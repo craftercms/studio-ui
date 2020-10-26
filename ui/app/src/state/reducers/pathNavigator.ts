@@ -30,6 +30,7 @@ import {
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
@@ -37,7 +38,7 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { id, path, locale, collapsed = false } }) => {
+    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {
       return {
         ...state,
         [id]: {
@@ -55,6 +56,15 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           offset: 0,
           count: 0,
           collapsed
+        }
+      };
+    },
+    [pathNavigatorSetLocaleCode.type]: (state, { payload: { id, locale } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          localeCode: locale
         }
       };
     },

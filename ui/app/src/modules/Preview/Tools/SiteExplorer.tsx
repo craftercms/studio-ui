@@ -114,7 +114,7 @@ const LinkWithIcon = (props: LinkWithIconProps) => {
 
 const ItemToComponentMap = {
   'craftercms.pathNavigator': Widget,
-  'craftercms.link': LinkWithIcon
+  'craftercms.linkWithIcon': LinkWithIcon
 };
 
 export function SiteExplorer(props: SiteExplorerProps) {
@@ -153,10 +153,10 @@ export function SiteExplorerContainer() {
         const hasPermission = itemRoles.length
           ? userRoles.some((role) => itemRoles.includes(role))
           : true;
-        return ['craftercms.link', 'craftercms.pathNavigator'].includes(item.id) && hasPermission;
+        return ['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(item.id) && hasPermission;
       });
       const notSupported = items.filter(
-        (i) => !['craftercms.link', 'craftercms.pathNavigator'].includes(i.id)
+        (i) => !['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(i.id)
       );
       return { supported, notSupported };
     },

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, Fragment, useMemo, useState } from 'react';
+import React, { ElementType, Fragment, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
@@ -45,7 +45,8 @@ import {
   pathNavigatorItemUnchecked,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
-  pathNavigatorSetKeyword
+  pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
@@ -98,6 +99,7 @@ export interface WidgetProps {
   label: string;
   rootPath: string;
   excludePaths: object;
+  locale?: string;
   icon: StateStylingProps | React.ElementType;
   container: StateStylingProps;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
@@ -133,11 +135,10 @@ export interface WidgetState {
 
 // PathNavigator
 export default function(props: WidgetProps) {
-  const { label, icon, container, rootPath: path, id } = props;
+  const { label, icon, container, rootPath: path, id, locale} = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
-  const locale = 'en';
   const { authoringBase } = useEnv();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
@@ -159,9 +160,19 @@ export default function(props: WidgetProps) {
 
   useMount(() => {
     if (!state) {
-      dispatch(pathNavigatorInit({ id, path: path, locale: locale }));
+      dispatch(pathNavigatorInit({ id, path, locale }));
     }
   });
+
+  useEffect(() => {
+    if(siteLocales.defaultLocaleCode) {
+      dispatch(pathNavigatorSetLocaleCode({
+        id,
+        locale: siteLocales.defaultLocaleCode
+      }))
+    }
+
+  }, [dispatch, id, siteLocales.defaultLocaleCode])
 
   if (!state) {
     return <LoadingState />;
@@ -409,8 +420,6 @@ export function WidgetUI(props: any) {
       errorSelector: null
     }
   );
-
-  console.log(state);
 
   return (
     <section
