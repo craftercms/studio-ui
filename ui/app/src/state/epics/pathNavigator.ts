@@ -19,7 +19,7 @@ import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
-import { getParentsFromPath, withoutIndex } from '../../utils/path';
+import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import { forkJoin, NEVER, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
@@ -50,7 +50,8 @@ export default [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
           pathNavigatorFetchParentItems({
             id,
-            path: storedState ? storedState.currentPath : payload.path
+            path: storedState ? storedState.currentPath : payload.path,
+            excludes: payload.excludes
           })
         ].filter(Boolean);
       })
@@ -85,23 +86,23 @@ export default [
         ([
            {
              type,
-             payload: { id, path }
+             payload: { id, path, excludes }
            },
            state
          ]) => {
           const site = state.sites.active;
-          const parentsPath = [...getParentsFromPath(path, state.pathNavigator[id].rootPath), path];
+          const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath).reverse();
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
-              requests.push(getChildrenByPath(site, parentPath));
+              requests.push(getChildrenByPath(site, parentPath, { excludes }));
             });
             return forkJoin(requests).pipe(
               map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );
           } else {
-            return getChildrenByPath(site, path).pipe(
+            return getChildrenByPath(site, path, { excludes }).pipe(
               map((response) => pathNavigatorFetchPathComplete({ id, response })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );

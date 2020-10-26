@@ -299,8 +299,8 @@ function parseSimulatorPanelConfig(element: Element) {
           if (channel.width === null && channel.height === null) {
             console.warn(
               '[services/configuration/parseSimulatorPanelConfig]' +
-                `Filtered out config item with blank/null width/height values. ` +
-                `Both values in blank is equivalent to the tool's default preset.`
+              `Filtered out config item with blank/null width/height values. ` +
+              `Both values in blank is equivalent to the tool's default preset.`
             );
             return false;
           } else {
@@ -318,9 +318,7 @@ function parseSimulatorPanelConfig(element: Element) {
 export interface SidebarConfigItem {
   id?: string;
   parameters?: object;
-  permittedRoles?: {
-    role?: string[];
-  };
+  permittedRoles?: string[];
 }
 
 export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
@@ -330,12 +328,23 @@ export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
         const items = Array.from(fromString(rawXML).querySelectorAll('widget'));
         const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
         cleanDoc.documentElement.append(...items);
-        return asArray<SidebarConfigItem>(
+        return asArray(
           toJS(cleanDoc, {
             attributeNamePrefix: '',
             ignoreAttributes: false
           }).root.widget
-        ).filter(Boolean);
+        )
+          .filter(Boolean)
+          .map((item) => {
+            let _item = { ...item };
+            if (item.permittedRoles) {
+              _item.permittedRoles = typeof item.permittedRoles.role === 'string' ? [item.permittedRoles.role] : item.permittedRoles.role;
+            }
+            if (item.parameters?.excludes) {
+              _item.parameters.excludes = typeof item.parameters.excludes.exclude === 'string' ? [item.parameters.excludes.exclude] : item.parameters.excludes.exclude;
+            }
+            return _item;
+          });
       } else {
         return [];
       }

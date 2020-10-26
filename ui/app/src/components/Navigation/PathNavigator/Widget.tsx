@@ -98,7 +98,7 @@ export interface WidgetProps {
   id: string;
   label: string;
   rootPath: string;
-  excludePaths: object;
+  excludes: string[];
   locale?: string;
   icon: StateStylingProps | React.ElementType;
   container: StateStylingProps;
@@ -135,7 +135,7 @@ export interface WidgetState {
 
 // PathNavigator
 export default function(props: WidgetProps) {
-  const { label, icon, container, rootPath: path, id, locale } = props;
+  const { label, icon, container, rootPath: path, id, locale, excludes } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -160,7 +160,7 @@ export default function(props: WidgetProps) {
 
   useMount(() => {
     if (!state) {
-      dispatch(pathNavigatorInit({ id, path, locale }));
+      dispatch(pathNavigatorInit({ id, path, locale, excludes }));
     }
   });
 

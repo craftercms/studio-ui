@@ -106,7 +106,7 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
   splitPath.pop();
   return [
     rootPath,
-    ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)
+    ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(1)
   ];
 }
 

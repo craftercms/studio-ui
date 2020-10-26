@@ -55,7 +55,7 @@ const translations = defineMessages({
   },
   unsupportedItemsPreset: {
     id: 'siteExplorerPanel.unsupportedItemsPreset',
-    defaultMessage: 'Some items in the site explorer config are not supported and won\'t show.'
+    defaultMessage: "Some items in the site explorer config are not supported and won't show."
   }
 });
 
@@ -149,11 +149,13 @@ export function SiteExplorerContainer() {
     resultSelector: ({ items }) => {
       const supported = items.filter((item) => {
         const userRoles = rolesBySite[site];
-        const itemRoles = item.permittedRoles?.role;
-        const hasPermission = itemRoles.length
+        const itemRoles = item.permittedRoles;
+        const hasPermission = itemRoles?.length
           ? userRoles.some((role) => itemRoles.includes(role))
           : true;
-        return ['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(item.id) && hasPermission;
+        return (
+          ['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(item.id) && hasPermission
+        );
       });
       const notSupported = items.filter(
         (i) => !['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(i.id)
