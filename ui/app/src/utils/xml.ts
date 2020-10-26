@@ -148,13 +148,19 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
   return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
 }
 
-export function toJS(xml: string, options?: X2jOptionsOptional): any;
-export function toJS(xml: XMLDocument, options?: X2jOptionsOptional): any;
+export function toJS(xml: string): any;
+export function toJS(xml: XMLDocument): any;
+export function toJS(xml: string, options: X2jOptionsOptional): any;
+export function toJS(xml: XMLDocument, options: X2jOptionsOptional): any;
 export function toJS(xml: string | XMLDocument, options?: X2jOptionsOptional): any {
   if (typeof xml !== 'string') {
     xml = serialize(xml);
   }
-  return parser.parse(xml, options);
+  return parser.parse(xml, {
+    attributeNamePrefix: '',
+    ignoreAttributes: false,
+    ...options
+  });
 }
 
 export default {

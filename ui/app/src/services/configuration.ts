@@ -299,8 +299,8 @@ function parseSimulatorPanelConfig(element: Element) {
           if (channel.width === null && channel.height === null) {
             console.warn(
               '[services/configuration/parseSimulatorPanelConfig]' +
-              `Filtered out config item with blank/null width/height values. ` +
-              `Both values in blank is equivalent to the tool's default preset.`
+                `Filtered out config item with blank/null width/height values. ` +
+                `Both values in blank is equivalent to the tool's default preset.`
             );
             return false;
           } else {
@@ -329,19 +329,22 @@ export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
         const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
         cleanDoc.documentElement.append(...items);
         return asArray(
-          toJS(cleanDoc, {
-            attributeNamePrefix: '',
-            ignoreAttributes: false
-          }).root.widget
+          toJS(cleanDoc).root.widget
         )
           .filter(Boolean)
           .map((item) => {
             let _item = { ...item };
             if (item.permittedRoles) {
-              _item.permittedRoles = typeof item.permittedRoles.role === 'string' ? [item.permittedRoles.role] : item.permittedRoles.role;
+              _item.permittedRoles =
+                typeof item.permittedRoles.role === 'string'
+                  ? [item.permittedRoles.role]
+                  : item.permittedRoles.role;
             }
             if (item.parameters?.excludes) {
-              _item.parameters.excludes = typeof item.parameters.excludes.exclude === 'string' ? [item.parameters.excludes.exclude] : item.parameters.excludes.exclude;
+              _item.parameters.excludes =
+                typeof item.parameters.excludes.exclude === 'string'
+                  ? [item.parameters.excludes.exclude]
+                  : item.parameters.excludes.exclude;
             }
             return _item;
           });
@@ -379,7 +382,9 @@ export function getGlobalMenuLinks(site: string) {
         const items = Array.from(fromString(rawXML).querySelectorAll(name));
         const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
         cleanDoc.documentElement.append(...items);
-        return asArray(toJS(cleanDoc).root[name])
+        return asArray(
+          toJS(cleanDoc).root[name]
+        )
           .filter((item) => {
             const link = name === 'widget' ? item.parameters?.link : item.params?.path;
             return link?.includes('/site-dashboard') || link?.includes('/site-config');
@@ -388,14 +393,14 @@ export function getGlobalMenuLinks(site: string) {
             if (name === 'widget') {
               return {
                 label: item.parameters.label,
-                path: `/studio${item.parameters.link.replace('/studio')}`,
+                path: `/studio${item.parameters.link.replace('/studio', '')}`,
                 roles: item.permittedRoles ? item.permittedRoles.role : [],
                 icon: item.parameters.icon.baseClass
               };
             } else {
               return {
                 label: item.params.label,
-                path: `/studio${item.params.path.replace('/studio')}`,
+                path: `/studio${item.params.path.replace('/studio', '')}`,
                 roles: item.roles ? item.roles.role : [],
                 icon: item.name === 'site-config' ? 'fa fa-sliders' : 'fa fa-tasks'
               };
