@@ -1551,7 +1551,10 @@
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
-        var controlExists = (this.config.controls.control.filter(control => control.name === field.type).length) > 0;
+        const controlExists = (this.config.controls.control.filter(control => {
+          const controlName = control.plugin ? control.plugin.name : control.name;
+          return (controlName === field.type);
+        }).length) > 0;
         if (!controlExists) {
           $(fieldContainerEl)
             .addClass('disabled')
