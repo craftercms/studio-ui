@@ -644,8 +644,8 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
           setDeps(dialog.dependencies);
         }
       }
-      // eslint-disable-next-line
     },
+    // eslint-disable-next-line
     [dialog.item, dialog.dependenciesShown, setDialog]
   );
 
