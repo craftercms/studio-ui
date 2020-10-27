@@ -618,7 +618,7 @@ export interface BulkUploadStateProps extends BulkUploadBaseProps {
   onClosed?: StandardAction;
 }
 
-export default function(props: BulkUploadProps) {
+export default function BulkUploadDialog(props: BulkUploadProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   // NOTE: this id needs to changed if we added support to many dialogs at the same time;

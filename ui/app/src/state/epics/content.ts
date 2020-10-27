@@ -41,7 +41,7 @@ import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 
-export default [
+const content = [
   // region Quick Create
   (action$: ActionsObservable<StandardAction>, $state: StateObservable<GlobalState>) =>
     action$.pipe(
@@ -145,3 +145,5 @@ export default [
     )
   // endregion
 ];
+
+export default content;

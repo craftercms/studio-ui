@@ -123,7 +123,7 @@ export interface WidgetState {
 }
 
 // PathNavigator
-export default function(props: WidgetProps) {
+export default function Widget(props: WidgetProps) {
   const { title, icon, path, id = removeSpaces(props.title), locale } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;

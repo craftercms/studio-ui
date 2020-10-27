@@ -1078,7 +1078,7 @@ export function getLegacyItemsTree(
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
-export default {
+const content = {
   getComponentInstanceHTML,
   getContentXML,
   getLegacyItem,
@@ -1109,3 +1109,5 @@ export default {
   changeContentType,
   checkPathExistence
 };
+
+export default content;

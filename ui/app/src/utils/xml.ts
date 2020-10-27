@@ -154,7 +154,7 @@ export function toJS(xml: string | XMLDocument): any {
   return parser.parse(xml, {});
 }
 
-export default {
+const xml = {
   fromString,
   deserialize,
   minify,
@@ -167,3 +167,5 @@ export default {
   createElements,
   wrapElementInAuxDocument
 };
+
+export default xml;

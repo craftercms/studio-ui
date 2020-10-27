@@ -1375,7 +1375,7 @@ export const languages = defineMessages({
   zh: { id: 'languages.zh', defaultMessage: 'Chinese' }
 });
 
-export default {
+const i18n = {
   approveDialogMessages,
   deleteDialogMessages,
   reposAdminMessages,
@@ -1417,3 +1417,5 @@ export default {
   adminDashboardMessages,
   controlsCommonMessages
 };
+
+export default i18n;

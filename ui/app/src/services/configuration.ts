@@ -364,7 +364,7 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
   );
 }
 
-export default {
+const configuration = {
   getProductLanguages,
   getRawConfiguration,
   getConfigurationDOM,
@@ -372,3 +372,5 @@ export default {
   getConfigurationHistory: getHistory,
   getSidebarItems
 };
+
+export default configuration;

@@ -93,7 +93,7 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
   );
 }
 
-export default {
+const auth = {
   getLogoutInfoURL,
   logout,
   login,
@@ -102,3 +102,5 @@ export default {
   setPassword,
   validatePasswordResetToken
 };
+
+export default auth;

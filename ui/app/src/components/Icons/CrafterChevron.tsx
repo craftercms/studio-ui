@@ -36,7 +36,7 @@ interface IconProps extends Omit<SvgIconProps, 'classes'> {
   classes?: SvgIconProps['classes'] & { gear?: string; letter?: string; chevron?: string };
 }
 
-export default function(props: IconProps) {
+export default function CrafterChevron(props: IconProps) {
   const classes = useStyles();
   const themeClass = props.darkMode ? classes.darkMode : classes.lightMode;
   return (

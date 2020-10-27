@@ -242,16 +242,16 @@ interface ContentLocalizationDialogProps {
   onClosed?(): void;
 }
 
-export default function (props: ContentLocalizationDialogProps) {
+export default function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <ContentLocalizationDialog {...props} />
+      <ContentLocalizationDialogUI {...props} />
     </Dialog>
   );
 }
 
-function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
+function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles({});

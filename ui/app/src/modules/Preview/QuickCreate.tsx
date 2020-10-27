@@ -247,7 +247,7 @@ function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
   );
 }
 
-export default function() {
+export default function QuickCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();

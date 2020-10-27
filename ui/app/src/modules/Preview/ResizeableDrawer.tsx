@@ -58,7 +58,7 @@ interface ResizeableDrawerProps extends DrawerProps {
   onWidthChange(width: number): void;
 }
 
-export default function(props: ResizeableDrawerProps) {
+export default function ResizeableDrawer(props: ResizeableDrawerProps) {
   const classes = useStyles();
   const [hovered, setHovered] = useState(false);
   const {

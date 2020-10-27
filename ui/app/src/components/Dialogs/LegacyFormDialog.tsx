@@ -205,7 +205,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
   );
 }
 
-export default function (props: LegacyFormDialogProps) {
+export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const id = 'legacy-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();

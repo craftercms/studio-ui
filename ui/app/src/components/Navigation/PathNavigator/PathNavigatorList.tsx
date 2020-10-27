@@ -35,7 +35,7 @@ interface NavProps {
 }
 
 // PathNavigatorList
-export default function(props: NavProps) {
+export default function PathNavigatorList(props: NavProps) {
   const {
     resource,
     onPathSelected,

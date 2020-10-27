@@ -38,11 +38,6 @@ import palette from '../../styles/palette';
 type Source = SandboxItem[];
 type Return = Omit<Source, 'error'>;
 
-interface WorkflowCancellationContentUIProps {
-  resource: Resource<Return>;
-  classes?: any;
-}
-
 interface WorkflowCancellationDialogUIProps {
   resource: Resource<Return>;
   classes?: any;

@@ -127,7 +127,7 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   }
 }
 
-export default {
+const path = {
   getPathFromPreviewURL,
   getPreviewURLFromPath,
   getQueryVariable,
@@ -138,3 +138,5 @@ export default {
   getParentPath,
   getParentsFromPath
 };
+
+export default path;

@@ -34,7 +34,7 @@ interface ActionProps extends IconButtonProps {
   tooltip: string;
 }
 
-export default function (props: ActionProps) {
+export default function DialogHeaderAction(props: ActionProps) {
   const { icon, tooltip, ...rest } = props;
   const Icon = typeof icon === 'string' ? ActionsIconMap[icon] : icon;
   return tooltip ? (

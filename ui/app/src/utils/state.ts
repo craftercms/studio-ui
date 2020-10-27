@@ -40,8 +40,10 @@ export function setStoredEditModeChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.editModeChoice.${site}`, value);
 }
 
-export default {
+const state = {
   getStateMapFromLegacyItem,
   getStoredPreviewChoice,
   setStoredPreviewChoice
 };
+
+export default state;
