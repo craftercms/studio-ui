@@ -96,6 +96,7 @@ import {
   setStoredPreviewChoice
 } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
+import { fetchSiteUiConfig } from '../../state/actions/configuration';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -155,6 +156,15 @@ export function PreviewConcierge(props: any) {
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
+
+  // region UI Config
+  useEffect(() => {
+    if(site){
+      dispatch(fetchSiteUiConfig({ site }))
+    }
+  }, [dispatch, site])
+
+  // end region
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;

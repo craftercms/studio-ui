@@ -14,31 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import ToolPanel from './ToolPanel';
-import { SidebarConfigItem } from '../../../services/configuration';
+import { siteExplorerItem } from '../../../services/configuration';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Widget from '../../../components/Navigation/PathNavigator/Widget';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  usePreviousValue,
-  useRoles,
-  useSelection
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useRoles, useSelection } from '../../../utils/hooks';
 import Alert from '@material-ui/lab/Alert';
 import Link from '@material-ui/core/Link';
-import { fetchSidebarConfig } from '../../../state/actions/configuration';
-import { useDispatch } from 'react-redux';
 import palette from '../../../styles/palette';
 
-type SiteExplorerResource = { supported: SidebarConfigItem[]; notSupported: SidebarConfigItem[] };
+type SiteExplorerResource = { supported: siteExplorerItem[]; notSupported: siteExplorerItem[] };
 
 interface SiteExplorerProps {
   resource: Resource<SiteExplorerResource>;
@@ -138,15 +130,13 @@ export function SiteExplorer(props: SiteExplorerProps) {
 export function SiteExplorerContainer() {
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  const prevSite = usePreviousValue(site);
-  const state = useSelection((state) => state.configuration.sidebar);
+  const state = useSelection((state) => state.uiConfig);
   const rolesBySite = useRoles();
 
   const resource = useLogicResource(state, {
     errorSelector: (state) => state.error,
-    resultSelector: ({ items }) => {
-      const supported = items.filter((item) => {
+    resultSelector: ({ siteExplorer }) => {
+      const supported = siteExplorer.filter((item) => {
         const userRoles = rolesBySite[site];
         const itemRoles = item.permittedRoles;
         const hasPermission = itemRoles?.length
@@ -156,21 +146,16 @@ export function SiteExplorerContainer() {
           ['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(item.id) && hasPermission
         );
       });
-      const notSupported = items.filter(
+      const notSupported = siteExplorer.filter(
         (i) => !['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(i.id)
       );
       return { supported, notSupported };
     },
     shouldReject: (state) => Boolean(state.error),
     shouldRenew: (state, resource) => resource.complete,
-    shouldResolve: (state) => !state.isFetching && Boolean(state.items)
+    shouldResolve: (state) => !state.isFetching && Boolean(state.siteExplorer)
   });
 
-  useEffect(() => {
-    if ((!state.items && !state.isFetching) || (prevSite !== undefined && prevSite !== site)) {
-      dispatch(fetchSidebarConfig(site));
-    }
-  }, [dispatch, prevSite, site, state.isFetching, state.items]);
   return (
     <ToolPanel title={translations.title}>
       <SuspenseWithEmptyState

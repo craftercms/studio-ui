@@ -349,6 +349,14 @@ export function useRoles(): GlobalState['user']['rolesBySite'] {
   return useSelection((state) => state.user.rolesBySite);
 }
 
+export function useGlobalNavConfig(): GlobalState['uiConfig']['globalNav'] {
+  return useSelection((state) => state.uiConfig.globalNav);
+}
+
+export function useSiteExplorerConfig(): GlobalState['uiConfig']['siteExplorer'] {
+  return useSelection((state) => state.uiConfig.siteExplorer);
+}
+
 export function usePreviousValue<T = any>(value: T) {
   const ref = useRef<T>();
   useEffect(() => {

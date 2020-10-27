@@ -28,7 +28,6 @@ import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
-import { asArray } from '../utils/array';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -315,39 +314,74 @@ function parseSimulatorPanelConfig(element: Element) {
 
 // region SidebarConfig
 
-export interface SidebarConfigItem {
+export interface siteExplorerItem {
   id?: string;
   parameters?: object;
   permittedRoles?: string[];
 }
 
-export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
-  return getRawConfiguration(site, '/site-explorer.xml', 'studio').pipe(
-    map((rawXML) => {
-      if (rawXML) {
-        const items = Array.from(fromString(rawXML).querySelectorAll('widget'));
-        const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
-        cleanDoc.documentElement.append(...items);
-        return asArray(
-          toJS(cleanDoc).root.widget
-        )
-          .filter(Boolean)
-          .map((item) => {
-            let _item = { ...item };
-            if (item.permittedRoles) {
-              _item.permittedRoles =
-                typeof item.permittedRoles.role === 'string'
-                  ? [item.permittedRoles.role]
-                  : item.permittedRoles.role;
-            }
-            if (item.parameters?.excludes) {
-              _item.parameters.excludes =
-                typeof item.parameters.excludes.exclude === 'string'
-                  ? [item.parameters.excludes.exclude]
-                  : item.parameters.excludes.exclude;
-            }
-            return _item;
-          });
+export interface globalNavItem {
+  parameters?: {
+    label: string;
+    link: string;
+    icon: {
+      id?: string;
+      baseClass?: string;
+      baseStyle: object;
+    };
+    target?: string;
+  };
+  permittedRoles?: string[];
+}
+
+export function getSiteUiConfig(
+  site: string
+): Observable<
+  | {
+      siteExplorer: siteExplorerItem[];
+      globalNav: { site: Array<globalNavItem>; global: Array<globalNavItem> };
+    }
+  | []
+> {
+  const permittedRolesParser = (items) => {
+    let array = items.length ? items : [items];
+    return array.map((item) => ({
+      ...item,
+      ...(item.permittedRoles && { permittedRoles: item.permittedRoles.role })
+    }));
+  };
+
+  const siteExplorerParser = (items) => {
+    let array = items.length ? items : [items];
+    return array.map((item) => ({
+      ...item,
+      ...(item.permittedRoles && { permittedRoles: item.permittedRoles.role }),
+      parameters: {
+        ...item.parameters,
+        ...(item.parameters?.excludes && { excludes: item.parameters.excludes.exclude }),
+      }
+    }));
+  };
+
+  return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
+    map((xml) => {
+      if (xml) {
+        const parsed = toJS(xml).ui;
+        return {
+          siteExplorer: parsed.siteExplorer
+            ? siteExplorerParser(parsed.siteExplorer.widgets.widget)
+            : null,
+          globalNav: parsed.globalNav
+            ? {
+                ...(parsed.globalNav.site?.items.item && {
+                  site: permittedRolesParser(parsed.globalNav.site.items.item)
+                }),
+                ...(parsed.globalNav.global?.items.item && {
+                  global: permittedRolesParser(parsed.globalNav.global.items.item)
+                })
+              }
+            : null
+        };
       } else {
         return [];
       }
@@ -368,49 +402,6 @@ function parsePreviewToolsPanelConfig(element: Element) {
   } catch (_e) {
     return element.outerHTML;
   }
-}
-
-export function getGlobalMenuLinks(site: string) {
-  return getRawConfiguration(site, '/context-nav/sidebar.xml', 'studio').pipe(
-    map((rawXML) => {
-      // The XML has a structure like:
-      // {root}.contextNav.contexts.context.groups.group.menuItems.menuItem.modulehooks.modulehook;
-      // To avoid excessive traversal, create a transition XML document with just the items.
-      if (rawXML) {
-        const parsedXML = fromString(rawXML);
-        let name = parsedXML.querySelector('modulehooks') ? 'modulehook' : 'widget';
-        const items = Array.from(fromString(rawXML).querySelectorAll(name));
-        const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
-        cleanDoc.documentElement.append(...items);
-        return asArray(
-          toJS(cleanDoc).root[name]
-        )
-          .filter((item) => {
-            const link = name === 'widget' ? item.parameters?.link : item.params?.path;
-            return link?.includes('/site-dashboard') || link?.includes('/site-config');
-          })
-          .map((item) => {
-            if (name === 'widget') {
-              return {
-                label: item.parameters.label,
-                path: `/studio${item.parameters.link.replace('/studio', '')}`,
-                roles: item.permittedRoles ? item.permittedRoles.role : [],
-                icon: item.parameters.icon.baseClass
-              };
-            } else {
-              return {
-                label: item.params.label,
-                path: `/studio${item.params.path.replace('/studio', '')}`,
-                roles: item.roles ? item.roles.role : [],
-                icon: item.name === 'site-config' ? 'fa fa-sliders' : 'fa fa-tasks'
-              };
-            }
-          });
-      } else {
-        return [];
-      }
-    })
-  );
 }
 
 export function getGlobalMenuItems() {
@@ -447,6 +438,5 @@ export default {
   getRawConfiguration,
   getConfigurationDOM,
   getGlobalMenuItems,
-  getConfigurationHistory: getHistory,
-  getSidebarItems
+  getConfigurationHistory: getHistory
 };

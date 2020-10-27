@@ -29,6 +29,7 @@ import content from './content';
 import translation from './translation';
 import configuration from './configuration';
 import pathNavigator from './pathNavigator';
+import uiConfig from './uiConfig';
 
 const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   auth,
@@ -42,7 +43,8 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   content,
   translation,
   configuration,
-  pathNavigator
+  pathNavigator,
+  uiConfig
 };
 
 export default reducer;

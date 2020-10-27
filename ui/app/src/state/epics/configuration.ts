@@ -18,20 +18,20 @@ import { Epic, ofType } from 'redux-observable';
 import { map, switchMap } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
-  fetchSidebarConfig,
-  fetchSidebarConfigComplete,
-  fetchSidebarConfigFailed
+  fetchSiteUiConfig,
+  fetchSiteUiConfigComplete,
+  fetchSiteUiConfigFailed
 } from '../actions/configuration';
-import { getSidebarItems } from '../../services/configuration';
+import { getSiteUiConfig } from '../../services/configuration';
 
-const fetch_sidebar_config: Epic = (action$) => action$.pipe(
-  ofType(fetchSidebarConfig.type),
-  switchMap(({ payload }) => getSidebarItems(payload).pipe(
-    map(fetchSidebarConfigComplete),
-    catchAjaxError(fetchSidebarConfigFailed)
+const fetch_site_ui_config: Epic = (action$) => action$.pipe(
+  ofType(fetchSiteUiConfig.type),
+  switchMap(({ payload }) => getSiteUiConfig(payload.site).pipe(
+    map(fetchSiteUiConfigComplete),
+    catchAjaxError(fetchSiteUiConfigFailed)
   ))
 );
 
 export default [
-  fetch_sidebar_config
+  fetch_site_ui_config
 ] as Epic[];

@@ -25,6 +25,7 @@ import GlobalState from '../../models/GlobalState';
 import {
   useActiveSiteId,
   useEnv,
+  useGlobalNavConfig,
   useMount,
   useSelection,
   useSiteList,
@@ -97,6 +98,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
   const { authoringBase } = useEnv();
   const version = useSystemVersion();
+  const globalNavItems = useGlobalNavConfig();
   const sites = useSiteList();
   const dispatch = useDispatch();
 
@@ -132,6 +134,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         authoringUrl={authoringBase}
         onMenuClose={onMenuClose}
         rolesBySite={user.rolesBySite}
+        globalNav={globalNavItems}
       />
     </>
   );
