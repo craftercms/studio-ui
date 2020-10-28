@@ -35,7 +35,6 @@ import {
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
-  fetchPreviewToolsConfigComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -115,7 +114,6 @@ const reducer = createReducer<GlobalState['preview']>(
     // Don't change/commit the tool you're working with. Use your .env.development to set it
     selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
     toolsPanelWidth: 240,
-    tools: null,
     guest: null,
     assets: createEntityState({
       page: [],
@@ -158,12 +156,6 @@ const reducer = createReducer<GlobalState['preview']>(
       return {
         ...state,
         showToolsPanel: false
-      };
-    },
-    [fetchPreviewToolsConfigComplete.type]: (state, { payload }) => {
-      return {
-        ...state,
-        tools: payload.modules
       };
     },
     [SET_HOST_SIZE]: (state, { payload }) => {
@@ -478,8 +470,8 @@ const reducer = createReducer<GlobalState['preview']>(
     }),
     [IN_PAGE_INSTANCES]: (state, { payload }) => ({
       ...state,
-      previousTool: 'craftercms.ice.components',
-      selectedTool: 'craftercms.ice.inPageInstances',
+      previousTool: 'craftercms.componentsPanel',
+      selectedTool: 'craftercms.inPageInstancesPanel',
       components: {
         ...state.components,
         contentTypeFilter: payload.contentType
@@ -487,8 +479,8 @@ const reducer = createReducer<GlobalState['preview']>(
     }),
     [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
       ...state,
-      previousTool: 'craftercms.ice.components',
-      selectedTool: 'craftercms.ice.browseComponents',
+      previousTool: 'craftercms.componentsPanel',
+      selectedTool: 'craftercms.browseComponentsPanel',
       components: {
         ...state.components,
         contentTypeFilter: payload.contentType,

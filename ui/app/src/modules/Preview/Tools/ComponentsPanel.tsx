@@ -144,7 +144,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   };
 
   const onListReceptaclesClick = () => {
-    dispatch(selectTool('craftercms.ice.contentTypeReceptacles'));
+    dispatch(selectTool('craftercms.contentTypeReceptaclesPanel'));
     hostToGuest$.next({
       type: CONTENT_TYPE_RECEPTACLES_REQUEST,
       payload: menuContext.contentType.id

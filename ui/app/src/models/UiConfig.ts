@@ -14,17 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type PreviewTool =
-  'craftercms.componentsPanel' |
-  'craftercms.assetsPanel' |
-  'craftercms.audiencesPanel' |
-  'craftercms.simulatorPanel' |
-  'craftercms.editPanel' |
-  'craftercms.browseComponentsPanel' |
-  'craftercms.inPageInstancesPanel' |
-  'craftercms.contentTypeReceptaclesPanel' |
-  'craftercms.pageExplorerPanel' |
-  'craftercms.searchPanel' |
-  'craftercms.siteExplorerPanel';
+export interface SidebarPanelConfigEntry {
+  id: string;
+  roles: string[];
+  parameters?: any;
+}
 
-export default PreviewTool;
+export interface StateStylingProps {
+  baseClass: string;
+  expandedClass: string;
+  collapsedClass: string;
+  baseStyle: object;
+  expandedStyle: object;
+  collapsedStyle: object;
+}
+
+export interface SidebarPanelWidgetConfig {
+  id: string;
+  roles: string[];
+  parameters?: {
+    label: string;
+    icon: Partial<StateStylingProps>;
+    container: Partial<StateStylingProps>;
+  }
+}

@@ -19,18 +19,18 @@ import { defineMessages, useIntl } from 'react-intl';
 import { createStyles } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import ToolPanel from './ToolPanel';
-import { SiteExplorerItem } from '../../../services/configuration';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Widget from '../../../components/Navigation/PathNavigator/Widget';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useActiveSiteId, useLogicResource, useRoles, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useRoles } from '../../../utils/hooks';
 import Alert from '@material-ui/lab/Alert';
 import Link from '@material-ui/core/Link';
 import palette from '../../../styles/palette';
+import { SidebarPanelWidgetConfig } from '../../../models/UiConfig';
 
-type SiteExplorerResource = { supported: SiteExplorerItem[]; notSupported: SiteExplorerItem[] };
+type SiteExplorerResource = { supported: SidebarPanelWidgetConfig[]; notSupported: SidebarPanelWidgetConfig[] };
 
 interface SiteExplorerProps {
   resource: Resource<SiteExplorerResource>;
@@ -127,18 +127,21 @@ export function SiteExplorer(props: SiteExplorerProps) {
   );
 }
 
-export function SiteExplorerContainer() {
+interface SiteExplorerContainerProps {
+  widgets: SidebarPanelWidgetConfig[];
+}
+
+export function SiteExplorerContainer({ widgets }: SiteExplorerContainerProps) {
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
-  const state = useSelection((state) => state.uiConfig);
   const rolesBySite = useRoles();
 
-  const resource = useLogicResource(state, {
-    errorSelector: (state) => state.error,
-    resultSelector: ({ siteExplorer }) => {
-      const supported = siteExplorer.filter((item) => {
+  const resource = useLogicResource(widgets, {
+    errorSelector: (widgets) => null,
+    resultSelector: (widgets) => {
+      const supported = widgets.filter((item) => {
         const userRoles = rolesBySite[site];
-        const itemRoles = item.permittedRoles;
+        const itemRoles = item.roles;
         const hasPermission = itemRoles?.length
           ? userRoles.some((role) => itemRoles.includes(role))
           : true;
@@ -146,14 +149,14 @@ export function SiteExplorerContainer() {
           ['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(item.id) && hasPermission
         );
       });
-      const notSupported = siteExplorer.filter(
+      const notSupported = widgets.filter(
         (i) => !['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(i.id)
       );
       return { supported, notSupported };
     },
-    shouldReject: (state) => Boolean(state.error),
+    shouldReject: (state) => null,
     shouldRenew: (state, resource) => resource.complete,
-    shouldResolve: (state) => !state.isFetching && Boolean(state.siteExplorer)
+    shouldResolve: (state) => Boolean(widgets)
   });
 
   return (

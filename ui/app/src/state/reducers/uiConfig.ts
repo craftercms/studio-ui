@@ -26,8 +26,13 @@ import { changeSite } from './sites';
 const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: false,
-  siteExplorer: null,
-  globalNav: null
+  preview: {
+    toolbar: {},
+    sidebar: {
+      panels: null
+    },
+    siteNav: {},
+  }
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
@@ -38,8 +43,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   [fetchSiteUiConfigComplete.type]: (state, { payload }) => ({
     ...state,
     isFetching: false,
-    siteExplorer: payload.siteExplorer,
-    globalNav: payload.globalNav
+    ...payload
   }),
   [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
     ...state,

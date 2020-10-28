@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getGlobalMenuItems, GlobalNavItem, SiteExplorerItem } from '../../services/configuration';
+import { getGlobalMenuItems } from '../../services/configuration';
 import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
@@ -37,7 +37,7 @@ import Hidden from '@material-ui/core/Hidden';
 import { LookupTable } from '../../models/LookupTable';
 import { useMount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { camelize, getInitials, popPiece } from '../../utils/string';
+import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
 import { logout } from '../../services/auth';
@@ -100,6 +100,26 @@ const messages = defineMessages({
     id: 'globalMenu.preview',
     defaultMessage: 'Preview'
   },
+  preview2: {
+    id: 'globalMenu.preview2',
+    defaultMessage: 'Preview 2.0'
+  },
+  preview1: {
+    id: 'globalMenu.preview1',
+    defaultMessage: 'Preview 1.0'
+  },
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
+  },
+  about: {
+    id: 'GlobalMenu.AboutUs',
+    defaultMessage: 'About'
+  },
+  docs: {
+    id: 'globalMenu.docs',
+    defaultMessage: 'Documentation'
+  },
   siteConfig: {
     id: 'globalMenu.siteConfig',
     defaultMessage: 'Site Config'
@@ -144,9 +164,33 @@ const messages = defineMessages({
     id: 'globalMenu.dashboard',
     defaultMessage: 'Dashboard'
   },
+  remove: {
+    id: 'globalMenu.remove',
+    defaultMessage: 'Remove'
+  },
+  ok: {
+    id: 'globalMenu.ok',
+    defaultMessage: 'Ok'
+  },
+  cancel: {
+    id: 'globalMenu.cancel',
+    defaultMessage: 'Cancel'
+  },
+  removeSite: {
+    id: 'globalMenu.removeSite',
+    defaultMessage: 'Remove site'
+  },
+  removeSiteConfirm: {
+    id: 'globalMenu.removeSiteConfirm',
+    defaultMessage: 'Do you want to remove {site}?'
+  },
   signOut: {
     id: 'toolbarGlobalNav.signOut',
     defaultMessage: 'Sign Out'
+  },
+  settings: {
+    id: 'toolbarGlobalNav.settings',
+    defaultMessage: 'Settings'
   }
 });
 
@@ -183,15 +227,6 @@ function Tile(props: TileProps) {
   );
 }
 
-const iconsIdMapping = {
-  'preview2.0': Preview,
-  'preview1.0': DevicesIcon,
-  'search': SearchIcon,
-  'docs': Docs,
-  'settings': SettingsRoundedIcon,
-  'about': About
-};
-
 const globalNavUrlMapping = {
   'home.globalMenu.logging-levels': '#/globalMenu/logging',
   'home.globalMenu.log-console': '#/globalMenu/log',
@@ -204,8 +239,11 @@ const globalNavUrlMapping = {
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
   'legacy.preview': '/preview/',
   preview: '/next/preview',
+  about: '#/about-us',
   siteConfig: '/site-config',
+  search: '/search',
   siteDashboard: '/site-dashboard',
+  settings: '#/settings'
 };
 
 const globalNavStyles = makeStyles((theme) =>
@@ -304,15 +342,12 @@ interface GlobalNavProps {
   authoringUrl: string;
   onMenuClose: (e: any) => void;
   rolesBySite: LookupTable<string[]>;
-  globalNav: { site: Array<GlobalNavItem>; global: Array<GlobalNavItem> };
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
   const {
     anchor,
     onMenuClose,
-    rolesBySite,
-    globalNav,
     logoutUrl,
     authoringUrl,
     version,
@@ -322,10 +357,6 @@ export default function GlobalNav(props: GlobalNavProps) {
   } = props;
   const classes = globalNavStyles({});
   const [menuItems, setMenuItems] = useState(null);
-  const [globalNavItems, setGlobalNavItems] = useState({
-    site: null,
-    global: null
-  });
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
@@ -386,15 +417,6 @@ export default function GlobalNav(props: GlobalNavProps) {
       });
     }
   };
-
-  useEffect(() => {
-    if (globalNav) {
-      setGlobalNavItems({
-        site: checkItemsVsRoles(globalNav.site, rolesBySite[site]),
-        global: checkItemsVsRoles(globalNav.global, rolesBySite[site])
-      });
-    }
-  }, [rolesBySite, site, globalNav]);
 
   useMount(() => {
     getGlobalMenuItems().subscribe(
@@ -508,33 +530,47 @@ export default function GlobalNav(props: GlobalNavProps) {
                     onClick={onMenuClose}
                   />
                 ))}
-                {globalNavItems.global?.map((item) => (
-                  <Tile
-                    key={item.label}
-                    title={item.label}
-                    icon={item.id ? iconsIdMapping[item.id] : item.icon}
-                    link={item.path}
-                    target={item.target}
-                    onClick={onMenuClose}
-                    disabled={!site}
-                  />
-                ))}
+                {/* prettier-ignore */}
+                <Tile
+                  title={formatMessage(messages.docs)}
+                  icon={Docs}
+                  link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
+                  target="_blank"
+                />
+                <Tile
+                  title={formatMessage(messages.settings)}
+                  icon={SettingsRoundedIcon}
+                  link={getLink('settings', authoringUrl)}
+                  disabled={!site}
+                />
+                <Tile
+                  icon={About}
+                  link={getLink('about', authoringUrl)}
+                  title={formatMessage(messages.about)}
+                />
               </nav>
               <Typography variant="subtitle1" component="h2" className={classes.title}>
                 {formatMessage(messages.site)}
               </Typography>
               <nav className={classes.sitesApps}>
-                {globalNavItems.site?.map((item) => (
-                  <Tile
-                    key={item.label}
-                    title={item.label}
-                    icon={item.id ? iconsIdMapping[item.id] : item.icon}
-                    link={item.path}
-                    target={item.target}
-                    onClick={onMenuClose}
-                    disabled={!site}
-                  />
-                ))}
+                <Tile
+                  title={formatMessage(messages.preview2)}
+                  icon={Preview}
+                  link={`${authoringUrl}/next/preview`}
+                  onClick={onMenuClose}
+                />
+                <Tile
+                  title={formatMessage(messages.preview1)}
+                  icon={DevicesIcon}
+                  link={getLink('legacy.preview', authoringUrl)}
+                  disabled={!site}
+                />
+                <Tile
+                  title={formatMessage(messages.search)}
+                  icon={SearchIcon}
+                  link={getLink('search', authoringUrl)}
+                  disabled={!site}
+                />
               </nav>
             </div>
             <div className={classes.railBottom}>
@@ -597,20 +633,4 @@ function onLogout(url) {
     Cookies.set('userSession', null);
     window.location.href = url;
   });
-}
-
-function checkItemsVsRoles(items: SiteExplorerItem[] | GlobalNavItem [], roles: string[], ) {
-  // @ts-ignore
-  return items.filter((item) => {
-      const userRoles = roles;
-      const itemRoles = item.permittedRoles ?? [];
-      return itemRoles.length ? userRoles.some((role) => itemRoles.includes(role)) : true;
-    })
-    .map((item) => ({
-      label: item.parameters.label,
-      ...(item.parameters.icon.id && { id: item.parameters.icon.id }),
-      ...(item.parameters.icon.baseClass && { icon: item.parameters.icon.baseClass }),
-      path: item.parameters.link,
-      ...(item.parameters.target && { target: item.parameters.target }),
-    }));
 }

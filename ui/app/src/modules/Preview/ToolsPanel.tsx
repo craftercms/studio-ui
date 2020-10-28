@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ExtensionRounded from '@material-ui/icons/ExtensionRounded';
 import ImageRounded from '@material-ui/icons/ImageOutlined';
@@ -38,32 +38,27 @@ import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
 import InPageInstancesPanel from './Tools/InPageInstancesPanel';
-import {
-  fetchPreviewToolsConfig,
-  selectTool,
-  updateToolsPanelWidth
-} from '../../state/actions/preview';
+import { selectTool, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
-  useLogicResource,
   usePreviewState,
-  useSelection
+  useSelection,
+  useSidebarPanels
 } from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import PageExplorer from './Tools/PageExplorer';
-import { nnou } from '../../utils/object';
-import Suspencified from '../../components/SystemStatus/Suspencified';
 import SearchPanel from './Tools/SearchPanel';
 import PreviewTool from '../../models/PreviewTool';
-import { Resource } from '../../models/Resource';
 import { SvgIconTypeMap } from '@material-ui/core/SvgIcon/SvgIcon';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import SiteExplorer from './Tools/SiteExplorer';
 import PageExplorerRounded from '../../components/Icons/PageExplorerRounded';
 import SiteExplorerRounded from '../../components/Icons/SiteExplorerRounded';
 import ResizeableDrawer from './ResizeableDrawer';
+import { ConditionalLoadingState } from '../../components/SystemStatus/LoadingState';
+import { ErrorBoundary } from '../../components/SystemStatus/ErrorBoundary';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -117,49 +112,44 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const translations = defineMessages({
-  unknownPanel: {
-    id: 'craftercms.ice.unknown.title',
+  unknownPanelTitle: {
+    id: 'unknownPanel.title',
     defaultMessage: 'Unknown Panel'
   },
-  componentsPanel: {
-    id: 'craftercms.ice.components.title',
+  componentsPanelTitle: {
+    id: 'componentsPanel.title',
     defaultMessage: 'Components'
   },
-  assetsPanel: {
-    id: 'craftercms.ice.assets.title',
+  assetsPanelTitle: {
+    id: 'assetsPanel.title',
     defaultMessage: 'Assets'
   },
-  audiencesPanel: {
-    id: 'craftercms.ice.audiences.title',
+  audiencesPanelTitle: {
+    id: 'audiencesPanel.title',
     defaultMessage: 'Audience Targeting'
   },
-  // TODO: Remove/clean up.
-  publishingChannel: {
-    id: 'craftercms.ice.simulator.title_legacy',
+  simulatorPanelTitle: {
+    id: 'simulatorPanelTitle.title',
     defaultMessage: 'Device Simulator'
   },
-  deviceSimulator: {
-    id: 'craftercms.ice.simulator.title',
-    defaultMessage: 'Device Simulator'
-  },
-  browseComponentsPanel: {
-    id: 'craftercms.ice.browseComponents.title',
+  browseComponentsPanelTitle: {
+    id: 'browseComponentsPanel.title',
     defaultMessage: 'Browse Components'
   },
-  pageExplorerPanel: {
-    id: 'craftercms.ice.pageExplorerPanel.title',
+  pageExplorerPanelTitle: {
+    id: 'pageExplorerPanel.title',
     defaultMessage: 'Page Explorer'
   },
-  searchPanel: {
-    id: 'craftercms.ice.pageExplorerPanel.title',
+  searchPanelTitle: {
+    id: 'searchPanel.title',
     defaultMessage: 'Search Everywhere'
   },
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
   },
-  siteExplorerPanel: {
-    id: 'siteExplorerPanel',
+  siteExplorerPanelTitle: {
+    id: 'siteExplorerPanel.title',
     defaultMessage: 'Site Explorer'
   }
 });
@@ -181,13 +171,13 @@ interface Tool {
 }
 
 interface ToolSelectorProps {
-  resource: Resource<Tool[]>;
+  tools: any[];
 }
 
 function UnknownPanel(props: UnknownPanelProps) {
   const classes = useStyles({});
   return (
-    <ToolPanel title={translations.unknownPanel}>
+    <ToolPanel title={translations.unknownPanelTitle}>
       <Typography
         component="div"
         variant="body1"
@@ -209,10 +199,9 @@ function UnknownPanel(props: UnknownPanelProps) {
 }
 
 function ToolSelector(props: ToolSelectorProps) {
-  const { resource } = props;
+  const { tools } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const tools = resource.read();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
 
@@ -222,7 +211,7 @@ function ToolSelector(props: ToolSelectorProps) {
         .map((tool) => ({
           ...tool,
           Icon: componentIconMap[tool.id] || WarningRounded,
-          title: getTranslation(tool.title, translations, formatMessage)
+          title: getTranslation(translationIdMap[tool.id], translations, formatMessage)
         }))
         .map(({ id, title, Icon }) => (
           <ListItem key={id} button onClick={() => select(id)}>
@@ -238,88 +227,97 @@ function ToolSelector(props: ToolSelectorProps) {
 }
 
 const componentIconMap: { [key in PreviewTool]: OverridableComponent<SvgIconTypeMap> } = {
-  'craftercms.ice.contentTypeReceptacles': undefined,
-  'craftercms.ice.edit': undefined,
-  'craftercms.ice.components': ExtensionRounded,
-  'craftercms.ice.assets': ImageRounded,
-  'craftercms.ice.audiences': EmojiPeopleRounded,
-  'craftercms.ice.simulator': DevicesRounded,
-  'craftercms.ice.browseComponents': ExtensionRounded,
-  'craftercms.ice.inPageInstances': ExtensionRounded,
-  'craftercms.ice.pageExplorer': PageExplorerRounded,
-  'craftercms.ice.search': SearchRoundedIcon,
+  'craftercms.contentTypeReceptaclesPanel': undefined,
+  'craftercms.editPanel': undefined,
+  'craftercms.componentsPanel': ExtensionRounded,
+  'craftercms.assetsPanel': ImageRounded,
+  'craftercms.audiencesPanel': EmojiPeopleRounded,
+  'craftercms.simulatorPanel': DevicesRounded,
+  'craftercms.browseComponentsPanel': ExtensionRounded,
+  'craftercms.inPageInstancesPanel': ExtensionRounded,
+  'craftercms.pageExplorerPanel': PageExplorerRounded,
+  'craftercms.searchPanel': SearchRoundedIcon,
   'craftercms.siteExplorerPanel': SiteExplorerRounded
 };
 
 const componentMap: { [key in PreviewTool]: React.ElementType } = {
-  'craftercms.ice.components': ComponentsPanel,
-  'craftercms.ice.assets': AssetsPanel,
-  'craftercms.ice.audiences': AudiencesPanel,
-  'craftercms.ice.simulator': SimulatorPanel,
-  'craftercms.ice.edit': EditFormPanel,
-  'craftercms.ice.browseComponents': BrowseComponentsPanel,
-  'craftercms.ice.inPageInstances': InPageInstancesPanel,
-  'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
-  'craftercms.ice.pageExplorer': PageExplorer,
-  'craftercms.ice.search': SearchPanel,
+  'craftercms.componentsPanel': ComponentsPanel,
+  'craftercms.assetsPanel': AssetsPanel,
+  'craftercms.audiencesPanel': AudiencesPanel,
+  'craftercms.simulatorPanel': SimulatorPanel,
+  'craftercms.editPanel': EditFormPanel,
+  'craftercms.browseComponentsPanel': BrowseComponentsPanel,
+  'craftercms.inPageInstancesPanel': InPageInstancesPanel,
+  'craftercms.contentTypeReceptaclesPanel': ReceptaclesPanel,
+  'craftercms.pageExplorerPanel': PageExplorer,
+  'craftercms.searchPanel': SearchPanel,
   'craftercms.siteExplorerPanel': SiteExplorer
+};
+
+const translationIdMap: { [key in PreviewTool]: string } = {
+  'craftercms.componentsPanel': 'componentsPanelTitle',
+  'craftercms.assetsPanel': 'assetsPanelTitle',
+  'craftercms.audiencesPanel': 'audiencesPanelTitle',
+  'craftercms.simulatorPanel': 'simulatorPanelTitle',
+  'craftercms.editPanel': 'editPanelTitle',
+  'craftercms.browseComponentsPanel': 'BrowseComponentsPanelTitle',
+  'craftercms.inPageInstancesPanel': 'inPageInstancesPanelTitle',
+  'craftercms.contentTypeReceptaclesPanel': 'contentTypeReceptaclesPanelTitle',
+  'craftercms.pageExplorerPanel': 'pageExplorerPanelTitle',
+  'craftercms.searchPanel': 'searchPanelTitle',
+  'craftercms.siteExplorerPanel': 'siteExplorerPanelTitle'
 };
 
 export default function ToolsPanel() {
   const classes = useStyles({});
-  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
+  const { guest, selectedTool, showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const tools = useSidebarPanels();
 
-  let Tool = guest?.selected
-    ? EditFormPanel
-    : Boolean(selectedTool)
-    ? componentMap[selectedTool] || UnknownPanel
-    : ToolSelector;
+  let Tool = componentMap[selectedTool] || UnknownPanel;
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
-  let config = toolMeta?.config;
-
-  const resource = useLogicResource(tools, {
-    shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: (source) => nnou(source),
-    shouldReject: () => false,
-    errorSelector: null,
-    resultSelector: (source) => source
-  });
-
-  useEffect(() => {
-    // TODO: Move fetch out of component
-    !tools && site && dispatch(fetchPreviewToolsConfig(site));
-  }, [site, dispatch, tools]);
 
   return (
     <ResizeableDrawer
       open={showToolsPanel}
       width={toolsPanelWidth}
       onWidthChange={(width) => {
-      dispatch(updateToolsPanelWidth({
-        width
-      }))
-    }}>
-      {site ? (
-        <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
-          <Tool id={toolMeta?.id} config={config} resource={resource} />
-        </Suspencified>
-      ) : (
-        <EmptyState
-          title={
-            <FormattedMessage
-              id="previewTools.choseSiteMessage"
-              defaultMessage="Please choose site."
-            />
-          }
-          image={`${baseUrl}/static-assets/images/choose_option.svg`}
-          classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
-        />
-      )}
+        dispatch(
+          updateToolsPanelWidth({
+            width
+          })
+        );
+      }}
+    >
+      <ErrorBoundary>
+        {site ? (
+          guest?.selected ? (
+            <EditFormPanel />
+          ) : (
+            <ConditionalLoadingState isLoading={!Boolean(tools)}>
+              {Boolean(selectedTool) ? (
+                <Tool id={toolMeta?.id} {...toolMeta?.parameters}/>
+              ) : (
+                <ToolSelector tools={tools} />
+              )}
+            </ConditionalLoadingState>
+          )
+        ) : (
+          <EmptyState
+            title={
+              <FormattedMessage
+                id="previewTools.choseSiteMessage"
+                defaultMessage="Please choose site."
+              />
+            }
+            image={`${baseUrl}/static-assets/images/choose_option.svg`}
+            classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
+          />
+        )}
+      </ErrorBoundary>
     </ResizeableDrawer>
   );
 }

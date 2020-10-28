@@ -17,17 +17,13 @@
 import { errorSelectorApi1, get } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
-import {
-  extractLocalizedElements,
-  fromString,
-  getInnerHtml,
-  getInnerHtmlNumber,
-  toJS
-} from '../utils/xml';
+import { fromString, getInnerHtml, toJS } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
+import { SidebarPanelConfigEntry, SidebarPanelWidgetConfig } from '../models/UiConfig';
+import { asArray } from '../utils/array';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -51,72 +47,12 @@ export function getConfigurationDOM(
 
 // region PreviewToolsConfig
 
-interface PreviewToolsModuleDescriptor {
-  id: string; // The module id
-  title: string;
-  // title_en: string;
-  // title_es: string;
-  // title_ko: string;
-  // title_de: string;
-  config: string;
-}
-
-export interface PreviewToolsConfig {
-  modules: Array<PreviewToolsModuleDescriptor>;
-}
-
-const LegacyPanelIdMap: any = {
-  'ice-tools-panel': 'craftercms.ice.ice',
-  'component-panel': 'craftercms.ice.components',
-  'medium-panel': 'craftercms.ice.simulator',
-  targeting: 'craftercms.ice.audiences'
-};
-
 const audienceTypesMap: any = {
   input: 'input',
   dropdown: 'dropdown',
   checkboxes: 'checkbox-group',
   datetime: 'date-time'
 };
-
-export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConfig> {
-  return getRawConfiguration(site, `/preview-tools/panel.xml`, 'studio').pipe(
-    map((content) => {
-      try {
-        return JSON.parse(content);
-      } catch (e) {
-        // Not JSON, assuming XML
-        let previewToolsConfig: PreviewToolsConfig = { modules: null };
-        const xml = fromString(content);
-        previewToolsConfig.modules = Array.from(xml.querySelectorAll('module')).map((elem) => {
-          let id =
-            // Try the new way first
-            elem.getAttribute('id') ||
-            // ...try the old way if no id attribute is found
-            getInnerHtml(elem.querySelector('moduleName'));
-          if (LegacyPanelIdMap[id]) {
-            id = LegacyPanelIdMap[id];
-          }
-
-          const configNode = elem.querySelector('config');
-          let config =
-            id === 'craftercms.ice.simulator'
-              ? parseSimulatorPanelConfig(configNode)
-              : parsePreviewToolsPanelConfig(configNode);
-
-          const localizedTitles = extractLocalizedElements(elem.querySelectorAll(':scope > title'));
-
-          return {
-            id: LegacyPanelIdMap[id] || id,
-            ...localizedTitles,
-            config
-          };
-        });
-        return previewToolsConfig;
-      }
-    })
-  );
-}
 
 // endregion
 
@@ -280,86 +216,45 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
 
-function parseSimulatorPanelConfig(element: Element) {
-  let config = parsePreviewToolsPanelConfig(element);
-  if (config === null) {
-    return null;
-  } else if (typeof config === 'object') {
-    return config;
-  } else {
-    return {
-      channels: Array.from(element.querySelectorAll('channel'))
-        .map((channel) => ({
-          width: getInnerHtmlNumber(channel.querySelector('width')),
-          height: getInnerHtmlNumber(channel.querySelector('height')),
-          ...extractLocalizedElements(channel.querySelectorAll(':scope > title'))
-        }))
-        .filter((channel) => {
-          if (channel.width === null && channel.height === null) {
-            console.warn(
-              '[services/configuration/parseSimulatorPanelConfig]' +
-                `Filtered out config item with blank/null width/height values. ` +
-                `Both values in blank is equivalent to the tool's default preset.`
-            );
-            return false;
-          } else {
-            return true;
-          }
-        })
-    };
-  }
-}
-
 // endregion
 
 // region SidebarConfig
 
-export interface SiteExplorerItem {
-  id?: string;
-  parameters?: object;
-  permittedRoles?: string[];
-}
+export function getSiteUiConfig(site: string): Observable<any> {
 
-export interface GlobalNavItem {
-  parameters?: {
-    label: string;
-    link: string;
-    icon: {
-      id?: string;
-      baseClass?: string;
-      baseStyle: object;
-    };
-    target?: string;
-  };
-  permittedRoles?: string[];
-}
-
-export function getSiteUiConfig(
-  site: string
-): Observable<
-  | {
-      siteExplorer: SiteExplorerItem[];
-      globalNav: { site: Array<GlobalNavItem>; global: Array<GlobalNavItem> };
-    }
-  | []
-> {
-  const permittedRolesParser = (items) => {
-    let array = items.length ? items : [items];
+  const widgetParser = (items): SidebarPanelWidgetConfig[] => {
+    let array = asArray(items.widget);
     return array.map((item) => ({
-      ...item,
-      ...(item.permittedRoles && { permittedRoles: item.permittedRoles.role })
+      id: item.id,
+      ...(item.roles?.role && { roles: asArray(item.roles.role) }),
+      ...(item.parameters && {
+        parameters: {
+          ...item.parameters,
+          ...(item.parameters.excludes && { excludes: asArray(item.parameters.excludes.exclude) })
+        }
+      })
     }));
   };
 
-  const siteExplorerParser = (items) => {
-    let array = items.length ? items : [items];
+  const panelsParser = (items): SidebarPanelConfigEntry[] => {
+    let array = asArray(items.panel);
     return array.map((item) => ({
-      ...item,
-      ...(item.permittedRoles && { permittedRoles: item.permittedRoles.role }),
-      parameters: {
-        ...item.parameters,
-        ...(item.parameters?.excludes && { excludes: item.parameters.excludes.exclude })
-      }
+      id: item.id,
+      ...(item.roles?.role && { roles: asArray(item.roles.role) }),
+      ...(item.parameters && {
+        parameters: {
+          ...item.parameters,
+          ...(item.parameters.widgets && { widgets: widgetParser(item.parameters.widgets) }),
+          ...(item.parameters.config && {
+            config: {
+              ...item.parameters.config,
+              ...(item.parameters.config.channels && {
+                channels: asArray(item.parameters.config.channels.channel)
+              })
+            }
+          })
+        }
+      })
     }));
   };
 
@@ -368,19 +263,13 @@ export function getSiteUiConfig(
       if (xml) {
         const parsed = toJS(xml).ui;
         return {
-          siteExplorer: parsed.siteExplorer
-            ? siteExplorerParser(parsed.siteExplorer.widgets.widget)
-            : null,
-          globalNav: parsed.globalNav
-            ? {
-                ...(parsed.globalNav.site?.items.item && {
-                  site: permittedRolesParser(parsed.globalNav.site.items.item)
-                }),
-                ...(parsed.globalNav.global?.items.item && {
-                  global: permittedRolesParser(parsed.globalNav.global.items.item)
-                })
-              }
-            : null
+          preview: {
+            toolbar: {},
+            sidebar: {
+              panels: panelsParser(parsed.preview.sidebar.panels)
+            },
+            siteNav: {}
+          }
         };
       } else {
         return [];
@@ -390,19 +279,6 @@ export function getSiteUiConfig(
 }
 
 // endregion
-
-function parsePreviewToolsPanelConfig(element: Element) {
-  if (element === null) {
-    return null;
-  }
-  // Inspect config to determine JSON (new way) or XML (old way).
-  try {
-    let config = getInnerHtml(element);
-    return JSON.parse(config);
-  } catch (_e) {
-    return element.outerHTML;
-  }
-}
 
 export function getGlobalMenuItems() {
   return get('/studio/api/2/ui/views/global_menu.json');

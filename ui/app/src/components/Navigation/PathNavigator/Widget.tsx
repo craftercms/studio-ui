@@ -56,6 +56,7 @@ import { getContentXML } from '../../../services/content';
 import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable, rand } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
+import { StateStylingProps } from '../../../models/UiConfig';
 
 const MyLoader = React.memo(function() {
   const [items] = useState(() => {
@@ -84,15 +85,6 @@ const menuOptions = {
     label: translations.refresh
   }
 };
-
-interface StateStylingProps {
-  baseClass: string;
-  expandedClass: string;
-  collapsedClass: string;
-  baseStyle: object;
-  expandedStyle: object;
-  collapsedStyle: object;
-}
 
 export interface WidgetProps {
   id: string;

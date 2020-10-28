@@ -533,10 +533,10 @@ export function PreviewConcierge(props: any) {
 
   useEffect(() => {
     switch (selectedTool) {
-      case 'craftercms.ice.assets':
+      case 'craftercms.assetsPanel':
         site && dispatch(fetchAssetsPanelItems({}));
         break;
-      case 'craftercms.ice.audiences':
+      case 'craftercms.audiencesPanel':
         if (
           !audiencesPanel.isFetching &&
           nou(audiencesPanel.contentType) &&
@@ -547,7 +547,7 @@ export function PreviewConcierge(props: any) {
           dispatch(fetchAudiencesPanelFormDefinition());
         }
         break;
-      case 'craftercms.ice.browseComponents':
+      case 'craftercms.browseComponentsPanel':
         contentTypeComponents.contentTypeFilter && site && dispatch(fetchComponentsByContentType());
         break;
     }
