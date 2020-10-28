@@ -38,20 +38,15 @@ export default function PathNavigatorHeader(props: HeaderProps) {
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <header className={clsx(classes.headerRoot)} onClick={onClick}>
-      {Icon && (typeof Icon === 'string' ? (
-        <span className={`fa ${Icon}`} />
-      ) : (
-        <Icon className={classes.pagesIcon} />
-      ))}
-      <Typography
-        variant="body1"
-        component="h6"
-        className={classes.headerTitle}
-        children={title}
-      />
+      {Icon &&
+        (typeof Icon === 'string' ? (
+          <span className={`fa ${Icon}`} />
+        ) : (
+          <Icon className={classes.pagesIcon} />
+        ))}
+      <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
 
-      {
-        onLanguageMenu &&
+      {onLanguageMenu && (
         <IconButton
           aria-label="language select"
           className={classes.iconButton}
@@ -62,9 +57,8 @@ export default function PathNavigatorHeader(props: HeaderProps) {
         >
           {currentFlag(locale)}
         </IconButton>
-      }
-      {
-        onContextMenu &&
+      )}
+      {onContextMenu && (
         <IconButton
           aria-label="options"
           className={classes.iconButton}
@@ -75,7 +69,7 @@ export default function PathNavigatorHeader(props: HeaderProps) {
         >
           <MoreVertIcon />
         </IconButton>
-      }
+      )}
     </header>
   );
 }

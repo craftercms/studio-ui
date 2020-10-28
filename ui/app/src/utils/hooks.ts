@@ -69,7 +69,9 @@ export function useEnv(): GlobalState['env'] {
 }
 
 export function usePermissions(): GlobalState['content']['items']['permissionsByPath'] {
-  return useSelector<GlobalState, GlobalState['content']['items']['permissionsByPath']>((state) => state.content.items.permissionsByPath);
+  return useSelector<GlobalState, GlobalState['content']['items']['permissionsByPath']>(
+    (state) => state.content.items.permissionsByPath
+  );
 }
 
 export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
@@ -80,14 +82,14 @@ export function useQuickCreateListResource() {
   const dispatch = useDispatch();
   const quickCreate = useQuickCreateState();
   useEffect(() => {
-    (!quickCreate.isFetching) && (quickCreate.items === null) && dispatch(fetchQuickCreateList());
+    !quickCreate.isFetching && quickCreate.items === null && dispatch(fetchQuickCreateList());
   }, [dispatch, quickCreate]);
   return useLogicResource(quickCreate, {
-    errorSelector: source => source.error,
-    resultSelector: source => source.items,
-    shouldReject: source => Boolean(source.error),
-    shouldResolve: source => Boolean(source.items),
-    shouldRenew: source => source.isFetching && Boolean(source.items)
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => source.items,
+    shouldReject: (source) => Boolean(source.error),
+    shouldResolve: (source) => Boolean(source.items),
+    shouldRenew: (source) => source.isFetching && Boolean(source.items)
   });
 }
 
@@ -222,9 +224,11 @@ interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, Er
   errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
 }
 
-export function useSelectorResource<ReturnType = unknown,
+export function useSelectorResource<
+  ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown>(
+  ErrorType = unknown
+>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
@@ -236,7 +240,6 @@ export function useLogicResource<ReturnType = unknown, SourceType = unknown, Err
   source: SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
-
   const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
   const [[resource, resolve, reject], setBundle] = useState(() =>
     createResourceBundle<ReturnType>()
@@ -330,9 +333,7 @@ export function useSiteLookup(): LookupTable<Site> {
 
 export function useSiteList(): Site[] {
   const state = useSitesBranch();
-  return useMemo(() => (
-    state.byId ? Object.values(state.byId) : null
-  ), [state.byId]);
+  return useMemo(() => (state.byId ? Object.values(state.byId) : null), [state.byId]);
 }
 
 export function useSiteLocales(): GlobalState['translation']['siteLocales'] {

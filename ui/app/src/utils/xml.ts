@@ -21,16 +21,13 @@ import { nnou } from './object';
 import parser from 'fast-xml-parser';
 
 export function fromString(xml: string) {
-  return (xml != null) ? new DOMParser().parseFromString(xml, 'text/xml') : null;
+  return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
 }
 
 export function serialize(doc: XMLDocument, options?: { format: boolean }): string {
   options = Object.assign({ format: true }, options || {});
   const content = new XMLSerializer().serializeToString(doc);
-  return options.format ? beautify(
-    content,
-    { printWidth: +Infinity }
-  ) : content;
+  return options.format ? beautify(content, { printWidth: +Infinity }) : content;
 }
 
 export function deserialize() {
@@ -44,7 +41,7 @@ export function minify(xml: string) {
 interface BeautifyOptions {
   tabWidth: number;
   printWidth: number;
-  xmlWhitespaceSensitivity: 'ignore' | 'strict',
+  xmlWhitespaceSensitivity: 'ignore' | 'strict';
   xmlSelfClosingSpace: boolean;
 }
 
@@ -72,7 +69,7 @@ export function getInnerHtml(element: Element, options = { trim: true }) {
       content = matches[0][1].trim();
     }
   }
-  return nnou(content) ? ((options.trim) ? content.trim() : content) : null;
+  return nnou(content) ? (options.trim ? content.trim() : content) : null;
 }
 
 export function getInnerHtmlNumber(element: Element): number {
@@ -81,7 +78,9 @@ export function getInnerHtmlNumber(element: Element): number {
   if (content === null || content === '') {
     return null;
   } else if (isNaN(num)) {
-    console.error(`[utils/xml/getInnerHtmlNumber] Expected number but got NaN. Received value was "${content}".`);
+    console.error(
+      `[utils/xml/getInnerHtmlNumber] Expected number but got NaN. Received value was "${content}".`
+    );
     return null;
   } else {
     return num;
@@ -127,7 +126,11 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
       });
     } else {
       const elem = doc.createElement(tag);
-      if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
+      if (
+        typeof content === 'string' ||
+        typeof content === 'number' ||
+        typeof content === 'boolean'
+      ) {
         elem.innerHTML = `${content}`;
       } else if (Array.isArray(content)) {
         console.error('[createElements] Path not implemented.');
