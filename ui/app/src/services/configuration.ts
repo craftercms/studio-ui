@@ -45,7 +45,7 @@ export function getConfigurationDOM(
   return getRawConfiguration(site, configPath, module).pipe(map(fromString));
 }
 
-// region PreviewToolsConfig
+// region AudiencesPanelConfig
 
 const audienceTypesMap: any = {
   input: 'input',
@@ -53,10 +53,6 @@ const audienceTypesMap: any = {
   checkboxes: 'checkbox-group',
   datetime: 'date-time'
 };
-
-// endregion
-
-// region AudiencesPanelConfig
 
 interface ActiveTargetingModel {
   id: string;
