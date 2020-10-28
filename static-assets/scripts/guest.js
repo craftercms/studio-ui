@@ -148,7 +148,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function(message) {
       var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
-      if(!elt) {
+      if (!elt) {
         elt = document.querySelectorAll(
           '[data-studio-ice' + message.label + '="' + message.region.replace(/ /g, '__') + '"]'
         )[0];
