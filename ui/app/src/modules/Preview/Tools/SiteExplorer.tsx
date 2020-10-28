@@ -19,7 +19,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { createStyles } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import ToolPanel from './ToolPanel';
-import { siteExplorerItem } from '../../../services/configuration';
+import { SiteExplorerItem } from '../../../services/configuration';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Widget from '../../../components/Navigation/PathNavigator/Widget';
@@ -30,7 +30,7 @@ import Alert from '@material-ui/lab/Alert';
 import Link from '@material-ui/core/Link';
 import palette from '../../../styles/palette';
 
-type SiteExplorerResource = { supported: siteExplorerItem[]; notSupported: siteExplorerItem[] };
+type SiteExplorerResource = { supported: SiteExplorerItem[]; notSupported: SiteExplorerItem[] };
 
 interface SiteExplorerProps {
   resource: Resource<SiteExplorerResource>;

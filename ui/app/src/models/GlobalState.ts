@@ -39,7 +39,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
-import { globalNavItem, siteExplorerItem } from '../services/configuration';
+import { GlobalNavItem, SiteExplorerItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
@@ -178,8 +178,8 @@ export interface GlobalState {
   uiConfig: {
     error: ApiResponse;
     isFetching: boolean;
-    siteExplorer: Array<siteExplorerItem>;
-    globalNav: { site: Array<globalNavItem>; global: Array<globalNavItem> };
+    siteExplorer: Array<SiteExplorerItem>;
+    globalNav: { site: Array<GlobalNavItem>; global: Array<GlobalNavItem> };
   };
   pathNavigator: {
     [id: string]: WidgetState;

@@ -38,7 +38,7 @@ export function getRawConfiguration(
 ): Observable<string> {
   return get(
     `/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`
-  ).pipe(map(({ response }) => response.content));
+  ).pipe(pluck('response', 'content'));
 }
 
 export function getConfigurationDOM(
@@ -314,13 +314,13 @@ function parseSimulatorPanelConfig(element: Element) {
 
 // region SidebarConfig
 
-export interface siteExplorerItem {
+export interface SiteExplorerItem {
   id?: string;
   parameters?: object;
   permittedRoles?: string[];
 }
 
-export interface globalNavItem {
+export interface GlobalNavItem {
   parameters?: {
     label: string;
     link: string;
@@ -338,8 +338,8 @@ export function getSiteUiConfig(
   site: string
 ): Observable<
   | {
-      siteExplorer: siteExplorerItem[];
-      globalNav: { site: Array<globalNavItem>; global: Array<globalNavItem> };
+      siteExplorer: SiteExplorerItem[];
+      globalNav: { site: Array<GlobalNavItem>; global: Array<GlobalNavItem> };
     }
   | []
 > {
@@ -358,7 +358,7 @@ export function getSiteUiConfig(
       ...(item.permittedRoles && { permittedRoles: item.permittedRoles.role }),
       parameters: {
         ...item.parameters,
-        ...(item.parameters?.excludes && { excludes: item.parameters.excludes.exclude }),
+        ...(item.parameters?.excludes && { excludes: item.parameters.excludes.exclude })
       }
     }));
   };

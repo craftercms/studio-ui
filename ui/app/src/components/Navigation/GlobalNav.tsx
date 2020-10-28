@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getGlobalMenuItems, globalNavItem, siteExplorerItem } from '../../services/configuration';
+import { getGlobalMenuItems, GlobalNavItem, SiteExplorerItem } from '../../services/configuration';
 import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
@@ -304,7 +304,7 @@ interface GlobalNavProps {
   authoringUrl: string;
   onMenuClose: (e: any) => void;
   rolesBySite: LookupTable<string[]>;
-  globalNav: { site: Array<globalNavItem>; global: Array<globalNavItem> };
+  globalNav: { site: Array<GlobalNavItem>; global: Array<GlobalNavItem> };
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
@@ -599,7 +599,7 @@ function onLogout(url) {
   });
 }
 
-function checkItemsVsRoles(items: siteExplorerItem[] | globalNavItem [], roles: string[], ) {
+function checkItemsVsRoles(items: SiteExplorerItem[] | GlobalNavItem [], roles: string[], ) {
   // @ts-ignore
   return items.filter((item) => {
       const userRoles = roles;

@@ -159,10 +159,10 @@ export function PreviewConcierge(props: any) {
 
   // region UI Config
   useEffect(() => {
-    if(site){
-      dispatch(fetchSiteUiConfig({ site }))
+    if (site) {
+      dispatch(fetchSiteUiConfig({ site }));
     }
-  }, [dispatch, site])
+  }, [dispatch, site]);
 
   // end region
 
