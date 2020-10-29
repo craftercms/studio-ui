@@ -32,13 +32,21 @@ import { asArray } from '../utils/array';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
-export function getRawConfiguration(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
-  return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
-    map(({ response }) => response.content)
-  );
+export function getRawConfiguration(
+  site: string,
+  configPath: string,
+  module: CrafterCMSModules
+): Observable<string> {
+  return get(
+    `/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`
+  ).pipe(map(({ response }) => response.content));
 }
 
-export function getConfigurationDOM(site: string, configPath: string, module: CrafterCMSModules): Observable<XMLDocument> {
+export function getConfigurationDOM(
+  site: string,
+  configPath: string,
+  module: CrafterCMSModules
+): Observable<XMLDocument> {
   return getRawConfiguration(site, configPath, module).pipe(map(fromString));
 }
 
@@ -62,14 +70,14 @@ const LegacyPanelIdMap: any = {
   'ice-tools-panel': 'craftercms.ice.ice',
   'component-panel': 'craftercms.ice.components',
   'medium-panel': 'craftercms.ice.simulator',
-  'targeting': 'craftercms.ice.audiences'
+  targeting: 'craftercms.ice.audiences'
 };
 
 const audienceTypesMap: any = {
-  'input': 'input',
-  'dropdown': 'dropdown',
-  'checkboxes': 'checkbox-group',
-  'datetime': 'date-time'
+  input: 'input',
+  dropdown: 'dropdown',
+  checkboxes: 'checkbox-group',
+  datetime: 'date-time'
 };
 
 export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConfig> {
@@ -82,21 +90,20 @@ export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConf
         let previewToolsConfig: PreviewToolsConfig = { modules: null };
         const xml = fromString(content);
         previewToolsConfig.modules = Array.from(xml.querySelectorAll('module')).map((elem) => {
-
-          let id = (
+          let id =
             // Try the new way first
             elem.getAttribute('id') ||
             // ...try the old way if no id attribute is found
-            getInnerHtml(elem.querySelector('moduleName'))
-          );
+            getInnerHtml(elem.querySelector('moduleName'));
           if (LegacyPanelIdMap[id]) {
             id = LegacyPanelIdMap[id];
           }
 
           const configNode = elem.querySelector('config');
-          let config = (id === 'craftercms.ice.simulator')
-            ? parseSimulatorPanelConfig(configNode)
-            : parsePreviewToolsPanelConfig(configNode);
+          let config =
+            id === 'craftercms.ice.simulator'
+              ? parseSimulatorPanelConfig(configNode)
+              : parsePreviewToolsPanelConfig(configNode);
 
           const localizedTitles = extractLocalizedElements(elem.querySelectorAll(':scope > title'));
 
@@ -105,7 +112,6 @@ export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConf
             ...localizedTitles,
             config
           };
-
         });
         return previewToolsConfig;
       }
@@ -145,9 +151,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 
         const xml = fromString(content);
         const properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
-
-          const
-            name = getInnerHtml(elem.querySelector('name')),
+          const name = getInnerHtml(elem.querySelector('name')),
             label = getInnerHtml(elem.querySelector('label')),
             type = getInnerHtml(elem.querySelector('type')),
             hint = getInnerHtml(elem.querySelector('hint'));
@@ -183,7 +187,6 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             values: possibleValues,
             helpText: hint
           };
-
         });
 
         audiencesPanelContentType.fields = createLookupTable(properties, 'id');
@@ -197,7 +200,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 // TODO: asses the location of profile methods.
 export function fetchActiveTargetingModel(site?: string): Observable<ContentInstance> {
   return get(`/api/1/profile/get`).pipe(
-    map(response => {
+    map((response) => {
       const data = reversePluckProps(response.response, 'id');
       const id = response.response.id ?? null;
 
@@ -217,7 +220,9 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
   );
 }
 
-export function getAudiencesPanelPayload(site: string): Observable<{ contentType: ContentType, model: ContentInstance }> {
+export function getAudiencesPanelPayload(
+  site: string
+): Observable<{ contentType: ContentType; model: ContentInstance }> {
   return forkJoin({
     data: fetchActiveTargetingModel(site),
     contentType: getAudiencesPanelConfig(site)
@@ -229,7 +234,10 @@ export function getAudiencesPanelPayload(site: string): Observable<{ contentType
   );
 }
 
-function deserializeActiveTargetingModelData<T extends Object>(data: T, contentType: ContentType): ContentInstance {
+function deserializeActiveTargetingModelData<T extends Object>(
+  data: T,
+  contentType: ContentType
+): ContentInstance {
   const contentTypeFields = contentType.fields;
 
   Object.keys(data).forEach((modelKey) => {
@@ -258,13 +266,17 @@ function deserializeActiveTargetingModelData<T extends Object>(data: T, contentT
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
 
-  Object.keys(model).forEach(key => {
+  Object.keys(model).forEach((key) => {
     if (Array.isArray(model[key])) {
       model[key] = model[key].join(',');
     }
   });
 
-  const params = encodeURIComponent(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
+  const params = encodeURIComponent(
+    Object.entries(model)
+      .map(([key, val]) => `${key}=${val}`)
+      .join('&')
+  );
 
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
@@ -277,22 +289,24 @@ function parseSimulatorPanelConfig(element: Element) {
     return config;
   } else {
     return {
-      channels: Array.from(element.querySelectorAll('channel')).map((channel) => ({
-        width: getInnerHtmlNumber(channel.querySelector('width')),
-        height: getInnerHtmlNumber(channel.querySelector('height')),
-        ...extractLocalizedElements(channel.querySelectorAll(':scope > title'))
-      })).filter((channel) => {
-        if (channel.width === null && channel.height === null) {
-          console.warn(
-            '[services/configuration/parseSimulatorPanelConfig]' +
-            `Filtered out config item with blank/null width/height values. ` +
-            `Both values in blank is equivalent to the tool's default preset.`
-          );
-          return false;
-        } else {
-          return true;
-        }
-      })
+      channels: Array.from(element.querySelectorAll('channel'))
+        .map((channel) => ({
+          width: getInnerHtmlNumber(channel.querySelector('width')),
+          height: getInnerHtmlNumber(channel.querySelector('height')),
+          ...extractLocalizedElements(channel.querySelectorAll(':scope > title'))
+        }))
+        .filter((channel) => {
+          if (channel.width === null && channel.height === null) {
+            console.warn(
+              '[services/configuration/parseSimulatorPanelConfig]' +
+                `Filtered out config item with blank/null width/height values. ` +
+                `Both values in blank is equivalent to the tool's default preset.`
+            );
+            return false;
+          } else {
+            return true;
+          }
+        })
     };
   }
 }
@@ -346,25 +360,31 @@ export function getGlobalMenuItems() {
 }
 
 export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
-  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
+    pluck('response')
+  );
 }
 
-export function getHistory(site: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
+export function getHistory(
+  site: string,
+  path: string,
+  environment: string,
+  module: string
+): Observable<VersionsResponse> {
   const parsedPath = encodeURIComponent(path.replace('/config/studio', ''));
 
-  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`).pipe(
-    pluck('response', 'history')
-  );
+  return get(
+    `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
+  ).pipe(pluck('response', 'history'));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
-  return get(`/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return get(
+    `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export default {
+const configuration = {
   getProductLanguages,
   getRawConfiguration,
   getConfigurationDOM,
@@ -372,3 +392,5 @@ export default {
   getConfigurationHistory: getHistory,
   getSidebarItems
 };
+
+export default configuration;

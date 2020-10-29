@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function(props) {
+export default function PagesSearchAhead(props) {
   const { value, placeholder, disabled, onEnter } = props;
   const classes = useStyles({});
   const onSearch$ = useSubject<string>();

@@ -32,26 +32,21 @@ interface HeaderProps {
 }
 
 // PathNavigatorHeader
-export default function (props: HeaderProps) {
+export default function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles({});
   const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <header className={clsx(classes.headerRoot)} onClick={onClick}>
-      {Icon && (typeof Icon === 'string' ? (
-        <span className={`fa ${Icon}`} />
-      ) : (
-        <Icon className={classes.pagesIcon} />
-      ))}
-      <Typography
-        variant="body1"
-        component="h6"
-        className={classes.headerTitle}
-        children={title}
-      />
+      {Icon &&
+        (typeof Icon === 'string' ? (
+          <span className={`fa ${Icon}`} />
+        ) : (
+          <Icon className={classes.pagesIcon} />
+        ))}
+      <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
 
-      {
-        onLanguageMenu &&
+      {onLanguageMenu && (
         <IconButton
           aria-label="language select"
           className={classes.iconButton}
@@ -62,9 +57,8 @@ export default function (props: HeaderProps) {
         >
           {currentFlag(locale)}
         </IconButton>
-      }
-      {
-        onContextMenu &&
+      )}
+      {onContextMenu && (
         <IconButton
           aria-label="options"
           className={classes.iconButton}
@@ -75,7 +69,7 @@ export default function (props: HeaderProps) {
         >
           <MoreVertIcon />
         </IconButton>
-      }
+      )}
     </header>
   );
 }

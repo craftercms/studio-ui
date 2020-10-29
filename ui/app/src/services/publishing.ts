@@ -84,10 +84,12 @@ export function reject(
   );
 }
 
-export default {
+const publishing = {
   fetchPackages,
   fetchPackage,
   cancelPackage,
   submitToGoLive,
   goLive
 };
+
+export default publishing;

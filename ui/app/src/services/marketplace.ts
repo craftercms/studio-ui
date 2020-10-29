@@ -36,6 +36,8 @@ export function createSite(site: MarketplaceSite) {
   return postJSON('/studio/api/2/sites/create_site_from_marketplace', site);
 }
 
-export default {
+const marketplace = {
   fetchBlueprints
 };
+
+export default marketplace;

@@ -235,7 +235,8 @@ function parseContentXML(
           current.craftercms.sourceMap[tagName] = source;
           // TODO: https://github.com/craftercms/craftercms/issues/4093
           // Temporarily falling back to a known content type while backend updates
-          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
+          sourceContentTypeId =
+            element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
         }
         current[tagName] = parseElementByContentType(
           element,
@@ -877,13 +878,17 @@ export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]
 
 export function getHistory(site: string, path: string): Observable<VersionsResponse> {
   return get(
-    `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${encodeURIComponent(path)}`
+    `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function revertTo(site: string, path: string, versionNumber: string): Observable<Boolean> {
   return get(
-    `/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${encodeURIComponent(path)}&version=${versionNumber}`
+    `/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&version=${versionNumber}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -937,7 +942,9 @@ export function getChildrenByPath(
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
   return get(
-    `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${encodeURIComponent(path)}&depth=1&order=default`
+    `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&depth=1&order=default`
   ).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),
@@ -975,7 +982,9 @@ export function cut(site: string, item: DetailedItem): Observable<any> {
 
 export function paste(site: string, path: string): Observable<{ site: string; status: string[] }> {
   return get(
-    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(path)}`
+    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(
+      path
+    )}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -1023,13 +1032,17 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
   return post(
-    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
+    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&name=${name}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function createFile(site: string, path: string, fileName: string): Observable<unknown> {
   return post(
-    `/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${encodeURIComponent(path)}&fileName=${fileName}&user=admin&unlock=true`
+    `/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${encodeURIComponent(
+      path
+    )}&fileName=${fileName}&user=admin&unlock=true`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -1052,15 +1065,14 @@ export function changeContentType(
 export function checkPathExistence(site: string, path: string): Observable<boolean> {
   return get(
     `/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`
-  ).pipe(
-    pluck('response', 'content'),
-    catchError(errorSelectorApi1)
-  );
+  ).pipe(pluck('response', 'content'), catchError(errorSelectorApi1));
 }
 
 export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
   return get(
-    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${encodeURIComponent(path)}`
+    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${encodeURIComponent(
+      path
+    )}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
@@ -1078,7 +1090,7 @@ export function getLegacyItemsTree(
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
-export default {
+const content = {
   getComponentInstanceHTML,
   getContentXML,
   getLegacyItem,
@@ -1109,3 +1121,5 @@ export default {
   changeContentType,
   checkPathExistence
 };
+
+export default content;

@@ -711,7 +711,7 @@ function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   );
 }
 
-export default function(props: LoginViewProps) {
+export default function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const token = parse(window.location.search).token as string;

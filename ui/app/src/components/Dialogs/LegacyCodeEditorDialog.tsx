@@ -165,7 +165,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
   );
 }
 
-export default function (props: LegacyCodeEditorDialogProps) {
+export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProps) {
   const id = 'legacy-code-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();

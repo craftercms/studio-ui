@@ -82,9 +82,11 @@ export function getSiteLocales(site: string): Observable<TranslationConfig> {
   return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(pluck('response', 'config'));
 }
 
-export default {
+const translation = {
   getItemLocales,
   getTargetLocales,
   markForTranslation,
   getSiteLocales
 };
+
+export default translation;

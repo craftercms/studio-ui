@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default {
+const palette = {
   white: '#fff',
   black: '#000',
   blue: { tint: '#409CFF', main: '#007AFF', shade: '#0040DD', highlight: '#E6F2FF' },
@@ -51,3 +51,5 @@ export default {
     dark7: '#1C1C1E'
   }
 };
+
+export default palette;

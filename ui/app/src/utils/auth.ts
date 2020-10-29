@@ -51,10 +51,12 @@ export function getSiteCookie(cookieName: string = siteCookie): string {
   return Cookies.get(cookieName) || null;
 }
 
-export default {
+const auth = {
   getCookieDomain,
   getRequestForgeryToken,
   setRequestForgeryToken,
   setSiteCookie,
   getSiteCookie
 };
+
+export default auth;

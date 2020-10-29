@@ -241,7 +241,7 @@ export function toQueryString<T extends {} = {}>(
   return `${options.prefix}${stringify(args, options)}`;
 }
 
-export default {
+const object = {
   pluckProps,
   reversePluckProps,
   camelizeProps,
@@ -261,3 +261,5 @@ export default {
   extend,
   toQueryString
 };
+
+export default object;

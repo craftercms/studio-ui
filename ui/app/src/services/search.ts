@@ -25,6 +25,8 @@ export function search(site: string, parameters: any = {}): Observable<SearchRes
   }).pipe(pluck('response', 'result'));
 }
 
-export default {
+const searchService = {
   search
 };
+
+export default searchService;

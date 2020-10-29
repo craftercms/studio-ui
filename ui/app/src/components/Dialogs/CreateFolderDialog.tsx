@@ -56,7 +56,7 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps {
   onCreated?: StandardAction;
 }
 
-export default function (props: CreateFolderProps) {
+export default function CreateFolderDialog(props: CreateFolderProps) {
   const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,

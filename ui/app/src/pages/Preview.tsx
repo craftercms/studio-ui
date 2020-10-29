@@ -18,7 +18,7 @@ import { HashRouter, Route } from 'react-router-dom';
 import Preview from '../modules/Preview/Preview';
 import AuthMonitor from '../components/SystemStatus/AuthMonitor';
 
-export default function (topProps: any) {
+export default function PreviewApp(topProps: any) {
   return (
     <>
       <AuthMonitor />

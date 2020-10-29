@@ -52,9 +52,11 @@ export function fetchDeleteDependencies(siteId: string, paths: string[]): Observ
   );
 }
 
-export default {
+const dependencies = {
   fetchDependencies,
   getSimpleDependencies,
   getDependant,
   fetchDeleteDependencies
 };
+
+export default dependencies;
