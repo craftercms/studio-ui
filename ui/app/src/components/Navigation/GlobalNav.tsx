@@ -448,14 +448,15 @@ export default function GlobalNav(props: GlobalNavProps) {
         onClick(site) {
           setSiteCookie(site);
         }
-      },
-      {
-        name: formatMessage(messages.siteConfig),
-        href: getLink('siteConfig', authoringUrl),
-        onClick(site) {
-          setSiteCookie(site);
-        }
       }
+      //TODO: Since these should be per-site, we need to figure what to do with this, if anything.
+      // {
+      //   name: formatMessage(messages.siteConfig),
+      //   href: getLink('siteConfig', authoringUrl),
+      //   onClick(site) {
+      //     setSiteCookie(site);
+      //   }
+      // }
     ],
     // Disable exhaustive hooks check since only need to create on mount
     // eslint-disable-next-line
@@ -627,19 +628,21 @@ export default function GlobalNav(props: GlobalNavProps) {
               <Typography variant="subtitle1" component="h2" className={classes.title}>
                 {formatMessage(messages.site)}
               </Typography>
-              <nav className={classes.sitesApps}>
-                {siteLinks.map((link, index) => {
-                  const Component = ItemToComponentMap[link.id ?? 'default'];
-                  return (
-                    <Component
-                      key={index}
-                      {...link.parameters}
-                      site={site}
-                      authoringUrl={authoringUrl}
-                    />
-                  );
-                })}
-              </nav>
+              {site && (
+                <nav className={classes.sitesApps}>
+                  {siteLinks.map((link, index) => {
+                    const Component = ItemToComponentMap[link.id ?? 'default'];
+                    return (
+                      <Component
+                        key={index}
+                        {...link.parameters}
+                        site={site}
+                        authoringUrl={authoringUrl}
+                      />
+                    );
+                  })}
+                </nav>
+              )}
             </div>
             <div className={classes.railBottom}>
               <Card className={classes.userCardRoot}>

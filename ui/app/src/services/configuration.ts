@@ -240,14 +240,7 @@ export function getSiteUiConfig(site: string): Observable<any> {
         parameters: {
           ...item.parameters,
           ...(item.parameters.widgets && { widgets: widgetParser(item.parameters.widgets) }),
-          ...(item.parameters.config && {
-            config: {
-              ...item.parameters.config,
-              ...(item.parameters.config.channels && {
-                channels: asArray(item.parameters.config.channels.channel)
-              })
-            }
-          })
+          ...(item.parameters.devices && { devices: asArray(item.parameters.devices.device) })
         }
       })
     }));

@@ -99,19 +99,19 @@ export default function SimulatorPanel(props: any) {
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const maxWidth = window.innerWidth - toolsPanelWidth;
 
-  const channels = useMemo(() => {
-    const _channels = props.config?.channels;
-    if (_channels) {
-      if (!Array.isArray(_channels)) {
-        console.log(`[SimulatorPanel] Expected channels to be array but instead got "${typeof _channels}"`);
+  const devices = useMemo(() => {
+    const _devices = props.devices;
+    if (_devices) {
+      if (!Array.isArray(_devices)) {
+        console.log(`[SimulatorPanel] Expected devices to be array but instead got "${typeof _devices}"`);
       }
-      return _channels.map((channel) => ({
-        ...channel,
-        value: `${channel.width}_${channel.height}`
+      return _devices.map((device) => ({
+        ...device,
+        value: `${device.width}_${device.height}`
       }));
     }
     return [];
-  }, [props.config]);
+  }, [props.devices]);
 
   const [{ width, height, preset }, setState] = useReducer(reducer, INITIAL_STATE);
   const setWidth = (value) => setState({ width: value });
@@ -125,10 +125,10 @@ export default function SimulatorPanel(props: any) {
         height: null
       }));
     } else {
-      const channel = channels.find((chan) => chan.value === value);
-      channel && dispatch(setHostSize({
-        width: (channel.width > maxWidth) ? maxWidth : channel.width,
-        height: channel.height
+      const device = devices.find((dev) => dev.value === value);
+      device && dispatch(setHostSize({
+        width: (device.width > maxWidth) ? maxWidth : device.width,
+        height: device.height
       }));
     }
   };
@@ -177,10 +177,10 @@ export default function SimulatorPanel(props: any) {
       nextState.height = '';
     }
     if (hostSize.width != null || hostSize.height != null) {
-      const matchingPreset = channels.find((channel) =>
+      const matchingPreset = devices.find((device) =>
         // @ts-ignore
         // eslint-disable-next-line
-        (channel.width == hostSize.width) && (channel.height == hostSize.height)
+        (device.width == hostSize.width) && (device.height == hostSize.height)
       );
       nextState.preset = (matchingPreset)
         ? matchingPreset.value
@@ -189,7 +189,7 @@ export default function SimulatorPanel(props: any) {
       nextState.preset = SIMULATOR_PANEL_RESPONSIVE_MODE;
     }
     setState(nextState);
-  }, [hostSize, props.config, channels]);
+  }, [hostSize, props.config, devices]);
 
   const onFlipDimensions = () => {
     const nextWidth = parseInt(height);
@@ -258,12 +258,12 @@ export default function SimulatorPanel(props: any) {
               control={<Radio />}
               label={formatMessage(translations.previewWindowSize)}
             />
-            {channels.map((channel) =>
+            {devices.map((device) =>
               <FormControlLabel
-                key={channel.value}
-                value={channel.value}
+                key={device.value}
+                value={device.value}
                 control={<Radio />}
-                label={formatMessage(getTranslation(channel.title, translations))}
+                label={formatMessage(getTranslation(device.title, translations))}
               />
             )}
           </RadioGroup>
