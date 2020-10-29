@@ -355,7 +355,7 @@ function SiteDashboardLink({ authoringUrl }) {
   return (
     <LinkWithIcon
       link={getLink('siteDashboard', authoringUrl)}
-      label={formatMessage(messages['dashboard'])}
+      label={formatMessage(messages.dashboard)}
       icon="fa fa-tasks"
     />
   );
@@ -366,7 +366,7 @@ function SiteConfigLink({ authoringUrl }) {
   return (
     <LinkWithIcon
       link={getLink('siteConfig', authoringUrl)}
-      label={formatMessage(messages['siteConfig'])}
+      label={formatMessage(messages.siteConfig)}
       icon="fa fa-sliders"
     />
   );
@@ -377,7 +377,7 @@ function SiteSearchLink({ authoringUrl }) {
   return (
     <LinkWithIcon
       link={getLink('search', authoringUrl)}
-      label={formatMessage(messages['search'])}
+      label={formatMessage(messages.search)}
       icon={SearchIcon}
     />
   );
@@ -391,7 +391,7 @@ function SitePreviewLink({ site, authoringUrl }) {
         getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview',
         authoringUrl
       )}
-      label={formatMessage(messages['preview'])}
+      label={formatMessage(messages.preview)}
       icon={Preview}
     />
   );

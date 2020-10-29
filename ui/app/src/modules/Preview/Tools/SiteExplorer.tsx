@@ -119,7 +119,7 @@ function SiteDashboardLink() {
   return (
     <LinkWithIcon
       link="/studio/dashboard"
-      label={formatMessage(translations['dashboard'])}
+      label={formatMessage(translations.dashboard)}
       icon={{ baseClass: 'fa fa-tasks' }}
     />
   );
@@ -130,7 +130,7 @@ function SiteConfigLink() {
   return (
     <LinkWithIcon
       link="/studio/site-config"
-      label={formatMessage(translations['siteConfig'])}
+      label={formatMessage(translations.siteConfig)}
       icon={{ baseClass: 'fa fa-sliders' }}
     />
   );
