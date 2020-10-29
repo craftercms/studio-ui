@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses}.
  */
 
-export const previewMock = {
+const uiConfigMock = {
   preview: {
     sidebar: {
       panels: [
@@ -176,3 +176,5 @@ export const previewMock = {
     }
   }
 };
+
+export default uiConfigMock;
