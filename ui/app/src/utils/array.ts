@@ -47,7 +47,9 @@ export function createPresenceTable(list: string[]): LookupTable<boolean> {
   return table;
 }
 
-export default {
+const array = {
   forEach,
   asArray
 };
+
+export default array;

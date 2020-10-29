@@ -45,8 +45,7 @@ export function getPathFromPreviewURL(previewURL: string): string {
 }
 
 export function getPreviewURLFromPath(path: string): string {
-  path = withoutIndex(path).replace('/site/website', '');
-  return path;
+  return withoutIndex(path).replace('/site/website', '') || '/';
 }
 
 export function getQueryVariable(query: string, variable: string): string | string[] {
@@ -136,7 +135,7 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   }
 }
 
-export default {
+const path = {
   getPathFromPreviewURL,
   getPreviewURLFromPath,
   getQueryVariable,
@@ -149,3 +148,5 @@ export default {
   getIndividualPaths,
   getRootPath
 };
+
+export default path;

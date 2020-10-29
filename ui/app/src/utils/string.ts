@@ -153,7 +153,7 @@ export function getSimplifiedVersion(
   return pieces.join('.');
 }
 
-export default {
+const string = {
   camelize,
   capitalize,
   underscore,
@@ -166,3 +166,4 @@ export default {
   insureSingleSlash
 };
 
+export default string;

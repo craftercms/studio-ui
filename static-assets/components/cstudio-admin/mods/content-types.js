@@ -803,7 +803,9 @@
                 cb
               );
             })(j);
-          } catch (err) {}
+          } catch (err) {
+            console.log(err)
+          }
 
           if (pluginInfo.missingProp.length > 0) {
             pluginError.control.push(pluginInfo.missingProp);

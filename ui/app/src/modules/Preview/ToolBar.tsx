@@ -117,6 +117,16 @@ const useStyles = makeStyles((theme: Theme) =>
         boxShadow: 'none'
       }
     },
+    siteSwitcherSelectMenu: {
+      maxWidth: 110
+    },
+    siteSwitcherMenuItem: {
+      maxWidth: 390,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      display: 'block'
+    },
     iconButton: {},
     divider: {
       height: 28,
@@ -212,7 +222,7 @@ export function AddressBar(props: AddressBarProps) {
       <Paper className={classes.addressBarInput}>
         <Select
           value={site}
-          classes={{ select: classes.input }}
+          classes={{ select: classes.input, selectMenu: classes.siteSwitcherSelectMenu }}
           onChange={({ target: { value } }) => onSiteChangeInternal(value)}
           displayEmpty
         >
@@ -225,7 +235,7 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           )}
           {sites.map(({ id, name }) => (
-            <MenuItem key={id} value={id}>
+            <MenuItem key={id} value={id} className={classes.siteSwitcherMenuItem}>
               {name}
             </MenuItem>
           ))}

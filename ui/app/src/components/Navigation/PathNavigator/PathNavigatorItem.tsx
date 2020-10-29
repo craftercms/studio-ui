@@ -58,7 +58,7 @@ const translations = defineMessages({
 });
 
 // PathNavigatorListItem
-export default function(props: NavItemProps) {
+export default function PathNavigatorItem(props: NavItemProps) {
   const classes = useStyles(props);
   const {
     item,

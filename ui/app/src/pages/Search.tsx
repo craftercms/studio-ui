@@ -17,7 +17,7 @@ import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import Search from '../modules/Search/Search';
 
-export default function (topProps: any) {
+export default function SearchApp(topProps: any) {
   return (
     <HashRouter>
       <Route

@@ -17,7 +17,7 @@
 import React from 'react';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
-export default function (props: SvgIconProps) {
+export default function BrokenLinkRounded(props: SvgIconProps) {
   return (
     <SvgIcon {...props}>
       <path d="M8.24163 12.6377C7.70018 12.7332 7.17865 12.368 7.08317 11.8266C6.9877 11.2851 7.35288 10.7636 7.89433 10.6681L10.8488 10.1472L11.1961 12.1168L8.24163 12.6377Z" />

@@ -30,6 +30,8 @@ export function getTimezones() {
   return offsetTmz.sort((a, b) => (parseInt(a.timezoneOffset) > parseInt(b.timezoneOffset)) ? 1 : -1);
 }
 
-export default {
+const datetime = {
   getTimezones
 };
+
+export default datetime;

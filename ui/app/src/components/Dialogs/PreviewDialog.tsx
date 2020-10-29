@@ -74,7 +74,7 @@ export interface PreviewDialogStateProps extends PreviewDialogBaseProps {
   onClosed?: StandardAction;
 }
 
-export default function(props: PreviewDialogProps) {
+export default function PreviewDialog(props: PreviewDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} maxWidth="md">
       <PreviewDialogUI {...props} />

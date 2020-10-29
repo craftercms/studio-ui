@@ -38,7 +38,7 @@ interface BreadcrumbsProps {
 }
 
 // PathBreadcrumbs + PathOptions + (Path)Search
-export default function (props: BreadcrumbsProps) {
+export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles({});
   const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);

@@ -25,7 +25,7 @@ interface QuickCreateMenuProps {
   onClose?(): void;
 }
 
-export default function(props: QuickCreateMenuProps) {
+export default function QuickCreateMenuApp(props: QuickCreateMenuProps) {
 
   const { anchorEl, onClose, onQuickCreateItemSelected, onNewContentSelected } = props;
   const [open, setOpen] = useState(true);

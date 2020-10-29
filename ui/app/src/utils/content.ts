@@ -198,8 +198,10 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
   };
 }
 
-export default {
+const content = {
   isEditableAsset,
   parseLegacyItemToSandBoxItem,
   parseLegacyItemToDetailedItem
 };
+
+export default content;

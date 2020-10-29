@@ -332,10 +332,12 @@ export function fetchLegacyFormDefinition(
   ).pipe(pluck('response'));
 }
 
-export default {
+const contentTypes = {
   fetchContentType,
   fetchContentTypes,
   fetchLegacyContentType,
   fetchLegacyContentTypes,
   fetchLegacyFormDefinition
 };
+
+export default contentTypes;

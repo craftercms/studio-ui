@@ -159,7 +159,7 @@ export function deserialize(xml: string | XMLDocument, options?: X2jOptionsOptio
   });
 }
 
-export default {
+const xml = {
   fromString,
   deserialize,
   minify,
@@ -172,3 +172,5 @@ export default {
   createElements,
   wrapElementInAuxDocument
 };
+
+export default xml;

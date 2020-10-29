@@ -268,6 +268,7 @@ export function useLogicResource<ReturnType = unknown, SourceType = unknown, Err
 }
 
 export function useMount(onMount: EffectCallback): void {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(onMount, []);
 }
 

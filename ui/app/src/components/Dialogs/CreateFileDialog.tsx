@@ -54,7 +54,7 @@ export const translations = defineMessages({
   }
 });
 
-export default function (props: CreateFileProps) {
+export default function CreateFileDialog(props: CreateFileProps) {
   const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,

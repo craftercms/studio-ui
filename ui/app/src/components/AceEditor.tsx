@@ -90,8 +90,9 @@ interface AceOptions {
 }
 
 interface AceEditorProps extends Partial<AceOptions> {
-  value: any;
+  value?: any;
   className?: string;
+  autoFocus?: boolean;
 }
 
 declare global {
@@ -165,7 +166,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
-  const { value } = props;
+  const { value = '', autoFocus = false } = props;
   const classes = useStyles();
   const elemRef = useRef(null);
   const aceRef = useRef(null);
@@ -179,7 +180,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
       if (!unmounted) {
         aceEditor = window.ace.edit(elemRef.current, options);
         aceEditor.setValue(value, -1);
-        aceEditor.focus();
+        autoFocus && aceEditor.focus();
         aceRef.current = aceEditor;
         if (ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);

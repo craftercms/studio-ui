@@ -307,10 +307,12 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export default {
+const configuration = {
   getProductLanguages,
   getRawConfiguration,
   getConfigurationDOM,
   getGlobalMenuItems,
   getConfigurationHistory: getHistory
 };
+
+export default configuration;

@@ -117,7 +117,7 @@ import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
 // import _wrapNativeSuper from '@babel/runtime/helpers/wrapNativeSuper';
 // import _wrapRegExp from '@babel/runtime/helpers/wrapRegExp';
 
-export default {
+const helpers = {
   // AsyncGenerator: _AsyncGenerator,
   // AwaitValue: _AwaitValue,
   // applyDecoratedDescriptor: _applyDecoratedDescriptor,
@@ -192,3 +192,5 @@ export default {
   // wrapNativeSuper: _wrapNativeSuper,
   // wrapRegExp: _wrapRegExp
 };
+
+export default helpers;

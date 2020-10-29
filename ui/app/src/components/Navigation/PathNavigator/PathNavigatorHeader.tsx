@@ -33,7 +33,7 @@ interface HeaderProps {
 }
 
 // PathNavigatorHeader
-export default function (props: HeaderProps) {
+export default function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles({});
   const { title, iconClassName, locale, onLanguageMenu, onContextMenu, onClick, style } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
@@ -47,8 +47,7 @@ export default function (props: HeaderProps) {
         children={title}
       />
 
-      {
-        onLanguageMenu &&
+      {onLanguageMenu && (
         <IconButton
           aria-label="language select"
           className={classes.iconButton}
@@ -59,9 +58,8 @@ export default function (props: HeaderProps) {
         >
           {currentFlag(locale)}
         </IconButton>
-      }
-      {
-        onContextMenu &&
+      )}
+      {onContextMenu && (
         <IconButton
           aria-label="options"
           className={classes.iconButton}
@@ -72,7 +70,7 @@ export default function (props: HeaderProps) {
         >
           <MoreVertIcon />
         </IconButton>
-      }
+      )}
     </header>
   );
 }

@@ -34,7 +34,9 @@ export function getUserPermissions(site: string, path: string, user: string): Ob
   );
 }
 
-export default {
+const security = {
   encrypt,
   getUserPermissions
 };
+
+export default security;

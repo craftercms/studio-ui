@@ -147,7 +147,7 @@ export const errorSelectorApi1: <T, O extends ObservableInput<any>>(
   }
 };
 
-export default {
+const ajaxUtil = {
   OMIT_GLOBAL_HEADERS,
   getGlobalHeaders,
   setGlobalHeaders,
@@ -161,3 +161,5 @@ export default {
   del,
   ajax
 };
+
+export default ajaxUtil;
