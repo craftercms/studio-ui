@@ -449,7 +449,7 @@ export default function GlobalNav(props: GlobalNavProps) {
           setSiteCookie(site);
         }
       }
-      //TODO: Since these should be per-site, we need to figure what to do with this, if anything.
+      // TODO: Since these should be per-site and constraint by role, we need to figure what to do with them.
       // {
       //   name: formatMessage(messages.siteConfig),
       //   href: getLink('siteConfig', authoringUrl),
