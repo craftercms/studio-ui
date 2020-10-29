@@ -17,12 +17,12 @@
 import { errorSelectorApi1, get } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
-import { fromString, getInnerHtml, toJS } from '../utils/xml';
+import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
-import { SidebarPanelConfigEntry, SidebarPanelWidgetConfig } from '../models/UiConfig';
+import { SidebarPanelConfigEntry, SiteNavConfigEntry } from '../models/UiConfig';
 import { asArray } from '../utils/array';
 
 type CrafterCMSModules = 'studio' | 'engine';
@@ -217,8 +217,7 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 // region SidebarConfig
 
 export function getSiteUiConfig(site: string): Observable<any> {
-
-  const widgetParser = (items): SidebarPanelWidgetConfig[] => {
+  const widgetParser = (items): SidebarPanelConfigEntry[] => {
     let array = asArray(items.widget);
     return array.map((item) => ({
       id: item.id,
@@ -254,17 +253,27 @@ export function getSiteUiConfig(site: string): Observable<any> {
     }));
   };
 
+  const linksParser = (items): SiteNavConfigEntry[] => {
+    let array = asArray(items.link);
+    return array.map((item) => ({
+      ...item,
+      ...(item.roles?.role && { roles: asArray(item.roles.role) })
+    }));
+  };
+
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
-        const parsed = toJS(xml).ui;
+        const parsed = deserialize(xml).ui;
         return {
           preview: {
             toolbar: {},
             sidebar: {
               panels: panelsParser(parsed.preview.sidebar.panels)
             },
-            siteNav: {}
+            siteNav: {
+              links: linksParser(parsed.preview.siteNav.links)
+            }
           }
         };
       } else {

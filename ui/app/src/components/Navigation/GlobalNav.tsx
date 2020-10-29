@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useMemo, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -28,7 +28,6 @@ import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
-import DevicesIcon from '@material-ui/icons/Devices';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
@@ -52,6 +51,7 @@ import { User } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
+import { SiteNavConfigEntry } from '../../models/UiConfig';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -342,7 +342,68 @@ interface GlobalNavProps {
   authoringUrl: string;
   onMenuClose: (e: any) => void;
   rolesBySite: LookupTable<string[]>;
+  siteNavLinks: SiteNavConfigEntry[];
 }
+
+const LinkWithIcon = (props) => {
+  const { label, icon, link, target } = props;
+  return <Tile title={label} icon={icon} link={link} target={target} />;
+};
+
+function SiteDashboardLink({ authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink('siteDashboard', authoringUrl)}
+      label={formatMessage(messages['dashboard'])}
+      icon="fa fa-tasks"
+    />
+  );
+}
+
+function SiteConfigLink({ authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink('siteConfig', authoringUrl)}
+      label={formatMessage(messages['siteConfig'])}
+      icon="fa fa-sliders"
+    />
+  );
+}
+
+function SiteSearchLink({ authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink('search', authoringUrl)}
+      label={formatMessage(messages['search'])}
+      icon={SearchIcon}
+    />
+  );
+}
+
+function SitePreviewLink({ site, authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink(
+        getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview',
+        authoringUrl
+      )}
+      label={formatMessage(messages['preview'])}
+      icon={Preview}
+    />
+  );
+}
+
+const ItemToComponentMap = {
+  'craftercms.sitePreviewLink': SitePreviewLink,
+  'craftercms.siteConfigLink': SiteConfigLink,
+  'craftercms.siteDashboardLink': SiteDashboardLink,
+  'craftercms.siteSearchLink': SiteSearchLink,
+  default: LinkWithIcon
+};
 
 export default function GlobalNav(props: GlobalNavProps) {
   const {
@@ -353,7 +414,9 @@ export default function GlobalNav(props: GlobalNavProps) {
     version,
     site,
     sites,
-    user
+    user,
+    rolesBySite,
+    siteNavLinks
   } = props;
   const classes = globalNavStyles({});
   const [menuItems, setMenuItems] = useState(null);
@@ -362,6 +425,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
+  const [siteLinks, setSiteLinks] = useState([]);
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
@@ -436,6 +500,17 @@ export default function GlobalNav(props: GlobalNavProps) {
       }
     );
   });
+
+  useEffect(() => {
+    if (siteNavLinks && rolesBySite && site) {
+      const links = siteNavLinks.filter((item) => {
+        const userRoles = rolesBySite[site];
+        const itemRoles = item.roles ?? [];
+        return itemRoles.length ? userRoles.some((role) => itemRoles.includes(role)) : true;
+      });
+      setSiteLinks(links);
+    }
+  }, [siteNavLinks, rolesBySite, site]);
 
   return (
     <Popover
@@ -553,24 +628,17 @@ export default function GlobalNav(props: GlobalNavProps) {
                 {formatMessage(messages.site)}
               </Typography>
               <nav className={classes.sitesApps}>
-                <Tile
-                  title={formatMessage(messages.preview2)}
-                  icon={Preview}
-                  link={`${authoringUrl}/next/preview`}
-                  onClick={onMenuClose}
-                />
-                <Tile
-                  title={formatMessage(messages.preview1)}
-                  icon={DevicesIcon}
-                  link={getLink('legacy.preview', authoringUrl)}
-                  disabled={!site}
-                />
-                <Tile
-                  title={formatMessage(messages.search)}
-                  icon={SearchIcon}
-                  link={getLink('search', authoringUrl)}
-                  disabled={!site}
-                />
+                {siteLinks.map((link, index) => {
+                  const Component = ItemToComponentMap[link.id ?? 'default'];
+                  return (
+                    <Component
+                      key={index}
+                      {...link.parameters}
+                      site={site}
+                      authoringUrl={authoringUrl}
+                    />
+                  );
+                })}
               </nav>
             </div>
             <div className={classes.railBottom}>

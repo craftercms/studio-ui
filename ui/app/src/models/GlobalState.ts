@@ -50,7 +50,7 @@ import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
-import { SidebarPanelConfigEntry } from './UiConfig';
+import { SidebarPanelConfigEntry, SiteNavConfigEntry } from './UiConfig';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -182,7 +182,9 @@ export interface GlobalState {
       sidebar: {
         panels: SidebarPanelConfigEntry[];
       };
-      siteNav: any;
+      siteNav: {
+        links: SiteNavConfigEntry[];
+      };
     };
   };
   pathNavigator: {

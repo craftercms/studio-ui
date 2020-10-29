@@ -30,10 +30,6 @@ export function serialize(doc: XMLDocument, options?: { format: boolean }): stri
   return options.format ? beautify(content, { printWidth: +Infinity }) : content;
 }
 
-export function deserialize() {
-  throw new Error('deserialize error is not implemented.');
-}
-
 export function minify(xml: string) {
   throw new Error('minify error is not implemented.');
 }
@@ -148,11 +144,11 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
   return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
 }
 
-export function toJS(xml: string): any;
-export function toJS(xml: XMLDocument): any;
-export function toJS(xml: string, options: X2jOptionsOptional): any;
-export function toJS(xml: XMLDocument, options: X2jOptionsOptional): any;
-export function toJS(xml: string | XMLDocument, options?: X2jOptionsOptional): any {
+export function deserialize(xml: string): any;
+export function deserialize(xml: XMLDocument): any;
+export function deserialize(xml: string, options: X2jOptionsOptional): any;
+export function deserialize(xml: XMLDocument, options: X2jOptionsOptional): any;
+export function deserialize(xml: string | XMLDocument, options?: X2jOptionsOptional): any {
   if (typeof xml !== 'string') {
     xml = serialize(xml);
   }

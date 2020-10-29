@@ -27,11 +27,13 @@ const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: false,
   preview: {
-    toolbar: {},
+    toolbar: null,
     sidebar: {
       panels: null
     },
-    siteNav: {},
+    siteNav: {
+      links: null
+    }
   }
 };
 

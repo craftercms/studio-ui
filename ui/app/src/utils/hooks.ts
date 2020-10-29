@@ -354,6 +354,10 @@ export function useSidebarPanels(): GlobalState['uiConfig']['preview']['sidebar'
   return useSelection((state) => state.uiConfig.preview.sidebar.panels);
 }
 
+export function useSiteNavLinks(): GlobalState['uiConfig']['preview']['siteNav']['links'] {
+  return useSelection((state) => state.uiConfig.preview.siteNav.links);
+}
+
 export function usePreviousValue<T = any>(value: T) {
   const ref = useRef<T>();
   useEffect(() => {

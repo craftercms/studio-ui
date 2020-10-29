@@ -14,12 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface SidebarPanelConfigEntry {
-  id: string;
-  roles: string[];
-  parameters?: any;
-}
-
 export interface StateStylingProps {
   baseClass: string;
   expandedClass: string;
@@ -29,12 +23,23 @@ export interface StateStylingProps {
   collapsedStyle: object;
 }
 
-export interface SidebarPanelWidgetConfig {
+export interface SiteNavConfigEntry {
+  id?: string;
+  roles?: string[];
+  parameters?: {
+    label: string;
+    icon: string;
+    link: string;
+    target: string;
+  };
+}
+
+export interface SidebarPanelConfigEntry {
   id: string;
-  roles: string[];
+  roles?: string[];
   parameters?: {
     label: string;
     icon: Partial<StateStylingProps>;
     container: Partial<StateStylingProps>;
-  }
+  };
 }

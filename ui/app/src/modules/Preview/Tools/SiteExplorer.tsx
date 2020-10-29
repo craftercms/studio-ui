@@ -28,9 +28,12 @@ import { useActiveSiteId, useLogicResource, useRoles } from '../../../utils/hook
 import Alert from '@material-ui/lab/Alert';
 import Link from '@material-ui/core/Link';
 import palette from '../../../styles/palette';
-import { SidebarPanelWidgetConfig } from '../../../models/UiConfig';
+import { SidebarPanelConfigEntry } from '../../../models/UiConfig';
 
-type SiteExplorerResource = { supported: SidebarPanelWidgetConfig[]; notSupported: SidebarPanelWidgetConfig[] };
+type SiteExplorerResource = {
+  supported: SidebarPanelConfigEntry[];
+  notSupported: SidebarPanelConfigEntry[];
+};
 
 interface SiteExplorerProps {
   resource: Resource<SiteExplorerResource>;
@@ -40,6 +43,14 @@ const translations = defineMessages({
   title: {
     id: 'siteExplorerPanel.title',
     defaultMessage: 'Site Explorer'
+  },
+  siteConfig: {
+    id: 'siteExplorerPanel.siteConfig',
+    defaultMessage: 'Site Config'
+  },
+  dashboard: {
+    id: 'words.dashboard',
+    defaultMessage: 'Dashboard'
   },
   noSidebarItems: {
     id: 'siteExplorerPanel.emptyMessage',
@@ -80,9 +91,9 @@ const useExplorerStyles = makeStyles(() =>
 interface LinkWithIconProps {
   label: string;
   link: string;
-  icon: {
-    baseClass: string;
-    baseStyle: object;
+  icon?: {
+    baseClass?: string;
+    baseStyle?: object;
   };
 }
 
@@ -103,9 +114,33 @@ const LinkWithIcon = (props: LinkWithIconProps) => {
   );
 };
 
+function SiteDashboardLink() {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link="/studio/dashboard"
+      label={formatMessage(translations['dashboard'])}
+      icon={{ baseClass: 'fa fa-tasks' }}
+    />
+  );
+}
+
+function SiteConfigLink() {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link="/studio/site-config"
+      label={formatMessage(translations['siteConfig'])}
+      icon={{ baseClass: 'fa fa-sliders' }}
+    />
+  );
+}
+
 const ItemToComponentMap = {
   'craftercms.pathNavigator': Widget,
-  'craftercms.linkWithIcon': LinkWithIcon
+  'craftercms.linkWithIcon': LinkWithIcon,
+  'craftercms.siteDashboardLink': SiteDashboardLink,
+  'craftercms.siteConfigLink': SiteConfigLink
 };
 
 export function SiteExplorer(props: SiteExplorerProps) {
@@ -128,7 +163,7 @@ export function SiteExplorer(props: SiteExplorerProps) {
 }
 
 interface SiteExplorerContainerProps {
-  widgets: SidebarPanelWidgetConfig[];
+  widgets: SidebarPanelConfigEntry[];
 }
 
 export function SiteExplorerContainer({ widgets }: SiteExplorerContainerProps) {
@@ -146,11 +181,22 @@ export function SiteExplorerContainer({ widgets }: SiteExplorerContainerProps) {
           ? userRoles.some((role) => itemRoles.includes(role))
           : true;
         return (
-          ['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(item.id) && hasPermission
+          [
+            'craftercms.linkWithIcon',
+            'craftercms.siteDashboardLink',
+            'craftercms.siteConfigLink',
+            'craftercms.pathNavigator'
+          ].includes(item.id) && hasPermission
         );
       });
       const notSupported = widgets.filter(
-        (i) => !['craftercms.linkWithIcon', 'craftercms.pathNavigator'].includes(i.id)
+        (i) =>
+          ![
+            'craftercms.linkWithIcon',
+            'craftercms.siteDashboardLink',
+            'craftercms.siteConfigLink',
+            'craftercms.pathNavigator'
+          ].includes(i.id)
       );
       return { supported, notSupported };
     },
