@@ -260,7 +260,6 @@ export function getSiteUiConfig(site: string): Observable<any> {
         const parsed = deserialize(xml).ui;
         return {
           preview: {
-            toolbar: {},
             sidebar: {
               panels: panelsParser(parsed.preview.sidebar.panels)
             },

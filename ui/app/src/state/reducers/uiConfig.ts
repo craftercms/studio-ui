@@ -27,7 +27,6 @@ const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: false,
   preview: {
-    toolbar: null,
     sidebar: {
       panels: null
     },

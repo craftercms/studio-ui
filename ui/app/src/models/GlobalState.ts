@@ -178,7 +178,6 @@ export interface GlobalState {
     error: ApiResponse;
     isFetching: boolean;
     preview: {
-      toolbar: any;
       sidebar: {
         panels: SidebarPanelConfigEntry[];
       };
