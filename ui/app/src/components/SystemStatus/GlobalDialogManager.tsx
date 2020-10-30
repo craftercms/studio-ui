@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useLayoutEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -27,6 +27,8 @@ import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
+import { useSnackbar } from 'notistack';
+import { popSnackbar } from '../../state/actions/preview';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() =>
@@ -106,6 +108,7 @@ export const useStyles = makeStyles(() =>
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
+  const snacks = useSelection((state) => state.preview.snacks);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
   const permissions = useSelection((state) => state.content.items.permissionsByPath);
@@ -375,9 +378,27 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
         onOk={createCallback(state.pathSelection.onOk, dispatch)}
       />
+      {
+        snacks.length &&
+        <SnacksManager snacks={snacks} />
+      }
       {/* endregion */}
     </Suspense>
   );
+}
+
+function SnacksManager({ snacks }) {
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (snacks.length) {
+      const snack = snacks[0];
+      enqueueSnackbar(snack.message);
+      dispatch(popSnackbar({ id: snack.id }));
+    }
+  }, [enqueueSnackbar, snacks]);
+  return null;
 }
 
 // @formatter:off

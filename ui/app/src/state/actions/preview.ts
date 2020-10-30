@@ -315,3 +315,8 @@ export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOO
 // region Edit Mode
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
 // endregion
+
+// region SnackBar
+export const pushSnackbar = createAction<{ id: string; message: string }>('PUSH_SNACKBAR');
+export const popSnackbar = createAction<{ id: string }>('POP_SNACKBAR');
+// endregion

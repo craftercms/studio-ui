@@ -40,6 +40,8 @@ import {
   GUEST_MODELS_RECEIVED,
   IN_PAGE_INSTANCES,
   OPEN_TOOLS,
+  popSnackbar,
+  pushSnackbar,
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
@@ -131,7 +133,8 @@ const reducer = createReducer<GlobalState['preview']>(
     receptacles: {
       selectedContentType: null,
       byId: null
-    }
+    },
+    snacks: []
   },
   {
     [SELECT_TOOL]: (state, { payload }) => ({
@@ -303,10 +306,10 @@ const reducer = createReducer<GlobalState['preview']>(
       state.currentUrl === payload
         ? state
         : {
-            ...state,
-            computedUrl: cleanseUrl(payload),
-            currentUrl: `${guestBase}${cleanseUrl(payload)}`
-          },
+          ...state,
+          computedUrl: cleanseUrl(payload),
+          currentUrl: `${guestBase}${cleanseUrl(payload)}`
+        },
     [changeSite.type]: (state, { payload }) => {
       let nextState = {
         ...state,
@@ -539,6 +542,18 @@ const reducer = createReducer<GlobalState['preview']>(
       return {
         ...state,
         toolsPanelWidth: payload.width
+      };
+    },
+    [pushSnackbar.type]: (state, { payload }) => {
+      return {
+        ...state, snacks: [...state.snacks, payload]
+      };
+    },
+    [popSnackbar.type]: (state, { payload }) => {
+      let snacks = state.snacks;
+      snacks = snacks.filter(snack => snack.id !== payload.id);
+      return {
+        ...state, snacks: snacks
       };
     }
   }

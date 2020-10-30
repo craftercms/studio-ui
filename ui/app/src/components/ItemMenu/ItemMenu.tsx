@@ -34,7 +34,6 @@ import {
   closeCopyDialog,
   closeCreateFileDialog,
   closeCreateFolderDialog,
-  closeDeleteDialog,
   closeNewContentDialog,
   closePublishDialog,
   closeUploadDialog,
@@ -43,7 +42,6 @@ import {
   showCopyDialog,
   showCreateFileDialog,
   showCreateFolderDialog,
-  showDeleteDialog,
   showDependenciesDialog,
   showEditDialog,
   showHistoryDialog,
@@ -80,6 +78,7 @@ import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
 import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
+import { pushSnackbar } from '../../state/actions/preview';
 
 interface ItemMenuProps {
   path: string;
@@ -211,17 +210,18 @@ export function ItemMenu(props: ItemMenuProps) {
       }
       case 'delete': {
         let items = [item];
-        dispatch(
-          showDeleteDialog({
-            items,
-            onSuccess: batchActions(
-              [
-                onItemMenuActionSuccessCreator?.({ item, option: option.id }),
-                closeDeleteDialog()
-              ].filter(Boolean)
-            )
-          })
-        );
+        dispatch(pushSnackbar({ id:'TODO', message: 'TODO'} ))
+        // dispatch(
+        //   showDeleteDialog({
+        //     items,
+        //     onSuccess: batchActions(
+        //       [
+        //         onItemMenuActionSuccessCreator?.({ item, option: option.id }),
+        //         closeDeleteDialog()
+        //       ].filter(Boolean)
+        //     )
+        //   })
+        // );
         break;
       }
       case 'changeContentType': {
