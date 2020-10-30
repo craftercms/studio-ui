@@ -34,6 +34,7 @@ import {
   closeCopyDialog,
   closeCreateFileDialog,
   closeCreateFolderDialog,
+  closeDeleteDialog,
   closeNewContentDialog,
   closePublishDialog,
   closeUploadDialog,
@@ -42,6 +43,7 @@ import {
   showCopyDialog,
   showCreateFileDialog,
   showCreateFolderDialog,
+  showDeleteDialog,
   showDependenciesDialog,
   showEditDialog,
   showHistoryDialog,
@@ -211,17 +213,17 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'delete': {
         let items = [item];
         dispatch(pushSnackbar({ id:'TODO', message: 'TODO'} ))
-        // dispatch(
-        //   showDeleteDialog({
-        //     items,
-        //     onSuccess: batchActions(
-        //       [
-        //         onItemMenuActionSuccessCreator?.({ item, option: option.id }),
-        //         closeDeleteDialog()
-        //       ].filter(Boolean)
-        //     )
-        //   })
-        // );
+        dispatch(
+          showDeleteDialog({
+            items,
+            onSuccess: batchActions(
+              [
+                onItemMenuActionSuccessCreator?.({ item, option: option.id }),
+                closeDeleteDialog()
+              ].filter(Boolean)
+            )
+          })
+        );
         break;
       }
       case 'changeContentType': {
