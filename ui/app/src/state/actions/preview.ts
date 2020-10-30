@@ -28,8 +28,6 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
-import { AjaxError } from 'rxjs/ajax';
-import { PreviewToolsConfig } from '../../services/configuration';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -309,16 +307,6 @@ export const setContentTypeReceptacles = createAction<{
 export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
 
 export const setChildrenMap = createAction<object>(CHILDREN_MAP_UPDATE);
-
-export const fetchPreviewToolsConfig = createAction<string>('FETCH_PREVIEW_TOOLS_CONFIG');
-
-export const fetchPreviewToolsConfigComplete = createAction<PreviewToolsConfig>(
-  'FETCH_PREVIEW_TOOLS_CONFIG_COMPLETE'
-);
-
-export const fetchPreviewToolsConfigFailed = createAction<AjaxError>(
-  'FETCH_PREVIEW_TOOLS_CONFIG_FAILED'
-);
 
 export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 

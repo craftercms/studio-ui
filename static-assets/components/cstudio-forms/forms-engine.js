@@ -1736,7 +1736,16 @@ var CStudioForms =
           });
 
           if (!form.readOnly) {
+
+            var cancelButtonEl = document.createElement('input');
+            cancelButtonEl.id = 'cancelBtn';
+            YDom.addClass(cancelButtonEl, 'btn btn-default');
+            cancelButtonEl.type = 'button';
+            cancelButtonEl.value = CMgs.format(formsLangBundle, 'cancel');
+            formButtonContainerEl.appendChild(cancelButtonEl);
+
             const buttonsContainer = document.createElement('div');
+            buttonsContainer.id = 'splitButtonContainer'
             formButtonContainerEl.appendChild(buttonsContainer);
 
             //In Context Edit, the preview button must not be shown
@@ -1786,13 +1795,6 @@ var CStudioForms =
               },
               failure: function() {}
             });
-
-            var cancelButtonEl = document.createElement('input');
-            cancelButtonEl.id = 'cancelBtn';
-            YDom.addClass(cancelButtonEl, 'btn btn-default');
-            cancelButtonEl.type = 'button';
-            cancelButtonEl.value = CMgs.format(formsLangBundle, 'cancel');
-            formButtonContainerEl.appendChild(cancelButtonEl);
 
             YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(cancelButtonEl, 'click', cancelFn, me);

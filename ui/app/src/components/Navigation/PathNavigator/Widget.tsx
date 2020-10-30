@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, Fragment, useMemo, useState } from 'react';
+import React, { ElementType, Fragment, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
@@ -39,14 +39,14 @@ import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import ContentLoader from 'react-content-loader';
 import { languages } from '../../../utils/i18n-legacy';
-import { removeSpaces } from '../../../utils/string';
 import {
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
-  pathNavigatorSetKeyword
+  pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
@@ -56,6 +56,7 @@ import { getContentXML } from '../../../services/content';
 import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable, rand } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
+import { StateStylingProps } from '../../../models/UiConfig';
 
 const MyLoader = React.memo(function() {
   const [items] = useState(() => {
@@ -86,11 +87,13 @@ const menuOptions = {
 };
 
 export interface WidgetProps {
-  path: string;
-  icon?: string | React.ElementType;
   id: string;
-  title?: string;
-  locale: string;
+  label: string;
+  rootPath: string;
+  excludes?: string[];
+  locale?: string;
+  icon?: Partial<StateStylingProps>;
+  container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
@@ -124,7 +127,7 @@ export interface WidgetState {
 
 // PathNavigator
 export default function Widget(props: WidgetProps) {
-  const { title, icon, path, id = removeSpaces(props.title), locale } = props;
+  const { label, icon = {}, container = {}, rootPath: path, id = label, locale, excludes } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -149,9 +152,20 @@ export default function Widget(props: WidgetProps) {
 
   useMount(() => {
     if (!state) {
-      dispatch(pathNavigatorInit({ id, path: path, locale: locale }));
+      dispatch(pathNavigatorInit({ id, path, locale, excludes }));
     }
   });
+
+  useEffect(() => {
+    if (siteLocales.defaultLocaleCode) {
+      dispatch(
+        pathNavigatorSetLocaleCode({
+          id,
+          locale: siteLocales.defaultLocaleCode
+        })
+      );
+    }
+  }, [dispatch, id, siteLocales.defaultLocaleCode]);
 
   if (!state) {
     return <LoadingState />;
@@ -326,7 +340,8 @@ export default function Widget(props: WidgetProps) {
         classes={props.classes}
         itemsByPath={itemsByPath}
         icon={icon}
-        title={title}
+        container={container}
+        title={label}
         itemMenu={itemMenu}
         simpleMenu={simpleMenu}
         onHeaderClick={onHeaderClick}
@@ -356,6 +371,7 @@ export function WidgetUI(props: any) {
     state,
     itemsByPath,
     icon,
+    container,
     title,
     itemMenu,
     simpleMenu,
@@ -399,12 +415,30 @@ export function WidgetUI(props: any) {
   );
 
   return (
-    <section className={clsx(classes.root, props.classes?.root, state?.collapsed && 'collapsed')}>
+    <section
+      className={clsx(
+        classes.root,
+        props.classes?.root,
+        state.collapsed && 'collapsed',
+        container.baseClass,
+        state.collapsed ? container.collapsedClass : container.expandedClass
+      )}
+      style={{
+        ...container.baseStyle,
+        ...(state.collapsed ? container.collapsedStyle : container.expandedStyle)
+      }}
+    >
       <Header
-        icon={icon}
+        iconClassName={`${icon.baseClass} ${
+          state.collapsed ? icon.collapsedClass : icon.expandedClass
+        }`}
+        style={{
+          ...icon.baseStyle,
+          ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
+        }}
         title={title}
-        locale={state?.localeCode}
-        onClick={() => onHeaderClick(!state?.collapsed)}
+        locale={state.localeCode}
+        onClick={() => onHeaderClick(!state.collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={
           siteLocales?.localeCodes?.length
@@ -412,10 +446,10 @@ export function WidgetUI(props: any) {
             : null
         }
       />
-      <div {...(state?.collapsed ? { hidden: true } : {})} className={clsx(props.classes?.body)}>
+      <div {...(state.collapsed ? { hidden: true } : {})} className={props.classes?.body}>
         <Breadcrumbs
-          keyword={state?.keyword}
-          breadcrumb={state?.breadcrumb.map(
+          keyword={state.keyword}
+          breadcrumb={state.breadcrumb.map(
             (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
           )}
           onMenu={onCurrentParentMenu}
@@ -442,8 +476,8 @@ export function WidgetUI(props: any) {
           }}
         >
           <Nav
-            leafs={state?.leafs}
-            locale={state?.localeCode}
+            leafs={state.leafs}
+            locale={state.localeCode}
             resource={resource}
             onSelectItem={onSelectItem}
             onPathSelected={onPathSelected}
@@ -460,8 +494,8 @@ export function WidgetUI(props: any) {
           }}
           component="div"
           labelRowsPerPage=""
-          count={state?.count}
-          rowsPerPage={state?.limit}
+          count={state.count}
+          rowsPerPage={state.limit}
           page={state && Math.ceil(state.offset / state.limit)}
           backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
           nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}

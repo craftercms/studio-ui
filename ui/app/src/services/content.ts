@@ -939,12 +939,11 @@ export function getChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
+  const qs = toQueryString({ site, path, depth: 1, order: 'default', ...options});
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
   return get(
-    `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${encodeURIComponent(
-      path
-    )}&depth=1&order=default`
+    `/studio/api/1/services/api/1/content/get-items-tree.json${qs}`
   ).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),

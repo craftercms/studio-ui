@@ -16,17 +16,40 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
+import {
+  fetchSiteUiConfig,
+  fetchSiteUiConfigComplete,
+  fetchSiteUiConfigFailed
+} from '../actions/configuration';
 import { changeSite } from './sites';
 
-const initialState: GlobalState['configuration'] = {
-  publishing: {
-    submission: {
-      commentMaxLength: 250
+const initialState: GlobalState['uiConfig'] = {
+  error: null,
+  isFetching: false,
+  preview: {
+    sidebar: {
+      panels: null
+    },
+    siteNav: {
+      links: null
     }
   }
 };
 
-const reducer = createReducer<GlobalState['configuration']>(initialState, {
+const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
+  [fetchSiteUiConfig.type]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
+  [fetchSiteUiConfigComplete.type]: (state, { payload }) => ({
+    ...state,
+    isFetching: false,
+    ...payload
+  }),
+  [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
+    ...state,
+    error: payload
+  }),
   [changeSite.type]: () => initialState
 });
 

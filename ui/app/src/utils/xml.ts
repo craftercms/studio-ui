@@ -18,7 +18,7 @@
 import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
-import parser from 'fast-xml-parser';
+import parser, { X2jOptionsOptional } from 'fast-xml-parser';
 
 export function fromString(xml: string) {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
@@ -28,10 +28,6 @@ export function serialize(doc: XMLDocument, options?: { format: boolean }): stri
   options = Object.assign({ format: true }, options || {});
   const content = new XMLSerializer().serializeToString(doc);
   return options.format ? beautify(content, { printWidth: +Infinity }) : content;
-}
-
-export function deserialize() {
-  throw new Error('deserialize error is not implemented.');
 }
 
 export function minify(xml: string) {
@@ -148,13 +144,19 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
   return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
 }
 
-export function toJS(xml: string): any;
-export function toJS(xml: XMLDocument): any;
-export function toJS(xml: string | XMLDocument): any {
+export function deserialize(xml: string): any;
+export function deserialize(xml: XMLDocument): any;
+export function deserialize(xml: string, options: X2jOptionsOptional): any;
+export function deserialize(xml: XMLDocument, options: X2jOptionsOptional): any;
+export function deserialize(xml: string | XMLDocument, options?: X2jOptionsOptional): any {
   if (typeof xml !== 'string') {
     xml = serialize(xml);
   }
-  return parser.parse(xml, {});
+  return parser.parse(xml, {
+    attributeNamePrefix: '',
+    ignoreAttributes: false,
+    ...options
+  });
 }
 
 const xml = {

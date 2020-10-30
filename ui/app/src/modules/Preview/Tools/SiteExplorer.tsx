@@ -14,30 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import ToolPanel from './ToolPanel';
-import { SidebarConfigItem } from '../../../services/configuration';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Widget from '../../../components/Navigation/PathNavigator/Widget';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  usePreviousValue,
-  useSelection
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useRoles } from '../../../utils/hooks';
 import Alert from '@material-ui/lab/Alert';
 import Link from '@material-ui/core/Link';
-import { fetchSidebarConfig } from '../../../state/actions/configuration';
-import { useDispatch } from 'react-redux';
 import palette from '../../../styles/palette';
+import { SidebarPanelConfigEntry } from '../../../models/UiConfig';
 
-type SiteExplorerResource = { supported: SidebarConfigItem[]; notSupported: SidebarConfigItem[] };
+type SiteExplorerResource = {
+  supported: SidebarPanelConfigEntry[];
+  notSupported: SidebarPanelConfigEntry[];
+};
 
 interface SiteExplorerProps {
   resource: Resource<SiteExplorerResource>;
@@ -47,6 +43,14 @@ const translations = defineMessages({
   title: {
     id: 'siteExplorerPanel.title',
     defaultMessage: 'Site Explorer'
+  },
+  siteConfig: {
+    id: 'siteExplorerPanel.siteConfig',
+    defaultMessage: 'Site Config'
+  },
+  dashboard: {
+    id: 'words.dashboard',
+    defaultMessage: 'Dashboard'
   },
   noSidebarItems: {
     id: 'siteExplorerPanel.emptyMessage',
@@ -84,14 +88,25 @@ const useExplorerStyles = makeStyles(() =>
   })
 );
 
-const LinkWithIcon = ({ label, icon, href }) => {
+interface LinkWithIconProps {
+  label: string;
+  link: string;
+  icon?: {
+    baseClass?: string;
+    baseStyle?: object;
+  };
+}
+
+const LinkWithIcon = (props: LinkWithIconProps) => {
+  const { link, label, icon } = props;
   const classes = useLinkIconStyles();
   return (
-    <ListItem button component={Link} href={href} className={classes.links}>
+    <ListItem button component={Link} href={link} className={classes.links}>
       <ListItemText
         primary={
           <>
-            <i className={`${classes.icon} ${icon}`} /> {label}
+            <i className={`${classes.icon} ${icon.baseClass}`} style={{ ...icon.baseStyle }} />{' '}
+            {label}
           </>
         }
       />
@@ -99,18 +114,33 @@ const LinkWithIcon = ({ label, icon, href }) => {
   );
 };
 
-const DashboardLink = () => (
-  <LinkWithIcon label="Dashboard" icon="fa fa-tasks" href="/studio/site-dashboard" />
-);
+function SiteDashboardLink() {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link="/studio/dashboard"
+      label={formatMessage(translations.dashboard)}
+      icon={{ baseClass: 'fa fa-tasks' }}
+    />
+  );
+}
 
-const SiteConfigLink = () => (
-  <LinkWithIcon label="Site Config" icon="fa fa-sliders" href="/studio/site-config" />
-);
+function SiteConfigLink() {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link="/studio/site-config"
+      label={formatMessage(translations.siteConfig)}
+      icon={{ baseClass: 'fa fa-sliders' }}
+    />
+  );
+}
 
 const ItemToComponentMap = {
-  PagesWidget: Widget,
-  'site-config': SiteConfigLink,
-  dashboard: DashboardLink
+  'craftercms.pathNavigator': Widget,
+  'craftercms.linkWithIcon': LinkWithIcon,
+  'craftercms.siteDashboardLink': SiteDashboardLink,
+  'craftercms.siteConfigLink': SiteConfigLink
 };
 
 export function SiteExplorer(props: SiteExplorerProps) {
@@ -125,41 +155,56 @@ export function SiteExplorer(props: SiteExplorerProps) {
         <Alert severity="warning">{formatMessage(translations.unsupportedItemsPreset)}</Alert>
       )}
       {widgets?.map((item, index) => {
-        const Component = ItemToComponentMap[item.name || item.render];
-        return (
-          <Component key={index} {...(item.name ? item.params : item.props)} classes={classes} />
-        );
+        const Component = ItemToComponentMap[item.id];
+        return <Component key={index} {...item.parameters} classes={classes} />;
       })}
     </>
   );
 }
 
-export function SiteExplorerContainer() {
+interface SiteExplorerContainerProps {
+  widgets: SidebarPanelConfigEntry[];
+}
+
+export function SiteExplorerContainer({ widgets }: SiteExplorerContainerProps) {
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  const prevSite = usePreviousValue(site);
-  const state = useSelection((state) => state.configuration.sidebar);
-  const resource = useLogicResource(state, {
-    errorSelector: (state) => state.error,
-    resultSelector: ({ items }) => {
-      const supported = items.filter((i) =>
-        ['PagesWidget', 'site-config', 'dashboard'].includes(i.name || i.render)
-      );
-      const notSupported = items.filter(
-        (i) => !['PagesWidget', 'site-config', 'dashboard'].includes(i.name || i.render)
+  const rolesBySite = useRoles();
+
+  const resource = useLogicResource(widgets, {
+    errorSelector: (widgets) => null,
+    resultSelector: (widgets) => {
+      const supported = widgets.filter((item) => {
+        const userRoles = rolesBySite[site];
+        const itemRoles = item.roles;
+        const hasPermission = itemRoles?.length
+          ? userRoles.some((role) => itemRoles.includes(role))
+          : true;
+        return (
+          [
+            'craftercms.linkWithIcon',
+            'craftercms.siteDashboardLink',
+            'craftercms.siteConfigLink',
+            'craftercms.pathNavigator'
+          ].includes(item.id) && hasPermission
+        );
+      });
+      const notSupported = widgets.filter(
+        (i) =>
+          ![
+            'craftercms.linkWithIcon',
+            'craftercms.siteDashboardLink',
+            'craftercms.siteConfigLink',
+            'craftercms.pathNavigator'
+          ].includes(i.id)
       );
       return { supported, notSupported };
     },
-    shouldReject: (state) => Boolean(state.error),
+    shouldReject: (state) => null,
     shouldRenew: (state, resource) => resource.complete,
-    shouldResolve: (state) => !state.isFetching && Boolean(state.items)
+    shouldResolve: (state) => Boolean(widgets)
   });
-  useEffect(() => {
-    if ((!state.items && !state.isFetching) || (prevSite !== undefined && prevSite !== site)) {
-      dispatch(fetchSidebarConfig(site));
-    }
-  }, [dispatch, prevSite, site, state.isFetching, state.items]);
+
   return (
     <ToolPanel title={translations.title}>
       <SuspenseWithEmptyState

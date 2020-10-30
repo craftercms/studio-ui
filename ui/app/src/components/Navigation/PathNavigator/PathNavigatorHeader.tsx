@@ -25,7 +25,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 interface HeaderProps {
   locale: string;
   title: string;
-  icon: React.ElementType | string;
+  iconClassName: string;
+  style: object;
   onClick?(): void;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
@@ -34,17 +35,17 @@ interface HeaderProps {
 // PathNavigatorHeader
 export default function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles({});
-  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
+  const { title, iconClassName, locale, onLanguageMenu, onContextMenu, onClick, style } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
-    <header className={clsx(classes.headerRoot)} onClick={onClick}>
-      {Icon &&
-        (typeof Icon === 'string' ? (
-          <span className={`fa ${Icon}`} />
-        ) : (
-          <Icon className={classes.pagesIcon} />
-        ))}
-      <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
+    <header className={clsx(classes.headerRoot)} onClick={onClick} style={style}>
+      <span className={iconClassName}/>
+      <Typography
+        variant="body1"
+        component="h6"
+        className={classes.headerTitle}
+        children={title}
+      />
 
       {onLanguageMenu && (
         <IconButton

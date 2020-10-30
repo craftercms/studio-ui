@@ -66,7 +66,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
 import StandardAction from '../../models/StandardAction';
-import { withoutIndex } from '../../utils/path';
+import { getRootPath, withoutIndex } from '../../utils/path';
 import {
   assetDuplicate,
   itemDuplicate,
@@ -373,11 +373,11 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'history': {
-        dispatch(batchActions([fetchItemVersions({ item }), showHistoryDialog({})]));
+        dispatch(batchActions([fetchItemVersions({ item, rootPath: getRootPath(item.path) }), showHistoryDialog({})]));
         break;
       }
       case 'dependencies': {
-        dispatch(showDependenciesDialog({ item }));
+        dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path)}));
         break;
       }
       case 'translation': {

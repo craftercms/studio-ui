@@ -15,16 +15,8 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import {
-  fetchPreviewToolsConfig,
-  fetchPreviewToolsConfigComplete,
-  fetchPreviewToolsConfigFailed,
-  SELECT_TOOL,
-  setPreviewEditMode
-} from '../actions/preview';
-import { getPreviewToolsConfig } from '../../services/configuration';
-import { catchAjaxError } from '../../utils/ajax';
+import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import { SELECT_TOOL, setPreviewEditMode } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { setStoredEditModeChoice } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
@@ -42,18 +34,6 @@ export default [
     }),
     ignoreElements()
   ),
-  // region fetchPreviewToolsConfig
-  (action$) =>
-    action$.pipe(
-      ofType(fetchPreviewToolsConfig.type),
-      switchMap(({ payload: site }) =>
-        getPreviewToolsConfig(site).pipe(
-          map(fetchPreviewToolsConfigComplete),
-          catchAjaxError(fetchPreviewToolsConfigFailed)
-        )
-      )
-    ),
-  // endregion
   // region setPreviewEditMode
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(

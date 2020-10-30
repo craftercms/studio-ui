@@ -15,16 +15,16 @@
  */
 
 type PreviewTool =
-  'craftercms.ice.components' |
-  'craftercms.ice.assets' |
-  'craftercms.ice.audiences' |
-  'craftercms.ice.simulator' |
-  'craftercms.ice.edit' |
-  'craftercms.ice.browseComponents' |
-  'craftercms.ice.inPageInstances' |
-  'craftercms.ice.contentTypeReceptacles' |
-  'craftercms.ice.pageExplorer' |
-  'craftercms.ice.search' |
+  'craftercms.componentsPanel' |
+  'craftercms.assetsPanel' |
+  'craftercms.audiencesPanel' |
+  'craftercms.simulatorPanel' |
+  'craftercms.editPanel' |
+  'craftercms.browseComponentsPanel' |
+  'craftercms.inPageInstancesPanel' |
+  'craftercms.contentTypeReceptaclesPanel' |
+  'craftercms.pageExplorerPanel' |
+  'craftercms.searchPanel' |
   'craftercms.siteExplorerPanel';
 
 export default PreviewTool;

@@ -98,6 +98,14 @@ export function getParentPath(path: string): string {
   return splitPath.join('/');
 }
 
+export function getRootPath(path: string): string {
+  if (path.includes('/site/website')) {
+    return '/site/website';
+  } else {
+    return path.split('/').slice(0, 2).join('/');
+  }
+}
+
 export function getParentsFromPath(path: string, rootPath: string): string[] {
   let splitPath = withoutIndex(path)
     .replace(rootPath, '')
@@ -105,7 +113,7 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
   splitPath.pop();
   return [
     rootPath,
-    ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)
+    ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(1)
   ];
 }
 
@@ -118,12 +126,12 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   } while (array.length);
   if (rootPath) {
     if (paths.indexOf(withIndex(rootPath)) >= 0) {
-      return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1);
+      return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1).reverse();
     } else {
-      return paths.slice(0, paths.indexOf(rootPath) + 1);
+      return paths.slice(0, paths.indexOf(rootPath) + 1).reverse();
     }
   } else {
-    return paths;
+    return paths.reverse();
   }
 }
 
@@ -136,7 +144,9 @@ const path = {
   withoutIndex,
   withIndex,
   getParentPath,
-  getParentsFromPath
+  getParentsFromPath,
+  getIndividualPaths,
+  getRootPath
 };
 
 export default path;

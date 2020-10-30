@@ -15,9 +15,8 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { SidebarConfigItem } from '../../services/configuration';
 import { AjaxError } from 'rxjs/ajax';
 
-export const fetchSidebarConfig = createAction<string>('FETCH_SIDEBAR_CONFIG');
-export const fetchSidebarConfigComplete = createAction<SidebarConfigItem[]>('FETCH_SIDEBAR_CONFIG_COMPLETE');
-export const fetchSidebarConfigFailed = createAction<AjaxError>('FETCH_SIDEBAR_CONFIG_FAILED');
+export const fetchSiteUiConfig = createAction<{ site: string }>('FETCH_SITE_UI_CONFIG');
+export const fetchSiteUiConfigComplete = createAction<any>('FETCH_SITE_UI_CONFIG_COMPLETE');
+export const fetchSiteUiConfigFailed = createAction<AjaxError>('FETCH_SITE_UI_CONFIG_FAILED');

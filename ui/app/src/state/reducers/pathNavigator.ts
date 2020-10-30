@@ -30,6 +30,7 @@ import {
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
@@ -37,7 +38,7 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { id, path, locale, collapsed = false } }) => {
+    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {
       return {
         ...state,
         [id]: {
@@ -55,6 +56,15 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           offset: 0,
           count: 0,
           collapsed
+        }
+      };
+    },
+    [pathNavigatorSetLocaleCode.type]: (state, { payload: { id, locale } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          localeCode: locale
         }
       };
     },
@@ -96,7 +106,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
       } else {
         const widgetState = {
           ...state[id],
-          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath).reverse(),
+          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
           itemsInPath: response.map((item) => item.id),
           count: response.length
         };
@@ -131,7 +141,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         [id]: {
           ...state[id],
           itemsInPath,
-          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath).reverse()
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath)
         }
       };
     },

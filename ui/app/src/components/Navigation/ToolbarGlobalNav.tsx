@@ -28,6 +28,7 @@ import {
   useMount,
   useSelection,
   useSiteList,
+  useSiteNavLinks,
   useSystemVersion
 } from '../../utils/hooks';
 import palette from '../../styles/palette';
@@ -96,6 +97,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
   const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
   const { authoringBase } = useEnv();
+  const siteNavLinks = useSiteNavLinks();
   const version = useSystemVersion();
   const sites = useSiteList();
   const dispatch = useDispatch();
@@ -132,6 +134,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         authoringUrl={authoringBase}
         onMenuClose={onMenuClose}
         rolesBySite={user.rolesBySite}
+        siteNavLinks={siteNavLinks}
       />
     </>
   );

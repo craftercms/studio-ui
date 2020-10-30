@@ -21,4 +21,5 @@ export interface GetChildrenOptions extends PaginationOptions {
   locale: string;
   keyword: string;
   sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
+  excludes?: string[];
 }

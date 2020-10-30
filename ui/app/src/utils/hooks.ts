@@ -347,6 +347,18 @@ export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
   return siteLocales;
 }
 
+export function useRoles(): GlobalState['user']['rolesBySite'] {
+  return useSelection((state) => state.user.rolesBySite);
+}
+
+export function useSidebarPanels(): GlobalState['uiConfig']['preview']['sidebar']['panels'] {
+  return useSelection((state) => state.uiConfig.preview.sidebar.panels);
+}
+
+export function useSiteNavLinks(): GlobalState['uiConfig']['preview']['siteNav']['links'] {
+  return useSelection((state) => state.uiConfig.preview.siteNav.links);
+}
+
 export function usePreviousValue<T = any>(value: T) {
   const ref = useRef<T>();
   useEffect(() => {

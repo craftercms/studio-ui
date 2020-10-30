@@ -906,6 +906,7 @@ var nodeOpen = false,
           payload: {
             open: true,
             item: CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(items[0]),
+            rootPath: CrafterCMSNext.util.path.getRootPath(items[0].path),
             dependenciesShown
           }
         });

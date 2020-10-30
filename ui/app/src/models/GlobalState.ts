@@ -39,7 +39,6 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
-import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
@@ -51,6 +50,7 @@ import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
+import { SidebarPanelConfigEntry, SiteNavConfigEntry } from './UiConfig';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -118,7 +118,6 @@ export interface GlobalState {
     selectedTool: PreviewTool;
     previousTool: PreviewTool;
     toolsPanelWidth: number;
-    tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -169,14 +168,21 @@ export interface GlobalState {
     };
   };
   configuration: {
-    sidebar: {
-      error: ApiResponse;
-      items: Array<SidebarConfigItem>;
-      isFetching: boolean;
-    };
     publishing: {
       submission: {
         commentMaxLength: number;
+      };
+    };
+  };
+  uiConfig: {
+    error: ApiResponse;
+    isFetching: boolean;
+    preview: {
+      sidebar: {
+        panels: SidebarPanelConfigEntry[];
+      };
+      siteNav: {
+        links: SiteNavConfigEntry[];
       };
     };
   };

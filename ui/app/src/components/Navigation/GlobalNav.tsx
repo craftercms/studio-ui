@@ -28,14 +28,13 @@ import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
-import DevicesIcon from '@material-ui/icons/Devices';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import { LookupTable } from '../../models/LookupTable';
-import { useSelection } from '../../utils/hooks';
+import { useMount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -49,11 +48,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
 import { User } from '../../models/User';
-import { fetchSidebarConfig } from '../../state/actions/configuration';
-import { forEach } from '../../utils/array';
 import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
+import { SiteNavConfigEntry } from '../../models/UiConfig';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -248,11 +246,6 @@ const globalNavUrlMapping = {
   settings: '#/settings'
 };
 
-const siteMenuKeys = {
-  dashboard: 'dashboard',
-  siteConfig: 'site-config'
-};
-
 const globalNavStyles = makeStyles((theme) =>
   createStyles({
     popover: {
@@ -349,29 +342,90 @@ interface GlobalNavProps {
   authoringUrl: string;
   onMenuClose: (e: any) => void;
   rolesBySite: LookupTable<string[]>;
+  siteNavLinks: SiteNavConfigEntry[];
 }
+
+const LinkWithIcon = (props) => {
+  const { label, icon, link, target } = props;
+  return <Tile title={label} icon={icon} link={link} target={target} />;
+};
+
+function SiteDashboardLink({ authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink('siteDashboard', authoringUrl)}
+      label={formatMessage(messages.dashboard)}
+      icon="fa fa-tasks"
+    />
+  );
+}
+
+function SiteConfigLink({ authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink('siteConfig', authoringUrl)}
+      label={formatMessage(messages.siteConfig)}
+      icon="fa fa-sliders"
+    />
+  );
+}
+
+function SiteSearchLink({ authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink('search', authoringUrl)}
+      label={formatMessage(messages.search)}
+      icon={SearchIcon}
+    />
+  );
+}
+
+function SitePreviewLink({ site, authoringUrl }) {
+  const { formatMessage } = useIntl();
+  return (
+    <LinkWithIcon
+      link={getLink(
+        getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview',
+        authoringUrl
+      )}
+      label={formatMessage(messages.preview)}
+      icon={Preview}
+    />
+  );
+}
+
+const ItemToComponentMap = {
+  'craftercms.sitePreviewLink': SitePreviewLink,
+  'craftercms.siteConfigLink': SiteConfigLink,
+  'craftercms.siteDashboardLink': SiteDashboardLink,
+  'craftercms.siteSearchLink': SiteSearchLink,
+  default: LinkWithIcon
+};
 
 export default function GlobalNav(props: GlobalNavProps) {
   const {
     anchor,
     onMenuClose,
-    rolesBySite,
     logoutUrl,
     authoringUrl,
     version,
     site,
     sites,
-    user
+    user,
+    rolesBySite,
+    siteNavLinks
   } = props;
   const classes = globalNavStyles({});
   const [menuItems, setMenuItems] = useState(null);
-  const [siteMenu, setSiteMenu] = useState(null);
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const sidebarState = useSelection((state) => state.configuration.sidebar);
+  const [siteLinks, setSiteLinks] = useState([]);
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
@@ -394,14 +448,15 @@ export default function GlobalNav(props: GlobalNavProps) {
         onClick(site) {
           setSiteCookie(site);
         }
-      },
-      {
-        name: formatMessage(messages.siteConfig),
-        href: getLink('siteConfig', authoringUrl),
-        onClick(site) {
-          setSiteCookie(site);
-        }
       }
+      // TODO: Since these should be per-site and constraint by role, we need to figure what to do with them.
+      // {
+      //   name: formatMessage(messages.siteConfig),
+      //   href: getLink('siteConfig', authoringUrl),
+      //   onClick(site) {
+      //     setSiteCookie(site);
+      //   }
+      // }
     ],
     // Disable exhaustive hooks check since only need to create on mount
     // eslint-disable-next-line
@@ -428,34 +483,10 @@ export default function GlobalNav(props: GlobalNavProps) {
     }
   };
 
-  useEffect(() => {
-    if (site && !sidebarState.items && !sidebarState.isFetching) {
-      dispatch(fetchSidebarConfig(site));
-    }
+  useMount(() => {
     getGlobalMenuItems().subscribe(
       ({ response }) => {
         setMenuItems(response.menuItems);
-        let roleFound = {
-          [siteMenuKeys.dashboard]: false,
-          [siteMenuKeys.siteConfig]: false
-        };
-        sidebarState.items?.forEach((item) => {
-          if (item.name === siteMenuKeys.siteConfig || item.name === siteMenuKeys.dashboard) {
-            let roles = item.params['roles']?.['role'];
-            roleFound[item.name] = roles?.length
-              ? forEach(
-                  roles,
-                  (role) => {
-                    if (rolesBySite[site] && rolesBySite[site].includes(role)) {
-                      return true;
-                    }
-                  },
-                  false
-                )
-              : true;
-            setSiteMenu(roleFound);
-          }
-        });
       },
       (error) => {
         if (error.response) {
@@ -469,7 +500,18 @@ export default function GlobalNav(props: GlobalNavProps) {
         }
       }
     );
-  }, [dispatch, site, sidebarState.isFetching, sidebarState.items, rolesBySite]);
+  });
+
+  useEffect(() => {
+    if (siteNavLinks && rolesBySite && site) {
+      const links = siteNavLinks.filter((item) => {
+        const userRoles = rolesBySite[site];
+        const itemRoles = item.roles ?? [];
+        return itemRoles.length ? userRoles.some((role) => itemRoles.includes(role)) : true;
+      });
+      setSiteLinks(links);
+    }
+  }, [siteNavLinks, rolesBySite, site]);
 
   return (
     <Popover
@@ -586,42 +628,21 @@ export default function GlobalNav(props: GlobalNavProps) {
               <Typography variant="subtitle1" component="h2" className={classes.title}>
                 {formatMessage(messages.site)}
               </Typography>
-              <nav className={classes.sitesApps}>
-                {siteMenu?.[siteMenuKeys.dashboard] && (
-                  <Tile
-                    title={formatMessage(messages.dashboard)}
-                    icon="fa-tasks"
-                    link={`${authoringUrl}/site-dashboard`}
-                    onClick={onMenuClose}
-                  />
-                )}
-                <Tile
-                  title={formatMessage(messages.preview2)}
-                  icon={Preview}
-                  link={`${authoringUrl}/next/preview`}
-                  onClick={onMenuClose}
-                />
-                <Tile
-                  title={formatMessage(messages.preview1)}
-                  icon={DevicesIcon}
-                  link={getLink('legacy.preview', authoringUrl)}
-                  disabled={!site}
-                />
-                {siteMenu?.[siteMenuKeys.siteConfig] && (
-                  <Tile
-                    title={formatMessage(messages.siteConfig)}
-                    icon="fa-sliders"
-                    link={getLink('siteConfig', authoringUrl)}
-                    onClick={onMenuClose}
-                  />
-                )}
-                <Tile
-                  title={formatMessage(messages.search)}
-                  icon={SearchIcon}
-                  link={getLink('search', authoringUrl)}
-                  disabled={!site}
-                />
-              </nav>
+              {site && (
+                <nav className={classes.sitesApps}>
+                  {siteLinks.map((link, index) => {
+                    const Component = ItemToComponentMap[link.id ?? 'default'];
+                    return (
+                      <Component
+                        key={index}
+                        {...link.parameters}
+                        site={site}
+                        authoringUrl={authoringUrl}
+                      />
+                    );
+                  })}
+                </nav>
+              )}
             </div>
             <div className={classes.railBottom}>
               <Card className={classes.userCardRoot}>

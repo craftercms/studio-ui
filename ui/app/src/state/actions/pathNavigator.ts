@@ -21,7 +21,7 @@ import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string; collapsed?: boolean }>>('PATH_NAVIGATOR_INIT');
+export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string; collapsed?: boolean, excludes?: string[] }>>('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_SET_LOCALE_CODE');
 
@@ -37,7 +37,7 @@ export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: Det
 
 export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
 
-export const pathNavigatorFetchParentItems = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
+export const pathNavigatorFetchParentItems = createAction<PayloadWithId<{ path: string, excludes?: string[] }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPathComplete = createAction<PayloadWithId<{ response: GetChildrenResponse }>>('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
 
