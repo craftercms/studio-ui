@@ -260,7 +260,12 @@ export function ItemMenu(props: ItemMenuProps) {
         cut(site, item).subscribe(
           ({ success }) => {
             if (success) {
-              dispatch(setClipBoard({ path: item.path }));
+              dispatch(
+                batchActions([
+                  setClipBoard({ path: item.path }),
+                  showCopyItemSuccessNotification()
+                ])
+              );
             }
           },
           (response) => {

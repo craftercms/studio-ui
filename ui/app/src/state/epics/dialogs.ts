@@ -38,7 +38,8 @@ import {
   showCopyItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showEditItemSuccessNotification,
-  showPublishItemSuccessNotification
+  showPublishItemSuccessNotification,
+  showRevertItemSuccessNotification
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { getVersion } from '../../services/content';
@@ -48,30 +49,8 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl, showSystemNotification } from '../actions/preview';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { defineMessages, IntlShape } from 'react-intl';
-
-const translations = defineMessages({
-  itemDeleted: {
-    id: 'item.delete',
-    defaultMessage: '{count, plural, one {The selected item is being deleted and will be removed shortly} other {The selected items are being deleted and will be removed shortly}}'
-  },
-  itemPublishedNow: {
-    id: 'item.publishedNow',
-    defaultMessage: '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
-  },
-  itemSchedulePublished: {
-    id: 'item.schedulePublished',
-    defaultMessage: '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
-  },
-  itemEdited: {
-    id: 'item.edited',
-    defaultMessage: 'Item updated successfully'
-  },
-  itemCopied: {
-    id: 'item.copied',
-    defaultMessage: '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
-  }
-});
+import { IntlShape } from 'react-intl';
+import { itemSuccessMessages } from '../../utils/i18n-legacy';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -147,7 +126,7 @@ export default [
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
       hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(translations.itemDeleted, {
+        message: intl.formatMessage(itemSuccessMessages.itemDeleted, {
           count: payload.items.length
         })
       }));
@@ -159,10 +138,10 @@ export default [
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
       hostToHost$.next(showSystemNotification({
-        message: payload.schedule === 'now' ? intl.formatMessage(translations.itemPublishedNow, {
+        message: payload.schedule === 'now' ? intl.formatMessage(itemSuccessMessages.itemPublishedNow, {
           count: payload.items.length,
           environment: payload.environment
-        }) : intl.formatMessage(translations.itemSchedulePublished, {
+        }) : intl.formatMessage(itemSuccessMessages.itemSchedulePublished, {
           count: payload.items.length,
           environment: payload.environment
         })
@@ -175,7 +154,7 @@ export default [
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
       hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(translations.itemEdited)
+        message: intl.formatMessage(itemSuccessMessages.itemEdited)
       }));
     }),
     ignoreElements()
@@ -185,7 +164,17 @@ export default [
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
       hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(translations.itemCopied, { count: payload?.children.length ?? 1 })
+        message: intl.formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+    ofType(showRevertItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(itemSuccessMessages.itemReverted)
       }));
     }),
     ignoreElements()

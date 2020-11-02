@@ -1375,6 +1375,33 @@ export const languages = defineMessages({
   zh: { id: 'languages.zh', defaultMessage: 'Chinese' }
 });
 
+export const itemSuccessMessages = defineMessages({
+  itemDeleted: {
+    id: 'item.delete',
+    defaultMessage: '{count, plural, one {The selected item is being deleted and will be removed shortly} other {The selected items are being deleted and will be removed shortly}}'
+  },
+  itemPublishedNow: {
+    id: 'item.publishedNow',
+    defaultMessage: '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
+  },
+  itemSchedulePublished: {
+    id: 'item.schedulePublished',
+    defaultMessage: '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
+  },
+  itemEdited: {
+    id: 'item.edited',
+    defaultMessage: 'Item updated successfully'
+  },
+  itemCopied: {
+    id: 'item.copied',
+    defaultMessage: '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
+  },
+  itemReverted: {
+    id: 'item.edited',
+    defaultMessage: 'Item reverted successfully'
+  }
+});
+
 const i18n = {
   approveDialogMessages,
   deleteDialogMessages,
@@ -1415,7 +1442,9 @@ const i18n = {
   localeSelectorControlMessages,
   languages,
   adminDashboardMessages,
-  controlsCommonMessages
+  controlsCommonMessages,
+  itemSuccessMessages
 };
 
 export default i18n;
+
