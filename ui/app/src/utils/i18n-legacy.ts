@@ -15,7 +15,7 @@
  */
 
 import { defineMessages, MessageDescriptor } from 'react-intl';
-import { intl } from '../components/CrafterCMSNextBridge';
+import { intlRef } from './i18n';
 
 export function translateElements(
   elements: Element[],
@@ -29,7 +29,7 @@ export function translateElements(
   elements.forEach((elem) => {
     const key = elem.getAttribute('data-i18n');
     if (key) {
-      const message = intl.formatMessage(messages[key], formats);
+      const message = intlRef.current.formatMessage(messages[key], formats);
       elem.innerHTML = Array.isArray(message) ? message.join('') : message;
     }
   });

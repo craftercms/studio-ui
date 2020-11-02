@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { SandboxItem } from '../../../models/Item';
-import { deleteItems } from '../../../services/content';
 import {
   useActiveSiteId,
   useLogicResource,
@@ -42,6 +41,7 @@ import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 import { fetchDeleteDependencies, showEditDialog } from '../../../state/actions/dialogs';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
+import { deleteItems } from '../../../services/content';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -72,14 +72,12 @@ interface DeleteDialogBaseProps {
   isFetching: boolean;
 }
 
-export type DeleteDialogProps = PropsWithChildren<
-  DeleteDialogBaseProps & {
-    onClose?(): any;
-    onClosed?(): any;
-    onDismiss?(): any;
-    onSuccess?(response?: any): any;
-  }
->;
+export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
+  onClose?(): any;
+  onClosed?(): any;
+  onDismiss?(): any;
+  onSuccess?(response?: any): any;
+}>;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
   childItems: string[];
@@ -265,7 +263,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     submitting: false
   });
   const siteId = useActiveSiteId();
-  const deleteDependencies = useSelector<GlobalState, { childItems: string[], dependentItems: string[]}>((state) => ({
+  const deleteDependencies = useSelector<GlobalState, { childItems: string[], dependentItems: string[] }>((state) => ({
     childItems: state.dialogs.delete.childItems,
     dependentItems: state.dialogs.delete.dependentItems
   }));
@@ -311,7 +309,10 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     deleteItems(siteId, submissionComment, data).subscribe(
       (response) => {
         setApiState({ submitting: false });
-        onSuccess?.(response);
+        onSuccess?.({
+          ...response,
+          items: selectedItems.map(path => items.find(item => item.id === path))
+        });
       },
       (error) => {
         setApiState({ error });

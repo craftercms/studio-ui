@@ -17,7 +17,7 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
+import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
 import path from './path';
@@ -44,6 +44,7 @@ import createStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
+import { intlRef } from './i18n';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -181,7 +182,7 @@ export function createCodebaseBridge() {
     },
 
     i18n: {
-      intl,
+      intl: intlRef.current,
       messages,
       translateElements
     },
@@ -218,7 +219,7 @@ export function createCodebaseBridge() {
         typeof component === 'string' ? Bridge.components[component] : component;
 
       if (nou(Component)) {
-        Component = function () {
+        Component = function() {
           return (
             <ErrorState
               graphicUrl="/studio/static-assets/images/warning_state.svg"

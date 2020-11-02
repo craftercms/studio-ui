@@ -197,3 +197,12 @@ export const showPathSelectionDialog = createAction<Partial<PathSelectionDialogS
 export const closePathSelectionDialog = createAction<StandardAction>('CLOSE_PATH_SELECTION_DIALOG');
 export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
 // endregion
+
+// region items notification
+
+export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
+export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
+export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
+export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+
+// endregion

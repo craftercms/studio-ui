@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -31,8 +31,14 @@ import {
   fetchContentVersion,
   fetchContentVersionComplete,
   fetchContentVersionFailed,
-  fetchDeleteDependencies, fetchDeleteDependenciesComplete, fetchDeleteDependenciesFailed,
-  newContentCreationComplete
+  fetchDeleteDependencies,
+  fetchDeleteDependenciesComplete,
+  fetchDeleteDependenciesFailed,
+  newContentCreationComplete,
+  showCopyItemSuccessNotification,
+  showDeleteItemSuccessNotification,
+  showEditItemSuccessNotification,
+  showPublishItemSuccessNotification
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { getVersion } from '../../services/content';
@@ -40,7 +46,32 @@ import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { changeCurrentUrl } from '../actions/preview'; // TODO: update to actions/dialogs
+import { changeCurrentUrl, showSystemNotification } from '../actions/preview';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { defineMessages, IntlShape } from 'react-intl';
+
+const translations = defineMessages({
+  itemDeleted: {
+    id: 'item.delete',
+    defaultMessage: '{count, plural, one {The selected item is being deleted and will be removed shortly} other {The selected items are being deleted and will be removed shortly}}'
+  },
+  itemPublishedNow: {
+    id: 'item.publishedNow',
+    defaultMessage: '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
+  },
+  itemSchedulePublished: {
+    id: 'item.schedulePublished',
+    defaultMessage: '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
+  },
+  itemEdited: {
+    id: 'item.edited',
+    defaultMessage: 'Item updated successfully'
+  },
+  itemCopied: {
+    id: 'item.copied',
+    defaultMessage: '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
+  }
+});
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -111,10 +142,58 @@ export default [
     ofType(newContentCreationComplete.type),
     switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
   ),
+  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+    ofType(showDeleteItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(translations.itemDeleted, {
+          count: payload.items.length
+        })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+    ofType(showPublishItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: payload.schedule === 'now' ? intl.formatMessage(translations.itemPublishedNow, {
+          count: payload.items.length,
+          environment: payload.environment
+        }) : intl.formatMessage(translations.itemSchedulePublished, {
+          count: payload.items.length,
+          environment: payload.environment
+        })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+    ofType(showEditItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(translations.itemEdited)
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+    ofType(showCopyItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(translations.itemCopied, { count: payload?.children.length ?? 1 })
+      }));
+    }),
+    ignoreElements()
+  ),
   (action$, state$) => action$.pipe(
     ofType(fetchDeleteDependencies.type),
     withLatestFrom(state$),
-    switchMap(([{payload: items}, state]) =>
+    switchMap(([{ payload: items }, state]) =>
       fetchDeleteDependenciesService(state.sites.active, items).pipe(
         map(fetchDeleteDependenciesComplete),
         catchAjaxError(fetchDeleteDependenciesFailed)

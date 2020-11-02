@@ -28,7 +28,9 @@ import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
-import { popSnackbar } from '../../state/actions/preview';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { showSystemNotification } from '../../state/actions/preview';
+import { filter } from 'rxjs/operators';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() =>
@@ -108,11 +110,19 @@ export const useStyles = makeStyles(() =>
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
-  const snacks = useSelection((state) => state.preview.snacks);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
   const permissions = useSelection((state) => state.content.items.permissionsByPath);
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    hostToHost$.pipe(filter((e) => e.type === showSystemNotification.type)).subscribe(({ payload }) => {
+      enqueueSnackbar(payload.message, payload.options);
+    });
+  }, [enqueueSnackbar]);
+
   return (
     <Suspense fallback="">
       {/* region Confirm */}
@@ -378,27 +388,9 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
         onOk={createCallback(state.pathSelection.onOk, dispatch)}
       />
-      {
-        snacks.length &&
-        <SnacksManager snacks={snacks} />
-      }
       {/* endregion */}
     </Suspense>
   );
-}
-
-function SnacksManager({ snacks }) {
-  const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (snacks.length) {
-      const snack = snacks[0];
-      enqueueSnackbar(snack.message);
-      dispatch(popSnackbar({ id: snack.id }));
-    }
-  }, [enqueueSnackbar, snacks]);
-  return null;
 }
 
 // @formatter:off

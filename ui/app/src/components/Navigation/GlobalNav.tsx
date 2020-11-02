@@ -625,23 +625,26 @@ export default function GlobalNav(props: GlobalNavProps) {
                   title={formatMessage(messages.about)}
                 />
               </nav>
-              <Typography variant="subtitle1" component="h2" className={classes.title}>
-                {formatMessage(messages.site)}
-              </Typography>
-              {site && (
-                <nav className={classes.sitesApps}>
-                  {siteLinks.map((link, index) => {
-                    const Component = ItemToComponentMap[link.id ?? 'default'];
-                    return (
-                      <Component
-                        key={index}
-                        {...link.parameters}
-                        site={site}
-                        authoringUrl={authoringUrl}
-                      />
-                    );
-                  })}
-                </nav>
+
+              {(site && siteLinks.length > 0) && (
+                <>
+                  <Typography variant="subtitle1" component="h2" className={classes.title}>
+                    {formatMessage(messages.site)}
+                  </Typography>
+                  <nav className={classes.sitesApps}>
+                    {siteLinks.map((link, index) => {
+                      const Component = ItemToComponentMap[link.id ?? 'default'];
+                      return (
+                        <Component
+                          key={index}
+                          {...link.parameters}
+                          site={site}
+                          authoringUrl={authoringUrl}
+                        />
+                      );
+                    })}
+                  </nav>
+                </>
               )}
             </div>
             <div className={classes.railBottom}>

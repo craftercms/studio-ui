@@ -134,7 +134,6 @@ export interface GlobalState {
       selectedContentType: string;
       byId: LookupTable<ContentTypeReceptacle>;
     };
-    snacks?: { id: string; message: string}[];
   };
   versions: VersionsStateProps;
   dialogs: {

@@ -28,6 +28,7 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
+import { OptionsObject } from 'notistack';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -316,7 +317,5 @@ export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOO
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
 // endregion
 
-// region SnackBar
-export const pushSnackbar = createAction<{ id: string; message: string }>('PUSH_SNACKBAR');
-export const popSnackbar = createAction<{ id: string }>('POP_SNACKBAR');
-// endregion
+// notification
+export const showSystemNotification = createAction<{message: string, options?: OptionsObject}>('SHOW_SYSTEM_NOTIFICATION');

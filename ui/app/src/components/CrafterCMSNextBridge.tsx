@@ -17,14 +17,9 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
-import { createIntl, createIntlCache, IntlShape, RawIntlProvider } from 'react-intl';
+import { IntlShape, RawIntlProvider } from 'react-intl';
 import { StylesProvider, ThemeProvider } from '@material-ui/styles';
 import { generateClassName, theme } from '../styles/theme';
-import { updateIntl } from '../utils/codebase-bridge';
-import en from '../translations/locales/en.json';
-import es from '../translations/locales/es.json';
-import de from '../translations/locales/de.json';
-import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import { CrafterCMSStore, createStore } from '../state/store';
@@ -33,47 +28,7 @@ import { SnackbarProvider } from 'notistack';
 import { createResource } from '../utils/hooks';
 import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
-
-const Locales: any = {
-  en,
-  es,
-  de,
-  ko,
-  kr: ko // TODO: Currently studio uses the wrong code for korean
-};
-
-export let intl = getIntl(getCurrentLocale());
-
-// @ts-ignore
-document.addEventListener(
-  'setlocale',
-  (e: CustomEvent<string>) => {
-    if (e.detail && e.detail !== intl.locale) {
-      intl = getIntl(e.detail);
-      updateIntl(intl);
-      document.documentElement.setAttribute('lang', e.detail);
-    }
-  },
-  false
-);
-
-function getIntl(locale: string): IntlShape {
-  return createIntl(
-    {
-      locale: locale,
-      messages: Locales[locale] || en
-    },
-    createIntlCache()
-  );
-}
-
-export function getCurrentLocale(): string {
-  const username = localStorage.getItem('userName');
-  const locale = username
-    ? localStorage.getItem(`${username}_crafterStudioLanguage`)
-    : localStorage.getItem(`crafterStudioLanguage`);
-  return locale ? locale : 'en';
-}
+import { intlRef } from '../utils/i18n';
 
 const storeResource = createResource(() =>
   createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise()
@@ -86,11 +41,11 @@ function Bridge(
 
   const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
-  useEffect(() => setUpLocaleChangeListener(update, intl), [update]);
+  useEffect(() => setUpLocaleChangeListener(update, intlRef.current), [update]);
 
   return (
     <Provider store={store}>
-      <RawIntlProvider value={intl}>
+      <RawIntlProvider value={intlRef.current}>
         <ThemeProvider theme={theme}>
           <StylesProvider generateClassName={generateClassName}>
             <SnackbarProvider
@@ -120,7 +75,7 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
 
 function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
   const handler = (e: any) => {
-    if (currentIntl !== intl) {
+    if (currentIntl !== intlRef.current) {
       update({});
     }
   };
