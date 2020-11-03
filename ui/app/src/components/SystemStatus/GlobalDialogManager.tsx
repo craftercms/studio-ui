@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useLayoutEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -27,6 +27,10 @@ import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
+import { useSnackbar } from 'notistack';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { showSystemNotification } from '../../state/actions/preview';
+import { filter } from 'rxjs/operators';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() =>
@@ -109,7 +113,19 @@ function GlobalDialogManager() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
   const permissions = useSelection((state) => state.content.items.permissionsByPath);
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => e.type === showSystemNotification.type)).subscribe(({ payload }) => {
+      enqueueSnackbar(payload.message, payload.options);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [enqueueSnackbar]);
+
   return (
     <Suspense fallback="">
       {/* region Confirm */}

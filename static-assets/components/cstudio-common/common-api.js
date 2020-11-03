@@ -354,13 +354,23 @@ var nodeOpen = false,
        * copy an content item on to the clipboard
        */
       copyContent: function (contentTO, callback) {
-        CSA.Service.copyContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', callback);
+        CSA.Service.copyContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function () {
+          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 1}), null, null, 'default');
+          callback && callback();
+        });
       },
       /**
        * cut a content item on to the clipboard
        */
       cutContent: function (contentTO, callback) {
-        CSA.Service.cutContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', callback);
+        CSA.Service.cutContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function () {
+          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 1}), null, null, 'default');
+          callback && callback();
+        });
       },
       /**
        * paste all content as child of contentTO
@@ -756,6 +766,9 @@ var nodeOpen = false,
             document.dispatchEvent(eventNS);
             cancelUnsubscribe();
             callback && callback();
+            const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+            const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+            CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemDeleted, { count: 1}), null, null, 'default');
           }
         });
 
@@ -890,6 +903,15 @@ var nodeOpen = false,
         unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
           cancelUnsubscribe();
+          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          let message;
+          if(response.schedule === 'now') {
+            message = formatMessage(messages.itemPublishedNow, { environment: response.environment , count: response.items.length })
+          }else {
+            message = formatMessage(messages.itemSchedulePublished, { environment: response.environment , count: response.items.length })
+          }
+          CStudioAuthoring.Utils.showNotification(message, null, null, 'default');
         });
 
         cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
@@ -2158,6 +2180,9 @@ var nodeOpen = false,
             var fillCopyDialog = {
               success: function (response) {
                 var copyTree = eval('(' + response.responseText + ')');
+                const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+                const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+                CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 2}), null, null, 'default');
 
                 dialogClass.updateDialog(copyTree, cut);
               },
@@ -5071,6 +5096,9 @@ var nodeOpen = false,
           success: function (jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
+            const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+            const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+            CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemReverted), null, null, 'default');
           },
           failure: function (response) {
             callback.failure(response);
@@ -8433,12 +8461,12 @@ var nodeOpen = false,
 
         if (type === 'success') {
           html =
-            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2, 4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0, 0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"></path></svg><span data-notify-text/></div>';
+            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2, 4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0, 0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"></path></svg><span class="message" data-notify-text/></div>';
         } else if (type === 'error') {
           html =
-            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg><span data-notify-text/></div>';
+            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg><span class="message" data-notify-text/></div>';
         } else {
-          html = '<div><span data-notify-text/></div>';
+          html = '<div><span class="message" data-notify-text/></div>';
         }
 
         $.notify.addStyle('material', {
@@ -8449,7 +8477,8 @@ var nodeOpen = false,
           globalPosition: globalPosition,
           className: currentType,
           style: 'material',
-          autoHideDelay: 4000
+          autoHide: false
+          //autoHideDelay: 4000
         });
 
         var element;

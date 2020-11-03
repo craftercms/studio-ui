@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -31,8 +31,15 @@ import {
   fetchContentVersion,
   fetchContentVersionComplete,
   fetchContentVersionFailed,
-  fetchDeleteDependencies, fetchDeleteDependenciesComplete, fetchDeleteDependenciesFailed,
-  newContentCreationComplete
+  fetchDeleteDependencies,
+  fetchDeleteDependenciesComplete,
+  fetchDeleteDependenciesFailed,
+  newContentCreationComplete,
+  showCopyItemSuccessNotification,
+  showDeleteItemSuccessNotification,
+  showEditItemSuccessNotification,
+  showPublishItemSuccessNotification,
+  showRevertItemSuccessNotification
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { getVersion } from '../../services/content';
@@ -40,7 +47,10 @@ import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { changeCurrentUrl } from '../actions/preview'; // TODO: update to actions/dialogs
+import { changeCurrentUrl, showSystemNotification } from '../actions/preview';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { IntlShape } from 'react-intl';
+import { itemSuccessMessages } from '../../utils/i18n-legacy';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -111,10 +121,68 @@ export default [
     ofType(newContentCreationComplete.type),
     switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
   ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
+    ofType(showDeleteItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(itemSuccessMessages.itemDeleted, {
+          count: payload.items.length
+        })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
+    ofType(showPublishItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: payload.schedule === 'now' ? intl.formatMessage(itemSuccessMessages.itemPublishedNow, {
+          count: payload.items.length,
+          environment: payload.environment
+        }) : intl.formatMessage(itemSuccessMessages.itemSchedulePublished, {
+          count: payload.items.length,
+          environment: payload.environment
+        })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
+    ofType(showEditItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(itemSuccessMessages.itemEdited)
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
+    ofType(showCopyItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
+    ofType(showRevertItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(itemSuccessMessages.itemReverted)
+      }));
+    }),
+    ignoreElements()
+  ),
   (action$, state$) => action$.pipe(
     ofType(fetchDeleteDependencies.type),
     withLatestFrom(state$),
-    switchMap(([{payload: items}, state]) =>
+    switchMap(([{ payload: items }, state]) =>
       fetchDeleteDependenciesService(state.sites.active, items).pipe(
         map(fetchDeleteDependenciesComplete),
         catchAjaxError(fetchDeleteDependenciesFailed)

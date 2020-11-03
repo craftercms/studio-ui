@@ -303,10 +303,10 @@ const reducer = createReducer<GlobalState['preview']>(
       state.currentUrl === payload
         ? state
         : {
-            ...state,
-            computedUrl: cleanseUrl(payload),
-            currentUrl: `${guestBase}${cleanseUrl(payload)}`
-          },
+          ...state,
+          computedUrl: cleanseUrl(payload),
+          currentUrl: `${guestBase}${cleanseUrl(payload)}`
+        },
     [changeSite.type]: (state, { payload }) => {
       let nextState = {
         ...state,

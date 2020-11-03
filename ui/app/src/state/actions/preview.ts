@@ -28,6 +28,7 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
+import { OptionsObject } from 'notistack';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -315,3 +316,9 @@ export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOO
 // region Edit Mode
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
 // endregion
+
+// notification
+export const showSystemNotification = createAction<{
+  message: string,
+  options?: OptionsObject
+}>('SHOW_SYSTEM_NOTIFICATION');

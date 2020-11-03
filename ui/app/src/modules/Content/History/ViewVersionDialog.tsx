@@ -97,7 +97,7 @@ const getLegacyDialogStyles = makeStyles(() => ({
     <>
       <section className={classes.viewVersionBox}>
         <ListItemText
-          primary={<FancyFormattedDate date={version.lastModifiedDate} />}
+          primary={<AsDayMonthDateTime date={version.lastModifiedDate} />}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"

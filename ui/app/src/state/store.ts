@@ -30,6 +30,8 @@ import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
 import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
+import { intlRef } from '../utils/i18n';
+import { IntlShape } from 'react-intl';
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
@@ -53,7 +55,9 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState>();
+  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, { intlRef: { current: IntlShape } }>({
+    dependencies: { intlRef }
+  });
   const middleware = [
     ...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }),
     epicMiddleware

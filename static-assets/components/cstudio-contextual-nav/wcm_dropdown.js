@@ -442,18 +442,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               } else {
                 var allowed = false;
                 var userRoles = userRoles.roles;
-                for (var j = 0; j < userRoles.length; j++) {
-                  var userRole = userRoles[j];
-
-                  for (var i = 0; i < roles.length; i++) {
-                    var role = roles[i];
-
-                    if (userRole == role) {
-                      allowed = true;
-                      break;
-                    }
-                  }
-                }
+                allowed = userRoles.some((role) => roles.includes(role))
               }
             }
             if (allowed) {
