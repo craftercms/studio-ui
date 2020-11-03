@@ -44,8 +44,8 @@ import palette from '../../styles/palette';
 import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
-import { getCurrentLocale } from '../CrafterCMSNextBridge';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import { getCurrentLocale } from '../../utils/i18n';
 
 // region Typings
 

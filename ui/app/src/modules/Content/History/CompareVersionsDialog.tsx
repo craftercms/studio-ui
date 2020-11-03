@@ -18,7 +18,7 @@ import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useLogicResource, useUnmount } from '../../../utils/hooks';
-import { FancyFormattedDate, VersionList } from './VersionList';
+import { AsDayMonthDateTime, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
 import DialogHeader, {
@@ -197,7 +197,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
             <FormattedMessage
               id="compareVersionsDialog.headerSubtitle"
               defaultMessage="Select a revision to compare to “{selectedA}”"
-              values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
+              values={{ selectedA: <AsDayMonthDateTime date={selectedA.lastModifiedDate} /> }}
             />
           ) : (
             !compareMode && (

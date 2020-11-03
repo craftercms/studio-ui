@@ -551,7 +551,12 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     submit(siteId, user.username, data).subscribe(
       (response) => {
         setApiState({ error: null, submitting: false });
-        onSuccess?.(response);
+        onSuccess?.({
+          ...response,
+          schedule: data.schedule,
+          environment: data.publishChannel,
+          items: data.items.map(path => items.find(item => item.id === path))
+        });
       },
       (error) => {
         setApiState({ error });

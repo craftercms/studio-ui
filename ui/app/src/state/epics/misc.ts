@@ -19,6 +19,7 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
+  batchActions,
   changeContentType as changeContentTypeAction,
   editTemplate as editTemplateAction
 } from '../actions/misc';
@@ -27,6 +28,7 @@ import { changeContentType, fetchWorkflowAffectedItems } from '../../services/co
 import {
   showCodeEditorDialog,
   showEditDialog,
+  showEditItemSuccessNotification,
   showWorkflowCancellationDialog
 } from '../actions/dialogs';
 import { pathNavigatorItemActionSuccess } from '../actions/pathNavigator';
@@ -42,7 +44,10 @@ const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) => actio
       return changeContentType(state.sites.active, path, contentType).pipe(
         map(() => showEditDialog({
           src,
-          onSaveSuccess: pathNavigatorItemActionSuccess({ id: payload.id, option: 'refresh' })
+          onSaveSuccess:  batchActions([
+            showEditItemSuccessNotification,
+            pathNavigatorItemActionSuccess({ id: payload.id, option: 'refresh' })
+          ])
         }))
       );
     }

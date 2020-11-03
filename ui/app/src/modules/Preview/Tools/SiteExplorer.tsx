@@ -118,7 +118,7 @@ function SiteDashboardLink() {
   const { formatMessage } = useIntl();
   return (
     <LinkWithIcon
-      link="/studio/dashboard"
+      link="/studio/site-dashboard"
       label={formatMessage(translations.dashboard)}
       icon={{ baseClass: 'fa fa-tasks' }}
     />

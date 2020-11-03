@@ -41,15 +41,19 @@ import {
   showCodeEditorDialog,
   showConfirmDialog,
   showCopyDialog,
+  showCopyItemSuccessNotification,
   showCreateFileDialog,
   showCreateFolderDialog,
   showDeleteDialog,
+  showDeleteItemSuccessNotification,
   showDependenciesDialog,
   showEditDialog,
+  showEditItemSuccessNotification,
   showHistoryDialog,
   showNewContentDialog,
   showPreviewDialog,
   showPublishDialog,
+  showPublishItemSuccessNotification,
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
@@ -164,7 +168,10 @@ export function ItemMenu(props: ItemMenuProps) {
               })
             );
           } else {
-            dispatch(showEditDialog({ src }));
+            dispatch(showEditDialog({
+              src,
+              onSaveSuccess: showEditItemSuccessNotification()
+            }));
           }
         });
         break;
@@ -216,6 +223,7 @@ export function ItemMenu(props: ItemMenuProps) {
             items,
             onSuccess: batchActions(
               [
+                showDeleteItemSuccessNotification(),
                 onItemMenuActionSuccessCreator?.({ item, option: option.id }),
                 closeDeleteDialog()
               ].filter(Boolean)
@@ -252,7 +260,12 @@ export function ItemMenu(props: ItemMenuProps) {
         cut(site, item).subscribe(
           ({ success }) => {
             if (success) {
-              dispatch(setClipBoard({ path: item.path }));
+              dispatch(
+                batchActions([
+                  setClipBoard({ path: item.path }),
+                  showCopyItemSuccessNotification()
+                ])
+              );
             }
           },
           (response) => {
@@ -274,14 +287,23 @@ export function ItemMenu(props: ItemMenuProps) {
                   title: formatMessage(translations.copyDialogTitle),
                   subtitle: formatMessage(translations.copyDialogSubtitle),
                   item: legacyItem,
-                  onOk: batchActions([closeCopyDialog(), setClipBoard({ path: item.path })])
+                  onOk: batchActions([
+                    closeCopyDialog(),
+                    setClipBoard({ path: item.path }),
+                    showCopyItemSuccessNotification()
+                  ])
                 })
               );
             } else {
               copy(site, item.path).subscribe(
                 (response) => {
                   if (response.success) {
-                    dispatch(setClipBoard({ path: item.path }));
+                    dispatch(
+                      batchActions([
+                        setClipBoard({ path: item.path }),
+                        showCopyItemSuccessNotification()
+                      ])
+                    );
                   }
                 },
                 (response) => {
@@ -357,7 +379,12 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showPublishDialog({
             items: [item],
-            scheduling: 'custom'
+            scheduling: 'custom',
+            onSuccess: batchActions([
+              showPublishItemSuccessNotification(),
+              reloadDetailedItem({ path: item.path }),
+              closePublishDialog()]
+            )
           })
         );
         break;
@@ -367,17 +394,24 @@ export function ItemMenu(props: ItemMenuProps) {
           showPublishDialog({
             items: [item],
             scheduling: 'now',
-            onSuccess: batchActions([reloadDetailedItem({ path: item.path }), closePublishDialog()])
+            onSuccess: batchActions([
+              showPublishItemSuccessNotification(),
+              reloadDetailedItem({ path: item.path }),
+              closePublishDialog()]
+            )
           })
         );
         break;
       }
       case 'history': {
-        dispatch(batchActions([fetchItemVersions({ item, rootPath: getRootPath(item.path) }), showHistoryDialog({})]));
+        dispatch(batchActions([fetchItemVersions({
+          item,
+          rootPath: getRootPath(item.path)
+        }), showHistoryDialog({})]));
         break;
       }
       case 'dependencies': {
-        dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path)}));
+        dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
         break;
       }
       case 'translation': {

@@ -35,7 +35,7 @@ import {
   versionsChangeItem
 } from '../reducers/versions';
 import { NEVER, of } from 'rxjs';
-import { historyDialogClosed } from '../actions/dialogs';
+import { historyDialogClosed, showRevertItemSuccessNotification } from '../actions/dialogs';
 import { getHistory as getConfigurationHistory } from '../../services/configuration';
 
 export default [
@@ -93,7 +93,7 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(revertContentComplete.type),
-      map(fetchItemVersions)
+      switchMap((args) => [fetchItemVersions(args), showRevertItemSuccessNotification()])
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(

@@ -38,7 +38,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { getProductLanguages } from '../../services/configuration';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import { parse } from 'query-string';
-import { getCurrentLocale } from '../CrafterCMSNextBridge';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import PasswordTextField from '../Controls/PasswordTextField';
@@ -49,6 +48,7 @@ import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
 import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
+import { getCurrentLocale } from '../../utils/i18n';
 
 setRequestForgeryToken();
 
