@@ -252,17 +252,16 @@ function HistoryDialog(props: HistoryDialogProps) {
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, permissions) => {
       const write = permissions?.write;
-      const isImage = item.mimeType.startsWith('image/');
+      const hasOptions = item.systemType === 'page' || item.systemType === 'component' || item.systemType === 'taxonomy';
       let sections = [];
       if (isCurrent) {
         sections.push([menuOptions.view]);
-        if (!isImage && count > 1) {
+        if (!hasOptions && count > 1) {
           sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
         }
         if (write && count > 1) {
           sections.push([menuOptions.revertToPrevious]);
         }
-
         setMenu({
           sections,
           anchorEl,
@@ -270,7 +269,7 @@ function HistoryDialog(props: HistoryDialogProps) {
         });
       } else {
         sections.push([menuOptions.view]);
-        if (!isImage && count > 1) {
+        if (!hasOptions && count > 1) {
           sections.push(
             [
               menuOptions.compareTo,
