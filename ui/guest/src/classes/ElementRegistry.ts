@@ -360,7 +360,7 @@ export function getParentElementFromICEProps(modelId: string, fieldId: string, i
   return (recordId === -1) ? null : $(fromICEId(recordId).element);
 }
 
-export default {
+const ElementRegistry = {
   get,
   setLabel,
   register,
@@ -378,3 +378,5 @@ export default {
   getElementFromICEProps,
   getParentElementFromICEProps
 };
+
+export default ElementRegistry;

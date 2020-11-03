@@ -17,7 +17,6 @@
 import React, { useEffect, useRef } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
-import '@videojs/http-streaming';
 
 export interface VideoPlayerProps {
   src: string,

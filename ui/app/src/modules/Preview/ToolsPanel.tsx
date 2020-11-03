@@ -158,18 +158,6 @@ interface UnknownPanelProps {
   id: string;
 }
 
-interface Config {
-  width: number;
-  height: number;
-  title: string;
-}
-
-interface Tool {
-  config: Config;
-  id: PreviewTool;
-  title: string;
-}
-
 interface ToolSelectorProps {
   tools: any[];
 }
