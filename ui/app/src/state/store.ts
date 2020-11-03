@@ -55,8 +55,8 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, { intl: { current: IntlShape } }>({
-    dependencies: { intl: intlRef }
+  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, { intlRef: { current: IntlShape } }>({
+    dependencies: { intlRef }
   });
   const middleware = [
     ...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }),
