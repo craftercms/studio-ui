@@ -24,7 +24,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
-import { FancyFormattedDate, VersionList } from './VersionList';
+import { VersionList } from './VersionList';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
@@ -52,6 +52,7 @@ import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchUserPermissions } from '../../../state/actions/content';
+import { asDayMonthDateTime } from '../../../utils/datetime';
 
 const translations = defineMessages({
   previousPage: {
@@ -96,7 +97,7 @@ const translations = defineMessages({
   },
   confirmRevertBody: {
     id: 'historyDialog.confirmRevertBody',
-    defaultMessage: 'Are you sure you want to revert to <b>{versionTitle}</b>?'
+    defaultMessage: 'Are you sure you want to revert to {versionTitle}?'
   }
 });
 
@@ -194,15 +195,13 @@ interface HistoryDialogBaseProps {
   open: boolean;
 }
 
-export type HistoryDialogProps = PropsWithChildren<
-  HistoryDialogBaseProps & {
-    versionsBranch: VersionsStateProps;
-    permissions: LookupTable<boolean>;
-    onClose?(): void;
-    onClosed?(): void;
-    onDismiss?(): void;
-  }
->;
+export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
+  versionsBranch: VersionsStateProps;
+  permissions: LookupTable<boolean>;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
+}>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
@@ -244,10 +243,10 @@ function HistoryDialog(props: HistoryDialogProps) {
     permissions,
     {
       shouldResolve: (permissions) => Boolean(permissions),
-      shouldReject: (permissions) => false,
+      shouldReject: () => false,
       shouldRenew: (permissions, resource) => resource.complete,
       resultSelector: (permissions) => permissions,
-      errorSelector: (permissions) => null
+      errorSelector: () => null
     }
   );
 
@@ -271,13 +270,13 @@ function HistoryDialog(props: HistoryDialogProps) {
         let sections =
           count > 1
             ? [
-                [menuOptions.view],
-                [
-                  menuOptions.compareTo,
-                  menuOptions.compareToCurrent,
-                  menuOptions.compareToPrevious
-                ]
+              [menuOptions.view],
+              [
+                menuOptions.compareTo,
+                menuOptions.compareToCurrent,
+                menuOptions.compareToPrevious
               ]
+            ]
             : [[menuOptions.view]];
         if (write && count > 1) {
           sections.push([menuOptions.revertToThisVersion]);
@@ -357,8 +356,7 @@ function HistoryDialog(props: HistoryDialogProps) {
       showConfirmDialog({
         title: formatMessage(translations.confirmRevertTitle),
         body: formatMessage(translations.confirmRevertBody, {
-          versionTitle: <FancyFormattedDate date={activeItem.lastModifiedDate} />,
-          b: (msg) => <b key={'bold'}>&nbsp;{msg}</b>
+          versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
         onOk: batchActions([
@@ -374,8 +372,7 @@ function HistoryDialog(props: HistoryDialogProps) {
       showConfirmDialog({
         title: formatMessage(translations.confirmRevertTitle),
         body: formatMessage(translations.confirmRevertBody, {
-          versionTitle: <FancyFormattedDate date={activeItem.lastModifiedDate} />,
-          b: (msg) => <b key={'bold'}>&nbsp;{msg}</b>
+          versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
         onOk: batchActions([

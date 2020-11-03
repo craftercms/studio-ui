@@ -101,7 +101,7 @@ interface FancyFormattedDateProps {
   date: string;
 }
 
-export function FancyFormattedDate(props: FancyFormattedDateProps) {
+export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
   const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
   return (
     <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">
@@ -109,7 +109,7 @@ export function FancyFormattedDate(props: FancyFormattedDateProps) {
         <>
           {`${parts[0].value} ${parts[2].value} `}
           <FormattedMessage
-            id="historyDialog.ordinals"
+            id="dateTime.ordinals"
             defaultMessage={`{day, ${ordinals}}`}
             values={{ day: parts[4].value }}
           />{' '}
@@ -154,7 +154,7 @@ export function VersionList(props: VersionListProps) {
               }}
               primary={
                 <>
-                  <FancyFormattedDate date={version.lastModifiedDate} />
+                  <AsDayMonthDateTime date={version.lastModifiedDate} />
                   {current === version.versionNumber && (
                     <Chip
                       label={

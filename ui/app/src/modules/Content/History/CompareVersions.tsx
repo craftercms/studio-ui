@@ -189,7 +189,7 @@ export function CompareVersions(props: CompareVersionsProps) {
       <section className={classes.compareBoxHeader}>
         <div className={classes.compareBoxHeaderItem}>
           <ListItemText
-            primary={<FancyFormattedDate date={a.craftercms.dateModified} />}
+            primary={<AsDayMonthDateTime date={a.craftercms.dateModified} />}
             secondary={
               <FormattedMessage
                 id="historyDialog.versionNumber"
@@ -204,7 +204,7 @@ export function CompareVersions(props: CompareVersionsProps) {
         </div>
         <div className={classes.compareBoxHeaderItem}>
           <ListItemText
-            primary={<FancyFormattedDate date={b.craftercms.dateModified} />}
+            primary={<AsDayMonthDateTime date={b.craftercms.dateModified} />}
             secondary={
               <FormattedMessage
                 id="historyDialog.versionNumber"
