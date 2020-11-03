@@ -21,11 +21,11 @@ import {
   fetchSiteUiConfigComplete,
   fetchSiteUiConfigFailed
 } from '../actions/configuration';
-import { changeSite } from './sites';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
-  isFetching: false,
+  isFetching: null,
+  currentSite: null,
   preview: {
     sidebar: {
       panels: null
@@ -37,9 +37,10 @@ const initialState: GlobalState['uiConfig'] = {
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [fetchSiteUiConfig.type]: (state) => ({
+  [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
-    isFetching: true
+    isFetching: true,
+    currentSite: site
   }),
   [fetchSiteUiConfigComplete.type]: (state, { payload }) => ({
     ...state,
@@ -48,9 +49,10 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   }),
   [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
     ...state,
-    error: payload
-  }),
-  [changeSite.type]: () => initialState
+    error: payload,
+    isFetching: false,
+    currentSite: null
+  })
 });
 
 export default reducer;

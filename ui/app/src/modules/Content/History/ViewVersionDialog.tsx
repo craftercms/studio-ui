@@ -152,12 +152,12 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <ViewVersionDialogWrapper {...props} />
+      <ViewVersionDialogBody {...props} />
     </Dialog>
   );
 }
 
-function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
+function ViewVersionDialogBody(props: ViewVersionDialogProps) {
   const { onDismiss, rightActions } = props;
   useUnmount(props.onClosed);
   const resource = useLogicResource<VersionResource, ViewVersionDialogProps>(props, {

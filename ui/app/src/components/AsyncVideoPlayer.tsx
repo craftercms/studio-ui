@@ -17,18 +17,27 @@
 import React, { useEffect, useState } from 'react';
 import VideoPlayer, { VideoPlayerProps } from './VideoPlayer';
 import '../styles/async-video-player.scss';
+import { defineMessages, useIntl } from 'react-intl';
 
 interface AsyncVideoPlayerProps {
   playerOptions: VideoPlayerProps;
-  nonPlayableMessage: string;
+  nonPlayableMessage?: string;
 }
 
-function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
+const messages = defineMessages({
+  videoBeingProcessed: {
+    id: 'asyncVideoPlayer.videoBeingProcessed',
+    defaultMessage:
+      'Video is being processed, preview will be available when processing is complete'
+  }
+});
 
+function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
+  const { formatMessage } = useIntl();
   const
     {
       playerOptions,
-      nonPlayableMessage
+      nonPlayableMessage = formatMessage(messages.videoBeingProcessed)
     } = props,
     [playable, setPlayable] = useState(null),
     errMessageStyle = {

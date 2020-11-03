@@ -244,8 +244,8 @@ const messages = defineMessages({
     defaultMessage: 'Delete'
   },
   preview: {
-    id: 'words.preview',
-    defaultMessage: 'Preview'
+    id: 'search.goToPreview',
+    defaultMessage: 'Go to page'
   }
 });
 

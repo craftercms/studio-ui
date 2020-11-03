@@ -81,7 +81,7 @@ type GuestProps = PropsWithChildren<{
   documentDomain?: string;
   path?: string;
   styleConfig?: GuestStyleConfig;
-  isAuthoring?: boolean;
+  isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
 }>;
 
@@ -454,7 +454,7 @@ function Guest(props: GuestProps) {
   );
 }
 
-export default function (props: GuestProps) {
+export default function CrafterCMSGuest(props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   return isAuthoring ? (

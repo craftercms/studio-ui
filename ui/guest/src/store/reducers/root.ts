@@ -27,7 +27,7 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { deleteProperty, notNullOrUndefined, reversePluckProps } from '../../utils/object';
+import { notNullOrUndefined, reversePluckProps } from '../../utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
 import {
   ASSET_DRAG_ENDED,
@@ -153,6 +153,7 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
 // endregion
 
 // region asset_drag_started
+// TODO: Not pure
 const asset_drag_started: GuestReducer = (state, action) => {
   const { asset } = action.payload;
   if (notNullOrUndefined(asset)) {
@@ -188,6 +189,7 @@ const asset_drag_started: GuestReducer = (state, action) => {
 // endregion
 
 // region desktop_asset_drag_started
+// TODO: Not pure
 const desktop_asset_drag_started: GuestReducer = (state, action) => {
   const { asset } = action.payload;
   if (notNullOrUndefined(asset)) {
@@ -325,6 +327,7 @@ const exit_component_inline_edit: GuestReducer = (state) => {
 // endregion
 
 // region ice_zone_selected
+// TODO: Not pure
 const ice_zone_selected: GuestReducer = (state, action) => {
   const { record } = action.payload;
   const highlight = ElementRegistry.getHoverData(record.id);
@@ -338,6 +341,8 @@ const ice_zone_selected: GuestReducer = (state, action) => {
 // endregion
 
 // region content_tree_field_selected
+
+// TODO: Not pure
 const content_tree_field_selected: GuestReducer = (state, action) => {
   const { iceProps } = action.payload;
   const iceId = iceRegistry.exists(iceProps);
@@ -361,6 +366,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
   };
 };
 
+// TODO: Not pure
 const content_tree_switch_field: GuestReducer = (state, action) => {
   const { type } = action.payload;
   let nextElem = type === 'next' ? state.fieldSwitcher.currentElement + 1 : state.fieldSwitcher.currentElement - 1;
@@ -472,7 +478,7 @@ const desktop_asset_upload_complete: GuestReducer = (
   const { record } = action.payload;
   return {
     ...state,
-    uploading: deleteProperty({ ...state.uploading }, `${record.id}`)
+    uploading: reversePluckProps(state.uploading, record.id)
   };
 };
 // endregion
@@ -494,6 +500,7 @@ const desktop_asset_upload_progress: GuestReducer = (state, action) => {
 // endregion
 
 // region desktop_asset_upload_started
+// TODO: Not pure
 const desktop_asset_upload_started: GuestReducer = (state, action) => {
   const { record } = action.payload;
   return {
@@ -517,6 +524,7 @@ const clear_highlighted_receptacles: GuestReducer = (state, action) => {
 // endregion
 
 // region content_type_receptacles_request
+// TODO: Not pure
 const content_type_receptacles_request: GuestReducer = (state, action) => {
   const { contentTypeId } = action.payload;
   const highlighted = {};
@@ -561,6 +569,7 @@ const scrolling: GuestReducer = (state) => {
 // endregion
 
 // region scrolling_end
+// TODO: Not pure
 const scrolling_stopped: GuestReducer = (state) => {
   return {
     ...state,
@@ -578,6 +587,7 @@ const scrolling_stopped: GuestReducer = (state) => {
 // endregion
 
 // region drop_zone_enter
+// TODO: Not pure
 const drop_zone_enter: GuestReducer = (state, action) => {
   const { iceId } = action.payload;
   const { dropZones: currentDropZones } = state.dragContext;
@@ -613,6 +623,7 @@ const drop_zone_enter: GuestReducer = (state, action) => {
 // endregion
 
 // region drop_zone_leave
+// TODO: Not pure
 const drop_zone_leave: GuestReducer = (state, action) => {
   const { iceId } = action.payload;
   if (!state.dragContext) {
