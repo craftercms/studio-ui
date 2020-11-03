@@ -537,12 +537,12 @@ const dialogInitialState = {
 export default function DependenciesDialog(props: DependenciesDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <DependenciesDialogWrapper {...props} />
+      <DependenciesDialogBody {...props} />
     </Dialog>
   );
 }
 
-function DependenciesDialogWrapper(props: DependenciesDialogProps) {
+function DependenciesDialogBody(props: DependenciesDialogProps) {
   const { item, dependenciesShown = 'depends-on', onDismiss, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,

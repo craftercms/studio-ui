@@ -193,12 +193,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       fullWidth
       maxWidth="md"
     >
-      <NewContentDialogWrapper {...props} />
+      <NewContentDialogBody {...props} />
     </Dialog>
   );
 }
 
-function NewContentDialogWrapper(props: NewContentDialogProps) {
+function NewContentDialogBody(props: NewContentDialogProps) {
   const {
     onDismiss,
     item,

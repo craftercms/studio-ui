@@ -38,8 +38,8 @@ import babel from './babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
 import translation from '../services/translation';
-import { jssPreset, makeStyles, Theme } from '@material-ui/core/styles';
-import { generateClassName, theme } from '../styles/theme';
+import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
+import { generateClassName, defaultThemeOptions } from '../styles/theme';
 import createStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
@@ -85,7 +85,7 @@ interface CodebaseBridge {
   mui: object;
   system: {
     generateClassName: GenerateId;
-    theme: Theme;
+    defaultThemeOptions: ThemeOptions;
     palette: any;
     store: CrafterCMSStore;
   };
@@ -154,7 +154,7 @@ export function createCodebaseBridge() {
       )
     },
 
-    system: { generateClassName, theme, palette, store: null },
+    system: { generateClassName, defaultThemeOptions, palette, store: null },
 
     mui: {
       core: {
@@ -241,7 +241,7 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge isLegacy={isLegacy}>
+            <CrafterCMSNextBridge mountGlobalDialogManager={!isLegacy}>
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,

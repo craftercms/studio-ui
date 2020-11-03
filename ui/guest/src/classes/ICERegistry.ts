@@ -523,7 +523,7 @@ export function findContainerField(
   });
 }
 
-export default {
+const InContextEditingRegistry = {
   register,
   deregister,
   exists,
@@ -543,3 +543,5 @@ export default {
   checkComponentMovability,
   checkRepeatGroupMovability
 };
+
+export default InContextEditingRegistry;

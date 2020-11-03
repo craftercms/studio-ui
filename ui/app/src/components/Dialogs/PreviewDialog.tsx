@@ -21,20 +21,11 @@ import DialogHeader from './DialogHeader';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import IFrame from '../IFrame';
 import AceEditor from '../AceEditor';
-import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useUnmount } from '../../utils/hooks';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 
-const messages = defineMessages({
-  videoProcessed: {
-    id: 'search.videoProcessed',
-    defaultMessage:
-      'Video is being processed, preview will be available when processing is complete'
-  }
-});
-
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     maxWidth: '700px',
     minWidth: '500px',
@@ -83,7 +74,6 @@ export default function PreviewDialog(props: PreviewDialogProps) {
 }
 
 function PreviewDialogUI(props: PreviewDialogProps) {
-  const { formatMessage } = useIntl();
   const classes = useStyles();
   useUnmount(props.onClosed);
 
@@ -97,7 +87,6 @@ function PreviewDialogUI(props: PreviewDialogProps) {
         return (
           <AsyncVideoPlayer
             playerOptions={{ src: props.url, autoplay: true }}
-            nonPlayableMessage={formatMessage(messages.videoProcessed)}
           />
         );
       case 'page':
