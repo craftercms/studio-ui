@@ -36,6 +36,7 @@ import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
+import NavItem from './PathNavigatorItem';
 import Nav from './PathNavigatorList';
 import ContentLoader from 'react-content-loader';
 import { languages } from '../../../utils/i18n-legacy';
@@ -115,6 +116,7 @@ export interface WidgetState {
   keyword: '';
   isSelectMode: boolean;
   hasClipboard: boolean;
+  levelDescriptor: string;
   itemsInPath: string[];
   breadcrumb: string[];
   selectedItems: string[];
@@ -226,9 +228,9 @@ export default function Widget(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-            id,
-            item
-          })
+          id,
+          item
+        })
     );
   };
 
@@ -365,7 +367,12 @@ export default function Widget(props: WidgetProps) {
   );
 }
 
-export function WidgetUI(props: any) {
+interface WidgetUIProps {
+  state: WidgetState;
+  [key: string]: any;
+}
+
+export function WidgetUI(props: WidgetUIProps) {
   const classes = useStyles({});
   const {
     state,
@@ -394,10 +401,8 @@ export function WidgetUI(props: any) {
   } = props;
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<
-    DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
-  >(
+  const resource = useLogicResource<DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -413,6 +418,13 @@ export function WidgetUI(props: any) {
       errorSelector: null
     }
   );
+
+  const levelDescriptor = useMemo(() => {
+    if (itemsByPath && state.levelDescriptor) {
+      return itemsByPath[state.levelDescriptor];
+    }
+    return null;
+  }, [state.levelDescriptor, itemsByPath]);
 
   return (
     <section
@@ -475,6 +487,16 @@ export function WidgetUI(props: any) {
             fallback: <MyLoader />
           }}
         >
+          {
+            levelDescriptor &&
+            <NavItem
+              item={levelDescriptor}
+              locale={state.localeCode}
+              isLevelDescriptor={true}
+              onOpenItemMenu={onOpenItemMenu}
+              onItemClicked={onItemClicked}
+            />
+          }
           <Nav
             leafs={state.leafs}
             locale={state.localeCode}

@@ -161,12 +161,22 @@ export const useStyles = makeStyles((theme) =>
       color: palette.gray.medium4
     },
     navItem: {
-      padding: '0 0 0 10px !important',
+      padding: '0 0 0 10px',
       '&.noLeftPadding': {
         paddingLeft: 0
       },
       '&:hover': {
         backgroundColor: 'rgba(0, 0, 0, 0.08)'
+      }
+    },
+    navItemLevelDescriptor: {
+      backgroundColor: 'rgba(90, 200, 250, 0.08)',
+      borderRadius: '5px',
+      maxWidth: 'calc(100% - 20px)',
+      margin: '0 10px',
+      padding: '0',
+      '&:hover': {
+        backgroundColor: 'rgba(90, 200, 250, 0.08)'
       }
     },
     navItemText: {
