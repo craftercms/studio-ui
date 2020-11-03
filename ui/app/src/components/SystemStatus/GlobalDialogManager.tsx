@@ -356,7 +356,7 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Bulk Upload*/}
+      {/* region PreviewDialog */}
       <PreviewDialog
         open={state.preview.open}
         url={state.preview.url}

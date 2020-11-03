@@ -66,7 +66,7 @@ const uiConfigMock = {
                 id: 'craftercms.pathNavigator',
                 roles: ['admin', 'developer'],
                 parameters: {
-                  id: 'pages',
+                  id: 'Pages',
                   label: 'Pages',
                   rootPath: '/site/website',
                   locale: 'en',
@@ -92,7 +92,7 @@ const uiConfigMock = {
                 id: 'craftercms.pathNavigator',
                 roles: ['admin', 'developer'],
                 parameters: {
-                  id: 'components',
+                  id: 'Components',
                   label: 'Components',
                   rootPath: '/site/components',
                   locale: 'en',
@@ -105,7 +105,7 @@ const uiConfigMock = {
                 id: 'craftercms.pathNavigator',
                 roles: ['admin', 'developer'],
                 parameters: {
-                  id: 'taxonomy',
+                  id: 'Taxonomy',
                   label: 'Taxonomy',
                   rootPath: '/site/taxonomy',
                   icon: {
@@ -117,7 +117,7 @@ const uiConfigMock = {
                 id: 'craftercms.pathNavigator',
                 roles: ['admin', 'developer'],
                 parameters: {
-                  id: 'staticAssets',
+                  id: 'StaticAssets',
                   label: 'Static Assets',
                   rootPath: '/static-assets',
                   icon: {
@@ -129,7 +129,7 @@ const uiConfigMock = {
                 id: 'craftercms.pathNavigator',
                 roles: ['admin', 'developer'],
                 parameters: {
-                  id: 'templates',
+                  id: 'Templates',
                   label: 'Templates',
                   rootPath: '/templates',
                   icon: {
@@ -141,7 +141,7 @@ const uiConfigMock = {
                 id: 'craftercms.pathNavigator',
                 roles: ['admin', 'developer'],
                 parameters: {
-                  id: 'scripts',
+                  id: 'Scripts',
                   label: 'Scripts',
                   rootPath: '/scripts',
                   icon: {

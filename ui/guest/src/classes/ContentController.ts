@@ -666,7 +666,7 @@ fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) =>
   contentTypesResponseReceived(data.payload)
 );
 
-export default {
+const ContentController = {
   children,
   operations,
   getModel,
@@ -690,3 +690,5 @@ export default {
   moveItem,
   deleteItem
 };
+
+export default ContentController;

@@ -39,6 +39,7 @@ import { fetchContentTypes } from '../state/actions/preview';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
 import { fetchSiteLocales } from '../state/actions/translation';
+import { fetchSiteUiConfig } from '../state/actions/configuration';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -356,7 +357,20 @@ export function useSidebarPanels(): GlobalState['uiConfig']['preview']['sidebar'
 }
 
 export function useSiteNavLinks(): GlobalState['uiConfig']['preview']['siteNav']['links'] {
-  return useSelection((state) => state.uiConfig.preview.siteNav.links);
+  const uiConfig = useSiteUIConfig();
+  return uiConfig.preview?.siteNav.links;
+}
+
+export function useSiteUIConfig(): GlobalState['uiConfig'] {
+  const site = useActiveSiteId();
+  const dispatch = useDispatch();
+  const config = useSelection((state) => state.uiConfig);
+  useEffect(() => {
+    if (config.currentSite !== site && !config.isFetching) {
+      dispatch(fetchSiteUiConfig({ site }));
+    }
+  }, [dispatch, site, config.isFetching, config.currentSite]);
+  return config;
 }
 
 export function usePreviousValue<T = any>(value: T) {

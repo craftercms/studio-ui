@@ -177,6 +177,7 @@ export interface GlobalState {
   uiConfig: {
     error: ApiResponse;
     isFetching: boolean;
+    currentSite: string;
     preview: {
       sidebar: {
         panels: SidebarPanelConfigEntry[];

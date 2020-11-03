@@ -19,7 +19,8 @@ import '../styles/index.scss';
 import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { IntlShape, RawIntlProvider } from 'react-intl';
 import { StylesProvider, ThemeProvider } from '@material-ui/styles';
-import { generateClassName, theme } from '../styles/theme';
+import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import { CrafterCMSStore, createStore } from '../state/store';
@@ -35,9 +36,11 @@ const storeResource = createResource(() =>
 );
 
 function Bridge(
-  props: PropsWithChildren<{ isLegacy?: boolean; resource: Resource<CrafterCMSStore> }>
+  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean; resource: Resource<CrafterCMSStore>; theme?: Theme }>
 ) {
   const store = props.resource.read();
+  const theme = props.theme ?? createMuiTheme(defaultThemeOptions);
+  const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
 
   const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
@@ -55,7 +58,7 @@ function Bridge(
             >
               <>
                 <Suspense fallback="" children={props.children} />
-                {!props.isLegacy && <GlobalDialogManager />}
+                {mountGlobalDialogManager && <GlobalDialogManager />}
               </>
             </SnackbarProvider>
           </StylesProvider>
@@ -65,10 +68,14 @@ function Bridge(
   );
 }
 
-function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) {
+function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>) {
   return (
     <Suspense fallback={<LoadingState />}>
-      <Bridge isLegacy={props.isLegacy} resource={storeResource} children={props.children} />
+      <Bridge
+        mountGlobalDialogManager={props.mountGlobalDialogManager}
+        resource={storeResource}
+        children={props.children}
+      />
     </Suspense>
   );
 }

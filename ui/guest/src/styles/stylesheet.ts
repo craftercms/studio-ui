@@ -142,7 +142,7 @@ function collectRules(styles): { overrides, global, other } {
   return toBeReturned;
 }
 
-export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
+export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@global'> {
   config = Object.assign({}, defaults, config);
   const { overrides, global, other } = collectRules(config.styles);
   const styles: Record<GuestRules, JssStyle> = {
