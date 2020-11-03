@@ -118,9 +118,12 @@ function GlobalDialogManager() {
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
-    hostToHost$.pipe(filter((e) => e.type === showSystemNotification.type)).subscribe(({ payload }) => {
+    const subscription = hostToHost$.pipe(filter((e) => e.type === showSystemNotification.type)).subscribe(({ payload }) => {
       enqueueSnackbar(payload.message, payload.options);
     });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [enqueueSnackbar]);
 
   return (

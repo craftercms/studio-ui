@@ -318,4 +318,7 @@ export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_
 // endregion
 
 // notification
-export const showSystemNotification = createAction<{message: string, options?: OptionsObject}>('SHOW_SYSTEM_NOTIFICATION');
+export const showSystemNotification = createAction<{
+  message: string,
+  options?: OptionsObject
+}>('SHOW_SYSTEM_NOTIFICATION');

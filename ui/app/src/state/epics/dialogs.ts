@@ -121,7 +121,7 @@ export default [
     ofType(newContentCreationComplete.type),
     switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
   ),
-  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
     ofType(showDeleteItemSuccessNotification.type),
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
@@ -133,7 +133,7 @@ export default [
     }),
     ignoreElements()
   ),
-  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
     ofType(showPublishItemSuccessNotification.type),
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
@@ -149,7 +149,7 @@ export default [
     }),
     ignoreElements()
   ),
-  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
     ofType(showEditItemSuccessNotification.type),
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
@@ -159,7 +159,7 @@ export default [
     }),
     ignoreElements()
   ),
-  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
     ofType(showCopyItemSuccessNotification.type),
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
@@ -169,7 +169,7 @@ export default [
     }),
     ignoreElements()
   ),
-  (action$, state$, { intl }: { intl: IntlShape }) => action$.pipe(
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
     ofType(showRevertItemSuccessNotification.type),
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
