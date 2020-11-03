@@ -194,15 +194,13 @@ interface HistoryDialogBaseProps {
   open: boolean;
 }
 
-export type HistoryDialogProps = PropsWithChildren<
-  HistoryDialogBaseProps & {
-    versionsBranch: VersionsStateProps;
-    permissions: LookupTable<boolean>;
-    onClose?(): void;
-    onClosed?(): void;
-    onDismiss?(): void;
-  }
->;
+export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
+  versionsBranch: VersionsStateProps;
+  permissions: LookupTable<boolean>;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
+}>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
@@ -254,42 +252,44 @@ function HistoryDialog(props: HistoryDialogProps) {
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, permissions) => {
       const write = permissions?.write;
+      const isImage = item.mimeType.startsWith('image/');
+      let sections = [];
       if (isCurrent) {
-        let sections =
-          count > 1
-            ? [[menuOptions.view], [menuOptions.compareTo, menuOptions.compareToPrevious]]
-            : [[menuOptions.view]];
+        sections.push([menuOptions.view]);
+        if (!isImage && count > 1) {
+          sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
+        }
         if (write && count > 1) {
           sections.push([menuOptions.revertToPrevious]);
         }
+
         setMenu({
-          sections: sections,
+          sections,
           anchorEl,
           activeItem: version
         });
       } else {
-        let sections =
-          count > 1
-            ? [
-                [menuOptions.view],
-                [
-                  menuOptions.compareTo,
-                  menuOptions.compareToCurrent,
-                  menuOptions.compareToPrevious
-                ]
-              ]
-            : [[menuOptions.view]];
+        sections.push([menuOptions.view]);
+        if (!isImage && count > 1) {
+          sections.push(
+            [
+              menuOptions.compareTo,
+              menuOptions.compareToCurrent,
+              menuOptions.compareToPrevious
+            ]
+          );
+        }
         if (write && count > 1) {
           sections.push([menuOptions.revertToThisVersion]);
         }
         setMenu({
-          sections: sections,
+          sections,
           anchorEl,
           activeItem: version
         });
       }
     },
-    [count, setMenu]
+    [count, item.mimeType, setMenu]
   );
 
   const compareVersionDialogWithActions = () =>
