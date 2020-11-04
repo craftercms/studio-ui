@@ -492,7 +492,7 @@ export function WidgetUI(props: WidgetUIProps) {
             <NavItem
               item={levelDescriptor}
               locale={state.localeCode}
-              isLevelDescriptor={true}
+              isLevelDescriptor
               onOpenItemMenu={onOpenItemMenu}
               onItemClicked={onItemClicked}
             />
