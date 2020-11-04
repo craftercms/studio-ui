@@ -253,7 +253,7 @@ function HistoryDialog(props: HistoryDialogProps) {
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, permissions) => {
       const write = permissions?.write;
-      const hasOptions = item.systemType === 'page' || item.systemType === 'component' || item.systemType === 'taxonomy';
+      const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
       let sections = [];
       if (isCurrent) {
         sections.push([menuOptions.view]);
