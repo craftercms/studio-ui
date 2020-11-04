@@ -289,7 +289,7 @@ function HistoryDialog(props: HistoryDialogProps) {
         });
       }
     },
-    [count, item.mimeType, setMenu]
+    [count, item, setMenu]
   );
 
   const compareVersionDialogWithActions = () =>
