@@ -256,7 +256,7 @@ export default function ToolsPanel() {
   const classes = useStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, selectedTool, showToolsPanel } = usePreviewState();
+  const { selectedTool, showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const tools = useSidebarPanels();
