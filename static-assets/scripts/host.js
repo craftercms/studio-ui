@@ -253,7 +253,7 @@
         studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
 
-      CStudioAuthoringContext.previewCurrentPath = message.url;
+      setHash({ page: message.url, site });
       CStudioAuthoring.ComponentsPanel.getPageModel(
         studioPath,
         'init-components',
