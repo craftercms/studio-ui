@@ -112,6 +112,7 @@ const reducer = createReducer<ContentState>(initialState, {
         byPath: {
           [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
           ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
+          ...(response.levelDescriptor && { [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor) }),
           ...state.items.byPath
         }
       }
@@ -122,6 +123,9 @@ const reducer = createReducer<ContentState>(initialState, {
     response.forEach(childResponse => {
       items.push(parseSandBoxItemToDetailedItem(childResponse.parent));
       items = [...items, ...parseSandBoxItemToDetailedItem(childResponse as SandboxItem[])];
+      if (childResponse.levelDescriptor) {
+        items.push(parseSandBoxItemToDetailedItem(childResponse.levelDescriptor));
+      }
     });
     return {
       ...state,

@@ -36,7 +36,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 interface NavItemProps {
   item: DetailedItem;
   locale: string;
-  isLeaf: boolean;
+  isLeaf?: boolean;
+  isLevelDescriptor?: boolean;
   isSelectMode?: boolean;
   showItemNavigateToButton?: boolean;
   onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
@@ -59,7 +60,7 @@ const translations = defineMessages({
 
 // PathNavigatorListItem
 export default function PathNavigatorItem(props: NavItemProps) {
-  const classes = useStyles(props);
+  const classes = useStyles();
   const {
     item,
     onItemClicked,
@@ -69,7 +70,8 @@ export default function PathNavigatorItem(props: NavItemProps) {
     isSelectMode,
     onItemChecked,
     onOpenItemMenu,
-    isLeaf,
+    isLeaf = false,
+    isLevelDescriptor = false,
     showItemNavigateToButton = false
   } = props;
   const [over, setOver] = useState(false);
@@ -84,7 +86,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
   return (
     <ListItem
       button={!isSelectMode as true}
-      className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
+      className={clsx(classes.navItem, isSelectMode && 'noLeftPadding', isLevelDescriptor && classes.navItemLevelDescriptor)}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       onClick={onClick}

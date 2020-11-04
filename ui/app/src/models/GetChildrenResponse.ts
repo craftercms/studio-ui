@@ -18,5 +18,5 @@ import { SandboxItem } from './Item';
 
 export interface GetChildrenResponse extends Array<SandboxItem> {
   parent: SandboxItem;
-  // levelDescriptor: Item;
+  levelDescriptor: SandboxItem;
 }
