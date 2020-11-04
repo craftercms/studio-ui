@@ -35,7 +35,6 @@ import AssetsPanel from './Tools/AssetsPanel';
 import ComponentsPanel from './Tools/ComponentsPanel';
 import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
-import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
 import InPageInstancesPanel from './Tools/InPageInstancesPanel';
 import { selectTool, updateToolsPanelWidth } from '../../state/actions/preview';
@@ -216,7 +215,6 @@ function ToolSelector(props: ToolSelectorProps) {
 
 const componentIconMap: { [key in PreviewTool]: OverridableComponent<SvgIconTypeMap> } = {
   'craftercms.contentTypeReceptaclesPanel': undefined,
-  'craftercms.editPanel': undefined,
   'craftercms.componentsPanel': ExtensionRounded,
   'craftercms.assetsPanel': ImageRounded,
   'craftercms.audiencesPanel': EmojiPeopleRounded,
@@ -233,7 +231,6 @@ const componentMap: { [key in PreviewTool]: React.ElementType } = {
   'craftercms.assetsPanel': AssetsPanel,
   'craftercms.audiencesPanel': AudiencesPanel,
   'craftercms.simulatorPanel': SimulatorPanel,
-  'craftercms.editPanel': EditFormPanel,
   'craftercms.browseComponentsPanel': BrowseComponentsPanel,
   'craftercms.inPageInstancesPanel': InPageInstancesPanel,
   'craftercms.contentTypeReceptaclesPanel': ReceptaclesPanel,
@@ -247,7 +244,6 @@ const translationIdMap: { [key in PreviewTool]: string } = {
   'craftercms.assetsPanel': 'assetsPanelTitle',
   'craftercms.audiencesPanel': 'audiencesPanelTitle',
   'craftercms.simulatorPanel': 'simulatorPanelTitle',
-  'craftercms.editPanel': 'editPanelTitle',
   'craftercms.browseComponentsPanel': 'BrowseComponentsPanelTitle',
   'craftercms.inPageInstancesPanel': 'inPageInstancesPanelTitle',
   'craftercms.contentTypeReceptaclesPanel': 'contentTypeReceptaclesPanelTitle',
@@ -282,17 +278,13 @@ export default function ToolsPanel() {
     >
       <ErrorBoundary>
         {site ? (
-          guest?.selected ? (
-            <EditFormPanel />
-          ) : (
-            <ConditionalLoadingState isLoading={!Boolean(tools)}>
-              {Boolean(selectedTool) ? (
-                <Tool id={toolMeta?.id} {...toolMeta?.parameters}/>
-              ) : (
-                <ToolSelector tools={tools} />
-              )}
-            </ConditionalLoadingState>
-          )
+          <ConditionalLoadingState isLoading={!Boolean(tools)}>
+            {Boolean(selectedTool) ? (
+              <Tool id={toolMeta?.id} {...toolMeta?.parameters}/>
+            ) : (
+              <ToolSelector tools={tools} />
+            )}
+          </ConditionalLoadingState>
         ) : (
           <EmptyState
             title={
