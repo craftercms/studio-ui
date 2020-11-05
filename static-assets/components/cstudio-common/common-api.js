@@ -8477,8 +8477,7 @@ var nodeOpen = false,
           globalPosition: globalPosition,
           className: currentType,
           style: 'material',
-          autoHide: false
-          //autoHideDelay: 4000
+          autoHideDelay: 4000
         });
 
         var element;

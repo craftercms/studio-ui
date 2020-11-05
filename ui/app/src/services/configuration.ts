@@ -24,7 +24,7 @@ import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import { SidebarPanelConfigEntry, SiteNavConfigEntry } from '../models/UiConfig';
 import { asArray } from '../utils/array';
-import uiConfigMock from '../assets/uiConfigMock';
+import uiConfigDefaults from '../assets/uiConfigDefaults';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -270,7 +270,7 @@ export function getSiteUiConfig(site: string): Observable<any> {
           }
         };
       } else {
-        return uiConfigMock;
+        return uiConfigDefaults;
       }
     })
   );

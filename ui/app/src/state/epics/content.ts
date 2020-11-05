@@ -117,8 +117,10 @@ const content = [
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
           map((path) => {
-            const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`;
-            return showEditDialog({ src, onSaveSuccess: payload.onSuccess });
+            return showEditDialog({
+              src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
+              onSaveSuccess: payload.onSuccess
+            });
           })
         );
       })
