@@ -29,6 +29,7 @@ import {
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
   pathNavigatorItemActionSuccess,
+  pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
@@ -55,6 +56,17 @@ export default [
           })
         ].filter(Boolean);
       })
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorRefresh.type),
+      withLatestFrom(state$),
+      mergeMap(([{ type, payload: { id } }, state]) =>
+        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
+          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          catchAjaxError(pathNavigatorFetchPathFailed)
+        )
+      )
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(

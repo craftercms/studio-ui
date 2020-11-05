@@ -85,6 +85,7 @@ import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
 import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 interface ItemMenuProps {
   path: string;
@@ -126,6 +127,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const hostToHost$ = getHostToHostBus();
 
   const resourceItem = useLogicResource<DetailedItem, DetailedItem>(item, {
     shouldResolve: (source) => Boolean(source),
@@ -331,6 +333,12 @@ export function ItemMenu(props: ItemMenuProps) {
         paste(site, item.path).subscribe(
           () => {
             dispatch(batchActions([unSetClipBoard(), showPasteItemSuccessNotification()]));
+            hostToHost$.next({
+              type: 'ITEM_PASTED',
+              payload: {
+                path: item.path
+              }
+            })
           },
           (response) => {
             dispatch(

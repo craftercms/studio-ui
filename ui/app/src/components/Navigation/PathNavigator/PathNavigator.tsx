@@ -44,6 +44,7 @@ import {
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
+  pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
@@ -60,6 +61,8 @@ import LookupTable from '../../../models/LookupTable';
 import { StateStylingProps } from '../../../models/UiConfig';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { getHostToHostBus } from '../../../modules/Preview/previewContext';
+import { filter } from 'rxjs/operators';
 
 export interface WidgetProps {
   id: string;
@@ -185,6 +188,23 @@ export default function PathNavigator(props: WidgetProps) {
     }
   }, [dispatch, id, siteLocales.defaultLocaleCode]);
 
+  //Item Updates Propagation
+  useEffect(() => {
+    const events = ['ITEM_PASTED'];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ payload }) => {
+      if (withoutIndex(payload.path) === state.currentPath) {
+        //TODO: who should check the path, the widget or the action pathNavigatorRefresh?
+        dispatch(pathNavigatorRefresh({
+          id
+        }));
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [state, id, dispatch]);
+
   if (!state) {
     return <LoadingState />;
   }
@@ -244,9 +264,9 @@ export default function PathNavigator(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-            id,
-            item
-          })
+          id,
+          item
+        })
     );
   };
 
@@ -330,9 +350,8 @@ export default function PathNavigator(props: WidgetProps) {
     onCloseSimpleMenu();
     if (section.id === 'refresh') {
       dispatch(
-        pathNavigatorSetCurrentPath({
-          id,
-          path: state.currentPath
+        pathNavigatorRefresh({
+          id
         })
       );
     }
@@ -414,10 +433,8 @@ export function PathNavigatorUI(props: WidgetUIProps) {
   // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<
-    DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
-  >(
+  const resource = useLogicResource<DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps

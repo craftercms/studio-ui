@@ -276,7 +276,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   const onResetFilter = useCallback(() => {
     setResetFilterType(defaultFilterType);
     setFilterContentTypes(contentTypes.current);
-  }, [contentTypes]);
+  }, [defaultFilterType, contentTypes]);
 
   const onTypeChange = useCallback(
     (type) => {
@@ -286,7 +286,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
         ? setFilterContentTypes(contentTypes.current.filter((content) => content.type === type))
         : onResetFilter();
     },
-    [contentTypes, resetFilterType, onResetFilter]
+    [defaultFilterType, contentTypes, resetFilterType, onResetFilter]
   );
 
   const onSearch = useCallback(

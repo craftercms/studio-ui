@@ -31,6 +31,8 @@ export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed:
 
 export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_SET_CURRENT_PATH');
 
+export const pathNavigatorRefresh = createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
+
 export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
 
 export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAVIGATOR_ITEM_UNCHECKED');
