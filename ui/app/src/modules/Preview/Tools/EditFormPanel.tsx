@@ -37,7 +37,7 @@ import Paper from '@material-ui/core/Paper';
 const translations = defineMessages({
   openComponentForm: {
     id: 'previewEditFormTool.openComponentForm',
-    defaultMessage: 'Open Component Form'
+    defaultMessage: 'Edit'
   },
   editTemplate: {
     id: 'previewEditFormTool.editTemplate',
