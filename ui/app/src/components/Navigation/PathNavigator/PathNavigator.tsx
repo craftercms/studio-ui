@@ -142,7 +142,7 @@ export default function PathNavigator(props: WidgetProps) {
     icon = {},
     container = {},
     rootPath: path,
-    id = label.replace(/\s/g, ''),
+    id = label?.replace(/\s/g, ''),
     locale,
     excludes
   } = props;
