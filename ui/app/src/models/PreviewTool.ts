@@ -19,7 +19,6 @@ type PreviewTool =
   'craftercms.assetsPanel' |
   'craftercms.audiencesPanel' |
   'craftercms.simulatorPanel' |
-  'craftercms.editPanel' |
   'craftercms.browseComponentsPanel' |
   'craftercms.inPageInstancesPanel' |
   'craftercms.contentTypeReceptaclesPanel' |
