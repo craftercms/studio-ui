@@ -355,9 +355,6 @@ var nodeOpen = false,
        */
       copyContent: function (contentTO, callback) {
         CSA.Service.copyContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function () {
-          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
-          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 1}), null, null, 'default');
           callback && callback();
         });
       },
@@ -2180,10 +2177,6 @@ var nodeOpen = false,
             var fillCopyDialog = {
               success: function (response) {
                 var copyTree = eval('(' + response.responseText + ')');
-                const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
-                const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-                CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 2}), null, null, 'default');
-
                 dialogClass.updateDialog(copyTree, cut);
               },
               failure: function () {
@@ -2294,6 +2287,9 @@ var nodeOpen = false,
                 success: function (typeSelected) {
                   var changeTemplateServiceCb = {
                     success: function () {
+                      const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+                      const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+                      CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemContentTypeChanged), null, null, 'default');
                       this.assignCallback.success(this.typeSelected);
                     },
 
@@ -2753,6 +2749,10 @@ var nodeOpen = false,
                           success: function (pasteResponse) {
                             var filePath = pasteResponse.status[0];
                             var extension = filePath.split('.')[filePath.split('.').length - 1];
+
+                            const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+                            const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+                            CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemPasted), null, null, 'default');
 
                             var editCb = {
                               success: function (newItem) {

@@ -210,6 +210,10 @@ CStudioAuthoring.Dialogs.DialogCopy =
       oncomplete = {
         success: function() {
           closeDialog();
+          const count = Object.keys(selectedIds).length;
+          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count }), null, null, 'default');
           CStudioAuthoring.ContextualNav.WcmRootFolder.resetNodeStyles();
         },
         failure: function() {

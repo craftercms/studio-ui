@@ -194,8 +194,8 @@
               CStudioAuthoring.Module.requireModule(
                 mod.name,
                 '/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/root-folder-mods/' +
-                  mod.name +
-                  '.js',
+                mod.name +
+                '.js',
                 { config: mod },
                 {
                   context: instance,
@@ -939,7 +939,7 @@
         var newId = CStudioAuthoring.Utils.generateUUID();
         if (searchConfig.newPath && !window.pasteFlag) {
           var label =
-            "<a style='display: inline; padding-right:5px;' id='ID' href='#' class='canned-search-el'>LABEL</a><a style='display: inline; border-left: 1px solid grey; padding-left: 5px;' id='NEWID' href='#'>+add</a>";
+            '<a style=\'display: inline; padding-right:5px;\' id=\'ID\' href=\'#\' class=\'canned-search-el\'>LABEL</a><a style=\'display: inline; border-left: 1px solid grey; padding-left: 5px;\' id=\'NEWID\' href=\'#\'>+add</a>';
 
           label = label.replace('ID', searchId);
           label = label.replace('LABEL', searchConfig.label);
@@ -951,9 +951,9 @@
           Self.searchesToWire.push(treeNode);
         } else {
           searchConfig.label =
-            "<a style='display: inline;' id='" +
+            '<a style=\'display: inline;\' id=\'' +
             searchId +
-            "' href='#'>" +
+            '\' href=\'#\'>' +
             searchConfig.label +
             '</a>';
 
@@ -977,7 +977,7 @@
           markup = markup.replace(/\&gt;/g, '>');
           markup = markup.replace(/\&lt;/g, '<');
           markup = markup.replace(/\&amp;/g, '&');
-          markup = markup.replace(/\&#x27;/g, "'");
+          markup = markup.replace(/\&#x27;/g, '\'');
           markup = markup.replace(/\&#x2F;/g, '/');
 
           return markup;
@@ -1027,15 +1027,15 @@
           nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
           const tooltip = treeNodeTO.statusObj.deleted
             ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(
-                CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
-                { path: treeNodeTO.path }
-              )}</div>`
+              CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
+              { path: treeNodeTO.path }
+            )}</div>`
             : treeNodeTO.title;
           nodeSpan.setAttribute('title', tooltip);
           nodeSpan.className = `${
             treeNodeTO.style
           } yui-resize-label treenode-label over-effect-set ${treeNodeTO.statusObj.deleted &&
-            'warning'} ${highlight && 'highlighted'}`;
+          'warning'} ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1283,7 +1283,7 @@
             num;
           num = el.getAttribute('num');
           if (!num) {
-            while ((el = el.parentElement) && !el.hasAttribute('num'));
+            while ((el = el.parentElement) && !el.hasAttribute('num')) ;
           }
           try {
             num = el.getAttribute('num') ? el.getAttribute('num') : null;
@@ -1369,7 +1369,7 @@
                       ? (tmp[key][k[key]].charAt(0) == '/'
                           ? tmp[key][k[key]].substr(1)
                           : tmp[key][k[key]]
-                        ).split('/')
+                      ).split('/')
                       : null;
                     recursiveCalls[key][k[key]] = tmp[key][k[key]].length
                       ? paths[key][k[key]].length
@@ -1467,7 +1467,7 @@
                           ? (tmp[key][k[key]].charAt(0) === '/'
                               ? tmp[key][k[key]].substr(1)
                               : tmp[key][k[key]]
-                            ).split('/')
+                          ).split('/')
                           : null;
                         recursiveCalls[key][k[key]] = tmp[key][k[key]].length
                           ? paths[key][k[key]].length
@@ -1512,7 +1512,8 @@
                       treePrint(servPath);
                     }
                   },
-                  failure: function() {}
+                  failure: function() {
+                  }
                 });
               }
 
@@ -1551,7 +1552,8 @@
               this.callingWindow.location.reload(true);
             },
 
-            failure: function() {},
+            failure: function() {
+            },
 
             callingWindow: window
           };
@@ -1661,7 +1663,7 @@
             num = el.getAttribute('num');
           plainpath = roothpath == '/site' ? 'root-folder' : plainpath;
           if (!num) {
-            while ((el = el.parentElement) && !el.hasAttribute('num'));
+            while ((el = el.parentElement) && !el.hasAttribute('num')) ;
           }
           if (el) {
             Self.save(
@@ -1705,7 +1707,7 @@
 
         plainpath = plainpath == '/site' || path == num ? 'root-folder' : plainpath;
         if (!num) {
-          while ((el = el.parentElement) && !el.hasAttribute('num'));
+          while ((el = el.parentElement) && !el.hasAttribute('num')) ;
         }
         //Self.remove(node.instance, plainpath);
         Self.save(
@@ -1782,7 +1784,7 @@
       },
 
       findAncestor: function(el, cls) {
-        while ((el = el.parentElement) && !el.classList.contains(cls));
+        while ((el = el.parentElement) && !el.classList.contains(cls)) ;
         return el;
       },
 
@@ -2060,8 +2062,8 @@
                               if (typeof WcmDashboardWidgetCommon != 'undefined') {
                                 CStudioAuthoring.SelectedContent.getSelectedContent()[0]
                                   ? CStudioAuthoring.SelectedContent.unselectContent(
-                                      CStudioAuthoring.SelectedContent.getSelectedContent()[0]
-                                    )
+                                  CStudioAuthoring.SelectedContent.getSelectedContent()[0]
+                                  )
                                   : null;
                               }
                               eventCM.typeAction = typeAction;
@@ -2099,8 +2101,8 @@
                                     ) {
                                       CStudioAuthoring.SelectedContent.getSelectedContent()[0]
                                         ? CStudioAuthoring.SelectedContent.unselectContent(
-                                            CStudioAuthoring.SelectedContent.getSelectedContent()[0]
-                                          )
+                                        CStudioAuthoring.SelectedContent.getSelectedContent()[0]
+                                        )
                                         : null;
                                     }
                                     if (indexOfFolder == -1 && typeAction != 'edit') {
@@ -2122,7 +2124,8 @@
                             curElt ? (curElt.innerHTML += currentInternalName) : null;
                           }
                         },
-                        failure: function() {}
+                        failure: function() {
+                        }
                       }
                     );
                   }
@@ -2139,7 +2142,7 @@
                       tree.removeChildren(curNode);
                       var loadEl = YAHOO.util.Selector.query('.ygtvtp', curNode.getEl(), true);
                       loadEl == null &&
-                        (loadEl = YAHOO.util.Selector.query('.ygtvlp', curNode.getEl(), true));
+                      (loadEl = YAHOO.util.Selector.query('.ygtvlp', curNode.getEl(), true));
                       YDom.addClass(loadEl, 'ygtvloading');
                       curNode.renderChildren();
                       curNode.refresh();
@@ -2166,11 +2169,11 @@
                           ? curNode.data.path
                             ? curNode.data.path
                             : treeNode.path
-                            ? treeNode.path
-                            : null
+                              ? treeNode.path
+                              : null
                           : treeNode.path
-                          ? treeNode.path
-                          : null;
+                            ? treeNode.path
+                            : null;
                       }
                       for (var i = 0; i <= instance.path.length; i++) {
                         if (path == instance.path[i]) {
@@ -2219,7 +2222,7 @@
                       tree.removeChildren(parNode);
                       var parLoadEl = YSelector('.ygtvtp', parNode.getEl(), true);
                       parLoadEl == null &&
-                        (parLoadEl = YSelector('.ygtvlp', parNode.getEl(), true));
+                      (parLoadEl = YSelector('.ygtvlp', parNode.getEl(), true));
                       YDom.addClass(parLoadEl, 'ygtvloading');
                       parNode.renderChildren();
                       parNode.refresh();
@@ -2562,7 +2565,8 @@
                             false
                           );
                         },
-                        failure: function() {}
+                        failure: function() {
+                        }
                       };
 
                       CStudioAuthoring.Service.lookupContentItem(
@@ -2600,7 +2604,8 @@
                                 false
                               );
                             },
-                            failure: function() {}
+                            failure: function() {
+                            }
                           };
 
                           CStudioAuthoring.Service.lookupContentItem(
@@ -2641,7 +2646,8 @@
                                   selectedContent
                                 );
                               },
-                              failure: function() {}
+                              failure: function() {
+                              }
                             };
 
                             CStudioAuthoring.Service.lookupContentItem(
@@ -2722,7 +2728,8 @@
                   this.args.render();
                   menuId.removeChild(d);
                 },
-                failure: function() {},
+                failure: function() {
+                },
                 args: p_aArgs,
                 menuItems: aMenuItems,
                 menuEl: menuId,
@@ -2993,8 +3000,8 @@
                           ).parent.contentElId != oCurrentTextNode.contentElId
                         ) {
                           var elementItem = Self.myTree.getNodeByProperty(
-                              'uri',
-                              collection.item[0].uri.replace(/\/\//g, '/')
+                            'uri',
+                            collection.item[0].uri.replace(/\/\//g, '/')
                             ).index,
                             currentItem = oCurrentTextNode.parent,
                             isChild = false;
@@ -3080,7 +3087,8 @@
 
                   this.args.render(); // Render the site dropdown's context menu
                 },
-                failure: function() {},
+                failure: function() {
+                },
                 args: p_aArgs,
                 menuItems: aMenuItems,
                 menuEl: menuId,
@@ -3092,7 +3100,8 @@
               CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
             } // end of else
           },
-          failure: function() {}
+          failure: function() {
+          }
         };
 
         checkPermissionsCb.isComponent = isComponent;
@@ -3287,7 +3296,8 @@
             eventNS.oldPath = null;
             document.dispatchEvent(eventNS);
           },
-          failure: function() {},
+          failure: function() {
+          },
           callingWindow: window
         };
         CStudioAuthoring.Service.unlockContentItem(
@@ -3516,7 +3526,8 @@
             }
           },
 
-          failure: function() {},
+          failure: function() {
+          },
 
           callingWindow: window
         };
@@ -3545,7 +3556,8 @@
             this.callingWindow.location.reload(true);
           },
 
-          failure: function() {},
+          failure: function() {
+          },
 
           callingWindow: window
         };
@@ -3569,7 +3581,8 @@
           success: function() {
             Self.refreshNodes(this.currentNode, false, false, null, null, true);
           },
-          failure: function() {},
+          failure: function() {
+          },
           callingWindow: window,
           currentNode: oCurrentTextNode
         };
@@ -3590,7 +3603,8 @@
           success: function() {
             Self.refreshNodes(this.currentNode.parent, false, false, null, null, true);
           },
-          failure: function() {},
+          failure: function() {
+          },
           callingWindow: window,
           currentNode: oCurrentTextNode
         };
@@ -3626,9 +3640,11 @@
        */
       copyContent: function(sType, args, tree) {
         var copyCb = {
-          success: function() {},
+          success: function() {
+          },
 
-          failure: function() {}
+          failure: function() {
+          }
         };
 
         CStudioAuthoring.Clipboard.copyContent(oCurrentTextNode.data, copyCb);
@@ -3698,7 +3714,8 @@
                 getTextNodes[i].style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
               }
             }
-          } catch (ex) {}
+          } catch (ex) {
+          }
 
           //CStudioAuthoring.Operations.openCopyDialog(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, assignTemplateCb, args);
           var cutCb = {
@@ -3714,8 +3731,10 @@
                 CStudioAuthoringContext.site;
 
               var onComplete = {
-                success: function(response) {},
-                failure: function() {}
+                success: function(response) {
+                },
+                failure: function() {
+                }
               };
 
               YAHOO.util.Connect.setDefaultPostHeader(false);
@@ -3726,7 +3745,8 @@
               );
               YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
             },
-            failure: function(response) {}
+            failure: function(response) {
+            }
           };
 
           YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
@@ -3810,7 +3830,8 @@
               Self.cutItem = null;
 
               WcmDashboardWidgetCommon.refreshDashboard('MyRecentActivity');
-            } catch (e) {}
+            } catch (e) {
+            }
           },
 
           failure: function() {
@@ -3846,7 +3867,7 @@
           'duplicate-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
           'Duplicate',
-          "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
+          'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?',
           [
             {
               text: 'Duplicate',
@@ -3874,9 +3895,11 @@
       },
       copyTree: function(sType, args, tree) {
         var assignTemplateCb = {
-          success: function(selectedType) {},
+          success: function(selectedType) {
+          },
 
-          failure: function() {},
+          failure: function() {
+          },
 
           activeNode: oCurrentTextNode
         };
@@ -3928,9 +3951,13 @@
               var myJSON = YAHOO.lang.JSON.stringify(pasteFormatItem);
               var oncomplete = {
                 success: function() {
+                  const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+                  const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+                  CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 1 }), null, null, 'default');
                   CStudioAuthoring.ContextualNav.WcmRootFolder.resetNodeStyles();
                 },
-                failure: function() {}
+                failure: function() {
+                }
               };
               var request = this.args['request'];
               YAHOO.util.Connect.setDefaultPostHeader(false);
@@ -3941,7 +3968,8 @@
               );
               YAHOO.util.Connect.asyncRequest('POST', request, oncomplete, myJSON);
             },
-            failure: function() {},
+            failure: function() {
+            },
             args: context
           };
           var serviceUri =
@@ -4030,7 +4058,8 @@
                   document.dispatchEvent(eventNS);
                 },
 
-                failure: function() {},
+                failure: function() {
+                },
 
                 callingWindow: window
               };
@@ -4057,7 +4086,8 @@
                 auxParams
               );
             },
-            failure: function() {},
+            failure: function() {
+            },
             activeNode: oCurrentTextNode
           };
           dialog.destroy();

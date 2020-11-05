@@ -1403,6 +1403,10 @@ export const itemSuccessMessages = defineMessages({
   itemReverted: {
     id: 'item.edited',
     defaultMessage: 'Item reverted successfully'
+  },
+  itemContentTypeChanged: {
+    id: 'item.contentTypeChanged',
+    defaultMessage: 'Item content type changed successfully'
   }
 });
 
