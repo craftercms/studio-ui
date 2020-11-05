@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
+import { WidgetState } from '../../components/Navigation/PathNavigator/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
@@ -52,7 +52,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           itemsInPath: null,
           breadcrumb: [],
           selectedItems: [],
-          leafs: [],
+          leaves: [],
           limit: 10,
           offset: 0,
           count: 0,
@@ -101,7 +101,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
             ...state[id],
             // Revert path to previous (parent) path
             currentPath: nextPath,
-            leafs: state[id].leafs.concat(path)
+            leaves: state[id].leaves.concat(path)
           }
         };
       } else {

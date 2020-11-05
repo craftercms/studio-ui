@@ -142,7 +142,7 @@ export function createCodebaseBridge() {
       BulkUpload: lazy(() => import('../components/Dialogs/BulkUploadDialog')),
       ConfirmDialog: lazy(() => import('../components/Dialogs/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
-      PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/Widget')),
+      PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/PathNavigator')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
       PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
