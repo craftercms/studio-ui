@@ -23,61 +23,61 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 
 interface HeaderProps {
-	locale: string;
-	title: string;
-	iconClassName: string;
-	style: object;
-	onClick?(): void;
-	onLanguageMenu?(anchor: Element): void;
-	onContextMenu?(anchor: Element): void;
+  locale: string;
+  title: string;
+  iconClassName: string;
+  style: object;
+  onClick?(): void;
+  onLanguageMenu?(anchor: Element): void;
+  onContextMenu?(anchor: Element): void;
 }
 
 // PathNavigatorHeader
 export default function PathNavigatorHeader(props: HeaderProps) {
-	const classes = useStyles({});
-	const { title, iconClassName, locale, onLanguageMenu, onContextMenu, onClick, style } = props;
-	const currentFlag = (locale: string) => <LanguageRounded />;
-	return (
-		<AccordionSummary
-			onClick={onClick}
-			style={style}
-			classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}
-		>
-			<div className={classes.accordionSummaryTitle}>
-				{iconClassName && <span className={iconClassName} />}
-				<Typography
-					variant="body1"
-					component="h6"
-					className={classes.headerTitle}
-					children={title}
-				/>
-			</div>
-			<div className={classes.accordionSummaryActions}>
-				{onLanguageMenu && (
-					<IconButton
-						aria-label="language select"
-						className={classes.iconButton}
-						onClick={(e) => {
-							e.stopPropagation();
-							onLanguageMenu(e.currentTarget);
-						}}
-					>
-						{currentFlag(locale)}
-					</IconButton>
-				)}
-				{onContextMenu && (
-					<IconButton
-						aria-label="options"
-						className={classes.iconButton}
-						onClick={(e) => {
-							e.stopPropagation();
-							onContextMenu(e.currentTarget);
-						}}
-					>
-						<MoreVertIcon />
-					</IconButton>
-				)}
-			</div>
-		</AccordionSummary>
-	);
+  const classes = useStyles({});
+  const { title, iconClassName, locale, onLanguageMenu, onContextMenu, onClick, style } = props;
+  const currentFlag = (locale: string) => <LanguageRounded />;
+  return (
+    <AccordionSummary
+      onClick={onClick}
+      style={style}
+      classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}
+    >
+      <div className={classes.accordionSummaryTitle}>
+        {iconClassName && <span className={iconClassName} />}
+        <Typography
+          variant="body1"
+          component="h6"
+          className={classes.headerTitle}
+          children={title}
+        />
+      </div>
+      <div className={classes.accordionSummaryActions}>
+        {onLanguageMenu && (
+          <IconButton
+            aria-label="language select"
+            className={classes.iconButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              onLanguageMenu(e.currentTarget);
+            }}
+          >
+            {currentFlag(locale)}
+          </IconButton>
+        )}
+        {onContextMenu && (
+          <IconButton
+            aria-label="options"
+            className={classes.iconButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              onContextMenu(e.currentTarget);
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        )}
+      </div>
+    </AccordionSummary>
+  );
 }
