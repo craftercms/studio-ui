@@ -204,6 +204,7 @@ export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_
 export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
 export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
 
 // endregion

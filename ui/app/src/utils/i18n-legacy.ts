@@ -1396,6 +1396,10 @@ export const itemSuccessMessages = defineMessages({
     id: 'item.copied',
     defaultMessage: '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
   },
+  itemPasted: {
+    id: 'item.pasted',
+    defaultMessage: 'Item pasted successfully'
+  },
   itemReverted: {
     id: 'item.edited',
     defaultMessage: 'Item reverted successfully'

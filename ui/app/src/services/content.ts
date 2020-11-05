@@ -951,7 +951,7 @@ export function getChildrenByPath(
     map(({ item }) =>
       Object.assign(parseLegacyItemToSandBoxItem(item.children), {
         parent: parseLegacyItemToSandBoxItem(item),
-        ...(item.children[0].contentType === '/component/level-descriptor' && {
+        ...(item.children[0]?.contentType === '/component/level-descriptor' && {
           levelDescriptor: {
             ...parseLegacyItemToSandBoxItem(item.children[0]),
             label: 'Section Defaults'

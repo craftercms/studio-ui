@@ -72,7 +72,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
     onOpenItemMenu,
     isLeaf = false,
     isLevelDescriptor = false,
-    showItemNavigateToButton = false
+    showItemNavigateToButton = true
   } = props;
   const [over, setOver] = useState(false);
   const { formatMessage } = useIntl();

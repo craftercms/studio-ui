@@ -51,6 +51,7 @@ import {
   showEditItemSuccessNotification,
   showHistoryDialog,
   showNewContentDialog,
+  showPasteItemSuccessNotification,
   showPreviewDialog,
   showPublishDialog,
   showPublishItemSuccessNotification,
@@ -329,7 +330,7 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'paste': {
         paste(site, item.path).subscribe(
           () => {
-            dispatch(unSetClipBoard());
+            dispatch(batchActions([unSetClipBoard(), showPasteItemSuccessNotification()]));
           },
           (response) => {
             dispatch(
@@ -351,7 +352,7 @@ export function ItemMenu(props: ItemMenuProps) {
               closeConfirmDialog(),
               assetDuplicate({
                 path: item.path,
-                onSuccess: onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+                onSuccess: batchActions([onItemMenuActionSuccessCreator?.({ item, option: 'refresh' }), showPasteItemSuccessNotification()])
               })
             ])
           })
@@ -368,7 +369,7 @@ export function ItemMenu(props: ItemMenuProps) {
               closeConfirmDialog(),
               itemDuplicate({
                 path: item.path,
-                onSuccess: onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+                onSuccess: batchActions([onItemMenuActionSuccessCreator?.({ item, option: 'refresh' }), showPasteItemSuccessNotification()])
               })
             ])
           })

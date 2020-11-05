@@ -38,6 +38,7 @@ import {
   showCopyItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showEditItemSuccessNotification,
+  showPasteItemSuccessNotification,
   showPublishItemSuccessNotification,
   showRevertItemSuccessNotification
 } from '../actions/dialogs';
@@ -165,6 +166,16 @@ export default [
       const hostToHost$ = getHostToHostBus();
       hostToHost$.next(showSystemNotification({
         message: intl.formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
+      }));
+    }),
+    ignoreElements()
+  ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
+    ofType(showPasteItemSuccessNotification.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(showSystemNotification({
+        message: intl.formatMessage(itemSuccessMessages.itemPasted)
       }));
     }),
     ignoreElements()
