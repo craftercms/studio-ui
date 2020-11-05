@@ -96,6 +96,7 @@ import {
   setStoredPreviewChoice
 } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
+import EditFormPanel from './Tools/EditFormPanel';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -572,6 +573,7 @@ export function PreviewConcierge(props: any) {
         open={nnou(guest?.itemBeingDragged)}
         onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
+      <EditFormPanel open={nnou(guest?.selected)} />
       <PreviewCompatibilityDialogContainer
         isPreviewNext={false}
         open={previewCompatibilityDialogOpen}
