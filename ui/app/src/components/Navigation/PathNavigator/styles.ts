@@ -20,11 +20,6 @@ import palette from '../../../styles/palette';
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    root: {
-      '&.collapsed': {
-        paddingBottom: 5
-      }
-    },
     widgetSection: {
       padding: `0 0 0 10px !important`,
       '& .MuiSvgIcon-root': {
@@ -44,24 +39,40 @@ export const useStyles = makeStyles((theme) =>
     optionsWrapperOver: {
       visibility: 'visible'
     },
-    // region Header
-    headerRoot: {
-      display: 'flex',
-      padding: '0 0 0 10px',
-      alignItems: 'center',
-      cursor: 'pointer',
-      '& .MuiSvgIcon-root': {
-        fontSize: '1.1rem'
-      },
-      '&:hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0.04)'
-      }
-    },
     headerTitle: {
       marginLeft: '6px',
       flexGrow: 1
     },
-    // endregion
+    accordion: {
+      boxShadow: 'none',
+      '&.Mui-expanded': {
+        margin: 'inherit'
+      }
+    },
+    accordionSummary: {
+      padding: '0 0 0 10px',
+      minHeight: 0,
+      '&.Mui-expanded': {
+        minHeight: 0
+      }
+    },
+    accordionSummaryContent: {
+      alignItems: 'center',
+      placeContent: 'center space-between',
+      margin: 0,
+      '&.Mui-expanded': {
+        margin: 0
+      }
+    },
+    accordionSummaryTitle: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    accordionSummaryActions: {},
+    accordionDetails: {
+      padding: 0,
+      flexDirection: 'column'
+    },
     pagesIcon: {
       fontSize: '1.1rem'
     },
@@ -161,7 +172,7 @@ export const useStyles = makeStyles((theme) =>
       color: palette.gray.medium4
     },
     navItem: {
-      padding: '0 0 0 10px',
+      padding: '0 0 0 10px !important',
       '&.noLeftPadding': {
         paddingLeft: 0
       },
@@ -169,9 +180,7 @@ export const useStyles = makeStyles((theme) =>
         backgroundColor: 'rgba(0, 0, 0, 0.08)'
       }
     },
-    navItemLevelDescriptor: {
-      backgroundColor: 'rgba(90, 200, 250, 0.08)'
-    },
+    navItemLevelDescriptor: {},
     navItemText: {
       color: palette.teal.shade,
       padding: 0,

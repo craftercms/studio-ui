@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { DetailedItem } from '../../models/Item';
-import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
+import { WidgetState } from '../../components/Navigation/PathNavigator/PathNavigator';
 
 type PayloadWithId<P> = P & { id: string };
 

@@ -21,7 +21,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import ToolPanel from './ToolPanel';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Widget from '../../../components/Navigation/PathNavigator/Widget';
+import PathNavigator from '../../../components/Navigation/PathNavigator/PathNavigator';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { useActiveSiteId, useLogicResource, useRoles } from '../../../utils/hooks';
@@ -137,7 +137,7 @@ function SiteConfigLink() {
 }
 
 const ItemToComponentMap = {
-  'craftercms.pathNavigator': Widget,
+  'craftercms.pathNavigator': PathNavigator,
   'craftercms.linkWithIcon': LinkWithIcon,
   'craftercms.siteDashboardLink': SiteDashboardLink,
   'craftercms.siteConfigLink': SiteConfigLink

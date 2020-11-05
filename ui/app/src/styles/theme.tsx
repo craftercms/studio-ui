@@ -120,6 +120,13 @@ export const defaultThemeOptions: ThemeOptions = (function () {
           color: darken(palette.blue.main, 0.10),
           border: `1px solid ${darken(palette.blue.main, 0.10)}`
         }
+      },
+      MuiAccordion: {
+        root: {
+          '&:before': {
+            display: 'none'
+          }
+        }
       }
     }
   };

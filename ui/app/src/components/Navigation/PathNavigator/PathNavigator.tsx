@@ -58,34 +58,8 @@ import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable, rand 
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
 import { StateStylingProps } from '../../../models/UiConfig';
-
-const MyLoader = React.memo(function() {
-  const [items] = useState(() => {
-    const numOfItems = 5;
-    const start = 20;
-    return new Array(numOfItems).fill(null).map((_, i) => ({
-      y: start + 30 * i,
-      width: rand(70, 85)
-    }));
-  });
-  return (
-    <ContentLoader speed={2} width="100%" backgroundColor="#f3f3f3" foregroundColor="#ecebeb">
-      {items.map(({ y, width }, i) => (
-        <Fragment key={i}>
-          <circle cx="10" cy={y} r="8" />
-          <rect x="25" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
-        </Fragment>
-      ))}
-    </ContentLoader>
-  );
-});
-
-const menuOptions = {
-  refresh: {
-    id: 'refresh',
-    label: translations.refresh
-  }
-};
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 
 export interface WidgetProps {
   id: string;
@@ -120,16 +94,58 @@ export interface WidgetState {
   itemsInPath: string[];
   breadcrumb: string[];
   selectedItems: string[];
-  leafs: string[];
+  leaves: string[];
   count: number; // Number of items in the current path
   limit: number;
   offset: number;
   collapsed?: boolean;
 }
 
+interface WidgetUIProps {
+  state: WidgetState;
+  // TODO: add props
+  [key: string]: any;
+}
+
+const MyLoader = React.memo(function() {
+  const [items] = useState(() => {
+    const numOfItems = 5;
+    const start = 20;
+    return new Array(numOfItems).fill(null).map((_, i) => ({
+      y: start + 30 * i,
+      width: rand(70, 85)
+    }));
+  });
+  return (
+    <ContentLoader speed={2} width="100%" backgroundColor="#f3f3f3" foregroundColor="#ecebeb">
+      {items.map(({ y, width }, i) => (
+        <Fragment key={i}>
+          <circle cx="10" cy={y} r="8" />
+          <rect x="25" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
+        </Fragment>
+      ))}
+    </ContentLoader>
+  );
+});
+
+const menuOptions = {
+  refresh: {
+    id: 'refresh',
+    label: translations.refresh
+  }
+};
+
 // PathNavigator
-export default function Widget(props: WidgetProps) {
-  const { label, icon = {}, container = {}, rootPath: path, id = label.replace(/\s/g, ''), locale, excludes } = props;
+export default function PathNavigator(props: WidgetProps) {
+  const {
+    label,
+    icon = {},
+    container = {},
+    rootPath: path,
+    id = label.replace(/\s/g, ''),
+    locale,
+    excludes
+  } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -228,9 +244,9 @@ export default function Widget(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-          id,
-          item
-        })
+            id,
+            item
+          })
     );
   };
 
@@ -327,7 +343,7 @@ export default function Widget(props: WidgetProps) {
     payload: { id, ...args }
   });
 
-  const onHeaderClick = (collapsed: boolean) => {
+  const onChangeCollapsed = (collapsed: boolean) => {
     dispatch(pathNavigatorSetCollapsed({ id, collapsed }));
   };
 
@@ -337,7 +353,7 @@ export default function Widget(props: WidgetProps) {
 
   return (
     <Suspencified>
-      <WidgetUI
+      <PathNavigatorUI
         state={state}
         classes={props.classes}
         itemsByPath={itemsByPath}
@@ -346,7 +362,7 @@ export default function Widget(props: WidgetProps) {
         title={label}
         itemMenu={itemMenu}
         simpleMenu={simpleMenu}
-        onHeaderClick={onHeaderClick}
+        onChangeCollapsed={onChangeCollapsed}
         onHeaderButtonClick={onHeaderButtonClick}
         onCurrentParentMenu={onCurrentParentMenu}
         siteLocales={siteLocales}
@@ -367,13 +383,9 @@ export default function Widget(props: WidgetProps) {
   );
 }
 
-interface WidgetUIProps {
-  state: WidgetState;
-  [key: string]: any;
-}
-
-export function WidgetUI(props: WidgetUIProps) {
-  const classes = useStyles({});
+export function PathNavigatorUI(props: WidgetUIProps) {
+  const classes = useStyles();
+  // region consts {...} = props
   const {
     state,
     itemsByPath,
@@ -382,7 +394,7 @@ export function WidgetUI(props: WidgetUIProps) {
     title,
     itemMenu,
     simpleMenu,
-    onHeaderClick,
+    onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
     siteLocales,
@@ -399,10 +411,13 @@ export function WidgetUI(props: WidgetUIProps) {
     onSimpleMenuClick,
     onItemMenuActionSuccessCreator
   } = props;
+  // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
+  const resource = useLogicResource<
+    DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
+  >(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -427,103 +442,104 @@ export function WidgetUI(props: WidgetUIProps) {
   }, [state.levelDescriptor, itemsByPath]);
 
   return (
-    <section
-      className={clsx(
-        classes.root,
-        props.classes?.root,
-        state.collapsed && 'collapsed',
-        container.baseClass,
-        state.collapsed ? container.collapsedClass : container.expandedClass
-      )}
-      style={{
-        ...container.baseStyle,
-        ...(state.collapsed ? container.collapsedStyle : container.expandedStyle)
-      }}
-    >
-      <Header
-        iconClassName={`${icon.baseClass} ${
-          state.collapsed ? icon.collapsedClass : icon.expandedClass
-        }`}
+    <>
+      <Accordion
+        expanded={!state.collapsed}
+        onChange={() => onChangeCollapsed(!state.collapsed)}
+        className={clsx(
+          classes.accordion,
+          props.classes?.root,
+          container.baseClass,
+          state.collapsed ? container.collapsedClass : container.expandedClass
+        )}
         style={{
-          ...icon.baseStyle,
-          ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
+          ...container.baseStyle,
+          ...(state.collapsed ? container.collapsedStyle : container.expandedStyle)
         }}
-        title={title}
-        locale={state.localeCode}
-        onClick={() => onHeaderClick(!state.collapsed)}
-        onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
-        onLanguageMenu={
-          siteLocales?.localeCodes?.length
-            ? (anchor) => onHeaderButtonClick(anchor, 'language')
-            : null
-        }
-      />
-      <div {...(state.collapsed ? { hidden: true } : {})} className={props.classes?.body}>
-        <Breadcrumbs
-          keyword={state.keyword}
-          breadcrumb={state.breadcrumb.map(
-            (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
-          )}
-          onMenu={onCurrentParentMenu}
-          onSearch={(keyword) => onSearch(keyword)}
-          onCrumbSelected={onBreadcrumbSelected}
-          classes={{ searchRoot: props.classes?.searchRoot }}
+      >
+        <Header
+          iconClassName={`${icon.baseClass} ${
+            state.collapsed ? icon.collapsedClass : icon.expandedClass
+          }`}
+          style={{
+            ...icon.baseStyle,
+            ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
+          }}
+          title={title}
+          locale={state.localeCode}
+          onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
+          onLanguageMenu={
+            siteLocales?.localeCodes?.length
+              ? (anchor) => onHeaderButtonClick(anchor, 'language')
+              : null
+          }
         />
-        <SuspenseWithEmptyState
-          resource={resource}
-          loadingStateProps={{
-            graphicProps: { className: classes.stateGraphics }
-          }}
-          errorBoundaryProps={{
-            errorStateProps: { classes: { graphic: classes.stateGraphics } }
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: 'No items at this location',
-              classes: { image: classes.stateGraphics }
-            }
-          }}
-          suspenseProps={{
-            fallback: <MyLoader />
-          }}
-        >
-          {
-            levelDescriptor &&
-            <NavItem
-              item={levelDescriptor}
+        <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
+          <Breadcrumbs
+            keyword={state.keyword}
+            breadcrumb={state.breadcrumb.map(
+              (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
+            )}
+            onMenu={onCurrentParentMenu}
+            onSearch={(keyword) => onSearch(keyword)}
+            onCrumbSelected={onBreadcrumbSelected}
+            classes={{ searchRoot: props.classes?.searchRoot }}
+          />
+          <SuspenseWithEmptyState
+            resource={resource}
+            loadingStateProps={{
+              graphicProps: { className: classes.stateGraphics }
+            }}
+            errorBoundaryProps={{
+              errorStateProps: { classes: { graphic: classes.stateGraphics } }
+            }}
+            withEmptyStateProps={{
+              emptyStateProps: {
+                title: 'No items at this location',
+                classes: { image: classes.stateGraphics }
+              }
+            }}
+            suspenseProps={{
+              fallback: <MyLoader />
+            }}
+          >
+            {levelDescriptor && (
+              <NavItem
+                item={levelDescriptor}
+                locale={state.localeCode}
+                isLevelDescriptor
+                onOpenItemMenu={onOpenItemMenu}
+                onItemClicked={onItemClicked}
+              />
+            )}
+            <Nav
+              leaves={state.leaves}
               locale={state.localeCode}
-              isLevelDescriptor
+              resource={resource}
+              onSelectItem={onSelectItem}
+              onPathSelected={onPathSelected}
+              onPreview={onPreview}
               onOpenItemMenu={onOpenItemMenu}
               onItemClicked={onItemClicked}
             />
-          }
-          <Nav
-            leafs={state.leafs}
-            locale={state.localeCode}
-            resource={resource}
-            onSelectItem={onSelectItem}
-            onPathSelected={onPathSelected}
-            onPreview={onPreview}
-            onOpenItemMenu={onOpenItemMenu}
-            onItemClicked={onItemClicked}
+          </SuspenseWithEmptyState>
+          <TablePagination
+            classes={{
+              root: classes.pagination,
+              selectRoot: 'hidden',
+              toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+            }}
+            component="div"
+            labelRowsPerPage=""
+            count={state.count}
+            rowsPerPage={state.limit}
+            page={state && Math.ceil(state.offset / state.limit)}
+            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onChangePage={(e, page: number) => onPageChanged(page)}
           />
-        </SuspenseWithEmptyState>
-        <TablePagination
-          classes={{
-            root: classes.pagination,
-            selectRoot: 'hidden',
-            toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
-          }}
-          component="div"
-          labelRowsPerPage=""
-          count={state.count}
-          rowsPerPage={state.limit}
-          page={state && Math.ceil(state.offset / state.limit)}
-          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-          onChangePage={(e, page: number) => onPageChanged(page)}
-        />
-      </div>
+        </AccordionDetails>
+      </Accordion>
       {Boolean(itemMenu.anchorEl) && (
         <ItemMenu
           path={itemMenu.path}
@@ -542,6 +558,6 @@ export function WidgetUI(props: WidgetUIProps) {
         onClose={onCloseSimpleMenu}
         onMenuItemClicked={onSimpleMenuClick}
       />
-    </section>
+    </>
   );
 }
