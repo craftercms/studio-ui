@@ -209,7 +209,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
     selectedContentType
   } = props;
   const [openSelector, setOpenSelector] = useState(false);
-  const defaultFilterType = 'all';
+  const defaultFilterType = (type === 'new') ? 'all' : item.systemType;
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
   const classes = useStyles({});
@@ -227,7 +227,9 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const path = previewItem?.path.endsWith('.xml') ? previewItem.path.replace(/[^/]*$/, '') : previewItem?.path;
+  const path = previewItem?.path;
+  const parentPath = previewItem?.path.endsWith('.xml') ? previewItem.path.replace(/[^/]*$/, '') : previewItem?.path;
+
   const contentTypesFilters = [
     {
       label: formatMessage(translations.contentTypeAllLabel),
@@ -263,7 +265,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
 
   const onTypeOpen = (contentType: LegacyFormConfig) => () => {
     onContentTypeSelected?.({
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${parentPath}&type=form`,
       inProgress: false,
       onSaveSuccess: newContentCreationComplete()
     });
@@ -329,7 +331,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
     if (path) {
       fetchLegacyContentTypes(site, path).subscribe(
         (response) => {
-          setFilterContentTypes(response);
+          setFilterContentTypes((defaultFilterType === 'all') ? response : response.filter((contenType) => contenType.type === defaultFilterType));
           contentTypes.current = response;
           setLoading(false);
         },
@@ -339,7 +341,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
         }
       );
     }
-  }, [dispatch, path, site]);
+  }, [dispatch, path, site, defaultFilterType]);
 
   return (
     <>
@@ -433,7 +435,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
         <ContentTypesFilter
           filters={contentTypesFilters}
           onTypeChange={onTypeChange}
-          disabled={loading}
+          disabled={(type === 'new') ? loading : true}
           resetType={resetFilterType}
         />
       </DialogFooter>

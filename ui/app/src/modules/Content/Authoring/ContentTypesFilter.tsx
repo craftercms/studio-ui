@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -64,6 +63,8 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [type, setType] = useState(filters[0].type);
 
+  const selected = filters.find(filter => filter.type === type);
+
   const onMenuClose = () => setAnchorEl(null);
 
   const onMenuOpen = (e) => setAnchorEl(e.currentTarget);
@@ -81,7 +82,7 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
   return (
     <>
       <Button disabled={disabled} onClick={onMenuOpen} className={classes.openMenuBtn}>
-        <FormattedMessage id="openMenuBtn.text" defaultMessage="Show all types" />
+        {selected ? selected.label : type}
         <ArrowDropDownIcon className={classes.openMenuBtnIcon} />
       </Button>
       <Menu
