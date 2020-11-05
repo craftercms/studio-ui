@@ -227,7 +227,6 @@ export function ItemMenu(props: ItemMenuProps) {
             onSuccess: batchActions(
               [
                 showDeleteItemSuccessNotification(),
-                onItemMenuActionSuccessCreator?.({ item, option: option.id }),
                 closeDeleteDialog()
               ].filter(Boolean)
             )

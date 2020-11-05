@@ -31,7 +31,7 @@ import {
 } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import Suspencified, { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
-import { withIndex, withoutIndex } from '../../../utils/path';
+import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -190,14 +190,29 @@ export default function PathNavigator(props: WidgetProps) {
 
   //Item Updates Propagation
   useEffect(() => {
-    const events = ['ITEM_PASTED'];
+    const events = ['ITEM_PASTED', 'ITEM_DELETED'];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ payload }) => {
-      if (withoutIndex(payload.path) === state.currentPath) {
-        //TODO: who should check the path, the widget or the action pathNavigatorRefresh?
-        dispatch(pathNavigatorRefresh({
-          id
-        }));
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case 'ITEM_PASTED': {
+          if (withoutIndex(payload.path) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
+          break;
+        }
+        case 'ITEM_DELETED': {
+          payload.paths.forEach(path => {
+            if(withoutIndex(path) === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorSetCurrentPath({
+                id,
+                path: getParentPath(withoutIndex(path))
+              }))
+            } else if (state.itemsInPath.includes(path)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+          });
+          break;
+        }
       }
     });
     return () => {
