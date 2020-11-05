@@ -57,7 +57,6 @@ const styles = makeStyles((theme) => createStyles({
     position: 'absolute',
     top: 64 + theme.spacing(1),
     left: theme.spacing(1),
-    bottom: theme.spacing(1),
     zIndex: theme.zIndex.drawer
   },
   formWrapper: {
@@ -90,7 +89,7 @@ export default function EditFormPanel(props) {
   return (
     <Grow in={props.open}>
       <Paper
-        elevation={2}
+        elevation={4}
         style={{ width: toolsPanelWidth - 30 }}
         className={classes.root}
       >

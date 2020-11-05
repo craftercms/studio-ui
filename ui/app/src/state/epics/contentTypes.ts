@@ -23,7 +23,7 @@ import {
   fetchContentTypesComplete,
   fetchContentTypesFailed
 } from '../actions/preview';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { getContentByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
@@ -33,7 +33,7 @@ import { fetchContentTypes } from '../../services/contentTypes';
 const fetch: Epic = (action$, state$) => action$.pipe(
   ofType(FETCH_CONTENT_TYPES),
   withLatestFrom(state$),
-  switchMap(([, { sites: { active: site } }]) => fetchContentTypes(site).pipe(
+  exhaustMap(([, { sites: { active: site } }]) => fetchContentTypes(site).pipe(
     map(fetchContentTypesComplete),
     catchAjaxError(fetchContentTypesFailed)
   ))
