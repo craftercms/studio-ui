@@ -120,8 +120,9 @@ function BlueprintForm(props: BlueprintFormProps) {
       setInputs({ [e.target.name]: e.target.checked, submitted: false });
     } else if (e.target.name === 'siteId') {
       const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
+      const siteId = e.target.value.replace(/[^a-zA-Z0-9-_]/g, '').replace(/_/g, '-').toLowerCase();
       setInputs({
-        [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase(),
+        [e.target.name]: siteId,
         invalidSiteId: invalidSiteId
       });
     } else if (type === 'blueprintFields') {
