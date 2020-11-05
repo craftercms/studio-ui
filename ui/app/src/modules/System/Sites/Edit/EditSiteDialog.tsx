@@ -169,11 +169,13 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
   const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose } = props;
   const site = resource.read().site;
   const [name, setName] = useState(site.name);
+  const [requestName, setRequestName] = useState(null);
   const [description, setDescription] = useState(site.description);
 
   const onSiteNameChange = (event) => {
     checkSiteName(event, site.name);
     setName(event.target.value);
+    setRequestName(event.target.value);
   };
 
   const onKeyPress = (event: React.KeyboardEvent) => {
@@ -192,7 +194,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
       submitting={submitting}
       submitDisabled={submitDisabled}
       onKeyPress={onKeyPress}
-      onSubmit={() => onSubmit(site.id, name, description)}
+      onSubmit={() => onSubmit(site.id, requestName, description)}
       onClose={onClose}
     />
   );
