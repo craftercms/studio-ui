@@ -999,10 +999,11 @@ export function duplicate(site: string, path: string): Observable<string> {
   if (path.endsWith('index.xml')) {
     parentPath = withoutIndex(path);
   }
-  return forkJoin({
-    copy: copy(site, path),
-    newItem: paste(site, getParentPath(parentPath))
-  }).pipe(map(({ copy, newItem }) => newItem.status[0]));
+  return copy(site, path).pipe(
+    switchMap(() => paste(site, getParentPath(parentPath))),
+    // Duplicate only does shallow copy, so return the copied path
+    pluck('status', '0')
+  );
 }
 
 export function deleteItems(

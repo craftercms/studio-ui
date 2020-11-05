@@ -36,7 +36,7 @@ export function getTranslation(key: string, table: any, formatMessage = (descrip
   });
 }
 
-export const intlRef = { current: null };
+export const intlRef = { current: getIntl(getCurrentLocale()) };
 
 function getIntl(locale: string): IntlShape {
   return createIntl(
@@ -68,5 +68,3 @@ document.addEventListener(
   },
   false
 );
-
-intlRef.current = getIntl(getCurrentLocale());

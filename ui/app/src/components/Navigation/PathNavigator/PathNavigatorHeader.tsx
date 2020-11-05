@@ -27,7 +27,6 @@ interface HeaderProps {
   title: string;
   iconClassName: string;
   style: object;
-  onClick?(): void;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
 }
@@ -35,11 +34,10 @@ interface HeaderProps {
 // PathNavigatorHeader
 export default function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
-  const { title, iconClassName, locale, onLanguageMenu, onContextMenu, onClick, style } = props;
+  const { title, iconClassName, locale, onLanguageMenu, onContextMenu, style } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <AccordionSummary
-      onClick={onClick}
       style={style}
       classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}
     >
