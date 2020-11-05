@@ -332,7 +332,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
       fetchLegacyContentTypes(site, path).subscribe(
         (response) => {
           setFilterContentTypes((defaultFilterType === 'all') ? response : response.filter((contenType) => contenType.type === defaultFilterType));
-          contentTypes.current = response;
+          contentTypes.current = (defaultFilterType === 'all') ? response : response.filter((contenType) => contenType.type === defaultFilterType);
           setLoading(false);
         },
         (response) => {
@@ -396,7 +396,10 @@ function NewContentDialogBody(props: NewContentDialogProps) {
                         component="a"
                         className={classes.emptyStateLink}
                         color="textSecondary"
-                        onClick={onResetFilter}
+                        onClick={() => {
+                          onResetFilter();
+                          setSearch('');
+                        }}
                       >
                         {msg}
                       </Typography>
