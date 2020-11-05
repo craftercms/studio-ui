@@ -909,6 +909,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabEngineSiteAppContextConfigurationDesc: 'Configuración del Contexto de Aplicación para el Sitio de Engine',
   confTabTranslationConf: 'Configuración de Traducciones',
   confTabTranslationConfDesc: 'Define los lenguajes soportados y su resolución',
+  confTabSitePolicyConf: 'Configuración de Políticas de Sitio',
+  confTabSitePolicyConfDesc: 'Define las políticas para validar operaciones de contentido',
 
   /*Postfixes*/
   iDescription: 'Para nuúmero entero.',
