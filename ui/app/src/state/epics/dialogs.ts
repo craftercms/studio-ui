@@ -118,86 +118,122 @@ export default [
       )
     ),
   // endregion
-  (action$, state$: Observable<GlobalState>) => action$.pipe(
-    ofType(newContentCreationComplete.type),
-    switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
-  ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
-    ofType(showDeleteItemSuccessNotification.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(itemSuccessMessages.itemDeleted, {
-          count: payload.items.length
-        })
-      }));
-    }),
-    ignoreElements()
-  ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
-    ofType(showPublishItemSuccessNotification.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(showSystemNotification({
-        message: payload.schedule === 'now' ? intl.formatMessage(itemSuccessMessages.itemPublishedNow, {
-          count: payload.items.length,
-          environment: payload.environment
-        }) : intl.formatMessage(itemSuccessMessages.itemSchedulePublished, {
-          count: payload.items.length,
-          environment: payload.environment
-        })
-      }));
-    }),
-    ignoreElements()
-  ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
-    ofType(showEditItemSuccessNotification.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(itemSuccessMessages.itemEdited)
-      }));
-    }),
-    ignoreElements()
-  ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
-    ofType(showCopyItemSuccessNotification.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
-      }));
-    }),
-    ignoreElements()
-  ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
-    ofType(showPasteItemSuccessNotification.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(itemSuccessMessages.itemPasted)
-      }));
-    }),
-    ignoreElements()
-  ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) => action$.pipe(
-    ofType(showRevertItemSuccessNotification.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(showSystemNotification({
-        message: intl.formatMessage(itemSuccessMessages.itemReverted)
-      }));
-    }),
-    ignoreElements()
-  ),
-  (action$, state$) => action$.pipe(
-    ofType(fetchDeleteDependencies.type),
-    withLatestFrom(state$),
-    switchMap(([{ payload: items }, state]) =>
-      fetchDeleteDependenciesService(state.sites.active, items).pipe(
-        map(fetchDeleteDependenciesComplete),
-        catchAjaxError(fetchDeleteDependenciesFailed)
+  (action$, state$: Observable<GlobalState>) =>
+    action$.pipe(
+      ofType(newContentCreationComplete.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next({
+          type: 'ITEM_CREATED',
+          payload: {
+            item: payload.item
+          }
+        });
+      }),
+      switchMap(({ payload }) =>
+        payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER
+      )
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showDeleteItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemDeleted, {
+              count: payload.items.length
+            })
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showPublishItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message:
+              payload.schedule === 'now'
+                ? intl.formatMessage(itemSuccessMessages.itemPublishedNow, {
+                    count: payload.items.length,
+                    environment: payload.environment
+                  })
+                : intl.formatMessage(itemSuccessMessages.itemSchedulePublished, {
+                    count: payload.items.length,
+                    environment: payload.environment
+                  })
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showEditItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemEdited)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showCopyItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemCopied, {
+              count: payload?.children.length ?? 1
+            })
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showPasteItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemPasted)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showRevertItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemReverted)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchDeleteDependencies.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload: items }, state]) =>
+        fetchDeleteDependenciesService(state.sites.active, items).pipe(
+          map(fetchDeleteDependenciesComplete),
+          catchAjaxError(fetchDeleteDependenciesFailed)
+        )
       )
     )
-  )
 ] as Epic[];

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -50,39 +50,32 @@ interface Filter {
 }
 
 interface ContentTypesFilterProps {
-  onTypeChange(type: string): any;
-
-  disabled: boolean;
   filters: Filter[];
-  resetType?: string;
+  selected: string;
+  disabled?: boolean;
+  onFilterChange(filter: string): void;
 }
 
 export default function ContentTypesFilter(props: ContentTypesFilterProps) {
-  const { onTypeChange, disabled, filters, resetType } = props;
+  const { onFilterChange, selected, disabled, filters } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [type, setType] = useState(filters[0].type);
 
-  const selected = filters.find(filter => filter.type === type);
+  const filter = filters.find((filter) => filter.type === selected);
 
   const onMenuClose = () => setAnchorEl(null);
 
   const onMenuOpen = (e) => setAnchorEl(e.currentTarget);
 
   const onChange = (e) => {
-    onTypeChange(e.target.value);
-    setType(e.target.value);
+    onFilterChange(e.target.value);
     onMenuClose();
   };
-
-  useEffect(() => {
-    resetType && setType(resetType);
-  }, [resetType]);
 
   return (
     <>
       <Button disabled={disabled} onClick={onMenuOpen} className={classes.openMenuBtn}>
-        {selected ? selected.label : type}
+        {filter.label}
         <ArrowDropDownIcon className={classes.openMenuBtnIcon} />
       </Button>
       <Menu
@@ -101,7 +94,7 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
           horizontal: 'right'
         }}
       >
-        <RadioGroup value={type} onChange={onChange} className={classes.radioGroup}>
+        <RadioGroup value={selected} onChange={onChange} className={classes.radioGroup}>
           {filters.map((filter) => (
             <FormControlLabel
               key={filter.type}

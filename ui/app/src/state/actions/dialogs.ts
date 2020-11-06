@@ -101,6 +101,16 @@ export const closeNewContentDialog = createAction<StandardAction>('CLOSE_NEW_CON
 export const newContentDialogClosed = createAction('NEW_CONTENT_DIALOG_CLOSED');
 // endregion
 
+// region Change ContentType
+export const showChangeContentTypeDialog = createAction<Partial<NewContentDialogStateProps>>(
+  'SHOW_CHANGE_CONTENT_TYPE_DIALOG'
+);
+export const closeChangeContentTypeDialog = createAction<StandardAction>(
+  'CLOSE_CHANGE_CONTENT_TYPE_DIALOG'
+);
+export const ChangeContentTypeDialogClosed = createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
+// endregion
+
 // region Dependencies
 export const showDependenciesDialog = createAction<Partial<DependenciesDialogStateProps>>(
   'SHOW_DEPENDENCIES_DIALOG'
@@ -200,11 +210,19 @@ export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
 
 // region items notification
 
-export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
-export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
+export const showDeleteItemSuccessNotification = createAction(
+  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
+);
+export const showPublishItemSuccessNotification = createAction(
+  'SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION'
+);
 export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
-export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
-export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
+export const showPasteItemSuccessNotification = createAction(
+  'SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION'
+);
+export const showRevertItemSuccessNotification = createAction(
+  'SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION'
+);
 
 // endregion

@@ -195,7 +195,8 @@ export default function PathNavigator(props: WidgetProps) {
       'ITEM_DELETED',
       'ITEM_DUPLICATED',
       'FOLDER_RENAMED',
-      'FOLDER_CREATED'
+      'FOLDER_CREATED',
+      'ITEM_CREATED'
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$
@@ -237,6 +238,12 @@ export default function PathNavigator(props: WidgetProps) {
           }
           case 'FOLDER_CREATED': {
             if (payload.path === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+            break;
+          }
+          case 'ITEM_CREATED': {
+            if (getParentPath(payload.item.path) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
             break;

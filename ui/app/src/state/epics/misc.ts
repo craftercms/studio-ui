@@ -19,7 +19,6 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
-  batchActions,
   changeContentType as changeContentTypeAction,
   editTemplate as editTemplateAction
 } from '../actions/misc';
@@ -31,49 +30,46 @@ import {
   showEditItemSuccessNotification,
   showWorkflowCancellationDialog
 } from '../actions/dialogs';
-import { pathNavigatorItemActionSuccess } from '../actions/pathNavigator';
 
-const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(changeContentTypeAction.type),
-  withLatestFrom(state$),
-  switchMap(([{ payload }, state]) => {
-    const contentType = queryString.parse(payload.src).contentTypeId as string;
-    const path = payload.path;
-    if (payload.contentTypeId !== contentType) {
-      let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${contentType}`;
-      return changeContentType(state.sites.active, path, contentType).pipe(
-        map(() => showEditDialog({
-          src,
-          onSaveSuccess:  batchActions([
-            showEditItemSuccessNotification,
-            pathNavigatorItemActionSuccess({ id: payload.id, option: 'refresh' })
-          ])
-        }))
+const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(changeContentTypeAction.type),
+    withLatestFrom(state$),
+    switchMap(([{ payload }, state]) => {
+      const contentType = queryString.parse(payload.src).contentTypeId as string;
+      const path = payload.path;
+      if (payload.contentTypeId !== contentType) {
+        let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${contentType}`;
+        return changeContentType(state.sites.active, path, contentType).pipe(
+          map(() =>
+            showEditDialog({
+              src,
+              onSaveSuccess: showEditItemSuccessNotification()
+            })
+          )
+        );
+      }
+      return NEVER;
+    })
+  );
+
+const editTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(editTemplateAction.type),
+    withLatestFrom(state$),
+    switchMap(([{ payload }, state]) => {
+      const path = state.contentTypes.byId[payload.contentTypeId].displayTemplate;
+      let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=template`;
+      return fetchWorkflowAffectedItems(state.sites.active, path).pipe(
+        map((items) => {
+          if (items?.length > 0) {
+            return showWorkflowCancellationDialog({ onContinue: showCodeEditorDialog({ src }) });
+          } else {
+            return showCodeEditorDialog({ src });
+          }
+        })
       );
-    }
-    return NEVER;
-  })
-);
+    })
+  );
 
-const editTemplate: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(editTemplateAction.type),
-  withLatestFrom(state$),
-  switchMap(([{ payload }, state]) => {
-    const path = state.contentTypes.byId[payload.contentTypeId].displayTemplate;
-    let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=template`;
-    return fetchWorkflowAffectedItems(state.sites.active, path).pipe(
-      map(items => {
-        if (items?.length > 0) {
-          return showWorkflowCancellationDialog({ onContinue: showCodeEditorDialog({ src }) });
-        } else {
-          return showCodeEditorDialog({ src });
-        }
-      })
-    );
-  })
-);
-
-export default [
-  changeTemplate,
-  editTemplate
-] as Epic[];
+export default [changeTemplate, editTemplate] as Epic[];

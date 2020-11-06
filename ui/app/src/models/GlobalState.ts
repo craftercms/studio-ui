@@ -51,6 +51,7 @@ import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 import { SidebarPanelConfigEntry, SiteNavConfigEntry } from './UiConfig';
+import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -158,6 +159,7 @@ export interface GlobalState {
     preview: PreviewDialogStateProps;
     editSite: EditSiteDialogStateProps;
     pathSelection: PathSelectionDialogStateProps;
+    changeContentType: ChangeContentTypeDialogStateProps;
   };
   translation: {
     siteLocales: {

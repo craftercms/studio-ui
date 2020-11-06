@@ -37,6 +37,7 @@ import {
   closeNewContentDialog,
   closePublishDialog,
   closeUploadDialog,
+  showChangeContentTypeDialog,
   showCodeEditorDialog,
   showConfirmDialog,
   showCopyDialog,
@@ -203,10 +204,8 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'createContent': {
         dispatch(
           showNewContentDialog({
-            open: true,
             item,
             rootPath: item.path,
-            compact: true,
             onContentTypeSelected: showEditDialog({})
           })
         );
@@ -232,11 +231,10 @@ export function ItemMenu(props: ItemMenuProps) {
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              showNewContentDialog({
+              showChangeContentTypeDialog({
                 open: true,
                 rootPath: path,
                 item,
-                type: 'change',
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
                   closeNewContentDialog(),
