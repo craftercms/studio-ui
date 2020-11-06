@@ -181,10 +181,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
     if (selectedItem.path) {
       fetchLegacyContentTypes(site, selectedItem.path).subscribe(
         (response) => {
-          setTimeout(() => {
-            setContentTypes(response);
-          }, 2000);
-          //setContentTypes(response);
+          setContentTypes(response);
         },
         (response) => {
           dispatch(showErrorDialog({ error: response }));
