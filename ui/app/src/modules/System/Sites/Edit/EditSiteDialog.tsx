@@ -90,7 +90,23 @@ const messages = defineMessages({
 });
 
 function EditSiteDialog(props: EditSiteDialogProps) {
-  const { site, open, onClosed, onClose, onSaveSuccess } = props;
+  const { open, onClose } = props;
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby="editSiteDialogTitle"
+      fullWidth
+      maxWidth="sm"
+    >
+      <EditSiteDialogWrapper {...props} />
+    </Dialog>
+  );
+}
+
+function EditSiteDialogWrapper(props: EditSiteDialogProps) {
+  const { site, onClosed, onClose, onSaveSuccess } = props;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -144,13 +160,12 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClosed}
-      aria-labelledby="editSiteDialogTitle"
-      fullWidth
-      maxWidth="sm"
-    >
+    <>
+      <DialogHeader
+        id="editSiteDialogTitle"
+        title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
+        onDismiss={onClose}
+      />
       <Suspencified>
         <EditSiteDialogUIContainer
           resource={resource}
@@ -161,8 +176,8 @@ function EditSiteDialog(props: EditSiteDialogProps) {
           onClose={onClose}
         />
       </Suspencified>
-    </Dialog>
-  );
+    </>
+  )
 }
 
 function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
@@ -214,10 +229,6 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const { formatMessage } = useIntl();
   return (
     <>
-      <DialogHeader
-        id="editSiteDialogTitle"
-        title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
-      />
       <DialogBody>
         <Grid container spacing={1} component="form">
           <Grid item xs={12}>

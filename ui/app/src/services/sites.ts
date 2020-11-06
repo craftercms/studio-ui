@@ -16,10 +16,11 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { CreateSiteMeta, Site } from '../models/Site';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
+import { AjaxError } from 'rxjs/ajax';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
@@ -55,7 +56,12 @@ export function deleteSite(id: string) {
 }
 
 export function updateSite(site: Site) {
-  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description });
+  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description })
+    .pipe(
+      catchError((error: AjaxError) => {
+        throw error.response?.response ?? error;
+      })
+    );
 }
 
 export function checkHandleAvailability(name: string) {
