@@ -302,7 +302,7 @@
   "publishingDashboard.environment": "Publishing Target",
   "publishingDashboard.fetchPackagesFiles": "Fetch Packages Files",
   "publishingDashboard.filesList": "files list",
-  "publishingDashboard.filteredBy": "Showing: {state, select, all {} other {Status : {state}.}} {environment, select, all {} other {{environment} target.}} {path, select, none {}  other {Filtered by {path}}}",
+  "publishingDashboard.filteredBy": "Showing: {state, select, all {} other {Status: {state}.}} {environment, select, all {} other {{environment} target.}} {path, select, none {} other {Filtered by {path}}}",
   "publishingDashboard.filters": "Filters",
   "publishingDashboard.next": "Next page",
   "publishingDashboard.no": "No",
