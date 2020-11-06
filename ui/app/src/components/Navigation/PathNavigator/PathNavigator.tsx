@@ -190,31 +190,59 @@ export default function PathNavigator(props: WidgetProps) {
 
   //Item Updates Propagation
   useEffect(() => {
-    const events = ['ITEM_PASTED', 'ITEM_DELETED'];
+    const events = [
+      'ITEM_PASTED',
+      'ITEM_DELETED',
+      'ITEM_DUPLICATED',
+      'FOLDER_RENAMED',
+      'FOLDER_CREATED'
+    ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      switch (type) {
-        case 'ITEM_PASTED': {
-          if (withoutIndex(payload.path) === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          break;
-        }
-        case 'ITEM_DELETED': {
-          payload.paths.forEach(path => {
-            if(withoutIndex(path) === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorSetCurrentPath({
-                id,
-                path: getParentPath(withoutIndex(path))
-              }))
-            } else if (state.itemsInPath.includes(path)) {
+    const subscription = hostToHost$
+      .pipe(filter((e) => events.includes(e.type)))
+      .subscribe(({ type, payload }) => {
+        switch (type) {
+          case 'ITEM_PASTED': {
+            if (withoutIndex(payload.item.path) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
-          });
-          break;
+            break;
+          }
+          case 'ITEM_DUPLICATED': {
+            if (withoutIndex(payload.originalItem.path) === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+            break;
+          }
+          case 'ITEM_DELETED': {
+            payload.items.forEach((item) => {
+              if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
+                dispatch(
+                  pathNavigatorSetCurrentPath({
+                    id,
+                    path: getParentPath(withoutIndex(item.path))
+                  })
+                );
+              } else if (state.itemsInPath.includes(item.path)) {
+                dispatch(pathNavigatorRefresh({ id }));
+              }
+            });
+            break;
+          }
+          case 'FOLDER_RENAMED': {
+            if (getParentPath(payload.path) === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+            break;
+          }
+          case 'FOLDER_CREATED': {
+            if (payload.path === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+            break;
+          }
         }
-      }
-    });
+      });
     return () => {
       subscription.unsubscribe();
     };
@@ -279,9 +307,9 @@ export default function PathNavigator(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-          id,
-          item
-        })
+            id,
+            item
+          })
     );
   };
 
@@ -448,8 +476,10 @@ export function PathNavigatorUI(props: WidgetUIProps) {
   // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
+  const resource = useLogicResource<
+    DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
+  >(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps

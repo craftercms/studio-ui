@@ -38,7 +38,10 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {
+    [pathNavigatorInit.type]: (
+      state,
+      { payload: { id, path, locale = 'en', collapsed = false } }
+    ) => {
       return {
         ...state,
         [id]: {
@@ -109,7 +112,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           ...state[id],
           breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
           itemsInPath: response.map((item) => item.id),
-          ...(response.levelDescriptor && { levelDescriptor: response.levelDescriptor.path }),
+          levelDescriptor: response.levelDescriptor?.path,
           count: response.length
         };
         return {

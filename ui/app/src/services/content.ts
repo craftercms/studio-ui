@@ -476,12 +476,12 @@ export function insertComponent(
       value: instance.craftercms.label,
       ...(shared
         ? {
-          include: path,
-          disableFlattening: 'false'
-        }
+            include: path,
+            disableFlattening: 'false'
+          }
         : {
-          component
-        })
+            component
+          })
     });
 
     insertCollectionItem(doc, fieldId, targetIndex, newItem);
@@ -516,8 +516,7 @@ export function insertInstance(
   });
 }
 
-export function insertItem() {
-}
+export function insertItem() {}
 
 export function sortItem(
   site: string,
@@ -651,11 +650,11 @@ export function getContentByContentType(
         of(count),
         paths.length
           ? forkJoin(
-          paths.reduce((array, path) => {
-            array.push(getContentInstanceLookup(site, path, contentTypesLookup));
-            return array;
-          }, []) as Array<Observable<LookupTable<ContentInstance>>>
-          )
+              paths.reduce((array, path) => {
+                array.push(getContentInstanceLookup(site, path, contentTypesLookup));
+                return array;
+              }, []) as Array<Observable<LookupTable<ContentInstance>>>
+            )
           : of([])
       )
     ),
@@ -711,7 +710,7 @@ function extractNode(doc: XMLDocument, fieldId: string, index: string | number) 
     // There's more indexes than fields
     throw new Error(
       '[content/extractNode] Path not handled: indexes.length > fields.length. Indexes ' +
-      `is ${indexes} and fields is ${fields}`
+        `is ${indexes} and fields is ${fields}`
     );
   }
   indexes.forEach((_index, i) => {
@@ -943,22 +942,23 @@ export function getChildrenByPath(
   const qs = toQueryString({ site, path, depth: 1, order: 'default', ...options });
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
-  return get(
-    `/studio/api/1/services/api/1/content/get-items-tree.json${qs}`
-  ).pipe(
+  return get(`/studio/api/1/services/api/1/content/get-items-tree.json${qs}`).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),
-    map(({ item }) =>
-      Object.assign(parseLegacyItemToSandBoxItem(item.children), {
+    map(({ item }) => {
+      const levelDescriptor = item.children.find(
+        (item) => item.contentType === '/component/level-descriptor'
+      );
+      return Object.assign(parseLegacyItemToSandBoxItem(item.children), {
         parent: parseLegacyItemToSandBoxItem(item),
-        ...(item.children[0]?.contentType === '/component/level-descriptor' && {
-          levelDescriptor: {
-            ...parseLegacyItemToSandBoxItem(item.children[0]),
-            label: 'Section Defaults'
-          }
-        })
-      })
-    ),
+        levelDescriptor: levelDescriptor
+          ? {
+              ...parseLegacyItemToSandBoxItem(levelDescriptor),
+              label: 'Section Defaults'
+            }
+          : null
+      });
+    }),
     catchError(errorSelectorApi1)
   );
 }

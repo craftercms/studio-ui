@@ -1378,15 +1378,18 @@ export const languages = defineMessages({
 export const itemSuccessMessages = defineMessages({
   itemDeleted: {
     id: 'item.delete',
-    defaultMessage: '{count, plural, one {The selected item is being deleted and will be removed shortly} other {The selected items are being deleted and will be removed shortly}}'
+    defaultMessage:
+      '{count, plural, one {The selected item is being deleted and will be removed shortly} other {The selected items are being deleted and will be removed shortly}}'
   },
   itemPublishedNow: {
     id: 'item.publishedNow',
-    defaultMessage: '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
+    defaultMessage:
+      '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
   },
   itemSchedulePublished: {
     id: 'item.schedulePublished',
-    defaultMessage: '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
+    defaultMessage:
+      '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
   },
   itemEdited: {
     id: 'item.edited',
@@ -1394,7 +1397,8 @@ export const itemSuccessMessages = defineMessages({
   },
   itemCopied: {
     id: 'item.copied',
-    defaultMessage: '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
+    defaultMessage:
+      '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
   },
   itemPasted: {
     id: 'item.pasted',
@@ -1406,7 +1410,7 @@ export const itemSuccessMessages = defineMessages({
   },
   itemContentTypeChanged: {
     id: 'item.contentTypeChanged',
-    defaultMessage: 'Item content type changed successfully'
+    defaultMessage: 'Item type changed successfully'
   }
 });
 
@@ -1455,4 +1459,3 @@ const i18n = {
 };
 
 export default i18n;
-

@@ -73,12 +73,14 @@ interface DeleteDialogBaseProps {
   isFetching: boolean;
 }
 
-export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
-  onSuccess?(response?: any): any;
-}>;
+export type DeleteDialogProps = PropsWithChildren<
+  DeleteDialogBaseProps & {
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSuccess?(response?: any): any;
+  }
+>;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
   childItems: string[];
@@ -184,7 +186,6 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
               }}
             />
           </form>
-
         </Grid>
       </Grid>
     </>
@@ -264,7 +265,10 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     submitting: false
   });
   const siteId = useActiveSiteId();
-  const deleteDependencies = useSelector<GlobalState, { childItems: string[], dependentItems: string[] }>((state) => ({
+  const deleteDependencies = useSelector<
+    GlobalState,
+    { childItems: string[]; dependentItems: string[] }
+  >((state) => ({
     childItems: state.dialogs.delete.childItems,
     dependentItems: state.dialogs.delete.dependentItems
   }));
@@ -295,10 +299,12 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   }, [dispatch, selectedItems, setApiState, siteId]);
 
   const onEditDependency = (src) => {
-    dispatch(showEditDialog({
-      src,
-      onClosed: fetchDeleteDependencies(selectedItems)
-    }));
+    dispatch(
+      showEditDialog({
+        src,
+        onClosed: fetchDeleteDependencies(selectedItems)
+      })
+    );
   };
 
   const handleSubmit = () => {
@@ -315,13 +321,13 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
         hostToHost$.next({
           type: 'ITEM_DELETED',
           payload: {
-            paths: selectedItems
+            items: selectedItems.map((path) => items.find((item) => item.id === path))
           }
-        })
+        });
 
         onSuccess?.({
           ...response,
-          items: selectedItems.map(path => items.find(item => item.id === path))
+          items: selectedItems.map((path) => items.find((item) => item.id === path))
         });
       },
       (error) => {

@@ -15,7 +15,7 @@
  */
 
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   assetDuplicate,
   completeDetailedItem,
@@ -40,6 +40,7 @@ import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 const content = [
   // region Quick Create
@@ -116,12 +117,22 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          map((path) => {
-            return showEditDialog({
+          tap((path) => {
+            const hostToHost$ = getHostToHostBus();
+            hostToHost$.next({
+              type: 'ITEM_DUPLICATED',
+              payload: {
+                originalItem: state.content.items.byPath[payload.path],
+                newItemPath: path
+              }
+            });
+          }),
+          map((path) =>
+            showEditDialog({
               src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
               onSaveSuccess: payload.onSuccess
-            });
-          })
+            })
+          )
         );
       })
     ),
@@ -133,6 +144,16 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
+          tap((path) => {
+            const hostToHost$ = getHostToHostBus();
+            hostToHost$.next({
+              type: 'ITEM_DUPLICATED',
+              payload: {
+                originalItem: state.content.items.byPath[payload.path],
+                newItemPath: path
+              }
+            });
+          }),
           map((path) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {

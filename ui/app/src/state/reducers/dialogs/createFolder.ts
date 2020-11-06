@@ -28,21 +28,18 @@ const initialState: CreateFolderStateProps = {
   open: false
 };
 
-export default createReducer<GlobalState['dialogs']['createFolder']>(
-  initialState,
-  {
-    [showCreateFolderDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeCreateFolderDialog(),
-      onClosed: createFolderDialogClosed(),
-      onCreate: closeCreateFolderDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeCreateFolderDialog.type]: (state) => ({
-      ...state,
-      open: false
-    }),
-    [createFolderDialogClosed.type]: () => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['createFolder']>(initialState, {
+  [showCreateFolderDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeCreateFolderDialog(),
+    onClosed: createFolderDialogClosed(),
+    onCreated: closeCreateFolderDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeCreateFolderDialog.type]: (state) => ({
+    ...state,
+    open: false
+  }),
+  [createFolderDialogClosed.type]: () => initialState
+});

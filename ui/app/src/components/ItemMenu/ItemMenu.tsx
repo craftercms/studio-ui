@@ -33,7 +33,6 @@ import {
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
-  closeCreateFolderDialog,
   closeDeleteDialog,
   closeNewContentDialog,
   closePublishDialog,
@@ -171,10 +170,12 @@ export function ItemMenu(props: ItemMenuProps) {
               })
             );
           } else {
-            dispatch(showEditDialog({
-              src,
-              onSaveSuccess: showEditItemSuccessNotification()
-            }));
+            dispatch(
+              showEditDialog({
+                src,
+                onSaveSuccess: showEditItemSuccessNotification()
+              })
+            );
           }
         });
         break;
@@ -183,11 +184,7 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showCreateFolderDialog({
             path: withoutIndex(item.path),
-            allowBraces: item.path.startsWith('/scripts/rest'),
-            onCreated: batchActions([
-              closeCreateFolderDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: option.id })
-            ])
+            allowBraces: item.path.startsWith('/scripts/rest')
           })
         );
         break;
@@ -198,11 +195,7 @@ export function ItemMenu(props: ItemMenuProps) {
             path: withoutIndex(item.path),
             allowBraces: item.path.startsWith('/scripts/rest'),
             rename: true,
-            value: item.label,
-            onCreated: batchActions([
-              closeCreateFolderDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-            ])
+            value: item.label
           })
         );
         break;
@@ -225,10 +218,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showDeleteDialog({
             items,
             onSuccess: batchActions(
-              [
-                showDeleteItemSuccessNotification(),
-                closeDeleteDialog()
-              ].filter(Boolean)
+              [showDeleteItemSuccessNotification(), closeDeleteDialog()].filter(Boolean)
             )
           })
         );
@@ -263,10 +253,7 @@ export function ItemMenu(props: ItemMenuProps) {
           ({ success }) => {
             if (success) {
               dispatch(
-                batchActions([
-                  setClipBoard({ path: item.path }),
-                  showCopyItemSuccessNotification()
-                ])
+                batchActions([setClipBoard({ path: item.path }), showCopyItemSuccessNotification()])
               );
             }
           },
@@ -335,9 +322,9 @@ export function ItemMenu(props: ItemMenuProps) {
             hostToHost$.next({
               type: 'ITEM_PASTED',
               payload: {
-                path: item.path
+                item: item
               }
-            })
+            });
           },
           (response) => {
             dispatch(
@@ -359,7 +346,7 @@ export function ItemMenu(props: ItemMenuProps) {
               closeConfirmDialog(),
               assetDuplicate({
                 path: item.path,
-                onSuccess: batchActions([onItemMenuActionSuccessCreator?.({ item, option: 'refresh' }), showPasteItemSuccessNotification()])
+                onSuccess: batchActions([showPasteItemSuccessNotification()])
               })
             ])
           })
@@ -376,7 +363,7 @@ export function ItemMenu(props: ItemMenuProps) {
               closeConfirmDialog(),
               itemDuplicate({
                 path: item.path,
-                onSuccess: batchActions([onItemMenuActionSuccessCreator?.({ item, option: 'refresh' }), showPasteItemSuccessNotification()])
+                onSuccess: batchActions([showPasteItemSuccessNotification()])
               })
             ])
           })
@@ -391,8 +378,8 @@ export function ItemMenu(props: ItemMenuProps) {
             onSuccess: batchActions([
               showPublishItemSuccessNotification(),
               reloadDetailedItem({ path: item.path }),
-              closePublishDialog()]
-            )
+              closePublishDialog()
+            ])
           })
         );
         break;
@@ -405,17 +392,22 @@ export function ItemMenu(props: ItemMenuProps) {
             onSuccess: batchActions([
               showPublishItemSuccessNotification(),
               reloadDetailedItem({ path: item.path }),
-              closePublishDialog()]
-            )
+              closePublishDialog()
+            ])
           })
         );
         break;
       }
       case 'history': {
-        dispatch(batchActions([fetchItemVersions({
-          item,
-          rootPath: getRootPath(item.path)
-        }), showHistoryDialog({})]));
+        dispatch(
+          batchActions([
+            fetchItemVersions({
+              item,
+              rootPath: getRootPath(item.path)
+            }),
+            showHistoryDialog({})
+          ])
+        );
         break;
       }
       case 'dependencies': {
@@ -479,7 +471,9 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'viewCodeEditor': {
-        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset&readonly=true`;
+        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(
+          item.path
+        )}&type=asset&readonly=true`;
         dispatch(showCodeEditorDialog({ src }));
         break;
       }

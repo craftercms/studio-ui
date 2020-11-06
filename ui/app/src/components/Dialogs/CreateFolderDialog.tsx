@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 export const translations = defineMessages({
   placeholder: {
@@ -44,11 +45,13 @@ interface CreateFolderBaseProps {
   allowBraces?: boolean;
 }
 
-export type CreateFolderProps = PropsWithChildren<CreateFolderBaseProps & {
-  onClose(): void;
-  onClosed?(): void;
-  onCreated?(response: { path: string, name: string, rename: boolean }): void;
-}>;
+export type CreateFolderProps = PropsWithChildren<
+  CreateFolderBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+    onCreated?(response: { path: string; name: string; rename: boolean }): void;
+  }
+>;
 
 export interface CreateFolderStateProps extends CreateFolderBaseProps {
   onClose?: StandardAction;
@@ -88,9 +91,21 @@ interface CreateFolderUIProps extends CreateFolderProps {
 }
 
 function CreateFolderUI(props: CreateFolderUIProps) {
-  const { onClosed, onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '', allowBraces = false } = props;
+  const {
+    onClosed,
+    onClose,
+    path,
+    submitted,
+    inProgress,
+    setState,
+    onCreated,
+    rename = false,
+    value = '',
+    allowBraces = false
+  } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
+  const hostToHost$ = getHostToHostBus();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
@@ -103,6 +118,12 @@ function CreateFolderUI(props: CreateFolderUIProps) {
       if (rename) {
         renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
+            hostToHost$.next({
+              type: 'FOLDER_RENAMED',
+              payload: {
+                path
+              }
+            });
             onCreated?.({ path, name, rename });
           },
           (response) => {
@@ -113,6 +134,12 @@ function CreateFolderUI(props: CreateFolderUIProps) {
       } else {
         createFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
+            hostToHost$.next({
+              type: 'FOLDER_CREATED',
+              payload: {
+                path
+              }
+            });
             onCreated?.({ path, name, rename });
           },
           (response) => {
@@ -121,27 +148,28 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           }
         );
       }
-
     }
   };
   return (
     <>
       <DialogHeader
         title={
-          rename
-            ? <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
-            : <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
-
+          rename ? (
+            <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
+          ) : (
+            <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
+          )
         }
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
         <TextField
           label={
-            rename
-              ?
+            rename ? (
               <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
-              : <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+            ) : (
+              <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+            )
           }
           value={name}
           autoFocus
@@ -149,7 +177,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           error={!name && submitted}
           placeholder={formatMessage(translations.placeholder)}
           helperText={
-            (!name && submitted) ? (
+            !name && submitted ? (
               <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
             ) : (
               <FormattedMessage
@@ -163,7 +191,11 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           InputLabelProps={{
             shrink: true
           }}
-          onChange={(event) => setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))}
+          onChange={(event) =>
+            setName(
+              event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '')
+            )
+          }
         />
       </DialogBody>
       <DialogFooter>
@@ -171,19 +203,18 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
         <Button
-          onClick={() => onOk()} variant="contained" color="primary" autoFocus
+          onClick={() => onOk()}
+          variant="contained"
+          color="primary"
+          autoFocus
           disabled={inProgress}
         >
-          {
-            inProgress &&
-            <CircularProgress size={15} style={{ marginRight: '5px' }} />
-          }
-          {
-            rename
-              ? <FormattedMessage id="words.rename" defaultMessage="Rename" />
-              : <FormattedMessage id="words.create" defaultMessage="Create" />
-          }
-
+          {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
+          {rename ? (
+            <FormattedMessage id="words.rename" defaultMessage="Rename" />
+          ) : (
+            <FormattedMessage id="words.create" defaultMessage="Create" />
+          )}
         </Button>
       </DialogFooter>
     </>
