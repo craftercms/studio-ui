@@ -33,7 +33,7 @@ import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { debounceTime } from 'rxjs/operators';
-import { ContentTypesGrid } from './NewContentDialog';
+import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
 
 const translations = defineMessages({
   title: {
@@ -211,6 +211,9 @@ function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
         </Box>
         <SuspenseWithEmptyState
           resource={resource}
+          suspenseProps={{
+            fallback: <ContentTypesLoader numOfItems={6} isCompact={isCompact} />
+          }}
           withEmptyStateProps={{
             emptyStateProps: {
               classes: {

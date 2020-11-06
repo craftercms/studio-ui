@@ -33,7 +33,7 @@ import { fetchLegacyContentTypes } from '../../../services/contentTypes';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import NewContentCard from './NewContentCard';
+import NewContentCard, { SkeletonCard } from './NewContentCard';
 import { debounceTime } from 'rxjs/operators';
 import ContentTypesFilter from './ContentTypesFilter';
 import { closeNewContentDialog, newContentCreationComplete } from '../../../state/actions/dialogs';
@@ -181,7 +181,10 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
     if (selectedItem.path) {
       fetchLegacyContentTypes(site, selectedItem.path).subscribe(
         (response) => {
-          setContentTypes(response);
+          setTimeout(() => {
+            setContentTypes(response);
+          }, 2000);
+          //setContentTypes(response);
         },
         (response) => {
           dispatch(showErrorDialog({ error: response }));
@@ -258,6 +261,9 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
         </Box>
         <SuspenseWithEmptyState
           resource={resource}
+          suspenseProps={{
+            fallback: <ContentTypesLoader numOfItems={6} isCompact={isCompact} />
+          }}
           withEmptyStateProps={{
             emptyStateProps: {
               classes: {
@@ -299,6 +305,20 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
         />
       </DialogFooter>
     </>
+  );
+}
+
+export function ContentTypesLoader(props: { numOfItems: number; isCompact: boolean }) {
+  const { numOfItems, isCompact } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <Grid container spacing={3} style={{ marginTop: '14px' }}>
+      {items.map((value, i) => (
+        <Grid item key={i} xs={12} sm={!isCompact ? 4 : 6}>
+          <SkeletonCard isCompact={isCompact} />
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
