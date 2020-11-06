@@ -195,13 +195,15 @@ interface HistoryDialogBaseProps {
   open: boolean;
 }
 
-export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
-  versionsBranch: VersionsStateProps;
-  permissions: LookupTable<boolean>;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type HistoryDialogProps = PropsWithChildren<
+  HistoryDialogBaseProps & {
+    versionsBranch: VersionsStateProps;
+    permissions: LookupTable<boolean>;
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
@@ -251,45 +253,37 @@ function HistoryDialog(props: HistoryDialogProps) {
   );
 
   const handleOpenMenu = useCallback(
-    (anchorEl, version, isCurrent = false, permissions) => {
+    (anchorEl, version, isCurrent = false, permissions, lastOne) => {
       const write = permissions?.write;
       const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
       let sections = [];
-      if (isCurrent) {
-        sections.push([menuOptions.view]);
-        if (!hasOptions && count > 1) {
-          sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
+      sections.push([menuOptions.view]);
+
+      if (count > 1) {
+        if (hasOptions) {
+          if (lastOne) {
+            sections.push([menuOptions.compareTo]);
+          } else {
+            sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
+          }
         }
-        if (write && count > 1) {
-          sections.push([menuOptions.revertToPrevious]);
+
+        if (write) {
+          if (isCurrent) {
+            sections.push([menuOptions.revertToPrevious]);
+          } else {
+            sections.push([menuOptions.revertToThisVersion]);
+          }
         }
-        setMenu({
-          sections,
-          anchorEl,
-          activeItem: version
-        });
-      } else {
-        sections.push([menuOptions.view]);
-        if (!hasOptions && count > 1) {
-          sections.push(
-            [
-              menuOptions.compareTo,
-              menuOptions.compareToCurrent,
-              menuOptions.compareToPrevious
-            ]
-          );
-        }
-        if (write && count > 1) {
-          sections.push([menuOptions.revertToThisVersion]);
-        }
-        setMenu({
-          sections,
-          anchorEl,
-          activeItem: version
-        });
       }
+
+      setMenu({
+        sections,
+        anchorEl,
+        activeItem: version
+      });
     },
-    [count, item.mimeType, setMenu]
+    [count, item.systemType, setMenu]
   );
 
   const compareVersionDialogWithActions = () =>
@@ -431,9 +425,7 @@ function HistoryDialog(props: HistoryDialogProps) {
   return (
     <>
       <DialogHeader
-        title={
-          <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />
-        }
+        title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />}
         onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogBody}>
