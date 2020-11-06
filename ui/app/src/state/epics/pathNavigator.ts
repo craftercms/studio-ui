@@ -152,6 +152,7 @@ export default [
       ofType(pathNavigatorItemActionSuccess.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
+        // TODO: This should be remove pathNavigatorItemActionSuccess
         let currentPath = state.pathNavigator[payload.id].currentPath;
         switch (payload.option) {
           case 'delete': {
