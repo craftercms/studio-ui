@@ -870,6 +870,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
     '이 파일은 컨텐트 작성자가 선택할 수있는 0 이상의 CMIS 가능 리포지토리를 데이터 소스로 구성합니다',
   confTabTranslationConf: '번역 구성',
   confTabTranslationConfDesc: '지원되는 언어 및 해결 방법을 정의합니다',
+  confTabSitePolicyConf: '사이트 정책 구성',
+  confTabSitePolicyConfDesc: '콘텐츠 작업의 유효성을 검사하는 정책을 정의합니다.',
 
   /*Postfixes*/
   iDescription: '정수의 경우',
