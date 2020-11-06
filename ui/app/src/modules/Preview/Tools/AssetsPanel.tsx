@@ -200,7 +200,7 @@ export default function AssetsPanel() {
       }
 
       const reader = new FileReader();
-      reader.onloadend = function () {
+      reader.onloadend = function() {
         uploadDataUrl(
           site,
           {
@@ -210,10 +210,8 @@ export default function AssetsPanel() {
           '/static-assets/images/',
           xsrfArgument
         ).subscribe(
-          () => {
-          },
-          () => {
-          },
+          () => {},
+          () => {},
           () => {
             dispatch(fetchAssetsPanelItems({}));
           }
@@ -294,7 +292,7 @@ export default function AssetsPanel() {
       <div ref={elementRef}>
         <div className={classes.search}>
           <SearchBar
-            onActionButtonClick={() => handleSearchKeyword('')}
+            showActionButton={Boolean(keyword)}
             onChange={handleSearchKeyword}
             keyword={keyword}
           />
@@ -321,14 +319,24 @@ export default function AssetsPanel() {
 
 interface AssetsPanelUIProps {
   guestBase: string;
-  classes?: Partial<Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>>;
+  classes?: Partial<
+    Record<
+      | 'assetsPanelWrapper'
+      | 'pagination'
+      | 'toolbar'
+      | 'card'
+      | 'noResultsImage'
+      | 'noResultsTitle',
+      string
+    >
+  >;
   assetsResource: Resource<AssetResource>;
   onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
   onDragStart(mediaItem: MediaItem): void;
   onDragEnd(): void;
 }
 
-export function AssetsPanelUI(props:AssetsPanelUIProps) {
+export function AssetsPanelUI(props: AssetsPanelUIProps) {
   const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
   const assets = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
@@ -346,11 +354,11 @@ export function AssetsPanelUI(props:AssetsPanelUIProps) {
         page={pageNumber}
         backIconButtonProps={{
           'aria-label': formatMessage(translations.previousPage),
-          'size': 'small'
+          size: 'small'
         }}
         nextIconButtonProps={{
           'aria-label': formatMessage(translations.nextPage),
-          'size': 'small'
+          size: 'small'
         }}
         onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
           onPageChanged(e, page * limit)

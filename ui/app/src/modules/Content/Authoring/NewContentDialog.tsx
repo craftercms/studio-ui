@@ -15,14 +15,13 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { DetailedItem } from '../../../models/Item';
-import palette from '../../../styles/palette';
 import { useActiveSiteId, useLogicResource, useSelection, useSubject } from '../../../utils/hooks';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
@@ -45,14 +44,6 @@ const translations = defineMessages({
     id: 'newContentDialog.title',
     defaultMessage: 'Create Content'
   },
-  chooseContentType: {
-    id: 'newContentDialog.chooseContentType',
-    defaultMessage: 'Choose Content Type'
-  },
-  chooseContentTypeSubtitle: {
-    id: 'newContentDialog.chooseContentTypeSubtitle',
-    defaultMessage: 'The following starter templates are available for use within this section.'
-  },
   subtitle: {
     id: 'newContentDialog.subtitle',
     defaultMessage: 'Choose a content type template for your new content item.'
@@ -72,14 +63,6 @@ const translations = defineMessages({
   contentTypeComponentLabel: {
     id: 'newContentDialog.contentTypeComponentLabel',
     defaultMessage: 'Components only'
-  },
-  contentTypeQuickCreateLabel: {
-    id: 'newContentDialog.contentTypeQuickCreateLabel',
-    defaultMessage: 'Quick create only'
-  },
-  contentTypeFavoriteLabel: {
-    id: 'newContentDialog.contentTypeFavoriteLabel',
-    defaultMessage: 'Favorites only'
   }
 });
 
@@ -95,25 +78,12 @@ const useStyles = makeStyles((theme: Theme) =>
     cardsContainer: {
       marginTop: 14
     },
-    submitBtn: {
-      marginLeft: 17
-    },
     searchBox: {
       minWidth: '33%'
-    },
-    emptyStateLink: {
-      cursor: 'pointer',
-      textDecoration: 'underline'
     },
     emptyStateImg: {
       width: 250,
       marginBottom: 17
-    },
-    loadingGraphic: {
-      width: 250
-    },
-    emptyStateTitle: {
-      color: palette.gray.medium6
     }
   })
 );
@@ -278,10 +248,30 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
             />
           </Box>
           <Box className={classes.searchBox}>
-            <SearchBar onChange={onSearch} keyword={keyword} autoFocus />
+            <SearchBar
+              onChange={onSearch}
+              keyword={keyword}
+              autoFocus
+              showActionButton={Boolean(keyword)}
+            />
           </Box>
         </Box>
-        <SuspenseWithEmptyState resource={resource}>
+        <SuspenseWithEmptyState
+          resource={resource}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              classes: {
+                image: classes.emptyStateImg
+              },
+              title: (
+                <FormattedMessage
+                  id="newContentDialog.emptyStateMessage"
+                  defaultMessage="No Content Types Found"
+                />
+              )
+            }
+          }}
+        >
           <ContentTypesGrid
             resource={resource}
             isCompact={isCompact}

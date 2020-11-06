@@ -26,7 +26,8 @@ const initialState: ChangeContentTypeDialogStateProps = {
   open: false,
   compact: false,
   item: null,
-  rootPath: '/site/website'
+  rootPath: '/site/website',
+  selectedContentType: null
 };
 
 export default createReducer<ChangeContentTypeDialogStateProps>(initialState, {

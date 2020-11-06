@@ -22,7 +22,6 @@ import {
   changeContentType as changeContentTypeAction,
   editTemplate as editTemplateAction
 } from '../actions/misc';
-import queryString from 'query-string';
 import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
 import {
   showCodeEditorDialog,
@@ -36,7 +35,7 @@ const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
     ofType(changeContentTypeAction.type),
     withLatestFrom(state$),
     switchMap(([{ payload }, state]) => {
-      const contentType = queryString.parse(payload.src).contentTypeId as string;
+      const contentType = payload.selectedContentType;
       const path = payload.path;
       if (payload.contentTypeId !== contentType) {
         let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${contentType}`;

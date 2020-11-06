@@ -212,6 +212,7 @@ function GlobalDialogManager() {
         item={state.changeContentType.item}
         rootPath={state.changeContentType.rootPath}
         compact={state.changeContentType.compact}
+        selectedContentType={state.changeContentType.selectedContentType}
         onContentTypeSelected={createCallback(
           state.changeContentType.onContentTypeSelected,
           dispatch

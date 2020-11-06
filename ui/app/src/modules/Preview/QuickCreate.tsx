@@ -162,12 +162,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   return (
     <>
-      <Menu
-        classes={{ paper: classes.menu }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={onClose}
-      >
+      <Menu classes={{ paper: classes.menu }} anchorEl={anchorEl} open={open} onClose={onClose}>
         <MenuItem className={classes.menuTitle} onClick={onNewContentSelected}>
           <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>
@@ -274,7 +269,6 @@ export default function QuickCreate() {
     dispatch(
       showNewContentDialog({
         item: currentPreview,
-        compact: false,
         onContentTypeSelected: showEditDialog({})
       })
     );

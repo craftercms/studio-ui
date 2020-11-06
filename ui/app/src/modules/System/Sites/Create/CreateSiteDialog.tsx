@@ -189,15 +189,15 @@ const CustomTabs = withStyles({
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     '@keyframes fadeIn': fadeIn,
-    'fadeIn': {
+    fadeIn: {
       animationName: '$fadeIn',
       animationDuration: '1s'
     },
-    'paperScrollPaper': {
+    paperScrollPaper: {
       height: 'calc(100% - 100px)',
       maxHeight: '1200px'
     },
-    'searchContainer': {
+    searchContainer: {
       position: 'absolute',
       background: 'white',
       padding: '0 20px',
@@ -206,89 +206,89 @@ const useStyles = makeStyles((theme: Theme) =>
       transform: 'translate(-50%)',
       zIndex: 1
     },
-    'dialogContainer': {
+    dialogContainer: {
       display: 'flex',
       flexDirection: 'column',
       height: '100%'
     },
-    'dialogContent': {
+    dialogContent: {
       padding: '30px 0 0',
       position: 'relative',
       backgroundColor: palette.gray.light0
     },
-    'slide': {
-      'flexWrap': 'wrap',
-      'height': '100%',
-      'overflow': 'auto',
-      'display': 'flex',
-      'padding': '0 25px',
+    slide: {
+      flexWrap: 'wrap',
+      height: '100%',
+      overflow: 'auto',
+      display: 'flex',
+      padding: '0 25px',
       '&.selected': {
         height: '100%',
         paddingTop: '70px'
       }
     },
-    'backBtn': {
+    backBtn: {
       marginRight: 'auto'
     },
-    'tabs': {
+    tabs: {
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'center'
     },
-    'simpleTab': {
-      'minWidth': '80px',
-      'minHeight': '0',
-      'padding': '0 0 5px 0',
-      'marginRight': '20px',
-      'opacity': 1,
+    simpleTab: {
+      minWidth: '80px',
+      minHeight: '0',
+      padding: '0 0 5px 0',
+      marginRight: '20px',
+      opacity: 1,
       '& span': {
         textTransform: 'none',
         color: '#2F2707'
       }
     },
-    'tabIcon': {
-      'color': '#000000',
-      'fontSize': '1.2rem',
-      'cursor': 'pointer',
+    tabIcon: {
+      color: '#000000',
+      fontSize: '1.2rem',
+      cursor: 'pointer',
       '&.selected': {
         color: theme.palette.primary.main
       }
     },
-    'loading': {
+    loading: {
       position: 'relative',
       padding: 16,
       flexGrow: 1
     },
-    'spinner': {
+    spinner: {
       marginRight: '10px',
       color: theme.palette.text.secondary
     },
-    'statePaper': {
+    statePaper: {
       background: '#e7e7e7',
       height: '100%'
     },
-    'loadingStateRoot': {
+    loadingStateRoot: {
       height: '100%'
     },
-    'loadingStateGraphicRoot': {
+    loadingStateGraphicRoot: {
       flexGrow: 1,
       paddingBottom: '100px'
     },
-    'loadingStateGraphic': {
+    loadingStateGraphic: {
       width: 200
     },
-    'errorPaperRoot': {
+    errorPaperRoot: {
       height: '100%'
     },
-    'headerRoot': {
+    headerRoot: {
       paddingBottom: 0
     },
-    'headerSubTitle': {
+    headerSubTitle: {
       marginBottom: 13
     },
-    'blueprintFormRoot': {
+    blueprintFormRoot: {
       marginTop: 10
     },
-    'emptyStateRoot': {
+    emptyStateRoot: {
       position: 'absolute',
       top: '40%',
       left: '50%',
@@ -369,7 +369,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    const loginListener = function (event: any) {
+    const loginListener = function(event: any) {
       if (event.detail.state === 'logged') {
         setDisableEnforceFocus(false);
       } else if (event.detail.state === 'reLogin') {
@@ -440,7 +440,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     return () => {
       subscriptions.forEach((sub) => sub.unsubscribe());
     };
-  }, [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, tab, site.showIncompatible]);
+  }, [
+    apiState.error,
+    blueprints,
+    formatMessage,
+    marketplace,
+    setApiState,
+    site.selectedView,
+    tab,
+    site.showIncompatible
+  ]);
 
   function handleClose(event?: any, reason?: string) {
     if (reason === 'escapeKeyDown' && site.details.blueprint) {
@@ -592,7 +601,13 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function validateForm() {
-    if (!site.siteId || site.siteIdExist || !site.siteName || site.siteNameExist || site.invalidSiteId) {
+    if (
+      !site.siteId ||
+      site.siteIdExist ||
+      !site.siteName ||
+      site.siteNameExist ||
+      site.invalidSiteId
+    ) {
       return false;
     } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
@@ -673,8 +688,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function createNewSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
     (fromMarketplace
-        ? createSiteFromMarketplace(site as MarketplaceSite)
-        : createSite(site as CreateSiteMeta)
+      ? createSiteFromMarketplace(site as MarketplaceSite)
+      : createSite(site as CreateSiteMeta)
     ).subscribe(
       () => {
         setApiState({ creatingSite: false });
@@ -741,7 +756,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         <EmptyState
           title={formatMessage(messages.noBlueprints)}
           subtitle={formatMessage(messages.changeQuery)}
-          classes={{root: classes.emptyStateRoot}}
+          classes={{ root: classes.emptyStateRoot }}
         />
       );
     }
@@ -840,14 +855,15 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
-                {
-                  (tab === 1) &&
+                {tab === 1 && (
                   <FormControlLabel
                     className={classes.showIncompatible}
                     control={
                       <Checkbox
                         checked={site.showIncompatible}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          handleShowIncompatibleChange(e)
+                        }
                         color="primary"
                         className={classes.showIncompatibleCheckbox}
                       />
@@ -859,7 +875,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                     }
                     labelPlacement="start"
                   />
-                }
+                )}
               </div>
             )}
           </DialogHeader>
@@ -869,7 +885,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               {search.searchSelected && site.selectedView === 0 && (
                 <div className={classes.searchContainer}>
                   <SearchBar
-                    onActionButtonClick={() => handleOnSearchChange('')}
+                    showActionButton={Boolean(search.searchKey)}
                     onChange={handleOnSearchChange}
                     keyword={search.searchKey}
                     autoFocus={true}
@@ -905,7 +921,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                       onCheckNameExist={checkNameExist}
                       onSubmit={handleFinish}
                       blueprint={site.blueprint}
-                      classes={{root: classes.blueprintFormRoot}}
+                      classes={{ root: classes.blueprintFormRoot }}
                     />
                   )}
                 </div>

@@ -59,8 +59,7 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           autoFocus
           onChange={onChange}
           keyword={keyword}
-          showActionButton={true}
-          onActionButtonClick={() => onChange('')}
+          showActionButton={Boolean(keyword)}
           classes={{
             root: clsx(classes.searchRoot, props.classes?.searchRoot),
             inputInput: classes.searchInput,
@@ -106,8 +105,7 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             )}
           </MuiBreadcrumbs>
           <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
-            {
-              onMenu &&
+            {onMenu && (
               <IconButton
                 aria-label="options"
                 className={clsx(classes.iconButton)}
@@ -115,9 +113,8 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               >
                 <MoreVertIcon />
               </IconButton>
-            }
-            {
-              onSearch &&
+            )}
+            {onSearch && (
               <IconButton
                 aria-label="search"
                 className={clsx(classes.iconButton)}
@@ -125,7 +122,7 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               >
                 <SearchRoundedIcon />
               </IconButton>
-            }
+            )}
           </div>
         </>
       )}

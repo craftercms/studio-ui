@@ -205,7 +205,7 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showNewContentDialog({
             item,
-            rootPath: item.path,
+            rootPath: getRootPath(item.path),
             onContentTypeSelected: showEditDialog({})
           })
         );
@@ -232,13 +232,12 @@ export function ItemMenu(props: ItemMenuProps) {
             onOk: batchActions([
               closeConfirmDialog(),
               showChangeContentTypeDialog({
-                open: true,
-                rootPath: path,
                 item,
+                rootPath: getRootPath(item.path),
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
                   closeNewContentDialog(),
-                  changeContentType({ contentTypeId: item.contentTypeId, path })
+                  changeContentType({ contentTypeId: item.contentTypeId, path: item.path })
                 ])
               })
             ])
