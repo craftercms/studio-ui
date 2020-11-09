@@ -211,15 +211,15 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-export default function HistoryDialogWrapper(props: HistoryDialogProps) {
+export default function HistoryDialog(props: HistoryDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <HistoryDialog {...props} />
+      <HistoryDialogBody {...props} />
     </Dialog>
   );
 }
 
-function HistoryDialog(props: HistoryDialogProps) {
+function HistoryDialogBody(props: HistoryDialogProps) {
   const { onDismiss, versionsBranch, permissions } = props;
   const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
   const path = item ? item.path : '';

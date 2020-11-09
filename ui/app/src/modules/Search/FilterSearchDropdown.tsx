@@ -559,9 +559,10 @@ function SortBy(props: SortByProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { queryParams, handleFilterChange, filterKeys } = props;
+
   return (
     <Select
-      value={filterKeys.includes(queryParams['sortBy']) ? queryParams['sortBy'] : '_score'}
+      value={queryParams['sortBy'] ?? '_score'}
       className={classes.Select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >

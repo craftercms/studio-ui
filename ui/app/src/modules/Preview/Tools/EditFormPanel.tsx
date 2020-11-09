@@ -31,6 +31,8 @@ import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import { ModelHelper } from '../../../utils/model';
 import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -47,7 +49,16 @@ const translations = defineMessages({
   }
 });
 
-const styles = makeStyles(() => createStyles({
+const styles = makeStyles((theme) => createStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    margin: theme.spacing(1),
+    position: 'absolute',
+    top: 64 + theme.spacing(1),
+    left: theme.spacing(1),
+    zIndex: theme.zIndex.drawer
+  },
   formWrapper: {
     textAlign: 'center',
     padding: '20px 0',
@@ -72,7 +83,27 @@ function createBackHandler(dispatch) {
   };
 }
 
-export default function EditFormPanel() {
+export default function EditFormPanel(props) {
+  const classes = styles();
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
+  return (
+    <Grow in={props.open}>
+      <Paper
+        elevation={4}
+        style={{ width: toolsPanelWidth - 30 }}
+        className={classes.root}
+      >
+        {
+          props.open &&
+          <EditFormPanelWrapper/>
+        }
+      </Paper>
+
+    </Grow>
+  );
+}
+
+function EditFormPanelWrapper() {
 
   const dispatch = useDispatch();
   const { guest: { selected, models, childrenMap } } = usePreviewState();
@@ -80,7 +111,7 @@ export default function EditFormPanel() {
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const classes = styles({});
+  const classes = styles();
   const onBack = createBackHandler(dispatch);
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
   const defaultSrc = `${authoringBase}/legacy/form?`;

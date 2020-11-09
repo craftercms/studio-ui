@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses}.
  */
 
-const uiConfigMock = {
+const uiConfigDefaults = {
   preview: {
     sidebar: {
       panels: [
@@ -165,11 +165,11 @@ const uiConfigMock = {
           roles: ['admin', 'developer']
         },
         {
-          id: 'craftercms.siteSearchLink',
+          id: 'craftercms.siteConfigLink',
           roles: ['admin', 'developer']
         },
         {
-          id: 'craftercms.siteConfigLink',
+          id: 'craftercms.siteSearchLink',
           roles: ['admin', 'developer']
         }
       ]
@@ -177,4 +177,4 @@ const uiConfigMock = {
   }
 };
 
-export default uiConfigMock;
+export default uiConfigDefaults;

@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
+import { WidgetState } from '../../components/Navigation/PathNavigator/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
@@ -48,10 +48,11 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           keyword: '',
           isSelectMode: false,
           hasClipboard: false,
+          levelDescriptor: null,
           itemsInPath: null,
           breadcrumb: [],
           selectedItems: [],
-          leafs: [],
+          leaves: [],
           limit: 10,
           offset: 0,
           count: 0,
@@ -100,7 +101,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
             ...state[id],
             // Revert path to previous (parent) path
             currentPath: nextPath,
-            leafs: state[id].leafs.concat(path)
+            leaves: state[id].leaves.concat(path)
           }
         };
       } else {
@@ -108,6 +109,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           ...state[id],
           breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
           itemsInPath: response.map((item) => item.id),
+          ...(response.levelDescriptor && { levelDescriptor: response.levelDescriptor.path }),
           count: response.length
         };
         return {
@@ -129,10 +131,14 @@ const reducer = createReducer<LookupTable<WidgetState>>(
     [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { id, response } }) => {
       const { currentPath, rootPath } = state[id];
       let itemsInPath = [];
+      let levelDescriptor = null;
 
       response.forEach((resp: GetChildrenResponse, i: number) => {
         if (i === response.length - 1) {
           itemsInPath = resp.map((item) => item.id);
+          if (resp.levelDescriptor) {
+            levelDescriptor = resp.levelDescriptor.path;
+          }
         }
       });
 
@@ -141,6 +147,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         [id]: {
           ...state[id],
           itemsInPath,
+          levelDescriptor,
           breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath)
         }
       };
