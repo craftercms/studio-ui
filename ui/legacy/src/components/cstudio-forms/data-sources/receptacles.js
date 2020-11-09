@@ -68,7 +68,7 @@
           }
         });
       }
-      if (this.allowShared && this.enableSearch) {
+      if (this.allowShared === 'true' && this.enableSearch === 'true') {
         let message = formatMessage('searchExisting');
         $(control.addContainerEl).append(
           self._createOption(message, () => {
@@ -271,7 +271,7 @@
       const self = this;
       const $addContainerEl = $(control.addContainerEl);
 
-      if (self.allowEmbedded) {
+      if (self.allowEmbedded === 'true') {
         let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
         let type = 'embedded';
         $addContainerEl.append(
@@ -279,7 +279,7 @@
         );
       }
 
-      if (self.allowShared) {
+      if (self.allowShared === 'true') {
         let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
         let type = 'shared';
         $addContainerEl.append(
@@ -287,7 +287,7 @@
         );
       }
 
-      if (self.allowShared && self.enableBrowse) {
+      if (self.allowShared === 'true' && self.enableBrowse === 'true') {
         let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
         $addContainerEl.append(
           self._createOption(message, () => {
