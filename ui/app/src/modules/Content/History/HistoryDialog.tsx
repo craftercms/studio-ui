@@ -253,7 +253,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   );
 
   const handleOpenMenu = useCallback(
-    (anchorEl, version, isCurrent = false, permissions, lastOne) => {
+    (anchorEl, version, isCurrent = false, permissions, initialCommit) => {
       const write = permissions?.write;
       const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
       let sections = [];
@@ -261,7 +261,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
 
       if (count > 1) {
         if (hasOptions) {
-          if (lastOne) {
+          if (initialCommit) {
             sections.push([menuOptions.compareTo]);
           } else {
             sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
