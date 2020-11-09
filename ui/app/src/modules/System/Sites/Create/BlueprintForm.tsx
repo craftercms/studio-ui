@@ -133,8 +133,9 @@ function BlueprintForm(props: BlueprintFormProps) {
       setInputs({ [e.target.name]: e.target.checked, submitted: false });
     } else if (e.target.name === 'siteId') {
       const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
+      const siteId = e.target.value.replace(/[^a-zA-Z0-9-_]/g, '').replace(/_/g, '-').toLowerCase();
       setInputs({
-        [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase(),
+        [e.target.name]: siteId,
         invalidSiteId: invalidSiteId
       });
     } else if (e.target.name === 'siteName') {
@@ -197,8 +198,9 @@ function BlueprintForm(props: BlueprintFormProps) {
   }
 
   function getSiteId(siteName: string): string {
-    let siteId = siteName.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
-    siteId = siteId.replace(/\s/g, '-');
+    let siteId = siteName.replace(/[^a-zA-Z0-9_\s]/g, '')
+      .replace(/[_\s]/g, '-')
+      .toLowerCase();
     if (siteId.startsWith('0') || siteId.startsWith('-') || siteId.startsWith('_')) {
       siteId = siteId.replace(/0|-|_/, '');
     }
