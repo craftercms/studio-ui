@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
@@ -39,6 +39,8 @@ import StandardAction from '../../models/StandardAction';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
+import { itemCreated, itemUpdated, systemEvent } from '../../state/actions/systemEvents';
+import { getQueryVariable } from '../../utils/path';
 
 const translations = defineMessages({
   title: {
@@ -79,12 +81,14 @@ interface LegacyFormDialogBaseProps {
   onMinimized?(): void;
 }
 
-export type LegacyFormDialogProps = PropsWithChildren<LegacyFormDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
-  onSaveSuccess?(response?: any): any;
-}>;
+export type LegacyFormDialogProps = PropsWithChildren<
+  LegacyFormDialogBaseProps & {
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSaveSuccess?(response?: any): any;
+  }
+>;
 
 export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
   onSaveSuccess?: StandardAction;
@@ -94,14 +98,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 }
 
 function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
-  const {
-    src,
-    inProgress,
-    onSaveSuccess,
-    onDismiss,
-    onClosed,
-    onMinimized
-  } = props;
+  const { src, inProgress, onSaveSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -116,11 +113,24 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     onDismiss();
   };
 
+  const onSave = useCallback(
+    (data) => {
+      onSaveSuccess?.(data);
+      if (data.isNew) {
+        dispatch(systemEvent(itemCreated({ target: data.item.uri })));
+      } else {
+        const path = getQueryVariable(src, 'path') as string;
+        dispatch(systemEvent(itemUpdated({ target: path })));
+      }
+    },
+    [dispatch, onSaveSuccess, src]
+  );
+
   useEffect(() => {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
-          onSaveSuccess?.(e.data);
+          onSave(e.data);
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
           switch (e.data.action) {
             case 'save': {
@@ -152,7 +162,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
-          onSaveSuccess?.(e.data);
+          onSave(e.data);
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
@@ -182,7 +192,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSaveSuccess, messages, dispatch, onMinimized, onDismiss]);
+  }, [inProgress, onSave, messages, dispatch, onMinimized, onDismiss]);
 
   useUnmount(onClosed);
 

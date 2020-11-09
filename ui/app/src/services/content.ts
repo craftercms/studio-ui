@@ -978,20 +978,20 @@ export function copy(
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function cut(site: string, item: DetailedItem): Observable<any> {
+export function cut(site: string, path: string): Observable<any> {
   return post(
     `/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`,
-    { item: [{ uri: item.path }] },
+    { item: [{ uri: path }] },
     CONTENT_TYPE_JSON
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function paste(site: string, path: string): Observable<{ site: string; status: string[] }> {
+export function paste(site: string, path: string): Observable<string[]> {
   return get(
     `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(
       path
     )}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  ).pipe(pluck('response', 'status'), catchError(errorSelectorApi1));
 }
 
 export function duplicate(site: string, path: string): Observable<string> {
@@ -1002,7 +1002,7 @@ export function duplicate(site: string, path: string): Observable<string> {
   return copy(site, path).pipe(
     switchMap(() => paste(site, getParentPath(parentPath))),
     // Duplicate only does shallow copy, so return the copied path
-    pluck('status', '0')
+    map((paths) => paths[0])
   );
 }
 

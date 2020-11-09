@@ -34,6 +34,7 @@ export default createReducer<GlobalState['dialogs']['createFolder']>(initialStat
     onClose: closeCreateFolderDialog(),
     onClosed: createFolderDialogClosed(),
     onCreated: closeCreateFolderDialog(),
+    onRenamed: closeCreateFolderDialog(),
     ...payload,
     open: true
   }),

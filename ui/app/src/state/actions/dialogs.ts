@@ -218,8 +218,12 @@ export const showPublishItemSuccessNotification = createAction(
 );
 export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 export const showPasteItemSuccessNotification = createAction(
   'SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION'
+);
+export const showDuplicatedItemSuccessNotification = createAction(
+  'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
 );
 export const showRevertItemSuccessNotification = createAction(
   'SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION'

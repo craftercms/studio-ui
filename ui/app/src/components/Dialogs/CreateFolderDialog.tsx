@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { folderCreated, folderRenamed, systemEvent } from '../../state/actions/systemEvents';
 
 export const translations = defineMessages({
   placeholder: {
@@ -50,6 +50,7 @@ export type CreateFolderProps = PropsWithChildren<
     onClose(): void;
     onClosed?(): void;
     onCreated?(response: { path: string; name: string; rename: boolean }): void;
+    onRenamed?(response: { path: string; name: string; rename: boolean }): void;
   }
 >;
 
@@ -57,6 +58,7 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onCreated?: StandardAction;
+  onRenamed?: StandardAction;
 }
 
 export default function CreateFolderDialog(props: CreateFolderProps) {
@@ -99,13 +101,13 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     inProgress,
     setState,
     onCreated,
+    onRenamed,
     rename = false,
     value = '',
     allowBraces = false
   } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
-  const hostToHost$ = getHostToHostBus();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
@@ -118,13 +120,8 @@ function CreateFolderUI(props: CreateFolderUIProps) {
       if (rename) {
         renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
-            hostToHost$.next({
-              type: 'FOLDER_RENAMED',
-              payload: {
-                path
-              }
-            });
-            onCreated?.({ path, name, rename });
+            onRenamed?.({ path, name, rename });
+            dispatch(systemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
@@ -134,13 +131,8 @@ function CreateFolderUI(props: CreateFolderUIProps) {
       } else {
         createFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
-            hostToHost$.next({
-              type: 'FOLDER_CREATED',
-              payload: {
-                path
-              }
-            });
             onCreated?.({ path, name, rename });
+            dispatch(systemEvent(folderCreated({ target: path, name: name })));
           },
           (response) => {
             setState({ inProgress: false, submitted: true });

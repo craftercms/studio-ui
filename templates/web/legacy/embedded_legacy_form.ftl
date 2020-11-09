@@ -186,7 +186,8 @@
                         refresh: false,
                         tab: type,
                         redirectUrl: response.item?.browserUri,
-                        action
+                        action,
+                        isNew: true
                       }, '*');
                     },
                     failure: (error) => {

@@ -30,11 +30,11 @@ import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin } from '@material-ui/core';
 import {
+  closeChangeContentTypeDialog,
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
   closeDeleteDialog,
-  closeNewContentDialog,
   closePublishDialog,
   closeUploadDialog,
   showChangeContentTypeDialog,
@@ -47,6 +47,7 @@ import {
   showDeleteDialog,
   showDeleteItemSuccessNotification,
   showDependenciesDialog,
+  showDuplicatedItemSuccessNotification,
   showEditDialog,
   showEditItemSuccessNotification,
   showHistoryDialog,
@@ -60,7 +61,6 @@ import {
 } from '../../state/actions/dialogs';
 import {
   copy,
-  cut,
   fetchWorkflowAffectedItems,
   getLegacyItemsTree,
   paste
@@ -70,10 +70,10 @@ import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
-import StandardAction from '../../models/StandardAction';
 import { getRootPath, withoutIndex } from '../../utils/path';
 import {
   assetDuplicate,
+  itemCut,
   itemDuplicate,
   reloadDetailedItem,
   setClipBoard,
@@ -85,7 +85,7 @@ import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
 import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { itemPasted } from '../../state/actions/systemEvents';
 
 interface ItemMenuProps {
   path: string;
@@ -95,7 +95,6 @@ interface ItemMenuProps {
   anchorOrigin?: PopoverOrigin;
   loaderItems?: number;
   onClose(): void;
-  onItemMenuActionSuccessCreator?(args: object): StandardAction;
 }
 
 interface ItemMenuUIProps {
@@ -115,7 +114,7 @@ const useStyles = makeStyles(() =>
 );
 
 export function ItemMenu(props: ItemMenuProps) {
-  const { path, onClose, onItemMenuActionSuccessCreator, loaderItems = 8 } = props;
+  const { path, onClose, loaderItems = 8 } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const permissions = usePermissions();
@@ -127,7 +126,6 @@ export function ItemMenu(props: ItemMenuProps) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const hostToHost$ = getHostToHostBus();
 
   const resourceItem = useLogicResource<DetailedItem, DetailedItem>(item, {
     shouldResolve: (source) => Boolean(source),
@@ -167,14 +165,23 @@ export function ItemMenu(props: ItemMenuProps) {
             dispatch(
               showWorkflowCancellationDialog({
                 items,
-                onContinue: showEditDialog({ src })
+                onContinue: showEditDialog({
+                  src,
+                  onSaveSuccess: batchActions([
+                    showEditItemSuccessNotification(),
+                    reloadDetailedItem({ path })
+                  ])
+                })
               })
             );
           } else {
             dispatch(
               showEditDialog({
                 src,
-                onSaveSuccess: showEditItemSuccessNotification()
+                onSaveSuccess: batchActions([
+                  showEditItemSuccessNotification(),
+                  reloadDetailedItem({ path })
+                ])
               })
             );
           }
@@ -216,9 +223,7 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showDeleteDialog({
             items,
-            onSuccess: batchActions(
-              [showDeleteItemSuccessNotification(), closeDeleteDialog()].filter(Boolean)
-            )
+            onSuccess: batchActions([showDeleteItemSuccessNotification(), closeDeleteDialog()])
           })
         );
         break;
@@ -236,7 +241,7 @@ export function ItemMenu(props: ItemMenuProps) {
                 rootPath: getRootPath(item.path),
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
-                  closeNewContentDialog(),
+                  closeChangeContentTypeDialog(),
                   changeContentType({ contentTypeId: item.contentTypeId, path: item.path })
                 ])
               })
@@ -246,22 +251,18 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'cut': {
-        cut(site, item).subscribe(
-          ({ success }) => {
-            if (success) {
-              dispatch(
-                batchActions([setClipBoard({ path: item.path }), showCopyItemSuccessNotification()])
-              );
-            }
-          },
-          (response) => {
+        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          if (items?.length > 0) {
             dispatch(
-              showErrorDialog({
-                error: response
+              showWorkflowCancellationDialog({
+                items,
+                onContinue: itemCut({ path })
               })
             );
+          } else {
+            dispatch(itemCut({ path }));
           }
-        );
+        });
         break;
       }
       case 'copy': {
@@ -314,14 +315,14 @@ export function ItemMenu(props: ItemMenuProps) {
       }
       case 'paste': {
         paste(site, item.path).subscribe(
-          () => {
-            dispatch(batchActions([unSetClipBoard(), showPasteItemSuccessNotification()]));
-            hostToHost$.next({
-              type: 'ITEM_PASTED',
-              payload: {
-                item: item
-              }
-            });
+          (resultingPaths) => {
+            dispatch(
+              batchActions([
+                itemPasted({ target: item.path, resultingPaths }),
+                unSetClipBoard(),
+                showPasteItemSuccessNotification()
+              ])
+            );
           },
           (response) => {
             dispatch(
@@ -343,7 +344,7 @@ export function ItemMenu(props: ItemMenuProps) {
               closeConfirmDialog(),
               assetDuplicate({
                 path: item.path,
-                onSuccess: batchActions([showPasteItemSuccessNotification()])
+                onSuccess: showDuplicatedItemSuccessNotification()
               })
             ])
           })
@@ -360,7 +361,7 @@ export function ItemMenu(props: ItemMenuProps) {
               closeConfirmDialog(),
               itemDuplicate({
                 path: item.path,
-                onSuccess: batchActions([showPasteItemSuccessNotification()])
+                onSuccess: showDuplicatedItemSuccessNotification()
               })
             ])
           })
@@ -441,10 +442,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'template',
-            onCreated: batchActions([
-              closeCreateFileDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-            ])
+            onCreated: batchActions([closeCreateFileDialog()])
           })
         );
         break;
@@ -454,10 +452,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: batchActions([
-              closeCreateFileDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-            ])
+            onCreated: batchActions([closeCreateFileDialog()])
           })
         );
         break;
@@ -489,10 +484,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showUploadDialog({
             path: item.path,
             site,
-            onClose: batchActions([
-              closeUploadDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'upload' })
-            ])
+            onClose: batchActions([closeUploadDialog()])
           })
         );
         break;

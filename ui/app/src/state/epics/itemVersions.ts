@@ -37,6 +37,7 @@ import {
 import { NEVER, of } from 'rxjs';
 import { historyDialogClosed, showRevertItemSuccessNotification } from '../actions/dialogs';
 import { getHistory as getConfigurationHistory } from '../../services/configuration';
+import { reloadDetailedItem } from '../actions/content';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -44,13 +45,13 @@ export default [
       ofType(fetchItemVersions.type, versionsChangeItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const service = (state.versions.isConfig)
+        const service = state.versions.isConfig
           ? getConfigurationHistory(
-            state.sites.active,
-            payload.path ?? state.versions.item.path,
-            payload.environment ?? state.versions.environment,
-            payload.module ?? state.versions.module
-          )
+              state.sites.active,
+              payload.path ?? state.versions.item.path,
+              payload.environment ?? state.versions.environment,
+              payload.module ?? state.versions.module
+            )
           : getContentHistory(state.sites.active, payload.path ?? state.versions.item.path);
         return service.pipe(
           map(fetchItemVersionsComplete),
@@ -68,11 +69,7 @@ export default [
           state.versions.item.path,
           [state.versions.selected[0], state.versions.selected[1]],
           state.contentTypes.byId
-        )
-          .pipe(
-            map(compareBothVersionsComplete),
-            catchAjaxError(compareBothVersionsFailed)
-          )
+        ).pipe(map(compareBothVersionsComplete), catchAjaxError(compareBothVersionsFailed))
       )
     ),
   (action$, state$: StateObservable<GlobalState>) =>
@@ -85,7 +82,7 @@ export default [
           payload.path ?? state.versions.item.path,
           payload.versionNumber ?? state.versions.previous
         ).pipe(
-          map(revertContentComplete),
+          map(() => revertContentComplete({ path: payload.path })),
           catchAjaxError(revertContentFailed)
         )
       )
@@ -93,7 +90,11 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(revertContentComplete.type),
-      switchMap((args) => [fetchItemVersions(args), showRevertItemSuccessNotification()])
+      switchMap(({ payload }) => [
+        fetchItemVersions(),
+        showRevertItemSuccessNotification(),
+        reloadDetailedItem({ path: payload.path })
+      ])
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(

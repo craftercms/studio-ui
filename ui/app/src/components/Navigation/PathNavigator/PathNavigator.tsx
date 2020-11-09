@@ -63,6 +63,16 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
+import {
+  fileUploaded,
+  folderCreated,
+  folderRenamed,
+  itemCreated,
+  itemDeleted,
+  itemDuplicated,
+  itemPasted,
+  itemUpdated
+} from '../../../state/actions/systemEvents';
 
 export interface WidgetProps {
   id: string;
@@ -191,61 +201,50 @@ export default function PathNavigator(props: WidgetProps) {
   //Item Updates Propagation
   useEffect(() => {
     const events = [
-      'ITEM_PASTED',
-      'ITEM_DELETED',
-      'ITEM_DUPLICATED',
-      'FOLDER_RENAMED',
-      'FOLDER_CREATED',
-      'ITEM_CREATED'
+      itemPasted.type,
+      itemUpdated.type,
+      folderCreated.type,
+      folderRenamed.type,
+      itemDeleted.type,
+      itemDuplicated.type,
+      itemCreated.type,
+      fileUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$
       .pipe(filter((e) => events.includes(e.type)))
       .subscribe(({ type, payload }) => {
         switch (type) {
-          case 'ITEM_PASTED': {
-            if (withoutIndex(payload.item.path) === withoutIndex(state.currentPath)) {
+          case itemCreated.type:
+          case itemUpdated.type:
+          case fileUploaded.type:
+          case folderRenamed.type:
+          case itemDuplicated.type: {
+            if (getParentPath(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
             break;
           }
-          case 'ITEM_DUPLICATED': {
-            if (withoutIndex(payload.originalItem.path) === withoutIndex(state.currentPath)) {
+          case folderCreated.type:
+          case itemPasted.type: {
+            if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
             break;
           }
-          case 'ITEM_DELETED': {
-            payload.items.forEach((item) => {
-              if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
+          case itemDeleted.type: {
+            payload.targets.forEach((path) => {
+              if (withoutIndex(path) === withoutIndex(state.currentPath)) {
                 dispatch(
                   pathNavigatorSetCurrentPath({
                     id,
-                    path: getParentPath(withoutIndex(item.path))
+                    path: getParentPath(withoutIndex(path))
                   })
                 );
-              } else if (state.itemsInPath.includes(item.path)) {
+              } else if (state.itemsInPath.includes(path)) {
                 dispatch(pathNavigatorRefresh({ id }));
               }
             });
-            break;
-          }
-          case 'FOLDER_RENAMED': {
-            if (getParentPath(payload.path) === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-            break;
-          }
-          case 'FOLDER_CREATED': {
-            if (payload.path === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-            break;
-          }
-          case 'ITEM_CREATED': {
-            if (getParentPath(payload.item.path) === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
             break;
           }
         }
@@ -407,11 +406,6 @@ export default function PathNavigator(props: WidgetProps) {
     }
   };
 
-  const onItemMenuActionSuccessCreator = (args) => ({
-    type: 'PATH_NAVIGATOR_ITEM_ACTION_SUCCESS',
-    payload: { id, ...args }
-  });
-
   const onChangeCollapsed = (collapsed: boolean) => {
     dispatch(pathNavigatorSetCollapsed({ id, collapsed }));
   };
@@ -446,7 +440,6 @@ export default function PathNavigator(props: WidgetProps) {
         onCloseItemMenu={onCloseItemMenu}
         onCloseSimpleMenu={onCloseSimpleMenu}
         onSimpleMenuClick={onSimpleMenuClick}
-        onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
       />
     </Suspencified>
   );
@@ -477,8 +470,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
     onPageChanged,
     onCloseItemMenu,
     onCloseSimpleMenu,
-    onSimpleMenuClick,
-    onItemMenuActionSuccessCreator
+    onSimpleMenuClick
   } = props;
   // endregion
   const { formatMessage } = useIntl();
@@ -616,7 +608,6 @@ export function PathNavigatorUI(props: WidgetUIProps) {
           loaderItems={itemMenu.loaderItems}
           anchorEl={itemMenu.anchorEl}
           onClose={onCloseItemMenu}
-          onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
         />
       )}
       <ContextMenu

@@ -42,7 +42,7 @@ import { fetchDeleteDependencies, showEditDialog } from '../../../state/actions/
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { deleteItems } from '../../../services/content';
-import { getHostToHostBus } from '../../Preview/previewContext';
+import { itemDeleted, systemEvent } from '../../../state/actions/systemEvents';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -275,7 +275,6 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
 
   const [selectedItems, setSelectedItems] = useState(null);
   const dispatch = useDispatch();
-  const hostToHost$ = getHostToHostBus();
 
   const depsSource = useMemo(() => ({ deleteDependencies, apiState, isFetching }), [
     deleteDependencies,
@@ -318,12 +317,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       (response) => {
         setApiState({ submitting: false });
 
-        hostToHost$.next({
-          type: 'ITEM_DELETED',
-          payload: {
-            items: selectedItems.map((path) => items.find((item) => item.id === path))
-          }
-        });
+        dispatch(systemEvent(itemDeleted({ targets: selectedItems })));
 
         onSuccess?.({
           ...response,

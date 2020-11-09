@@ -15,10 +15,11 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
+  batchActions,
   changeContentType as changeContentTypeAction,
   editTemplate as editTemplateAction
 } from '../actions/misc';
@@ -29,6 +30,19 @@ import {
   showEditItemSuccessNotification,
   showWorkflowCancellationDialog
 } from '../actions/dialogs';
+import { reloadDetailedItem } from '../actions/content';
+import { systemEvent } from '../actions/systemEvents';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+
+const systemEventPropagate: Epic = (action$) =>
+  action$.pipe(
+    ofType(systemEvent.type),
+    tap(({ payload }) => {
+      const hostToHost$ = getHostToHostBus();
+      hostToHost$.next(payload);
+    }),
+    ignoreElements()
+  );
 
 const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
   action$.pipe(
@@ -43,7 +57,10 @@ const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
           map(() =>
             showEditDialog({
               src,
-              onSaveSuccess: showEditItemSuccessNotification()
+              onSaveSuccess: batchActions([
+                showEditItemSuccessNotification(),
+                reloadDetailedItem({ path })
+              ])
             })
           )
         );
@@ -71,4 +88,4 @@ const editTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
     })
   );
 
-export default [changeTemplate, editTemplate] as Epic[];
+export default [changeTemplate, editTemplate, systemEventPropagate] as Epic[];

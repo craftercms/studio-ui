@@ -31,7 +31,9 @@ interface HistoryConfigProps {
 
 export const fetchItemVersions = createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
 
-export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
+export const fetchItemVersionsComplete = createAction<VersionsResponse>(
+  'FETCH_ITEM_VERSIONS_COMPLETE'
+);
 
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
@@ -53,7 +55,7 @@ export const compareBothVersionsFailed = createAction<any>('COMPARE_BOTH_VERSION
 
 export const revertContent = createAction<FetchContentVersion>('REVERT_CONTENT');
 
-export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
+export const revertContentComplete = createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
 
 export const revertContentFailed = createAction<AjaxResponse>('REVERT_CONTENT_FAILED');
 
@@ -115,7 +117,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     selected: payload ? [payload.id] : []
   }),
   [compareToPreviousVersion.type]: (state, { payload }) => {
-    let i = state.allVersions.findIndex(version => version.versionNumber === payload.id);
+    let i = state.allVersions.findIndex((version) => version.versionNumber === payload.id);
     let previous = state.allVersions?.[i + 1].versionNumber;
     return {
       ...state,
@@ -147,7 +149,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     }
   }),
   [revertToPreviousVersion.type]: (state, { payload }) => {
-    let i = state.allVersions.findIndex(version => version.versionNumber === payload.id);
+    let i = state.allVersions.findIndex((version) => version.versionNumber === payload.id);
     let previous = state.allVersions?.[i + 1].versionNumber;
     return {
       ...state,

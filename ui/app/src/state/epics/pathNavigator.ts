@@ -19,8 +19,8 @@ import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
-import { getIndividualPaths, withoutIndex } from '../../utils/path';
-import { forkJoin, NEVER, Observable } from 'rxjs';
+import { getIndividualPaths } from '../../utils/path';
+import { forkJoin, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
   pathNavigatorFetchParentItems,
@@ -28,7 +28,6 @@ import {
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
-  pathNavigatorItemActionSuccess,
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
@@ -84,7 +83,9 @@ export default [
       ofType(pathNavigatorSetKeyword.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, keyword } }, state]) =>
-        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, { keyword }).pipe(
+        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+          keyword
+        }).pipe(
           map((response) => pathNavigatorFetchPathComplete({ id, response })),
           catchAjaxError(pathNavigatorFetchPathFailed)
         )
@@ -96,12 +97,12 @@ export default [
       withLatestFrom(state$),
       mergeMap(
         ([
-           {
-             type,
-             payload: { id, path, excludes }
-           },
-           state
-         ]) => {
+          {
+            type,
+            payload: { id, path, excludes }
+          },
+          state
+        ]) => {
           const site = state.sites.active;
           const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
           const requests: Observable<GetChildrenResponse>[] = [];
@@ -128,12 +129,12 @@ export default [
       withLatestFrom(state$),
       tap(
         ([
-           {
-             type,
-             payload: { id, response }
-           },
-           state
-         ]) => {
+          {
+            type,
+            payload: { id, response }
+          },
+          state
+        ]) => {
           if (response?.length > 0 || type === pathNavigatorSetCollapsed.type) {
             localStorage.setItem(
               `craftercms.pathNavigator.${state.sites.active}.${id}`,
@@ -146,55 +147,5 @@ export default [
         }
       ),
       ignoreElements()
-    ),
-  (action$, state$: StateObservable<GlobalState>) =>
-    action$.pipe(
-      ofType(pathNavigatorItemActionSuccess.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        // TODO: This should be remove pathNavigatorItemActionSuccess
-        let currentPath = state.pathNavigator[payload.id].currentPath;
-        switch (payload.option) {
-          case 'delete': {
-            if (withoutIndex(payload.item.path) !== withoutIndex(currentPath)) {
-              return [pathNavigatorSetCurrentPath({
-                id: payload.id,
-                path: currentPath
-              })];
-            } else {
-              return NEVER;
-            }
-          }
-          case 'createFolder': {
-            if (withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
-              return [pathNavigatorSetCurrentPath({
-                id: payload.id,
-                path: currentPath
-              })];
-            } else {
-              return NEVER;
-            }
-          }
-          case 'upload': {
-            if (payload.dropZoneStatus.uploadedFiles > 0 && withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
-              return [pathNavigatorSetCurrentPath({
-                id: payload.id,
-                path: currentPath
-              })];
-            } else {
-              return NEVER;
-            }
-          }
-          case 'refresh': {
-            return [pathNavigatorSetCurrentPath({
-              id: payload.id,
-              path: currentPath
-            })];
-          }
-          default: {
-            return NEVER;
-          }
-        }
-      })
     )
 ] as Epic[];

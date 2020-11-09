@@ -36,7 +36,9 @@ import {
   fetchDeleteDependenciesFailed,
   newContentCreationComplete,
   showCopyItemSuccessNotification,
+  showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
+  showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
   showPasteItemSuccessNotification,
   showPublishItemSuccessNotification,
@@ -121,15 +123,6 @@ export default [
   (action$, state$: Observable<GlobalState>) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
-      tap(({ payload }) => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next({
-          type: 'ITEM_CREATED',
-          payload: {
-            item: payload.item
-          }
-        });
-      }),
       switchMap(({ payload }) =>
         payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER
       )
@@ -201,12 +194,38 @@ export default [
     ),
   (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
     action$.pipe(
+      ofType(showCutItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemCut)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
       ofType(showPasteItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
             message: intl.formatMessage(itemSuccessMessages.itemPasted)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+    action$.pipe(
+      ofType(showDuplicatedItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: intl.formatMessage(itemSuccessMessages.itemDuplicated)
           })
         );
       }),

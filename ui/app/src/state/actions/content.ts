@@ -22,13 +22,17 @@ import StandardAction from '../../models/StandardAction';
 
 // region Quick Create
 export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
-export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>('FETCH_QUICK_CREATE_LIST_COMPLETE');
+export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>(
+  'FETCH_QUICK_CREATE_LIST_COMPLETE'
+);
 export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
 // region Permissions
 export const fetchUserPermissions = createAction<{ path: string }>('FETCH_USER_PERMISSIONS');
-export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: string[] }>('FETCH_USER_PERMISSIONS_COMPLETE');
+export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: string[] }>(
+  'FETCH_USER_PERMISSIONS_COMPLETE'
+);
 export const fetchUserPermissionsFailed = createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
 // endregion
 
@@ -45,10 +49,12 @@ export const setClipBoard = createAction<{ path: string }>('SET_CLIPBOARD');
 export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
-// region duplicate
-export const itemDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ITEM_DUPlICATE');
-export const assetDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ASSET_DUPlICATE');
+// region item
+export const itemDuplicate = createAction<{ path: string; onSuccess: StandardAction }>(
+  'ITEM_DUPlICATE'
+);
+export const assetDuplicate = createAction<{ path: string; onSuccess: StandardAction }>(
+  'ASSET_DUPlICATE'
+);
+export const itemCut = createAction<{ path: string }>('ITEM_CUT');
 // endregion
-
-
-

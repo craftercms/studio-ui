@@ -15,7 +15,7 @@
  */
 
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   assetDuplicate,
   completeDetailedItem,
@@ -28,19 +28,25 @@ import {
   fetchUserPermissions,
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
+  itemCut,
   itemDuplicate,
   reloadDetailedItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem } from '../../services/content';
+import { cut, duplicate, fetchQuickCreateList, getDetailedItem } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
-import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
+import {
+  showCodeEditorDialog,
+  showCutItemSuccessNotification,
+  showEditDialog
+} from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { itemDuplicated, systemEvent } from '../actions/systemEvents';
+import { batchActions } from '../actions/misc';
 
 const content = [
   // region Quick Create
@@ -110,57 +116,64 @@ const content = [
       })
     ),
   // endregion
-  // region itemDuplicate
+  // region Item Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(itemDuplicate.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          tap((path) => {
-            const hostToHost$ = getHostToHostBus();
-            hostToHost$.next({
-              type: 'ITEM_DUPLICATED',
-              payload: {
-                originalItem: state.content.items.byPath[payload.path],
-                newItemPath: path
-              }
-            });
-          }),
           map((path) =>
-            showEditDialog({
-              src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
-              onSaveSuccess: payload.onSuccess
-            })
+            batchActions([
+              systemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
+              showEditDialog({
+                src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
+                onSaveSuccess: payload.onSuccess
+              })
+            ])
           )
         );
       })
     ),
   // endregion
-  // region assetDuplicate
+  // region Asset Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(assetDuplicate.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          tap((path) => {
-            const hostToHost$ = getHostToHostBus();
-            hostToHost$.next({
-              type: 'ITEM_DUPLICATED',
-              payload: {
-                originalItem: state.content.items.byPath[payload.path],
-                newItemPath: path
-              }
-            });
-          }),
           map((path) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
               const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
-              return showCodeEditorDialog({ src, onSuccess: payload.onSuccess });
+              return batchActions([
+                systemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
+                showCodeEditorDialog({
+                  src,
+                  onSuccess: payload.onSuccess
+                })
+              ]);
             } else {
-              return payload.onSuccess;
+              return systemEvent(itemDuplicated({ target: payload.path, resultPath: path }));
+            }
+          })
+        );
+      })
+    ),
+  // endregion
+  // region Item Cut
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(itemCut.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return cut(state.sites.active, payload.path).pipe(
+          map(({ success }) => {
+            if (success) {
+              return showCutItemSuccessNotification();
+            } else {
+              return NEVER;
             }
           })
         );
