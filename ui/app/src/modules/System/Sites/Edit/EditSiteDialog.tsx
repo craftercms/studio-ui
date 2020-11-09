@@ -33,9 +33,9 @@ import GlobalState from '../../../../models/GlobalState';
 import { LookupTable } from '../../../../models/LookupTable';
 import { fetchSites } from '../../../../state/reducers/sites';
 import Grid from '@material-ui/core/Grid';
+import { showErrorDialog } from '../../../../state/reducers/dialogs/error';
 
-type Source = { site: Site; error: Error };
-type Return = Omit<Source, 'error'>;
+type Return = Omit<Site, 'error'>;
 
 interface EditSiteDialogUIProps {
   siteId: string;
@@ -51,7 +51,7 @@ interface EditSiteDialogUIProps {
 }
 
 interface EditSiteDialogUIContainerProps {
-  resource: Resource<Pick<Source, 'site'>>;
+  resource: Resource<Site>;
   submitting: boolean;
   submitDisabled: boolean;
   checkSiteName: Function;
@@ -108,27 +108,18 @@ function EditSiteDialog(props: EditSiteDialogProps) {
 function EditSiteDialogWrapper(props: EditSiteDialogProps) {
   const { site, onClosed, onClose, onSaveSuccess } = props;
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
   const dispatch = useDispatch();
 
   useUnmount(onClosed);
 
-  const dialogResource = useMemo(
-    () => ({
-      site,
-      error
-    }),
-    [site, error]
-  );
-
-  const resource = useLogicResource<Return, Source>(dialogResource, {
-    shouldResolve: (source) => Boolean(source.site),
-    shouldReject: (source) => Boolean(source.error),
+  const resource = useLogicResource<Return, Site>(site, {
+    shouldResolve: (source) => Boolean(source),
+    shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
-    errorSelector: (source) => source.error
+    errorSelector: (source) => false
   });
 
   function checkSiteName(event: any, currentSiteName: string) {
@@ -154,19 +145,13 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
       },
       (e) => {
         setSubmitting(false);
-        setError(e);
+        dispatch(showErrorDialog({ error: e.response.response }));
       }
     );
   };
 
   return (
-    <>
-      <DialogHeader
-        id="editSiteDialogTitle"
-        title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
-        onDismiss={onClose}
-      />
-      <Suspencified>
+    <Suspencified>
         <EditSiteDialogUIContainer
           resource={resource}
           submitting={submitting}
@@ -175,14 +160,13 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
           onSubmit={handleSubmit}
           onClose={onClose}
         />
-      </Suspencified>
-    </>
+  </Suspencified>
   )
 }
 
 function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
   const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose } = props;
-  const site = resource.read().site;
+  const site = resource.read();
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
 
@@ -229,6 +213,11 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const { formatMessage } = useIntl();
   return (
     <>
+      <DialogHeader
+        id="editSiteDialogTitle"
+        title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
+        onDismiss={onClose}
+      />
       <DialogBody>
         <Grid container spacing={1} component="form">
           <Grid item xs={12}>
