@@ -21,6 +21,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { IntlShape } from 'react-intl';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
+  emitSystemEvent,
   showCopyItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -32,6 +33,15 @@ import {
 } from '../actions/system';
 
 export default [
+  (action$) =>
+    action$.pipe(
+      ofType(emitSystemEvent.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(payload);
+      }),
+      ignoreElements()
+    ),
   (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
     action$.pipe(
       ofType(showDeleteItemSuccessNotification.type),

@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
@@ -30,18 +30,7 @@ import {
   showWorkflowCancellationDialog
 } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
-import { emitSystemEvent, showEditItemSuccessNotification } from '../actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
-
-const systemEventPropagate: Epic = (action$) =>
-  action$.pipe(
-    ofType(emitSystemEvent.type),
-    tap(({ payload }) => {
-      const hostToHost$ = getHostToHostBus();
-      hostToHost$.next(payload);
-    }),
-    ignoreElements()
-  );
+import { showEditItemSuccessNotification } from '../actions/system';
 
 const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
   action$.pipe(
@@ -87,4 +76,4 @@ const editTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
     })
   );
 
-export default [changeTemplate, editTemplate, systemEventPropagate] as Epic[];
+export default [changeTemplate, editTemplate] as Epic[];
