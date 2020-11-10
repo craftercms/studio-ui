@@ -35,7 +35,11 @@
 
     properties.forEach(prop => {
       if (prop.value) {
-        this[prop.name] = prop.value;
+        if (prop.type === 'boolean') {
+          this[prop.name] = prop.value === 'true';
+        } else {
+          this[prop.name] = prop.value;
+        }
       }
     });
 
@@ -68,7 +72,7 @@
           }
         });
       }
-      if (this.allowShared === 'true' && this.enableSearch === 'true') {
+      if (this.allowShared && this.enableSearch) {
         let message = formatMessage('searchExisting');
         $(control.addContainerEl).append(
           self._createOption(message, () => {
@@ -271,7 +275,7 @@
       const self = this;
       const $addContainerEl = $(control.addContainerEl);
 
-      if (self.allowEmbedded === 'true') {
+      if (self.allowEmbedded) {
         let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
         let type = 'embedded';
         $addContainerEl.append(
@@ -279,7 +283,7 @@
         );
       }
 
-      if (self.allowShared === 'true') {
+      if (self.allowShared) {
         let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
         let type = 'shared';
         $addContainerEl.append(
@@ -287,7 +291,7 @@
         );
       }
 
-      if (self.allowShared === 'true' && self.enableBrowse === 'true') {
+      if (self.allowShared && self.enableBrowse) {
         let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
         $addContainerEl.append(
           self._createOption(message, () => {
