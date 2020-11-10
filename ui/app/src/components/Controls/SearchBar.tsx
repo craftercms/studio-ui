@@ -22,21 +22,20 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
-import palette from '../../styles/palette';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     search: {
       position: 'relative',
-      background: (props: any) => props.background || palette.gray.light3,
+      background: (props: any) => props.background ?? theme.palette.background.default,
       width: '100%',
       display: 'flex',
       alignItems: 'center',
       padding: '0 12px',
       borderRadius: '5px',
       '&.focus': {
-        backgroundColor: palette.white,
-        boxShadow: '0px 0px 3px rgba(65, 69, 73, 0.15), 0px 4px 4px rgba(65, 69, 73, 0.15)'
+        backgroundColor: theme.palette.background.paper
       },
       '&.noPadded': {
         padding: '0 0 0 12px'
@@ -108,7 +107,7 @@ export default function SearchBar(props: SearchBarProps) {
     autoFocus = false,
     placeholder,
     disabled = false,
-    showDecoratorIcon = false,
+    showDecoratorIcon = true,
     decoratorIcon: DecoratorIcon = SearchIcon,
     onActionButtonClick,
     onBlur
@@ -116,7 +115,8 @@ export default function SearchBar(props: SearchBarProps) {
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   return (
-    <div
+    <Box
+      boxShadow={focus ? 4 : 0}
       className={clsx(
         classes.search,
         focus && 'focus',
@@ -151,6 +151,6 @@ export default function SearchBar(props: SearchBarProps) {
           <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       )}
-    </div>
+    </Box>
   );
 }

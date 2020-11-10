@@ -100,7 +100,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     dialogContent: {
       padding: theme.spacing(2),
-      backgroundColor: palette.gray.light0,
       overflow: 'auto',
       minHeight: 455
     },

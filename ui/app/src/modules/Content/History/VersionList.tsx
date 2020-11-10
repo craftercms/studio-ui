@@ -126,12 +126,25 @@ interface VersionListProps {
   selected?: string[];
   current?: string;
   onItemClick(version: LegacyVersion): void;
-  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, permissions: LookupTable<boolean>): void;
+  onOpenMenu?(
+    anchorEl: Element,
+    version: LegacyVersion,
+    isCurrent: boolean,
+    permissions: LookupTable<boolean>,
+    lastOne: boolean
+  ): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const { versions: versionsResource, onOpenMenu, onItemClick, current, selected, permissions: permissionsResource } = props;
+  const {
+    versions: versionsResource,
+    onOpenMenu,
+    onItemClick,
+    current,
+    selected,
+    permissions: permissionsResource
+  } = props;
   const versions = versionsResource.read();
   const permissions = permissionsResource?.read();
 
@@ -144,7 +157,10 @@ export function VersionList(props: VersionListProps) {
             divider={versions.length - 1 !== i}
             button
             onClick={() => onItemClick(version)}
-            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
+            className={clsx(
+              classes.listItem,
+              selected?.includes(version.versionNumber) && 'selected'
+            )}
           >
             <ListItemText
               classes={{
@@ -167,19 +183,24 @@ export function VersionList(props: VersionListProps) {
               }
               secondary={version.comment}
             />
-            {
-              onOpenMenu &&
+            {onOpenMenu && (
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
                   onClick={(e) =>
-                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, permissions)
+                    onOpenMenu(
+                      e.currentTarget,
+                      version,
+                      current === version.versionNumber,
+                      permissions,
+                      versions.length === i + 1
+                    )
                   }
                 >
                   <MoreVertIcon />
                 </IconButton>
               </ListItemSecondaryAction>
-            }
+            )}
           </ListItem>
         );
       })}
