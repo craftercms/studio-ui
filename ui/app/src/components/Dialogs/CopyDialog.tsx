@@ -25,7 +25,6 @@ import { TreeView } from '@material-ui/lab';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
-import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
 import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
@@ -57,9 +56,8 @@ const messages = defineMessages({
 
 const simpleItemsSelectionsStyles = makeStyles((theme: Theme) => ({
   simpleItemsSelectionRoot: {
-    background: palette.white,
     border: '1px solid rgba(0, 0, 0, .125)',
-    minHeight: '30vh'
+    flexGrow: 1
   },
   simpleItemsSelectionHeader: {
     padding: '10px 10px 0 10px'
@@ -100,11 +98,13 @@ interface CopyBaseProps {
   item: LegacyItem;
 }
 
-export type CopyDialogProps = PropsWithChildren<CopyBaseProps & {
-  onClose(): void;
-  onClosed?(): void;
-  onOk?(item: CopyItem): void;
-}>;
+export type CopyDialogProps = PropsWithChildren<
+  CopyBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+    onOk?(response: { paths: string[] }): void;
+  }
+>;
 
 export interface CopyDialogStateProps extends CopyBaseProps {
   onClose?: StandardAction;
@@ -145,19 +145,17 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
         label: classes.treeItemLabel
       }}
     >
-      {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
+      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   );
 
   return (
     <section className={classes.simpleItemsSelectionRoot}>
       <header className={classes.simpleItemsSelectionHeader}>
-        <Link
-          component="button"
-          variant="body2"
-          onClick={toggleSelectAll}
-        >
-          {expanded.length === selected.length ? formatMessage(messages.deselectAll) : formatMessage(messages.selectAll)}
+        <Link component="button" variant="body2" onClick={toggleSelectAll}>
+          {expanded.length === selected.length
+            ? formatMessage(messages.deselectAll)
+            : formatMessage(messages.selectAll)}
         </Link>
       </header>
       <TreeView
@@ -176,10 +174,7 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
 
 export default function CopyDialog(props: CopyDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-    >
+    <Dialog open={props.open} onClose={props.onClose}>
       <CopyDialogUI {...props} />
     </Dialog>
   );
@@ -214,7 +209,7 @@ function CopyDialogUI(props: CopyDialogProps) {
     const _selected = [...selected];
     if (checked) {
       const parentsId = getParentsId(nodes.uri, parents);
-      parentsId.forEach(id => {
+      parentsId.forEach((id) => {
         if (!_selected.includes(id)) {
           _selected.push(id);
         }
@@ -222,7 +217,7 @@ function CopyDialogUI(props: CopyDialogProps) {
       _selected.push(nodes.uri);
     } else {
       const childrenId = getChildrenId(nodes.uri, children);
-      childrenId.forEach(id => {
+      childrenId.forEach((id) => {
         let index = _selected.indexOf(id);
         if (index >= 0) {
           _selected.splice(index, 1);
@@ -243,7 +238,7 @@ function CopyDialogUI(props: CopyDialogProps) {
 
   function getChildrenId(id: string, children: LookupTable<Array<string>>, ids: string[] = []) {
     if (children[id]) {
-      children[id].forEach(childId => {
+      children[id].forEach((childId) => {
         ids.push(childId);
         getChildrenId(childId, children, ids);
       });
@@ -255,7 +250,7 @@ function CopyDialogUI(props: CopyDialogProps) {
     if (children[id]) {
       tree.children = [];
       tree.uri = id;
-      children[id].forEach(childId => {
+      children[id].forEach((childId) => {
         if (selected.includes(childId)) {
           let item = getChildrenTree(childId, children);
           if (item.children.length) {
@@ -283,7 +278,7 @@ function CopyDialogUI(props: CopyDialogProps) {
     copy(site, copyItem).subscribe(
       (response) => {
         if (response.success) {
-          onOk?.(copyItem);
+          onOk?.({ paths: selected });
         }
       },
       (response) => {
@@ -301,7 +296,7 @@ function CopyDialogUI(props: CopyDialogProps) {
   return (
     <>
       <DialogHeader title={title} subtitle={subtitle} onDismiss={onClose} />
-      <DialogBody>
+      <DialogBody style={{ minHeight: '30vh' }}>
         <ItemSelectorTree
           item={item}
           selected={selected}

@@ -103,7 +103,11 @@ interface ItemMenuProps {
 interface ItemMenuUIProps {
   resource: { item: Resource<DetailedItem>; permissions: Resource<LookupTable<boolean>> };
   classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
-  hasClipboard?: boolean;
+  clipboard: {
+    type: 'cut | copy';
+    paths: string[];
+    sourceRootPath: string;
+  };
   onMenuItemClicked(section: SectionItem): void;
 }
 
@@ -124,7 +128,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const site = useActiveSiteId();
   const permissions = usePermissions();
   const items = useSelection((state) => state.content.items);
-  const hasClipboard = useSelection((state) => state.content.clipboard);
+  const clipboard = useSelection((state) => state.content.clipboard);
   const item = items.byPath?.[path];
   const itemPermissions = permissions?.[path];
   const { authoringBase } = useEnv();
@@ -281,7 +285,10 @@ export function ItemMenu(props: ItemMenuProps) {
                   item: legacyItem,
                   onOk: batchActions([
                     closeCopyDialog(),
-                    setClipBoard({ path: item.path }),
+                    setClipBoard({
+                      type: 'copy',
+                      sourceRootPath: getRootPath(item.path)
+                    }),
                     showCopyItemSuccessNotification()
                   ])
                 })
@@ -292,7 +299,11 @@ export function ItemMenu(props: ItemMenuProps) {
                   if (response.success) {
                     dispatch(
                       batchActions([
-                        setClipBoard({ path: item.path }),
+                        setClipBoard({
+                          type: 'copy',
+                          paths: [item.path],
+                          sourceRootPath: getRootPath(item.path)
+                        }),
                         showCopyItemSuccessNotification()
                       ])
                     );
@@ -512,7 +523,7 @@ export function ItemMenu(props: ItemMenuProps) {
           resource={{ item: resourceItem, permissions: resourcePermissions }}
           classes={props.classes}
           onMenuItemClicked={onMenuItemClicked}
-          hasClipboard={Boolean(hasClipboard)}
+          clipboard={clipboard}
         />
       </Suspense>
     </Menu>
@@ -520,9 +531,11 @@ export function ItemMenu(props: ItemMenuProps) {
 }
 
 function ItemMenuUI(props: ItemMenuUIProps) {
-  const { resource, classes, onMenuItemClicked, hasClipboard } = props;
+  const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
+  const hasClipboard =
+    clipboard?.paths.length && clipboard.sourceRootPath === getRootPath(item.path);
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
   return (

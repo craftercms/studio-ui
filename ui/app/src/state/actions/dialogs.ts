@@ -36,6 +36,7 @@ import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog'
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
+import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>(
@@ -171,7 +172,7 @@ export const createFileDialogClosed = createAction('CREATE_FILE_DIALOG_CLOSED');
 // endregion
 
 // region Copy Dialog
-export const showCopyDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_COPY_DIALOG');
+export const showCopyDialog = createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
 export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');
 export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
 // endregion

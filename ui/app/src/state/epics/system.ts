@@ -100,7 +100,7 @@ export default [
         hostToHost$.next(
           showSystemNotification({
             message: intl.formatMessage(itemSuccessMessages.itemCopied, {
-              count: payload?.children.length ?? 1
+              count: payload?.paths.length ?? 1
             })
           })
         );

@@ -99,7 +99,11 @@ export interface GlobalState {
       byPath: LookupTable<DetailedItem>;
       permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
-    clipboard: string;
+    clipboard: {
+      type: 'cut | copy';
+      paths: string[];
+      sourceRootPath: string;
+    };
   };
   contentTypes: EntityState<ContentType>;
   env: {

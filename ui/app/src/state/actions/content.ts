@@ -45,7 +45,12 @@ export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_I
 // endregion
 
 // region clipboard
-export const setClipBoard = createAction<{ path: string }>('SET_CLIPBOARD');
+export const setClipBoard = createAction<{
+  type: 'cut' | 'copy';
+  paths?: string[];
+  sourceRootPath: string;
+}>('SET_CLIPBOARD');
+
 export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
