@@ -3056,7 +3056,8 @@
           var val = supportedProperty.defaultValue ? supportedProperty.defaultValue : '';
           newDataSource.properties[newDataSource.properties.length] = {
             name: supportedProperty.name,
-            value: val
+            value: val,
+            type: supportedProperty.type
           };
         }
 
