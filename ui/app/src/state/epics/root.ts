@@ -34,7 +34,7 @@ import StandardAction from '../../models/StandardAction';
 import configuration from './configuration';
 import pathNavigator from './pathNavigator';
 import misc from './misc';
-import system from './misc';
+import system from './system';
 
 const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.apply(this, [
   (action$) =>
