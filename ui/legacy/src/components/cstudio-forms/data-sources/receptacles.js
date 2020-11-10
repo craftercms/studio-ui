@@ -35,7 +35,11 @@
 
     properties.forEach(prop => {
       if (prop.value) {
-        this[prop.name] = prop.value;
+        if (prop.type === 'boolean') {
+          this[prop.name] = prop.value === 'true';
+        } else {
+          this[prop.name] = prop.value;
+        }
       }
     });
 
