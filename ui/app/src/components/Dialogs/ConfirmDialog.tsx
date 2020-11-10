@@ -46,13 +46,15 @@ interface ConfirmDialogBaseProps {
   disableBackdropClick?: boolean;
 }
 
-export type ConfirmDialogProps = PropsWithChildren<ConfirmDialogBaseProps & {
-  onOk?(): void;
-  onCancel?(): void;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type ConfirmDialogProps = PropsWithChildren<
+  ConfirmDialogBaseProps & {
+    onOk?(): void;
+    onCancel?(): void;
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
   onOk?: StandardAction;
@@ -80,14 +82,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
 }
 
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
-  const {
-    onOk,
-    onCancel,
-    onDismiss,
-    body,
-    title,
-    children
-  } = props;
+  const { onOk, onCancel, onDismiss, body, title, children } = props;
   const { formatMessage } = useIntl();
   useUnmount(props.onClosed);
   return (
@@ -99,7 +94,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
       </DialogBody>
       <DialogFooter>
         {onCancel && (
-          <Button onClick={onCancel} variant="outlined">
+          <Button onClick={onCancel} variant="contained">
             {formatMessage(messages.cancel)}
           </Button>
         )}

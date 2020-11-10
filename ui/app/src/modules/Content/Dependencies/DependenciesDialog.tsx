@@ -59,7 +59,6 @@ import { useDispatch } from 'react-redux';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
-import palette from '../../../styles/palette';
 import {
   showCodeEditorDialog,
   showEditDialog,
@@ -107,22 +106,6 @@ const dependenciesDialogStyles = makeStyles((theme) =>
       overflow: 'auto',
       minHeight: '50vh'
     },
-    titleRoot: {
-      margin: 0,
-      padding: '13px 20px 11px',
-      background: palette.white
-    },
-    title: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingBottom: 10
-    },
-    subtitle: {
-      fontSize: '14px',
-      lineHeight: '18px',
-      paddingRight: '35px'
-    },
     selectionContent: {
       marginBottom: '15px',
       display: 'flex'
@@ -135,58 +118,18 @@ const dependenciesDialogStyles = makeStyles((theme) =>
       minWidth: 120,
       marginLeft: 'auto'
     },
-    selectLabel: {
-      position: 'relative',
-      color: palette.gray.dark5,
-      fontSize: '14px'
-    },
     select: {
       fontSize: '16px',
       border: 'none',
       background: 'none'
     },
-    selectedItem: {
-      backgroundColor: palette.white,
-      borderRadius: '5px',
-      padding: '10px',
-      height: '40px',
-      fontSize: '16px',
-      borderColor: palette.gray.light1
-    },
-    selectedItemLabel: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '0 10px 0 0',
-      '& .label': {
-        fontWeight: '600',
-        marginRight: '10px',
-        color: palette.black,
-        fontSize: '16px'
-      },
-      '& .item-icon': {
-        color: palette.teal.main,
-        marginRight: '10px',
-        width: '20px',
-        height: '20px'
-      },
-      '& .item-title': {
-        marginRight: '25px'
-      }
-    },
-    selectedItemEditIcon: {
-      fontSize: '14px',
-      color: palette.gray.medium5,
-      width: '16px',
-      height: '16px'
-    },
     dependenciesList: {
-      backgroundColor: palette.white,
+      backgroundColor: theme.palette.background.paper,
       padding: 0,
       borderRadius: '5px 5px 0 0',
       overflowY: 'auto'
     },
     dependenciesListItem: {
-      boxShadow: '0 1px 1px #EBEBF0',
       padding: 0,
       height: '70px'
     },
@@ -255,9 +198,10 @@ function DependenciesList(props: DependenciesListProps) {
     <List className={classes.dependenciesList}>
       {dependencies
         .filter((dependency) => assetsTypes[showTypes].filter(dependency))
-        .map((dependency) => (
+        .map((dependency, i) => (
           <ListItem
             key={dependency.path}
+            divider={dependencies.length - 1 !== i}
             className={clsx(classes.dependenciesListItem, {
               [classes.dependenciesCompactListItem]: compactView
             })}

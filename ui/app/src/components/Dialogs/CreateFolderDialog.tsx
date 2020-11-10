@@ -193,7 +193,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         />
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onClose} variant="outlined" disabled={inProgress}>
+        <Button onClick={onClose} variant="contained" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
         <Button

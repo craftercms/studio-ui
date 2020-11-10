@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
@@ -30,11 +29,12 @@ import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
 import LookupTable from '../../../models/LookupTable';
+import { makeStyles } from '@material-ui/core';
 
-const versionListStyles = makeStyles(() =>
+const versionListStyles = makeStyles((theme) =>
   createStyles({
     list: {
-      backgroundColor: palette.white,
+      backgroundColor: theme.palette.background.paper,
       padding: 0,
       borderRadius: '5px 5px 0 0'
     },
@@ -62,37 +62,6 @@ const versionListStyles = makeStyles(() =>
       height: 'auto',
       color: palette.white,
       marginLeft: '10px'
-    },
-    pagination: {
-      marginLeft: 'auto',
-      position: 'fixed',
-      zIndex: 1,
-      bottom: 0,
-      background: 'white',
-      color: 'black',
-      left: 0,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '20px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
     }
   })
 );

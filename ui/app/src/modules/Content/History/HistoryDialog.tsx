@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
@@ -53,6 +52,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchUserPermissions } from '../../../state/actions/content';
 import { asDayMonthDateTime } from '../../../utils/datetime';
+import { makeStyles } from '@material-ui/core';
 
 const translations = defineMessages({
   previousPage: {
@@ -119,12 +119,12 @@ const historyStyles = makeStyles(() =>
   })
 );
 
-const paginationStyles = makeStyles(() =>
+const paginationStyles = makeStyles((theme) =>
   createStyles({
     pagination: {
       marginLeft: 'auto',
-      background: 'white',
-      color: 'black',
+      background: theme.palette.background.paper,
+      color: theme.palette.text.primary,
       '& p': {
         padding: 0
       },

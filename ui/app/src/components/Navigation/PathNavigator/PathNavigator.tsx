@@ -47,7 +47,8 @@ import {
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode
+  pathNavigatorSetLocaleCode,
+  pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
@@ -200,8 +201,17 @@ export default function PathNavigator(props: WidgetProps) {
           case fileUploaded.type:
           case folderRenamed.type:
           case itemDuplicated.type: {
-            if (getParentPath(payload.target) === withoutIndex(state.currentPath)) {
+            const parentPath = getParentPath(payload.target);
+            if (parentPath === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
+            }
+            if (state.leaves.includes(parentPath)) {
+              dispatch(
+                pathNavigatorUpdate({
+                  id,
+                  leaves: state.leaves.filter((path) => path !== parentPath)
+                })
+              );
             }
             break;
           }

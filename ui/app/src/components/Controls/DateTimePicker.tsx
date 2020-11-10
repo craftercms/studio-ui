@@ -21,7 +21,11 @@ import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
 import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
 import DateFnsUtils from '@date-io/date-fns';
-import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import {
+  KeyboardDatePicker,
+  KeyboardTimePicker,
+  MuiPickersUtilsProvider
+} from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../../utils/datetime';
@@ -56,7 +60,7 @@ interface DateTimePickerProps {
   date?: string | moment.Moment | Number;
   disabled?: boolean;
   classes?: any;
-  controls?: string[];    // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
+  controls?: string[]; // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
   datePickerProps?: {
     dateFormat?: string;
     onDateChange?: Function;
@@ -83,7 +87,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     pickerInput: {
       padding: '8px 12px',
-      backgroundColor: palette.white,
       fontSize: '14px'
     },
     pickerButton: {
@@ -107,8 +110,7 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '22px'
     },
     autocompleteRoot: {
-      marginTop: '16px',
-      backgroundColor: palette.white
+      marginTop: '16px'
     },
     autocompleteInputRoot: {
       paddingTop: '4px !important',
@@ -138,7 +140,9 @@ const getDateTimeMoment = (dateString, timezoneObj) => {
   switch (typeof dateString) {
     case 'string':
     case 'number':
-      dateMoment = timezoneObj ? moment.tz(dateString, timezoneObj.timezoneName) : moment.tz(dateString);
+      dateMoment = timezoneObj
+        ? moment.tz(dateString, timezoneObj.timezoneName)
+        : moment.tz(dateString);
       break;
     case 'object':
       // moment object, stays the same
@@ -186,7 +190,9 @@ function DateTimePicker(props: DateTimePickerProps) {
 
   let dateMoment;
   let timeMoment;
-  let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timeZonePickerProps.timezone)));
+  let timezoneObj = timezones.find(
+    (tz) => tz.timezoneName === unescape(timeZonePickerProps.timezone)
+  );
   dateMoment = getDateTimeMoment(date, timezoneObj);
   timeMoment = getDateTimeMoment(date, timezoneObj);
   const { formatMessage } = useIntl();
@@ -231,7 +237,11 @@ function DateTimePicker(props: DateTimePickerProps) {
 
   const handleTimezoneChange = (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-      updatedDateTime = moment.tz(dateMoment.format(), `${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`, timezone);
+      updatedDateTime = moment.tz(
+        dateMoment.format(),
+        `${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`,
+        timezone
+      );
 
     timeZonePickerProps?.onTimezoneChange?.(timezone);
     datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
@@ -246,8 +256,7 @@ function DateTimePicker(props: DateTimePickerProps) {
   return (
     <FormControl {...formControlProps} fullWidth>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        {
-          controls.includes('date') &&
+        {controls.includes('date') && (
           <KeyboardDatePicker
             format="MM/dd/yyyy"
             margin="normal"
@@ -266,10 +275,9 @@ function DateTimePicker(props: DateTimePickerProps) {
             error={!pickerState.dateValid}
             helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
           />
-        }
+        )}
 
-        {
-          controls.includes('time') &&
+        {controls.includes('time') && (
           <KeyboardTimePicker
             margin="normal"
             value={timeMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
@@ -287,14 +295,15 @@ function DateTimePicker(props: DateTimePickerProps) {
             error={!pickerState.timeValid}
             helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
           />
-        }
+        )}
       </MuiPickersUtilsProvider>
 
-      {
-        controls.includes('timezone') &&
+      {controls.includes('timezone') && (
         <Autocomplete
           options={timezones}
-          getOptionLabel={(timezone: timezoneType) => (`${timezone.timezoneName} (GMT${timezone.timezoneOffset})`)}
+          getOptionLabel={(timezone: timezoneType) =>
+            `${timezone.timezoneName} (GMT${timezone.timezoneOffset})`
+          }
           defaultValue={timezoneObj}
           onChange={handleTimezoneChange}
           size="small"
@@ -304,18 +313,12 @@ function DateTimePicker(props: DateTimePickerProps) {
             input: classes.autocompleteInput,
             endAdornment: classes.autocompleteEndAdornment
           }}
-          popupIcon={<PublicRoundedIcon/>}
+          popupIcon={<PublicRoundedIcon />}
           disableClearable={true}
-          renderInput={params => (
-            <TextField
-              {...params}
-              variant="outlined"
-              fullWidth
-            />
-          )}
+          renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
           disabled={disabled}
         />
-      }
+      )}
     </FormControl>
   );
 }

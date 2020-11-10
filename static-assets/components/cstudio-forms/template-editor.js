@@ -19,7 +19,7 @@ CStudioAuthoring.Module.requireModule(
   '/static-assets/libs/ace/ace.js',
   {},
   {
-    moduleLoaded: function () {
+    moduleLoaded: function() {
       CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
       CStudioAuthoring.Utils.addJavascript('/static-assets/libs/ace/ext-language_tools.js');
 
@@ -28,10 +28,10 @@ CStudioAuthoring.Module.requireModule(
         '/static-assets/components/cstudio-forms/forms-engine.js',
         {},
         {
-          moduleLoaded: function () {
+          moduleLoaded: function() {
             CStudioForms.TemplateEditor =
               CStudioForms.TemplateEditor ||
-              function () {
+              function() {
                 return this;
               };
 
@@ -65,7 +65,7 @@ CStudioAuthoring.Module.requireModule(
                 },
                 'transform-path-to-url': {
                   label: 'Transform PATH to URL',
-                  value: '${urlTransformationService.transform(\'storeUrlToRenderUrl\', STOREURL)}'
+                  value: "${urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)}"
                 },
 
                 'ice-attr': {
@@ -74,7 +74,8 @@ CStudioAuthoring.Module.requireModule(
                 },
                 'component-dropzone-attr': {
                   label: 'Component DropZone attribute',
-                  value: '<@studio.componentContainerAttr target="TARGETID" objectId=contentModel.objectId />'
+                  value:
+                    '<@studio.componentContainerAttr target="TARGETID" objectId=contentModel.objectId />'
                 },
                 'component-attr': {
                   label: 'Component attribute',
@@ -92,7 +93,8 @@ CStudioAuthoring.Module.requireModule(
                 },
                 'iterate-repeat-group': {
                   label: 'Iterate over repeat group',
-                  value: '<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>'
+                  value:
+                    '<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>'
                 },
 
                 'freemarker-value-assignment': {
@@ -133,13 +135,13 @@ CStudioAuthoring.Module.requireModule(
 
                 'current-site-id': { label: 'Current Site ID', value: 'siteContext.siteName' },
                 'request-parameters': { label: 'Request Parameters', value: 'params' },
-                'cookies': { label: 'Cookies', value: 'cookies' },
+                cookies: { label: 'Cookies', value: 'cookies' },
                 'http-request': { label: 'HTTP Request', value: 'request' },
                 'http-response': { label: 'HTTP Response', value: 'response' },
-                'session': { label: 'Session', value: 'session' },
+                session: { label: 'Session', value: 'session' },
                 'transform-path-to-url': {
                   label: 'Transform PATH to URL',
-                  value: 'urlTransformationService.transform(\'storeUrlToRenderUrl\', STOREURL)'
+                  value: "urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)"
                 },
 
                 'user-profile': { label: 'User Profile', value: 'profile' },
@@ -148,8 +150,8 @@ CStudioAuthoring.Module.requireModule(
                   value: 'authentication'
                 },
 
-                'log-info': { label: 'Log an INFO', value: 'logger.info(\'MY MESSAGE\')' },
-                'log-error': { label: 'Log an ERROR', value: 'logger.error(\'MY MESSAGE\')' },
+                'log-info': { label: 'Log an INFO', value: "logger.info('MY MESSAGE')" },
+                'log-error': { label: 'Log an ERROR', value: "logger.error('MY MESSAGE')" },
 
                 'search-service': { label: 'Search Service', value: 'searchService' },
                 'site-item-service': { label: 'Site Item Service', value: 'siteItemService' },
@@ -163,20 +165,24 @@ CStudioAuthoring.Module.requireModule(
             };
 
             CStudioForms.TemplateEditor.prototype = {
-              render: function (templatePath, channel, onSaveCb, contentType, mode) {
+              render: function(templatePath, channel, onSaveCb, contentType, mode) {
                 var me = this;
 
                 Promise.all([
-                    CrafterCMSNext.services.configuration
-                      .getConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
-                      .toPromise(),
-                    new Promise((resolve, reject) => {
-                      CStudioAuthoring.Service.getContent(templatePath, true, {
-                        success: resolve,
-                        failure: reject
-                      });
-                    })
-                  ])
+                  CrafterCMSNext.services.configuration
+                    .getConfigurationDOM(
+                      CStudioAuthoringContext.site,
+                      '/code-editor-config.xml',
+                      'studio'
+                    )
+                    .toPromise(),
+                  new Promise((resolve, reject) => {
+                    CStudioAuthoring.Service.getContent(templatePath, true, {
+                      success: resolve,
+                      failure: reject
+                    });
+                  })
+                ])
                   .then(([xmlDoc, content]) => {
                     CStudioForms.TemplateEditor.config = xmlDoc;
                     if (xmlDoc) {
@@ -197,7 +203,7 @@ CStudioAuthoring.Module.requireModule(
                       [
                         {
                           text: 'OK',
-                          handler: function () {
+                          handler: function() {
                             this.hide();
                             callback.failure(response);
                           },
@@ -227,10 +233,10 @@ CStudioAuthoring.Module.requireModule(
                 });
               },
 
-              renderTemplateEditor: function (templatePath, content, onSaveCb, contentType, mode) {
+              renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, mode) {
                 const me = this;
                 var permsCallback = {
-                  success: function (response) {
+                  success: function(response) {
                     var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
                     var modalEl = document.createElement('div');
@@ -248,41 +254,41 @@ CStudioAuthoring.Module.requireModule(
                     }
 
                     formHTML +=
-                      '<div class=\'template-editor-toolbar\'><div class=\'template-editor-toolbar-variable\'></div>' +
+                      "<div class='template-editor-toolbar'><div class='template-editor-toolbar-variable'></div>" +
                       '</div>' +
-                      '<div class=\'editor-container\'>' +
+                      "<div class='editor-container'>" +
                       '</div>' +
-                      '<div class=\'template-editor-button-container\'>';
+                      "<div class='template-editor-button-container'>";
 
                     if (isWrite == true && !isRead) {
                       formHTML +=
-                        '<div class=\'edit-buttons-container\'>' +
-                        '<select id=\'themeSelector\'>' +
-                        '<option value=\'chrome\'>Light Theme</option>' +
-                        '<option value=\'tomorrow_night\'>Dark Theme</option>' +
+                        "<div class='edit-buttons-container'>" +
+                        "<select id='themeSelector'>" +
+                        "<option value='chrome'>Light Theme</option>" +
+                        "<option value='tomorrow_night'>Dark Theme</option>" +
                         '</select>' +
-                        '<div class=\'template-editor-update-button\'>' +
-                        formatMessage(words.update) +
-                        '</div>' +
-                        '<div class=\'dropup inline-block relative\'>' +
-                        '<button data-toggle=\'dropdown\' aria-haspopup=\'true\' aria-expanded=\'false\' class=\'template-editor-cancel-button\'>' +
+                        "<div class='dropup inline-block relative'>" +
+                        "<button data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='template-editor-cancel-button'>" +
                         formatMessage(words.cancel) +
                         '</button>' +
-                        '<ul class=\'dropdown-menu dropdown-menu-right\' aria-labelledby=\'template-editor-cancel-button\'>' +
-                        '<li><a class=\'cancel\' href=\'#\' onclick=\'return false;\'>' +
+                        "<ul class='dropdown-menu dropdown-menu-right' aria-labelledby='template-editor-cancel-button'>" +
+                        "<li><a class='cancel' href='#' onclick='return false;'>" +
                         formatMessage(messages.stay) +
                         '</a></li>' +
-                        '<li role=\'separator\' class=\'divider\'></li>' +
-                        '<li><a class=\'confirm\' href=\'#\'>' +
+                        "<li role='separator' class='divider'></li>" +
+                        "<li><a class='confirm' href='#'>" +
                         formatMessage(messages.confirm) +
                         '</a></li>' +
                         '</ul>' +
                         '</div>' +
+                        "<div class='template-editor-update-button'>" +
+                        formatMessage(words.update) +
+                        '</div>' +
                         '<div/>';
                     } else {
                       formHTML +=
-                        '<div class=\'edit-buttons-container viewer\'>' +
-                        '<div class=\'template-editor-cancel-button btn btn-default cstudio-template-editor-button\'>Close</div>';
+                        "<div class='edit-buttons-container viewer'>" +
+                        "<div class='template-editor-cancel-button btn btn-default cstudio-template-editor-button'>Close</div>";
                       ('<div/>');
                     }
 
@@ -301,7 +307,7 @@ CStudioAuthoring.Module.requireModule(
 
                     var langTools;
 
-                    var initEditorFn = function () {
+                    var initEditorFn = function() {
                       if (typeof ace === 'undefined') {
                         window.setTimeout(500, initEditorFn);
                       } else {
@@ -339,7 +345,8 @@ CStudioAuthoring.Module.requireModule(
                           defaultTheme =
                             CStudioForms.TemplateEditor.config &&
                             CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0] &&
-                            CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0].textContent === 'dark'
+                            CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0]
+                              .textContent === 'dark'
                               ? 'tomorrow_night'
                               : 'chrome',
                           theme = localStorage.getItem('templateEditorTheme')
@@ -347,26 +354,35 @@ CStudioAuthoring.Module.requireModule(
                             : defaultTheme,
                           enableBasicAutocompletion =
                             CStudioForms.TemplateEditor.config &&
-                            CStudioForms.TemplateEditor.config.getElementsByTagName('enable-basic-autocompletion')[0]
-                              ? CStudioForms.TemplateEditor.config.getElementsByTagName(
+                            CStudioForms.TemplateEditor.config.getElementsByTagName(
                               'enable-basic-autocompletion'
-                            )[0].textContent === 'true'
+                            )[0]
+                              ? CStudioForms.TemplateEditor.config.getElementsByTagName(
+                                  'enable-basic-autocompletion'
+                                )[0].textContent === 'true'
                               : true,
                           enableLiveAutocompletion =
                             CStudioForms.TemplateEditor.config &&
-                            CStudioForms.TemplateEditor.config.getElementsByTagName('enable-live-autocompletion')[0]
-                              ? CStudioForms.TemplateEditor.config.getElementsByTagName('enable-live-autocompletion')[0]
-                              .textContent === 'true'
+                            CStudioForms.TemplateEditor.config.getElementsByTagName(
+                              'enable-live-autocompletion'
+                            )[0]
+                              ? CStudioForms.TemplateEditor.config.getElementsByTagName(
+                                  'enable-live-autocompletion'
+                                )[0].textContent === 'true'
                               : true,
                           fontSize =
                             CStudioForms.TemplateEditor.config &&
                             CStudioForms.TemplateEditor.config.getElementsByTagName('font-size')[0]
-                              ? CStudioForms.TemplateEditor.config.getElementsByTagName('font-size')[0].textContent
+                              ? CStudioForms.TemplateEditor.config.getElementsByTagName(
+                                  'font-size'
+                                )[0].textContent
                               : '11pt',
                           tabSize =
                             CStudioForms.TemplateEditor.config &&
                             CStudioForms.TemplateEditor.config.getElementsByTagName('tab-size')[0]
-                              ? CStudioForms.TemplateEditor.config.getElementsByTagName('tab-size')[0].textContent
+                              ? CStudioForms.TemplateEditor.config.getElementsByTagName(
+                                  'tab-size'
+                                )[0].textContent
                               : '4';
                         aceEditor.setTheme('ace/theme/' + theme);
                         aceEditor.session.setMode(mode);
@@ -387,12 +403,12 @@ CStudioAuthoring.Module.requireModule(
 
                         $(modalEl)
                           .find('#themeSelector')
-                          .on('change', function () {
+                          .on('change', function() {
                             aceEditor.setTheme('ace/theme/' + this.value);
                             localStorage.setItem('templateEditorTheme', this.value);
                           });
 
-                        aceEditor.getSession().on('change', function () {
+                        aceEditor.getSession().on('change', function() {
                           aceEditor.isModified = true;
                         });
 
@@ -402,11 +418,11 @@ CStudioAuthoring.Module.requireModule(
 
                     var aceEditor = initEditorFn();
 
-                    var _getVarsFromSections = function (sections, parent, variables) {
+                    var _getVarsFromSections = function(sections, parent, variables) {
                       var variables = variables ? variables : [],
-                        _searchFields = function (section) {
+                        _searchFields = function(section) {
                           if (section.fields.field.length) {
-                            $.each(section.fields.field, function () {
+                            $.each(section.fields.field, function() {
                               if (this.id) {
                                 var value = this.title ? this.title : this.id,
                                   containsDash = this.id.indexOf('-') > -1,
@@ -414,9 +430,13 @@ CStudioAuthoring.Module.requireModule(
 
                                 if (parent) {
                                   var parentVarContainsDash = sections.id.indexOf('-') > -1,
-                                    parentId = parentVarContainsDash ? '["' + sections.id + '"]' : sections.id;
+                                    parentId = parentVarContainsDash
+                                      ? '["' + sections.id + '"]'
+                                      : sections.id;
                                   value = parent + ' - ' + value;
-                                  id = containsDash ? parentId + '.item[0]' + id : parentId + '.item[0].' + id;
+                                  id = containsDash
+                                    ? parentId + '.item[0]' + id
+                                    : parentId + '.item[0].' + id;
                                 }
 
                                 if (this.type == 'node-selector') {
@@ -450,9 +470,13 @@ CStudioAuthoring.Module.requireModule(
 
                               if (parent) {
                                 var parentVarContainsDash = sections.id.indexOf('-') > -1,
-                                  parentId = parentVarContainsDash ? '["' + sections.id + '"]' : sections.id;
+                                  parentId = parentVarContainsDash
+                                    ? '["' + sections.id + '"]'
+                                    : sections.id;
                                 value = parent + ' - ' + value;
-                                id = containsDash ? parentId + '.item[0]' + id : parentId + '.item[0].' + id;
+                                id = containsDash
+                                  ? parentId + '.item[0]' + id
+                                  : parentId + '.item[0].' + id;
                               }
 
                               if (field.type == 'node-selector') {
@@ -480,7 +504,7 @@ CStudioAuthoring.Module.requireModule(
                         };
 
                       if (sections.length) {
-                        $.each(sections, function () {
+                        $.each(sections, function() {
                           //puede haber solo una seccion
                           _searchFields(this);
                         });
@@ -491,7 +515,9 @@ CStudioAuthoring.Module.requireModule(
                       return variables;
                     };
 
-                    var templateEditorToolbarVarElt = modalEl.querySelector('.template-editor-toolbar-variable');
+                    var templateEditorToolbarVarElt = modalEl.querySelector(
+                      '.template-editor-toolbar-variable'
+                    );
                     var filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
                     var filenameElement = document.createElement('p');
                     filenameElement.className = 'fileName';
@@ -511,10 +537,10 @@ CStudioAuthoring.Module.requireModule(
 
                         langTools = ace.require('ace/ext/language_tools');
                         var customCompleter = {
-                          getCompletions: function (editor, session, pos, prefix, callback) {
+                          getCompletions: function(editor, session, pos, prefix, callback) {
                             callback(
                               null,
-                              Object.keys(variableOpts).map(function (key, index) {
+                              Object.keys(variableOpts).map(function(key, index) {
                                 return {
                                   caption: variableOpts[key].label,
                                   value: variableOpts[key].value,
@@ -526,7 +552,6 @@ CStudioAuthoring.Module.requireModule(
                         };
                         langTools.addCompleter(customCompleter);
                       } else if (templatePath.indexOf('.ftl') != -1) {
-
                         if (!isRead) {
                           me.addLocales(nameWrapper, aceEditor, templatePath, filename, content);
                         }
@@ -535,10 +560,10 @@ CStudioAuthoring.Module.requireModule(
 
                         langTools = ace.require('ace/ext/language_tools');
                         var customCompleter = {
-                          getCompletions: function (editor, session, pos, prefix, callback) {
+                          getCompletions: function(editor, session, pos, prefix, callback) {
                             callback(
                               null,
-                              Object.keys(variableOpts).map(function (key, index) {
+                              Object.keys(variableOpts).map(function(key, index) {
                                 return {
                                   caption: variableOpts[key].label,
                                   value: variableOpts[key].value,
@@ -566,32 +591,36 @@ CStudioAuthoring.Module.requireModule(
                         //add variablesNames
                         if (contentType && contentType !== '') {
                           var path = '/content-types' + contentType + '/form-definition.xml';
-                          CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, path, {
-                            success: (response) => {
-                              const variables = _getVarsFromSections(response.sections.section);
-                              Object.keys(variableOpts).map(function (key) {
-                                if (key === 'content-variable') {
-                                  let optgroup = document.createElement('optgroup');
-                                  optgroup.label = variableOpts[key].label;
-                                  variables.forEach(variable => {
-                                    let subOption = document.createElement('option');
-                                    subOption.value = variable.value;
-                                    subOption.text = variable.label;
-                                    subOption.setAttribute('content-variable', true);
-                                    optgroup.appendChild(subOption);
-                                    selectList.appendChild(optgroup);
-                                  });
-                                } else {
-                                  let option = document.createElement('option');
-                                  option.value = key;
-                                  option.text = variableOpts[key].label;
-                                  selectList.appendChild(option);
-                                }
-                              });
+                          CStudioAuthoring.Service.lookupConfigurtion(
+                            CStudioAuthoringContext.site,
+                            path,
+                            {
+                              success: (response) => {
+                                const variables = _getVarsFromSections(response.sections.section);
+                                Object.keys(variableOpts).map(function(key) {
+                                  if (key === 'content-variable') {
+                                    let optgroup = document.createElement('optgroup');
+                                    optgroup.label = variableOpts[key].label;
+                                    variables.forEach((variable) => {
+                                      let subOption = document.createElement('option');
+                                      subOption.value = variable.value;
+                                      subOption.text = variable.label;
+                                      subOption.setAttribute('content-variable', true);
+                                      optgroup.appendChild(subOption);
+                                      selectList.appendChild(optgroup);
+                                    });
+                                  } else {
+                                    let option = document.createElement('option');
+                                    option.value = key;
+                                    option.text = variableOpts[key].label;
+                                    selectList.appendChild(option);
+                                  }
+                                });
+                              }
                             }
-                          });
+                          );
                         } else {
-                          Object.keys(variableOpts).map(function (key) {
+                          Object.keys(variableOpts).map(function(key) {
                             let option = document.createElement('option');
                             option.value = key;
                             option.text = variableOpts[key].label;
@@ -599,7 +628,7 @@ CStudioAuthoring.Module.requireModule(
                           });
                         }
 
-                        $(selectList).on('change', function (event) {
+                        $(selectList).on('change', function(event) {
                           const cursorPosition = aceEditor.getCursorPosition();
                           const itemKey = this.value;
                           let snippet;
@@ -619,11 +648,10 @@ CStudioAuthoring.Module.requireModule(
                           aceEditor.focus();
                           $(selectList).val('');
                         });
-
                       }
                     }
 
-                    var cancelEdit = function () {
+                    var cancelEdit = function() {
                       var cancelEditServiceUrl =
                         '/api/1/services/api/1/content/unlock-content.json' +
                         '?site=' +
@@ -632,18 +660,21 @@ CStudioAuthoring.Module.requireModule(
                         encodeURI(templatePath);
 
                       var cancelEditCb = {
-                        success: function (response) {
+                        success: function(response) {
                           // dispatch legacyTemplateEditor.opened
                           var event = new CustomEvent('legacyTemplateEditor.closed');
                           document.dispatchEvent(event);
                           modalEl.parentNode.removeChild(modalEl);
                         },
-                        failure: function () {
-                        }
+                        failure: function() {}
                       };
 
                       if (typeof CStudioAuthoring.editDisabled !== 'undefined') {
-                        for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
+                        for (
+                          var x = 0;
+                          x < window.parent.CStudioAuthoring.editDisabled.length;
+                          x++
+                        ) {
                           window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = '';
                         }
                         window.parent.CStudioAuthoring.editDisabled = [];
@@ -658,7 +689,7 @@ CStudioAuthoring.Module.requireModule(
 
                     $(modalEl)
                       .find('.template-editor-cancel-button')
-                      .on('click', function (e) {
+                      .on('click', function(e) {
                         if (!aceEditor.isModified) {
                           e.stopPropagation();
                           cancelEdit();
@@ -670,7 +701,7 @@ CStudioAuthoring.Module.requireModule(
 
                     $(modalEl)
                       .find('.template-editor-cancel-button + .dropdown-menu .confirm')
-                      .on('click', function (e) {
+                      .on('click', function(e) {
                         e.preventDefault();
                         cancelEdit();
                         if (onSaveCb.cancelled) {
@@ -691,7 +722,14 @@ CStudioAuthoring.Module.requireModule(
                         {
                           label: formatMessage(messages.saveAndClose),
                           callback: () => {
-                            me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndClose');
+                            me.save(
+                              modalEl,
+                              aceEditor,
+                              templatePath,
+                              onSaveCb,
+                              true,
+                              'saveAndClose'
+                            );
                           }
                         }
                       ];
@@ -699,7 +737,14 @@ CStudioAuthoring.Module.requireModule(
                         options.push({
                           label: formatMessage(messages.saveAndMinimize),
                           callback: () => {
-                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
+                            me.save(
+                              modalEl,
+                              aceEditor,
+                              templatePath,
+                              onSaveCb,
+                              false,
+                              'saveAndMinimize'
+                            );
                           }
                         });
                       }
@@ -712,29 +757,35 @@ CStudioAuthoring.Module.requireModule(
                       onSaveCb.renderComplete();
                     }
                   },
-                  failure: function () {
+                  failure: function() {
                     if (onSaveCb.failure) {
                       onSaveCb.failure();
                     }
                   }
                 };
 
-                CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, templatePath, permsCallback);
+                CStudioAuthoring.Service.getUserPermissions(
+                  CStudioAuthoringContext.site,
+                  templatePath,
+                  permsCallback
+                );
               },
 
               addLocales: (headerEl, aceEditor, templatePath, filename, defaultContent) => {
-                CrafterCMSNext.services.translation.getSiteLocales(CStudioAuthoringContext.site).subscribe(
-                  ({ localeCodes }) => {
+                CrafterCMSNext.services.translation
+                  .getSiteLocales(CStudioAuthoringContext.site)
+                  .subscribe(({ localeCodes }) => {
                     if (localeCodes === null) {
                       return;
                     }
 
-                    const $select = $('<select id="locale-selector" class="template-editor-locales-selector" />');
+                    const $select = $(
+                      '<select id="locale-selector" class="template-editor-locales-selector" />'
+                    );
                     const options = [];
                     let defaultLocale = '';
 
-
-                    localeCodes.forEach(locale => {
+                    localeCodes.forEach((locale) => {
                       const stem = locale.match(/[^_]*/)[0];
                       if (!options.includes(stem)) {
                         options.push(stem);
@@ -747,7 +798,7 @@ CStudioAuthoring.Module.requireModule(
                     //get the baseName
                     $select.data('baseName', filename.replace('.ftl', ''));
 
-                    options.forEach(locale => {
+                    options.forEach((locale) => {
                       if (filename.replace('.ftl', '').endsWith(locale)) {
                         $select.data('baseName', filename.replace(`_${locale}.ftl`, ''));
                         defaultLocale = locale;
@@ -756,17 +807,22 @@ CStudioAuthoring.Module.requireModule(
                     });
                     $select.val(defaultLocale);
 
-
                     $(headerEl).append($select);
-                    const $helperBtn = $(`<button class="button-without-styles template-editor-locales-helper-button"><i class="fa fa-question-circle-o"></i></button>`);
+                    const $helperBtn = $(
+                      `<button class="button-without-styles template-editor-locales-helper-button"><i class="fa fa-question-circle-o"></i></button>`
+                    );
                     $(headerEl).append($helperBtn);
 
-                    CStudioAuthoring.Utils.addPopover($helperBtn, null, formatMessage(messages.localesHelperText));
+                    CStudioAuthoring.Utils.addPopover(
+                      $helperBtn,
+                      null,
+                      formatMessage(messages.localesHelperText)
+                    );
 
                     //set prev value
                     $select.data('prev', $select.val());
 
-                    $select.on('change', function () {
+                    $select.on('change', function() {
                       const path = templatePath.substring(0, templatePath.lastIndexOf('/'));
                       let localePath = templatePath;
 
@@ -780,7 +836,9 @@ CStudioAuthoring.Module.requireModule(
                           const baseName = $select.data('baseName');
                           if (content) {
                             //updating the filename
-                            $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
+                            $(headerEl).find('.fileName')[0].innerText = this.value
+                              ? `${baseName}_${this.value}.ftl`
+                              : `${baseName}.ftl`;
 
                             //set prev value
                             $select.data('prev', $select.val());
@@ -815,32 +873,40 @@ CStudioAuthoring.Module.requireModule(
 
                             let unsubscribe, cancelUnsubscribe;
 
-                            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
-                              $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
-                              aceEditor.setValue('');
-                              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
+                            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(
+                              createTemplateOnOk,
+                              () => {
+                                $(headerEl).find('.fileName')[0].innerText = this.value
+                                  ? `${baseName}_${this.value}.ftl`
+                                  : `${baseName}.ftl`;
+                                aceEditor.setValue('');
+                                CrafterCMSNext.system.store.dispatch({
+                                  type: 'CLOSE_CONFIRM_DIALOG'
+                                });
 
-                              CStudioAuthoring.Utils.showConfirmNotification(
-                                formatMessage(messages.localesSnackBarTitle),
-                                formatMessage(messages.copy),
-                                () => {
-                                  aceEditor.setValue(defaultContent);
-                                }
-                              );
-                              cancelUnsubscribe();
-                            });
+                                CStudioAuthoring.Utils.showConfirmNotification(
+                                  formatMessage(messages.localesSnackBarTitle),
+                                  formatMessage(messages.copy),
+                                  () => {
+                                    aceEditor.setValue(defaultContent);
+                                  }
+                                );
+                                cancelUnsubscribe();
+                              }
+                            );
 
-                            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
-                              $select.val($select.data('prev'));
-                              unsubscribe();
-                            });
-
+                            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(
+                              createTemplateOnCancel,
+                              () => {
+                                $select.val($select.data('prev'));
+                                unsubscribe();
+                              }
+                            );
                           }
                         }
                       });
                     });
-                  }
-                );
+                  });
               },
               save: (modalEl, aceEditor, templatePath, onSaveCb, unlock, type) => {
                 const value = aceEditor.getValue();
@@ -854,7 +920,11 @@ CStudioAuthoring.Module.requireModule(
                   filename = localeCode ? `${baseName}_${localeCode}.ftl` : `${baseName}.ftl`;
                 }
 
-                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
+                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${
+                  CStudioAuthoringContext.site
+                }&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&user=${
+                  CStudioAuthoringContext.user
+                }&unlock=${unlock}`;
 
                 fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
                   method: 'POST',
@@ -882,7 +952,10 @@ CStudioAuthoring.Module.requireModule(
               }
             };
 
-            CStudioAuthoring.Module.moduleLoaded('cstudio-forms-template-editor', CStudioForms.TemplateEditor);
+            CStudioAuthoring.Module.moduleLoaded(
+              'cstudio-forms-template-editor',
+              CStudioForms.TemplateEditor
+            );
           }
         }
       );

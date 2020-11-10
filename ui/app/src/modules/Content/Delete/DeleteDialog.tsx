@@ -121,7 +121,6 @@ const deleteDialogStyles = makeStyles((theme) =>
       color: '#fff'
     },
     textField: {
-      backgroundColor: palette.white,
       padding: 0
     },
     errorPaperRoot: {

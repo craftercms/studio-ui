@@ -18,7 +18,6 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
@@ -52,6 +51,7 @@ import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, fileUploaded } from '../../state/actions/system';
+import { makeStyles } from '@material-ui/core';
 
 const translations = defineMessages({
   title: {
@@ -93,17 +93,15 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     dialogContent: {
-      backgroundColor: palette.gray.light0,
       flexDirection: 'row'
     },
     dragZone: {
       height: '300px',
       width: '100%',
       border: `2px dashed ${palette.gray.medium2}`,
-      backgroundColor: palette.white,
       borderRadius: '7px',
       display: 'flex',
       alignItems: 'center',
@@ -118,7 +116,7 @@ const useStyles = makeStyles(() =>
         cursor: 'inherit'
       },
       '&.over': {
-        backgroundColor: palette.gray.light4,
+        backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark4 : palette.gray.light4,
         borderColor: palette.blue.tint
       },
       '& button:focus': {
@@ -168,11 +166,11 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const UppyItemStyles = makeStyles(() =>
+const UppyItemStyles = makeStyles((theme) =>
   createStyles({
     cardRoot: {
       display: 'flex',
-      backgroundColor: palette.gray.light0,
+      backgroundColor: theme.palette.background.paper,
       position: 'relative',
       marginBottom: '12px',
       '&:last-child': {

@@ -57,6 +57,7 @@ const messages = defineMessages({
 const simpleItemsSelectionsStyles = makeStyles((theme: Theme) => ({
   simpleItemsSelectionRoot: {
     border: '1px solid rgba(0, 0, 0, .125)',
+    background: theme.palette.background.paper,
     flexGrow: 1
   },
   simpleItemsSelectionHeader: {
