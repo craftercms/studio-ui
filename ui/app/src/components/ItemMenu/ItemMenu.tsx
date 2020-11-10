@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, Suspense, useState } from 'react';
+import React, { Suspense } from 'react';
 import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
@@ -74,10 +74,9 @@ import {
   unSetClipBoard
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
-import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
 import {
   itemPasted,
@@ -88,6 +87,8 @@ import {
   showPasteItemSuccessNotification,
   showPublishItemSuccessNotification
 } from '../../state/actions/system';
+import Typography from '@material-ui/core/Typography';
+import { Skeleton } from '@material-ui/lab';
 
 interface ItemMenuProps {
   path: string;
@@ -106,18 +107,20 @@ interface ItemMenuUIProps {
   onMenuItemClicked(section: SectionItem): void;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     loadingWrapper: {
       width: '135px',
       padding: '0px 15px'
+    },
+    typo: {
+      padding: '6px 0'
     }
   })
 );
 
 export function ItemMenu(props: ItemMenuProps) {
   const { path, onClose, loaderItems = 8 } = props;
-  const classes = useStyles({});
   const site = useActiveSiteId();
   const permissions = usePermissions();
   const items = useSelection((state) => state.content.items);
@@ -504,13 +507,7 @@ export function ItemMenu(props: ItemMenuProps) {
       onClose={props.onClose}
       anchorOrigin={props.anchorOrigin}
     >
-      <Suspense
-        fallback={
-          <div className={classes.loadingWrapper}>
-            <Loader loaderItems={loaderItems} />
-          </div>
-        }
-      >
+      <Suspense fallback={<Loader numOfItems={loaderItems} />}>
         <ItemMenuUI
           resource={{ item: resourceItem, permissions: resourcePermissions }}
           classes={props.classes}
@@ -533,28 +530,22 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   );
 }
 
-export function Loader(props) {
-  const [items] = useState(() => {
-    const numOfItems = props.loaderItems;
-    const start = 20;
-    return new Array(numOfItems).fill(null).map((_, i) => ({
-      y: start + 32 * i,
-      width: rand(85, 100)
-    }));
-  });
+export const Loader = React.memo((props: { numOfItems?: number }) => {
+  const { numOfItems = 5 } = props;
+  const classes = useStyles();
+  const items = new Array(numOfItems).fill(null);
   return (
-    <ContentLoader
-      speed={2}
-      width="100%"
-      height={`${props.loaderItems * 32}`}
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ecebeb"
-    >
-      {items.map(({ y, width }, i) => (
-        <Fragment key={i}>
-          <rect x="0" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
-        </Fragment>
+    <div className={classes.loadingWrapper}>
+      {items.map((value, i) => (
+        <Typography
+          key={i}
+          variant="body2"
+          className={classes.typo}
+          style={{ width: `${rand(85, 100)}%` }}
+        >
+          <Skeleton animation="wave" width="100%" />
+        </Typography>
       ))}
-    </ContentLoader>
+    </div>
   );
-}
+});

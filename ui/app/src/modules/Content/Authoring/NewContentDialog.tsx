@@ -33,7 +33,7 @@ import { fetchLegacyContentTypes } from '../../../services/contentTypes';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import NewContentCard, { SkeletonCard } from './NewContentCard';
+import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
 import { debounceTime } from 'rxjs/operators';
 import ContentTypesFilter from './ContentTypesFilter';
 import { closeNewContentDialog, newContentCreationComplete } from '../../../state/actions/dialogs';
@@ -259,7 +259,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
         <SuspenseWithEmptyState
           resource={resource}
           suspenseProps={{
-            fallback: <ContentTypesLoader numOfItems={6} isCompact={isCompact} />
+            fallback: <ContentTypesLoader isCompact={isCompact} />
           }}
           withEmptyStateProps={{
             emptyStateProps: {
@@ -305,14 +305,14 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   );
 }
 
-export function ContentTypesLoader(props: { numOfItems: number; isCompact: boolean }) {
-  const { numOfItems, isCompact } = props;
+export function ContentTypesLoader(props: { numOfItems?: number; isCompact: boolean }) {
+  const { numOfItems = 6, isCompact } = props;
   const items = new Array(numOfItems).fill(null);
   return (
     <Grid container spacing={3} style={{ marginTop: '14px' }}>
       {items.map((value, i) => (
         <Grid item key={i} xs={12} sm={!isCompact ? 4 : 6}>
-          <SkeletonCard isCompact={isCompact} />
+          <ContentSkeletonCard isCompact={isCompact} />
         </Grid>
       ))}
     </Grid>

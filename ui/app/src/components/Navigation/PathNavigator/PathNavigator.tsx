@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, Fragment, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
@@ -38,7 +38,6 @@ import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import NavItem from './PathNavigatorItem';
 import Nav from './PathNavigatorList';
-import ContentLoader from 'react-content-loader';
 import { languages } from '../../../utils/i18n-legacy';
 import {
   pathNavigatorInit,
@@ -55,7 +54,7 @@ import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
-import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable, rand } from './utils';
+import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
 import { StateStylingProps } from '../../../models/UiConfig';
@@ -73,6 +72,8 @@ import {
   itemPasted,
   itemUpdated
 } from '../../../state/actions/system';
+import List from '@material-ui/core/List';
+import { PathNavigatorSkeletonItem } from './PathNavigatorSkeletonItem';
 
 export interface WidgetProps {
   id: string;
@@ -119,27 +120,6 @@ interface WidgetUIProps {
   // TODO: add props
   [key: string]: any;
 }
-
-const MyLoader = React.memo(function() {
-  const [items] = useState(() => {
-    const numOfItems = 5;
-    const start = 20;
-    return new Array(numOfItems).fill(null).map((_, i) => ({
-      y: start + 30 * i,
-      width: rand(70, 85)
-    }));
-  });
-  return (
-    <ContentLoader speed={2} width="100%" backgroundColor="#f3f3f3" foregroundColor="#ecebeb">
-      {items.map(({ y, width }, i) => (
-        <Fragment key={i}>
-          <circle cx="10" cy={y} r="8" />
-          <rect x="25" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
-        </Fragment>
-      ))}
-    </ContentLoader>
-  );
-});
 
 const menuOptions = {
   refresh: {
@@ -447,7 +427,6 @@ export default function PathNavigator(props: WidgetProps) {
 
 export function PathNavigatorUI(props: WidgetUIProps) {
   const classes = useStyles();
-  // region consts {...} = props
   const {
     state,
     itemsByPath,
@@ -548,9 +527,6 @@ export function PathNavigatorUI(props: WidgetUIProps) {
           />
           <SuspenseWithEmptyState
             resource={resource}
-            loadingStateProps={{
-              graphicProps: { className: classes.stateGraphics }
-            }}
             errorBoundaryProps={{
               errorStateProps: { classes: { graphic: classes.stateGraphics } }
             }}
@@ -561,7 +537,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
               }
             }}
             suspenseProps={{
-              fallback: <MyLoader />
+              fallback: <NavLoader numOfItems={state.limit} />
             }}
           >
             {levelDescriptor && (
@@ -621,3 +597,15 @@ export function PathNavigatorUI(props: WidgetUIProps) {
     </>
   );
 }
+
+const NavLoader = React.memo((props: { numOfItems?: number }) => {
+  const { numOfItems = 5 } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <List component="nav" disablePadding={true}>
+      {items.map((value, i) => (
+        <PathNavigatorSkeletonItem key={i} />
+      ))}
+    </List>
+  );
+});

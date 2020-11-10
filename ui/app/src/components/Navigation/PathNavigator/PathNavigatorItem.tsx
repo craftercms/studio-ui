@@ -86,7 +86,11 @@ export default function PathNavigatorItem(props: NavItemProps) {
   return (
     <ListItem
       button={!isSelectMode as true}
-      className={clsx(classes.navItem, isSelectMode && 'noLeftPadding', isLevelDescriptor && classes.navItemLevelDescriptor)}
+      className={clsx(
+        classes.navItem,
+        isSelectMode && 'noLeftPadding',
+        isLevelDescriptor && classes.navItemLevelDescriptor
+      )}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       onClick={onClick}

@@ -830,14 +830,13 @@ function SimpleMenu(props: SimpleMenuProps) {
     errorSelector: (source) => null
   });
 
-
   return (
     <Menu anchorEl={props.anchorEl} open={Boolean(props.anchorEl)} onClose={props.onClose}>
       <Suspense
         fallback={
           <div className={classes.loadingWrapper}>
             <Loader
-              loaderItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2}
+              numOfItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2}
             />
           </div>
         }
@@ -884,17 +883,15 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
           {messages.delete}
         </MenuItem>
       )}
-      {
-        preview && (
-          <MenuItem
-            onClick={() => {
-              onNavigate();
-            }}
-          >
-            {messages.preview}
-          </MenuItem>
-        )
-      }
+      {preview && (
+        <MenuItem
+          onClick={() => {
+            onNavigate();
+          }}
+        >
+          {messages.preview}
+        </MenuItem>
+      )}
       {!isWriteAllowed && !isDeleteAllowed && (
         <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>
       )}

@@ -106,7 +106,7 @@ export default function NewContentCard(props: NewContentCardProps) {
   );
 }
 
-export function SkeletonCard(props: { isCompact: boolean }) {
+export function ContentSkeletonCard(props: { isCompact: boolean }) {
   const classes = useStyles();
   const rootClass = !props.isCompact ? classes.defaultCard : classes.compactCard;
   return (
