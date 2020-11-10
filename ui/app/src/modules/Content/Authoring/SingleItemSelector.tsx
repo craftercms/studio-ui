@@ -56,14 +56,14 @@ const useStyles = makeStyles((theme) => ({
     padding: '0px 5px 5px 5px'
   },
   root: {
-    'backgroundColor': palette.white,
-    'display': 'flex',
-    'padding-left': '15px',
-    'align-items': 'center',
-    'justify-content': 'space-between',
-    'margin-right': 'auto',
-    'max-width': '100%',
-    'min-width': '200px',
+    backgroundColor: theme.palette.background.paper,
+    display: 'flex',
+    paddingLeft: '15px',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginRight: 'auto',
+    maxWidth: '100%',
+    minWidth: '200px',
     '& $itemName': {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     },
     '&.disable': {
       'min-width': 'auto',
-      'backgroundColor': 'inherit'
+      backgroundColor: 'inherit'
     }
   },
   selectedItem: {
@@ -128,7 +128,9 @@ interface SingleItemSelectorState extends PaginationOptions {
   breadcrumb: DetailedItem[];
 }
 
-const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props: SingleItemSelectorProps) => ({
+const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (
+  props: SingleItemSelectorProps
+) => ({
   byId: null,
   isFetching: null,
   error: null,
@@ -189,14 +191,16 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       const { currentPath, rootPath, byId } = state;
       let nextItems: any = { ...byId };
       let items = [];
-      let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
+      let parentPath =
+        withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
 
       payload.forEach((response: GetChildrenResponse, i: number) => {
         if (i === payload.length - 1) {
           items = response.map((item) => item.id);
         }
         nextItems = {
-          ...nextItems, ...createLookupTable(response),
+          ...nextItems,
+          ...createLookupTable(response),
           [response.parent.id]: response.parent
         };
       });
@@ -233,9 +237,13 @@ export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH'
 
 export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
 
-export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>('FETCH_PARENTS_ITEMS_COMPLETE');
+export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>(
+  'FETCH_PARENTS_ITEMS_COMPLETE'
+);
 
-export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>('FETCH_CHILDREN_BY_PATH_COMPLETE');
+export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>(
+  'FETCH_CHILDREN_BY_PATH_COMPLETE'
+);
 
 export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
@@ -277,7 +285,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           const requests: Observable<GetChildrenResponse>[] = [];
 
           if (parentsPath.length) {
-            parentsPath.forEach(parentPath => {
+            parentsPath.forEach((parentPath) => {
               if (!state.items[parentPath] && !state.items[withIndex(parentPath)]) {
                 requests.push(getChildrenByPath(site, parentPath));
               }
@@ -301,11 +309,9 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const itemsResource = useLogicResource<DetailedItem[], SingleItemSelectorState>(state, {
     shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
     shouldReject: (consumer) => Boolean(consumer.error),
-    shouldRenew: (consumer, resource) => (
-      consumer.isFetching && resource.complete
-    ),
+    shouldRenew: (consumer, resource) => consumer.isFetching && resource.complete,
     resultSelector: (consumer) => {
-      return consumer.items.map(id => consumer.byId[id]);
+      return consumer.items.map((id) => consumer.byId[id]);
     },
     errorSelector: (consumer) => consumer.error
   });
@@ -339,35 +345,31 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   };
 
   const Wrapper = hideUI ? React.Fragment : Paper;
-  const wrapperProps = hideUI ? {} : {
-    className: clsx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
-    elevation: 0
-  };
+  const wrapperProps = hideUI
+    ? {}
+    : {
+        className: clsx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
+        elevation: 0
+      };
 
   return (
     <Wrapper {...wrapperProps}>
-      {
-        !hideUI &&
+      {!hideUI && (
         <>
-          <Typography
-            variant={titleVariant}
-            className={clsx(classes.title, propClasses?.title)}
-          >
+          <Typography variant={titleVariant} className={clsx(classes.title, propClasses?.title)}>
             {label}
           </Typography>
-          {
-            selectedItem &&
+          {selectedItem && (
             <div className={classes.selectedItem}>
               <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-              <Typography
-                className={classes.itemName} variant={labelVariant}
-              >{selectedItem.label}</Typography>
+              <Typography className={classes.itemName} variant={labelVariant}>
+                {selectedItem.label}
+              </Typography>
             </div>
-          }
+          )}
         </>
-      }
-      {
-        onDropdownClick &&
+      )}
+      {onDropdownClick && (
         <IconButton
           className={classes.changeBtn}
           ref={anchorEl}
@@ -376,7 +378,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         >
           <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
         </IconButton>
-      }
+      )}
       <Popover
         anchorEl={anchorEl.current}
         open={open}
@@ -394,8 +396,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         <Breadcrumbs
           keyword={state?.keywords}
           breadcrumb={state?.breadcrumb ?? []}
-          onSearch={() => {
-          }}
+          onSearch={() => {}}
           onCrumbSelected={onCrumbSelected}
         />
         <SuspenseWithEmptyState resource={itemsResource}>

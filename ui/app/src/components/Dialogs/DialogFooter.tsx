@@ -19,13 +19,13 @@ import MuiDialogActions, { DialogActionsProps } from '@material-ui/core/DialogAc
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import clsx from 'clsx';
-import palette from '../../styles/palette';
+import { Theme } from '@material-ui/core/styles';
 
-const styles = makeStyles(() =>
+const styles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       minHeight: '50px',
-      background: palette.white,
+      backgroundColor: theme.palette.background.paper,
       borderTop: '1px solid rgba(0, 0, 0, 0.12)'
     }
   })

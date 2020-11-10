@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@material-ui/core/IconButton';
-import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
+import AddCircleIcon from '@material-ui/icons/AddRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
@@ -54,16 +54,8 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
-    addBtn: {
-      padding: 0
-    },
-    addIcon: {
-      width: 30,
-      height: 30,
-      fill: palette.green.main
-    },
     menu: {
       paddingTop: 0,
       minWidth: '140px'
@@ -76,13 +68,9 @@ const useStyles = makeStyles(() =>
     },
     menuSectionTitle: {
       fontSize: 12,
-      backgroundColor: palette.gray.light0,
-      color: palette.gray.medium3,
-      padding: '5px 16px',
-      '&:hover': {
-        backgroundColor: palette.gray.light0,
-        cursor: 'text'
-      }
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.secondary,
+      padding: '5px 16px'
     },
     quickCreateEmptyRoot: {
       width: '149px',
@@ -228,16 +216,15 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
 
 function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
   const { onMenuBtnClick } = props;
-  const classes = useStyles({});
   const { formatMessage } = useIntl();
   return (
     <IconButton
+      size="small"
+      color="primary"
       onClick={onMenuBtnClick}
       aria-label={formatMessage(translations.quickCreateBtnLabel)}
-      className={classes.addBtn}
-      size="small"
     >
-      <AddCircleIcon fontSize="large" className={classes.addIcon} />
+      <AddCircleIcon fontSize="large"  />
     </IconButton>
   );
 }

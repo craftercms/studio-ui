@@ -16,10 +16,17 @@
 
 import '../styles/index.scss';
 
-import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState
+} from 'react';
 import { IntlShape, RawIntlProvider } from 'react-intl';
 import { StylesProvider, ThemeProvider } from '@material-ui/styles';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeOptions } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
@@ -30,17 +37,33 @@ import { createResource } from '../utils/hooks';
 import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
 import { intlRef } from '../utils/i18n';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const storeResource = createResource(() =>
   createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise()
 );
 
 function Bridge(
-  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean; resource: Resource<CrafterCMSStore>; theme?: Theme }>
+  props: PropsWithChildren<{
+    mountGlobalDialogManager?: boolean;
+    resource: Resource<CrafterCMSStore>;
+    themeOptions?: ThemeOptions;
+  }>
 ) {
   const store = props.resource.read();
-  const theme = props.theme ?? createMuiTheme(defaultThemeOptions);
   const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const theme = useMemo(
+    () =>
+      createMuiTheme({
+        ...(props.themeOptions ?? defaultThemeOptions),
+        palette: {
+          ...(props.themeOptions ?? defaultThemeOptions).palette,
+          type: prefersDarkMode ? 'dark' : 'light'
+        }
+      }),
+    [prefersDarkMode, props.themeOptions]
+  );
 
   const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
@@ -68,7 +91,9 @@ function Bridge(
   );
 }
 
-function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>) {
+export default function CrafterCMSNextBridge(
+  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>
+) {
   return (
     <Suspense fallback={<LoadingState />}>
       <Bridge
@@ -89,5 +114,3 @@ function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
   document.addEventListener('setlocale', handler, false);
   return () => document.removeEventListener('setlocale', handler, false);
 }
-
-export default CrafterCMSNextBridge;

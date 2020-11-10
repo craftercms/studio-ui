@@ -24,7 +24,7 @@ import palette from '../../../styles/palette';
 import clsx from 'clsx';
 import Skeleton from '@material-ui/lab/Skeleton';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   defaultCard: {
     maxWidth: 345,
     cursor: 'pointer'
@@ -38,9 +38,6 @@ const useStyles = makeStyles((theme) => ({
   },
   compactMedia: {
     width: 151
-  },
-  cardTitle: {
-    color: palette.black
   },
   selected: {
     border: `1px solid ${palette.blue.tint}`
@@ -64,14 +61,7 @@ const DefaultCardContent = (props) => {
       <CardHeader
         title={headerTitle}
         subheader={subheader}
-        titleTypographyProps={{
-          variant: 'subtitle2',
-          className: classes.cardTitle
-        }}
-        subheaderTypographyProps={{
-          variant: 'subtitle2',
-          color: 'textSecondary'
-        }}
+        titleTypographyProps={{ variant: 'body1' }}
       />
       <Divider />
       <CardMedia className={classes.media} image={img} title={imgTitle} />
@@ -87,14 +77,7 @@ const CompactCardContent = (props) => {
       <CardHeader
         title={headerTitle}
         subheader={subheader}
-        titleTypographyProps={{
-          variant: 'subtitle2',
-          className: classes.cardTitle
-        }}
-        subheaderTypographyProps={{
-          variant: 'subtitle2',
-          color: 'textSecondary'
-        }}
+        titleTypographyProps={{ variant: 'body1' }}
       />
     </>
   );

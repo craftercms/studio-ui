@@ -1299,6 +1299,7 @@ body.yui-skin-cstudioTheme.masked {
   float: none;
   display: inline-block;
   width: 94.5%;
+  word-break: break-all;
 }
 
 .removeItemBox {

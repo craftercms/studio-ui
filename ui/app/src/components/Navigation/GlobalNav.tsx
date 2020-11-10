@@ -52,8 +52,10 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
 import { SiteNavConfigEntry } from '../../models/UiConfig';
+import List from '@material-ui/core/List';
+import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 
-const tileStyles = makeStyles(() =>
+const tileStyles = makeStyles((theme) =>
   createStyles({
     tile: {
       width: '120px',
@@ -75,11 +77,13 @@ const tileStyles = makeStyles(() =>
         pointerEvents: 'none'
       }
     },
-    icon: {
-      fontSize: '35px !important',
-      color: palette.gray.medium5
+    iconAvatar: {
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.text.secondary
     },
-    tileTitle: {}
+    icon: {
+      fontSize: '35px !important'
+    }
   })
 );
 
@@ -215,12 +219,14 @@ function Tile(props: TileProps) {
       onClick={() => (!disabled && onClick ? onClick() : null)}
       target={target ? target : '_self'}
     >
-      {typeof Icon === 'string' ? (
-        <i className={clsx(classes.icon, 'fa', Icon)} />
-      ) : (
-        <Icon className={classes.icon} />
-      )}
-      <Typography variant="subtitle1" color="textSecondary" className={classes.tileTitle}>
+      <Avatar variant="rounded" className={classes.iconAvatar}>
+        {typeof Icon === 'string' ? (
+          <i className={clsx(classes.icon, 'fa', Icon)} />
+        ) : (
+          <Icon className={classes.icon} />
+        )}
+      </Avatar>
+      <Typography color="textPrimary">
         {title}
       </Typography>
     </Link>
@@ -271,9 +277,6 @@ const globalNavStyles = makeStyles((theme) =>
       alignItems: 'center',
       padding: '0 20px',
       placeContent: 'center space-between'
-    },
-    logo: {
-      width: 115
     },
     gridContainer: {
       height: '100%',
@@ -418,7 +421,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     rolesBySite,
     siteNavLinks
   } = props;
-  const classes = globalNavStyles({});
+  const classes = globalNavStyles();
   const [menuItems, setMenuItems] = useState(null);
   const [apiState, setApiState] = useState({
     error: false,
@@ -548,18 +551,20 @@ export default function GlobalNav(props: GlobalNavProps) {
                   {formatMessage(messages.mySites)}
                 </Typography>
                 {sites.length ? (
-                  sites.map((item, i) => (
-                    <SiteCard
-                      key={i}
-                      options
-                      selected={item.id === site}
-                      title={item.name}
-                      value={item.id}
-                      classes={{ root: classes.titleCard }}
-                      onCardClick={() => onSiteCardClick(item.id)}
-                      cardActions={cardActions}
-                    />
-                  ))
+                  <List>
+                    {sites.map((item, i) => (
+                      <SiteCard
+                        key={i}
+                        options
+                        selected={item.id === site}
+                        title={item.name}
+                        value={item.id}
+                        classes={{ root: classes.titleCard }}
+                        onCardClick={() => onSiteCardClick(item.id)}
+                        cardActions={cardActions}
+                      />
+                    ))}
+                  </List>
                 ) : (
                   <EmptyState
                     title={
@@ -572,7 +577,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                 )}
               </div>
               <div className={classes.railBottom}>
-                <img className={classes.logo} src="/studio/static-assets/images/logo.svg" alt="" />
+                <CrafterCMSLogo width={115} />
                 <Typography className={classes.versionText} color="textSecondary" variant="caption">
                   {version}
                 </Typography>
@@ -625,7 +630,6 @@ export default function GlobalNav(props: GlobalNavProps) {
                   title={formatMessage(messages.about)}
                 />
               </nav>
-
               {(site && siteLinks.length > 0) && (
                 <>
                   <Typography variant="subtitle1" component="h2" className={classes.title}>

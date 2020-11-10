@@ -49,7 +49,6 @@ import {
   fetchBlueprints as fetchMarketplaceBlueprints
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
-import { backgroundColor } from '../../../../styles/theme';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
@@ -60,7 +59,6 @@ import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
-import palette from '../../../../styles/palette';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -199,7 +197,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchContainer: {
       position: 'absolute',
-      background: 'white',
       padding: '0 20px',
       width: '100%',
       left: '50%',
@@ -213,8 +210,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     dialogContent: {
       padding: '30px 0 0',
-      position: 'relative',
-      backgroundColor: palette.gray.light0
+      position: 'relative'
     },
     slide: {
       flexWrap: 'wrap',
@@ -241,12 +237,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: '20px',
       opacity: 1,
       '& span': {
-        textTransform: 'none',
-        color: '#2F2707'
+        textTransform: 'none'
       }
     },
     tabIcon: {
-      color: '#000000',
       fontSize: '1.2rem',
       cursor: 'pointer',
       '&.selected': {
@@ -263,7 +257,6 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.text.secondary
     },
     statePaper: {
-      background: '#e7e7e7',
       height: '100%'
     },
     loadingStateRoot: {
@@ -889,7 +882,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                     onChange={handleOnSearchChange}
                     keyword={search.searchKey}
                     autoFocus={true}
-                    backgroundColor={backgroundColor}
                   />
                 </div>
               )}
