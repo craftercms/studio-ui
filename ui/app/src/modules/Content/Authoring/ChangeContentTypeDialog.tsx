@@ -130,7 +130,7 @@ function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
 
   const onSelectedContentType = (contentType: LegacyFormConfig) => {
     onContentTypeSelected?.({
-      selectedContentType: contentType.form
+      newContentTypeId: contentType.form
     });
   };
 

@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
-import { folderCreated, folderRenamed, systemEvent } from '../../state/actions/systemEvents';
+import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
 
 export const translations = defineMessages({
   placeholder: {
@@ -121,7 +121,9 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
             onRenamed?.({ path, name, rename });
-            dispatch(systemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
+            dispatch(
+              emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
+            );
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
@@ -132,7 +134,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         createFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
             onCreated?.({ path, name, rename });
-            dispatch(systemEvent(folderCreated({ target: path, name: name })));
+            dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
           },
           (response) => {
             setState({ inProgress: false, submitted: true });

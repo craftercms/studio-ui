@@ -35,6 +35,7 @@ import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog'
 import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
+import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>(
@@ -102,7 +103,7 @@ export const newContentDialogClosed = createAction('NEW_CONTENT_DIALOG_CLOSED');
 // endregion
 
 // region Change ContentType
-export const showChangeContentTypeDialog = createAction<Partial<NewContentDialogStateProps>>(
+export const showChangeContentTypeDialog = createAction<Partial<ChangeContentTypeDialogStateProps>>(
   'SHOW_CHANGE_CONTENT_TYPE_DIALOG'
 );
 export const closeChangeContentTypeDialog = createAction<StandardAction>(
@@ -209,24 +210,5 @@ export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
 // endregion
 
 // region items notification
-
-export const showDeleteItemSuccessNotification = createAction(
-  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
-);
-export const showPublishItemSuccessNotification = createAction(
-  'SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION'
-);
-export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
-export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
-export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
-export const showPasteItemSuccessNotification = createAction(
-  'SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION'
-);
-export const showDuplicatedItemSuccessNotification = createAction(
-  'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
-);
-export const showRevertItemSuccessNotification = createAction(
-  'SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION'
-);
 
 // endregion

@@ -34,6 +34,7 @@ import StandardAction from '../../models/StandardAction';
 import configuration from './configuration';
 import pathNavigator from './pathNavigator';
 import misc from './misc';
+import system from './misc';
 
 const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.apply(this, [
   (action$) =>
@@ -55,7 +56,8 @@ const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.app
   ...translation,
   ...configuration,
   ...pathNavigator,
-  ...misc
+  ...misc,
+  ...system
 ]);
 
 export default epic;

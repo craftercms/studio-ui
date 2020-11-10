@@ -18,7 +18,7 @@ import { translations } from './translations';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import { SectionItem } from '../ContextMenu';
-import { withoutIndex } from '../../utils/path';
+import { isRootPath } from '../../utils/path';
 
 const menuOptions = {
   edit: {
@@ -146,14 +146,8 @@ export function generateMenuOptions(
   );
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
-  const isWebsite = withoutIndex(item.path) === '/site/website';
   const isImage = item.mimeType.startsWith('image/');
-  const isRootFolder =
-    item.path === '/site/templates' ||
-    item.path === '/site/static-assets' ||
-    item.path === '/site/components' ||
-    item.path === '/site/taxonomy' ||
-    item.path === '/site/scripts';
+  const isRootFolder = isRootPath(item.path);
   let type = item.systemType;
 
   switch (type) {
@@ -170,13 +164,13 @@ export function generateMenuOptions(
         if (createContent) {
           _optionsA.push(menuOptions.createContent);
         }
-        if (deleteItem) {
+        if (deleteItem && !isRootFolder) {
           _optionsA.push(menuOptions.delete);
         }
-        if (changeContentType) {
+        if (changeContentType && !isRootFolder) {
           _optionsA.push(menuOptions.changeContentType);
         }
-        if (!isWebsite) {
+        if (!isRootFolder) {
           _optionsA.push(menuOptions.cut);
           _optionsA.push(menuOptions.copy);
           _optionsA.push(menuOptions.duplicate);
@@ -215,10 +209,10 @@ export function generateMenuOptions(
         if (!isRootFolder) {
           _optionsA.push(menuOptions.renameFolder);
         }
-        if (deleteItem) {
+        if (deleteItem && !isRootFolder) {
           _optionsA.push(menuOptions.delete);
+          _optionsA.push(menuOptions.cut);
         }
-        _optionsA.push(menuOptions.cut);
         _optionsA.push(menuOptions.copy);
         if (hasClipboard) {
           _optionsA.push(menuOptions.paste);

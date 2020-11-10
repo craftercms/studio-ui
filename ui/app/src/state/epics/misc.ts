@@ -27,16 +27,15 @@ import { changeContentType, fetchWorkflowAffectedItems } from '../../services/co
 import {
   showCodeEditorDialog,
   showEditDialog,
-  showEditItemSuccessNotification,
   showWorkflowCancellationDialog
 } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
-import { systemEvent } from '../actions/systemEvents';
+import { emitSystemEvent, showEditItemSuccessNotification } from '../actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 const systemEventPropagate: Epic = (action$) =>
   action$.pipe(
-    ofType(systemEvent.type),
+    ofType(emitSystemEvent.type),
     tap(({ payload }) => {
       const hostToHost$ = getHostToHostBus();
       hostToHost$.next(payload);
@@ -49,11 +48,11 @@ const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
     ofType(changeContentTypeAction.type),
     withLatestFrom(state$),
     switchMap(([{ payload }, state]) => {
-      const contentType = payload.selectedContentType;
+      const newContentTypeId = payload.newContentTypeId;
       const path = payload.path;
-      if (payload.contentTypeId !== contentType) {
-        let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${contentType}`;
-        return changeContentType(state.sites.active, path, contentType).pipe(
+      if (payload.originalContentTypeId !== newContentTypeId) {
+        let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${newContentTypeId}`;
+        return changeContentType(state.sites.active, path, newContentTypeId).pipe(
           map(() =>
             showEditDialog({
               src,

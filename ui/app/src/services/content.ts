@@ -1002,7 +1002,7 @@ export function duplicate(site: string, path: string): Observable<string> {
   return copy(site, path).pipe(
     switchMap(() => paste(site, getParentPath(parentPath))),
     // Duplicate only does shallow copy, so return the copied path
-    map((paths) => paths[0])
+    pluck('0')
   );
 }
 

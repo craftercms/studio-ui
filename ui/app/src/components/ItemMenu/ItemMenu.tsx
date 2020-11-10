@@ -41,21 +41,15 @@ import {
   showCodeEditorDialog,
   showConfirmDialog,
   showCopyDialog,
-  showCopyItemSuccessNotification,
   showCreateFileDialog,
   showCreateFolderDialog,
   showDeleteDialog,
-  showDeleteItemSuccessNotification,
   showDependenciesDialog,
-  showDuplicatedItemSuccessNotification,
   showEditDialog,
-  showEditItemSuccessNotification,
   showHistoryDialog,
   showNewContentDialog,
-  showPasteItemSuccessNotification,
   showPreviewDialog,
   showPublishDialog,
-  showPublishItemSuccessNotification,
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
@@ -85,7 +79,15 @@ import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
 import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
-import { itemPasted } from '../../state/actions/systemEvents';
+import {
+  itemPasted,
+  showCopyItemSuccessNotification,
+  showDeleteItemSuccessNotification,
+  showDuplicatedItemSuccessNotification,
+  showEditItemSuccessNotification,
+  showPasteItemSuccessNotification,
+  showPublishItemSuccessNotification
+} from '../../state/actions/system';
 
 interface ItemMenuProps {
   path: string;
@@ -242,7 +244,7 @@ export function ItemMenu(props: ItemMenuProps) {
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
                   closeChangeContentTypeDialog(),
-                  changeContentType({ contentTypeId: item.contentTypeId, path: item.path })
+                  changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
                 ])
               })
             ])

@@ -72,7 +72,7 @@ import {
   itemDuplicated,
   itemPasted,
   itemUpdated
-} from '../../../state/actions/systemEvents';
+} from '../../../state/actions/system';
 
 export interface WidgetProps {
   id: string;

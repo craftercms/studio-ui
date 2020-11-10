@@ -39,13 +39,9 @@ import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
-import {
-  showCodeEditorDialog,
-  showCutItemSuccessNotification,
-  showEditDialog
-} from '../actions/dialogs';
+import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
-import { itemDuplicated, systemEvent } from '../actions/systemEvents';
+import { emitSystemEvent, itemDuplicated, showCutItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
 
 const content = [
@@ -125,7 +121,7 @@ const content = [
         return duplicate(state.sites.active, payload.path).pipe(
           map((path) =>
             batchActions([
-              systemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
+              emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
               showEditDialog({
                 src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
                 onSaveSuccess: payload.onSuccess
@@ -148,14 +144,14 @@ const content = [
             if (editableAsset) {
               const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
               return batchActions([
-                systemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
+                emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
                 showCodeEditorDialog({
                   src,
                   onSuccess: payload.onSuccess
                 })
               ]);
             } else {
-              return systemEvent(itemDuplicated({ target: payload.path, resultPath: path }));
+              return emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path }));
             }
           })
         );

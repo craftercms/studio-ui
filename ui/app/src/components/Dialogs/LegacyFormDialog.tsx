@@ -39,7 +39,7 @@ import StandardAction from '../../models/StandardAction';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
-import { itemCreated, itemUpdated, systemEvent } from '../../state/actions/systemEvents';
+import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import { getQueryVariable } from '../../utils/path';
 
 const translations = defineMessages({
@@ -117,10 +117,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     (data) => {
       onSaveSuccess?.(data);
       if (data.isNew) {
-        dispatch(systemEvent(itemCreated({ target: data.item.uri })));
+        dispatch(emitSystemEvent(itemCreated({ target: data.item.uri })));
       } else {
         const path = getQueryVariable(src, 'path') as string;
-        dispatch(systemEvent(itemUpdated({ target: path })));
+        dispatch(emitSystemEvent(itemUpdated({ target: path })));
       }
     },
     [dispatch, onSaveSuccess, src]

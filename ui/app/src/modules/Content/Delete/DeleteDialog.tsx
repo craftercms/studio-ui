@@ -42,7 +42,7 @@ import { fetchDeleteDependencies, showEditDialog } from '../../../state/actions/
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { deleteItems } from '../../../services/content';
-import { itemDeleted, systemEvent } from '../../../state/actions/systemEvents';
+import { emitSystemEvent, itemDeleted } from '../../../state/actions/system';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -317,7 +317,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       (response) => {
         setApiState({ submitting: false });
 
-        dispatch(systemEvent(itemDeleted({ targets: selectedItems })));
+        dispatch(emitSystemEvent(itemDeleted({ targets: selectedItems })));
 
         onSuccess?.({
           ...response,

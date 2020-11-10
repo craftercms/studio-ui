@@ -35,9 +35,10 @@ import {
   versionsChangeItem
 } from '../reducers/versions';
 import { NEVER, of } from 'rxjs';
-import { historyDialogClosed, showRevertItemSuccessNotification } from '../actions/dialogs';
+import { historyDialogClosed } from '../actions/dialogs';
 import { getHistory as getConfigurationHistory } from '../../services/configuration';
 import { reloadDetailedItem } from '../actions/content';
+import { showRevertItemSuccessNotification } from '../actions/system';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>

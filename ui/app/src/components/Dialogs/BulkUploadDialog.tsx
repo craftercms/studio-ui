@@ -51,7 +51,7 @@ import { useDispatch } from 'react-redux';
 import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
-import { fileUploaded, systemEvent } from '../../state/actions/systemEvents';
+import { emitSystemEvent, fileUploaded } from '../../state/actions/system';
 
 const translations = defineMessages({
   title: {
@@ -651,9 +651,12 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
     e.preventDefault();
   };
 
-  const onFileUploaded = (path: string) => {
-    dispatch(systemEvent(fileUploaded({ target: path })));
-  };
+  const onFileUploaded = useCallback(
+    (path: string) => {
+      dispatch(emitSystemEvent(fileUploaded({ target: path })));
+    },
+    [dispatch]
+  );
 
   const onStatusChange = useCallback(
     (status: DropZoneStatus) => {

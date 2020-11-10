@@ -17,6 +17,8 @@
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 
+//region Item Events
+
 export const itemUpdated = createAction<{ target: string }>('ITEM_UPDATED');
 
 export const itemCreated = createAction<{ target: string }>('ITEM_CREATED');
@@ -37,4 +39,34 @@ export const itemDuplicated = createAction<{ target: string; resultPath: string 
   'ITEM_DUPLICATED'
 );
 
-export const systemEvent = createAction<StandardAction>('SYSTEM_EVENT');
+//endregion
+
+// region Notifications
+export const showDeleteItemSuccessNotification = createAction(
+  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
+);
+
+export const showPublishItemSuccessNotification = createAction(
+  'SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION'
+);
+
+export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
+
+export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+
+export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
+
+export const showPasteItemSuccessNotification = createAction(
+  'SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION'
+);
+
+export const showDuplicatedItemSuccessNotification = createAction(
+  'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
+);
+
+export const showRevertItemSuccessNotification = createAction(
+  'SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION'
+);
+// endregion
+
+export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
