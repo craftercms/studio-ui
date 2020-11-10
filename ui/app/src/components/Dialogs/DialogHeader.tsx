@@ -27,7 +27,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Action, { ActionIcon } from './DialogHeaderAction';
-import palette from '../../styles/palette';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
@@ -35,7 +34,7 @@ const dialogTitleStyles = makeStyles((theme) =>
       margin: 0,
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
       padding: theme.spacing(1),
-      background: palette.white
+      background: theme.palette.background.paper
     },
     titleWrapper: {
       display: 'flex',

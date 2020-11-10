@@ -18,6 +18,7 @@ import React, { PropsWithChildren } from 'react';
 import ErrorState, { ErrorStateProps } from './ErrorState';
 
 export type ErrorBoundaryProps = PropsWithChildren<{
+  onReset?(): void;
   errorStateProps?: Omit<ErrorStateProps, 'error'>;
 }>;
 
@@ -32,10 +33,29 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
     // TODO: Log to an error reporting service
   }
 
+  reset() {
+    this.setState({ error: null });
+  }
+
   render() {
+    const errorStateProps = {
+      ...this.props.errorStateProps,
+      onBack: (e) => {
+        this.props.errorStateProps?.onBack?.(e);
+        if (this.props.onReset) {
+          this.props.onReset();
+          // Move the ErrorBoundary's reset to the next cycle so any
+          // clean up performed by the ErrorBoundary's children "onReset"
+          // is applied and the error boundary is not re-shown immediately
+          setTimeout(() => this.reset());
+        } else {
+          this.reset();
+        }
+      }
+    };
     return this.state.error ? (
       <ErrorState
-        {...this.props.errorStateProps}
+        {...errorStateProps}
         error={{ message: this.state.error.message || this.state.error }}
       />
     ) : (

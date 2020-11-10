@@ -19,7 +19,6 @@ import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogCo
 import makeStyles from '@material-ui/styles/makeStyles';
 import { createStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import palette from '../../styles/palette';
 
 const styles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,7 +27,7 @@ const styles = makeStyles((theme: Theme) =>
       flex: '1 1 auto',
       flexDirection: 'column',
       padding: theme.spacing(2),
-      backgroundColor: palette.gray.light0
+      backgroundColor: theme.palette.background.default
     }
   })
 );

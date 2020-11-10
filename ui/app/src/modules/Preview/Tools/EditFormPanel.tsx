@@ -57,7 +57,8 @@ const styles = makeStyles((theme) => createStyles({
     position: 'absolute',
     top: 64 + theme.spacing(1),
     left: theme.spacing(1),
-    zIndex: theme.zIndex.drawer
+    zIndex: theme.zIndex.drawer,
+    width: 250
   },
   formWrapper: {
     textAlign: 'center',
@@ -85,25 +86,22 @@ function createBackHandler(dispatch) {
 
 export default function EditFormPanel(props) {
   const classes = styles();
-  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   return (
     <Grow in={props.open}>
       <Paper
         elevation={4}
-        style={{ width: toolsPanelWidth - 30 }}
         className={classes.root}
       >
         {
           props.open &&
-          <EditFormPanelWrapper/>
+          <EditFormPanelBody/>
         }
       </Paper>
-
     </Grow>
   );
 }
 
-function EditFormPanelWrapper() {
+function EditFormPanelBody() {
 
   const dispatch = useDispatch();
   const { guest: { selected, models, childrenMap } } = usePreviewState();

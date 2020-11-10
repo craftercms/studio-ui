@@ -19,26 +19,22 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(() => ({
-  lightMode: {
-    fill: '#000'
+const useStyles = makeStyles((theme) => ({
+  themedFill: {
+    fill: theme.palette.type === 'dark' ? '#fff' : '#000'
   },
   gear: {
     fill: '#f00'
-  },
-  darkMode: {
-    fill: '#fff'
   }
 }));
 
 interface IconProps extends Omit<SvgIconProps, 'classes'> {
-  darkMode?: boolean;
   classes?: SvgIconProps['classes'] & { gear?: string; letter?: string; chevron?: string };
 }
 
 export default function CrafterChevron(props: IconProps) {
   const classes = useStyles();
-  const themeClass = props.darkMode ? classes.darkMode : classes.lightMode;
+  const themeClass = classes.themedFill;
   return (
     <SvgIcon {...props}>
       <path

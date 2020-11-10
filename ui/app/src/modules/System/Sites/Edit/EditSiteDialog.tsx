@@ -143,6 +143,8 @@ function EditSiteDialog(props: EditSiteDialogProps) {
     );
   };
 
+  const onErrorBoundaryReset = () => setError(null);
+
   return (
     <Dialog
       open={open}
@@ -151,7 +153,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
       fullWidth
       maxWidth="sm"
     >
-      <Suspencified>
+      <Suspencified errorBoundaryProps={{ onReset: onErrorBoundaryReset }}>
         <EditSiteDialogUIContainer
           resource={resource}
           submitting={submitting}

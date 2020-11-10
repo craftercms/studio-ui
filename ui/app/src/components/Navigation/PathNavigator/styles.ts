@@ -114,10 +114,10 @@ export const useStyles = makeStyles(
       },
       breadcrumbsTypography: {
         fontWeight: 'bold',
-        color: palette.gray.medium4
+        color: theme.palette.text.secondary
       },
       breadcrumbLast: {
-        color: palette.teal.shade,
+        color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
         textDecoration: 'underline'
       },
       // endregion
@@ -171,11 +171,10 @@ export const useStyles = makeStyles(
       },
       typeIcon: {
         marginRight: 5,
-        fontSize: '1.2rem',
-        color: palette.gray.medium4
+        fontSize: '1.2rem'
       },
       navItem: {
-        padding: '0 0 0 10px !important',
+        padding: '0 0 0 10px',
         '&.noLeftPadding': {
           paddingLeft: 0
         },
@@ -185,7 +184,7 @@ export const useStyles = makeStyles(
       },
       navItemLevelDescriptor: {},
       navItemText: {
-        color: palette.teal.shade,
+        color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
         padding: 0,
         marginRight: 'auto',
         whiteSpace: 'nowrap',
@@ -198,7 +197,7 @@ export const useStyles = makeStyles(
           color: palette.black
         },
         '&.non-navigable': {
-          color: palette.gray.medium7
+          color: theme.palette.text.secondary
         }
       },
       navItemCheckbox: {
