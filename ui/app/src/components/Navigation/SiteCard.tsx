@@ -14,54 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
+import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import cardTitleStyles from '../../styles/card';
 import clsx from 'clsx';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
-import palette from '../../styles/palette';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Box from '@material-ui/core/Box';
+import { createStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(() => ({
-  card: {
-    cursor: 'pointer',
-    '& .cardTitle': {
-      ...cardTitleStyles
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    card: {
+      paddingTop: theme.spacing(2.5),
+      paddingBottom: theme.spacing(2.5),
+      borderRadius: 5,
+      backgroundColor: theme.palette.background.paper
     },
-    '&:hover': {
-      backgroundColor: palette.gray.light1
-    },
-    '&.disabled': {
-      opacity: '0.5',
-      pointerEvents: 'none'
-    },
-    '&.selected, &.selected:hover': {
-      color: palette.blue.main,
-      backgroundColor: palette.blue.highlight
+    siteName: {
+      fontWeight: 600
     }
-  },
-  avatar: {
-    color: palette.red.main
-  },
-  action: {
-    marginTop: 0,
-    alignSelf: 'inherit'
-  },
-  root: {
-    padding: '0 16px',
-    height: '70px'
-  }
-}));
+  })
+);
 
 interface TitleCardProps {
   title: string;
   value?: string;
-  icon?: ElementType<any>;
   options?: boolean;
   classes?: any;
   cardActions?: any;
@@ -71,18 +54,9 @@ interface TitleCardProps {
 }
 
 export default function SiteCard(props: TitleCardProps) {
-  const {
-    title,
-    value,
-    options,
-    icon: Icon,
-    onCardClick,
-    cardActions = [],
-    disabled = false,
-    selected = false
-  } = props;
+  const { title, value, options, onCardClick, cardActions = [], selected = false } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const classes = useStyles({});
+  const classes = useStyles();
 
   const handleClose = (event, action?) => {
     event.stopPropagation();
@@ -96,32 +70,28 @@ export default function SiteCard(props: TitleCardProps) {
   };
 
   return (
-    <Card
-      className={clsx(
-        classes.card,
-        props.classes?.root && props.classes.root,
-        disabled && 'disabled',
-        selected && 'selected'
-      )}
-      onClick={() => (!disabled ? onCardClick(value) : null)}
-    >
-      <CardHeader
-        classes={{ root: classes.root, avatar: classes.avatar, action: classes.action }}
-        avatar={Icon && <Icon />}
-        action={
-          options && (
+    <>
+      <Box
+        // @ts-ignore
+        button
+        selected={selected}
+        boxShadow={1}
+        component={ListItem}
+        onClick={() => onCardClick(value)}
+        className={clsx(classes.card, props.classes?.root)}
+      >
+        <ListItemText
+          primary={title}
+          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
+        />
+        {options && (
+          <ListItemSecondaryAction>
             <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>
               <MoreVertIcon />
             </IconButton>
-          )
-        }
-        title={title}
-        titleTypographyProps={{
-          variant: 'subtitle2',
-          component: 'h2',
-          className: 'cardTitle'
-        }}
-      />
+          </ListItemSecondaryAction>
+        )}
+      </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {cardActions.map((action, i) => (
           <MenuItem
@@ -134,6 +104,6 @@ export default function SiteCard(props: TitleCardProps) {
           </MenuItem>
         ))}
       </Menu>
-    </Card>
+    </>
   );
 }

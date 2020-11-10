@@ -28,50 +28,44 @@ import clsx from 'clsx';
 import { nnou } from '../../utils/object';
 import { ApiResponse } from '../../models/ApiResponse';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  errorView: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '40px'
-  },
-  graphic: {
-    maxWidth: '100%'
-  },
-  title: {
-    marginTop: '20px',
-    marginBottom: '10px'
-  },
-  paragraph: {
-    textAlign: 'center',
-    marginTop: '10px'
-  },
-  link: {
-    color: theme.palette.text.secondary,
-    '& svg': {
-      verticalAlign: 'sub',
-      fontSize: '1.3rem'
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    errorView: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px'
+    },
+    graphic: {
+      maxWidth: '100%'
+    },
+    title: {
+      marginTop: '20px',
+      marginBottom: '10px'
+    },
+    paragraph: {
+      textAlign: 'center',
+      marginTop: '10px'
+    },
+    link: {
+      color: theme.palette.text.secondary,
+      '& svg': {
+        verticalAlign: 'sub',
+        fontSize: '1.3rem'
+      }
+    },
+    circleBtn: {
+      color: theme.palette.text.secondary,
+      background: theme.palette.background.default,
+      marginTop: theme.spacing(1)
     }
-  },
-  circleBtn: {
-    color: theme.palette.primary.main,
-    backgroundColor: '#FFFFFF',
-    position: 'absolute',
-    left: '40px',
-    top: '35px',
-    '&:hover': {
-      backgroundColor: '#FFFFFF'
-    }
-  }
-}));
+  })
+);
 
 export interface ErrorStateProps {
   graphicUrl?: string;
-  classes?: {
-    root?: string;
-    graphic?: string;
-  };
+  classes?: Partial<Record<'root' | 'graphic' | 'backButton', string>>;
   error: ApiResponse;
   onBack?(event: any): any;
 }
@@ -84,15 +78,22 @@ const messages = defineMessages({
   error: {
     id: 'words.error',
     defaultMessage: 'Error'
+  },
+  back: {
+    id: 'words.back',
+    defaultMessage: 'Back'
   }
 });
 
 export default function ErrorState(props: ErrorStateProps) {
   const classes = useStyles({});
-  const propClasses = Object.assign({
-    root: '',
-    graphic: ''
-  }, props.classes || {});
+  const propClasses = Object.assign(
+    {
+      root: '',
+      graphic: ''
+    },
+    props.classes || {}
+  );
   const { error, onBack, graphicUrl = crack } = props;
   const { formatMessage } = useIntl();
   const { title, code, documentationUrl, message, remedialAction } = error;
@@ -100,41 +101,41 @@ export default function ErrorState(props: ErrorStateProps) {
   return (
     <div className={clsx(classes.errorView, propClasses.root)}>
       <img className={clsx(classes.graphic, propClasses?.graphic)} src={graphicUrl} alt="" />
-      {
-        (nnou(code) || nnou(title)) &&
+      {(nnou(code) || nnou(title)) && (
         <Typography variant="h5" component="h2" className={classes.title} color={'textSecondary'}>
           {nnou(code) ? `${formatMessage(messages.error)}${code ? ` ${code}` : ''}` : ''}
           {nnou(code) && nnou(title) && ': '}
           {title}
         </Typography>
-      }
-      <Typography variant="subtitle1" component="p" color="textSecondary" className={classes.paragraph}>
-        {
-          (message) +
+      )}
+      <Typography
+        variant="subtitle1"
+        component="p"
+        color="textSecondary"
+        className={classes.paragraph}
+      >
+        {message +
           (message.endsWith('.') ? '' : '.') +
           (remedialAction ? ` ${remedialAction}` : '') +
-          (remedialAction ? (remedialAction.endsWith('.') ? '' : '.') : '')
-        }
+          (remedialAction ? (remedialAction.endsWith('.') ? '' : '.') : '')}
       </Typography>
-      {
-        documentationUrl &&
+      {documentationUrl && (
         <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-          <a
-            className={classes.link}
-            href={documentationUrl}
-            target={'blank'}
-          >
+          <a className={classes.link} href={documentationUrl} target={'blank'}>
             {formatMessage(messages.moreInfo)}
             <OpenInNewIcon />
           </a>
         </Typography>
-      }
-      {
-        onBack &&
-        <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
+      )}
+      {onBack && (
+        <Fab
+          onClick={onBack}
+          aria-label={formatMessage(messages.back)}
+          className={clsx(classes.circleBtn, props.classes?.backButton)}
+        >
           <ArrowBackIcon />
         </Fab>
-      }
+      )}
     </div>
   );
 }

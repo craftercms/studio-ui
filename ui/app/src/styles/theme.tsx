@@ -17,7 +17,6 @@
 import {
   createGenerateClassName,
   createMuiTheme,
-  darken,
   fade,
   ThemeOptions
 } from '@material-ui/core/styles';
@@ -27,7 +26,7 @@ import { GenerateId } from 'jss';
 export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
-export const defaultThemeOptions: ThemeOptions = (function () {
+export const defaultThemeOptions: ThemeOptions = (function() {
   const defaultTheme = createMuiTheme();
   const theme: ThemeOptions = {
     typography: {
@@ -38,21 +37,31 @@ export const defaultThemeOptions: ThemeOptions = (function () {
       fontFamily: '"Source Sans Pro", "Open Sans", sans-serif'
     },
     palette: {
+      type: 'light',
       primary: {
-        main: palette.blue.main,
-        contrastText: palette.white
+        main: palette.blue.main
       },
-      text: {
-        secondary: palette.gray.medium4
+      warning: {
+        main: palette.orange.main
       },
       error: {
-        main: palette.red.main,
-        light: palette.red.highlight,
-        contrastText: palette.black
+        main: palette.red.main
       },
-      type: 'light'
+      success: {
+        main: palette.green.main
+      },
+      info: {
+        main: palette.teal.main
+      }
     },
     overrides: {
+      MuiListItem: {
+        root: {
+          '&.Mui-selected, &.Mui-selected:hover': {
+            backgroundColor: palette.blue.highlight
+          }
+        }
+      },
       MuiFormLabel: {
         root: {
           transform: 'translate(0, 1.5px) scale(1) !important',
@@ -88,7 +97,6 @@ export const defaultThemeOptions: ThemeOptions = (function () {
           borderRadius: 4,
           position: 'relative',
           border: '1px solid #ced4da',
-          background: palette.white,
           fontSize: 16,
           width: '100%',
           padding: '10px 12px',
@@ -105,20 +113,6 @@ export const defaultThemeOptions: ThemeOptions = (function () {
       MuiTabs: {
         indicator: {
           backgroundColor: palette.blue.main
-        }
-      },
-      MuiButton: {
-        contained: {
-          color: palette.gray.dark4,
-          backgroundColor: palette.white,
-          textTransform: 'inherit',
-          '&:hover': {
-            backgroundColor: palette.white
-          }
-        },
-        outlinedPrimary: {
-          color: darken(palette.blue.main, 0.10),
-          border: `1px solid ${darken(palette.blue.main, 0.10)}`
         }
       },
       MuiAccordion: {
