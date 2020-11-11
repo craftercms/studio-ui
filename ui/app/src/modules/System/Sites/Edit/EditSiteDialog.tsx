@@ -48,6 +48,7 @@ interface EditSiteDialogUIProps {
   onKeyPress: (e: React.KeyboardEvent) => void;
   onSubmit: Function;
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
 }
 
 interface EditSiteDialogUIContainerProps {
@@ -57,6 +58,7 @@ interface EditSiteDialogUIContainerProps {
   checkSiteName: Function;
   onSubmit: Function;
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
 }
 
 interface EditSiteDialogBaseProps {
@@ -106,7 +108,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
 }
 
 function EditSiteDialogWrapper(props: EditSiteDialogProps) {
-  const { site, onClosed, onClose, onSaveSuccess } = props;
+  const { site, onClosed, onClose, onDismiss, onSaveSuccess } = props;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -154,7 +156,7 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
       },
       (e) => {
         setSubmitting(false);
-        setError(e.response.response);
+        setError(e.response?.response ?? e);
       }
     );
   };
@@ -170,13 +172,14 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
         checkSiteName={checkSiteName}
         onSubmit={handleSubmit}
         onClose={onClose}
+        onDismiss={onDismiss}
       />
   </Suspencified>
   )
 }
 
 function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
-  const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose } = props;
+  const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose, onDismiss } = props;
   const site = resource.read().site;
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
@@ -204,6 +207,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
       onKeyPress={onKeyPress}
       onSubmit={() => onSubmit(site.id, name, description)}
       onClose={onClose}
+      onDismiss={onDismiss}
     />
   );
 }
@@ -219,7 +223,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     submitDisabled,
     onKeyPress,
     onSubmit,
-    onClose
+    onClose,
+    onDismiss
   } = props;
   const { formatMessage } = useIntl();
   return (
@@ -227,7 +232,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
       <DialogHeader
         id="editSiteDialogTitle"
         title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
-        onDismiss={onClose}
+        onDismiss={onDismiss}
       />
       <DialogBody>
         <Grid container spacing={1} component="form">
