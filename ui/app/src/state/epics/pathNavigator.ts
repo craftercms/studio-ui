@@ -23,6 +23,9 @@ import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
+  pathNavigatorConditionallySetPath,
+  pathNavigatorConditionallySetPathComplete,
+  pathNavigatorConditionallySetPathFailed,
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete,
@@ -64,6 +67,17 @@ export default [
         getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
           map((response) => pathNavigatorFetchPathComplete({ id, response })),
           catchAjaxError(pathNavigatorFetchPathFailed)
+        )
+      )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorConditionallySetPath.type),
+      withLatestFrom(state$),
+      mergeMap(([{ type, payload: { id, path } }, state]) =>
+        getChildrenByPath(state.sites.active, path).pipe(
+          map((response) => pathNavigatorConditionallySetPathComplete({ id, path, response })),
+          catchAjaxError(pathNavigatorConditionallySetPathFailed)
         )
       )
     ),
@@ -125,7 +139,11 @@ export default [
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(pathNavigatorFetchPathComplete.type, pathNavigatorSetCollapsed.type),
+      ofType(
+        pathNavigatorFetchPathComplete.type,
+        pathNavigatorConditionallySetPathComplete.type,
+        pathNavigatorSetCollapsed.type
+      ),
       withLatestFrom(state$),
       tap(
         ([

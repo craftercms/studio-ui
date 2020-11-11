@@ -29,9 +29,11 @@ export const folderRenamed = createAction<{ target: string; oldName: string; new
   'FOLDER_RENAMED'
 );
 
-export const itemPasted = createAction<{ target: string; resultingPaths: string[] }>('ITEM_PASTED');
+export const itemsPasted = createAction<{ target: string; resultingPaths: string[] }>(
+  'ITEM_PASTED'
+);
 
-export const itemDeleted = createAction<{ targets: string[] }>('ITEM_DELETED');
+export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED');
 
 export const fileUploaded = createAction<{ target: string }>('FILE_UPLOADED');
 

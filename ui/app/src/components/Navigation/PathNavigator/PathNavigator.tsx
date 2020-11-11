@@ -40,6 +40,7 @@ import NavItem from './PathNavigatorItem';
 import Nav from './PathNavigatorList';
 import { languages } from '../../../utils/i18n-legacy';
 import {
+  pathNavigatorConditionallySetPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -68,9 +69,9 @@ import {
   folderCreated,
   folderRenamed,
   itemCreated,
-  itemDeleted,
   itemDuplicated,
-  itemPasted,
+  itemsDeleted,
+  itemsPasted,
   itemUpdated
 } from '../../../state/actions/system';
 import List from '@material-ui/core/List';
@@ -182,11 +183,11 @@ export default function PathNavigator(props: WidgetProps) {
   //Item Updates Propagation
   useEffect(() => {
     const events = [
-      itemPasted.type,
+      itemsPasted.type,
       itemUpdated.type,
       folderCreated.type,
       folderRenamed.type,
-      itemDeleted.type,
+      itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
       fileUploaded.type
@@ -205,24 +206,32 @@ export default function PathNavigator(props: WidgetProps) {
             if (parentPath === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
-            if (state.leaves.includes(parentPath)) {
+            if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
               dispatch(
                 pathNavigatorUpdate({
                   id,
-                  leaves: state.leaves.filter((path) => path !== parentPath)
+                  leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
                 })
               );
             }
             break;
           }
           case folderCreated.type:
-          case itemPasted.type: {
+          case itemsPasted.type: {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
+            if (state.leaves.some((path) => withoutIndex(path) === payload.target)) {
+              dispatch(
+                pathNavigatorUpdate({
+                  id,
+                  leaves: state.leaves.filter((path) => withoutIndex(path) !== payload.target)
+                })
+              );
+            }
             break;
           }
-          case itemDeleted.type: {
+          case itemsDeleted.type: {
             payload.targets.forEach((path) => {
               if (withoutIndex(path) === withoutIndex(state.currentPath)) {
                 dispatch(
@@ -250,7 +259,7 @@ export default function PathNavigator(props: WidgetProps) {
 
   const onPathSelected = (item: DetailedItem) => {
     dispatch(
-      pathNavigatorSetCurrentPath({
+      pathNavigatorConditionallySetPath({
         id,
         path: item.path
       })

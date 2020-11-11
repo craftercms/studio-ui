@@ -79,7 +79,8 @@ import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
 import { rand } from '../Navigation/PathNavigator/utils';
 import {
-  itemPasted,
+  emitSystemEvent,
+  itemsPasted,
   showCopyItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
@@ -334,7 +335,7 @@ export function ItemMenu(props: ItemMenuProps) {
           (resultingPaths) => {
             dispatch(
               batchActions([
-                itemPasted({ target: item.path, resultingPaths }),
+                emitSystemEvent(itemsPasted({ target: item.path, resultingPaths })),
                 unSetClipBoard(),
                 showPasteItemSuccessNotification()
               ])

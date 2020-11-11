@@ -30,6 +30,7 @@ import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import { createPresenceTable } from '../../utils/array';
 import {
+  pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete
 } from '../actions/pathNavigator';
@@ -51,6 +52,23 @@ const initialState: ContentState = {
     permissionsByPath: null
   },
   clipboard: null
+};
+
+const updateItemByPath = (state, { payload: { response } }) => {
+  return {
+    ...state,
+    items: {
+      ...state.items,
+      byPath: {
+        [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
+        ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
+        ...(response.levelDescriptor && {
+          [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor)
+        }),
+        ...state.items.byPath
+      }
+    }
+  };
 };
 
 const reducer = createReducer<ContentState>(initialState, {
@@ -106,24 +124,8 @@ const reducer = createReducer<ContentState>(initialState, {
     ...state,
     clipboard: null
   }),
-  [pathNavigatorFetchPathComplete.type]: (state, { payload: { response } }) => {
-    return {
-      ...state,
-      items: {
-        ...state.items,
-        byPath: {
-          [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
-          ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
-          ...(response.levelDescriptor && {
-            [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
-              response.levelDescriptor
-            )
-          }),
-          ...state.items.byPath
-        }
-      }
-    };
-  },
+  [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
+  [pathNavigatorFetchPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { response } }) => {
     let items = [];
     response.forEach((childResponse) => {
