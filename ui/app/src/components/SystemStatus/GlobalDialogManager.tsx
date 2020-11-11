@@ -339,6 +339,7 @@ function GlobalDialogManager() {
         onClose={createCallback(state.createFolder.onClose, dispatch)}
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}
+        onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
       />
       {/* endregion */}
 
