@@ -95,13 +95,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   const { open, onClose } = props;
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      aria-labelledby="editSiteDialogTitle"
-      fullWidth
-      maxWidth="sm"
-    >
+    <Dialog open={open} onClose={onClose} aria-labelledby="editSiteDialogTitle" fullWidth maxWidth="sm">
       <EditSiteDialogWrapper {...props} />
     </Dialog>
   );
@@ -179,15 +173,7 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
 }
 
 function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
-  const {
-    resource,
-    submitting,
-    submitDisabled,
-    checkSiteName,
-    onSubmit,
-    onClose,
-    onDismiss
-  } = props;
+  const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose, onDismiss } = props;
   const site = resource.read().site;
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
@@ -275,10 +261,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
               value={siteId}
               disabled
               helperText={
-                <FormattedMessage
-                  id="editSiteDialog.notEditable"
-                  defaultMessage="The site id is not editable"
-                />
+                <FormattedMessage id="editSiteDialog.notEditable" defaultMessage="The site id is not editable" />
               }
             />
           </Grid>
@@ -286,12 +269,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
             <TextField
               id="description"
               name="description"
-              label={
-                <FormattedMessage
-                  id="editSiteDialog.siteDescription"
-                  defaultMessage="Site Description"
-                />
-              }
+              label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Site Description" />}
               fullWidth
               onChange={(event) => onSiteDescriptionChange(event.target.value)}
               onKeyPress={onKeyPress}
