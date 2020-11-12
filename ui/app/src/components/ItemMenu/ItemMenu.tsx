@@ -47,7 +47,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
-import { copy, cut, fetchWorkflowAffectedItems, getLegacyItemsTree, paste } from '../../services/content';
+import { copy, fetchWorkflowAffectedItems, getLegacyItemsTree } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
