@@ -36,7 +36,7 @@
 
   function Animator(element) {
     var $element = $(element).addClass(ANIMATE_CLASS);
-    this.$el = function (el) {
+    this.$el = function(el) {
       if (el) $element = $(el).addClass(ANIMATE_CLASS);
       return $element;
     };

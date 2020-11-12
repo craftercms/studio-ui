@@ -30,25 +30,27 @@ import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
 import { fetchContentTypes } from '../../services/contentTypes';
 
-const fetch: Epic = (action$, state$) => action$.pipe(
-  ofType(FETCH_CONTENT_TYPES),
-  withLatestFrom(state$),
-  exhaustMap(([, { sites: { active: site } }]) => fetchContentTypes(site).pipe(
-    map(fetchContentTypesComplete),
-    catchAjaxError(fetchContentTypesFailed)
-  ))
-);
+const fetch: Epic = (action$, state$) =>
+  action$.pipe(
+    ofType(FETCH_CONTENT_TYPES),
+    withLatestFrom(state$),
+    exhaustMap(([, { sites: { active: site } }]) =>
+      fetchContentTypes(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
+    )
+  );
 
-const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
-  withLatestFrom(state$),
-  switchMap(([, state]) => getContentByContentType(state.sites.active, state.preview.components.contentTypeFilter, state.contentTypes.byId, state.preview.components.query).pipe(
-    map(fetchComponentsByContentTypeComplete),
-    catchAjaxError(fetchComponentsByContentTypeFailed)
-  ))
-);
+const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
+    withLatestFrom(state$),
+    switchMap(([, state]) =>
+      getContentByContentType(
+        state.sites.active,
+        state.preview.components.contentTypeFilter,
+        state.contentTypes.byId,
+        state.preview.components.query
+      ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
+    )
+  );
 
-export default [
-  fetch,
-  fetchComponentsByContentType
-] as Epic[];
+export default [fetch, fetchComponentsByContentType] as Epic[];

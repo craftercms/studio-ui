@@ -22,7 +22,9 @@ import Model from './model';
 import { forEach } from './array';
 import { popPiece } from './string';
 
-export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]): ContentTypeField[] {
+export function findComponentContainerFields(
+  fields: LookupTable<ContentTypeField> | ContentTypeField[]
+): ContentTypeField[] {
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);
   }
@@ -38,46 +40,44 @@ export function findComponentContainerFields(fields: LookupTable<ContentTypeFiel
   });
 }
 
-export function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
-  return isNullOrUndefined(Model.prop(models[modelId], 'path'))
-    ? findParentModelId(modelId, children, models)
-    : null;
+export function getParentModelId(
+  modelId: string,
+  models: LookupTable<ContentInstance>,
+  children: LookupTable<ContentInstance>
+): string {
+  return isNullOrUndefined(Model.prop(models[modelId], 'path')) ? findParentModelId(modelId, children, models) : null;
 }
 
-function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInstance>, models: LookupTable<ContentInstance>): string {
+function findParentModelId(
+  modelId: string,
+  childrenMap: LookupTable<ContentInstance>,
+  models: LookupTable<ContentInstance>
+): string {
   const parentId = forEach(
     Object.entries(childrenMap),
     ([id, children]) => {
-      if (
-        notNullOrUndefined(children) &&
-        (id !== modelId) &&
-        children.includes(modelId)
-      ) {
+      if (notNullOrUndefined(children) && id !== modelId && children.includes(modelId)) {
         return id;
       }
     },
     null
   );
   return notNullOrUndefined(parentId)
-    // If it has a path, it is not embedded and hence the parent
-    // Otherwise, need to keep looking.
-    ? notNullOrUndefined(Model.prop(models[parentId], 'path'))
+    ? // If it has a path, it is not embedded and hence the parent
+      // Otherwise, need to keep looking.
+      notNullOrUndefined(Model.prop(models[parentId], 'path'))
       ? parentId
       : findParentModelId(parentId, childrenMap, models)
-    // No parent found for this model
-    : null;
+    : // No parent found for this model
+      null;
 }
 
 export function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
-  return collection
-    .slice(0, parsedIndex)
-    .concat(collection.slice(parsedIndex + 1));
+  return collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 }
 
 export function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
   const isStringIndex = typeof index === 'string';
-  return isStringIndex
-    ? Model.extractCollection(model, fieldId, index)
-    : Model.value(model, fieldId);
+  return isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
 }

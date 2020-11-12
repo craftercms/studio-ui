@@ -30,10 +30,12 @@ const Locales: any = {
 };
 
 export function getTranslation(key: string, table: any, formatMessage = (descriptor) => descriptor) {
-  return formatMessage(table[key] || {
-    id: 'translationNotAvailable',
-    defaultMessage: (key || '(check configuration)')
-  });
+  return formatMessage(
+    table[key] || {
+      id: 'translationNotAvailable',
+      defaultMessage: key || '(check configuration)'
+    }
+  );
 }
 
 export const intlRef = { current: getIntl(getCurrentLocale()) };

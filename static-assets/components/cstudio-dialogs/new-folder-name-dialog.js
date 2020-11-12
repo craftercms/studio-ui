@@ -191,7 +191,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
   /**
    * don't allow characters which are invalid for file names and check length
    */
-  processKey: function (evt, el, allowBraces) {
+  processKey: function(evt, el, allowBraces) {
     var invalid = new RegExp('[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\.\\/\\{\\}|":<>\\?~ ]', 'g');
     if (allowBraces) {
       invalid = new RegExp('[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\.\\/|":<>\\?~ ]', 'g');

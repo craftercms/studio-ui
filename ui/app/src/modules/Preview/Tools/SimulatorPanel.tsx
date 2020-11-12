@@ -68,21 +68,23 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  simulatorFlipColumn: {
-    display: 'flex',
-    alignItems: 'flex-end'
-  },
-  simulatorFlipButton: {
-    marginBottom: `${theme.spacing(1)}px`
-  },
-  presetFieldset: {
-    marginTop: theme.spacing(1)
-  },
-  panelBodyInner: {
-    padding: theme.spacing(1)
-  }
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    simulatorFlipColumn: {
+      display: 'flex',
+      alignItems: 'flex-end'
+    },
+    simulatorFlipButton: {
+      marginBottom: `${theme.spacing(1)}px`
+    },
+    presetFieldset: {
+      marginTop: theme.spacing(1)
+    },
+    panelBodyInner: {
+      padding: theme.spacing(1)
+    }
+  })
+);
 
 const INITIAL_STATE = {
   width: '',
@@ -93,7 +95,6 @@ const INITIAL_STATE = {
 const reducer = (a: any, b: any) => ({ ...a, ...b });
 
 export default function SimulatorPanel(props: any) {
-
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
@@ -120,24 +121,28 @@ export default function SimulatorPanel(props: any) {
   const handlePresetChange = (e: any) => {
     const value = e.target.value;
     if (value === SIMULATOR_PANEL_RESPONSIVE_MODE) {
-      dispatch(setHostSize({
-        width: null,
-        height: null
-      }));
+      dispatch(
+        setHostSize({
+          width: null,
+          height: null
+        })
+      );
     } else {
       const device = devices.find((dev) => dev.value === value);
-      device && dispatch(setHostSize({
-        width: (device.width > maxWidth) ? maxWidth : device.width,
-        height: device.height
-      }));
+      device &&
+        dispatch(
+          setHostSize({
+            width: device.width > maxWidth ? maxWidth : device.width,
+            height: device.height
+          })
+        );
     }
   };
 
   const dispatch = useDispatch();
-  const hostSize = useSelection<WidthAndHeight>(state => state.preview.hostSize);
+  const hostSize = useSelection<WidthAndHeight>((state) => state.preview.hostSize);
   const onDimensionKeyUp = (e: any) => {
     if (e.key === 'Enter') {
-
       let widthToSet, heightToSet;
 
       if (!width) {
@@ -156,11 +161,12 @@ export default function SimulatorPanel(props: any) {
         heightToSet = hostSize.height;
       }
 
-      dispatch(setHostSize({
-        width: widthToSet > maxWidth ? maxWidth : widthToSet,
-        height: heightToSet
-      }));
-
+      dispatch(
+        setHostSize({
+          width: widthToSet > maxWidth ? maxWidth : widthToSet,
+          height: heightToSet
+        })
+      );
     }
   };
 
@@ -177,14 +183,13 @@ export default function SimulatorPanel(props: any) {
       nextState.height = '';
     }
     if (hostSize.width != null || hostSize.height != null) {
-      const matchingPreset = devices.find((device) =>
-        // @ts-ignore
-        // eslint-disable-next-line
-        (device.width == hostSize.width) && (device.height == hostSize.height)
+      const matchingPreset = devices.find(
+        (device) =>
+          // @ts-ignore
+          // eslint-disable-next-line
+          device.width == hostSize.width && device.height == hostSize.height
       );
-      nextState.preset = (matchingPreset)
-        ? matchingPreset.value
-        : SIMULATOR_PANEL_CUSTOM_MODE;
+      nextState.preset = matchingPreset ? matchingPreset.value : SIMULATOR_PANEL_CUSTOM_MODE;
     } else {
       nextState.preset = SIMULATOR_PANEL_RESPONSIVE_MODE;
     }
@@ -194,10 +199,12 @@ export default function SimulatorPanel(props: any) {
   const onFlipDimensions = () => {
     const nextWidth = parseInt(height);
     const nextHeight = parseInt(width);
-    dispatch(setHostSize({
-      width: nextWidth > maxWidth ? maxWidth : nextWidth,
-      height: nextHeight
-    }));
+    dispatch(
+      setHostSize({
+        width: nextWidth > maxWidth ? maxWidth : nextWidth,
+        height: nextHeight
+      })
+    );
   };
 
   const PRESETS = formatMessage(translations.presets);
@@ -241,12 +248,7 @@ export default function SimulatorPanel(props: any) {
         <Divider />
         <FormControl component="fieldset" className={classes.presetFieldset}>
           <FormLabel component="legend">{PRESETS}</FormLabel>
-          <RadioGroup
-            value={preset}
-            onChange={handlePresetChange}
-            aria-label={PRESETS}
-            name="words.device"
-          >
+          <RadioGroup value={preset} onChange={handlePresetChange} aria-label={PRESETS} name="words.device">
             <FormControlLabel
               value={SIMULATOR_PANEL_CUSTOM_MODE}
               control={<Radio />}
@@ -258,14 +260,14 @@ export default function SimulatorPanel(props: any) {
               control={<Radio />}
               label={formatMessage(translations.previewWindowSize)}
             />
-            {devices.map((device) =>
+            {devices.map((device) => (
               <FormControlLabel
                 key={device.value}
                 value={device.value}
                 control={<Radio />}
                 label={formatMessage(getTranslation(device.title, translations))}
               />
-            )}
+            ))}
           </RadioGroup>
         </FormControl>
       </div>

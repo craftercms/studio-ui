@@ -107,9 +107,7 @@ const reducer = createReducer<GlobalState['preview']>(
     // The src of the iframe
     currentUrl: previewLanding,
     hostSize: { width: null, height: null },
-    showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL
-      ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true'
-      : true,
+    showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
     previousTool: null,
     // Don't change/commit the tool you're working with. Use your .env.development to set it
     selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
@@ -303,10 +301,10 @@ const reducer = createReducer<GlobalState['preview']>(
       state.currentUrl === payload
         ? state
         : {
-          ...state,
-          computedUrl: cleanseUrl(payload),
-          currentUrl: `${guestBase}${cleanseUrl(payload)}`
-        },
+            ...state,
+            computedUrl: cleanseUrl(payload),
+            currentUrl: `${guestBase}${cleanseUrl(payload)}`
+          },
     [changeSite.type]: (state, { payload }) => {
       let nextState = {
         ...state,
@@ -401,10 +399,7 @@ const reducer = createReducer<GlobalState['preview']>(
         }
       };
     },
-    [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (
-      state,
-      { payload: searchResult }: { payload: SearchResult }
-    ) => {
+    [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
       let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
       let page = [...state.assets.page];
       page[state.assets.pageNumber] = searchResult.items.map((item) => item.path);
@@ -440,16 +435,11 @@ const reducer = createReducer<GlobalState['preview']>(
           isFetching: true,
           query: newQuery,
           pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
-          contentTypeFilter: contentTypeFilter
-            ? contentTypeFilter
-            : state.components.contentTypeFilter
+          contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
         }
       };
     },
-    [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (
-      state,
-      { payload }: { payload: ContentInstancePage }
-    ) => {
+    [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: ContentInstancePage }) => {
       let page = [...state.components.page];
       page[state.components.pageNumber] = Object.keys(payload.lookup);
       return {

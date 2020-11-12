@@ -16,12 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closePreviewDialog,
-  previewDialogClosed,
-  showPreviewDialog,
-  updatePreviewDialog
-} from '../../actions/dialogs';
+import { closePreviewDialog, previewDialogClosed, showPreviewDialog, updatePreviewDialog } from '../../actions/dialogs';
 import { PreviewDialogStateProps } from '../../../components/Dialogs/PreviewDialog';
 
 const initialState: PreviewDialogStateProps = {
@@ -32,24 +27,21 @@ const initialState: PreviewDialogStateProps = {
   content: null
 };
 
-export default createReducer<GlobalState['dialogs']['preview']>(
-  initialState,
-  {
-    [showPreviewDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closePreviewDialog(),
-      onClosed: previewDialogClosed(),
-      ...payload,
-      open: true
-    }),
-    [updatePreviewDialog.type]: (state, { payload }) => ({
-      ...state,
-      ...payload
-    }),
-    [closePreviewDialog.type]: (state) => ({
-      ...state,
-      open: false
-    }),
-    [previewDialogClosed.type]: () => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['preview']>(initialState, {
+  [showPreviewDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closePreviewDialog(),
+    onClosed: previewDialogClosed(),
+    ...payload,
+    open: true
+  }),
+  [updatePreviewDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
+  }),
+  [closePreviewDialog.type]: (state) => ({
+    ...state,
+    open: false
+  }),
+  [previewDialogClosed.type]: () => initialState
+});

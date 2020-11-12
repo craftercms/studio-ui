@@ -23,4 +23,3 @@ export interface ContentTypeReceptacle {
 
   [prop: string]: any;
 }
-

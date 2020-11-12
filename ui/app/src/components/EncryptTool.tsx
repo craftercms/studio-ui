@@ -92,7 +92,6 @@ const notificationInitialState = {
 };
 
 function copyToClipboard(input: HTMLInputElement) {
-
   /* Select the text field */
   input.select();
   /* For mobile devices */
@@ -100,7 +99,6 @@ function copyToClipboard(input: HTMLInputElement) {
 
   /* Copy the text inside the text field */
   document.execCommand('copy');
-
 }
 
 function SnackbarContentWrapper(props: any) {
@@ -113,11 +111,11 @@ function SnackbarContentWrapper(props: any) {
       aria-describedby="encryptToolSnackbar"
       message={
         <span id="encryptToolSnackbar" className={classes.message}>
-          {
-            variant === 'success'
-              ? <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
-              : <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
-          }
+          {variant === 'success' ? (
+            <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
+          ) : (
+            <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
+          )}
           {message}
         </span>
       }
@@ -186,7 +184,9 @@ const EncryptTool = (props: EncryptToolProps) => {
         <h1 className={classes.title}>{formatMessage(messages.pageTitle)}</h1>
       </header>
       <div className="form-group">
-        <label htmlFor="encryptionToolRawText" className="control-label">{formatMessage(messages.inputLabel)}</label>
+        <label htmlFor="encryptionToolRawText" className="control-label">
+          {formatMessage(messages.inputLabel)}
+        </label>
         <input
           type="text"
           value={text}
@@ -198,8 +198,7 @@ const EncryptTool = (props: EncryptToolProps) => {
           disabled={fetching}
         />
       </div>
-      {
-        result &&
+      {result && (
         <div className="form-group">
           <input
             readOnly
@@ -217,12 +216,11 @@ const EncryptTool = (props: EncryptToolProps) => {
             }}
           />
         </div>
-      }
+      )}
       <div className="form-group">
         <button type="submit" className="btn btn-primary" onClick={encrypt} disabled={fetching}>
           <span>{formatMessage(messages.buttonText)}</span>
-        </button>
-        {' '}
+        </button>{' '}
         <button type="button" className="btn btn-default" onClick={clear} disabled={fetching}>
           <span>{formatMessage(messages.clearResultButtonText)}</span>
         </button>
@@ -243,7 +241,9 @@ const EncryptTool = (props: EncryptToolProps) => {
           onClose={() => setNotificationSettings({ open: false })}
           variant={notificationSettings.variant}
           className={notificationSettings.variant === 'success' ? classes.success : classes.error}
-          message={formatMessage(notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage)}
+          message={formatMessage(
+            notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
+          )}
         />
       </Snackbar>
     </form>

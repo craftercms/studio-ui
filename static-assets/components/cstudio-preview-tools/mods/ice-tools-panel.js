@@ -107,7 +107,10 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 if (selectedIndex != 0) {
                   var region = regions[selectedIndex - 1];
                   if (region.label) {
-                    amplify.publish(cstopic('ICE_TOOLS_REGIONS'), { label: '-label', region: region.label });
+                    amplify.publish(cstopic('ICE_TOOLS_REGIONS'), {
+                      label: '-label',
+                      region: region.label
+                    });
                   } else {
                     amplify.publish(cstopic('ICE_TOOLS_REGIONS'), { label: '', region: region.id });
                   }

@@ -48,10 +48,7 @@ const content = [
       ofType(fetchQuickCreateListAction.type),
       withLatestFrom($state),
       switchMap(([, { sites: { active } }]) =>
-        fetchQuickCreateList(active).pipe(
-          map(fetchQuickCreateListComplete),
-          catchAjaxError(fetchQuickCreateListFailed)
-        )
+        fetchQuickCreateList(active).pipe(map(fetchQuickCreateListComplete), catchAjaxError(fetchQuickCreateListFailed))
       )
     ),
   // endregion

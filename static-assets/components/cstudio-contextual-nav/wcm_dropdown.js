@@ -62,14 +62,10 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
       }
     });
 
-    if (
-      window.location.pathname.indexOf('browse') > -1 ||
-      window.location.pathname.indexOf('site-config') > -1
-    ) {
+    if (window.location.pathname.indexOf('browse') > -1 || window.location.pathname.indexOf('site-config') > -1) {
       mainContainerEl.innerHTML = '';
     } else {
-      mainContainerEl.innerHTML =
-        `<div id="acn-dropdown" class="acn-dropdown">
+      mainContainerEl.innerHTML = `<div id="acn-dropdown" class="acn-dropdown">
           <div id="acn-dropdown-inner" class="acn-dropdown-inner">
             <a id="acn-dropdown-toggler" href="#" class="acn-dropdown-toggler">
               <span class="fa fa-bars"></span>
@@ -442,7 +438,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               } else {
                 var allowed = false;
                 var userRoles = userRoles.roles;
-                allowed = userRoles.some((role) => roles.includes(role))
+                allowed = userRoles.some((role) => roles.includes(role));
               }
             }
             if (allowed) {
@@ -461,8 +457,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
               module.containerEl = moduleContainerEl;
 
-              var
-                self = this,
+              var self = this,
                 cb = {
                   moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                     try {
@@ -475,18 +470,18 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   }
                 };
 
-              (module.name === 'wcm-root-folder') && (cb.once = function() {
-                try {
-                  CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function (evtType, aArgs) {
-                    if (aArgs[0] == aArgs[1]) {
-                      // number of instances == number of times event has fired
-                      self.handleScroll = true;
-                      self.oPreferences.visible && self.updateScrollPosition(true);
-                    }
-                  });
-                } catch (ex) {
-                }
-              });
+              module.name === 'wcm-root-folder' &&
+                (cb.once = function() {
+                  try {
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function(evtType, aArgs) {
+                      if (aArgs[0] == aArgs[1]) {
+                        // number of instances == number of times event has fired
+                        self.handleScroll = true;
+                        self.oPreferences.visible && self.updateScrollPosition(true);
+                      }
+                    });
+                  } catch (ex) {}
+                });
 
               const $el = $(moduleContainerEl);
               if (module.container) {
@@ -504,7 +499,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 CStudioAuthoring.Module.requireModule(
                   module.plugin ? module.plugin.name : module.name,
                   module.plugin
-                    ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module.plugin.name || module.name}&filename=${module.plugin.file}`
+                    ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${
+                        module.plugin.type
+                      }&name=${module.plugin.name || module.name}&filename=${module.plugin.file}`
                     : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
                   module,
                   cb

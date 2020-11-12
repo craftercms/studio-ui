@@ -32,32 +32,22 @@ import GlobalState from '../../models/GlobalState';
 import auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 
-const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) => action$.pipe(
-  ofType(LOG_IN),
-  switchMap((action) => auth.login(action.payload).pipe(
-    map(loginComplete),
-    catchAjaxError(loginFailed)
-  ))
-);
+const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) =>
+  action$.pipe(
+    ofType(LOG_IN),
+    switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
+  );
 
-const logout: Epic = (action$) => action$.pipe(
-  ofType(LOG_OUT),
-  switchMap(() => auth.logout().pipe(
-    map(logoutComplete),
-    catchAjaxError(logoutFailed)
-  ))
-);
+const logout: Epic = (action$) =>
+  action$.pipe(
+    ofType(LOG_OUT),
+    switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
+  );
 
-const validateSession: Epic = (action$) => action$.pipe(
-  ofType(VALIDATE_SESSION),
-  switchMap(() => auth.validateSession().pipe(
-    map(validateSessionComplete),
-    catchAjaxError(validateSessionFailed)
-  ))
-);
+const validateSession: Epic = (action$) =>
+  action$.pipe(
+    ofType(VALIDATE_SESSION),
+    switchMap(() => auth.validateSession().pipe(map(validateSessionComplete), catchAjaxError(validateSessionFailed)))
+  );
 
-export default [
-  login,
-  logout,
-  validateSession
-] as Epic[];
+export default [login, logout, validateSession] as Epic[];

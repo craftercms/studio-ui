@@ -77,91 +77,95 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    width: 'auto'
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  formSection: {
-    marginBottom: '20px'
-  },
-  sectionLabel: {
-    color: palette.black,
-    width: '100%',
-    fontSize: '16px'
-  },
-  formInputs: {
-    fontSize: '14px'
-  },
-  checkboxInput: {
-    padding: '2px',
-    marginLeft: '5px',
-    marginRight: '7px'
-  },
-  selectInput: {
-    padding: '10px 12px',
-    backgroundColor: palette.white
-  },
-  environmentLoaderContainer: {
-    paddingTop: '24px',
-    display: 'inline-flex'
-  },
-  environmentLoader: {
-    border: '1px solid #ced4da',
-    padding: '10px 12px',
-    borderRadius: '4px',
-    width: '100%'
-  },
-  environmentEmpty: {
-    padding: '10px 12px',
-    borderRadius: '4px',
-    width: '100%'
-  },
-  datePicker: {
-    position: 'relative',
-    paddingLeft: '30px',
-    paddingBottom: '20px',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      width: '5px',
-      height: '100%',
-      top: '0',
-      left: '7px',
-      backgroundColor: '#F2F2F7',
-      borderRadius: '5px'
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      width: 'auto'
+    },
+    title: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    formSection: {
+      marginBottom: '20px'
+    },
+    sectionLabel: {
+      color: palette.black,
+      width: '100%',
+      fontSize: '16px'
+    },
+    formInputs: {
+      fontSize: '14px'
+    },
+    checkboxInput: {
+      padding: '2px',
+      marginLeft: '5px',
+      marginRight: '7px'
+    },
+    selectInput: {
+      padding: '10px 12px',
+      backgroundColor: palette.white
+    },
+    environmentLoaderContainer: {
+      paddingTop: '24px',
+      display: 'inline-flex'
+    },
+    environmentLoader: {
+      border: '1px solid #ced4da',
+      padding: '10px 12px',
+      borderRadius: '4px',
+      width: '100%'
+    },
+    environmentEmpty: {
+      padding: '10px 12px',
+      borderRadius: '4px',
+      width: '100%'
+    },
+    datePicker: {
+      position: 'relative',
+      paddingLeft: '30px',
+      paddingBottom: '20px',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        width: '5px',
+        height: '100%',
+        top: '0',
+        left: '7px',
+        backgroundColor: '#F2F2F7',
+        borderRadius: '5px'
+      }
+    },
+    radioGroup: {
+      paddingTop: '10px',
+      fontSize: '14px'
+    },
+    radioInput: {
+      padding: '4px',
+      marginLeft: '5px',
+      marginRight: '5px'
+    },
+    selectIcon: {
+      right: '12px'
+    },
+    submissionTextField: {
+      paddingBottom: 0
+    },
+    textField: {
+      backgroundColor: palette.white,
+      padding: 0
     }
-  },
-  radioGroup: {
-    paddingTop: '10px',
-    fontSize: '14px'
-  },
-  radioInput: {
-    padding: '4px',
-    marginLeft: '5px',
-    marginRight: '5px'
-  },
-  selectIcon: {
-    right: '12px'
-  },
-  submissionTextField: {
-    paddingBottom: 0
-  },
-  textField: {
-    backgroundColor: palette.white,
-    padding: 0
-  }
-}));
+  })
+);
 
-const SelectInput = withStyles(() => createStyles({
-  input: {
-    borderRadius: 4
-  }
-}))(InputBase);
+const SelectInput = withStyles(() =>
+  createStyles({
+    input: {
+      borderRadius: 4
+    }
+  })
+)(InputBase);
 
 let schedulingTimeout;
 
@@ -179,7 +183,6 @@ interface PublishFormProps {
 }
 
 function PublishForm(props: PublishFormProps) {
-
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const {
@@ -196,7 +199,7 @@ function PublishForm(props: PublishFormProps) {
   useEffect(
     () => {
       if (publishingChannels && publishingChannels.length > 0) {
-        setInputs({ ...inputs, 'environment': publishingChannels[0].name });
+        setInputs({ ...inputs, environment: publishingChannels[0].name });
       }
     },
     // eslint-disable-next-line
@@ -218,8 +221,8 @@ function PublishForm(props: PublishFormProps) {
         schedulingTimeout = setTimeout(() => {
           setInputs({
             ...inputs,
-            'scheduling': 'now',
-            'scheduledDateTime': moment().format()
+            scheduling: 'now',
+            scheduledDateTime: moment().format()
           });
         }, 2000);
       } else {
@@ -233,7 +236,7 @@ function PublishForm(props: PublishFormProps) {
   };
 
   const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
-    setInputs({ ...inputs, 'scheduledDateTime': scheduledDateTime.format() });
+    setInputs({ ...inputs, scheduledDateTime: scheduledDateTime.format() });
     if (scheduledDateTime.toString() === 'Invalid date') {
       setSubmitDisabled(true);
     } else {
@@ -243,8 +246,7 @@ function PublishForm(props: PublishFormProps) {
 
   return (
     <form className={classes.root}>
-      {
-        showEmailCheckbox &&
+      {showEmailCheckbox && (
         <div className={classes.formSection}>
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
@@ -261,20 +263,13 @@ function PublishForm(props: PublishFormProps) {
             }
           />
         </div>
-      }
+      )}
 
       <div className={classes.formSection}>
-        <InputLabel
-          htmlFor="environmentSelect"
-          className={classes.sectionLabel}
-        >
+        <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>
           {formatMessage(messages.scheduling)}
         </InputLabel>
-        <RadioGroup
-          className={classes.radioGroup}
-          value={inputs.scheduling}
-          onChange={handleInputChange('scheduling')}
-        >
+        <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
           <FormControlLabel
             value="now"
             control={<Radio color="primary" className={classes.radioInput} />}
@@ -297,7 +292,7 @@ function PublishForm(props: PublishFormProps) {
         <Collapse
           in={inputs.scheduling === 'custom'}
           timeout={300}
-          className={inputs.scheduling === 'custom' ? (classes.datePicker) : ''}
+          className={inputs.scheduling === 'custom' ? classes.datePicker : ''}
         >
           <DateTimePicker
             onChange={dateTimePickerChange}
@@ -317,8 +312,7 @@ function PublishForm(props: PublishFormProps) {
       <div className={classes.formSection}>
         <FormControl fullWidth>
           <InputLabel className={classes.sectionLabel}>{formatMessage(messages.environment)}</InputLabel>
-          {
-            !publishingChannels &&
+          {!publishingChannels && (
             <>
               <div className={classes.environmentLoaderContainer}>
                 <Typography
@@ -328,54 +322,43 @@ function PublishForm(props: PublishFormProps) {
                   color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
                 >
                   {formatMessage(messages[`environment${publishingChannelsStatus}`])}
-                  {
-                    publishingChannelsStatus === 'Error' &&
+                  {publishingChannelsStatus === 'Error' && (
                     <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
                       ({formatMessage(messages.environmentRetry)})
                     </Link>
-                  }
+                  )}
                 </Typography>
               </div>
             </>
-          }
+          )}
 
-          {
-            publishingChannels && (
-            publishingChannels.length
-            ? (
+          {publishingChannels &&
+            (publishingChannels.length ? (
               <Select
-              fullWidth
-              style={{ borderRadius: '4px' }}
-              value={inputs.environment}
-              classes={{
-                select: `${classes.selectInput} ${classes.formInputs}`,
-                icon: classes.selectIcon
-              }}
-              onChange={handleSelectChange('environment')}
-              input={<SelectInput />}
-              disabled={disabled}
-            >
-              {
-                publishingChannels.map((publishingChannel: any) =>
+                fullWidth
+                style={{ borderRadius: '4px' }}
+                value={inputs.environment}
+                classes={{
+                  select: `${classes.selectInput} ${classes.formInputs}`,
+                  icon: classes.selectIcon
+                }}
+                onChange={handleSelectChange('environment')}
+                input={<SelectInput />}
+                disabled={disabled}
+              >
+                {publishingChannels.map((publishingChannel: any) => (
                   <MenuItem key={publishingChannel.name} value={publishingChannel.name}>
                     {publishingChannel.name}
                   </MenuItem>
-                )
-              }
-            </Select>
-              ) : (
-                <div className={classes.environmentLoaderContainer}>
-                  <Typography
-                    variant="body1"
-                    className={classes.environmentEmpty}
-                  >
-                    No publishing channels are available.
-                  </Typography>
-                </div>
-              )
-            )
-          }
-
+                ))}
+              </Select>
+            ) : (
+              <div className={classes.environmentLoaderContainer}>
+                <Typography variant="body1" className={classes.environmentEmpty}>
+                  No publishing channels are available.
+                </Typography>
+              </div>
+            ))}
         </FormControl>
       </div>
 

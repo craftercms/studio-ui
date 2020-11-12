@@ -15,12 +15,7 @@
  */
 
 import { forEach } from './array';
-import {
-  Coordinates,
-  DropMarkerPosition,
-  DropMarkerPositionArgs,
-  InRectStats
-} from '../models/Positioning';
+import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from '../models/Positioning';
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { DropZone, ICEProps, ValidationResult } from '../models/InContextEditing';
@@ -205,11 +200,7 @@ export function getDistanceBetweenPoints(p1: Coordinates, p2: Coordinates): numb
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 }
 
-export function findClosestRect(
-  parentRect: DOMRect,
-  subRects: DOMRect[],
-  coordinates: Coordinates
-): number {
+export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordinates: Coordinates): number {
   let //
     index = -1,
     distances = [];
@@ -236,11 +227,7 @@ export function findClosestRect(
   return index;
 }
 
-export function getChildArrangement(
-  children: Element[],
-  childrenRects: DOMRect[],
-  selfRect?: DOMRect
-): string {
+export function getChildArrangement(children: Element[], childrenRects: DOMRect[], selfRect?: DOMRect): string {
   if (children.length === 0) {
     // If width is big enough, we may assume it may potentially have multiple
     // columns and HORIZONTAL arrangement may be better guess; however,
@@ -313,10 +300,7 @@ export function getInRectStats(
   };
 }
 
-export function getRelativePointerPositionPercentages(
-  mousePosition: Coordinates,
-  rect: DOMRect
-): Coordinates {
+export function getRelativePointerPositionPercentages(mousePosition: Coordinates, rect: DOMRect): Coordinates {
   const x =
       /* mouse X distance from rect left edge */
       ((mousePosition.x - rect.left) /
@@ -333,10 +317,7 @@ export function getRelativePointerPositionPercentages(
   return { x, y };
 }
 
-export function isElementInView(
-  element: Element | JQuery<Element>,
-  fullyInView?: boolean
-): boolean {
+export function isElementInView(element: Element | JQuery<Element>, fullyInView?: boolean): boolean {
   const pageTop = $(window).scrollTop();
   const pageBottom = pageTop + $(window).height();
   const elementTop = $(element).offset().top;
@@ -349,10 +330,7 @@ export function isElementInView(
   }
 }
 
-export function addAnimation(
-  $element: JQuery<Element> | JQuery<HTMLElement>,
-  animationClass: string
-): void {
+export function addAnimation($element: JQuery<Element> | JQuery<HTMLElement>, animationClass: string): void {
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   // @ts-ignore
@@ -361,12 +339,12 @@ export function addAnimation(
   });
 }
 
-export function scrollToIceProps(
-  iceProps: ICEProps,
-  scrollElement: string,
-  animate: boolean = false
-): JQuery<Element> {
-  return scrollToElement(getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index), scrollElement, animate);
+export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, animate: boolean = false): JQuery<Element> {
+  return scrollToElement(
+    getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index),
+    scrollElement,
+    animate
+  );
 }
 
 export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): JQuery<Element> {
@@ -380,7 +358,7 @@ export function scrollToElement(element: Element, scrollElement: string, animate
         scrollTop: $element.offset().top - 100
       },
       300,
-      function () {
+      function() {
         if (animate) addAnimation($element, 'craftercms-content-tree-locate');
       }
     );

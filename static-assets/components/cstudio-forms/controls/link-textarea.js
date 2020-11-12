@@ -259,8 +259,18 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     return [
       { label: CMgs.format(langBundle, 'columns'), name: 'cols', type: 'int', defaultValue: '50' },
       { label: CMgs.format(langBundle, 'rows'), name: 'rows', type: 'int', defaultValue: '5' },
-      { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int', defaultValue: '100000' },
-      { label: CMgs.format(langBundle, 'allowResize'), name: 'allowResize', type: 'boolean', defaultValue: 'true' },
+      {
+        label: CMgs.format(langBundle, 'maxLength'),
+        name: 'maxlength',
+        type: 'int',
+        defaultValue: '100000'
+      },
+      {
+        label: CMgs.format(langBundle, 'allowResize'),
+        name: 'allowResize',
+        type: 'boolean',
+        defaultValue: 'true'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
     ];
   },

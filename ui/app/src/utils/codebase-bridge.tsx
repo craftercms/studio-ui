@@ -101,7 +101,6 @@ export function updateIntl(nextIntl: IntlShape) {
 }
 
 export function createCodebaseBridge() {
-
   const Bridge: CodebaseBridge = {
     // React
     React,
@@ -120,9 +119,7 @@ export function createCodebaseBridge() {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/Controls/SingleFileUpload')),
-      DependencySelection: lazy(() =>
-        import('../modules/Content/Dependencies/DependencySelection')
-      ),
+      DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
       DependencySelectionDelete: lazy(() =>
         import('../modules/Content/Dependencies/DependencySelection').then((module) => ({
           default: module.DependencySelectionDelete
@@ -149,7 +146,7 @@ export function createCodebaseBridge() {
       PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog')),
       SplitButton: lazy(() => import('../components/Controls/SplitButton')),
       CharCountStatusContainer: lazy(() =>
-        import ('../components/CharCountStatus').then((module) => ({
+        import('../components/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
         }))
       )
@@ -208,9 +205,7 @@ export function createCodebaseBridge() {
       if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        console.warn(
-          `The supplied component name ('${component}') is not a know component of CrafterCMSNext.`
-        );
+        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       const element = typeof container === 'string' ? document.querySelector(container) : container;
@@ -279,15 +274,10 @@ export function createCodebaseBridge() {
             ReactDOM.unmountComponentAtNode(element);
             // document.body.removeChild(element);
           };
-          ReactDOM.render(
-            <CrafterCMSNextBridge />,
-            element,
-            () => resolve({
+          ReactDOM.render(<CrafterCMSNextBridge />, element, () =>
+            resolve({
               unmount: (options) => {
-                options = Object.assign(
-                  { delay: false },
-                  options || {}
-                );
+                options = Object.assign({ delay: false }, options || {});
                 if (options.delay) {
                   setTimeout(unmount, options.delay);
                 } else {
@@ -313,7 +303,6 @@ export function createCodebaseBridge() {
         document.removeEventListener(id, callback, false);
       };
     }
-
   };
 
   // @ts-ignore
@@ -322,5 +311,4 @@ export function createCodebaseBridge() {
   createStore().subscribe((store) => {
     Bridge.system.store = store;
   });
-
 }

@@ -28,10 +28,7 @@ export const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, Use
 }));
 
 export function me(): Observable<User> {
-  return get('/studio/api/2/users/me.json').pipe(
-    pluck('response', 'authenticatedUser'),
-    mapToUser
-  );
+  return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'), mapToUser);
 }
 
 export function fetchRolesInSite(username: string, siteId: string): Observable<string[]> {
@@ -44,26 +41,29 @@ export function fetchRolesInSiteForCurrent(siteId: string): Observable<string[]>
 
 export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<LookupTable<string[]>> {
   return forkJoin({
-    username: username ? of(username) : me().pipe(map(user => user.username)),
+    username: username ? of(username) : me().pipe(map((user) => user.username)),
     sites: sites ? of(sites) : fetchSites()
   }).pipe(
-    switchMap(({ username, sites }) => forkJoin<LookupTable<Observable<string[]>>, ''>(
-      sites.reduce((lookup, site) => {
-        lookup[site.id] = fetchRolesInSite(username, site.id);
-        return lookup;
-      }, {})
-    ))
+    switchMap(({ username, sites }) =>
+      forkJoin<LookupTable<Observable<string[]>>, ''>(
+        sites.reduce((lookup, site) => {
+          lookup[site.id] = fetchRolesInSite(username, site.id);
+          return lookup;
+        }, {})
+      )
+    )
   );
 }
 
 export function fetchRolesBySiteForCurrent(sites?: Site[]): Observable<LookupTable<string[]>> {
-  return (sites ? of(sites) : fetchSites())
-    .pipe(
-      switchMap((sites) => forkJoin<LookupTable<Observable<string[]>>, ''>(
+  return (sites ? of(sites) : fetchSites()).pipe(
+    switchMap((sites) =>
+      forkJoin<LookupTable<Observable<string[]>>, ''>(
         sites.reduce((lookup, site) => {
           lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
           return lookup;
         }, {})
-      ))
-    );
+      )
+    )
+  );
 }

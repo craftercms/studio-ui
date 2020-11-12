@@ -127,10 +127,7 @@ const menuOptions = {
   }
 };
 
-export function generateMenuOptions(
-  item: DetailedItem,
-  permissions: LookupTable<boolean>
-): SectionItem[][] {
+export function generateMenuOptions(item: DetailedItem, permissions: LookupTable<boolean>): SectionItem[][] {
   let options: SectionItem[][] = [];
   const write = permissions.write;
   const read = permissions.read;
@@ -141,9 +138,7 @@ export function generateMenuOptions(
   const createContent = permissions.create_content;
   const changeContentType = permissions.change_content_type;
   const hasClipboard = permissions.hasClipboard;
-  const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) =>
-    item.path.includes(str)
-  );
+  const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
   const isWebsite = withoutIndex(item.path) === '/site/website';

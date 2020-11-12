@@ -21,12 +21,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import PreviewTool from '../../models/PreviewTool';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import {
-  ComponentsContentTypeParams,
-  ContentInstancePage,
-  ElasticParams,
-  SearchResult
-} from '../../models/Search';
+import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 import { OptionsObject } from 'notistack';
 
@@ -101,14 +96,11 @@ export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE =
-  'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
+export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
 export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE =
-  'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED =
-  'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
@@ -221,9 +213,7 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelFormDefinition = createAction(
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION
-);
+export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
 
 export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
   return {
@@ -268,9 +258,7 @@ export function setActiveTargetingModelFailed(error): StandardAction {
 
 export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
 
-export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(
-  FETCH_ASSETS_PANEL_ITEMS_COMPLETE
-);
+export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
@@ -288,13 +276,9 @@ export const fetchComponentsByContentTypeComplete = createAction<ContentInstance
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE
 );
 
-export const fetchComponentsByContentTypeFailed = createAction(
-  FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED
-);
+export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const browseSharedInstance = createAction<{ contentType: string }>(
-  BROWSE_COMPONENT_INSTANCES
-);
+export const browseSharedInstance = createAction<{ contentType: string }>(BROWSE_COMPONENT_INSTANCES);
 
 export const inPageInstances = createAction<{ contentType: string }>(IN_PAGE_INSTANCES);
 
@@ -319,6 +303,6 @@ export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_
 
 // notification
 export const showSystemNotification = createAction<{
-  message: string,
-  options?: OptionsObject
+  message: string;
+  options?: OptionsObject;
 }>('SHOW_SYSTEM_NOTIFICATION');

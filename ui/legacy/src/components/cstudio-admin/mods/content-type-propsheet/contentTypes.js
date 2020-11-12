@@ -14,38 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function () {
-
+(function() {
   const { React, ReactDOM, i18n } = CrafterCMSNext;
   const { useState, useMemo, useRef, useEffect } = React;
 
   const STAR = '*';
 
   function createLookupTableFromCVS(cvs) {
-    return !cvs ? [] : cvs
-      .split(',')
-      .reduce((lookupTable, id) => ({
-        ...lookupTable,
-        [id]: true
-      }), {});
+    return !cvs
+      ? []
+      : cvs.split(',').reduce(
+          (lookupTable, id) => ({
+            ...lookupTable,
+            [id]: true
+          }),
+          {}
+        );
   }
 
   function Selector({ contentTypes, onSelection, initialValue }) {
-
     const [keywords, setKeywords] = useState('');
-    const [selected, setSelected] = useState(
-      createLookupTableFromCVS(initialValue)
-    );
+    const [selected, setSelected] = useState(createLookupTableFromCVS(initialValue));
 
-    const types = useMemo(() => (
-      [
+    const types = useMemo(
+      () => [
         { name: STAR, label: 'Allow any component' },
-        ...contentTypes.filter((type) => (
-          (type.type === 'component') &&
-          (type.name.includes(keywords) || type.label.includes(keywords))
-        ))
-      ]
-    ), [contentTypes, keywords]);
+        ...contentTypes.filter(
+          (type) => type.type === 'component' && (type.name.includes(keywords) || type.label.includes(keywords))
+        )
+      ],
+      [contentTypes, keywords]
+    );
 
     const ref = useRef();
 
@@ -63,7 +62,7 @@
 
     useEffect(() => {
       if (selected[STAR]) {
-        Array.from(ref.current.querySelectorAll('input')).forEach(e => {
+        Array.from(ref.current.querySelectorAll('input')).forEach((e) => {
           if (e.value !== STAR) {
             e.checked = false;
           }
@@ -78,31 +77,25 @@
             type="text"
             value={keywords}
             className="content-type-selector--search-input"
-            placeholder={"Search components..."}
+            placeholder={'Search components...'}
             onChange={(e) => setKeywords(e.target.value)}
           />
         </div>
-        {
-          types.map((contentType) => (
-            <label
-              key={`${contentType.name}_label`}
-              className="content-type-selector--label"
-            >
-              <input
-                type="checkbox"
-                value={contentType.name}
-                className="content-type-selector--checkbox"
-                checked={selected[contentType.name]}
-                disabled={(contentType.name === STAR) ? false : selected[STAR]}
-                onChange={(e) => update(e.target.value, e.target.checked)}
-              />
-              {contentType.label}
-            </label>
-          ))
-        }
+        {types.map((contentType) => (
+          <label key={`${contentType.name}_label`} className="content-type-selector--label">
+            <input
+              type="checkbox"
+              value={contentType.name}
+              className="content-type-selector--checkbox"
+              checked={selected[contentType.name]}
+              disabled={contentType.name === STAR ? false : selected[STAR]}
+              onChange={(e) => update(e.target.value, e.target.checked)}
+            />
+            {contentType.label}
+          </label>
+        ))}
       </div>
     );
-
   }
 
   function ContentTypes(fieldName, container) {
@@ -120,7 +113,7 @@
           initialValue={value}
           contentTypes={contentTypes}
           onSelection={(selected) => {
-            const value = this.value = selected.join(',');
+            const value = (this.value = selected.join(','));
             updateFn(null, { fieldName: this.fieldName, value });
           }}
         />,
@@ -133,9 +126,5 @@
     }
   };
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-console-tools-content-types-proptype-contentTypes',
-    ContentTypes
-  );
-
+  CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-content-types-proptype-contentTypes', ContentTypes);
 })();

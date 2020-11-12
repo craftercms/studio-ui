@@ -42,7 +42,10 @@ export function pluckProps<T extends object = {}, K extends keyof T = any>(sourc
   return object;
 }
 
-export function reversePluckProps<T extends object = {}, K extends keyof T = any>(source: T, ...props: K[]): Omit<T, K> {
+export function reversePluckProps<T extends object = {}, K extends keyof T = any>(
+  source: T,
+  ...props: K[]
+): Omit<T, K> {
   const object = {} as Omit<T, K>;
   if (isNullOrUndefined(source)) {
     return object;
@@ -58,11 +61,7 @@ export function reversePluckProps<T extends object = {}, K extends keyof T = any
 }
 
 export function retrieveProperty(object: object, prop: string): any {
-  return (object == null)
-    ? null
-    : (!prop)
-      ? object
-      : prop.split('.').reduce((value, prop) => value[prop], object);
+  return object == null ? null : !prop ? object : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
 export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T, P> {
@@ -70,11 +69,11 @@ export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T
   return object;
 }
 
-export function setProperty<
-  T extends object = {},
-  K extends string = string,
-  V extends any = any
->(object: T, prop: K, value: V): T {
+export function setProperty<T extends object = {}, K extends string = string, V extends any = any>(
+  object: T,
+  prop: K,
+  value: V
+): T {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();

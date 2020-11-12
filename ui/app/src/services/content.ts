@@ -14,36 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  CONTENT_TYPE_JSON,
-  del,
-  errorSelectorApi1,
-  get,
-  getText,
-  post,
-  postJSON
-} from '../utils/ajax';
+import { CONTENT_TYPE_JSON, del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import {
-  createElements,
-  fromString,
-  getInnerHtml,
-  serialize,
-  wrapElementInAuxDocument
-} from '../utils/xml';
+import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import {
-  dataUriToBlob,
-  decodeHTML,
-  fileNameFromPath,
-  isBlank,
-  popPiece,
-  removeLastPiece
-} from '../utils/string';
+import { dataUriToBlob, decodeHTML, fileNameFromPath, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
@@ -68,16 +47,10 @@ interface GetContentOptions {
   lock: boolean;
 }
 
-export function getContentXML(
-  site: string,
-  path: string,
-  options?: Partial<GetContentOptions>
-): Observable<string> {
+export function getContentXML(site: string, path: string, options?: Partial<GetContentOptions>): Observable<string> {
   options = Object.assign({ lock: false }, options);
   const qs = toQueryString({ site_id: site, path, edit: options.lock });
-  return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(
-    pluck('response', 'content')
-  );
+  return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(pluck('response', 'content'));
 }
 
 export function getContentDOM(site: string, path: string): Observable<XMLDocument> {
@@ -110,9 +83,7 @@ export function getSandboxItem(site: string, path: string): Observable<SandboxIt
 }
 
 export function getDetailedItem(site: string, path: string): Observable<DetailedItem> {
-  return getLegacyItem(site, path).pipe(
-    map<LegacyItem, DetailedItem>(parseLegacyItemToDetailedItem)
-  );
+  return getLegacyItem(site, path).pipe(map<LegacyItem, DetailedItem>(parseLegacyItemToDetailedItem));
 }
 
 export function getContentInstanceLookup(
@@ -134,9 +105,7 @@ export function getContentInstance(
   path: string,
   contentTypesLookup: LookupTable<ContentType>
 ): Observable<ContentInstance> {
-  return getContentDOM(site, path).pipe(
-    map((doc) => parseContentXML(doc, path, contentTypesLookup, {}))
-  );
+  return getContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
 export function getContentInstanceDescriptor(
@@ -235,8 +204,7 @@ function parseContentXML(
           current.craftercms.sourceMap[tagName] = source;
           // TODO: https://github.com/craftercms/craftercms/issues/4093
           // Temporarily falling back to a known content type while backend updates
-          sourceContentTypeId =
-            element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
+          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
         }
         current[tagName] = parseElementByContentType(
           element,
@@ -442,9 +410,7 @@ export function insertComponent(
 ): Observable<any> {
   return performMutation(site, modelId, parentModelId, (doc) => {
     const id = instance.craftercms.id;
-    const path = shared
-      ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId)
-      : null;
+    const path = shared ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId) : null;
 
     // Create the new `item` that holds or references (embedded vs shared) the component.
     const newItem = doc.createElement('item');
@@ -476,12 +442,12 @@ export function insertComponent(
       value: instance.craftercms.label,
       ...(shared
         ? {
-          include: path,
-          disableFlattening: 'false'
-        }
+            include: path,
+            disableFlattening: 'false'
+          }
         : {
-          component
-        })
+            component
+          })
     });
 
     insertCollectionItem(doc, fieldId, targetIndex, newItem);
@@ -516,8 +482,7 @@ export function insertInstance(
   });
 }
 
-export function insertItem() {
-}
+export function insertItem() {}
 
 export function sortItem(
   site: string,
@@ -642,20 +607,18 @@ export function getContentByContentType(
   }).pipe(
     map<AjaxResponse, { count: number; paths: string[] }>(({ response }) => ({
       count: response.result.total,
-      paths: response.result.items
-        .filter((item) => item.type === options.type)
-        .map((item) => item.path)
+      paths: response.result.items.filter((item) => item.type === options.type).map((item) => item.path)
     })),
     switchMap(({ paths, count }) =>
       zip(
         of(count),
         paths.length
           ? forkJoin(
-          paths.reduce((array, path) => {
-            array.push(getContentInstanceLookup(site, path, contentTypesLookup));
-            return array;
-          }, []) as Array<Observable<LookupTable<ContentInstance>>>
-          )
+              paths.reduce((array, path) => {
+                array.push(getContentInstanceLookup(site, path, contentTypesLookup));
+                return array;
+              }, []) as Array<Observable<LookupTable<ContentInstance>>>
+            )
           : of([])
       )
     ),
@@ -700,8 +663,7 @@ interface AnyObject {
 }
 
 function extractNode(doc: XMLDocument, fieldId: string, index: string | number) {
-  const indexes =
-    index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
+  const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   let aux: any = doc.documentElement;
   if (nou(index) || isBlank(`${index}`)) {
     return aux.querySelector(`:scope > ${fieldId}`);
@@ -711,7 +673,7 @@ function extractNode(doc: XMLDocument, fieldId: string, index: string | number) 
     // There's more indexes than fields
     throw new Error(
       '[content/extractNode] Path not handled: indexes.length > fields.length. Indexes ' +
-      `is ${indexes} and fields is ${fields}`
+        `is ${indexes} and fields is ${fields}`
     );
   }
   indexes.forEach((_index, i) => {
@@ -762,10 +724,7 @@ function updateModifiedDateElement(doc: XMLDocument) {
 }
 
 function getComponentPath(id: string, contentType: string) {
-  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(
-    /\/{1,}$/m,
-    ''
-  );
+  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
   return `${pathBase}/${id}.xml`;
 }
 
@@ -781,15 +740,12 @@ function insertCollectionItem(
 
   //If currentIndex it means the op is a 'sort', and the index(targetIndex) needs to plus 1 or no
   if (nnou(currentIndex)) {
-    let currentIndexParsed =
-      typeof currentIndex === 'string' ? parseInt(popPiece(currentIndex)) : currentIndex;
-    let targetIndexParsed =
-      typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
+    let currentIndexParsed = typeof currentIndex === 'string' ? parseInt(popPiece(currentIndex)) : currentIndex;
+    let targetIndexParsed = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
     if (currentIndexParsed > targetIndexParsed) {
       index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
     } else {
-      index =
-        typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
+      index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
     }
   }
 
@@ -808,12 +764,7 @@ function insertCollectionItem(
   }
 }
 
-export function uploadDataUrl(
-  site: string,
-  file: any,
-  path: string,
-  xsrfArgumentName: string
-): Observable<any> {
+export function uploadDataUrl(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
@@ -872,16 +823,12 @@ export function getBulkUploadUrl(site: string, path: string): string {
 }
 
 export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]> {
-  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${site}`).pipe(
-    pluck('response', 'items')
-  );
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${site}`).pipe(pluck('response', 'items'));
 }
 
 export function getHistory(site: string, path: string): Observable<VersionsResponse> {
   return get(
-    `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${encodeURIComponent(
-      path
-    )}`
+    `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${encodeURIComponent(path)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -900,11 +847,7 @@ interface VersionDescriptor {
   content: ContentInstance;
 }
 
-export function getVersion(
-  site: string,
-  path: string,
-  versionNumber: string
-): Observable<VersionDescriptor> {
+export function getVersion(site: string, path: string, versionNumber: string): Observable<VersionDescriptor> {
   return of({
     site,
     path,
@@ -943,9 +886,7 @@ export function getChildrenByPath(
   const qs = toQueryString({ site, path, depth: 1, order: 'default', ...options });
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
-  return get(
-    `/studio/api/1/services/api/1/content/get-items-tree.json${qs}`
-  ).pipe(
+  return get(`/studio/api/1/services/api/1/content/get-items-tree.json${qs}`).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),
     map(({ item }) =>
@@ -965,17 +906,12 @@ export function getChildrenByPath(
 
 export function copy(site: string, item: CopyItem): Observable<{ success: boolean }>;
 export function copy(site: string, path: string): Observable<{ success: boolean }>;
-export function copy(
-  site: string,
-  itemOrPath: string | CopyItem
-): Observable<{ success: boolean }> {
-  let item =
-    typeof itemOrPath === 'string' ? { item: [{ uri: itemOrPath }] } : { item: [itemOrPath] };
-  return post(
-    `/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`,
-    item,
-    CONTENT_TYPE_JSON
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+export function copy(site: string, itemOrPath: string | CopyItem): Observable<{ success: boolean }> {
+  let item = typeof itemOrPath === 'string' ? { item: [{ uri: itemOrPath }] } : { item: [itemOrPath] };
+  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, item, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function cut(site: string, item: DetailedItem): Observable<any> {
@@ -988,9 +924,7 @@ export function cut(site: string, item: DetailedItem): Observable<any> {
 
 export function paste(site: string, path: string): Observable<{ site: string; status: string[] }> {
   return get(
-    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(
-      path
-    )}`
+    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(path)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -1006,15 +940,11 @@ export function duplicate(site: string, path: string): Observable<string> {
   );
 }
 
-export function deleteItems(
-  site: string,
-  submissionComment: string,
-  data: AnyObject
-): Observable<ApiResponse> {
+export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
   const paths = encodeURIComponent(data.items.join(','));
-  return del(
-    `/studio/api/2/content/delete?siteId=${site}&submissionComment=${submissionComment}&paths=${paths}`
-  ).pipe(pluck('response', 'response'));
+  return del(`/studio/api/2/content/delete?siteId=${site}&submissionComment=${submissionComment}&paths=${paths}`).pipe(
+    pluck('response', 'response')
+  );
 }
 
 export function lock(site: string, path: string): Observable<boolean> {
@@ -1022,15 +952,11 @@ export function lock(site: string, path: string): Observable<boolean> {
 }
 
 export function unlock(site: string, path: string): Observable<boolean> {
-  return get(
-    `/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`
-  ).pipe(mapTo(true));
+  return get(`/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`).pipe(mapTo(true));
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
-  return get(
-    `/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`
-  ).pipe(
+  return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
     pluck('response', 'items'),
     map((items) => items.map(parseLegacyItemToSandBoxItem)),
     catchError(errorSelectorApi1)
@@ -1039,9 +965,7 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
   return post(
-    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(
-      path
-    )}&name=${name}`
+    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -1054,32 +978,28 @@ export function createFile(site: string, path: string, fileName: string): Observ
 }
 
 export function renameFolder(site: string, path: string, name: string) {
-  return post(
-    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  return post(`/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
-export function changeContentType(
-  site: string,
-  path: string,
-  contentType: string
-): Observable<boolean> {
+export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
   return post(
     `/studio/api/1/services/api/1/content/change-content-type.json?site=${site}&path=${path}&contentType=${contentType}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function checkPathExistence(site: string, path: string): Observable<boolean> {
-  return get(
-    `/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`
-  ).pipe(pluck('response', 'content'), catchError(errorSelectorApi1));
+  return get(`/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`).pipe(
+    pluck('response', 'content'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
   return get(
-    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${encodeURIComponent(
-      path
-    )}`
+    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${encodeURIComponent(path)}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 

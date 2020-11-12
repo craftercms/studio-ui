@@ -28,14 +28,10 @@ import uiConfigDefaults from '../assets/uiConfigDefaults';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
-export function getRawConfiguration(
-  site: string,
-  configPath: string,
-  module: CrafterCMSModules
-): Observable<string> {
-  return get(
-    `/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`
-  ).pipe(pluck('response', 'content'));
+export function getRawConfiguration(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
+  return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
+    pluck('response', 'content')
+  );
 }
 
 export function getConfigurationDOM(
@@ -166,10 +162,7 @@ export function getAudiencesPanelPayload(
   );
 }
 
-function deserializeActiveTargetingModelData<T extends Object>(
-  data: T,
-  contentType: ContentType
-): ContentInstance {
+function deserializeActiveTargetingModelData<T extends Object>(data: T, contentType: ContentType): ContentInstance {
   const contentTypeFields = contentType.fields;
 
   Object.keys(data).forEach((modelKey) => {
@@ -283,9 +276,7 @@ export function getGlobalMenuItems() {
 }
 
 export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
-  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
-    pluck('response')
-  );
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
 }
 
 export function getHistory(

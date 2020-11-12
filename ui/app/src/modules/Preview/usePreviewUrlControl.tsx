@@ -23,8 +23,10 @@ import { changeCurrentUrl } from '../../state/actions/preview';
 import { changeSite } from '../../state/reducers/sites';
 
 export default function usePreviewUrlControl(history) {
-
-  const { location: { search }, push } = history;
+  const {
+    location: { search },
+    push
+  } = history;
 
   const { computedUrl } = usePreviewState();
   const { previewLandingBase } = useEnv();
@@ -46,7 +48,7 @@ export default function usePreviewUrlControl(history) {
     // Retrieve the stored query string (QS)
     let qs = prev.qs;
     // If nothing is stored or the search portion has changed...
-    if ((!qs) || (prev.search !== search)) {
+    if (!qs || prev.search !== search) {
       // Parse the current QS
       qs = parse(search) as LookupTable<string>;
       // In case somehow 2 site or page arguments ended on the
@@ -87,35 +89,23 @@ export default function usePreviewUrlControl(history) {
       }
 
       prev.mounted = true;
-
     } else {
       // Not the first render. Something changed and we're updating.
 
       // Check if either the QS or the state has changed
-      const qsSiteChanged = (qs.site !== prev.qsSite) && (qs.site !== site);
-      const siteChanged = (site !== prev.site);
-      const qsUrlChanged = (qs.page !== prev.qsPage) && (qs.page !== computedUrl);
-      const urlChanged = (computedUrl !== prev.computedUrl);
-      const somethingDidChanged = (
-        qsSiteChanged ||
-        siteChanged ||
-        qsUrlChanged ||
-        urlChanged
-      );
+      const qsSiteChanged = qs.site !== prev.qsSite && qs.site !== site;
+      const siteChanged = site !== prev.site;
+      const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== computedUrl;
+      const urlChanged = computedUrl !== prev.computedUrl;
+      const somethingDidChanged = qsSiteChanged || siteChanged || qsUrlChanged || urlChanged;
 
       // If nothing changed, skip...
       if (somethingDidChanged) {
-
-        if (
-          (siteChanged || urlChanged) &&
-          (computedUrl !== qs.page || site !== qs.site)
-        ) {
-
+        if ((siteChanged || urlChanged) && (computedUrl !== qs.page || site !== qs.site)) {
           const page = computedUrl;
           if (page !== previewLandingBase) {
             push({ search: stringify({ site, page }, { encode: false }) });
           }
-
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
         } else if (qsUrlChanged) {
@@ -126,16 +116,12 @@ export default function usePreviewUrlControl(history) {
 
         prev.computedUrl = computedUrl;
         prev.site = site;
-
       }
 
       // The above conditions related to these are compound so safer to
       // always update to avoid stale prev props
       prev.qsPage = qs.page;
       prev.qsSite = qs.site;
-
     }
-
   }, [computedUrl, dispatch, previewLandingBase, push, search, site]);
-
 }

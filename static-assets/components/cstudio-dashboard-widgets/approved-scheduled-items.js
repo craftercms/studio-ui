@@ -253,8 +253,8 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard =
             uri,
             this.widgetId == currentDashboard &&
             currentCheckItem &&
-              CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-              item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+            CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
               ? ' checked'
               : '',
             '"',

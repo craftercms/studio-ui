@@ -132,7 +132,8 @@ YAHOO.extend(
                   if (
                     widthConstrains &&
                     originalWidth <= widthConstrains &&
-                    heightConstrains && originalHeight <= heightConstrains
+                    heightConstrains &&
+                    originalHeight <= heightConstrains
                   ) {
                     var itemURL = to.fileName;
                     _self.valueEl.value = itemURL;

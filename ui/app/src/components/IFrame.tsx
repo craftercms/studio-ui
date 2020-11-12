@@ -18,25 +18,27 @@ import React from 'react';
 import clsx from 'clsx';
 import { createStyles, makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles(() => createStyles({
-  iframe: {
-    width: '100%',
-    maxWidth: '100%',
-    border: 'none',
-    height: '100%',
-    transition: 'width .25s ease, height .25s ease'
-  },
-  iframeWithBorder: {
-    borderRadius: 20,
-    borderColor: '#555'
-  },
-  iframeWithBorderLandscape: {
-    borderWidth: '10px 50px'
-  },
-  iframeWithBorderPortrait: {
-    borderWidth: '50px 10px'
-  }
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    iframe: {
+      width: '100%',
+      maxWidth: '100%',
+      border: 'none',
+      height: '100%',
+      transition: 'width .25s ease, height .25s ease'
+    },
+    iframeWithBorder: {
+      borderRadius: 20,
+      borderColor: '#555'
+    },
+    iframeWithBorderLandscape: {
+      borderWidth: '10px 50px'
+    },
+    iframeWithBorderPortrait: {
+      borderWidth: '50px 10px'
+    }
+  })
+);
 
 interface IFrameProps {
   url: string;
@@ -50,15 +52,7 @@ interface IFrameProps {
 
 export default function IFrame(props: IFrameProps) {
   const classes = useStyles({});
-  const {
-    url,
-    title,
-    width,
-    height,
-    border,
-    className,
-    onLoadComplete
-  } = props;
+  const { url, title, width, height, border, className, onLoadComplete } = props;
 
   const cls = clsx(classes.iframe, {
     [className || '']: !!className,

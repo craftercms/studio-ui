@@ -157,7 +157,12 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     return [
       { label: 'Profile ID', name: 'profile_id', type: 'string', defaultValue: 'box-default' },
       { label: 'Enable Upload', name: 'enable_upload', type: 'boolean', defaultValue: false },
-      { label: 'Enable Multiple Selection', name: 'enable_multi_selection', type: 'boolean', defaultValue: false },
+      {
+        label: 'Enable Multiple Selection',
+        name: 'enable_multi_selection',
+        type: 'boolean',
+        defaultValue: false
+      },
       { label: 'Logo', name: 'logo', type: 'string', defaultValue: 'box' }
     ];
   },

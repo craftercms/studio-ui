@@ -42,7 +42,7 @@ import {
 } from '../../constants';
 
 export type GuestActionTypes =
-// dom events
+  // dom events
   | 'mouseover'
   | 'mouseleave'
   | 'dragstart'

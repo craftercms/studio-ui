@@ -100,11 +100,13 @@ interface CopyBaseProps {
   item: LegacyItem;
 }
 
-export type CopyDialogProps = PropsWithChildren<CopyBaseProps & {
-  onClose(): void;
-  onClosed?(): void;
-  onOk?(item: CopyItem): void;
-}>;
+export type CopyDialogProps = PropsWithChildren<
+  CopyBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+    onOk?(item: CopyItem): void;
+  }
+>;
 
 export interface CopyDialogStateProps extends CopyBaseProps {
   onClose?: StandardAction;
@@ -145,19 +147,17 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
         label: classes.treeItemLabel
       }}
     >
-      {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
+      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   );
 
   return (
     <section className={classes.simpleItemsSelectionRoot}>
       <header className={classes.simpleItemsSelectionHeader}>
-        <Link
-          component="button"
-          variant="body2"
-          onClick={toggleSelectAll}
-        >
-          {expanded.length === selected.length ? formatMessage(messages.deselectAll) : formatMessage(messages.selectAll)}
+        <Link component="button" variant="body2" onClick={toggleSelectAll}>
+          {expanded.length === selected.length
+            ? formatMessage(messages.deselectAll)
+            : formatMessage(messages.selectAll)}
         </Link>
       </header>
       <TreeView
@@ -176,10 +176,7 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
 
 export default function CopyDialog(props: CopyDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-    >
+    <Dialog open={props.open} onClose={props.onClose}>
       <CopyDialogUI {...props} />
     </Dialog>
   );
@@ -214,7 +211,7 @@ function CopyDialogUI(props: CopyDialogProps) {
     const _selected = [...selected];
     if (checked) {
       const parentsId = getParentsId(nodes.uri, parents);
-      parentsId.forEach(id => {
+      parentsId.forEach((id) => {
         if (!_selected.includes(id)) {
           _selected.push(id);
         }
@@ -222,7 +219,7 @@ function CopyDialogUI(props: CopyDialogProps) {
       _selected.push(nodes.uri);
     } else {
       const childrenId = getChildrenId(nodes.uri, children);
-      childrenId.forEach(id => {
+      childrenId.forEach((id) => {
         let index = _selected.indexOf(id);
         if (index >= 0) {
           _selected.splice(index, 1);
@@ -243,7 +240,7 @@ function CopyDialogUI(props: CopyDialogProps) {
 
   function getChildrenId(id: string, children: LookupTable<Array<string>>, ids: string[] = []) {
     if (children[id]) {
-      children[id].forEach(childId => {
+      children[id].forEach((childId) => {
         ids.push(childId);
         getChildrenId(childId, children, ids);
       });
@@ -255,7 +252,7 @@ function CopyDialogUI(props: CopyDialogProps) {
     if (children[id]) {
       tree.children = [];
       tree.uri = id;
-      children[id].forEach(childId => {
+      children[id].forEach((childId) => {
         if (selected.includes(childId)) {
           let item = getChildrenTree(childId, children);
           if (item.children.length) {

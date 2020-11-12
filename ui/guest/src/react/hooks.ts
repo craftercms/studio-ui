@@ -148,19 +148,22 @@ export function useICE(props: UseICEProps): ICEMaterials {
     };
     return {
       model,
-      props: props.noRef !== true ? {
-        ref,
-        ...(isDraggable ? { draggable: true } : {}),
-        onMouseOver: handler,
-        onMouseLeave: handler,
-        onDragStart: handler,
-        onDragOver: handler,
-        onDragLeave: handler,
-        onDrop: handler,
-        onDragEnd: handler,
-        onClick: handler,
-        onDoubleClick: handler
-      } : null
+      props:
+        props.noRef !== true
+          ? {
+              ref,
+              ...(isDraggable ? { draggable: true } : {}),
+              onMouseOver: handler,
+              onMouseLeave: handler,
+              onDragStart: handler,
+              onDragOver: handler,
+              onDragLeave: handler,
+              onDrop: handler,
+              onDragEnd: handler,
+              onClick: handler,
+              onDoubleClick: handler
+            }
+          : null
     };
   } else {
     return bypassICE(props);

@@ -30,11 +30,7 @@ export function createGuestStore(): GuestStore {
   if (store) {
     return store;
   }
-  const epicMiddleware = createEpicMiddleware<
-    GuestStandardAction,
-    GuestStandardAction,
-    GuestState
-  >();
+  const epicMiddleware = createEpicMiddleware<GuestStandardAction, GuestStandardAction, GuestState>();
   const middleware = [
     ...getDefaultMiddleware<GuestState, any>({
       thunk: false,
@@ -65,12 +61,6 @@ export const state$ = new Observable((subscriber) => {
   });
 }).pipe(share());
 
-export const models$ = state$.pipe(
-  pluck('content'),
-  distinctUntilChanged()
-);
+export const models$ = state$.pipe(pluck('content'), distinctUntilChanged());
 
-export const contentTypes$ = state$.pipe(
-  pluck('contentTypes'),
-  distinctUntilChanged()
-);
+export const contentTypes$ = state$.pipe(pluck('contentTypes'), distinctUntilChanged());

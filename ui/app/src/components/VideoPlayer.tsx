@@ -19,19 +19,19 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 
 export interface VideoPlayerProps {
-  src: string,
-  autoplay?: boolean,
-  controls?: boolean,
-  height?: number,
-  width?: number,
-  muted?: boolean,
-  poster?: string
+  src: string;
+  autoplay?: boolean;
+  controls?: boolean;
+  height?: number;
+  width?: number;
+  muted?: boolean;
+  poster?: string;
 }
 
 const SourceTypes = {
-  'mp4': 'video/mp4',
-  'm3u8': 'application/x-mpegURL',
-  'mpd': 'application/dash+xml'
+  mp4: 'video/mp4',
+  m3u8: 'application/x-mpegURL',
+  mpd: 'application/dash+xml'
 };
 
 const extensionRegex = /(?:\.([^.]+))?$/;
@@ -59,20 +59,9 @@ function VideoPlayer(props: VideoPlayerProps) {
     return () => {
       player.current.dispose();
     };
-  }, [
-    props.autoplay,
-    props.controls,
-    props.height,
-    props.width,
-    props.muted,
-    props.poster,
-    props.src
-  ]);
+  }, [props.autoplay, props.controls, props.height, props.width, props.muted, props.poster, props.src]);
 
-  return (
-    <video ref={videoNode} className="video-js" />
-  );
-
+  return <video ref={videoNode} className="video-js" />;
 }
 
 export default VideoPlayer;

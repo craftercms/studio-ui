@@ -53,12 +53,12 @@ export interface Filter {
 
 export interface Facet {
   date: boolean;
-  multiple: boolean
+  multiple: boolean;
   name: string;
   range: boolean;
   values: {
     [key: string]: any;
-  }
+  };
 }
 
 export interface SearchItem {
@@ -94,5 +94,5 @@ export interface ComponentsContentTypeParams extends PaginationOptions {
 
 export interface ContentInstancePage {
   count: number;
-  lookup: LookupTable<ContentInstance>
+  lookup: LookupTable<ContentInstance>;
 }

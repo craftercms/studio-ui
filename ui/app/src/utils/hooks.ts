@@ -16,16 +16,7 @@
 
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import {
-  Dispatch,
-  EffectCallback,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import { Dispatch, EffectCallback, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -132,9 +123,7 @@ export function useContentTypes(): LookupTable<ContentType> {
 
 export function useContentTypeList(): Array<ContentType>;
 export function useContentTypeList(filterFn: (type: ContentType) => boolean): Array<ContentType>;
-export function useContentTypeList(
-  filterFn: (type: ContentType) => boolean = null
-): Array<ContentType> {
+export function useContentTypeList(filterFn: (type: ContentType) => boolean = null): Array<ContentType> {
   const byId = useContentTypes();
   return useMemo(
     () => {
@@ -190,11 +179,7 @@ export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   return resource;
 }
 
-export function createResourceBundle<T>(): [
-  Resource<T>,
-  (value?: unknown) => void,
-  (reason?: any) => void
-] {
+export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
   let resolve, reject;
   let promise = new Promise<T>((resolvePromise, rejectPromise) => {
     resolve = resolvePromise;
@@ -203,9 +188,7 @@ export function createResourceBundle<T>(): [
   return [createResource(() => promise), resolve, reject];
 }
 
-export function useResolveWhenNotNullResource<ResultType = unknown>(
-  source: ResultType
-): Resource<ResultType> {
+export function useResolveWhenNotNullResource<ResultType = unknown>(source: ResultType): Resource<ResultType> {
   const [[resource, resolve], setBundle] = useState(() => createResourceBundle<ResultType>());
   useEffect(() => {
     if (resource.complete) {
@@ -225,11 +208,7 @@ interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, Er
   errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
 }
 
-export function useSelectorResource<
-  ReturnType = unknown,
-  SourceType = GlobalState,
-  ErrorType = unknown
->(
+export function useSelectorResource<ReturnType = unknown, SourceType = GlobalState, ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
@@ -242,20 +221,12 @@ export function useLogicResource<ReturnType = unknown, SourceType = unknown, Err
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
   const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
-  const [[resource, resolve, reject], setBundle] = useState(() =>
-    createResourceBundle<ReturnType>()
-  );
+  const [[resource, resolve, reject], setBundle] = useState(() => createResourceBundle<ReturnType>());
 
   checkersRef.current = checkers;
 
   useEffect(() => {
-    const {
-      shouldRenew,
-      shouldReject,
-      shouldResolve,
-      errorSelector,
-      resultSelector
-    } = checkersRef.current;
+    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = checkersRef.current;
     if (shouldRenew(source, resource)) {
       setBundle(createResourceBundle);
     } else if (shouldReject(source, resource)) {
@@ -283,15 +254,10 @@ export function useUnmount(onUnmount: () => any) {
   );
 }
 
-export function useDebouncedInput(
-  observer: (keywords: string) => any,
-  time: number = 250
-): Subject<string> {
+export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250): Subject<string> {
   const subject$Ref = useRef(new Subject<string>());
   useEffect(() => {
-    const subscription = subject$Ref.current
-      .pipe(debounceTime(time), distinctUntilChanged())
-      .subscribe(observer);
+    const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe(observer);
     return () => subscription.unsubscribe();
   }, [observer, time]);
   return subject$Ref.current;

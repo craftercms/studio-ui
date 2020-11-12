@@ -26,22 +26,16 @@ interface AssetUploaderMaskProps {
 }
 
 export default function AssetUploaderMask(props: AssetUploaderMaskProps) {
-
-  const
-    { rect, progress } = props,
+  const { rect, progress } = props,
     [zoneStyle, setZoneStyle] = useState<CSSProperties>();
 
-  useEffect(
-    () => {
-      setZoneStyle(getZoneMarkerStyle(rect));
-    },
-    [rect]
-  );
+  useEffect(() => {
+    setZoneStyle(getZoneMarkerStyle(rect));
+  }, [rect]);
 
   return (
     <craftercms-asset-uploader-mask-container style={zoneStyle}>
       <craftercms-asset-uploader-mask style={{ height: `${100 - progress}%` }} />
     </craftercms-asset-uploader-mask-container>
   );
-
 }

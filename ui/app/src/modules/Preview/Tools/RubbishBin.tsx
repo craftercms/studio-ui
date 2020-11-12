@@ -26,34 +26,36 @@ import palette from '../../../styles/palette';
 import clsx from 'clsx';
 import { useSelection } from '../../../utils/hooks';
 
-const useStyles = makeStyles((theme) => createStyles({
-  rubbishBin: {
-    height: 250,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: palette.orange.main,
-    margin: theme.spacing(1),
-    position: 'absolute',
-    left: theme.spacing(1),
-    bottom: theme.spacing(1),
-    color: palette.white,
-    zIndex: theme.zIndex.drawer
-  },
-  rubbishBinHover: {
-    background: palette.red.main
-  },
-  rubbishIcon: {
-    width: '100%',
-    height: '50%',
-    color: palette.white,
-    pointerEvents: 'none'
-  },
-  rubbishLabel: {
-    pointerEvents: 'none'
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    rubbishBin: {
+      height: 250,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: palette.orange.main,
+      margin: theme.spacing(1),
+      position: 'absolute',
+      left: theme.spacing(1),
+      bottom: theme.spacing(1),
+      color: palette.white,
+      zIndex: theme.zIndex.drawer
+    },
+    rubbishBinHover: {
+      background: palette.red.main
+    },
+    rubbishIcon: {
+      width: '100%',
+      height: '50%',
+      color: palette.white,
+      pointerEvents: 'none'
+    },
+    rubbishLabel: {
+      pointerEvents: 'none'
+    }
+  })
+);
 
 export default function RubbishBin(props: any) {
   const classes = useStyles({});
@@ -70,7 +72,7 @@ export default function RubbishBin(props: any) {
     <Grow in={props.open}>
       <Paper
         elevation={2}
-        style={{ width: toolsPanelWidth - 30}}
+        style={{ width: toolsPanelWidth - 30 }}
         className={clsx(classes.rubbishBin, over && classes.rubbishBinHover)}
         onDragOver={(e) => {
           e.preventDefault();
@@ -89,32 +91,22 @@ export default function RubbishBin(props: any) {
           props.onTrash?.();
         }}
       >
-        {
-          /* For embedded components show a link instead of a rubbish bin
+        {/* For embedded components show a link instead of a rubbish bin
           (over)
             ? <BrokenLinkRounded className={classes.rubbishIcon} />
             : <LinkRounded className={classes.rubbishIcon} />
-          */
-        }
-        {
-          (over)
-            ? <DeleteRoundedTilted className={classes.rubbishIcon} />
-            : <DeleteRounded className={classes.rubbishIcon} />
-        }
+          */}
+        {over ? (
+          <DeleteRoundedTilted className={classes.rubbishIcon} />
+        ) : (
+          <DeleteRounded className={classes.rubbishIcon} />
+        )}
         <Typography variant="caption" className={classes.rubbishLabel}>
-          {
-            (trashed) ? (
-              <FormattedMessage
-                id="previewRubbishBin.itemTrashed"
-                defaultMessage="Trashed!"
-              />
-            ) : (
-              <FormattedMessage
-                id="previewRubbishBin.dropToTrash"
-                defaultMessage="Drop Here To Trash"
-              />
-            )
-          }
+          {trashed ? (
+            <FormattedMessage id="previewRubbishBin.itemTrashed" defaultMessage="Trashed!" />
+          ) : (
+            <FormattedMessage id="previewRubbishBin.dropToTrash" defaultMessage="Drop Here To Trash" />
+          )}
         </Typography>
       </Paper>
     </Grow>

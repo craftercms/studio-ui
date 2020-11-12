@@ -104,7 +104,10 @@ YAHOO.extend(
           YDom.addClass(exactContainerEl, 'hide');
         }
 
-        updateFn(null, { fieldName: _self.fieldName, value: _self.valueToJsonString(_self.fieldValue) });
+        updateFn(null, {
+          fieldName: _self.fieldName,
+          value: _self.valueToJsonString(_self.fieldValue)
+        });
       };
 
       YAHOO.util.Event.on(switchCtrl, 'click', switchFn, switchCtrl);
@@ -140,7 +143,7 @@ YAHOO.extend(
 
         const currentValue = el.value;
         const isNumber = /^[+-]?\d+(\.\d+)?$/;
-        const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
+        const isValid = currentValue.match(isNumber) !== null || currentValue === '';
         const $element = $(el);
         if (isValid) {
           _self.fieldValue[label] = el.value;
@@ -157,7 +160,10 @@ YAHOO.extend(
             'int-property'
           );
         }
-        updateFn(null, { fieldName: _self.fieldName, value: _self.valueToJsonString(_self.fieldValue) });
+        updateFn(null, {
+          fieldName: _self.fieldName,
+          value: _self.valueToJsonString(_self.fieldValue)
+        });
       };
 
       YAHOO.util.Event.on(valEl, 'focus', hideFn, valEl);

@@ -16,30 +16,14 @@
 
 import { ActionsObservable, combineEpics, Epic, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import {
-  filter,
-  ignoreElements,
-  map,
-  mapTo,
-  switchMap,
-  take,
-  takeUntil,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
 import contentController from '../../classes/ContentController';
 import { merge, NEVER, of, Subject } from 'rxjs';
-import {
-  clearAndListen$,
-  destroyDragSubjects,
-  dragover$,
-  escape$,
-  initializeDragSubjects
-} from '../subjects';
+import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
 import {
   ASSET_DRAG_ENDED,
@@ -67,21 +51,13 @@ import {
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-  pluckProps,
-  reversePluckProps
-} from '../../utils/object';
+import { isNullOrUndefined, notNullOrUndefined, pluckProps, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import ElementRegistry, { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
-  function multiEventPropagationStopperEpic(
-    action$: MouseEventActionObservable,
-    state$: GuestStateObservable
-  ) {
+  function multiEventPropagationStopperEpic(action$: MouseEventActionObservable, state$: GuestStateObservable) {
     return action$.pipe(
       ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
@@ -114,7 +90,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           console.error('No ice id found for this drag instance.');
         } else if (not(iceId)) {
           // Items that browser make draggable by default (images, etc)
-          console.warn('Element is draggable but wasn\'t set draggable by craftercms');
+          console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
           event.stopPropagation();
           post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
@@ -140,11 +116,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           payload: { event, record }
         } = action;
         let { element } = record;
-        if (
-          dragOk(state.status) &&
-          !state.dragContext?.scrolling &&
-          state.dragContext.players.includes(element)
-        ) {
+        if (dragOk(state.status) && !state.dragContext?.scrolling && state.dragContext.players.includes(element)) {
           event.preventDefault();
           event.stopPropagation();
           dragover$().next({ event, record });
@@ -178,12 +150,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               const { dropZone } = dragContext;
               if (dropZone && dragContext.inZone) {
                 const record = iceRegistry.getById(dropZone.iceId);
-                contentController.updateField(
-                  record.modelId,
-                  record.fieldId,
-                  record.index,
-                  dragContext.dragged.path
-                );
+                contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
               }
               break;
             }
@@ -305,8 +272,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           case 'textarea': {
             if (!window.tinymce) {
               alert(
-                'Looks like tinymce is not added on the page. ' +
-                'Please add tinymce on to the page to enable editing.'
+                'Looks like tinymce is not added on the page. ' + 'Please add tinymce on to the page to enable editing.'
               );
             } else if (not(validations?.readOnly?.value)) {
               return initTinyMCE(record, validations);
@@ -346,7 +312,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Desktop Asset Upload (Complete)
-  (action$: ActionsObservable<GuestStandardAction<{ path: string, record: ElementRecord }>>) => {
+  (action$: ActionsObservable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {
     return action$.pipe(
       ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
       tap((action) => {
@@ -435,7 +401,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       tap(([action, state]) => {
         const { iceId } = action.payload;
         const { validations } = state.dragContext.dropZones.find((dropZone) => dropZone.iceId === iceId);
-        Object.values(validations).forEach(validation => {
+        Object.values(validations).forEach((validation) => {
           post({ type: 'VALIDATION_MESSAGE', payload: validation });
         });
       }),
@@ -458,7 +424,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         if (validations.minCount) {
           post({ type: INSTANCE_DRAG_ENDED });
         }
-        Object.values(validations).forEach(validation => {
+        Object.values(validations).forEach((validation) => {
           //We dont want to show a validation message for maxCount on Leaving Dropzone
           if (validations.maxCount) {
             return;
@@ -561,7 +527,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region content_tree_field_selected
-  (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps, scrollElement: string, name: string }>>) => {
+  (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps; scrollElement: string; name: string }>>) => {
     return action$.pipe(
       ofType(CONTENT_TREE_FIELD_SELECTED),
       switchMap((action) => {
@@ -584,7 +550,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     );
   },
 
-  (action$: ActionsObservable<GuestStandardAction<{ type: string, scrollElement: string }>>, state$: GuestStateObservable) => {
+  (
+    action$: ActionsObservable<GuestStandardAction<{ type: string; scrollElement: string }>>,
+    state$: GuestStateObservable
+  ) => {
     return action$.pipe(
       ofType(CONTENT_TREE_SWITCH_FIELD_INSTANCE),
       withLatestFrom(state$),
@@ -601,7 +570,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region ice_zone_selected
 
   // endregion
-
 ]);
 
 export default epic;
@@ -617,10 +585,7 @@ const moveComponent = (dragContext) => {
     // If the index is a string, it's a nested index with dot notation.
     // At this point, we only care for the last index piece, which is
     // the index of this item in the collection that's being manipulated.
-    draggedElementIndex = parseInt(
-      draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1),
-      10
-    );
+    draggedElementIndex = parseInt(draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1), 10);
   }
 
   const containerRecord = iceRegistry.getById(originDropZone.iceId);
@@ -645,9 +610,7 @@ const moveComponent = (dragContext) => {
           containerRecord.fieldId.includes('.')
             ? `${containerRecord.index}.${draggedElementIndex}`
             : draggedElementIndex,
-          containerRecord.fieldId.includes('.')
-            ? `${containerRecord.index}.${targetIndex}`
-            : targetIndex
+          containerRecord.fieldId.includes('.') ? `${containerRecord.index}.${targetIndex}` : targetIndex
         );
       });
     }
@@ -662,9 +625,7 @@ const moveComponent = (dragContext) => {
       contentController.moveItem(
         containerRecord.modelId,
         containerRecord.fieldId,
-        containerRecord.fieldId.includes('.')
-          ? `${containerRecord.index}.${draggedElementIndex}`
-          : draggedElementIndex,
+        containerRecord.fieldId.includes('.') ? `${containerRecord.index}.${draggedElementIndex}` : draggedElementIndex,
         rec.modelId,
         rec.fieldId,
         rec.fieldId.includes('.') ? `${rec.index}.${targetIndex}` : targetIndex

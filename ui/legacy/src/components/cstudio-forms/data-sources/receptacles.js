@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function () {
-
+(function() {
   function formatMessage(id) {
     return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.receptaclesMessages[id]);
   }
@@ -33,7 +32,7 @@
     this.baseRepoPath = '/site/components';
     this.baseBrowsePath = '/site/components';
 
-    properties.forEach(prop => {
+    properties.forEach((prop) => {
       if (prop.value) {
         if (prop.type === 'boolean') {
           this[prop.name] = prop.value === 'true';
@@ -47,11 +46,10 @@
   }
 
   Receptacles.prototype = {
-
-    add: function (control) {
+    add: function(control) {
       const self = this;
       if (this.contentTypes) {
-        this.contentTypes.split(',').forEach(contentType => {
+        this.contentTypes.split(',').forEach((contentType) => {
           if (contentType !== '*') {
             self._createContentTypesControls(contentType, control);
           } else {
@@ -83,7 +81,7 @@
       }
     },
 
-    edit: function (key, control) {
+    edit: function(key, control) {
       const self = this;
       if (key.endsWith('.xml')) {
         self._editShared(key, control);
@@ -92,22 +90,21 @@
       }
     },
 
-    updateItem: function (item, control) {
-    },
+    updateItem: function(item, control) {},
 
-    getLabel: function () {
+    getLabel: function() {
       return formatMessage('receptacles');
     },
 
-    getInterface: function () {
+    getInterface: function() {
       return 'item';
     },
 
-    getName: function () {
+    getName: function() {
       return 'receptacles';
     },
 
-    getSupportedProperties: function () {
+    getSupportedProperties: function() {
       return [
         {
           label: formatMessage('allowShared'),
@@ -150,27 +147,26 @@
       ];
     },
 
-    getSupportedConstraints: function () {
+    getSupportedConstraints: function() {
       return [];
     },
 
-    _openBrowse: function (contentType, control) {
+    _openBrowse: function(contentType, control) {
       const path = `${this.baseBrowsePath}/${contentType.replace(/\//g, '_').substr(1)}`;
       CStudioAuthoring.Operations.openBrowse('', path, -1, 'select', true, {
-        success: function (searchId, selectedTOs) {
+        success: function(searchId, selectedTOs) {
           for (let i = 0; i < selectedTOs.length; i++) {
             let item = selectedTOs[i];
-            let value = (item.internalName && item.internalName !== '') ? item.internalName : item.uri;
+            let value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
             control.newInsertItem(item.uri, value, 'shared');
             control._renderItems();
           }
         },
-        failure: function () {
-        }
+        failure: function() {}
       });
     },
 
-    _openSearch: function (control) {
+    _openSearch: function(control) {
       const searchContext = {
         searchId: null,
         itemsPerPage: 12,
@@ -184,38 +180,41 @@
         searchInProgress: false,
         view: 'grid',
         lastSelectedFilterSelector: '',
-        mode: 'select'              // open search not in default but in select mode
+        mode: 'select' // open search not in default but in select mode
       };
 
       if (this.contentTypes) {
         searchContext.filters['content-type'] = this.contentTypes.split(',');
       }
 
-      CStudioAuthoring.Operations.openSearch(searchContext, true, {
-        success(searchId, selectedTOs) {
-          selectedTOs.forEach(function (item) {
-            const value = (item.internalName && item.internalName !== '') ? item.internalName : item.uri;
-            control.newInsertItem(item.uri, value, 'shared');
-            control._renderItems();
-          });
+      CStudioAuthoring.Operations.openSearch(
+        searchContext,
+        true,
+        {
+          success(searchId, selectedTOs) {
+            selectedTOs.forEach(function(item) {
+              const value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
+              control.newInsertItem(item.uri, value, 'shared');
+              control._renderItems();
+            });
+          },
+          failure: function() {}
         },
-        failure: function () {
-        }
-      }, searchContext.searchId);
+        searchContext.searchId
+      );
     },
 
-    _openCreateAny: function (control, type) {
+    _openCreateAny: function(control, type) {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
         'getAllContentType',
         false,
         {
-          success: function (contentTO, editorId, name, value) {
+          success: function(contentTO, editorId, name, value) {
             control.newInsertItem(name, value, type);
             control._renderItems();
           },
-          failure: function () {
-          }
+          failure: function() {}
         },
         true,
         type === 'embedded',
@@ -226,7 +225,7 @@
 
     _editShared(key, control) {
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-        success: function (contentTO) {
+        success: function(contentTO) {
           CStudioAuthoring.Operations.editContent(
             contentTO.item.contentType,
             CStudioAuthoringContext.siteId,
@@ -235,31 +234,29 @@
             contentTO.item.uri,
             false,
             {
-              success: function (contentTO, editorId, name, value) {
+              success: function(contentTO, editorId, name, value) {
                 if (control) {
                   control.updateEditedItem(value);
                   CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               }
-            });
+            }
+          );
         },
-        failure: function () {
-        }
+        failure: function() {}
       });
     },
 
     _editEmbedded(key, control) {
       CStudioForms.communication.sendAndAwait(key, (message) => {
-        const contentType = CStudioForms.communication
-          .parseDOM(message.payload)
-          .querySelector('content-type')
+        const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type')
           .innerHTML;
         CStudioAuthoring.Operations.performSimpleIceEdit(
           { contentType: contentType, uri: key },
           null,
           true,
           {
-            success: function (contentTO, editorId, name, value) {
+            success: function(contentTO, editorId, name, value) {
               if (control) {
                 control.updateEditedItem(value);
               }
@@ -278,17 +275,13 @@
       if (self.allowEmbedded) {
         let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
         let type = 'embedded';
-        $addContainerEl.append(
-          self._createOption(message, callback(type))
-        );
+        $addContainerEl.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared) {
         let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
         let type = 'shared';
-        $addContainerEl.append(
-          self._createOption(message, callback(type))
-        );
+        $addContainerEl.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared && self.enableBrowse) {
@@ -320,7 +313,7 @@
               ${message}
             </div>
           `);
-      $option.on('click', function () {
+      $option.on('click', function() {
         callback();
       });
       return $option;
@@ -337,17 +330,14 @@
         false,
         false,
         {
-          success: function (contentTO, editorId, name, value) {
+          success: function(contentTO, editorId, name, value) {
             control.newInsertItem(name, value, type);
             control._renderItems();
             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
-          failure: function () {
-          }
+          failure: function() {}
         },
-        [
-          { name: 'childForm', value: 'true' }
-        ],
+        [{ name: 'childForm', value: 'true' }],
         null,
         type === 'embedded' ? true : null
       );
@@ -356,7 +346,6 @@
     _getContentTypeName(contentType) {
       return CrafterCMSNext.util.string.capitalize(contentType.replace('/component/', '').replace(/-/g, ' '));
     }
-
   };
 
   CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-receptacles', Receptacles);

@@ -135,7 +135,6 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
               }
             }
           };
-
         }
       }
     });

@@ -324,10 +324,19 @@ CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder = CStudioAuthoring.Contextual
 
     var menuOptions = {
       default: [
-        { text: 'Order Children', onclick: { fn: CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder.orderTaxonomy } },
-        { text: 'New', onclick: { fn: CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder.newTaxonomy } },
+        {
+          text: 'Order Children',
+          onclick: { fn: CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder.orderTaxonomy }
+        },
+        {
+          text: 'New',
+          onclick: { fn: CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder.newTaxonomy }
+        },
         { text: 'Edit', onclick: { fn: CStudioAuthoring.ContextualNav.WcmRootFolder.editContent } },
-        { text: 'Delete', onclick: { fn: CStudioAuthoring.ContextualNav.WcmRootFolder.deleteContent, obj: tree } }
+        {
+          text: 'Delete',
+          onclick: { fn: CStudioAuthoring.ContextualNav.WcmRootFolder.deleteContent, obj: tree }
+        }
       ]
     };
 

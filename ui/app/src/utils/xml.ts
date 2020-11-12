@@ -74,9 +74,7 @@ export function getInnerHtmlNumber(element: Element): number {
   if (content === null || content === '') {
     return null;
   } else if (isNaN(num)) {
-    console.error(
-      `[utils/xml/getInnerHtmlNumber] Expected number but got NaN. Received value was "${content}".`
-    );
+    console.error(`[utils/xml/getInnerHtmlNumber] Expected number but got NaN. Received value was "${content}".`);
     return null;
   } else {
     return num;
@@ -122,11 +120,7 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
       });
     } else {
       const elem = doc.createElement(tag);
-      if (
-        typeof content === 'string' ||
-        typeof content === 'number' ||
-        typeof content === 'boolean'
-      ) {
+      if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
         elem.innerHTML = `${content}`;
       } else if (Array.isArray(content)) {
         console.error('[createElements] Path not implemented.');

@@ -163,7 +163,9 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       }
     });
 
-    YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, { self: this });
+    YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, {
+      self: this
+    });
 
     $('#closeWCMPopup').click(function() {
       self.contentPopupCancel();

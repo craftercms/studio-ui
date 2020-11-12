@@ -37,12 +37,7 @@
 -->
 `;
 
-  CStudioAuthoring.Module.requireModule(
-    'ace',
-    '/static-assets/libs/ace/ace.js',
-    {},
-    { moduleLoaded }
-  );
+  CStudioAuthoring.Module.requireModule('ace', '/static-assets/libs/ace/ace.js', {}, { moduleLoaded });
 
   function moduleLoaded() {
     CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
@@ -150,7 +145,7 @@
 
         const cb = () => {
           self.loadSelectedConfig();
-        }
+        };
 
         const handler = () => {
           amplify.unsubscribe('HISTORY_REVERT', cb);
@@ -303,7 +298,9 @@
                   module: itemSelectEl[selectedIndex].getAttribute('module'),
                   path: itemSelectEl[selectedIndex].value,
                   environment: environment,
-                  uri:`${configFilesPath}/${itemSelectEl[selectedIndex].getAttribute('module')}/${itemSelectEl[selectedIndex].value}`,
+                  uri: `${configFilesPath}/${itemSelectEl[selectedIndex].getAttribute('module')}/${
+                    itemSelectEl[selectedIndex].value
+                  }`,
                   escaped: true
                 };
                 CStudioAuthoring.Operations.viewConfigurationHistory(content, true);
@@ -703,7 +700,6 @@
       'cstudio-console-tools-admin-configurations',
       CStudioAdminConsole.Tool.AdminConfig
     );
-
   }
 
   function parseValidateDocument(editorText) {

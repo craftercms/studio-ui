@@ -88,14 +88,7 @@ type GuestProps = PropsWithChildren<{
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const {
-    path,
-    styleConfig,
-    modelId,
-    children,
-    documentDomain,
-    scrollElement = 'html, body'
-  } = props;
+  const { path, styleConfig, modelId, children, documentDomain, scrollElement = 'html, body' } = props;
 
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
@@ -164,7 +157,7 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const sub = message$.subscribe(function (action) {
+    const sub = message$.subscribe(function(action) {
       const { type, payload } = action;
       switch (type) {
         case EDIT_MODE_CHANGED:
@@ -211,11 +204,7 @@ function Guest(props: GuestProps) {
           break;
         }
         case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle(
-            [payload],
-            scrollElement,
-            (id: number) => elementRegistry.fromICEId(id).element
-          );
+          scrollToReceptacle([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
           dispatch(action);
@@ -283,7 +272,6 @@ function Guest(props: GuestProps) {
 
   // Check out (dismount, beforeunload)
   useEffect(() => {
-
     // Notice this is not executed when the iFrame url is changed abruptly.
     // This only triggers when navigation occurs from within the guest page.
     const handler = () => post({ type: GUEST_CHECK_OUT });
@@ -293,12 +281,10 @@ function Guest(props: GuestProps) {
       post(GUEST_CHECK_OUT);
       window.removeEventListener('beforeunload', handler);
     };
-
   }, []);
 
   // Registers parent zone, checkin, checkout (when model is changed)
   useEffect(() => {
-
     const location = createLocationArgument();
     const site = Cookies.get('crafterSite');
     post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
@@ -321,7 +307,6 @@ function Guest(props: GuestProps) {
       post(GUEST_CHECK_OUT);
       iceRegistry.deregister(iceId);
     };
-
   }, [documentDomain, modelId, path]);
 
   // Listen for desktop asset drag & drop
@@ -379,9 +364,7 @@ function Guest(props: GuestProps) {
     }
   }, [dispatch, dragContextDropZoneIceId]);
 
-  const draggableItemElemRecId = Object.entries(state.draggable ?? {}).find(
-    ([, ice]) => ice !== false
-  )?.[0];
+  const draggableItemElemRecId = Object.entries(state.draggable ?? {}).find(([, ice]) => ice !== false)?.[0];
 
   return (
     <GuestContextProvider value={context}>
@@ -396,21 +379,24 @@ function Guest(props: GuestProps) {
           {Object.values(state.uploading).map((highlight: HighlightData) => (
             <AssetUploaderMask key={highlight.id} {...highlight} />
           ))}
-          {
-            state.fieldSwitcher &&
+          {state.fieldSwitcher && (
             <FieldInstanceSwitcher
-              onNext={() => dispatch({
-                type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-                payload: { type: 'next', scrollElement }
-              })}
-              onPrev={() => dispatch({
-                type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-                payload: { type: 'prev', scrollElement }
-              })}
+              onNext={() =>
+                dispatch({
+                  type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
+                  payload: { type: 'next', scrollElement }
+                })
+              }
+              onPrev={() =>
+                dispatch({
+                  type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
+                  payload: { type: 'prev', scrollElement }
+                })
+              }
               registryEntryIds={state.fieldSwitcher.registryEntryIds}
               currentElement={state.fieldSwitcher.currentElement}
             />
-          }
+          )}
 
           {Object.values(state.highlighted).map((highlight: HighlightData, index, array) => (
             <ZoneMarker
@@ -432,17 +418,17 @@ function Guest(props: GuestProps) {
             EditingStatus.PLACING_NEW_COMPONENT,
             EditingStatus.PLACING_DETACHED_COMPONENT
           ].includes(status) &&
-          state.dragContext.inZone &&
-          !state.dragContext.invalidDrop && (
-            <DropMarker
-              onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-              dropZone={state.dragContext.dropZone}
-              over={state.dragContext.over}
-              prev={state.dragContext.prev}
-              next={state.dragContext.next}
-              coordinates={state.dragContext.coordinates}
-            />
-          )}
+            state.dragContext.inZone &&
+            !state.dragContext.invalidDrop && (
+              <DropMarker
+                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
+                dropZone={state.dragContext.dropZone}
+                over={state.dragContext.over}
+                prev={state.dragContext.prev}
+                next={state.dragContext.next}
+                coordinates={state.dragContext.coordinates}
+              />
+            )}
         </CrafterCMSPortal>
       )}
       {snack && (
@@ -462,6 +448,6 @@ export default function CrafterCMSGuest(props: GuestProps) {
       <Guest {...props} />
     </Provider>
   ) : (
-    children as JSX.Element
+    (children as JSX.Element)
   );
 }

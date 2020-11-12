@@ -53,7 +53,7 @@
     const container = document.querySelector('.cstudio-search');
     CrafterCMSNext.render(container, 'Search', {
       onSelect: CStudioSearch.changeSelectStatus,
-      mode: this.searchContext.mode,
+      mode: this.searchContext.mode
     });
   };
 
@@ -199,5 +199,4 @@
         .remove(); //TODO: find a better way
     }
   };
-
 })(window, jQuery, Handlebars);

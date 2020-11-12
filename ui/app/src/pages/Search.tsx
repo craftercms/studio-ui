@@ -20,12 +20,7 @@ import Search from '../modules/Search/Search';
 export default function SearchApp(topProps: any) {
   return (
     <HashRouter>
-      <Route
-        path="/"
-        render={(routeProps: any) =>
-          <Search {...topProps} {...routeProps} />
-        }
-      />
+      <Route path="/" render={(routeProps: any) => <Search {...topProps} {...routeProps} />} />
     </HashRouter>
   );
 }

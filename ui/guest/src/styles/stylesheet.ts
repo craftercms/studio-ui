@@ -45,7 +45,7 @@ export type GuestRules =
 
 type AllRules = { [key in GuestRules]: any };
 
-const getAllGuestRules: () => string[] = (() => {
+const getAllGuestRules: () => string[] = () => {
   const rules: AllRules = {
     '[draggable="true"]': undefined,
     'craftercms-asset-uploader-mask': undefined,
@@ -69,11 +69,9 @@ const getAllGuestRules: () => string[] = (() => {
     '@keyframes craftercms-uploader-mask-animation': undefined
   };
   return Object.keys(rules);
-});
+};
 
-export type GuestStyles<RuleName extends GuestRules | string | number | symbol = string> = Styles<
-  RuleName
-> & {
+export type GuestStyles<RuleName extends GuestRules | string | number | symbol = string> = Styles<RuleName> & {
   '@global'?: Record<RuleName, JssStyle | string> &
     {
       [key in GuestRules]?: Record<RuleName | GuestRules, JssStyle | string>;
@@ -109,8 +107,7 @@ const defaults: GuestStyleSheetConfig = {
   snackBarBackgroundColor: 'rgb(49, 49, 49)',
   zoneLabelZIndex: 1010,
   zoneLabelTextColor: '#00270b',
-  zoneLabelBackground:
-    'linear-gradient(to bottom, rgba(48,219,91,0.8) 0%, rgba(52,199,89,0.8) 100%)',
+  zoneLabelBackground: 'linear-gradient(to bottom, rgba(48,219,91,0.8) 0%, rgba(52,199,89,0.8) 100%)',
   zoneMarkerZIndex: 1010,
   zoneMarkerOutlineColor: palette.green.main,
   inlineTextEditorOutlineColor: palette.blue.tint,
@@ -119,8 +116,10 @@ const defaults: GuestStyleSheetConfig = {
   validationSuggestedColor: palette.orange.main
 };
 
-function collectRules(styles): { overrides, global, other } {
-  const overrides = {}, global = {}, other = {};
+function collectRules(styles): { overrides; global; other } {
+  const overrides = {},
+    global = {},
+    other = {};
   const toBeReturned = { overrides, global, other };
   if (!styles) {
     return toBeReturned;
@@ -377,12 +376,16 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
     '@keyframes craftercms-placeholder-animation': overrides['@keyframes craftercms-placeholder-animation'] ?? {
       '100%': { transform: 'rotate(360deg)' }
     },
-    '@keyframes craftercms-placeholder-inner-animation': overrides['@keyframes craftercms-placeholder-inner-animation'] ?? {
+    '@keyframes craftercms-placeholder-inner-animation': overrides[
+      '@keyframes craftercms-placeholder-inner-animation'
+    ] ?? {
       '0%': { strokeDasharray: '1, 150', strokeDashoffset: '0' },
       '50%': { strokeDasharray: '90, 150', strokeDashoffset: '-35' },
       '100%': { strokeDasharray: '90, 150', strokeDashoffset: '-124' }
     },
-    '@keyframes craftercms-content-tree-locate-animation': overrides['@keyframes craftercms-content-tree-locate-animation'] ?? {
+    '@keyframes craftercms-content-tree-locate-animation': overrides[
+      '@keyframes craftercms-content-tree-locate-animation'
+    ] ?? {
       '0%': {
         transform: 'scaleX(1)'
       },

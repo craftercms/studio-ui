@@ -62,15 +62,9 @@ const peerDeps = [
 
 async function createPackageFile() {
   const packageData = await fse.readFile(path.resolve(packagePath, './package.json'), 'utf8');
-  const {
-    scripts,
-    dependencies,
-    devDependencies,
-    eslintConfig,
-    browserslist,
-    proxy,
-    ...packageDataOther
-  } = JSON.parse(packageData);
+  const { scripts, dependencies, devDependencies, eslintConfig, browserslist, proxy, ...packageDataOther } = JSON.parse(
+    packageData
+  );
 
   delete dependencies['react-scripts'];
   const packageDeps = {
@@ -88,7 +82,7 @@ async function createPackageFile() {
       }
       if (optionalDeps.includes(dep)) {
         packageDeps.peerDependenciesMeta[dep] = {
-          'optional': true
+          optional: true
         };
       }
     }
@@ -112,7 +106,7 @@ async function bannerAndFormat() {
   console.log(`Beginning copyright & format of ${filesToProcess.length} files (${filePattern}).`);
   const banner = `${await fse.readFile(path.resolve(packagePath, './scripts/license.txt'), 'utf8')}\n`;
   const config = path.join(__dirname, '../../../prettier.config.js');
-  filesToProcess.forEach((async (filePath) => {
+  filesToProcess.forEach(async (filePath) => {
     const fullPath = path.join(buildPath, filePath);
     const options = prettier.resolveConfig.sync(fullPath, { config });
     const code = await fse.readFile(fullPath, 'utf8');
@@ -122,13 +116,12 @@ async function bannerAndFormat() {
     } catch {
       console.log(`Error formatting "${filePath}"`);
     }
-  }));
+  });
   console.log(`Formatted and added license to "${filePattern}".`);
 }
 
 async function run() {
   try {
-
     await createPackageFile();
 
     const directoryPackages = glob.sync('**/**.scss', { cwd: srcPath });
@@ -142,20 +135,13 @@ async function run() {
     fse.copy(path.join(srcPath, 'assets'), path.join(buildPath, 'assets'));
     console.log(`Copied assets to build`);
 
-    await fse.copyFile(
-      path.join(packagePath, 'scripts', 'LICENSE'),
-      path.join(buildPath, 'LICENSE')
-    );
+    await fse.copyFile(path.join(packagePath, 'scripts', 'LICENSE'), path.join(buildPath, 'LICENSE'));
     console.log('License file added');
 
-    await fse.copyFile(
-      path.join(packagePath, 'scripts', 'README.md'),
-      path.join(buildPath, 'README.md')
-    );
+    await fse.copyFile(path.join(packagePath, 'scripts', 'README.md'), path.join(buildPath, 'README.md'));
     console.log('Readme file added');
 
     await bannerAndFormat();
-
   } catch (err) {
     console.error(err);
     process.exit(1);

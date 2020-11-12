@@ -18,7 +18,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   progress: {
     margin: theme.spacing(2)
   },
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface SpinnerProps {
-  background?: string,
+  background?: string;
 }
 
 export default function Spinner(props: SpinnerProps) {

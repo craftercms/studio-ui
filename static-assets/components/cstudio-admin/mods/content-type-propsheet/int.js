@@ -37,16 +37,16 @@ YAHOO.extend(
       valueEl.value = value;
       valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('focus', function () {
+      $(valueEl).on('focus', function() {
         valueEl.setAttribute('type', 'number');
       });
 
-      $(valueEl).on('blur', function (e) {
+      $(valueEl).on('blur', function(e) {
         valueEl.setAttribute('type', 'text');
 
         const integerValue = parseInt($(valueEl).val());
         if (!isNaN(integerValue)) {
-          $(valueEl).val(integerValue);   // Make sure that value is integer
+          $(valueEl).val(integerValue); // Make sure that value is integer
         }
         if (updateFieldFn) {
           updateFieldFn(e, this);

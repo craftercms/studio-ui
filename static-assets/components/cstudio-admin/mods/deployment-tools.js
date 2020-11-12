@@ -627,13 +627,21 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
 
   renderDeploymentTools: function() {
     var actions = [
-      { name: CMgs.format(formsLangBundle, 'setDeploymentQueue'), context: this, method: this.renderDeploymentQueue },
+      {
+        name: CMgs.format(formsLangBundle, 'setDeploymentQueue'),
+        context: this,
+        method: this.renderDeploymentQueue
+      },
       {
         name: CMgs.format(formsLangBundle, 'setDeploymentEndpoints'),
         context: this,
         method: this.renderDeploymentEndpoints
       },
-      { name: CMgs.format(formsLangBundle, 'setDeploymentJobs'), context: this, method: this.renderDeploymentJobs }
+      {
+        name: CMgs.format(formsLangBundle, 'setDeploymentJobs'),
+        context: this,
+        method: this.renderDeploymentJobs
+      }
     ];
     CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 

@@ -35,11 +35,13 @@ interface CreateFileBaseProps {
   path: string;
 }
 
-export type CreateFileProps = PropsWithChildren<CreateFileBaseProps & {
-  onClose(): void;
-  onClosed?(): void;
-  onCreated?(response: { path: string, fileName: string, type: string }): void;
-}>;
+export type CreateFileProps = PropsWithChildren<
+  CreateFileBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+    onCreated?(response: { path: string; fileName: string; type: string }): void;
+  }
+>;
 
 export interface CreateFileStateProps extends CreateFileBaseProps {
   onClose?: StandardAction;
@@ -69,12 +71,7 @@ export default function CreateFileDialog(props: CreateFileProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateFileUI
-        {...props}
-        submitted={state.submitted}
-        inProgress={state.inProgress}
-        setState={setState}
-      />
+      <CreateFileUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>
   );
 }
@@ -98,7 +95,7 @@ function CreateFileUI(props: CreateFileUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      const fileName = (type === 'controller') ? `${name}.groovy` : `${name}.ftl`;
+      const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
       createFile(site, path, fileName).subscribe(
         () => {
           onCreated?.({ path, fileName, type });
@@ -114,18 +111,22 @@ function CreateFileUI(props: CreateFileUIProps) {
     <>
       <DialogHeader
         title={
-          type === 'controller'
-            ? <FormattedMessage id="newFile.controller" defaultMessage="Create a New Controller" />
-            : <FormattedMessage id="newFile.template" defaultMessage="Create a New Template" />
+          type === 'controller' ? (
+            <FormattedMessage id="newFile.controller" defaultMessage="Create a New Controller" />
+          ) : (
+            <FormattedMessage id="newFile.template" defaultMessage="Create a New Template" />
+          )
         }
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
         <TextField
           label={
-            type === 'controller'
-              ? <FormattedMessage id="newFile.controllerName" defaultMessage="Controller Name" />
-              : <FormattedMessage id="newFile.templateName" defaultMessage="Template Name" />
+            type === 'controller' ? (
+              <FormattedMessage id="newFile.controllerName" defaultMessage="Controller Name" />
+            ) : (
+              <FormattedMessage id="newFile.templateName" defaultMessage="Template Name" />
+            )
           }
           value={name}
           autoFocus
@@ -133,14 +134,12 @@ function CreateFileUI(props: CreateFileUIProps) {
           error={!name && submitted}
           placeholder={formatMessage(translations.placeholder)}
           helperText={
-            (!name && submitted) ? (
-              type === 'controller'
-                ? <FormattedMessage
-                  id="newFile.controller.required" defaultMessage="Controller name is required."
-                />
-                : <FormattedMessage
-                  id="newFile.controller.required" defaultMessage="Template name is required."
-                />
+            !name && submitted ? (
+              type === 'controller' ? (
+                <FormattedMessage id="newFile.controller.required" defaultMessage="Controller name is required." />
+              ) : (
+                <FormattedMessage id="newFile.controller.required" defaultMessage="Template name is required." />
+              )
             ) : (
               <FormattedMessage
                 id="newFile.helperText"
@@ -160,14 +159,8 @@ function CreateFileUI(props: CreateFileUIProps) {
         <Button onClick={onClose} variant="outlined" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
-        <Button
-          onClick={() => onOk()} variant="contained" color="primary" autoFocus
-          disabled={inProgress}
-        >
-          {
-            inProgress &&
-            <CircularProgress size={15} style={{ marginRight: '5px' }} />
-          }
+        <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>
+          {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           <FormattedMessage id="words.create" defaultMessage="Create" />
         </Button>
       </DialogFooter>

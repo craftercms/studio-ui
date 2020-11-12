@@ -42,33 +42,25 @@ export function value(model, fieldId, newValue) {
 }
 
 export function extractCollection(model, fieldId: string, index: string | number) {
-  return extractCollectionPiece(
-    model,
-    fieldId,
-    removeLastPiece(`${index}`)
-  );
+  return extractCollectionPiece(model, fieldId, removeLastPiece(`${index}`));
 }
 
 export function extractCollectionItem(model, fieldId: string, index: string | number) {
-  const indexes = (
-    (index === '' || nou(index))
-      ? []
-      : `${index}`.split('.').map(i => parseInt(i))
-  );
+  const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i));
   const fields = fieldId.split('.');
   if (indexes.length > fields.length) {
     throw new Error(
       '[Model.extractCollectionItem] The number of indexes surpasses the number ' +
-      `of nested properties on model id "${prop(model, 'id')}", field id "${fieldId}". ` +
-      `Supplied index path was ${index}. `
+        `of nested properties on model id "${prop(model, 'id')}", field id "${fieldId}". ` +
+        `Supplied index path was ${index}. `
     );
   }
   if (Math.abs(indexes.length - fields.length) > 1) {
     throw new Error(
       '[extractCollectionItem] The number of indexes and number of nested props mismatch ' +
-      `by more than 1 on "${prop(model, 'id')}", field id "${fieldId}". ` +
-      `Supplied index path was ${index}. Number of nested props may be greater by no more than one ` +
-      'than the number of nested indexes.'
+        `by more than 1 on "${prop(model, 'id')}", field id "${fieldId}". ` +
+        `Supplied index path was ${index}. Number of nested props may be greater by no more than one ` +
+        'than the number of nested indexes.'
     );
   }
   return extractCollectionPiece(model, fieldId, index);
@@ -83,11 +75,7 @@ export function isEmbedded(model) {
 }
 
 function extractCollectionPiece(model, fieldId, index) {
-  const indexes = (
-    (index === '' || nou(index))
-      ? []
-      : `${index}`.split('.').map(i => parseInt(i, 10))
-  );
+  const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   if (indexes.length === 0) {
     return retrieveProperty(model, fieldId);
   }
@@ -97,7 +85,7 @@ function extractCollectionPiece(model, fieldId, index) {
     // There's more indexes than fields
     throw new Error(
       '[content/extractNode] Path not handled: indexes.length > fields.length. Indexes ' +
-      `is ${indexes} and fields is ${fields}`
+        `is ${indexes} and fields is ${fields}`
     );
   }
   indexes.forEach((index, i) => {

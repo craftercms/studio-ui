@@ -19,11 +19,7 @@ import { DEFAULT_RECORD_DATA } from '../utils/util';
 import contentTypeUtils from '../utils/contentType';
 import Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import {
-  ContentType,
-  ContentTypeField,
-  ValidationKeys
-} from '@craftercms/studio-ui/models/ContentType';
+import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import {
   ICEProps,
@@ -32,13 +28,7 @@ import {
   ReferentialEntries,
   ValidationResult
 } from '../models/InContextEditing';
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-  nou,
-  pluckProps,
-  reversePluckProps
-} from '../utils/object';
+import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
 
@@ -80,16 +70,11 @@ const registry: Map<number, ICERecord> = new Map();
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
   // to null for records that don't include those values
-  const data = Object.assign(
-    {},
-    DEFAULT_RECORD_DATA,
-    pluckProps(registration, 'modelId', 'fieldId', 'index')
-  );
+  const data = Object.assign({}, DEFAULT_RECORD_DATA, pluckProps(registration, 'modelId', 'fieldId', 'index'));
 
   if (isNullOrUndefined(data.modelId)) {
     throw new Error(
-      'ICE component registration requires a model ID to be supplied. ' +
-        `Supplied model id was ${data.modelId}.`
+      'ICE component registration requires a model ID to be supplied. ' + `Supplied model id was ${data.modelId}.`
     );
   } else if (
     notNullOrUndefined(data.fieldId) &&
@@ -98,9 +83,7 @@ export function register(registration: ICERecordRegistration): number {
   ) {
     throw new Error(
       'Group item registration requires the index within the collection that contains the item to be supplied. ' +
-        `Please supply index for '${data.fieldId}' of the ${
-          getReferentialEntries(data).contentType.name
-        } model.`
+        `Please supply index for '${data.fieldId}' of the ${getReferentialEntries(data).contentType.name} model.`
     );
   }
 
@@ -255,8 +238,7 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
     if (notNullOrUndefined(fieldId)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
       const acceptedTypes = field?.validations?.allowedContentTypes?.value;
-      const accepts =
-        acceptedTypes && (acceptedTypes.includes(contentTypeId) || acceptedTypes.includes('*'));
+      const accepts = acceptedTypes && (acceptedTypes.includes(contentTypeId) || acceptedTypes.includes('*'));
       if (!accepts) {
         return false;
       } else if (isNullOrUndefined(index)) {
@@ -282,9 +264,7 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
   });
 }
 
-export function runReceptaclesValidations(
-  receptacles: ICERecord[]
-): LookupTable<LookupTable<ValidationResult>> {
+export function runReceptaclesValidations(receptacles: ICERecord[]): LookupTable<LookupTable<ValidationResult>> {
   const lookup = {};
   receptacles.forEach((record) => {
     const validationResult = {};
@@ -326,19 +306,13 @@ export function runReceptaclesValidations(
   return lookup;
 }
 
-export function runValidation(
-  iceId: number,
-  validationId: ValidationKeys,
-  args?: unknown[]
-): ValidationResult {
+export function runValidation(iceId: number, validationId: ValidationKeys, args?: unknown[]): ValidationResult {
   const record = getById(iceId);
   let {
     field: { validations }
   } = getReferentialEntries(record);
   if (validations[validationId]) {
-    return validationChecks[validationId](
-      ...[...Object.values(validations[validationId]), ...args]
-    );
+    return validationChecks[validationId](...[...Object.values(validations[validationId]), ...args]);
   } else {
     return null;
   }
@@ -436,9 +410,7 @@ export function checkComponentMovability(entries): boolean {
   if (!parentField) {
     throw new Error(
       `Unable to find the parent field for instance "${entries.modelId}" of ` +
-        `${entries.contentType.name} component${
-          entries.fieldId ? ` (${entries.fieldId} field)` : ''
-        }. ` +
+        `${entries.contentType.name} component${entries.fieldId ? ` (${entries.fieldId} field)` : ''}. ` +
         'Did you forget to declare the field when creating the content type?\n' +
         'Check the state of the model data this could mean the data is corrupted.'
     );

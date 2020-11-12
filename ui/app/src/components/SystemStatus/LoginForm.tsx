@@ -56,9 +56,7 @@ export function LogInForm(props: LogInFormProps) {
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
         className={classes?.username}
-        label={
-          <FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />
-        }
+        label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
       />
       <PasswordTextField
         id="loginFormPasswordField"
@@ -67,18 +65,10 @@ export function LogInForm(props: LogInFormProps) {
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
         className={classes?.password}
-        label={
-          <FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />
-        }
+        label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
       {/* This button is just to have the form submit when pressing enter. */}
-      <Button
-        children=""
-        type="submit"
-        onClick={onSubmit}
-        disabled={isFetching}
-        style={{ display: 'none' }}
-      />
+      <Button children="" type="submit" onClick={onSubmit} disabled={isFetching} style={{ display: 'none' }} />
     </form>
   );
 }

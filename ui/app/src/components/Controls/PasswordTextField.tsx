@@ -35,7 +35,6 @@ const translations = defineMessages({
 });
 
 export default function PasswordTextField(props: PasswordTextFieldProps) {
-
   const { visibilitySwitch = true, initialVisible = false } = props;
   const { formatMessage } = useIntl();
   const [showPassword, setShowPassword] = useState(initialVisible);
@@ -46,20 +45,22 @@ export default function PasswordTextField(props: PasswordTextFieldProps) {
       {...props}
       type={showPassword ? 'text' : 'password'}
       InputProps={
-        visibilitySwitch ? {
-          ...props.InputProps,
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                edge="end"
-                aria-label={formatMessage(translations.toggleVisibilityButtonText)}
-                onClick={handleClickShowPassword}
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          )
-        } : props.InputProps
+        visibilitySwitch
+          ? {
+              ...props.InputProps,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    edge="end"
+                    aria-label={formatMessage(translations.toggleVisibilityButtonText)}
+                    onClick={handleClickShowPassword}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
+          : props.InputProps
       }
     />
   );

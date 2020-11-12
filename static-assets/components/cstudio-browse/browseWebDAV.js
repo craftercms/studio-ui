@@ -96,7 +96,11 @@
           openNodes(nodes, nodes.length - 1);
         }
       } else if (obj) {
-        tree.trigger('select_node', { node: obj, selected: tree._data.core.selected, event: event });
+        tree.trigger('select_node', {
+          node: obj,
+          selected: tree._data.core.selected,
+          event: event
+        });
       }
 
       me.renderContextMenu('.jstree-anchor');

@@ -282,8 +282,18 @@ YAHOO.extend(CStudioForms.Controls.LinkInput, CStudioForms.CStudioFormField, {
 
   getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, 'displaySize'), name: 'size', type: 'int', defaultValue: '50' },
-      { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int', defaultValue: '50' },
+      {
+        label: CMgs.format(langBundle, 'displaySize'),
+        name: 'size',
+        type: 'int',
+        defaultValue: '50'
+      },
+      {
+        label: CMgs.format(langBundle, 'maxLength'),
+        name: 'maxlength',
+        type: 'int',
+        defaultValue: '50'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' }
     ];

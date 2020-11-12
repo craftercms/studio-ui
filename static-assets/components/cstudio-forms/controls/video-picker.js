@@ -629,7 +629,11 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
   getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, 'datasource'), name: 'videoManager', type: 'datasource:video' },
+      {
+        label: CMgs.format(langBundle, 'datasource'),
+        name: 'videoManager',
+        type: 'datasource:video'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
     ];
   },

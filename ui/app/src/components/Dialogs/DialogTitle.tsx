@@ -57,14 +57,15 @@ export default function DialogTitle(props: DialogTitleProps) {
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <CloseIcon/>
+            <CloseIcon />
           </IconButton>
         ) : null}
       </div>
-      {
-        subtitle &&
-        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
-      }
+      {subtitle && (
+        <Typography variant="subtitle1" className={classes.subtitle}>
+          {subtitle}
+        </Typography>
+      )}
     </MuiDialogTitle>
   );
 }

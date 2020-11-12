@@ -28,23 +28,18 @@ export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
 }
 
 export function logout(): Observable<boolean> {
-  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON).pipe(
-    mapTo(true)
-  );
+  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON).pipe(mapTo(true));
 }
 
 export function login(credentials: Credentials): Observable<User> {
-  return post(
-    '/studio/api/1/services/api/1/security/login.json',
-    credentials,
-    CONTENT_TYPE_JSON
-  ).pipe(pluck('response'), mapToUser);
+  return post('/studio/api/1/services/api/1/security/login.json', credentials, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    mapToUser
+  );
 }
 
 export function validateSession(): Observable<boolean> {
-  return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(
-    pluck('response', 'active')
-  );
+  return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(pluck('response', 'active'));
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
@@ -57,11 +52,7 @@ export function sendPasswordRecovery(username: string): Observable<ApiResponse> 
   );
 }
 
-export function setPassword(
-  token: string,
-  password: string,
-  confirmation: string = password
-): Observable<User> {
+export function setPassword(token: string, password: string, confirmation: string = password): Observable<User> {
   return password !== confirmation
     ? of('Password and confirmation mismatch').pipe(
         map((msg) => {
@@ -85,10 +76,8 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
   return get(`/studio/api/2/users/validate_token?token=${token}`).pipe(
     mapTo(true),
     catchError((error) => {
-      if (error.status === 401)
-        return of(false);
-      else
-        throw new Error(error.response)
+      if (error.status === 401) return of(false);
+      else throw new Error(error.response);
     })
   );
 }

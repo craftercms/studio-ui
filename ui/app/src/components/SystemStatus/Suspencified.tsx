@@ -40,20 +40,13 @@ type SuspencifiedProps = PropsWithChildren<{
   errorBoundaryProps?: ErrorBoundaryProps;
 }>;
 
-export function WithEmptyState<ResourceType = unknown[]>(
-  props: SuspenseWithEmptyStateProps<ResourceType>
-) {
+export function WithEmptyState<ResourceType = unknown[]>(props: SuspenseWithEmptyStateProps<ResourceType>) {
   const {
     children,
     isEmpty = (value: ResourceType) => (value as any).length === 0,
     resource,
     emptyStateProps = {
-      title: (
-        <FormattedMessage
-          id="withEmptyState.defaultEmptyStateMessage"
-          defaultMessage="No results found"
-        />
-      )
+      title: <FormattedMessage id="withEmptyState.defaultEmptyStateMessage" defaultMessage="No results found" />
     }
   } = props;
   const value = resource.read();
@@ -64,11 +57,7 @@ export function Suspencified(props: SuspencifiedProps) {
   const { children, loadingStateProps, errorBoundaryProps, suspenseProps } = props;
   return (
     <ErrorBoundary {...errorBoundaryProps}>
-      <Suspense
-        fallback={<LoadingState {...loadingStateProps} />}
-        {...suspenseProps}
-        children={children}
-      />
+      <Suspense fallback={<LoadingState {...loadingStateProps} />} {...suspenseProps} children={children} />
     </ErrorBoundary>
   );
 }

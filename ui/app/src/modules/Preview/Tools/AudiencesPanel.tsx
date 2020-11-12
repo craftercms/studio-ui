@@ -174,9 +174,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 }
 
 export default function AudiencesPanel() {
-  const panelState = useSelection<GlobalState['preview']['audiencesPanel']>(
-    (state) => state.preview.audiencesPanel
-  );
+  const panelState = useSelection<GlobalState['preview']['audiencesPanel']>((state) => state.preview.audiencesPanel);
   const resource = useLogicResource(panelState, {
     shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
     shouldResolve: (source) => !source.isFetching && nnou(source.contentType) && nnou(source.model),

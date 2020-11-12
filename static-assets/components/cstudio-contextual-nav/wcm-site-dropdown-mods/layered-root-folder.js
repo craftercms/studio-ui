@@ -1767,9 +1767,15 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
             onclick: { fn: LSelf.createContainer }
           },
 
-          editOption: { text: CMgs.format(siteDropdownLangBundle, 'edit'), onclick: { fn: LSelf.editContent } },
+          editOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'edit'),
+            onclick: { fn: LSelf.editContent }
+          },
 
-          viewOption: { text: CMgs.format(siteDropdownLangBundle, 'view'), onclick: { fn: LSelf.viewContent } },
+          viewOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'view'),
+            onclick: { fn: LSelf.viewContent }
+          },
 
           changeTemplateOption: {
             text: CMgs.format(siteDropdownLangBundle, 'changeTemplate'),
@@ -1781,22 +1787,37 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
             onclick: { fn: LSelf.deleteContent, obj: tree }
           },
 
-          cutOption: { text: CMgs.format(siteDropdownLangBundle, 'cut'), onclick: { fn: LSelf.cutContent, obj: tree } },
+          cutOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'cut'),
+            onclick: { fn: LSelf.cutContent, obj: tree }
+          },
 
-          copyOption: { text: CMgs.format(siteDropdownLangBundle, 'copy'), onclick: { fn: LSelf.copyTree, obj: tree } },
+          copyOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'copy'),
+            onclick: { fn: LSelf.copyTree, obj: tree }
+          },
 
-          pasteOption: { text: CMgs.format(siteDropdownLangBundle, 'paste'), onclick: { fn: LSelf.pasteContent } },
+          pasteOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'paste'),
+            onclick: { fn: LSelf.pasteContent }
+          },
 
           revertOption: {
             text: CMgs.format(siteDropdownLangBundle, 'history'),
             onclick: { fn: LSelf.revertContent, obj: tree }
           },
 
-          unlockOption: { text: CMgs.format(siteDropdownLangBundle, 'Unlock'), onclick: { fn: LSelf.unlockContent } },
+          unlockOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'Unlock'),
+            onclick: { fn: LSelf.unlockContent }
+          },
 
           overlayOption: { text: 'Override', onclick: { fn: LSelf.overlayContent } },
 
-          removeOverlayOption: { text: 'Remove Override', onclick: { fn: LSelf.deleteContent, obj: tree } }
+          removeOverlayOption: {
+            text: 'Remove Override',
+            onclick: { fn: LSelf.deleteContent, obj: tree }
+          }
         };
         p_aArgs.clearContent();
 
@@ -2087,7 +2108,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         if (
           (LSelf.cutItem != null && LSelf.cutItem.contentElId == oCurrentTextNode.contentElId) ||
           (LSelf.copiedItem != null && LSelf.copiedItem.contentElId == oCurrentTextNode.contentElId) ||
-            Self.copiedItem == oCurrentTextNode.data.uri ||
+          Self.copiedItem == oCurrentTextNode.data.uri ||
           (LSelf.copiedItem != null && LSelf.copiedItem.parent.contentElId == oCurrentTextNode.contentElId)
         ) {
           CStudioAuthoring.Operations.showSimpleDialog(

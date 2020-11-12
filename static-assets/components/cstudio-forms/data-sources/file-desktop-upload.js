@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.FileDesktopUpload =
   CStudioForms.Datasources.FileDesktopUpload ||
-  function (id, form, properties, constraints) {
+  function(id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -37,7 +37,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
   /**
    * action called when user clicks insert file
    */
-  add: function (control, multiple) {
+  add: function(control, multiple) {
     this._self = this;
     var me = this;
 
@@ -54,7 +54,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     }
 
     var callback = {
-      success: function (fileData) {
+      success: function(fileData) {
         if (control) {
           control.insertItem(
             path + '/' + fileData.fileName,
@@ -69,7 +69,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
         }
       },
 
-      failure: function () {
+      failure: function() {
         if (control) {
           control.failure('An error occurred while uploading the file.');
         }
@@ -117,7 +117,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
       YAHOO.util.Event.on(
         createEl,
         'click',
-        function () {
+        function() {
           control.addContainerEl = null;
           control.containerEl.removeChild(addContainerEl);
 
@@ -130,7 +130,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     }
   },
 
-  edit: function (key, control) {
+  edit: function(key, control) {
     this._self = this;
     var me = this;
 
@@ -147,7 +147,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     }
 
     var callback = {
-      success: function (fileData) {
+      success: function(fileData) {
         if (control) {
           control.deleteItem(key);
           control.insertItem(
@@ -163,7 +163,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
         }
       },
 
-      failure: function () {
+      failure: function() {
         if (control) {
           control.failure('An error occurred while uploading the file.');
         }
@@ -175,19 +175,19 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
   },
 
-  getLabel: function () {
+  getLabel: function() {
     return CMgs.format(langBundle, 'fileUploadedDesktop');
   },
 
-  getInterface: function () {
+  getInterface: function() {
     return 'item';
   },
 
-  getName: function () {
+  getName: function() {
     return 'file-desktop-upload';
   },
 
-  getSupportedProperties: function () {
+  getSupportedProperties: function() {
     return [
       {
         label: CMgs.format(langBundle, 'repositoryPath'),
@@ -202,7 +202,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     ];
   },
 
-  getSupportedConstraints: function () {
+  getSupportedConstraints: function() {
     return [];
   }
 });

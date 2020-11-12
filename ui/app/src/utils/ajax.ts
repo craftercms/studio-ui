@@ -80,30 +80,27 @@ export function del(url: string, headers: object = {}): Observable<AjaxResponse>
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) => {
-  if (error.name === 'AjaxError') {
-    const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
-    ajaxError.response = {
-      message: ajaxError.response?.message ?? 'An unknown error has occurred.'
-    };
-    if (ajaxError.status === 401) {
-      return of(fetchFailedCreator(ajaxError), sessionTimeout());
+export const catchAjaxError = (fetchFailedCreator) =>
+  catchError((error: any) => {
+    if (error.name === 'AjaxError') {
+      const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
+      ajaxError.response = {
+        message: ajaxError.response?.message ?? 'An unknown error has occurred.'
+      };
+      if (ajaxError.status === 401) {
+        return of(fetchFailedCreator(ajaxError), sessionTimeout());
+      } else {
+        return of(fetchFailedCreator(ajaxError));
+      }
     } else {
-      return of(fetchFailedCreator(ajaxError));
+      console.error('[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.', error);
+      throw error;
     }
-  } else {
-    console.error(
-      '[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.',
-      error
-    );
-    throw error;
-  }
-});
+  });
 
-export const errorSelectorApi1: <T, O extends ObservableInput<any>>(
-  err: any,
-  caught: Observable<T>
-) => O = (error: any) => {
+export const errorSelectorApi1: <T, O extends ObservableInput<any>>(err: any, caught: Observable<T>) => O = (
+  error: any
+) => {
   if (error.name === 'AjaxError') {
     switch (error.status) {
       case 400:
@@ -125,8 +122,7 @@ export const errorSelectorApi1: <T, O extends ObservableInput<any>>(
         throw {
           code: 2001,
           message: 'Unauthorized',
-          remedialAction:
-            "You don't have permission to perform this task, please contact your administrator"
+          remedialAction: "You don't have permission to perform this task, please contact your administrator"
         };
       case 500:
       default:

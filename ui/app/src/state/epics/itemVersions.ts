@@ -44,18 +44,15 @@ export default [
       ofType(fetchItemVersions.type, versionsChangeItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const service = (state.versions.isConfig)
+        const service = state.versions.isConfig
           ? getConfigurationHistory(
-            state.sites.active,
-            payload.path ?? state.versions.item.path,
-            payload.environment ?? state.versions.environment,
-            payload.module ?? state.versions.module
-          )
+              state.sites.active,
+              payload.path ?? state.versions.item.path,
+              payload.environment ?? state.versions.environment,
+              payload.module ?? state.versions.module
+            )
           : getContentHistory(state.sites.active, payload.path ?? state.versions.item.path);
-        return service.pipe(
-          map(fetchItemVersionsComplete),
-          catchAjaxError(fetchItemVersionsFailed)
-        );
+        return service.pipe(map(fetchItemVersionsComplete), catchAjaxError(fetchItemVersionsFailed));
       })
     ),
   (action$, state$: StateObservable<GlobalState>) =>
@@ -68,11 +65,7 @@ export default [
           state.versions.item.path,
           [state.versions.selected[0], state.versions.selected[1]],
           state.contentTypes.byId
-        )
-          .pipe(
-            map(compareBothVersionsComplete),
-            catchAjaxError(compareBothVersionsFailed)
-          )
+        ).pipe(map(compareBothVersionsComplete), catchAjaxError(compareBothVersionsFailed))
       )
     ),
   (action$, state$: StateObservable<GlobalState>) =>
@@ -84,10 +77,7 @@ export default [
           state.sites.active,
           payload.path ?? state.versions.item.path,
           payload.versionNumber ?? state.versions.previous
-        ).pipe(
-          map(revertContentComplete),
-          catchAjaxError(revertContentFailed)
-        )
+        ).pipe(map(revertContentComplete), catchAjaxError(revertContentFailed))
       )
     ),
   (action$) =>
