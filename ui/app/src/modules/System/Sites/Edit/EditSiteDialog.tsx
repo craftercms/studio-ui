@@ -44,7 +44,7 @@ interface EditSiteDialogUIProps {
   submitting: boolean;
   submitDisabled: boolean;
   onKeyPress: (e: React.KeyboardEvent) => void;
-  onSiteNameChange(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void;
+  onSiteNameChange(event: React.ChangeEvent): void;
   onSiteDescriptionChange(value: string): void;
   onSubmit(): void;
   onClose?(response?: any): any;
@@ -55,7 +55,7 @@ interface EditSiteDialogUIContainerProps {
   resource: Resource<Pick<Source, 'site'>>;
   submitting: boolean;
   submitDisabled: boolean;
-  checkSiteName(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, currentSiteName: string): void;
+  checkSiteName(event: React.ChangeEvent, currentSiteName: string): void;
   onSubmit(id: string, name: string, description: string): void;
   onClose?(): void;
   onDismiss?(): void;
@@ -127,7 +127,7 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
     errorSelector: (source) => source.error
   });
 
-  function checkSiteName(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, currentSiteName: string) {
+  function checkSiteName(event: React.ChangeEvent<HTMLInputElement>, currentSiteName: string) {
     if (
       (currentSiteName !== event.target.value &&
         sites &&
@@ -178,7 +178,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
 
-  const onSiteNameChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const onSiteNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     checkSiteName(event, site.name);
     setName(event.target.value);
   };
