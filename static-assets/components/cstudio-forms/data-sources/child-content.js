@@ -247,11 +247,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
         failure: function () {}
       };
 
-      CStudioAuthoring.Service.lookupContentItem(
-        CStudioAuthoringContext.site,
-        item.key,
-        getContentItemCb
-      );
+      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, item.key, getContentItemCb);
     }
   },
 
@@ -292,7 +288,4 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-child-content',
-  CStudioForms.Datasources.ChildContent
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-child-content', CStudioForms.Datasources.ChildContent);

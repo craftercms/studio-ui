@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE
-  .InsertPredefinedTable || {
+CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.InsertPredefinedTable || {
   createControl: function (name, cm) {
     var predefinedTables = cm.editor.contextControl.rteTables;
     predefinedTables =
@@ -74,10 +73,7 @@ tinymce2.create(
 );
 
 // Register plugin with a short name
-tinymce2.PluginManager.add(
-  'insertpredefinedtable',
-  tinymce2.plugins.CStudioManagedPredefinedTablePlugin
-);
+tinymce2.PluginManager.add('insertpredefinedtable', tinymce2.plugins.CStudioManagedPredefinedTablePlugin);
 
 CStudioAuthoring.Module.moduleLoaded(
   'cstudio-forms-controls-rte-insert-predefined-table',

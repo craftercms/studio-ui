@@ -86,8 +86,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
             } else {
               //link
               previewUrl = repo['download-url-regex'].replace('{item_id}', item.itemId);
-              relativeUrl =
-                repo['download-url-regex'].replace('{item_id}', item.itemId) + '?crafterCMIS=true';
+              relativeUrl = repo['download-url-regex'].replace('{item_id}', item.itemId) + '?crafterCMIS=true';
             }
 
             var videoData = {
@@ -108,15 +107,11 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
   },
 
   getConfig: function (callback) {
-    CStudioAuthoring.Service.getConfiguration(
-      CStudioAuthoringContext.site,
-      '/data-sources/cmis-config.xml',
-      {
-        success: function (config) {
-          callback(config.repositories.repository);
-        }
+    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
+      success: function (config) {
+        callback(config.repositories.repository);
       }
-    );
+    });
   },
 
   // remove edit because edit is not supported
@@ -169,7 +164,4 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-video-cmis-repo',
-  CStudioForms.Datasources.VideoCMISRepo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-video-cmis-repo', CStudioForms.Datasources.VideoCMISRepo);

@@ -143,7 +143,4 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'preview_tools',
-  CStudioAuthoring.ContextualNav.PreviewToolsMod
-);
+CStudioAuthoring.Module.moduleLoaded('preview_tools', CStudioAuthoring.ContextualNav.PreviewToolsMod);

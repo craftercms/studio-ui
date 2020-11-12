@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addCss(
-  '/static-assets/components/cstudio-admin/mods/plugin-manager/plugin.css'
-);
+CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/plugin-manager/plugin.css');
 CStudioAdminConsole.Tool.PluginManager =
   CStudioAdminConsole.Tool.PluginManager ||
   function (config, el) {
@@ -35,7 +33,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.PluginManager, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-plugin-manager',
-  CStudioAdminConsole.Tool.PluginManager
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-plugin-manager', CStudioAdminConsole.Tool.PluginManager);

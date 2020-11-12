@@ -54,7 +54,6 @@
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
       $rootScope.$on('$stateChangeStart', function (event, toState) {
-
         authService.validateSession().then(function (response) {
           if (response.data && response.data.active) {
             var user = authService.getUser() || {};
@@ -517,20 +516,9 @@
       };
 
       this.setCookie = function (cookieGenName, value, maxAge) {
-        var domainVal =
-          document.location.hostname.indexOf('.') > -1
-            ? 'domain=' + document.location.hostname
-            : '';
+        var domainVal = document.location.hostname.indexOf('.') > -1 ? 'domain=' + document.location.hostname : '';
         if (maxAge != null) {
-          document.cookie = [
-            cookieGenName,
-            '=',
-            value,
-            '; path=/; ',
-            domainVal,
-            '; max-age=',
-            maxAge
-          ].join('');
+          document.cookie = [cookieGenName, '=', value, '; path=/; ', domainVal, '; max-age=', maxAge].join('');
         } else {
           document.cookie = [cookieGenName, '=', value, '; path=/; ', domainVal].join('');
         }
@@ -601,9 +589,7 @@
             var userCookieLang = scope.user
                 ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage')
                 : null,
-              cookieLang = userCookieLang
-                ? userCookieLang
-                : localStorage.getItem('crafterStudioLanguage');
+              cookieLang = userCookieLang ? userCookieLang : localStorage.getItem('crafterStudioLanguage');
 
             if (cookieLang) {
               for (var i = 0; i < data.length; i++) {
@@ -688,27 +674,27 @@
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ''),
         captureGroups = generalRegExp.match(/\(\?<.*?>.*?\)/g);
 
-      const allowedChars = (generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) || [
-        '',
+      const allowedChars = (generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) || ['', '', ''])[2];
+
+      const min = ((generalRegExp.match(/\(\?<minLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
         '',
         ''
-      ])[2];
+      ])[1].split(',')[0];
 
-      const min = ((generalRegExp.match(/\(\?<minLength>(.*){(.*?)}\)/) || [''])[0].match(
-        /{(.*?)}/
-      ) || ['', ''])[1].split(',')[0];
+      const max = ((generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[1];
 
-      const max = ((generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(
-        /{(.*?)}/
-      ) || ['', ''])[1].split(',')[1];
+      const minLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[0];
 
-      const minLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
-        /{(.*?)}/
-      ) || ['', ''])[1].split(',')[0];
-
-      const maxLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
-        /{(.*?)}/
-      ) || ['', ''])[1].split(',')[1];
+      const maxLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[1];
 
       const messages = {
         hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
@@ -747,9 +733,7 @@
                 this.runValidation(scope, isValid, elt, 'noGroups', placement);
               }
             } catch (error) {
-              console.warn(
-                'Defaulting password validation to server due to issues in RegExp compilation.'
-              );
+              console.warn('Defaulting password validation to server due to issues in RegExp compilation.');
             }
           }
         }
@@ -758,9 +742,7 @@
       this.creatingPassValHTML = function (content, templateType) {
         var html = '<div class="password-popover">';
         var validPass = false;
-        var isGeneralRegExpWithoutGroupsValid = content
-          ? content.match(generalRegExpWithoutGroups)
-          : false;
+        var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
         if (templateType !== 'noGroups') {
           if (templateType === 'groupsNotSupported') {
             html += '<ul class="password-popover--list password-popover--static">';
@@ -779,11 +761,9 @@
                 isValid = content ? content.match(captureGroup) : false;
               }
               if (isValid) {
-                html +=
-                  '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
+                html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
               } else {
-                html +=
-                  '<span class="password-popover--list-icon fa fa-times-circle password-popover--red "></span>';
+                html += '<span class="password-popover--list-icon fa fa-times-circle password-popover--red "></span>';
                 validPass = true;
               }
             }
@@ -826,7 +806,8 @@
           .focus(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $(this).popover({
-              title: `<span>${messages.passwordValidation}</span>` +
+              title:
+                `<span>${messages.passwordValidation}</span>` +
                 `<button type="button" class="close fa fa-times" onclick="$(this).popover('hide');"/>`,
               content: creatingPassValHTML.template,
               placement: placement ? placement : 'top',
@@ -883,9 +864,7 @@
       $scope.logoutInfo = {};
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
       $scope.messages = {
-        fulfillAllReqErrorMessage: formatMessage(
-          passwordRequirementMessages.fulfillAllReqErrorMessage
-        ),
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
         password: formatMessage(profileSettingsMessages.password),
         currentPassword: formatMessage(profileSettingsMessages.currentPassword),
         isRequired: formatMessage(profileSettingsMessages.isRequired),
@@ -899,8 +878,7 @@
       $scope.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
-          windowClass:
-            (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
           backdrop: 'static',
           keyboard: true,
           scope: $scope,
@@ -1003,28 +981,21 @@
           // set max-age of language cookie to one year
           // set both cookies, on login (on user) it will get last selected
           localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-          localStorage.setItem(
-            $scope.user.username + '_crafterStudioLanguage',
-            $scope.langSelected
-          );
+          localStorage.setItem($scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
           $scope.isModified = false;
 
           let loginSuccess = new CustomEvent('setlocale', { detail: $scope.langSelected });
           document.dispatchEvent(loginSuccess);
 
-          $element
-            .find('.settings-view')
-            .notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
-              position: 'top left',
-              className: 'success'
-            });
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
+            position: 'top left',
+            className: 'success'
+          });
         } catch (err) {
-          $element
-            .find('.settings-view')
-            .notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
-              position: 'top left',
-              className: 'error'
-            });
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
+            position: 'top left',
+            className: 'error'
+          });
         }
       };
 
@@ -1047,15 +1018,13 @@
       $scope.user = authService.getUser();
 
       if ($scope.user && $scope.user.username) {
-        sitesService
-          .getPermissions('', '/', $scope.user.username || $scope.user)
-          .success(function (data) {
-            for (var i = 0; i < data.permissions.length; i++) {
-              if (data.permissions[i] == 'create-site') {
-                $scope.createSites = true;
-              }
+        sitesService.getPermissions('', '/', $scope.user.username || $scope.user).success(function (data) {
+          for (var i = 0; i < data.permissions.length; i++) {
+            if (data.permissions[i] == 'create-site') {
+              $scope.createSites = true;
             }
-          });
+          }
+        });
       }
 
       $scope.data = { email: ($scope.user || { email: '' }).email };
@@ -1074,10 +1043,7 @@
           const packageVersion = response.data.version.packageVersion;
           const simpleVersion = packageVersion.substr(0, 3);
           $scope.aboutStudio = response.data.version;
-          $scope.versionNumber = `${packageVersion}-${response.data.version.packageBuild.substring(
-            0,
-            6
-          )}`;
+          $scope.versionNumber = `${packageVersion}-${response.data.version.packageBuild.substring(0, 6)}`;
           $scope.simpleVersion = simpleVersion;
           $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
           $scope.attributionHTML = CrafterCMSNext.i18n.intl
@@ -1137,12 +1103,7 @@
 
           $scope.confirmationText = $scope.messages.unSavedConfirmation;
           $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
-          $scope.confirmationModal = $scope.showModal(
-            'confirmationModal.html',
-            'sm',
-            true,
-            'studioMedium'
-          );
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
         }
       });
     }
@@ -1174,9 +1135,7 @@
         formatMessage = i18n.intl.formatMessage;
         globalMenuMessages = i18n.messages.globalMenuMessages;
         $scope.entities.forEach(function (entry, i) {
-          entry.label = globalMenuMessages[entry.id]
-            ? formatMessage(globalMenuMessages[entry.id])
-            : entry.label;
+          entry.label = globalMenuMessages[entry.id] ? formatMessage(globalMenuMessages[entry.id]) : entry.label;
         });
       }
 
@@ -1192,9 +1151,7 @@
           const currentView = $state.current.name;
 
           $scope.entities.forEach(function (entry, i) {
-            const label = globalMenuMessages[entry.id]
-              ? formatMessage(globalMenuMessages[entry.id])
-              : entry.label;
+            const label = globalMenuMessages[entry.id] ? formatMessage(globalMenuMessages[entry.id]) : entry.label;
 
             entry.label = label;
 
@@ -1232,17 +1189,7 @@
     '$cookies',
     '$timeout',
     'Constants',
-    function (
-      $scope,
-      $state,
-      $location,
-      sitesService,
-      authService,
-      $uibModal,
-      $cookies,
-      $timeout,
-      Constants
-    ) {
+    function ($scope, $state, $location, sitesService, authService, $uibModal, $cookies, $timeout, Constants) {
       $scope.sites = null;
 
       $scope.editSite = sitesService.editSite;
@@ -1432,8 +1379,7 @@
       $scope.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
-          windowClass:
-            (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
           backdrop: 'static',
           keyboard: true,
           scope: $scope,
@@ -1565,12 +1511,7 @@
 
           $scope.confirmationText = formatMessage(globalConfigMessages.unSavedConfirmation);
           $scope.confirmationTitle = formatMessage(globalConfigMessages.unSavedConfirmationTitle);
-          $scope.confirmationModal = $scope.showModal(
-            'confirmationModal.html',
-            'sm',
-            true,
-            'studioMedium'
-          );
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
         }
       });
     }
@@ -1745,11 +1686,7 @@
           return;
         }
 
-        for (
-          var i = 0, sites = $scope.sites, site = sites[i], l = sites.length;
-          i < l;
-          site = sites[++i]
-        ) {
+        for (var i = 0, sites = $scope.sites, site = sites[i], l = sites.length; i < l; site = sites[++i]) {
           if (site.siteId + '' === siteId + '') {
             $scope.site = site;
             break;
@@ -1761,9 +1698,7 @@
         var patt = /(^0$)|(^0[0-9]+$)/i;
         var result = false;
         if ($scope.site.siteId) {
-          $scope.site.siteId = $scope.site.siteId
-            .replace(/(^-|_$)|[^a-zA-Z0-9-_]/g, '')
-            .toLowerCase();
+          $scope.site.siteId = $scope.site.siteId.replace(/(^-|_$)|[^a-zA-Z0-9-_]/g, '').toLowerCase();
           result = $scope.site.siteId.match(patt);
           if (result) {
             $scope.isNumValid = true;
@@ -1809,9 +1744,7 @@
             params.remote_branch = $scope.site.remote_branch;
           }
           params.single_branch = false;
-          params.authentication_type = !$scope.site.authentication
-            ? 'none'
-            : $scope.site.authentication;
+          params.authentication_type = !$scope.site.authentication ? 'none' : $scope.site.authentication;
           if ($scope.site.authentication == 'basic') {
             params.remote_username = $scope.site.username;
             params.remote_password = $scope.site.password;
@@ -1838,9 +1771,7 @@
               params.remote_branch = $scope.site.push_remote_branch;
             }
             params.single_branch = false;
-            params.authentication_type = !$scope.site.push_authentication
-              ? 'none'
-              : $scope.site.push_authentication;
+            params.authentication_type = !$scope.site.push_authentication ? 'none' : $scope.site.push_authentication;
             if ($scope.site.push_authentication == 'basic') {
               params.remote_username = $scope.site.push_username;
               params.remote_password = $scope.site.push_password;
@@ -2130,5 +2061,4 @@
       }
     };
   });
-
 })(angular);

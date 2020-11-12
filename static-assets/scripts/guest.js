@@ -135,9 +135,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
-      var elt = document.querySelectorAll(
-        '[data-studio-ice' + message.label + '="' + message.region + '"]'
-      )[0];
+      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
       if (!elt) {
         elt = document.querySelectorAll(
           '[data-studio-ice' + message.label + '="' + message.region.replace(/ /g, '__') + '"]'
@@ -235,8 +233,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     });
 
     loadCss(
-      config.hostOrigin +
-        crafter.join('/', config.studioContext, config.studioStaticAssets, 'styles', 'guest.css')
+      config.hostOrigin + crafter.join('/', config.studioContext, config.studioStaticAssets, 'styles', 'guest.css')
     );
 
     if (!$("link[href*='font-awesome']").length) {
@@ -321,9 +318,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     if (!flag && compElement.is(':visible')) {
       const aux = $(
         crafter
-          .String(
-            '<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>'
-          )
+          .String('<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>')
           .fmt(iceRef)
       ).css({
         top: position.top,

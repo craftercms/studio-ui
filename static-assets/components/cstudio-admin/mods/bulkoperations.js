@@ -190,10 +190,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
       failure: function () {}
     };
 
-    CStudioAuthoring.Service.retrievePublishingChannels(
-      CStudioAuthoringContext.site,
-      publishingOptionsCB
-    );
+    CStudioAuthoring.Service.retrievePublishingChannels(CStudioAuthoringContext.site, publishingOptionsCB);
   },
 
   renderJobsList: function () {
@@ -204,7 +201,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-bulkoperations',
-  CStudioAdminConsole.Tool.BulkOperations
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-bulkoperations', CStudioAdminConsole.Tool.BulkOperations);

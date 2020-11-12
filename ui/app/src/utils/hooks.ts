@@ -14,15 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  Dispatch,
-  EffectCallback,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef
-} from 'react';
+import { Dispatch, EffectCallback, SetStateAction, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -34,15 +26,10 @@ export function useSubject<T = unknown>() {
   return useMemo(() => new Subject<T>(), []);
 }
 
-export function useDebouncedInput(
-  observer: (keywords: string) => any,
-  time: number = 250
-): Subject<string> {
+export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250): Subject<string> {
   const subject$Ref = useRef(new Subject<string>());
   useEffect(() => {
-    const subscription = subject$Ref.current
-      .pipe(debounceTime(time), distinctUntilChanged())
-      .subscribe(observer);
+    const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe(observer);
     return () => subscription.unsubscribe();
   }, [observer, time]);
   return subject$Ref.current;

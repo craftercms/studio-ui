@@ -148,8 +148,7 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
       var c = cm.createMenuButton('managedImage', {
         title: 'Insert Image',
         image:
-          CStudioAuthoringContext.authoringAppBaseUri +
-          '/static-assets/themes/cstudioTheme/images/insert_image.png',
+          CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/insert_image.png',
         icons: false
       });
 
@@ -203,15 +202,9 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
   }
 };
 
-tinymce2.create(
-  'tinymce2.plugins.CStudioManagedImagePlugin',
-  CStudioForms.Controls.RTE.ImageInsert
-);
+tinymce2.create('tinymce2.plugins.CStudioManagedImagePlugin', CStudioForms.Controls.RTE.ImageInsert);
 
 // Register plugin with a short name
 tinymce2.PluginManager.add('insertimage', tinymce2.plugins.CStudioManagedImagePlugin);
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-rte-insert-image',
-  CStudioForms.Controls.RTE.ImageInsert
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-insert-image', CStudioForms.Controls.RTE.ImageInsert);

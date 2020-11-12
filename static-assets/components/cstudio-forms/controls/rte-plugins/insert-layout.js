@@ -69,10 +69,7 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
   }
 };
 
-tinymce2.create(
-  'tinymce2.plugins.CStudioInsertLayoutPlugin',
-  CStudioForms.Controls.RTE.InsertLayout
-);
+tinymce2.create('tinymce2.plugins.CStudioInsertLayoutPlugin', CStudioForms.Controls.RTE.InsertLayout);
 
 // Register plugin with a short name
 tinymce2.PluginManager.add('insertlayout', tinymce2.plugins.CStudioInsertLayoutPlugin);

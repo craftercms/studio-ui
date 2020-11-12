@@ -208,8 +208,7 @@ YAHOO.extend(
         if (i != 0) {
           delEl = document.createElement('img');
           delEl.src =
-            CStudioAuthoringContext.authoringAppBaseUri +
-            '/static-assets/themes/cstudioTheme/images/icons/delete.png';
+            CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/icons/delete.png';
           YAHOO.util.Dom.addClass(delEl, 'deleteControl');
           delEl.index = i;
           YAHOO.util.Event.on(

@@ -90,7 +90,4 @@ YAHOO.extend(CStudioForms.Controls.AutoFilename, CStudioForms.CStudioFormField, 
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-auto-filename',
-  CStudioForms.Controls.AutoFilename
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-auto-filename', CStudioForms.Controls.AutoFilename);

@@ -81,23 +81,19 @@
         panel.setHeader('<span data-translation="previewToolsTitle">Preview Tools</span>');
         panel.render();
 
-        CStudioAuthoring.Service.lookupConfigurtion(
-          CStudioAuthoringContext.site,
-          '/preview-tools/panel.xml',
-          {
-            success: function (config) {
-              this.context.buildModules(config);
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/panel.xml', {
+          success: function (config) {
+            this.context.buildModules(config);
 
-              if (ptoOn) {
-                this.context.turnToolsOn();
-              } else {
-                this.context.turnToolsOff();
-              }
-            },
-            failure: CStudioAuthoring.Utils.noop,
-            context: this
-          }
-        );
+            if (ptoOn) {
+              this.context.turnToolsOn();
+            } else {
+              this.context.turnToolsOff();
+            }
+          },
+          failure: CStudioAuthoring.Utils.noop,
+          context: this
+        });
 
         this.panel = panel;
         this.initialized = true;
@@ -139,10 +135,7 @@
     updateLocationPrefs: function () {
       var panelXYvalues = this.panel.cfg.config.xy.value;
       sessionStorage.setItem('pto-left', panelXYvalues[0]);
-      sessionStorage.setItem(
-        'pto-top',
-        panelXYvalues[1] < STUDIO_BAR_HEIGHT ? STUDIO_BAR_HEIGHT : panelXYvalues[1]
-      );
+      sessionStorage.setItem('pto-top', panelXYvalues[1] < STUDIO_BAR_HEIGHT ? STUDIO_BAR_HEIGHT : panelXYvalues[1]);
     },
 
     /*

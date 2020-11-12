@@ -14,31 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const
+const //
   fs = require('fs'),
   ncp = require('ncp').ncp,
   rimraf = require('rimraf'),
-
-  APP_DIR = (__dirname).replace('/scripts', ''),
+  APP_DIR = __dirname.replace('/scripts', ''),
   PATH_BUILD = `${APP_DIR}/build`,
   TEMPLATES = `../../templates`,
   DEST = `../../static-assets/next`,
-
   PLACEHOLDER = '<script id="_placeholderscript_"></script>',
-
   indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString(),
   position = indexContents.indexOf(PLACEHOLDER),
-
   templateScripts = indexContents
     .substr(position + PLACEHOLDER.length)
     .replace(/\<\/(body|html)>/gi, '')
-    .replace(/<\/script>/gi, '<\/script>\n')
-;
-
+    .replace(/<\/script>/gi, '</script>\n');
 console.log(`Updating script imports`);
-fs.writeFileSync(
-  `${TEMPLATES}/web/common/js-next-scripts.ftl`,
-  `${templateScripts}`);
+fs.writeFileSync(`${TEMPLATES}/web/common/js-next-scripts.ftl`, `${templateScripts}`);
 
 console.log(`Deleting previous build (rm -rf ${DEST}/*)`);
 rimraf.sync(`${DEST}/*`);

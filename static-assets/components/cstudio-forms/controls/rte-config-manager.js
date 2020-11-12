@@ -94,11 +94,7 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
           }
         };
 
-        CStudioAuthoring.Service.lookupConfigurtion(
-          CStudioAuthoringContext.site,
-          configPath,
-          cacheCb
-        );
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, configPath, cacheCb);
       } else {
         if (!this.queuedConfigCallbacks[cacheKey]) {
           this.queuedConfigCallbacks[cacheKey] = new Array();
@@ -126,7 +122,4 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-rte-config-manager',
-  CStudioForms.Controls.RTEManager
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-rte-config-manager', CStudioForms.Controls.RTEManager);

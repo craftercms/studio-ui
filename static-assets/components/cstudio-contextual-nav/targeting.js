@@ -118,10 +118,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
           var reportContainerEl = document.createElement('div');
           reportContainerEl.id = 'cstudioPreviewTargetingOverlay';
-          YAHOO.util.Dom.addClass(
-            reportContainerEl,
-            'cstudio-targeting-overlay row yui-skin-cstudioTheme'
-          );
+          YAHOO.util.Dom.addClass(reportContainerEl, 'cstudio-targeting-overlay row yui-skin-cstudioTheme');
 
           reportContainerEl.style.position = 'fixed';
           reportContainerEl.style.width = '800px';
@@ -148,168 +145,156 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           targetingContainerEl.id = 'targeting-container';
           YAHOO.util.Dom.addClass(targetingContainerEl, 'col-md-10 targeting-container');
           targetingContainerEl.style.cssText = 'overflow-y: scroll; max-height: 467px;';
-          targetingContainerEl.innerHTML =
-            "<h3 class='bold'>" + CMgs.format(previewLangBundle, 'userProps') + '</h2>';
+          targetingContainerEl.innerHTML = "<h3 class='bold'>" + CMgs.format(previewLangBundle, 'userProps') + '</h2>';
 
           reportContainerEl.appendChild(targetingContainerEl);
 
-          CStudioAuthoring.Service.lookupConfigurtion(
-            CStudioAuthoringContext.site,
-            '/targeting/targeting-config.xml',
-            {
-              success: function (config) {
-                var properties = config.property,
-                  currentProp,
-                  controlContainer;
+          CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
+            success: function (config) {
+              var properties = config.property,
+                currentProp,
+                controlContainer;
 
-                me.initModel(properties, {
-                  //update model and properties with current profile
-                  success: function (properties) {
-                    //Create and append the options
-                    for (var i = 0; i < properties.length; i++) {
-                      currentProp = properties[i];
+              me.initModel(properties, {
+                //update model and properties with current profile
+                success: function (properties) {
+                  //Create and append the options
+                  for (var i = 0; i < properties.length; i++) {
+                    currentProp = properties[i];
 
-                      controlContainer = document.createElement('div');
-                      YAHOO.util.Dom.addClass(controlContainer, 'control-container clearfix');
-                      controlContainer.style.marginBottom = '15px';
-                      targetingContainerEl.appendChild(controlContainer);
+                    controlContainer = document.createElement('div');
+                    YAHOO.util.Dom.addClass(controlContainer, 'control-container clearfix');
+                    controlContainer.style.marginBottom = '15px';
+                    targetingContainerEl.appendChild(controlContainer);
 
-                      var labelSpan = document.createElement('span');
-                      YAHOO.util.Dom.addClass(labelSpan, 'control-label bold');
-                      labelSpan.style.cssText =
-                        'min-width: 80px; display: inline-block; margin-right: 20px;';
-                      labelSpan.innerHTML = currentProp.label;
-                      targetingContainerEl.appendChild(controlContainer);
-                      controlContainer.appendChild(labelSpan);
+                    var labelSpan = document.createElement('span');
+                    YAHOO.util.Dom.addClass(labelSpan, 'control-label bold');
+                    labelSpan.style.cssText = 'min-width: 80px; display: inline-block; margin-right: 20px;';
+                    labelSpan.innerHTML = currentProp.label;
+                    targetingContainerEl.appendChild(controlContainer);
+                    controlContainer.appendChild(labelSpan);
 
-                      // <!-- valid types: dropdown, checkboxes, input -->
+                    // <!-- valid types: dropdown, checkboxes, input -->
 
-                      switch (currentProp.type) {
-                        case 'dropdown':
-                          YAHOO.util.Dom.addClass(controlContainer, 'dropdown');
+                    switch (currentProp.type) {
+                      case 'dropdown':
+                        YAHOO.util.Dom.addClass(controlContainer, 'dropdown');
 
-                          var selectList = document.createElement('select');
-                          selectList.id = currentProp.name;
-                          selectList.style.width = '30%';
-                          controlContainer.appendChild(selectList);
+                        var selectList = document.createElement('select');
+                        selectList.id = currentProp.name;
+                        selectList.style.width = '30%';
+                        controlContainer.appendChild(selectList);
 
-                          for (var j = 0; j < currentProp.possible_values.value.length; j++) {
-                            var option = document.createElement('option');
-                            option.value = currentProp.possible_values.value[j];
-                            option.text = currentProp.possible_values.value[j];
-                            if (currentProp.default_value == option.value) {
-                              option.selected = 'selected';
-                            }
-                            selectList.appendChild(option);
+                        for (var j = 0; j < currentProp.possible_values.value.length; j++) {
+                          var option = document.createElement('option');
+                          option.value = currentProp.possible_values.value[j];
+                          option.text = currentProp.possible_values.value[j];
+                          if (currentProp.default_value == option.value) {
+                            option.selected = 'selected';
                           }
+                          selectList.appendChild(option);
+                        }
 
-                          break;
-                        case 'checkboxes':
-                          YAHOO.util.Dom.addClass(controlContainer, 'checkboxes clearfix');
-                          labelSpan.style.float = 'left';
+                        break;
+                      case 'checkboxes':
+                        YAHOO.util.Dom.addClass(controlContainer, 'checkboxes clearfix');
+                        labelSpan.style.float = 'left';
 
-                          var checkBoxGroupContainer = document.createElement('div');
-                          YAHOO.util.Dom.addClass(checkBoxGroupContainer, 'checkbox-group');
-                          checkBoxGroupContainer.id = currentProp.name;
-                          checkBoxGroupContainer.style.cssText =
-                            'float: left; max-width: calc(100% - 100px); width: 100%;';
-                          controlContainer.appendChild(checkBoxGroupContainer);
+                        var checkBoxGroupContainer = document.createElement('div');
+                        YAHOO.util.Dom.addClass(checkBoxGroupContainer, 'checkbox-group');
+                        checkBoxGroupContainer.id = currentProp.name;
+                        checkBoxGroupContainer.style.cssText =
+                          'float: left; max-width: calc(100% - 100px); width: 100%;';
+                        controlContainer.appendChild(checkBoxGroupContainer);
 
-                          var checkboxSelectAll = document.createElement('span'),
-                            checkbox;
-                          YAHOO.util.Dom.addClass(checkboxSelectAll, 'checkbox select-all mt0');
-                          checkboxSelectAll.innerHTML =
-                            "<label for='" +
+                        var checkboxSelectAll = document.createElement('span'),
+                          checkbox;
+                        YAHOO.util.Dom.addClass(checkboxSelectAll, 'checkbox select-all mt0');
+                        checkboxSelectAll.innerHTML =
+                          "<label for='" +
+                          currentProp.name +
+                          "-all'>" +
+                          "	<input type='checkbox' id='" +
+                          currentProp.name +
+                          "-all' class='select-all'>" +
+                          '	<span>Select All</span>' +
+                          '</label>';
+                        checkBoxGroupContainer.appendChild(checkboxSelectAll);
+
+                        var defVals = currentProp.default_value.split(','),
+                          checked;
+
+                        for (var j = 0; j < currentProp.possible_values.value.length; j++) {
+                          checked = defVals.indexOf(currentProp.possible_values.value[j]) != -1 ? 'checked' : '';
+
+                          checkbox = document.createElement('span');
+                          YAHOO.util.Dom.addClass(checkboxSelectAll, 'checkbox');
+                          checkbox.innerHTML =
+                            "<label style='width: 50%;' for='" +
                             currentProp.name +
-                            "-all'>" +
-                            "	<input type='checkbox' id='" +
+                            '-' +
+                            currentProp.possible_values.value[j] +
+                            "'>" +
+                            '	<input  ' +
+                            checked +
+                            " type='checkbox' data-value='" +
+                            currentProp.possible_values.value[j] +
+                            "' id='" +
                             currentProp.name +
-                            "-all' class='select-all'>" +
-                            '	<span>Select All</span>' +
+                            '-' +
+                            currentProp.possible_values.value[j] +
+                            "'>" +
+                            '	<span>' +
+                            currentProp.possible_values.value[j] +
+                            '</span>' +
                             '</label>';
-                          checkBoxGroupContainer.appendChild(checkboxSelectAll);
+                          checkBoxGroupContainer.appendChild(checkbox);
+                        }
 
-                          var defVals = currentProp.default_value.split(','),
-                            checked;
+                        checkboxSelectAll.onclick = function () {
+                          var checkAll = $(this).find("input[type='checkbox']").is(':checked');
+                          var checkboxes = $(this.parentElement).find('input[type="checkbox"]:not(".select-all")');
 
-                          for (var j = 0; j < currentProp.possible_values.value.length; j++) {
-                            checked =
-                              defVals.indexOf(currentProp.possible_values.value[j]) != -1
-                                ? 'checked'
-                                : '';
+                          $.each(checkboxes, function (i, el) {
+                            el.checked = checkAll;
+                          });
+                        };
 
-                            checkbox = document.createElement('span');
-                            YAHOO.util.Dom.addClass(checkboxSelectAll, 'checkbox');
-                            checkbox.innerHTML =
-                              "<label style='width: 50%;' for='" +
-                              currentProp.name +
-                              '-' +
-                              currentProp.possible_values.value[j] +
-                              "'>" +
-                              '	<input  ' +
-                              checked +
-                              " type='checkbox' data-value='" +
-                              currentProp.possible_values.value[j] +
-                              "' id='" +
-                              currentProp.name +
-                              '-' +
-                              currentProp.possible_values.value[j] +
-                              "'>" +
-                              '	<span>' +
-                              currentProp.possible_values.value[j] +
-                              '</span>' +
-                              '</label>';
-                            checkBoxGroupContainer.appendChild(checkbox);
-                          }
+                        break;
+                      case 'input':
+                        YAHOO.util.Dom.addClass(controlContainer, 'input');
 
-                          checkboxSelectAll.onclick = function () {
-                            var checkAll = $(this).find("input[type='checkbox']").is(':checked');
-                            var checkboxes = $(this.parentElement).find(
-                              'input[type="checkbox"]:not(".select-all")'
-                            );
+                        var input = document.createElement('input');
+                        input.id = currentProp.name;
+                        input.value = currentProp.default_value;
+                        input.style.width = '30%';
+                        controlContainer.appendChild(input);
 
-                            $.each(checkboxes, function (i, el) {
-                              el.checked = checkAll;
-                            });
-                          };
+                        break;
+                      case 'datetime':
+                        me.dateTimeInit(controlContainer, currentProp);
 
-                          break;
-                        case 'input':
-                          YAHOO.util.Dom.addClass(controlContainer, 'input');
-
-                          var input = document.createElement('input');
-                          input.id = currentProp.name;
-                          input.value = currentProp.default_value;
-                          input.style.width = '30%';
-                          controlContainer.appendChild(input);
-
-                          break;
-                        case 'datetime':
-                          me.dateTimeInit(controlContainer, currentProp);
-
-                          break;
-                      }
-
-                      var description = document.createElement('span');
-                      YAHOO.util.Dom.addClass(description, 'description');
-                      description.innerHTML = currentProp.description;
-
-                      description.style.cssText =
-                        'color: #999999; display: block; margin-left: 100px; text-align: justify; margin-top: 5px;';
-                      controlContainer.appendChild(description);
-
-                      var hint = document.createElement('span');
-                      YAHOO.util.Dom.addClass(hint, 'hint');
-                      hint.innerHTML = currentProp.hint;
-                      hint.style.cssText =
-                        'color: #999999; margin-left: 100px; text-align: justify; margin-top: 5px;';
-                      controlContainer.appendChild(hint);
+                        break;
                     }
+
+                    var description = document.createElement('span');
+                    YAHOO.util.Dom.addClass(description, 'description');
+                    description.innerHTML = currentProp.description;
+
+                    description.style.cssText =
+                      'color: #999999; display: block; margin-left: 100px; text-align: justify; margin-top: 5px;';
+                    controlContainer.appendChild(description);
+
+                    var hint = document.createElement('span');
+                    YAHOO.util.Dom.addClass(hint, 'hint');
+                    hint.innerHTML = currentProp.hint;
+                    hint.style.cssText = 'color: #999999; margin-left: 100px; text-align: justify; margin-top: 5px;';
+                    controlContainer.appendChild(hint);
                   }
-                });
-              }
+                }
+              });
             }
-          );
+          });
 
           var actionButtonsContainer = document.createElement('div');
           actionButtonsContainer.style.cssText = 'position: absolute; bottom: 15px; right: 15px;';
@@ -327,9 +312,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
               '/targeting/targeting-config.xml',
               {
                 success: function (config) {
-                  var properties = Array.isArray(config.property)
-                      ? config.property
-                      : [config.property],
+                  var properties = Array.isArray(config.property) ? config.property : [config.property],
                     currentProp,
                     controlEl;
 
@@ -347,9 +330,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                         break;
                       case 'checkboxes':
-                        var $checkboxes = $(controlEl).find(
-                          "input[type='checkbox']:not('.select-all')"
-                        );
+                        var $checkboxes = $(controlEl).find("input[type='checkbox']:not('.select-all')");
                         $checkboxes.attr('checked', false);
 
                         var defVals = currentProp.default_value.split(','),
@@ -367,9 +348,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                       case 'datetime':
                         var $controlEl = $(controlEl),
                           $dateTimePicker = $controlEl.find('.date-picker'),
-                          $timeZonePicker = $controlEl
-                            .siblings('.timezone-container')
-                            .find('.zone-picker');
+                          $timeZonePicker = $controlEl.siblings('.timezone-container').find('.zone-picker');
 
                         if (currentProp.default_value === '') {
                           $dateTimePicker.val(currentProp.default_value);
@@ -431,19 +410,15 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
           serviceUri += 'nocache=' + new Date();
 
-          YConnect.asyncRequest(
-            'GET',
-            CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)),
-            {
-              success: function () {
-                document.body.removeChild(reportContainerEl);
+          YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)), {
+            success: function () {
+              document.body.removeChild(reportContainerEl);
 
-                if (CStudioAuthoringContext.isPreview) {
-                  CStudioAuthoring.Operations.refreshPreview();
-                }
+              if (CStudioAuthoringContext.isPreview) {
+                CStudioAuthoring.Operations.refreshPreview();
               }
             }
-          );
+          });
         },
 
         closeDialog: function (reportContainerEl) {
@@ -467,30 +442,26 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
           //properties from profile
           var serviceUri = '/api/1/profile/get?time=' + new Date();
-          YConnect.asyncRequest(
-            'GET',
-            CStudioAuthoring.Service.createEngineServiceUri(serviceUri),
-            {
-              success: function (oResponse) {
-                var json = oResponse.responseText,
-                  currentProfile = eval('(' + json + ')');
+          YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(serviceUri), {
+            success: function (oResponse) {
+              var json = oResponse.responseText,
+                currentProfile = eval('(' + json + ')');
 
-                for (var property in currentProfile) {
-                  if (currentProfile.hasOwnProperty(property)) {
-                    me.model[property] = currentProfile[property];
-                  }
-
-                  for (var x = 0; x < properties.length; x++) {
-                    if (properties[x].name == property) {
-                      properties[x].default_value = currentProfile[property];
-                    }
-                  }
+              for (var property in currentProfile) {
+                if (currentProfile.hasOwnProperty(property)) {
+                  me.model[property] = currentProfile[property];
                 }
 
-                callback.success(properties);
+                for (var x = 0; x < properties.length; x++) {
+                  if (properties[x].name == property) {
+                    properties[x].default_value = currentProfile[property];
+                  }
+                }
               }
+
+              callback.success(properties);
             }
-          );
+          });
         },
 
         //get model from current form
@@ -525,11 +496,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                 pickerDate =
                   valueDate === ''
                     ? ''
-                    : moment.tz(
-                        $(element).find('.date-picker').val(),
-                        'YYYY-MM-DD HH:mm A',
-                        timezone
-                      );
+                    : moment.tz($(element).find('.date-picker').val(), 'YYYY-MM-DD HH:mm A', timezone);
 
               value = pickerDate === '' ? '' : pickerDate.toISOString();
               me.model[`${key}_tz`] = encodeURIComponent(timezone);
@@ -543,16 +510,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
           $(controlContainer).addClass('datetime');
 
-          let $dateContainer = $(
-              '<div class="date-container clearfix" id="' + currentProp.name + '"/>'
-            ).appendTo(controlContainer),
-            $timeZoneContainer = $('<div class="timezone-container clearfix"/>').appendTo(
+          let $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '"/>').appendTo(
               controlContainer
             ),
+            $timeZoneContainer = $('<div class="timezone-container clearfix"/>').appendTo(controlContainer),
             $dateTimeEl = $(
-              '<input readonly class="date-picker mr10" name="' +
-                currentProp.name +
-                '-control" type="datetime" />'
+              '<input readonly class="date-picker mr10" name="' + currentProp.name + '-control" type="datetime" />'
             ).appendTo($dateContainer),
             $timeZonePicker = $(
               '<select class="zone-picker" data-dateRef="' + currentProp.name + '"></select>'
@@ -561,9 +524,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
               '<a href="#">' + targetingMod.formatMessage(targetingMod.messages.setNow) + '</a>'
             ).appendTo($dateContainer),
             $setClearLink = $(
-              '<a href="#" class="ml10">' +
-                targetingMod.formatMessage(targetingMod.words.clear) +
-                '</a>'
+              '<a href="#" class="ml10">' + targetingMod.formatMessage(targetingMod.words.clear) + '</a>'
             ).appendTo($dateContainer),
             timeZone = this.model[`${currentProp.name}_tz`],
             dateObj,

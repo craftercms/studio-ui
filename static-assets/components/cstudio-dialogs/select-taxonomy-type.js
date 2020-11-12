@@ -22,8 +22,7 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 /**
  * Submit to go live
  */
-CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs
-  .DialogSelectTaxonomyType || {
+CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.DialogSelectTaxonomyType || {
   /**
    * initialize module
    */
@@ -156,8 +155,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs
         oPropertyValue = aProperty[1];
       if (sPropertyName == 'zindex') {
         var siteContextNavZIndex = 100;
-        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex =
-          oPropertyValue + siteContextNavZIndex;
+        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
 
       //set focus on OK Button.
@@ -219,8 +217,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs
     }
 
     YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
-      var defaultSrc =
-        CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
+      var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
       var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
 
@@ -265,7 +262,4 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'dialog-select-taxonomy',
-  CStudioAuthoring.Dialogs.DialogSelectTaxonomyType
-);
+CStudioAuthoring.Module.moduleLoaded('dialog-select-taxonomy', CStudioAuthoring.Dialogs.DialogSelectTaxonomyType);

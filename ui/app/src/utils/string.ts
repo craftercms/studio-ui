@@ -36,7 +36,8 @@ export function capitalize(str: string) {
  * Converts a camelized string into a series of words separated by an underscore (_).
  **/
 export function underscore(str: string) {
-  return str.replace(/::/g, '/')
+  return str
+    .replace(/::/g, '/')
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
     .replace(/([a-z\d])([A-Z])/g, '$1_$2')
     .replace(/-/g, '_')
@@ -65,7 +66,7 @@ export function bytesToSize(bytes: number, separator: string = '') {
   if (bytes === 0) return 'n/a';
   const i = parseInt(`${Math.floor(Math.log(bytes) / Math.log(1024))}`, 10);
   if (i === 0) return `${bytes}${separator}${sizes[i]}`;
-  return `${(bytes / (1024 ** i)).toFixed(1)}${separator}${sizes[i]}`;
+  return `${(bytes / 1024 ** i).toFixed(1)}${separator}${sizes[i]}`;
 }
 
 /**
@@ -73,9 +74,7 @@ export function bytesToSize(bytes: number, separator: string = '') {
  * @param url {string} The URL to clean up
  */
 export function insureSingleSlash(url: string): string {
-  return /^(http|https):\/\//g.test(url)
-    ? url.replace(/([^:]\/)\/+/g, '$1')
-    : url.replace(/\/+/g, '/');
+  return /^(http|https):\/\//g.test(url) ? url.replace(/([^:]\/)\/+/g, '$1') : url.replace(/\/+/g, '/');
 }
 
 export default {

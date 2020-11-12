@@ -65,8 +65,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
           '</div> ' +
           '</div>';
 
-      Array.isArray(aURIs) &&
-        aURIs.push('<div style="margin:0 0 5px 0">' + item.browserUri + '</div>');
+      Array.isArray(aURIs) && aURIs.push('<div style="margin:0 0 5px 0">' + item.browserUri + '</div>');
       flatMap[item.uri] = item;
 
       if (children) {
@@ -86,19 +85,14 @@ CStudioAuthoring.Dialogs.DialogCopy =
           heading: CMgs.format(formsLangBundle, 'cut'),
           description: CMgs.format(formsLangBundle, 'copyDescription'),
           actionButton: CMgs.format(formsLangBundle, 'cut'),
-          request:
-            CStudioAuthoringContext.baseUri + '/service/cstudio/services/clipboard/cut?site=' + site
+          request: CStudioAuthoringContext.baseUri + '/service/cstudio/services/clipboard/cut?site=' + site
         };
       } else {
         context = {
           heading: CMgs.format(formsLangBundle, 'copy'),
           description: CMgs.format(formsLangBundle, 'copyDescription'),
           actionButton: CMgs.format(formsLangBundle, 'copy'),
-          request:
-            CStudioAuthoringContext.baseUri +
-            CStudioAuthoring.Service.copyServiceUrl +
-            '?site=' +
-            site
+          request: CStudioAuthoringContext.baseUri + CStudioAuthoring.Service.copyServiceUrl + '?site=' + site
         };
       }
       return context;
@@ -312,11 +306,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
     function updateDialog(content, cut) {
       var dialogContent = getDialogContent(content),
-        contentContainer = YAHOO.util.Selector.query(
-          '#cstudio-wcm-popup-div .scrollBox',
-          null,
-          true
-        );
+        contentContainer = YAHOO.util.Selector.query('#cstudio-wcm-popup-div .scrollBox', null, true);
 
       item = content.item;
 

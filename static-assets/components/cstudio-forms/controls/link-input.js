@@ -307,7 +307,4 @@ YAHOO.extend(CStudioForms.Controls.LinkInput, CStudioForms.CStudioFormField, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-link-input',
-  CStudioForms.Controls.LinkInput
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-link-input', CStudioForms.Controls.LinkInput);

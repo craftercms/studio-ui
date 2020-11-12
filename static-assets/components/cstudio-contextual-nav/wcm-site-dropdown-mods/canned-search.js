@@ -35,8 +35,7 @@ CStudioAuthoring.ContextualNav.CannedSearch = CStudioAuthoring.ContextualNav.Can
       var parentFolderEl = document.createElement('div');
 
       var parentFolderLinkEl = document.createElement('a');
-      parentFolderLinkEl.innerHTML =
-        '<br/>&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;Downloads Canned Search Example';
+      parentFolderLinkEl.innerHTML = '<br/>&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;Downloads Canned Search Example';
       parentFolderLinkEl.onclick = function () {
         var url =
           CStudioAuthoringContext.authoringAppBaseUri +

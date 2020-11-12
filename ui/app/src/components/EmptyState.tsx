@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
-import emptyIGM from "../assets/desert.svg";
+import React from 'react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import emptyIGM from '../assets/desert.svg';
 
 const useStyles = makeStyles(() => ({
   emptyContainer: {
@@ -31,36 +31,34 @@ const useStyles = makeStyles(() => ({
       marginBottom: '10px'
     },
     '& .paragraph': {
-      marginTop: '10px',
-    },
+      marginTop: '10px'
+    }
   }
 }));
 
 interface EmptyStateProps {
-  image?: string,
-  title: string
-  subtitle: string
+  image?: string;
+  title: string;
+  subtitle: string;
 }
 
 export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles({});
-  const {image, title, subtitle} = props;
+  const { image, title, subtitle } = props;
 
   return (
     <div className={classes.emptyContainer}>
-      <img src={image ? image : emptyIGM} alt=""/>
-      {
-        title &&
+      <img src={image ? image : emptyIGM} alt="" />
+      {title && (
         <Typography variant="h5" component="h1" className={'title'} color={'textSecondary'}>
           {title}
         </Typography>
-      }
-      {
-        subtitle &&
+      )}
+      {subtitle && (
         <Typography variant="subtitle1" component="p" className={'paragraph'} color={'textSecondary'}>
           {subtitle}
         </Typography>
-      }
+      )}
     </div>
-  )
+  );
 }

@@ -153,7 +153,4 @@ YAHOO.extend(CStudioForms.Controls.Disabled, CStudioForms.CStudioFormField, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-forcehttps',
-  CStudioForms.Controls.ForceHttps
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-forcehttps', CStudioForms.Controls.ForceHttps);

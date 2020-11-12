@@ -149,11 +149,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+    url += '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
       formTarget: '#asset_upload_form',
@@ -274,10 +270,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     //which tells Connection Manager this is an file upload form
     YAHOO.util.Connect.setForm('asset_upload_form', true);
     serviceUri +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
     YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
   },
 
@@ -313,10 +306,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         //which tells Connection Manager this is an file upload form
         YAHOO.util.Connect.setForm('asset_upload_form', true);
         serviceUri +=
-          '&' +
-          CStudioAuthoringContext.xsrfParameterName +
-          '=' +
-          CrafterCMSNext.util.auth.getRequestForgeryToken();
+          '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
         YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
       },
 
@@ -344,7 +334,4 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'upload-webdav-dialog',
-  CStudioAuthoring.Dialogs.UploadWebDAVDialog
-);
+CStudioAuthoring.Module.moduleLoaded('upload-webdav-dialog', CStudioAuthoring.Dialogs.UploadWebDAVDialog);

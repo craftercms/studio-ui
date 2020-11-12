@@ -112,10 +112,7 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
         titleEl.innerHTML = config.title;
 
         var controlWidgetContainerEl = document.createElement('div');
-        YAHOO.util.Dom.addClass(
-          controlWidgetContainerEl,
-          'cstudio-form-control-linked-dropdown-container'
-        );
+        YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-linked-dropdown-container');
 
         var validEl = document.createElement('span');
         YAHOO.util.Dom.addClass(validEl, 'validation-hint');
@@ -218,7 +215,4 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-linked-dropdown',
-  CStudioForms.Controls.LinkedDropdown
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-linked-dropdown', CStudioForms.Controls.LinkedDropdown);

@@ -144,8 +144,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
         oPropertyValue = aProperty[1];
       if (sPropertyName == 'zindex') {
         var siteContextNavZIndex = 100;
-        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex =
-          oPropertyValue + siteContextNavZIndex;
+        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
 
       //set focus on OK Button.
@@ -202,12 +201,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
       }
     };
 
-    CStudioAuthoring.Service.createTaxonomyItem(
-      taxonomyPath,
-      taxonomyType,
-      taxonomyLabel,
-      createCb
-    );
+    CStudioAuthoring.Service.createTaxonomyItem(taxonomyPath, taxonomyType, taxonomyLabel, createCb);
   },
 
   closeDialog: function () {
@@ -224,7 +218,4 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'dialog-create-taxonomy',
-  CStudioAuthoring.Dialogs.DialogCreateTaxonomy
-);
+CStudioAuthoring.Module.moduleLoaded('dialog-create-taxonomy', CStudioAuthoring.Dialogs.DialogCreateTaxonomy);

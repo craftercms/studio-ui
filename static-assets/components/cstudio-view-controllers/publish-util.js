@@ -182,11 +182,7 @@ function fetchPublishingSettings() {
     success: function (config) {
       var publishing = config['publishing'];
       me.isValidateCommentOn =
-        publishing && publishing['comments']
-          ? publishing['comments']['required'] === 'true'
-            ? true
-            : false
-          : false;
+        publishing && publishing['comments'] ? (publishing['comments']['required'] === 'true' ? true : false) : false;
       if (me.isValidateCommentOn) {
         me.getComponent('.approveDialogSubmissionComment').append(' (*)');
       }
@@ -200,10 +196,7 @@ function fetchPublishingSettings() {
       var zonePicker = $('.zone-picker');
       zonePicker.timezones();
       zonePicker.hide();
-      $("select.zone-picker option[value='" + config['default-timezone'] + "']").attr(
-        'selected',
-        'selected'
-      );
+      $("select.zone-picker option[value='" + config['default-timezone'] + "']").attr('selected', 'selected');
       me.$('.zone-link').click(function () {
         zonePicker.show();
       });
@@ -276,10 +269,8 @@ function publishValidation() {
   if (
     me.result &&
     me.result.length > 0 &&
-    ((me.isValidateCommentOn && me.getComponent('.submission-comment').value !== '') ||
-      !me.isValidateCommentOn) &&
-    ((me.$('[name="schedulingMode"]:checked').val() !== 'now' &&
-      me.$('.date-picker').val() !== '') ||
+    ((me.isValidateCommentOn && me.getComponent('.submission-comment').value !== '') || !me.isValidateCommentOn) &&
+    ((me.$('[name="schedulingMode"]:checked').val() !== 'now' && me.$('.date-picker').val() !== '') ||
       me.$('[name="schedulingMode"]:checked').val() === 'now')
   ) {
     me.$('#approveSubmit').prop('disabled', false);
@@ -297,9 +288,7 @@ function initValidation() {
     if (me.isValidateCommentOn && $(this).get(0).value === '') {
       submissionCommentVal.classList.remove('hide');
     } else {
-      submissionCommentVal.classList.contains('hide') === false
-        ? submissionCommentVal.classList.add('hide')
-        : null;
+      submissionCommentVal.classList.contains('hide') === false ? submissionCommentVal.classList.add('hide') : null;
     }
     me.publishValidation();
   });
@@ -327,13 +316,7 @@ function getScheduledDateTimeFromJson(dateTimeStr) {
   var dateTimeTokens = dateTimeStr.split('T');
   var dateTokens = dateTimeTokens[0].split('-');
   var timeTokens = dateTimeTokens[1].split(':');
-  var dateTime = new Date(
-    dateTokens[0],
-    dateTokens[1] - 1,
-    dateTokens[2],
-    timeTokens[0],
-    timeTokens[1]
-  );
+  var dateTime = new Date(dateTokens[0], dateTokens[1] - 1, dateTokens[2], timeTokens[0], timeTokens[1]);
 
   var hrs = dateTime.getHours() % 12 ? dateTime.getHours() % 12 : 12;
   var mnts = dateTime.getMinutes();

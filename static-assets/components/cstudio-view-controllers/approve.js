@@ -37,13 +37,7 @@
 
     loadItems: publishUtil.loadItems,
 
-    startup: [
-      'fetchPublishingSettings',
-      'loadPublishingChannels',
-      'initDatePicker',
-      'initValidation',
-      'translateUI'
-    ],
+    startup: ['fetchPublishingSettings', 'loadPublishingChannels', 'initDatePicker', 'initValidation', 'translateUI'],
 
     loadPublishingChannels: publishUtil.loadPublishingChannels,
 
@@ -83,9 +77,7 @@ function submit() {
   var timezone = $('select.zone-picker').find(':selected').attr('data-offset');
 
   if (data.schedule === 'custom') {
-    data.scheduledDate = getScheduledDateTimeForJson(
-      this.getComponent('[name="scheduleDate"]').value
-    );
+    data.scheduledDate = getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
     data.scheduledDate += timezone;
   }
 

@@ -67,15 +67,9 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
   }
 };
 
-tinymce2.create(
-  'tinymce2.plugins.CStudioChannelSelectPlugin',
-  CStudioForms.Controls.RTE.ChannelSelect
-);
+tinymce2.create('tinymce2.plugins.CStudioChannelSelectPlugin', CStudioForms.Controls.RTE.ChannelSelect);
 
 // Register plugin with a short name
 tinymce2.PluginManager.add('channel', tinymce2.plugins.CStudioChannelSelectPlugin);
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-rte-channel',
-  CStudioForms.Controls.RTE.ChannelSelect
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-channel', CStudioForms.Controls.RTE.ChannelSelect);

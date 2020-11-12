@@ -17,11 +17,7 @@
 import { get, post } from '../utils/ajax';
 import { MarketplaceSite } from '../models/Site';
 
-export function fetchBlueprints(options?: {
-  type?: string,
-  limit?: number,
-  showIncompatible?: boolean
-}) {
+export function fetchBlueprints(options?: { type?: string; limit?: number; showIncompatible?: boolean }) {
   const params = {
     type: 'blueprint',
     limit: 1000,
@@ -29,15 +25,17 @@ export function fetchBlueprints(options?: {
     ...options
   };
 
-  return get(`/studio/api/2/marketplace/search?type=${params.type}&limit=${params.limit}&showIncompatible=${params.showIncompatible}`);
+  return get(
+    `/studio/api/2/marketplace/search?type=${params.type}&limit=${params.limit}&showIncompatible=${params.showIncompatible}`
+  );
 }
 
 export function createSite(site: MarketplaceSite) {
   return post('/studio/api/2/sites/create_site_from_marketplace', site, {
     'Content-Type': 'application/json'
-  })
+  });
 }
 
 export default {
   fetchBlueprints
-}
+};

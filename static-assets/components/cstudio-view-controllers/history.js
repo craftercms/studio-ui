@@ -60,7 +60,7 @@
         CStudioAuthoring.Service.getVersionHistory(CStudioAuthoringContext.site, selection, {
           success: function (history) {
             var versions = history.versions,
-              isXML = history.item.mimeType === 'application/xml';    // Diff tool support only xml files
+              isXML = history.item.mimeType === 'application/xml'; // Diff tool support only xml files
 
             var itemStateEl = _this.getComponent('span.show-for-item');
             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
@@ -105,10 +105,7 @@
                   checkboxEl,
                   $revertDropdown,
                   // if more than 5 versions, last 5 will have dropup
-                  dropdownClass =
-                    versions.length > 5 && i > 1 && i + 5 >= versions.length
-                      ? 'dropup'
-                      : 'dropdown';
+                  dropdownClass = versions.length > 5 && i > 1 && i + 5 >= versions.length ? 'dropup' : 'dropdown';
 
                 col2El = document.createElement('div');
                 Dom.addClass(col2El, 'c8');
@@ -121,9 +118,7 @@
 
                 var versionNumber = new Date(version.lastModifiedDate);
                 versionNumber =
-                  versionNumber.toLocaleDateString() +
-                  'T' +
-                  versionNumber.toLocaleTimeString().replace(' ', '');
+                  versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
 
                 if (isXML) {
                   checkboxEl = document.createElement('input');
@@ -163,9 +158,7 @@
                 if (isXML) {
                   var viewActionEl = document.createElement('a');
                   viewActionEl.innerHTML =
-                    '<span id="actionView' +
-                    version.versionNumber +
-                    '" class="action fa fa-eye"></span>';
+                    '<span id="actionView' + version.versionNumber + '" class="action fa fa-eye"></span>';
                   viewActionEl.version = version.versionNumber;
                   viewActionEl.path = selection.uri;
                   col5El.appendChild(viewActionEl);
@@ -178,9 +171,7 @@
 
                   var compareActionEl = document.createElement('a');
                   compareActionEl.innerHTML =
-                    '<span id="actionCompare' +
-                    version.versionNumber +
-                    '" class="action fa fa-files-o"></span>';
+                    '<span id="actionCompare' + version.versionNumber + '" class="action fa fa-files-o"></span>';
                   compareActionEl.version = version.versionNumber;
                   compareActionEl.path = selection.uri;
                   col5El.appendChild(compareActionEl);
@@ -198,12 +189,8 @@
                         <span id="actionRevert${
                           version.versionNumber
                         }" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
-                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${
-                          version.versionNumber
-                        }">
-                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(
-                            words.cancel
-                          )}</a></li>
+                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
+                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(words.cancel)}</a></li>
                           <li role="separator" class="divider"></li>
                           <li><a class="confirm" href="#">${formatMessage(words.confirm)}</a></li>
                         </ul>
@@ -352,262 +339,242 @@
           CMgs.format(formsLangBundle, 'historyDialogLoadingWait') +
           '&hellip;</i></td></tr>';
 
-        CStudioAuthoring.Service.getConfigurationVersionHistory(
-          CStudioAuthoringContext.site,
-          selection,
-          {
-            success: function (history) {
-              var versions = history.versions,
-                isAsset = history.item.isAsset;
+        CStudioAuthoring.Service.getConfigurationVersionHistory(CStudioAuthoringContext.site, selection, {
+          success: function (history) {
+            var versions = history.versions,
+              isAsset = history.item.isAsset;
 
-              var itemStateEl = _this.getComponent('span.show-for-item');
-              Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
-              itemStateEl.innerHTML = history.item.internalName;
+            var itemStateEl = _this.getComponent('span.show-for-item');
+            Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
+            itemStateEl.innerHTML = history.item.internalName;
 
-              if (versions.length == 0) {
-                tbody.innerHTML =
-                  '<tr><td colspan="5"><i>' +
-                  CMgs.format(formsLangBundle, 'historyDialogNoVersionsFound') +
-                  '</i></td></tr>';
-              } else {
-                tbody.innerHTML = '';
+            if (versions.length == 0) {
+              tbody.innerHTML =
+                '<tr><td colspan="5"><i>' +
+                CMgs.format(formsLangBundle, 'historyDialogNoVersionsFound') +
+                '</i></td></tr>';
+            } else {
+              tbody.innerHTML = '';
+
+              if (!isAsset) {
+                var actionWrapper = _this.getComponent('.history-view .action-wrapper'),
+                  compareButton = document.createElement('input');
+                $('#historyCompareBtn').remove();
+                compareButton.type = 'button';
+                Dom.addClass(compareButton, 'compare-button btn btn-default');
+                compareButton.value = CMgs.format(formsLangBundle, 'historyDialogCompare');
+                compareButton.setAttribute('disabled', '');
+                compareButton.setAttribute('id', 'historyCompareBtn');
+                actionWrapper.appendChild(compareButton);
+
+                (function () {
+                  Event.addListener(compareButton, 'click', function () {
+                    _this.compareButtonActionClicked(history.item.uri);
+                  });
+                })();
+              }
+
+              for (var i = 0; i < versions.length; i++) {
+                var version = versions[i],
+                  rowEl = document.createElement('tr'),
+                  tdEl,
+                  col2El,
+                  col3El,
+                  col4El,
+                  col5El,
+                  col6El,
+                  revertActionEl,
+                  checkboxEl,
+                  $revertDropdown,
+                  // if more than 5 versions, last 5 will have dropup
+                  dropdownClass = versions.length > 5 && i > 1 && i + 5 >= versions.length ? 'dropup' : 'dropdown';
+
+                col2El = document.createElement('div');
+                Dom.addClass(col2El, 'c8');
+
+                col2El.innerHTML = CStudioAuthoring.Utils.formatDateFromUTC(
+                  version.lastModifiedDate,
+                  studioTimeZone,
+                  'full'
+                );
+
+                var versionNumber = new Date(version.lastModifiedDate);
+                versionNumber =
+                  versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
 
                 if (!isAsset) {
-                  var actionWrapper = _this.getComponent('.history-view .action-wrapper'),
-                    compareButton = document.createElement('input');
-                  $('#historyCompareBtn').remove();
-                  compareButton.type = 'button';
-                  Dom.addClass(compareButton, 'compare-button btn btn-default');
-                  compareButton.value = CMgs.format(formsLangBundle, 'historyDialogCompare');
-                  compareButton.setAttribute('disabled', '');
-                  compareButton.setAttribute('id', 'historyCompareBtn');
-                  actionWrapper.appendChild(compareButton);
-
-                  (function () {
-                    Event.addListener(compareButton, 'click', function () {
-                      _this.compareButtonActionClicked(history.item.uri);
-                    });
-                  })();
+                  checkboxEl = document.createElement('input');
+                  checkboxEl.maxLength = 300;
+                  checkboxEl.type = 'checkbox';
+                  checkboxEl.name = 'version';
+                  checkboxEl.value = version.versionNumber;
+                  checkboxEl.style.marginRight = '5px';
+                  col2El.insertBefore(checkboxEl, col2El.firstChild);
                 }
 
-                for (var i = 0; i < versions.length; i++) {
-                  var version = versions[i],
-                    rowEl = document.createElement('tr'),
-                    tdEl,
-                    col2El,
-                    col3El,
-                    col4El,
-                    col5El,
-                    col6El,
-                    revertActionEl,
-                    checkboxEl,
-                    $revertDropdown,
-                    // if more than 5 versions, last 5 will have dropup
-                    dropdownClass =
-                      versions.length > 5 && i > 1 && i + 5 >= versions.length
-                        ? 'dropup'
-                        : 'dropdown';
+                tdEl = document.createElement('td');
+                tdEl.appendChild(col2El);
+                rowEl.appendChild(tdEl);
 
-                  col2El = document.createElement('div');
-                  Dom.addClass(col2El, 'c8');
+                col4El = document.createElement('div');
+                Dom.addClass(col4El, 'c4');
+                col4El.innerHTML = version.lastModifier;
+                tdEl = document.createElement('td');
+                tdEl.appendChild(col4El);
+                rowEl.appendChild(tdEl);
 
-                  col2El.innerHTML = CStudioAuthoring.Utils.formatDateFromUTC(
-                    version.lastModifiedDate,
-                    studioTimeZone,
-                    'full'
-                  );
+                col6El = document.createElement('div');
+                // Dom.addClass(col6El, "c6");
+                col6El.innerHTML = version.comment ? version.comment : '&nbsp;';
+                tdEl = document.createElement('td');
+                tdEl.appendChild(col6El);
+                rowEl.appendChild(tdEl);
 
-                  var versionNumber = new Date(version.lastModifiedDate);
-                  versionNumber =
-                    versionNumber.toLocaleDateString() +
-                    'T' +
-                    versionNumber.toLocaleTimeString().replace(' ', '');
+                col5El = document.createElement('div');
+                col5El.style.whiteSpace = 'nowrap';
+                Dom.addClass(col5El, 'c5');
+                tdEl = document.createElement('td');
+                tdEl.appendChild(col5El);
+                rowEl.appendChild(tdEl);
 
-                  if (!isAsset) {
-                    checkboxEl = document.createElement('input');
-                    checkboxEl.maxLength = 300;
-                    checkboxEl.type = 'checkbox';
-                    checkboxEl.name = 'version';
-                    checkboxEl.value = version.versionNumber;
-                    checkboxEl.style.marginRight = '5px';
-                    col2El.insertBefore(checkboxEl, col2El.firstChild);
-                  }
+                if (!isAsset) {
+                  var viewActionEl = document.createElement('a');
+                  viewActionEl.innerHTML =
+                    '<span id="actionView' + version.versionNumber + '" class="action fa fa-eye"></span>';
+                  viewActionEl.version = version.versionNumber;
+                  viewActionEl.path = history.item.uri;
+                  col5El.appendChild(viewActionEl);
+                  new YAHOO.widget.Tooltip('tooltipView' + viewActionEl.version, {
+                    context: 'actionView' + viewActionEl.version,
+                    container: _this.tooltipsContainer,
+                    text: CMgs.format(formsLangBundle, 'historyDialogViewFileMessage'),
+                    zIndex: 104103
+                  });
 
-                  tdEl = document.createElement('td');
-                  tdEl.appendChild(col2El);
-                  rowEl.appendChild(tdEl);
+                  var compareActionEl = document.createElement('a');
+                  compareActionEl.innerHTML =
+                    '<span id="actionCompare' + version.versionNumber + '" class="action fa fa-files-o"></span>';
+                  compareActionEl.version = version.versionNumber;
+                  compareActionEl.path = history.item.uri;
+                  col5El.appendChild(compareActionEl);
+                  new YAHOO.widget.Tooltip('tooltipCompare' + compareActionEl.version, {
+                    context: 'actionCompare' + viewActionEl.version,
+                    container: _this.tooltipsContainer,
+                    text: CMgs.format(formsLangBundle, 'historyDialogCompareFileMessage'),
+                    zIndex: 104103
+                  });
+                }
 
-                  col4El = document.createElement('div');
-                  Dom.addClass(col4El, 'c4');
-                  col4El.innerHTML = version.lastModifier;
-                  tdEl = document.createElement('td');
-                  tdEl.appendChild(col4El);
-                  rowEl.appendChild(tdEl);
-
-                  col6El = document.createElement('div');
-                  // Dom.addClass(col6El, "c6");
-                  col6El.innerHTML = version.comment ? version.comment : '&nbsp;';
-                  tdEl = document.createElement('td');
-                  tdEl.appendChild(col6El);
-                  rowEl.appendChild(tdEl);
-
-                  col5El = document.createElement('div');
-                  col5El.style.whiteSpace = 'nowrap';
-                  Dom.addClass(col5El, 'c5');
-                  tdEl = document.createElement('td');
-                  tdEl.appendChild(col5El);
-                  rowEl.appendChild(tdEl);
-
-                  if (!isAsset) {
-                    var viewActionEl = document.createElement('a');
-                    viewActionEl.innerHTML =
-                      '<span id="actionView' +
-                      version.versionNumber +
-                      '" class="action fa fa-eye"></span>';
-                    viewActionEl.version = version.versionNumber;
-                    viewActionEl.path = history.item.uri;
-                    col5El.appendChild(viewActionEl);
-                    new YAHOO.widget.Tooltip('tooltipView' + viewActionEl.version, {
-                      context: 'actionView' + viewActionEl.version,
-                      container: _this.tooltipsContainer,
-                      text: CMgs.format(formsLangBundle, 'historyDialogViewFileMessage'),
-                      zIndex: 104103
-                    });
-
-                    var compareActionEl = document.createElement('a');
-                    compareActionEl.innerHTML =
-                      '<span id="actionCompare' +
-                      version.versionNumber +
-                      '" class="action fa fa-files-o"></span>';
-                    compareActionEl.version = version.versionNumber;
-                    compareActionEl.path = history.item.uri;
-                    col5El.appendChild(compareActionEl);
-                    new YAHOO.widget.Tooltip('tooltipCompare' + compareActionEl.version, {
-                      context: 'actionCompare' + viewActionEl.version,
-                      container: _this.tooltipsContainer,
-                      text: CMgs.format(formsLangBundle, 'historyDialogCompareFileMessage'),
-                      zIndex: 104103
-                    });
-                  }
-
-                  if (_this.isWrite) {
-                    $revertDropdown = $(
-                      `<div class="${dropdownClass} inline-block relative confirmation-dropdown">
+                if (_this.isWrite) {
+                  $revertDropdown = $(
+                    `<div class="${dropdownClass} inline-block relative confirmation-dropdown">
                         <span id="actionRevert${
                           version.versionNumber
                         }" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
-                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${
-                          version.versionNumber
-                        }">
-                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(
-                            words.cancel
-                          )}</a></li>
+                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
+                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(words.cancel)}</a></li>
                           <li role="separator" class="divider"></li>
                           <li><a class="confirm" href="#">${formatMessage(words.confirm)}</a></li>
                         </ul>
                       </div>`
-                    ).appendTo($(col5El));
-                    $revertDropdown.data('item', selection);
-                    $revertDropdown.data('version', version.versionNumber);
+                  ).appendTo($(col5El));
+                  $revertDropdown.data('item', selection);
+                  $revertDropdown.data('version', version.versionNumber);
 
-                    new YAHOO.widget.Tooltip('tooltipRevert' + version.versionNumber, {
-                      context: 'actionRevert' + version.versionNumber,
-                      container: _this.tooltipsContainer,
-                      text: CMgs.format(formsLangBundle, 'historyDialogRevertFileMessage'),
-                      zIndex: 104103
+                  new YAHOO.widget.Tooltip('tooltipRevert' + version.versionNumber, {
+                    context: 'actionRevert' + version.versionNumber,
+                    container: _this.tooltipsContainer,
+                    text: CMgs.format(formsLangBundle, 'historyDialogRevertFileMessage'),
+                    zIndex: 104103
+                  });
+                }
+
+                (function (item) {
+                  if (_this.isWrite) {
+                    $revertDropdown.find('.confirm').on('click', function (e) {
+                      e.preventDefault();
+                      const $dropdown = $(this).closest('.confirmation-dropdown');
+
+                      CStudioAuthoring.Service.revertContentItem(
+                        CStudioAuthoringContext.site,
+                        item,
+                        $dropdown.data('version'),
+                        {
+                          success: function () {
+                            if (CStudioAuthoringContext.isPreview) {
+                              CStudioAuthoring.Operations.refreshPreview();
+                            }
+                            eventNS.data = item;
+                            document.dispatchEvent(eventNS);
+
+                            _this.loadConfigurationHistory(_this.selection);
+                            amplify.publish('HISTORY_REVERT');
+                          },
+                          failure: function () {
+                            var CMgs = CStudioAuthoring.Messages;
+                            var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                              'revertError-dialog',
+                              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                              CMgs.format(langBundle, 'notification'),
+                              CMgs.format(langBundle, 'revertError'),
+                              null,
+                              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                              'studioDialog'
+                            );
+                          }
+                        }
+                      );
                     });
                   }
 
-                  (function (item) {
-                    if (_this.isWrite) {
-                      $revertDropdown.find('.confirm').on('click', function (e) {
-                        e.preventDefault();
-                        const $dropdown = $(this).closest('.confirmation-dropdown');
+                  Event.addListener(viewActionEl, 'click', function () {
+                    detachEscapeListener();
+                    CStudioAuthoring.Operations.openDiff(
+                      CStudioAuthoringContext.site,
+                      history.item.uri,
+                      this.version,
+                      this.version,
+                      escaped
+                    );
+                  });
 
-                        CStudioAuthoring.Service.revertContentItem(
-                          CStudioAuthoringContext.site,
-                          item,
-                          $dropdown.data('version'),
-                          {
-                            success: function () {
-                              if (CStudioAuthoringContext.isPreview) {
-                                CStudioAuthoring.Operations.refreshPreview();
-                              }
-                              eventNS.data = item;
-                              document.dispatchEvent(eventNS);
+                  Event.addListener(compareActionEl, 'click', function () {
+                    detachEscapeListener();
+                    CStudioAuthoring.Operations.openDiff(
+                      CStudioAuthoringContext.site,
+                      history.item.uri,
+                      this.version,
+                      null,
+                      escaped
+                    );
+                  });
 
-                              _this.loadConfigurationHistory(_this.selection);
-                              amplify.publish('HISTORY_REVERT');
-                            },
-                            failure: function () {
-                              var CMgs = CStudioAuthoring.Messages;
-                              var langBundle = CMgs.getBundle(
-                                'forms',
-                                CStudioAuthoringContext.lang
-                              );
-                              CStudioAuthoring.Operations.showSimpleDialog(
-                                'revertError-dialog',
-                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                CMgs.format(langBundle, 'notification'),
-                                CMgs.format(langBundle, 'revertError'),
-                                null,
-                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                'studioDialog'
-                              );
-                            }
-                          }
-                        );
-                      });
-                    }
+                  Event.addListener(checkboxEl, 'change', function () {
+                    _this.validateDiffCheckboxes();
+                  });
+                })(history.item);
 
-                    Event.addListener(viewActionEl, 'click', function () {
-                      detachEscapeListener();
-                      CStudioAuthoring.Operations.openDiff(
-                        CStudioAuthoringContext.site,
-                        history.item.uri,
-                        this.version,
-                        this.version,
-                        escaped
-                      );
-                    });
-
-                    Event.addListener(compareActionEl, 'click', function () {
-                      detachEscapeListener();
-                      CStudioAuthoring.Operations.openDiff(
-                        CStudioAuthoringContext.site,
-                        history.item.uri,
-                        this.version,
-                        null,
-                        escaped
-                      );
-                    });
-
-                    Event.addListener(checkboxEl, 'change', function () {
-                      _this.validateDiffCheckboxes();
-                    });
-                  })(history.item);
-
-                  tbody.appendChild(rowEl);
-                }
+                tbody.appendChild(rowEl);
               }
-              //set focus on submit/delete button
-              var oSubmitBtn = _this.getComponent(_this.actions[0]);
-
-              if (oSubmitBtn) {
-                CStudioAuthoring.Utils.setDefaultFocusOn(oSubmitBtn);
-              }
-            },
-            failure: function () {
-              tbody.innerHTML =
-                '<tr><td>' +
-                CMgs.format(formsLangBundle, 'historyDialogUnable') +
-                ' <a class="retry-dependency-load" href="javascript:">' +
-                CMgs.format(formsLangBundle, 'historyDialogTryAgain') +
-                '</a></td></tr>';
-              Event.addListener(_this.getComponent('a.retry-dependency-load'), 'click', loadFn);
             }
+            //set focus on submit/delete button
+            var oSubmitBtn = _this.getComponent(_this.actions[0]);
+
+            if (oSubmitBtn) {
+              CStudioAuthoring.Utils.setDefaultFocusOn(oSubmitBtn);
+            }
+          },
+          failure: function () {
+            tbody.innerHTML =
+              '<tr><td>' +
+              CMgs.format(formsLangBundle, 'historyDialogUnable') +
+              ' <a class="retry-dependency-load" href="javascript:">' +
+              CMgs.format(formsLangBundle, 'historyDialogTryAgain') +
+              '</a></td></tr>';
+            Event.addListener(_this.getComponent('a.retry-dependency-load'), 'click', loadFn);
           }
-        );
+        });
       };
 
       var tooltipsContainer = document.createElement('div');
@@ -652,8 +619,7 @@
           minutes = minutes < 10 ? '0' + minutes : minutes,
           seconds = convertedTimezone.getSeconds();
 
-        convertedDate =
-          year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
+        convertedDate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
       }
       return convertedDate;
     },
@@ -714,12 +680,7 @@
         diffArray[index] = this.value;
       });
 
-      CStudioAuthoring.Operations.openDiff(
-        CStudioAuthoringContext.site,
-        path,
-        diffArray[0],
-        diffArray[1]
-      );
+      CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, path, diffArray[0], diffArray[1]);
     }
   });
 

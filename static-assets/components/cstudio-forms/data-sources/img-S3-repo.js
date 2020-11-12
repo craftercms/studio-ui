@@ -93,7 +93,4 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormData
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-img-S3-repo',
-  CStudioForms.Datasources.ImgWebS3Repo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-img-S3-repo', CStudioForms.Datasources.ImgWebS3Repo);

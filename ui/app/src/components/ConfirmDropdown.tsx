@@ -53,27 +53,19 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ConfirmDropdownProps {
-  onConfirm(): any
+  onConfirm(): any;
 
-  text: string
-  cancelText: string
-  confirmText: string
-  confirmHelperText?: string
-  disabled?: boolean
+  text: string;
+  cancelText: string;
+  confirmText: string;
+  confirmHelperText?: string;
+  disabled?: boolean;
 }
-
 
 export default function SelectButton(props: ConfirmDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {
-    onConfirm,
-    text,
-    cancelText,
-    confirmText,
-    confirmHelperText,
-    disabled = false
-  } = props;
+  const { onConfirm, text, cancelText, confirmText, confirmHelperText, disabled = false } = props;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -117,5 +109,5 @@ export default function SelectButton(props: ConfirmDropdownProps) {
         <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
       </Menu>
     </div>
-  )
+  );
 }

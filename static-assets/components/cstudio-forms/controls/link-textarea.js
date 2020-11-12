@@ -280,7 +280,4 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-link-textarea',
-  CStudioForms.Controls.LinkTextarea
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-link-textarea', CStudioForms.Controls.LinkTextarea);

@@ -205,7 +205,4 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-key-value-list',
-  CStudioForms.Datasources.KeyValueList
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-key-value-list', CStudioForms.Datasources.KeyValueList);

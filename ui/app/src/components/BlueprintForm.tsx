@@ -97,7 +97,8 @@ const messages = defineMessages({
   },
   createAsOrphanHelpText: {
     id: 'createSiteDialog.createAsOrphanHelpText',
-    defaultMessage: 'Creating the site as an orphan will dissociate the site from the source git repository and remove all history.'
+    defaultMessage:
+      'Creating the site as an orphan will dissociate the site from the source git repository and remove all history.'
   }
 });
 
@@ -119,8 +120,12 @@ function BlueprintForm(props: BlueprintFormProps) {
     if (e.target.type === 'checkbox') {
       setInputs({ [e.target.name]: e.target.checked, submitted: false });
     } else if (e.target.name === 'siteId') {
-      const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
-      const siteId = e.target.value.replace(/[^a-zA-Z0-9-_]/g, '').replace(/_/g, '-').toLowerCase();
+      const invalidSiteId =
+        e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_');
+      const siteId = e.target.value
+        .replace(/[^a-zA-Z0-9-_]/g, '')
+        .replace(/_/g, '-')
+        .toLowerCase();
       setInputs({
         [e.target.name]: siteId,
         invalidSiteId: invalidSiteId
@@ -147,14 +152,21 @@ function BlueprintForm(props: BlueprintFormProps) {
     }
   }
 
-  function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean, siteIdExist: boolean) {
+  function renderHelperText(
+    name: string,
+    value: string = '',
+    helperText: string,
+    required: boolean,
+    submitted: boolean,
+    siteIdExist: boolean
+  ) {
     if (value.startsWith('0') || value.startsWith('-') || value.startsWith('_')) {
-      return formatMessage(messages.cantStart)
+      return formatMessage(messages.cantStart);
     }
     if (siteIdExist) {
-      return formatMessage(messages.nameExist)
+      return formatMessage(messages.nameExist);
     } else if (required && !value && submitted) {
-      return formatMessage(messages.required, { name: name })
+      return formatMessage(messages.required, { name: name });
     } else {
       return helperText;
     }
@@ -177,16 +189,15 @@ function BlueprintForm(props: BlueprintFormProps) {
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
             inputProps={{ maxLength: 50 }}
-            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId)}
-            helperText={
-              renderHelperText(
-                formatMessage(messages.siteId),
-                inputs.siteId,
-                formatMessage(messages.siteFormat),
-                true,
-                inputs.submitted,
-                inputs.siteIdExist)
-            }
+            error={(inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId}
+            helperText={renderHelperText(
+              formatMessage(messages.siteId),
+              inputs.siteId,
+              formatMessage(messages.siteFormat),
+              true,
+              inputs.submitted,
+              inputs.siteIdExist
+            )}
           />
         </Grid>
         <Grid item xs={12}>
@@ -215,8 +226,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {
-          (blueprint.id === 'GIT') &&
+        {blueprint.id === 'GIT' && (
           <Grid item xs={12}>
             <FormControlLabel
               control={
@@ -229,22 +239,24 @@ function BlueprintForm(props: BlueprintFormProps) {
               }
               label={formatMessage(messages.createAsOrphan)}
             />
-            <Typography variant="subtitle2" component="small" className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}>
+            <Typography
+              variant="subtitle2"
+              component="small"
+              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
+            >
               {formatMessage(messages.createAsOrphanHelpText)}
             </Typography>
           </Grid>
-        }
-        {
-          blueprint.parameters &&
+        )}
+        {blueprint.parameters && (
           <FormBuilder
             parameters={blueprint.parameters}
             handleInputChange={handleInputChange}
             inputs={inputs}
             onKeyPress={onKeyPress}
           />
-        }
-        {
-          (blueprint.id !== 'GIT' && blueprint.source !== 'GIT') &&
+        )}
+        {blueprint.id !== 'GIT' && blueprint.source !== 'GIT' && (
           <Grid item xs={12}>
             <FormControlLabel
               control={
@@ -258,10 +270,9 @@ function BlueprintForm(props: BlueprintFormProps) {
               label={formatMessage(messages.pushSiteToRemote)}
             />
           </Grid>
-        }
+        )}
         <Collapse in={inputs.pushSite} timeout={300}>
-          {
-            (inputs.pushSite && blueprint.source !== 'GIT') &&
+          {inputs.pushSite && blueprint.source !== 'GIT' && (
             <GitForm
               inputs={inputs}
               setInputs={setInputs}
@@ -269,10 +280,9 @@ function BlueprintForm(props: BlueprintFormProps) {
               handleInputChange={handleInputChange}
               onKeyPress={onKeyPress}
             />
-          }
+          )}
         </Collapse>
-        {
-          (blueprint.id === 'GIT') &&
+        {blueprint.id === 'GIT' && (
           <GitForm
             type="clone"
             inputs={inputs}
@@ -280,10 +290,10 @@ function BlueprintForm(props: BlueprintFormProps) {
             handleInputChange={handleInputChange}
             onKeyPress={onKeyPress}
           />
-        }
+        )}
       </Grid>
     </form>
-  )
+  );
 }
 
 export default BlueprintForm;

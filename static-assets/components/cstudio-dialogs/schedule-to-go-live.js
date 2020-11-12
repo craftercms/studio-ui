@@ -36,11 +36,7 @@ CStudioAuthoring.Module.requireModule(
       YAHOO.lang.extend(CStudioAuthoring.Dialogs.DialogScheduleToGoLive, parentClass);
 
       // Extend GoLive's prototype with its own class functions
-      CStudioAuthoring.Dialogs.DialogScheduleToGoLive.prototype.createPanel = function (
-        panelName,
-        modalState,
-        zIdx
-      ) {
+      CStudioAuthoring.Dialogs.DialogScheduleToGoLive.prototype.createPanel = function (panelName, modalState, zIdx) {
         return new YAHOO.widget.Panel(panelName, {
           fixedcenter: true,
           visible: false,
@@ -100,9 +96,7 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          this.selectedJsonObj.submissionComment = document.getElementById(
-            'acn-submission-comment'
-          ).value;
+          this.selectedJsonObj.submissionComment = document.getElementById('acn-submission-comment').value;
           var jsonSubmitString = YAHOO.lang.JSON.stringify(this.selectedJsonObj),
             self = this,
             serviceCallback = {
@@ -364,13 +358,7 @@ CStudioAuthoring.Module.requireModule(
 
         this.publishingChannelsInit();
 
-        YEvent.addListener(
-          'golivesubmitButton',
-          'click',
-          this.invokeScheduleToGoLiveService,
-          this,
-          true
-        );
+        YEvent.addListener('golivesubmitButton', 'click', this.invokeScheduleToGoLiveService, this, true);
         YEvent.addListener('golivecancelButton', 'click', this.closeDialog, this, true);
 
         // hide dependency line if only 1 item
@@ -440,11 +428,9 @@ CStudioAuthoring.Module.requireModule(
                     afterRenderFn.firecount++;
                     var today = new Date();
                     today.setDate(today.getDate() + 1);
-                    YDom.get(sourceElementId).value = [
-                      today.getMonth() + 1,
-                      today.getDate(),
-                      today.getFullYear()
-                    ].join('/');
+                    YDom.get(sourceElementId).value = [today.getMonth() + 1, today.getDate(), today.getFullYear()].join(
+                      '/'
+                    );
                   }
                 };
                 afterRenderFn.firecount = 0;
@@ -462,11 +448,7 @@ CStudioAuthoring.Module.requireModule(
                     'mouseup',
                     'mousedown'
                   ]),
-                  initTimeFormat = CStudioAuthoring.Utils.textFieldTimeHelper(
-                    'timepicker',
-                    'blur',
-                    'timepicker'
-                  ),
+                  initTimeFormat = CStudioAuthoring.Utils.textFieldTimeHelper('timepicker', 'blur', 'timepicker'),
                   initTimeIncrementButton = CStudioAuthoring.Utils.textFieldTimeIncrementHelper(
                     'timeIncrementButton',
                     'timepicker',
@@ -489,11 +471,7 @@ CStudioAuthoring.Module.requireModule(
                 }
               } else {
                 if (!parentClass.messagePanel) {
-                  parentClass.messagePanel = new parentClass.createMessagePanel(
-                    'messageOverlay',
-                    true,
-                    1000
-                  );
+                  parentClass.messagePanel = new parentClass.createMessagePanel('messageOverlay', true, 1000);
                   parentClass.messagePanel.setBody(parentClass.getNoPublishingChannelsBody());
 
                   parentClass.messagePanel.hideEvent.subscribe(function () {
@@ -572,10 +550,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogScheduleToGoLive.prototype.showDialog = function (
-        site,
-        contentItems
-      ) {
+      CStudioAuthoring.Dialogs.DialogScheduleToGoLive.prototype.showDialog = function (site, contentItems) {
         var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
         this.init();
 

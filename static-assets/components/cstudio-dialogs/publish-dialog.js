@@ -80,10 +80,7 @@ CStudioAuthoring.Dialogs.PublishDialog.createMessagePanel = function (panelName,
   });
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.getTimeInJsonObject = function (
-  jsonArray,
-  browserUri
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.getTimeInJsonObject = function (jsonArray, browserUri) {
   for (var i = 0; i < jsonArray.length; ++i) {
     if (jsonArray[i].browserUri == browserUri) {
       if (
@@ -170,10 +167,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.setTimeConfiguration = function
   }
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.getScheduledDateTimeForJson = function (
-  dateValue,
-  timeValue
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.getScheduledDateTimeForJson = function (dateValue, timeValue) {
   var dateValueArray = dateValue.split('/'),
     timeValueArray = timeValue.split(' '),
     timeSplit = timeValueArray[0].split(':');
@@ -215,11 +209,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.getScheduledDateTimeForJson = f
   return scheduledDate;
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.setTimeInJsonObject = function (
-  jsonArray,
-  jsonTime,
-  browserUri
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.setTimeInJsonObject = function (jsonArray, jsonTime, browserUri) {
   for (var i = 0; i < jsonArray.length; ++i) {
     if (jsonArray[i].browserUri == browserUri) {
       if (jsonTime == 'now') {
@@ -344,10 +334,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.ifExistsInUncheckedItemsArray =
   return found;
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.updateUncheckedItemList = function (
-  matchedElement,
-  isChecked
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.updateUncheckedItemList = function (matchedElement, isChecked) {
   // walk the DOM to get the path
   // get parent of current element
   var parentTD = YDom.getAncestorByTagName(matchedElement, 'td'),
@@ -369,10 +356,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.updateUncheckedItemList = funct
   }
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.checkReferencePages = function (
-  refPages,
-  browserUri
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.checkReferencePages = function (refPages, browserUri) {
   for (var refIdx = 0; refIdx < refPages.length; refIdx++) {
     if (refPages[refIdx].browserUri == browserUri) {
       return true;
@@ -642,11 +626,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
     childItem = null;
 
   if (isChildNodes) {
-    var parSchedTime = itemJson.now
-      ? 'now'
-      : itemJson.scheduledDate == ''
-      ? 'now'
-      : itemJson.scheduledDate;
+    var parSchedTime = itemJson.now ? 'now' : itemJson.scheduledDate == '' ? 'now' : itemJson.scheduledDate;
     parentPageIntName = itemJson.internalName;
     if (itemJson && isSubmittedForDeletion) {
       //in submitted for delete case child items can not allow to set after date
@@ -655,11 +635,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
         //check for child pages.
         var isChildPage = chdItem.parentPath && chdItem.parentPath == itemJson.browserUri;
         if (isChildPage) {
-          var chdSchedTime = chdItem.now
-              ? 'now'
-              : chdItem.scheduledDate == ''
-              ? 'now'
-              : chdItem.scheduledDate,
+          var chdSchedTime = chdItem.now ? 'now' : chdItem.scheduledDate == '' ? 'now' : chdItem.scheduledDate,
             errorFlag = false;
 
           if (parSchedTime == 'now' && chdSchedTime != 'now') {
@@ -693,13 +669,8 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
         //check for page references.
         //page reference can go-live before  parent go-live.
         var isRefPage = this.isReferencePage(items, chdItem.browserUri);
-        var isChildPage =
-          !isRefPage && chdItem.mandatoryParent && chdItem.mandatoryParent == itemJson.uri;
-        var chdSchedTime = chdItem.now
-          ? 'now'
-          : chdItem.scheduledDate == ''
-          ? 'now'
-          : chdItem.scheduledDate;
+        var isChildPage = !isRefPage && chdItem.mandatoryParent && chdItem.mandatoryParent == itemJson.uri;
+        var chdSchedTime = chdItem.now ? 'now' : chdItem.scheduledDate == '' ? 'now' : chdItem.scheduledDate;
         var errorFlag = false,
           referencePageError = false,
           childPageError = false;
@@ -763,11 +734,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
       if (itemJson.children && itemJson.children.length >= 1) {
         for (var chdIdx = 0; chdIdx < itemJson.children.length; chdIdx++) {
           var chdItem = itemJson.children[chdIdx];
-          var childSchedTime = chdItem.now
-            ? 'now'
-            : chdItem.scheduledDate == ''
-            ? 'now'
-            : chdItem.scheduledDate;
+          var childSchedTime = chdItem.now ? 'now' : chdItem.scheduledDate == '' ? 'now' : chdItem.scheduledDate;
           var errorFlag = false;
           if (jsonSchedTime == 'now' && childSchedTime != 'now') {
             alertFlag = errorFlag = true;
@@ -798,11 +765,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
           //check for child pages.
           var isChildPage = chdItem.parentPath && chdItem.parentPath == itemJson.browserUri;
           if (isChildPage) {
-            var chdSchedTime = chdItem.now
-              ? 'now'
-              : chdItem.scheduledDate == ''
-              ? 'now'
-              : chdItem.scheduledDate;
+            var chdSchedTime = chdItem.now ? 'now' : chdItem.scheduledDate == '' ? 'now' : chdItem.scheduledDate;
             var errorFlag = false;
 
             if (parSchedTime == 'now' && chdSchedTime != 'now') {
@@ -838,16 +801,8 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
         //check for page references.
         //page reference can go-live before  parent go-live.
         var isRefPage = this.isReferencePage(items, chdItem.browserUri);
-        var parSchedTime = itemJson.now
-          ? 'now'
-          : itemJson.scheduledDate == ''
-          ? 'now'
-          : itemJson.scheduledDate;
-        var chdSchedTime = chdItem.now
-          ? 'now'
-          : chdItem.scheduledDate == ''
-          ? 'now'
-          : chdItem.scheduledDate;
+        var parSchedTime = itemJson.now ? 'now' : itemJson.scheduledDate == '' ? 'now' : itemJson.scheduledDate;
+        var chdSchedTime = chdItem.now ? 'now' : chdItem.scheduledDate == '' ? 'now' : chdItem.scheduledDate;
         var errorFlag = false,
           referencePageError = false,
           childPageError = false;
@@ -959,10 +914,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
         }
         if (multipleReferenceChilds) {
           errorMsg +=
-            'Page (' +
-            parentPageIntName +
-            ') cannot Go Live without the reference pages below:' +
-            referencePageIntName;
+            'Page (' + parentPageIntName + ') cannot Go Live without the reference pages below:' + referencePageIntName;
         } else {
           errorMsg +=
             'Page (' +
@@ -1001,10 +953,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
   return true;
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentChildSchedules = function (
-  items,
-  isChildNodes
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentChildSchedules = function (items, isChildNodes) {
   for (var itemIdx = 0; itemIdx < items.length; itemIdx++) {
     var item = items[itemIdx];
     var scheduledDate = 'now';
@@ -1014,13 +963,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentChildSchedules = fun
 
     if (
       item &&
-      !this.checkParentSchedule(
-        items,
-        item.browserUri,
-        scheduledDate,
-        item.submittedForDeletion,
-        isChildNodes
-      )
+      !this.checkParentSchedule(items, item.browserUri, scheduledDate, item.submittedForDeletion, isChildNodes)
     ) {
       return false;
     }
@@ -1034,9 +977,7 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentChildSchedules = fun
   return true;
 };
 
-CStudioAuthoring.Dialogs.PublishDialog.prototype.appendPublishingChannelsData = function (
-  containerObj
-) {
+CStudioAuthoring.Dialogs.PublishDialog.prototype.appendPublishingChannelsData = function (containerObj) {
   var publishObj = {},
     statusObj = {},
     selectEl = document.getElementById('go-pub-channel'),

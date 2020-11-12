@@ -51,32 +51,35 @@ interface LoadingStateProps {
     subtitle?: string;
     graphic?: string;
     graphicRoot?: string;
-  }
+  };
 }
 
 export default function LoadingState(props: LoadingStateProps) {
   const classes = useStyles({});
   const { Graphic } = props;
-  const propClasses = Object.assign({
-    root: '',
-    title: '',
-    subtitle: '',
-    graphic: '',
-    graphicRoot: ''
-  }, props.classes || {});
+  const propClasses = Object.assign(
+    {
+      root: '',
+      title: '',
+      subtitle: '',
+      graphic: '',
+      graphicRoot: ''
+    },
+    props.classes || {}
+  );
 
   return (
     <div className={clsx(classes.loadingView, { [propClasses.root]: !!propClasses.root })}>
-      {
-        props.title &&
+      {props.title && (
         <Typography
-          variant="h5" component="h1"
-          className={clsx(classes.title, { [propClasses.title]: !!propClasses.title })}>
-        {props.title}
-      </Typography>
-      }
-      {
-        props.subtitle &&
+          variant="h5"
+          component="h1"
+          className={clsx(classes.title, { [propClasses.title]: !!propClasses.title })}
+        >
+          {props.title}
+        </Typography>
+      )}
+      {props.subtitle && (
         <Typography
           variant="subtitle1"
           component="p"
@@ -84,13 +87,12 @@ export default function LoadingState(props: LoadingStateProps) {
         >
           {props.subtitle}
         </Typography>
-      }
+      )}
       <div className={clsx(classes.gearContainer, { [propClasses.graphicRoot]: !!propClasses.graphicRoot })}>
-        <Graphic className={propClasses.graphic} {...props.graphicProps}/>
+        <Graphic className={propClasses.graphic} {...props.graphicProps} />
       </div>
     </div>
   );
-
 }
 
 LoadingState.defaultProps = {

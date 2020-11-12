@@ -45,9 +45,7 @@
         compile: function dirPaginationCompileFn(tElement, tAttrs) {
           var expression = tAttrs.dirPaginate;
           // regex taken directly from https://github.com/angular/angular.js/blob/master/src/ng/directive/ngRepeat.js#L211
-          var match = expression.match(
-            /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/
-          );
+          var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
 
           var filterPattern = /\|\s*itemsPerPage\s*:[^|]*/;
           if (match[2].match(filterPattern) === null) {
@@ -64,26 +62,19 @@
           return function dirPaginationLinkFn(scope, element, attrs) {
             // Now that we have access to the `scope` we can interpolate any expression given in the paginationId attribute and
             // potentially register a new ID if it evaluates to a different value than the rawId.
-            var paginationId =
-              $parse(attrs.paginationId)(scope) || attrs.paginationId || DEFAULT_ID;
+            var paginationId = $parse(attrs.paginationId)(scope) || attrs.paginationId || DEFAULT_ID;
             paginationService.registerInstance(paginationId);
 
             var repeatExpression;
             var idDefinedInFilter = !!expression.match(/(\|\s*itemsPerPage\s*:[^|]*:[^|]*)/);
             if (paginationId !== DEFAULT_ID && !idDefinedInFilter) {
-              repeatExpression = expression.replace(
-                /(\|\s*itemsPerPage\s*:[^|]*)/,
-                "$1 : '" + paginationId + "'"
-              );
+              repeatExpression = expression.replace(/(\|\s*itemsPerPage\s*:[^|]*)/, "$1 : '" + paginationId + "'");
             } else {
               repeatExpression = expression;
             }
 
             // Add ng-repeat to the dom element
-            if (
-              element[0].hasAttribute('dir-paginate-start') ||
-              element[0].hasAttribute('data-dir-paginate-start')
-            ) {
+            if (element[0].hasAttribute('dir-paginate-start') || element[0].hasAttribute('data-dir-paginate-start')) {
               // using multiElement mode (dir-paginate-start, dir-paginate-end)
               attrs.$set('ngRepeatStart', repeatExpression);
               element.eq(element.length - 1).attr('ng-repeat-end', true);
@@ -173,8 +164,7 @@
           var pageNumber = calculatePageNumber(i, currentPage, paginationRange, totalPages);
 
           var openingEllipsesNeeded = i === 2 && (position === 'middle' || position === 'end');
-          var closingEllipsesNeeded =
-            i === paginationRange - 1 && (position === 'middle' || position === 'start');
+          var closingEllipsesNeeded = i === paginationRange - 1 && (position === 'middle' || position === 'start');
           if (ellipsesNeeded && (openingEllipsesNeeded || closingEllipsesNeeded)) {
             pages.push('...');
           } else {
@@ -230,10 +220,7 @@
           var rawId = attrs.paginationId || DEFAULT_ID;
           var paginationId = scope.paginationId || attrs.paginationId || DEFAULT_ID;
 
-          if (
-            !paginationService.isRegistered(paginationId) &&
-            !paginationService.isRegistered(rawId)
-          ) {
+          if (!paginationService.isRegistered(paginationId) && !paginationService.isRegistered(rawId)) {
             var idMessage = paginationId !== DEFAULT_ID ? ' (id: ' + paginationId + ') ' : ' ';
             throw (
               'pagination directive: the pagination controls' +

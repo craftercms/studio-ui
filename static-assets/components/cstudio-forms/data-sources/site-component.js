@@ -31,38 +31,35 @@ CStudioForms.Datasources.SiteComponent =
     for (var i = 0; i < properties.length; i++) {
       var property = properties[i];
       if (property.name === 'componentPath') {
-        CrafterCMSNext.services.content
-          .getDOM(CStudioAuthoringContext.siteId, property.value)
-          .subscribe(
-            (dom) => {
-              let items = Array.from(dom.querySelectorAll('items > item'));
-              items = items.map((item) => {
-                let values = {};
-                Array.from(item.children).map((child) => {
-                  values[child.tagName] = CrafterCMSNext.util.string.decodeHTML(child.innerHTML);
-                });
-                return values;
+        CrafterCMSNext.services.content.getDOM(CStudioAuthoringContext.siteId, property.value).subscribe(
+          (dom) => {
+            let items = Array.from(dom.querySelectorAll('items > item'));
+            items = items.map((item) => {
+              let values = {};
+              Array.from(item.children).map((child) => {
+                values[child.tagName] = CrafterCMSNext.util.string.decodeHTML(child.innerHTML);
               });
-              _self.list = items;
-              for (var j = 0; j < _self.callbacks.length; j++) {
-                _self.callbacks[j].success(items);
-              }
-            },
-            () => {
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'unableLoad-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
-                CrafterCMSNext.i18n.intl.formatMessage(
-                  _self.messages.siteComponentDSMessages.unableLoad,
-                  { file: property.value }
-                ),
-                null,
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
+              return values;
+            });
+            _self.list = items;
+            for (var j = 0; j < _self.callbacks.length; j++) {
+              _self.callbacks[j].success(items);
             }
-          );
+          },
+          () => {
+            CStudioAuthoring.Operations.showSimpleDialog(
+              'unableLoad-dialog',
+              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+              CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
+              CrafterCMSNext.i18n.intl.formatMessage(_self.messages.siteComponentDSMessages.unableLoad, {
+                file: property.value
+              }),
+              null,
+              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              'studioDialog'
+            );
+          }
+        );
       }
     }
 
@@ -71,9 +68,7 @@ CStudioForms.Datasources.SiteComponent =
 
 YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDatasource, {
   getLabel: function () {
-    return CrafterCMSNext.i18n.intl.formatMessage(
-      CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent
-    );
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent);
   },
 
   getInterface: function () {
@@ -111,9 +106,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   getSupportedProperties: function () {
     return [
       {
-        label: CrafterCMSNext.i18n.intl.formatMessage(
-          this.messages.siteComponentDSMessages.dataType
-        ),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.dataType),
         name: 'dataType',
         type: 'dropdown',
         defaultValue: [
@@ -125,45 +118,33 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
           },
           {
             value: 'value_s',
-            label: CrafterCMSNext.i18n.intl.formatMessage(
-              this.messages.siteComponentDSMessages.string
-            ),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.string),
             selected: false
           },
           {
             value: 'value_i',
-            label: CrafterCMSNext.i18n.intl.formatMessage(
-              this.messages.siteComponentDSMessages.integer
-            ),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.integer),
             selected: false
           },
           {
             value: 'value_f',
-            label: CrafterCMSNext.i18n.intl.formatMessage(
-              this.messages.siteComponentDSMessages.float
-            ),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.float),
             selected: false
           },
           {
             value: 'value_dt',
-            label: CrafterCMSNext.i18n.intl.formatMessage(
-              this.messages.siteComponentDSMessages.date
-            ),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.date),
             selected: false
           },
           {
             value: 'value_html',
-            label: CrafterCMSNext.i18n.intl.formatMessage(
-              this.messages.siteComponentDSMessages.html
-            ),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.html),
             selected: false
           }
         ]
       },
       {
-        label: CrafterCMSNext.i18n.intl.formatMessage(
-          this.messages.siteComponentDSMessages.componentPath
-        ),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.componentPath),
         name: 'componentPath',
         type: 'string'
       }
@@ -173,9 +154,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   getSupportedConstraints: function () {
     return [
       {
-        label: CrafterCMSNext.i18n.intl.formatMessage(
-          this.messages.siteComponentDSMessages.required
-        ),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.required),
         name: 'required',
         type: 'boolean'
       }
@@ -191,7 +170,4 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-site-component',
-  CStudioForms.Datasources.SiteComponent
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-site-component', CStudioForms.Datasources.SiteComponent);

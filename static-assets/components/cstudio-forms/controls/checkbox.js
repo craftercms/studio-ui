@@ -154,7 +154,4 @@ YAHOO.extend(CStudioForms.Controls.Checkbox, CStudioForms.CStudioFormField, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-checkbox',
-  CStudioForms.Controls.Checkbox
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-checkbox', CStudioForms.Controls.Checkbox);

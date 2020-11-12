@@ -171,10 +171,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     titleEl.innerHTML = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(
-      controlWidgetContainerEl,
-      'cstudio-form-control-node-selector-container'
-    );
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-node-selector-container');
 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
@@ -193,10 +190,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     var nodeItemsContainerEl = document.createElement('div');
     nodeItemsContainerEl.id = this.id + '-target';
-    YAHOO.util.Dom.addClass(
-      nodeItemsContainerEl,
-      'cstudio-form-control-node-selector-items-container'
-    );
+    YAHOO.util.Dom.addClass(nodeItemsContainerEl, 'cstudio-form-control-node-selector-items-container');
     nodeControlboxEl.appendChild(nodeItemsContainerEl);
     this.itemsContainerEl = nodeItemsContainerEl;
 
@@ -351,9 +345,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           function (evt) {
             _self.form.setFocusedField(_self);
             var selectedDatasource =
-              datasources.find(
-                (item) => item.id === _self.items[_self.selectedItemIndex].datasource
-              ) || datasources[0];
+              datasources.find((item) => item.id === _self.items[_self.selectedItemIndex].datasource) || datasources[0];
             selectedDatasource.edit(_self.items[_self.selectedItemIndex].key, _self);
           },
           this.editButtonEl
@@ -413,10 +405,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             this.context.itemsContainerEl
           )[0];
           if (selectedEl) {
-            YAHOO.util.Dom.removeClass(
-              selectedEl,
-              'cstudio-form-control-node-selector-item-selected'
-            );
+            YAHOO.util.Dom.removeClass(selectedEl, 'cstudio-form-control-node-selector-item-selected');
           }
 
           YAHOO.util.Dom.addClass(this, 'cstudio-form-control-node-selector-item-selected');
@@ -688,9 +677,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
   },
 
   getSupportedConstraints: function () {
-    return [
-      { label: CMgs.format(langBundle, 'allowDuplicate'), name: 'allowDuplicates', type: 'boolean' }
-    ];
+    return [{ label: CMgs.format(langBundle, 'allowDuplicate'), name: 'allowDuplicates', type: 'boolean' }];
   },
 
   getSupportedPostFixes: function () {
@@ -728,11 +715,7 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
 
     dragEl.innerHTML = clickEl.innerHTML;
     YAHOO.util.Dom.setStyle(dragEl, 'color', YAHOO.util.Dom.getStyle(clickEl, 'color'));
-    YAHOO.util.Dom.setStyle(
-      dragEl,
-      'backgroundColor',
-      YAHOO.util.Dom.getStyle(clickEl, 'backgroundColor')
-    );
+    YAHOO.util.Dom.setStyle(dragEl, 'backgroundColor', YAHOO.util.Dom.getStyle(clickEl, 'backgroundColor'));
     YAHOO.util.Dom.setStyle(dragEl, 'border', '2px solid #7EA6B2');
   },
 
@@ -831,7 +814,4 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-node-selector',
-  CStudioForms.Controls.NodeSelector
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-node-selector', CStudioForms.Controls.NodeSelector);

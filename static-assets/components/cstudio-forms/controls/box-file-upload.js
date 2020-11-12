@@ -15,9 +15,7 @@
  */
 
 CStudioAuthoring.Utils.addCss('/static-assets/styles/box-file-upload.css');
-CStudioAuthoring.Utils.addJavascript(
-  'https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.js'
-);
+CStudioAuthoring.Utils.addJavascript('https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.js');
 
 CStudioForms.Controls.BoxFileUpload =
   CStudioForms.Controls.BoxFileUpload ||
@@ -199,16 +197,11 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     containerEl.appendChild(controlWidgetContainerEl);
 
     var self = this;
-    var tokenUri = CStudioAuthoring.Service.createServiceUri(
-      '/api/1/services/api/1/box/token.json'
-    );
+    var tokenUri = CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/box/token.json');
     tokenUri += '&site=' + CStudioAuthoringContext.site;
     tokenUri += '&profileId=' + this.profile_id;
     tokenUri +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
     YAHOO.util.Connect.asyncRequest('GET', tokenUri, {
       success: function (o) {
         var data = JSON.parse(o.responseText);
@@ -251,7 +244,4 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-box-file-upload',
-  CStudioForms.Controls.BoxFileUpload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-box-file-upload', CStudioForms.Controls.BoxFileUpload);

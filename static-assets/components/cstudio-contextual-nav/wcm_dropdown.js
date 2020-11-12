@@ -52,9 +52,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
     navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
 
     if (
-      /*window.location.pathname.indexOf("search") > -1 ||*/ window.location.pathname.indexOf(
-        'browse'
-      ) > -1 ||
+      /*window.location.pathname.indexOf("search") > -1 ||*/ window.location.pathname.indexOf('browse') > -1 ||
       window.location.pathname.indexOf('site-config') > -1
     ) {
       mainContainerEl.innerHTML = '';
@@ -116,8 +114,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                * the dropdown */
               var parent = YDom.get('acn-dropdown-wrapper'),
                 node = evt.target;
-              while (node != null && parent != node && node.id != 'cstudio-wcm-popup-div')
-                node = node.parentNode;
+              while (node != null && parent != node && node.id != 'cstudio-wcm-popup-div') node = node.parentNode;
 
               /* when we click on copy/change template pop ups
                * context nav should be in open state	*/
@@ -238,10 +235,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
            *
            */
           getStoredCfgKey: function () {
-            return strUtils.format(
-              auth.ContextualNav.WcmSiteDropdown.STORED_CONFIG_KEY_TEMPLATE,
-              this.oConfig.role
-            );
+            return strUtils.format(auth.ContextualNav.WcmSiteDropdown.STORED_CONFIG_KEY_TEMPLATE, this.oConfig.role);
           },
           initializeVisibility: function () {
             // Enable the link element to open & close the dropdown
@@ -255,11 +249,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               null,
               this
             );
-            YEvent.on(
-              'acn-dropdown-wrapper',
-              'click',
-              auth.ContextualNav.WcmSiteDropdown.dropdownWrapperClickFn
-            );
+            YEvent.on('acn-dropdown-wrapper', 'click', auth.ContextualNav.WcmSiteDropdown.dropdownWrapperClickFn);
             if (this.oPreferences.visible) {
               // Set config visibility to false so that
               // setVisible method wont bypass the call
@@ -300,8 +290,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
             return this;
           },
           save: function () {
-            this.oConfig.persistState &&
-              storage.write(this.getStoredCfgKey(), this.oPreferences.toString(), 360);
+            this.oConfig.persistState && storage.write(this.getStoredCfgKey(), this.oPreferences.toString(), 360);
             return this;
           },
           setVisible: function (visible) {
@@ -398,8 +387,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   CStudioAuthoringContext.user,
                   {
                     success: function (userRoles) {
-                      for (k = 0, c = modules.length; k < c; k++)
-                        this.initDropdownModule(userRoles, modules[k]);
+                      for (k = 0, c = modules.length; k < c; k++) this.initDropdownModule(userRoles, modules[k]);
                     },
                     failure: function () {},
                     initDropdownModule: this.initDropdownModule
@@ -474,24 +462,22 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               module.name === 'wcm-root-folder' &&
                 (cb.once = function () {
                   try {
-                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(
-                      function (evtType, aArgs) {
-                        if (aArgs[0] == aArgs[1]) {
-                          // number of instaces == number of times event has fired
-                          self.handleScroll = true;
-                          self.oPreferences.visible && self.updateScrollPosition(true);
-                        }
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function (evtType, aArgs) {
+                      if (aArgs[0] == aArgs[1]) {
+                        // number of instaces == number of times event has fired
+                        self.handleScroll = true;
+                        self.oPreferences.visible && self.updateScrollPosition(true);
                       }
-                    );
+                    });
                   } catch (ex) {}
                 });
 
               CStudioAuthoring.Module.requireModule(
                 module.plugin ? module.plugin.name : module.name,
                 module.plugin
-                  ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${
-                      module.plugin.type
-                    }&name=${module.plugin.name || module.name}&filename=${module.plugin.file}`
+                  ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${
+                      module.plugin.name || module.name
+                    }&filename=${module.plugin.file}`
                   : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
                 module,
                 cb

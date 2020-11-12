@@ -107,29 +107,22 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
         browseEl
       );
     } else {
-      CStudioAuthoring.Operations.openBrowse(
-        '',
-        _self.processPathsForMacros(_self.repoPath),
-        '-1',
-        'select',
-        true,
-        {
-          success: function (searchId, selectedTOs) {
-            for (var i = 0; i < selectedTOs.length; i++) {
-              var item = selectedTOs[i];
-              var fileName = item.name;
-              var fileExtension = fileName.split('.').pop();
+      CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
+        success: function (searchId, selectedTOs) {
+          for (var i = 0; i < selectedTOs.length; i++) {
+            var item = selectedTOs[i];
+            var fileName = item.name;
+            var fileExtension = fileName.split('.').pop();
 
-              const returnProp = control.returnProp ? control.returnProp : 'uri';
-              control.insertItem(item[returnProp], item.uri, fileExtension, null, _self.id);
-              if (control._renderItems) {
-                control._renderItems();
-              }
+            const returnProp = control.returnProp ? control.returnProp : 'uri';
+            control.insertItem(item[returnProp], item.uri, fileExtension, null, _self.id);
+            if (control._renderItems) {
+              control._renderItems();
             }
-          },
-          failure: function () {}
-        }
-      );
+          }
+        },
+        failure: function () {}
+      });
     }
   },
 

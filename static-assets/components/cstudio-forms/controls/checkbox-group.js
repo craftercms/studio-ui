@@ -221,9 +221,7 @@
             // index item and index + iterationLength item on each iteration
             listLengthOdd = keyValueList.length % 2 === 1;
             // if list length is odd then add 1 before calculating half
-            iterationLength = listLengthOdd
-              ? (keyValueList.length + 1) / 2
-              : keyValueList.length / 2;
+            iterationLength = listLengthOdd ? (keyValueList.length + 1) / 2 : keyValueList.length / 2;
           }
 
           for (var j = 0; j < iterationLength; j++) {
@@ -373,10 +371,7 @@
         checkboxes = YAHOO.util.Selector.query('.checkbox input[type="checkbox"]', ancestor),
         state = el.checked,
         allSameState = true,
-        checkAllEl = YAHOO.util.Selector.query(
-          '.checkbox.select-all input[type="checkbox"]',
-          ancestor
-        )[0];
+        checkAllEl = YAHOO.util.Selector.query('.checkbox.select-all input[type="checkbox"]', ancestor)[0];
 
       if (checkAllEl) {
         checkboxes.forEach(function (el) {
@@ -472,9 +467,7 @@
         }
         return valObj;
       } else {
-        throw new TypeError(
-          'Function updateDataType (checkbox-group.js) : module variable dataType is undefined'
-        );
+        throw new TypeError('Function updateDataType (checkbox-group.js) : module variable dataType is undefined');
       }
     },
 
@@ -503,8 +496,7 @@
 
       for (var i = 0; i < values.length; i++) {
         item = values[i];
-        strValue +=
-          '{ "key": "' + item.key + '", "' + this.dataType + '":"' + item[this.dataType] + '"}';
+        strValue += '{ "key": "' + item.key + '", "' + this.dataType + '":"' + item[this.dataType] + '"}';
         if (i != values.length - 1) {
           strValue += ',';
         }
@@ -564,8 +556,5 @@
     }
   });
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-forms-controls-checkbox-group',
-    CStudioForms.Controls.CheckBoxGroup
-  );
+  CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-checkbox-group', CStudioForms.Controls.CheckBoxGroup);
 })();

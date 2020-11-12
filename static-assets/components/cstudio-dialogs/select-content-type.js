@@ -22,8 +22,7 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 /**
  * Submit to go live
  */
-CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs
-  .DialogSelectContentType || {
+CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.DialogSelectContentType || {
   /**
    * initialize module
    */
@@ -91,10 +90,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs
 
     var divIdName = 'cstudio-wcm-popup-div';
     var CMgs = CStudioAuthoring.Messages;
-    var formsLangBundle = CStudioAuthoring.Messages.getBundle(
-      'forms',
-      CStudioAuthoringContext.lang
-    );
+    var formsLangBundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
 
     newDiv.setAttribute('id', divIdName);
     newDiv.className = 'yui-pe-content';
@@ -102,10 +98,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs
       `<div class="contentTypePopupInner" id="ct_contentTypePopupInner">` +
       /**/ `<div class="contentTypePopupContent" id="ct_contentTypePopupContent">` +
       /****/ '<form name="contentFromWCM"> ' +
-      /******/ `<div class="contentTypePopupHeader">${CMgs.format(
-        formsLangBundle,
-        'chooseContentType'
-      )}</div>` +
+      /******/ `<div class="contentTypePopupHeader">${CMgs.format(formsLangBundle, 'chooseContentType')}</div>` +
       /******/ `<div>${CMgs.format(formsLangBundle, 'chooseContentTypeBody')}</div>` +
       /******/ '<div class="contentTypeOuter"> ' +
       /********/ '<div class="templateName" id="templateName"> ' +
@@ -166,8 +159,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs
         oPropertyValue = aProperty[1];
       if (sPropertyName == 'zindex') {
         var siteContextNavZIndex = 100000;
-        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex =
-          oPropertyValue + siteContextNavZIndex;
+        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
     });
 
@@ -270,8 +262,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs
     }
 
     YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
-      var defaultSrc =
-        CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
+      var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
       var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
       var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
@@ -352,7 +343,4 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'dialog-select-template',
-  CStudioAuthoring.Dialogs.DialogSelectContentType
-);
+CStudioAuthoring.Module.moduleLoaded('dialog-select-template', CStudioAuthoring.Dialogs.DialogSelectContentType);

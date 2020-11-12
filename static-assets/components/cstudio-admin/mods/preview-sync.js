@@ -46,7 +46,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.PreviewSync, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-preview-sync',
-  CStudioAdminConsole.Tool.PreviewSync
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-preview-sync', CStudioAdminConsole.Tool.PreviewSync);

@@ -83,13 +83,7 @@ CStudioAuthoring.Module.requireModule(
           dateValue = YDom.get('datepicker').value,
           timeValue = YDom.get('timepicker').value;
 
-        return (
-          checked &&
-          dateValue !== 'Date...' &&
-          dateValue !== '' &&
-          timeValue !== 'Time...' &&
-          timeValue !== ''
-        );
+        return checked && dateValue !== 'Date...' && dateValue !== '' && timeValue !== 'Time...' && timeValue !== '';
       }
 
       function setDisabled(isDisabled) {
@@ -186,17 +180,12 @@ CStudioAuthoring.Module.requireModule(
           if (reference === '') {
             YDom.get('globalSetToNow').checked = true;
           } else {
-            var dt = CStudioAuthoring.Utils.formatDateFromString(reference, 'tooltipformat').split(
-                SPACE
-              ),
+            var dt = CStudioAuthoring.Utils.formatDateFromString(reference, 'tooltipformat').split(SPACE),
               time = dt[1];
             dp.disabled = false;
             tp.disabled = false;
             dp.value = CStudioAuthoring.Utils.formatDateFromString(reference, 'simpleformat');
-            tp.value =
-              time.substr(0, time.length - 1) +
-              ':00 ' +
-              (time.indexOf('P') !== -1 ? 'p.m.' : 'a.m.');
+            tp.value = time.substr(0, time.length - 1) + ':00 ' + (time.indexOf('P') !== -1 ? 'p.m.' : 'a.m.');
             YDom.get('globalSetToDateTime').checked = true;
           }
         } else {
@@ -302,14 +291,9 @@ CStudioAuthoring.Module.requireModule(
               timepicker = YDom.get('timepicker');
             var dateValue = datepicker.value,
               timeValue = timepicker.value;
-            this.selectedJsonObj.scheduledDate = this.getScheduledDateTimeForJson(
-              dateValue,
-              timeValue
-            );
+            this.selectedJsonObj.scheduledDate = this.getScheduledDateTimeForJson(dateValue, timeValue);
           }
-          this.selectedJsonObj.submissionComment = document.getElementById(
-            'acn-submission-comment'
-          ).value;
+          this.selectedJsonObj.submissionComment = document.getElementById('acn-submission-comment').value;
 
           var jsonSubmitString = YAHOO.lang.JSON.stringify(this.selectedJsonObj),
             self = this,
@@ -409,11 +393,7 @@ CStudioAuthoring.Module.requireModule(
                 };
 
                 // check for on-go-live workflows (eventually moves server side)
-                CSA.Service.lookupConfigurtion(
-                  CSAContext.site,
-                  '/workflow-config.xml',
-                  siteConfigCb
-                );
+                CSA.Service.lookupConfigurtion(CSAContext.site, '/workflow-config.xml', siteConfigCb);
               },
               failure: function (oResponse) {
                 self.pageRedirect(oResponse);
@@ -658,16 +638,8 @@ CStudioAuthoring.Module.requireModule(
                     'mousedown'
                   ]);
                   CSA.Utils.textFieldTimeHelper('timepicker', 'change', 'timepicker');
-                  CSA.Utils.textFieldTimeIncrementHelper(
-                    'timeIncrementButton',
-                    'timepicker',
-                    'click'
-                  );
-                  CSA.Utils.textFieldTimeDecrementHelper(
-                    'timeDecrementButton',
-                    'timepicker',
-                    'click'
-                  );
+                  CSA.Utils.textFieldTimeIncrementHelper('timeIncrementButton', 'timepicker', 'click');
+                  CSA.Utils.textFieldTimeDecrementHelper('timeDecrementButton', 'timepicker', 'click');
 
                   //set z-index for panel so that it will appear over context nav bar also.
                   var oContainerPanel = YDom.get('submitPanel_c');
@@ -713,11 +685,7 @@ CStudioAuthoring.Module.requireModule(
                   me.getDependenciesForGoLiveItemList(contentItems);
                 } else {
                   if (!parentClass.messagePanel) {
-                    parentClass.messagePanel = new parentClass.createMessagePanel(
-                      'messageOverlay',
-                      true,
-                      1000
-                    );
+                    parentClass.messagePanel = new parentClass.createMessagePanel('messageOverlay', true, 1000);
                     parentClass.messagePanel.setBody(parentClass.getNoPublishingChannelsBody());
 
                     parentClass.messagePanel.hideEvent.subscribe(function () {
@@ -795,10 +763,7 @@ CStudioAuthoring.Module.requireModule(
 
         YConnect.setDefaultPostHeader(false);
         YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
-        YConnect.initHeader(
-          CStudioAuthoringContext.xsrfHeaderName,
-          CrafterCMSNext.util.auth.getRequestForgeryToken()
-        );
+        YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest(
           'POST',
           dependencyUrl,
@@ -898,8 +863,7 @@ CStudioAuthoring.Module.requireModule(
                   msg = document.createElement('span');
 
                 msg.className = 'notice';
-                msg.textContent =
-                  '*Dependencies must be checked before you can Schedule to Go Live.';
+                msg.textContent = '*Dependencies must be checked before you can Schedule to Go Live.';
 
                 el.appendChild(msg);
               }
@@ -1010,10 +974,7 @@ CStudioAuthoring.Module.requireModule(
 
         // update main pop-up
         if (now == false) {
-          this.elementThatClickedMiniScheduler.innerHTML = CSA.Utils.getScheduledDateTimeUI(
-            dateValue,
-            timeValue
-          );
+          this.elementThatClickedMiniScheduler.innerHTML = CSA.Utils.getScheduledDateTimeUI(dateValue, timeValue);
           var jsonScheduledTime = this.getScheduledDateTimeForJson(dateValue, timeValue);
           this.setTimeInJsonObject(
             this.dependencyJsonObj.items,
@@ -1022,11 +983,7 @@ CStudioAuthoring.Module.requireModule(
           );
         } else {
           this.elementThatClickedMiniScheduler.innerHTML = 'Now';
-          this.setTimeInJsonObject(
-            this.dependencyJsonObj.items,
-            'now',
-            this.browserUriOfItemClickedInMiniScheduler
-          );
+          this.setTimeInJsonObject(this.dependencyJsonObj.items, 'now', this.browserUriOfItemClickedInMiniScheduler);
         }
       };
 

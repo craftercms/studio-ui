@@ -59,33 +59,23 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       aria-describedby="confirmDialogBody"
       disableEnforceFocus={disableEnforceFocus}
     >
-      {
-        title &&
-        <DialogTitle id="confirmDialogTitle">{title}</DialogTitle>
-      }
+      {title && <DialogTitle id="confirmDialogTitle">{title}</DialogTitle>}
 
       <DialogContent id="confirmDialogBody" dividers>
-        {
-          description &&
-          <DialogContentText>
-            {description}
-          </DialogContentText>
-        }
+        {description && <DialogContentText>{description}</DialogContentText>}
       </DialogContent>
       <DialogActions>
-        {
-          onCancel &&
+        {onCancel && (
           <Button onClick={onCancel} variant="outlined">
             {formatMessage(messages.cancel)}
           </Button>
-        }
-        {
-          onOk &&
+        )}
+        {onOk && (
           <Button onClick={onOk} variant="contained" color="primary" autoFocus>
             {formatMessage(messages.ok)}
           </Button>
-        }
+        )}
       </DialogActions>
     </Dialog>
-  )
+  );
 }

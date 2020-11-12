@@ -106,11 +106,7 @@ YAHOO.extend(
               var imageData = to;
               _self.createImageData(
                 imageData,
-                configFilesPath +
-                  '/content-types' +
-                  CStudioAdminConsole.contentTypeSelected +
-                  '/' +
-                  to.fileName
+                configFilesPath + '/content-types' + CStudioAdminConsole.contentTypeSelected + '/' + to.fileName
               );
 
               var valid = false,

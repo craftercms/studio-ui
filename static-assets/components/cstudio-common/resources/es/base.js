@@ -242,8 +242,7 @@ CStudioAuthoring.Messages.registerBundle('previewTools', 'es', {
   signOut: 'Desloguearse',
   mainMenu: 'Menu Principal',
 
-  videoProcessed:
-    'El video se está procesado, la vista previa estará disponible cuando se complete el procesamiento',
+  videoProcessed: 'El video se está procesado, la vista previa estará disponible cuando se complete el procesamiento',
   quickCreate: 'Creación Rápida',
   inContextEdit: 'Edición en Contexto'
 });
@@ -312,8 +311,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'es', {
   previewInitiated: 'Sincronización del servidor de previsualización iniciado.',
   syncfromRepoInitiated: 'Sincronización del repositorio iniciado.',
 
-  lookUpItemError:
-    'No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.',
+  lookUpItemError: 'No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.',
   pathSameError: 'Las rutas de origen y destino son las mismas.',
   pageExistError: 'Página ya existe en el destino.',
   wcmContentDependencies: 'Dependencias',
@@ -341,8 +339,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   repeatMoveDown: 'Mover Abajo',
   repeatDelete: 'Eliminar',
   errMissingRequirements: 'You cannot save until all form requirements are satisfied',
-  errSaveFailed:
-    'Unable to save form content. Please try again or contact or your system administrator.',
+  errSaveFailed: 'Unable to save form content. Please try again or contact or your system administrator.',
   errOnRepeat: 'Error on repeater operation: {0}',
   errFailedToLoadContent: 'Error loading content: {0}',
   errExpectedIndexXml: 'Not expecting file-name other than index.xml',
@@ -374,8 +371,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   newFolderUpdating: 'Creando la carpeta...',
 
   chooseContentType: 'Elige un tipo de contenido',
-  chooseContentTypeBody:
-    'Las siguientes plantillas de inicio están disponibles para su uso dentro de esta sección.',
+  chooseContentTypeBody: 'Las siguientes plantillas de inicio están disponibles para su uso dentro de esta sección.',
   chooseContentTypeLabel: 'Nombre de la Plantilla:',
   chooseContentTypePreview: 'Vista Previa:',
 
@@ -388,8 +384,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
 
   changeTemplateDialogTitle: 'Advertencia: Cambiando el Tipo de Contenido',
   changeTemplateDialogSubTitle: 'Crafter Studio',
-  changeTemplateDialogBody:
-    'La siguiente operación puede provocar la pérdida de datos. ¿Quieres continuar?',
+  changeTemplateDialogBody: 'La siguiente operación puede provocar la pérdida de datos. ¿Quieres continuar?',
 
   bulkPublishDialogTitle: 'Advertencia: Publicación en cantidades',
   bulkPublishDialogBody:
@@ -456,8 +451,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
 
   requestApproveDialogTitle: 'Solicitud de Publicación',
   requestApproveDialogSubTitle: 'Cuando desea que los artículos se publiquen?',
-  requestApproveDialogEmailMe:
-    'Enviarme un correo cuando los artículos sean aprobados para publicarse.',
+  requestApproveDialogEmailMe: 'Enviarme un correo cuando los artículos sean aprobados para publicarse.',
 
   itemsForPublish: 'Articulos para publicar',
   selectAll: 'Seleccionar todo',
@@ -484,8 +478,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   newContTypeDialogPage: 'Página',
   component: 'Componente',
   newContTypeDialogLabelMsg: 'Proporcione una etiqueta de visualización de este Tipo de Contenido',
-  newContTypeDialogContentTypeNamelMsg:
-    'Proporcione un nombre de sistema para este Tipo de Contenido',
+  newContTypeDialogContentTypeNamelMsg: 'Proporcione un nombre de sistema para este Tipo de Contenido',
   newContTypeDialogTypeMsg: 'Seleccione el tipo de este Tipo de Contenido',
 
   adminHelpDialogTitle: 'Contenido del Campo',
@@ -517,8 +510,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
 
   /*Error*/
   legacyFormNoSupported: 'Servidor de formulario heredado ya no es soportado.',
-  loadContentsError:
-    'No se puede cargar contenido. Por favor, cierre la ventana de diálogo e inténtelo de nuevo.',
+  loadContentsError: 'No se puede cargar contenido. Por favor, cierre la ventana de diálogo e inténtelo de nuevo.',
   taxonomyError: 'No hay tipos de taxonomía disponibles para',
   getDomainNameError: 'Service.getDomainName obsoleto.',
   changeContTypeError: 'Error al cambiar el tipo de contenido.',
@@ -541,11 +533,9 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   numberPerPage: 'Introduzca un número en el elemento de muestra por página.',
   revertError: 'Error al revertir.',
   legacyError: 'El servidor de formulario heredado ya no es compatible.',
-  contentTypesEmpty:
-    'No hay tipos de contenido disponibles que se pueden crear en la ruta de configuración.',
+  contentTypesEmpty: 'No hay tipos de contenido disponibles que se pueden crear en la ruta de configuración.',
   componentCategoriesError: 'No hay categorías disponibles que puedan ser creadas.',
-  pluginError:
-    'Se encontraron problemas con la configuración de su plugin. Faltan las siguientes propiedades:',
+  pluginError: 'Se encontraron problemas con la configuración de su plugin. Faltan las siguientes propiedades:',
   pluginErrorSolution:
     "Vaya a <a id='siteConfigURL'> [página de configuración del sitio] </a> y seleccione 'Herramientas de configuración del sitio' en el menú desplegable para editar el archivo.",
   control: 'Control: ',
@@ -591,8 +581,7 @@ CStudioAuthoring.Messages.registerBundle('search', 'es', {
   seeLess: 'Ver Menos',
   under: 'Menos de ',
   above: 'y más',
-  errorMessage:
-    'Hubo un problema completando su búsqueda, por favor contacte al Administrador si el problema persite.',
+  errorMessage: 'Hubo un problema completando su búsqueda, por favor contacte al Administrador si el problema persite.',
   clear: 'Limpiar',
   apply: 'Aplicar'
 });
@@ -607,8 +596,7 @@ CStudioAuthoring.Messages.registerBundle('browse', 'es', {
   clearAll: 'Limpiar Selección',
   uploadLabel: 'Subir',
   notification: 'Notificación',
-  lookUpChildError:
-    'No puede buscar la devolución de llamada del formulario secundario para la búsqueda: ',
+  lookUpChildError: 'No puede buscar la devolución de llamada del formulario secundario para la búsqueda: ',
   lookUpParentError: 'No puede buscar el contexto del padre para la búsqueda: ',
   loading: 'Cargando',
   noBrowseResults: 'No hay archivos en esta ruta.',
@@ -870,8 +858,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabConfigurations: 'Configuraciones',
   confTabConfDesc: 'Define esta lista de configuraciones',
   confTabContextualNavigationConf: 'Configuración de Navegación Contextual',
-  confTabContextualNavigationConfDesc:
-    'Define los módulos de la barra de navegación contextual del sitio',
+  confTabContextualNavigationConfDesc: 'Define los módulos de la barra de navegación contextual del sitio',
   confTabSidebarConf: 'Configuración del Menu barra lateral',
   confTabSidebarConfDesc: 'Define los módulos de la barra lateral',
   confTabEndpointsConf: 'Configuración de los puntos finales',
@@ -879,8 +866,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabDevEnvironmentConf: 'Configuración del Ambiente Dev',
   confTabDevEnvironmentConfDesc: 'Define una configuración de entorno de desarrollo',
   confTabTargetsConf: 'Configuración de objetivos',
-  confTabTargetsConfDesc:
-    'Define una lista de objetivos para la forma de fuente de datos utilizada',
+  confTabTargetsConfDesc: 'Define una lista de objetivos para la forma de fuente de datos utilizada',
   confTabRTEConf: 'Configuración RTE',
   confTabRTEConfDesc: 'Define la configuraciones de editores de texto enriquecido en formularios',
   confTabRTEtMCE5Conf: 'Configuración RTE (TinyMCE 5)',
@@ -893,11 +879,9 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabPreviewComponentsConfDesc:
     'Define una lista de componentes que se pueden crear de forma dinámica en la vista previa',
   confTabPreviewPanelConf: 'Configuración del Panel de Vista Previa',
-  confTabconfTabPreviewPanelConfDesc:
-    'Define una lista de herramientas disponibles en la vista previa',
+  confTabconfTabPreviewPanelConfDesc: 'Define una lista de herramientas disponibles en la vista previa',
   confTabPersonasConf: 'Configuración de las Personas',
-  confTabPersonasConfDesc:
-    'Personas define una lista de personajes disponibles para asumir en la vista previa',
+  confTabPersonasConfDesc: 'Personas define una lista de personajes disponibles para asumir en la vista previa',
   confTabNotificationConf: 'Notification Configuration',
   confTabNotificationConfDesc: 'Define una lista de mensajes de interfaz de usuario',
   confTabPermissionsMappings: 'Asignación de Permisos',
@@ -915,17 +899,14 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabTargetingConfigurationDesc:
     'Este archivo configura el sistema de orientación de Crafter Studio para ayudar a proporcionar a Crafter Engine propiedades de usuario falsas que ayudan a conducir el sistema de orientación',
   confTabEnvironmentConfiguration: 'Configuración del entorno',
-  confTabEnvironmentConfigurationDesc:
-    'Este archivo configura los entornos que Crafter Studio puede publicar',
+  confTabEnvironmentConfigurationDesc: 'Este archivo configura los entornos que Crafter Studio puede publicar',
   confTabCMISConfiguration: 'Configuración de CMIS',
   confTabCMISConfigurationDesc:
     'Estos archivos configuran 0 o más repositorios capaces de CMIS como fuentes de datos que los autores de contenido pueden elegir',
   confTabEngineSiteConfiguration: 'Configuración de Sitio de Engine',
   confTabEngineSiteConfigurationDesc: 'Configuración del Sitio usada por Crafter Engine',
-  confTabEngineSiteAppContextConfiguration:
-    'Configuración de Contexto de Aplicación de Sitio de Engine',
-  confTabEngineSiteAppContextConfigurationDesc:
-    'Configuración del Contexto de Aplicación para el Sitio de Engine',
+  confTabEngineSiteAppContextConfiguration: 'Configuración de Contexto de Aplicación de Sitio de Engine',
+  confTabEngineSiteAppContextConfigurationDesc: 'Configuración del Contexto de Aplicación para el Sitio de Engine',
 
   /*Postfixes*/
   iDescription: 'Para nuúmero entero.',
@@ -959,8 +940,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   cancelDeploymentError: 'Error al cancelar la implementación.',
   saveDateError:
     'No se puede guardar el campo Fecha / Hora. Por favor, póngase en contacto con el administrador del sistema.',
-  contentTypeModifiedWarn:
-    'Se ha modificado el tipo de contenido, ¿está seguro de que desea abandonar los cambios?',
+  contentTypeModifiedWarn: 'Se ha modificado el tipo de contenido, ¿está seguro de que desea abandonar los cambios?',
   noPathSetError:
     'El campo de ruta del origen de datos {DATASOURCENAME} no está configurado correctamente. Por favor contacte a su administrador.',
 

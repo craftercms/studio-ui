@@ -127,9 +127,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       'zoomFullButton',
       'click',
       function () {
-        this.fullImageTab(
-          !this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value
-        );
+        this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
       },
       this,
       true
@@ -362,10 +360,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     titleEl.innerHTML = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(
-      controlWidgetContainerEl,
-      'cstudio-form-control-video-picker-container'
-    );
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-video-picker-container');
 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');

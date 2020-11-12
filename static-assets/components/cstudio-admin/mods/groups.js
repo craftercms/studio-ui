@@ -44,7 +44,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.Groups, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-groups',
-  CStudioAdminConsole.Tool.Groups
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-groups', CStudioAdminConsole.Tool.Groups);
