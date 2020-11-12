@@ -16,8 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
@@ -195,13 +194,15 @@ interface HistoryDialogBaseProps {
   open: boolean;
 }
 
-export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
-  versionsBranch: VersionsStateProps;
-  permissions: LookupTable<boolean>;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type HistoryDialogProps = PropsWithChildren<
+  HistoryDialogBaseProps & {
+    versionsBranch: VersionsStateProps;
+    permissions: LookupTable<boolean>;
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
@@ -231,24 +232,20 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (versionsBranch) =>
-      Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => resource.complete,
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(
-    permissions,
-    {
-      shouldResolve: (permissions) => Boolean(permissions),
-      shouldReject: () => false,
-      shouldRenew: (permissions, resource) => resource.complete,
-      resultSelector: (permissions) => permissions,
-      errorSelector: () => null
-    }
-  );
+  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(permissions, {
+    shouldResolve: (permissions) => Boolean(permissions),
+    shouldReject: () => false,
+    shouldRenew: (permissions, resource) => resource.complete,
+    resultSelector: (permissions) => permissions,
+    errorSelector: () => null
+  });
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, permissions) => {
@@ -271,13 +268,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
       } else {
         sections.push([menuOptions.view]);
         if (!hasOptions && count > 1) {
-          sections.push(
-            [
-              menuOptions.compareTo,
-              menuOptions.compareToCurrent,
-              menuOptions.compareToPrevious
-            ]
-          );
+          sections.push([menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious]);
         }
         if (write && count > 1) {
           sections.push([menuOptions.revertToThisVersion]);
@@ -324,11 +315,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
 
   const compareTo = (versionNumber: string) => {
     dispatch(
-      batchActions([
-        fetchContentTypes(),
-        compareVersion({ id: versionNumber }),
-        compareVersionDialogWithActions()
-      ])
+      batchActions([fetchContentTypes(), compareVersion({ id: versionNumber }), compareVersionDialogWithActions()])
     );
   };
 
@@ -360,10 +347,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
-        onOk: batchActions([
-          closeConfirmDialog(),
-          revertToPreviousVersion({ id: activeItem.versionNumber })
-        ])
+        onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ id: activeItem.versionNumber })])
       })
     );
   };
@@ -376,10 +360,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
-        onOk: batchActions([
-          closeConfirmDialog(),
-          revertContent({ path, versionNumber: activeItem.versionNumber })
-        ])
+        onOk: batchActions([closeConfirmDialog(), revertContent({ path, versionNumber: activeItem.versionNumber })])
       })
     );
   };
@@ -431,9 +412,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   return (
     <>
       <DialogHeader
-        title={
-          <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />
-        }
+        title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />}
         onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogBody}>
@@ -448,12 +427,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           selectedItem={item}
           onItemClicked={(item) => {
             setOpenSelector(false);
-            dispatch(
-              batchActions([
-                versionsChangeItem({ item }),
-                fetchUserPermissions({ path: item.path })
-              ])
-            );
+            dispatch(batchActions([versionsChangeItem({ item }), fetchUserPermissions({ path: item.path })]));
           }}
         />
         <SuspenseWithEmptyState resource={versionsResource}>
@@ -512,9 +486,7 @@ export function Pagination(props: PaginationProps) {
       nextIconButtonProps={{
         'aria-label': formatMessage(translations.nextPage)
       }}
-      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
-        props.onPageChanged(nextPage)
-      }
+      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => props.onPageChanged(nextPage)}
     />
   );
 }

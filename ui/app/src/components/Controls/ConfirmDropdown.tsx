@@ -19,28 +19,30 @@ import Button, { ButtonTypeMap } from '@material-ui/core/Button';
 import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles(() => ({
-  menuPaper: {
-    maxWidth: '250px',
-    '& ul': {
-      padding: 0
+const useStyles = makeStyles(() =>
+  createStyles({
+    menuPaper: {
+      maxWidth: '250px',
+      '& ul': {
+        padding: 0
+      },
+      '& li': {
+        borderTop: '1px solid #dedede',
+        paddingTop: '10px',
+        paddingBottom: '10px'
+      }
     },
-    '& li': {
-      borderTop: '1px solid #dedede',
-      paddingTop: '10px',
-      paddingBottom: '10px'
+    helperText: {
+      padding: '10px 16px 10px 16px',
+      background: palette.gray.light0
     }
-  },
-  helperText: {
-    padding: '10px 16px 10px 16px',
-    background: palette.gray.light0
-  }
-}));
+  })
+);
 
 interface ConfirmDropdownProps {
   text: string;
@@ -84,12 +86,7 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
 
   return (
     <>
-      <Button
-        className={props.classes?.button}
-        variant={buttonVariant}
-        onClick={handleClick}
-        disabled={disabled}
-      >
+      <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>
         {text} <ArrowDown />
       </Button>
       <Menu

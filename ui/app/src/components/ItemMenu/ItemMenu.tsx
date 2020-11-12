@@ -19,13 +19,7 @@ import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
 import { LookupTable } from '../../models/LookupTable';
-import {
-  useActiveSiteId,
-  useEnv,
-  useLogicResource,
-  usePermissions,
-  useSelection
-} from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
 import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin } from '@material-ui/core';
@@ -57,13 +51,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
-import {
-  copy,
-  cut,
-  fetchWorkflowAffectedItems,
-  getLegacyItemsTree,
-  paste
-} from '../../services/content';
+import { copy, cut, fetchWorkflowAffectedItems, getLegacyItemsTree, paste } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -79,8 +67,7 @@ import {
   unSetClipBoard
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { translations } from './translations';
 import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
@@ -134,16 +121,13 @@ export function ItemMenu(props: ItemMenuProps) {
     errorSelector: (source) => null
   });
 
-  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(
-    itemPermissions,
-    {
-      shouldResolve: (source) => Boolean(source),
-      shouldReject: (source) => false,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: (source) => source,
-      errorSelector: (source) => null
-    }
-  );
+  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(itemPermissions, {
+    shouldResolve: (source) => Boolean(source),
+    shouldReject: (source) => false,
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source,
+    errorSelector: (source) => null
+  });
 
   const onMenuItemClicked = (option: SectionItem) => {
     switch (option.id) {
@@ -168,10 +152,12 @@ export function ItemMenu(props: ItemMenuProps) {
               })
             );
           } else {
-            dispatch(showEditDialog({
-              src,
-              onSaveSuccess: showEditItemSuccessNotification()
-            }));
+            dispatch(
+              showEditDialog({
+                src,
+                onSaveSuccess: showEditItemSuccessNotification()
+              })
+            );
           }
         });
         break;
@@ -260,12 +246,7 @@ export function ItemMenu(props: ItemMenuProps) {
         cut(site, item).subscribe(
           ({ success }) => {
             if (success) {
-              dispatch(
-                batchActions([
-                  setClipBoard({ path: item.path }),
-                  showCopyItemSuccessNotification()
-                ])
-              );
+              dispatch(batchActions([setClipBoard({ path: item.path }), showCopyItemSuccessNotification()]));
             }
           },
           (response) => {
@@ -298,12 +279,7 @@ export function ItemMenu(props: ItemMenuProps) {
               copy(site, item.path).subscribe(
                 (response) => {
                   if (response.success) {
-                    dispatch(
-                      batchActions([
-                        setClipBoard({ path: item.path }),
-                        showCopyItemSuccessNotification()
-                      ])
-                    );
+                    dispatch(batchActions([setClipBoard({ path: item.path }), showCopyItemSuccessNotification()]));
                   }
                 },
                 (response) => {
@@ -383,8 +359,8 @@ export function ItemMenu(props: ItemMenuProps) {
             onSuccess: batchActions([
               showPublishItemSuccessNotification(),
               reloadDetailedItem({ path: item.path }),
-              closePublishDialog()]
-            )
+              closePublishDialog()
+            ])
           })
         );
         break;
@@ -397,17 +373,22 @@ export function ItemMenu(props: ItemMenuProps) {
             onSuccess: batchActions([
               showPublishItemSuccessNotification(),
               reloadDetailedItem({ path: item.path }),
-              closePublishDialog()]
-            )
+              closePublishDialog()
+            ])
           })
         );
         break;
       }
       case 'history': {
-        dispatch(batchActions([fetchItemVersions({
-          item,
-          rootPath: getRootPath(item.path)
-        }), showHistoryDialog({})]));
+        dispatch(
+          batchActions([
+            fetchItemVersions({
+              item,
+              rootPath: getRootPath(item.path)
+            }),
+            showHistoryDialog({})
+          ])
+        );
         break;
       }
       case 'dependencies': {
@@ -490,10 +471,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showUploadDialog({
             path: item.path,
             site,
-            onClose: batchActions([
-              closeUploadDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'upload' })
-            ])
+            onClose: batchActions([closeUploadDialog(), onItemMenuActionSuccessCreator?.({ item, option: 'upload' })])
           })
         );
         break;
@@ -535,9 +513,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   let permissions = resource.permissions.read();
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
-  return (
-    <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />
-  );
+  return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;
 }
 
 export function Loader(props) {

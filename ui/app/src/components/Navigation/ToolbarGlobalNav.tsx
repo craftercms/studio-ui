@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CrafterChevron from '../Icons/CrafterChevron';
 import GlobalNav from './GlobalNav';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import { getLogoutInfoURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
@@ -36,40 +36,42 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
 import { fetchSites } from '../../state/reducers/sites';
 
-const useStyles = makeStyles((theme) => ({
-  avatarClickable: {
-    width: 43,
-    height: 43,
-    fontSize: '1em',
-    cursor: 'pointer',
-    boxShadow: 'none',
-    color: palette.white,
-    textTransform: 'uppercase',
-    padding: theme.spacing(1),
-    backgroundColor: palette.red.main,
-    '&:hover': {
-      backgroundColor: palette.red.shade
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    avatarClickable: {
+      width: 43,
+      height: 43,
+      fontSize: '1em',
+      cursor: 'pointer',
+      boxShadow: 'none',
+      color: palette.white,
+      textTransform: 'uppercase',
+      padding: theme.spacing(1),
+      backgroundColor: palette.red.main,
+      '&:hover': {
+        backgroundColor: palette.red.shade
+      }
+    },
+    bold: {
+      fontWeight: 600
+    },
+    userInfo: {
+      padding: '10px 16px'
+    },
+    anchor: {
+      '&:hover': {
+        textDecoration: 'none',
+        color: 'inherit'
+      }
+    },
+    appsButton: {
+      padding: '5px'
+    },
+    crafterIcon: {
+      fontSize: '1.4em'
     }
-  },
-  bold: {
-    fontWeight: 600
-  },
-  userInfo: {
-    padding: '10px 16px'
-  },
-  anchor: {
-    '&:hover': {
-      textDecoration: 'none',
-      color: 'inherit'
-    }
-  },
-  appsButton: {
-    padding: '5px'
-  },
-  crafterIcon: {
-    fontSize: '1.4em'
-  }
-}));
+  })
+);
 
 const messages = defineMessages({
   menu: {
@@ -88,7 +90,7 @@ interface ToolBarGlobalNavProps {
 }
 
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
-  const user = useSelection<GlobalState['user']>(state => state.user);
+  const user = useSelection<GlobalState['user']>((state) => state.user);
   const [anchor, setAnchor] = useState<Element>();
   const onMenuClick = (e) => setAnchor(e.target);
   const onMenuClose = () => setAnchor(null);

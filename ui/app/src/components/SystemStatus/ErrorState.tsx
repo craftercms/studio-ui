@@ -16,14 +16,13 @@
 
 import React from 'react';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from '@material-ui/core/Fab';
 import crack from '../../assets/full-crack.svg';
 import { defineMessages, useIntl } from 'react-intl';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { createStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { nnou } from '../../utils/object';
 import { ApiResponse } from '../../models/ApiResponse';
@@ -108,12 +107,7 @@ export default function ErrorState(props: ErrorStateProps) {
           {title}
         </Typography>
       )}
-      <Typography
-        variant="subtitle1"
-        component="p"
-        color="textSecondary"
-        className={classes.paragraph}
-      >
+      <Typography variant="subtitle1" component="p" color="textSecondary" className={classes.paragraph}>
         {message +
           (message.endsWith('.') ? '' : '.') +
           (remedialAction ? ` ${remedialAction}` : '') +

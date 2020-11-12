@@ -14,47 +14,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
-const useStyles = makeStyles({
-  'small': {
-    'animation': '$rotation 3s infinite linear',
-    'transform-origin': '34.5px 81.5px'
-  },
-  'smallShadow': {
-    'animation': '$rotation 3s infinite linear',
-    'transform-origin': '37.5px 84.5px'
-  },
-  'narrow': {
-    'animation': '$counter-rotation 6s infinite linear',
-    'transform-origin': '106.46px 136.83px'
-  },
-  'narrowShadow': {
-    'animation': '$counter-rotation 6s infinite linear',
-    'transform-origin': '109.46px 139.83px'
-  },
-  'wide': {
-    'animation': '$rotation 6s infinite linear',
-    'transform-origin': '198.69px 61.69px'
-  },
-  'wideShadow': {
-    'animation': '$rotation 6s infinite linear',
-    'transform-origin': '201.69px 64.69px'
-  },
-  'spinnerGear': {
-    'animation': `$rotation 6s infinite linear`,
-    'transform-origin': '50% 50%'
-  },
-  '@keyframes rotation': {
-    from: { transform: 'rotate(0deg)' },
-    to: { transform: 'rotate(360deg)' }
-  },
-  '@keyframes counter-rotation': {
-    from: { transform: 'rotate(360deg)' },
-    to: { transform: 'rotate(0deg)' }
-  }
-});
+const useStyles = makeStyles(() =>
+  createStyles({
+    small: {
+      animation: '$rotation 3s infinite linear',
+      'transform-origin': '34.5px 81.5px'
+    },
+    smallShadow: {
+      animation: '$rotation 3s infinite linear',
+      'transform-origin': '37.5px 84.5px'
+    },
+    narrow: {
+      animation: '$counter-rotation 6s infinite linear',
+      'transform-origin': '106.46px 136.83px'
+    },
+    narrowShadow: {
+      animation: '$counter-rotation 6s infinite linear',
+      'transform-origin': '109.46px 139.83px'
+    },
+    wide: {
+      animation: '$rotation 6s infinite linear',
+      'transform-origin': '198.69px 61.69px'
+    },
+    wideShadow: {
+      animation: '$rotation 6s infinite linear',
+      'transform-origin': '201.69px 64.69px'
+    },
+    spinnerGear: {
+      animation: `$rotation 6s infinite linear`,
+      'transform-origin': '50% 50%'
+    },
+    '@keyframes rotation': {
+      from: { transform: 'rotate(0deg)' },
+      to: { transform: 'rotate(360deg)' }
+    },
+    '@keyframes counter-rotation': {
+      from: { transform: 'rotate(360deg)' },
+      to: { transform: 'rotate(0deg)' }
+    }
+  })
+);
 
 interface GearsProps {
   fill?: string;
@@ -79,13 +81,7 @@ export default function Gears(props: GearsProps) {
   const opacity = 0.05;
   return (
     <>
-      <svg
-        width={width}
-        fill={fill}
-        viewBox="0 0 264 202"
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-      >
+      <svg width={width} fill={fill} viewBox="0 0 264 202" xmlns="http://www.w3.org/2000/svg" className={className}>
         {addElevation && (
           <>
             <path

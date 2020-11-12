@@ -18,8 +18,7 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../utils/hooks';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { createStyles } from '@material-ui/core';
+import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import { SandboxItem } from '../../models/Item';
 import DialogHeader from './DialogHeader';
 import { FormattedMessage } from 'react-intl';
@@ -38,7 +37,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import palette from '../../styles/palette';
 import { reject } from '../../services/publishing';
@@ -191,10 +189,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
               withEmptyStateProps={{
                 emptyStateProps: {
                   title: (
-                    <FormattedMessage
-                      id="publishDialog.noItemsSelected"
-                      defaultMessage="There are no affected files"
-                    />
+                    <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="There are no affected files" />
                   )
                 },
                 isEmpty: (value) => value.length === 0
@@ -213,11 +208,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
             <form>
               <FormControl fullWidth>
                 <InputLabel className={classes.sectionLabel}>
-                  <FormattedMessage
-                    id="rejectDialog.rejectionReason"
-                    defaultMessage="Rejection Reason"
-                  />
-                  :
+                  <FormattedMessage id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason" />:
                 </InputLabel>
                 <Select
                   fullWidth
@@ -229,10 +220,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                     <FormattedMessage id="rejectDialog.notApproved" defaultMessage="Not Approved" />
                   </MenuItem>
                   <MenuItem value="IB">
-                    <FormattedMessage
-                      id="rejectDialog.incorrectBranding"
-                      defaultMessage="Incorrect Branding"
-                    />
+                    <FormattedMessage id="rejectDialog.incorrectBranding" defaultMessage="Incorrect Branding" />
                   </MenuItem>
                   <MenuItem value="Typos">
                     <FormattedMessage id="rejectDialog.typos" defaultMessage="Typos" />
@@ -241,22 +229,14 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                     <FormattedMessage id="rejectDialog.brokenLinks" defaultMessage="Broken Links" />
                   </MenuItem>
                   <MenuItem value="NSOA">
-                    <FormattedMessage
-                      id="rejectDialog.nsoa"
-                      defaultMessage="Needs Section Owner's Approval"
-                    />
+                    <FormattedMessage id="rejectDialog.nsoa" defaultMessage="Needs Section Owner's Approval" />
                   </MenuItem>
                 </Select>
               </FormControl>
 
               <TextFieldWithMax
                 className={classes.submissionTextField}
-                label={
-                  <FormattedMessage
-                    id="rejectDialog.rejectCommentLabel"
-                    defaultMessage="Rejection Comment"
-                  />
-                }
+                label={<FormattedMessage id="rejectDialog.rejectCommentLabel" defaultMessage="Rejection Comment" />}
                 fullWidth
                 multiline
                 rows={8}
@@ -282,9 +262,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
             variant="contained"
             color="primary"
             autoFocus
-            disabled={
-              checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''
-            }
+            disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
           >
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
           </Button>
@@ -296,13 +274,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
 
 export default function RejectDialog(props: RejectDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="rejectDialogTitle"
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} aria-labelledby="rejectDialogTitle" fullWidth maxWidth="md">
       <RejectDialogWrapper {...props} />
     </Dialog>
   );

@@ -17,8 +17,7 @@
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
@@ -335,9 +334,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
   return (
     <>
       <DialogHeader
-        title={
-          <FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />
-        }
+        title={<FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />}
         onDismiss={onClose}
       />
       <DialogBody>
@@ -367,10 +364,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
             <header className={classes.flex}>
               <Checkbox color="primary" className={classes.checkbox} onChange={toggleSelectAll} />
               <>
-                <Typography
-                  variant="subtitle2"
-                  className={clsx(classes.headerTitle, classes.width30)}
-                >
+                <Typography variant="subtitle2" className={clsx(classes.headerTitle, classes.width30)}>
                   {formatMessage(translations.locales)}
                 </Typography>
                 <Typography variant="subtitle2" className={classes.headerTitle}>

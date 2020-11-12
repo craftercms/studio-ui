@@ -16,17 +16,9 @@
 
 import '../styles/index.scss';
 
-import React, {
-  PropsWithChildren,
-  Suspense,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { IntlShape, RawIntlProvider } from 'react-intl';
-import { StylesProvider, ThemeProvider } from '@material-ui/styles';
-import { createMuiTheme, ThemeOptions } from '@material-ui/core/styles';
+import { createMuiTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
@@ -91,9 +83,7 @@ function Bridge(
   );
 }
 
-export default function CrafterCMSNextBridge(
-  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>
-) {
+export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>) {
   return (
     <Suspense fallback={<LoadingState />}>
       <Bridge

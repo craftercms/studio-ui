@@ -20,8 +20,7 @@ import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles/createStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
@@ -33,9 +32,7 @@ import { showSystemNotification } from '../../state/actions/preview';
 import { filter } from 'rxjs/operators';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
-const CompareVersionsDialog = lazy(() =>
-  import('../../modules/Content/History/CompareVersionsDialog')
-);
+const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
 const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
@@ -43,9 +40,7 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
-const DependenciesDialog = lazy(() =>
-  import('../../modules/Content/Dependencies/DependenciesDialog')
-);
+const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
@@ -118,9 +113,11 @@ function GlobalDialogManager() {
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => e.type === showSystemNotification.type)).subscribe(({ payload }) => {
-      enqueueSnackbar(payload.message, payload.options);
-    });
+    const subscription = hostToHost$
+      .pipe(filter((e) => e.type === showSystemNotification.type))
+      .subscribe(({ payload }) => {
+        enqueueSnackbar(payload.message, payload.options);
+      });
     return () => {
       subscription.unsubscribe();
     };
@@ -265,12 +262,8 @@ function GlobalDialogManager() {
           onClick: createCallback(action.onClick, dispatch)
         }))}
         contentTypesBranch={contentTypesBranch}
-        selectedA={
-          versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null
-        }
-        selectedB={
-          versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null
-        }
+        selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
+        selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
         disableItemSwitching={state.compareVersions.disableItemSwitching}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
@@ -397,23 +390,16 @@ function GlobalDialogManager() {
 }
 
 // @formatter:off
-function MinimizedDialogManager({
-  state,
-  dispatch
-}: {
-  state: GlobalState['dialogs'];
-  dispatch: Dispatch;
-}) {
+function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialogs']; dispatch: Dispatch }) {
   const classes = useStyles({});
   const [el] = useState<HTMLElement>(() => {
     const elem = document.createElement('div');
     elem.className = classes.wrapper;
     return elem;
   });
-  const inventory = useMemo(
-    () => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized),
-    [state.minimizedDialogs]
-  );
+  const inventory = useMemo(() => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized), [
+    state.minimizedDialogs
+  ]);
   useLayoutEffect(() => {
     if (inventory.length) {
       document.body.appendChild(el);

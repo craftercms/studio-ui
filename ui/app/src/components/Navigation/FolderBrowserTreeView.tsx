@@ -23,8 +23,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { LegacyItem } from '../../models/Item';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import LoadingState from '../SystemStatus/LoadingState';
 import { Resource } from '../../models/Resource';
@@ -227,14 +226,7 @@ interface PathSelectedProps {
 }
 
 function PathSelected(props: PathSelectedProps) {
-  const {
-    rootPath,
-    currentPath,
-    onPathChanged,
-    invalidPath,
-    isFetching,
-    onKeyPress: onInputChanges
-  } = props;
+  const { rootPath, currentPath, onPathChanged, invalidPath, isFetching, onKeyPress: onInputChanges } = props;
   const classes = getPathSelectedStyles({});
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(null);
@@ -286,10 +278,7 @@ function PathSelected(props: PathSelectedProps) {
       </section>
       {invalidPath && (
         <FormHelperText error>
-          <FormattedMessage
-            id="folderBrowserTreeView.invalidPath"
-            defaultMessage="The entered path doesn’t exist."
-          />
+          <FormattedMessage id="folderBrowserTreeView.invalidPath" defaultMessage="The entered path doesn’t exist." />
         </FormHelperText>
       )}
     </>

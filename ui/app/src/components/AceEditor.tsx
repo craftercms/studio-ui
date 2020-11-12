@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useMount } from '../utils/hooks';
 import { pluckProps } from '../utils/object';
 
@@ -185,7 +185,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
         if (ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
         }
-        setInitialized(initialized = true);
+        setInitialized((initialized = true));
       }
     };
     if (!window.ace) {

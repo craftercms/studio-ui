@@ -18,8 +18,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
@@ -27,13 +26,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  usePreviewGuest,
-  useSelection,
-  useSpreadState
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, usePreviewGuest, useSelection, useSpreadState } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
 import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
@@ -329,11 +322,7 @@ function getContentTypeField(
   fieldName: string,
   contentTypes: LookupTable<ContentType>
 ): ContentTypeField {
-  return (
-    contentType.fields[fieldName] ??
-    contentTypes['/component/level-descriptor'].fields[fieldName] ??
-    null
-  );
+  return contentType.fields[fieldName] ?? contentTypes['/component/level-descriptor'].fields[fieldName] ?? null;
 }
 
 interface TreeItemCustomInterface {
@@ -667,10 +656,7 @@ export default function PageExplorer() {
   };
 
   const handleChange = (event: any, nodes: string[]) => {
-    if (
-      event.target.classList.contains('toggle') ||
-      event.target.parentElement.classList.contains('toggle')
-    ) {
+    if (event.target.classList.contains('toggle') || event.target.parentElement.classList.contains('toggle')) {
       setState({ ...state, expanded: [...nodes] });
     }
   };
@@ -680,8 +666,7 @@ export default function PageExplorer() {
 
     const parentModelId = findParentModelId(node.modelId, childrenMap, models);
     const path = models[node.modelId].craftercms.path;
-    const embeddedParentPath =
-      !path && parentModelId ? models[parentModelId].craftercms.path : null;
+    const embeddedParentPath = !path && parentModelId ? models[parentModelId].craftercms.path : null;
 
     setOptionsMenu({
       ...optionsMenu,
@@ -821,16 +806,8 @@ function PageExplorerUI(props: PageExplorerUIProps) {
                 TypographyClasses={{
                   root: classes.breadcrumbsTypography
                 }}
-                onClick={(e) =>
-                  handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])
-                }
-                children={
-                  id === 'root' ? (
-                    <Root className={classes.rootIcon} />
-                  ) : (
-                    nodeLookup[id].name.split(':').pop()
-                  )
-                }
+                onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
+                children={id === 'root' ? <Root className={classes.rootIcon} /> : nodeLookup[id].name.split(':').pop()}
               />
             )
           )}
@@ -839,10 +816,7 @@ function PageExplorerUI(props: PageExplorerUIProps) {
       {node.id === 'root' ? (
         <>
           <Typography variant="subtitle1" className={classes.currentContentItems}>
-            <FormattedMessage
-              id="pageExplorerPanel.currentContentItems"
-              defaultMessage="Current Content Items"
-            />
+            <FormattedMessage id="pageExplorerPanel.currentContentItems" defaultMessage="Current Content Items" />
           </Typography>
           {node.children?.map((childNodeId, i) => (
             <TreeItemCustom

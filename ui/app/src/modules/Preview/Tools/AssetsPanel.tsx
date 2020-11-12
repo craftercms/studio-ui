@@ -17,15 +17,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import {
-  useActiveSiteId,
-  useDebouncedInput,
-  useSelection,
-  useSelectorResource
-} from '../../../utils/hooks';
+import { useActiveSiteId, useDebouncedInput, useSelection, useSelectorResource } from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import SearchBar from '../../../components/Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
@@ -33,11 +28,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../previewContext';
-import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  fetchAssetsPanelItems
-} from '../../../state/actions/preview';
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
@@ -158,25 +149,20 @@ export default function AssetsPanel() {
   const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useSelectorResource<AssetResource, PagedEntityState<MediaItem>>(
-    (state) => state.preview.assets,
-    {
-      shouldRenew: (source, resource) => resource.complete,
-      shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
-      shouldReject: (source) => nnou(source.error),
-      errorSelector: (source) => source.error,
-      resultSelector: (source) => {
-        const items = source.page[source.pageNumber].map((id) => source.byId[id]);
-        return {
-          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber'),
-          items
-        } as AssetResource;
-      }
+  const resource = useSelectorResource<AssetResource, PagedEntityState<MediaItem>>((state) => state.preview.assets, {
+    shouldRenew: (source, resource) => resource.complete,
+    shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
+    shouldReject: (source) => nnou(source.error),
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => {
+      const items = source.page[source.pageNumber].map((id) => source.byId[id]);
+      return {
+        ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber'),
+        items
+      } as AssetResource;
     }
-  );
-  const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>(
-    (state) => state.env
-  );
+  });
+  const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
   const elementRef = useRef();
@@ -200,7 +186,7 @@ export default function AssetsPanel() {
       }
 
       const reader = new FileReader();
-      reader.onloadend = function () {
+      reader.onloadend = function() {
         uploadDataUrl(
           site,
           {
@@ -210,10 +196,8 @@ export default function AssetsPanel() {
           '/static-assets/images/',
           xsrfArgument
         ).subscribe(
-          () => {
-          },
-          () => {
-          },
+          () => {},
+          () => {},
           () => {
             dispatch(fetchAssetsPanelItems({}));
           }
@@ -267,17 +251,13 @@ export default function AssetsPanel() {
     }
   }, [dragInProgress, onDragDrop]);
 
-  const onSearch = useCallback(
-    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })),
-    [dispatch]
-  );
+  const onSearch = useCallback((keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })), [
+    dispatch
+  ]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function onPageChanged(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number
-  ) {
+  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
   }
 
@@ -287,10 +267,7 @@ export default function AssetsPanel() {
   }
 
   return (
-    <ToolPanel
-      title={translations.assetsPanel}
-      classes={dragInProgress ? { body: classes.noScroll } : null}
-    >
+    <ToolPanel title={translations.assetsPanel} classes={dragInProgress ? { body: classes.noScroll } : null}>
       <div ref={elementRef}>
         <div className={classes.search}>
           <SearchBar
@@ -321,14 +298,16 @@ export default function AssetsPanel() {
 
 interface AssetsPanelUIProps {
   guestBase: string;
-  classes?: Partial<Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>>;
+  classes?: Partial<
+    Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>
+  >;
   assetsResource: Resource<AssetResource>;
   onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
   onDragStart(mediaItem: MediaItem): void;
   onDragEnd(): void;
 }
 
-export function AssetsPanelUI(props:AssetsPanelUIProps) {
+export function AssetsPanelUI(props: AssetsPanelUIProps) {
   const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
   const assets = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
@@ -346,15 +325,13 @@ export function AssetsPanelUI(props:AssetsPanelUIProps) {
         page={pageNumber}
         backIconButtonProps={{
           'aria-label': formatMessage(translations.previousPage),
-          'size': 'small'
+          size: 'small'
         }}
         nextIconButtonProps={{
           'aria-label': formatMessage(translations.nextPage),
-          'size': 'small'
+          size: 'small'
         }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-          onPageChanged(e, page * limit)
-        }
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
       />
       {items.map((item: MediaItem) => {
         return (

@@ -22,12 +22,8 @@ import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
-import FolderBrowserTreeView, {
-  legacyItemsToTreeNodes,
-  TreeNode
-} from '../Navigation/FolderBrowserTreeView';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import FolderBrowserTreeView, { legacyItemsToTreeNodes, TreeNode } from '../Navigation/FolderBrowserTreeView';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import CreateFolderDialog from './CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
@@ -100,9 +96,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
-  const [expanded, setExpanded] = useState(
-    initialPath ? getIndividualPaths(initialPath) : [rootPath]
-  );
+  const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
   const [dirtyInput, setDirtyInput] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -230,13 +224,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
   return (
     <>
       <DialogHeader
-        title={
-          title ? (
-            title
-          ) : (
-            <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />
-          )
-        }
+        title={title ? title : <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
         onDismiss={onClose}
       />
       <DialogBody className={classes.dialogBody}>

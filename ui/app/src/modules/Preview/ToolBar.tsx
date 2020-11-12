@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
@@ -34,14 +34,13 @@ import {
   setPreviewEditMode
 } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { Site } from '../../models/Site';
-import { LookupTable } from '../../models/LookupTable';
 import {
   useActiveSiteId,
   usePermissions,
   usePreviewGuest,
   usePreviewState,
-  useSelection
+  useSelection,
+  useSiteList
 } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
@@ -172,15 +171,7 @@ interface AddressBarProps {
 export function AddressBar(props: AddressBarProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const {
-    site,
-    url = '',
-    sites = [],
-    item,
-    onSiteChange = foo,
-    onUrlChange = foo,
-    onRefresh = foo
-  } = props;
+  const { site, url = '', sites = [], item, onSiteChange = foo, onUrlChange = foo, onRefresh = foo } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -212,11 +203,7 @@ export function AddressBar(props: AddressBarProps) {
         <KeyboardArrowRightRounded />
       </IconButton>
       */}
-      <IconButton
-        className={classes.iconButton}
-        title={formatMessage(translations.reload)}
-        onClick={onRefresh}
-      >
+      <IconButton className={classes.iconButton} title={formatMessage(translations.reload)} onClick={onRefresh}>
         <RefreshRounded />
       </IconButton>
       <Paper className={classes.addressBarInput}>
@@ -228,10 +215,7 @@ export function AddressBar(props: AddressBarProps) {
         >
           {noSiteSet && (
             <MenuItem value="">
-              <FormattedMessage
-                id="previewToolBar.siteSelectorNoSiteSelected"
-                defaultMessage="Choose site"
-              />
+              <FormattedMessage id="previewToolBar.siteSelectorNoSiteSelected" defaultMessage="Choose site" />
             </MenuItem>
           )}
           {sites.map(({ id, name }) => (
@@ -267,21 +251,11 @@ export function AddressBar(props: AddressBarProps) {
           }}
         />
       </Paper>
-      <IconButton
-        className={classes.iconButton}
-        title={formatMessage(translations.itemMenu)}
-        onClick={handleClick}
-      >
+      <IconButton className={classes.iconButton} title={formatMessage(translations.itemMenu)} onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
       {Boolean(anchorEl) && (
-        <ItemMenu
-          open={true}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          path={path}
-          loaderItems={13}
-        />
+        <ItemMenu open={true} anchorEl={anchorEl} onClose={handleClose} path={path} loaderItems={13} />
       )}
     </>
   );
@@ -292,9 +266,8 @@ export default function ToolBar() {
   const classes = useStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const sitesTable = useSelection<LookupTable<Site>>((state) => state.sites.byId);
   const editMode = useSelection((state) => state.preview.editMode);
-  const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
+  const sites = useSiteList();
   const { computedUrl, showToolsPanel } = usePreviewState();
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
@@ -327,10 +300,7 @@ export default function ToolBar() {
           <section className={!createContent ? classes.hidden : ''}>
             <QuickCreate />
           </section>
-          <Tooltip
-            title={formatMessage(translations.toggleEditMode)}
-            className={!write ? classes.hidden : ''}
-          >
+          <Tooltip title={formatMessage(translations.toggleEditMode)} className={!write ? classes.hidden : ''}>
             <EditSwitch
               color="default"
               checked={editMode}

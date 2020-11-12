@@ -24,25 +24,26 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-import { createStyles } from '@material-ui/core';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(() => createStyles({
-  root: {},
-  noWrapping: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    display: 'block'
-  },
-  component: {
-    cursor: 'move'
-  },
-  avatarRootOver: {
-    color: 'black',
-    background: 'white'
-  }
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {},
+    noWrapping: {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      display: 'block'
+    },
+    component: {
+      cursor: 'move'
+    },
+    avatarRootOver: {
+      color: 'black',
+      background: 'white'
+    }
+  })
+);
 
 interface PanelListItemProps {
   primaryText: string;
@@ -55,14 +56,7 @@ interface PanelListItemProps {
 
 export function DraggablePanelListItem(props: PanelListItemProps) {
   const classes = useStyles({});
-  const {
-    onMenu,
-    primaryText,
-    avatarSrc,
-    secondaryText,
-    onDragStart,
-    onDragEnd
-  } = props;
+  const { onMenu, primaryText, avatarSrc, secondaryText, onDragStart, onDragEnd } = props;
   const [over, setOver] = useState(false);
   return (
     <>
@@ -71,13 +65,13 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         className={classes.component}
         draggable
         onDragStart={onDragStart}
-        onDragEnd={(onDragEnd)}
+        onDragEnd={onDragEnd}
         onMouseEnter={() => setOver(true)}
         onMouseLeave={() => setOver(false)}
       >
         <ListItemAvatar>
           <Avatar classes={{ root: over ? classes.avatarRootOver : '' }} src={over ? null : avatarSrc}>
-            {over ? <DragIndicatorRounded/> : getInitials(primaryText)}
+            {over ? <DragIndicatorRounded /> : getInitials(primaryText)}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
@@ -85,14 +79,13 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
           secondary={secondaryText}
           classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
         />
-        {
-          onMenu &&
+        {onMenu && (
           <ListItemSecondaryAction>
             <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget)}>
               <MoreVertRounded />
             </IconButton>
           </ListItemSecondaryAction>
-        }
+        )}
       </ListItem>
     </>
   );

@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@material-ui/core/List';
@@ -131,7 +130,14 @@ interface VersionListProps {
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const { versions: versionsResource, onOpenMenu, onItemClick, current, selected, permissions: permissionsResource } = props;
+  const {
+    versions: versionsResource,
+    onOpenMenu,
+    onItemClick,
+    current,
+    selected,
+    permissions: permissionsResource
+  } = props;
   const versions = versionsResource.read();
   const permissions = permissionsResource?.read();
 
@@ -157,9 +163,7 @@ export function VersionList(props: VersionListProps) {
                   <AsDayMonthDateTime date={version.lastModifiedDate} />
                   {current === version.versionNumber && (
                     <Chip
-                      label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
-                      }
+                      label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
                       className={classes.chip}
                     />
                   )}
@@ -172,9 +176,7 @@ export function VersionList(props: VersionListProps) {
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
-                  onClick={(e) =>
-                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, permissions)
-                  }
+                  onClick={(e) => onOpenMenu(e.currentTarget, version, current === version.versionNumber, permissions)}
                 >
                   <MoreVertIcon />
                 </IconButton>

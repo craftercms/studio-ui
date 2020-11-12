@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -95,7 +95,7 @@ const messages = defineMessages({
   },
   noPushSite: {
     id: 'createSiteDialog.noPushSite',
-    defaultMessage: 'Don\'t push the site to a remote Git repository after creation'
+    defaultMessage: "Don't push the site to a remote Git repository after creation"
   },
   remoteName: {
     id: 'createSiteDialog.remoteName',
@@ -199,7 +199,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
     } else if (inputs.blueprintFields[parameter.name] && parameter.type === 'PASSWORD') {
       return (
         <span>
-          {(passwordFields && passwordFields[parameter.name]) ? inputs.blueprintFields[parameter.name] : '********'}
+          {passwordFields && passwordFields[parameter.name] ? inputs.blueprintFields[parameter.name] : '********'}
           <IconButton
             edge="end"
             className={classes.showPassword}
@@ -208,53 +208,48 @@ function BlueprintReview(props: BlueprintReviewProps) {
               showPassword(parameter);
             }}
           >
-            {(passwordFields && passwordFields[parameter.name]) ? <VisibilityOff /> : <Visibility />}
+            {passwordFields && passwordFields[parameter.name] ? <VisibilityOff /> : <Visibility />}
           </IconButton>
-        </span>);
+        </span>
+      );
     } else {
       return '********';
     }
   }
 
   function renderBlueprintParameters() {
-    return (
-      blueprint.parameters.map((parameter, index) => {
-        return (
-          <Typography variant="body2" gutterBottom key={index}>
-            <span className={classes.bold}>{parameter.label}: </span>
-            {renderSingleParameter(parameter)}
-          </Typography>
-        );
-      })
-    );
+    return blueprint.parameters.map((parameter, index) => {
+      return (
+        <Typography variant="body2" gutterBottom key={index}>
+          <span className={classes.bold}>{parameter.label}: </span>
+          {renderSingleParameter(parameter)}
+        </Typography>
+      );
+    });
   }
 
   function renderGitOptions() {
     return (
       <div>
-        {
-          inputs.repoUrl &&
+        {inputs.repoUrl && (
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repoUrl}
           </Typography>
-        }
+        )}
         <Typography variant="body2" gutterBottom>
           <span className={classes.bold}>{formatMessage(messages.remoteName)}:</span>
           {` ${inputs.repoRemoteName ? inputs.repoRemoteName : 'origin'}`}
         </Typography>
         <Typography variant="body2" gutterBottom>
-          <span
-            className={classes.bold}
-          >{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch ? inputs.repoRemoteBranch : 'master'}
+          <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span>{' '}
+          {inputs.repoRemoteBranch ? inputs.repoRemoteBranch : 'master'}
         </Typography>
-        {
-          inputs.repoAuthentication !== 'none' &&
+        {inputs.repoAuthentication !== 'none' && (
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>
-              {formatMessage(messages.authentication)}:
-            </span> {renderAuth(inputs.repoAuthentication)}
+            <span className={classes.bold}>{formatMessage(messages.authentication)}:</span>{' '}
+            {renderAuth(inputs.repoAuthentication)}
           </Typography>
-        }
+        )}
       </div>
     );
   }
@@ -269,25 +264,23 @@ function BlueprintReview(props: BlueprintReviewProps) {
               <EditIcon />
             </IconButton>
           </Typography>
-          {
-            (blueprint.id !== 'GIT') ?
-              <div>
-                <Typography variant="body2" gutterBottom>
-                  {formatMessage(messages.blueprintStrategy)}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <span
-                    className={classes.bold}
-                  >{formatMessage(messages.blueprint)}: </span> {blueprint && blueprint.name}
-                </Typography>
-              </div>
-              :
-              <div>
-                <Typography variant="body2" gutterBottom>
-                  {formatMessage(messages.gitStrategy)}
-                </Typography>
-              </div>
-          }
+          {blueprint.id !== 'GIT' ? (
+            <div>
+              <Typography variant="body2" gutterBottom>
+                {formatMessage(messages.blueprintStrategy)}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <span className={classes.bold}>{formatMessage(messages.blueprint)}: </span>{' '}
+                {blueprint && blueprint.name}
+              </Typography>
+            </div>
+          ) : (
+            <div>
+              <Typography variant="body2" gutterBottom>
+                {formatMessage(messages.gitStrategy)}
+              </Typography>
+            </div>
+          )}
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
@@ -305,36 +298,26 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.description)}:</span>
             {` `}
-            {
+            {inputs.description ? (
               inputs.description
-                ? inputs.description
-                : <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
-            }
+            ) : (
+              <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
+            )}
           </Typography>
-          {
-            (blueprint.source !== 'GIT') &&
-            (blueprint.id === 'GIT' || inputs.pushSite) &&
-            renderGitOptions()
-          }
+          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}:</span>
-            {` ${
-              inputs.sandboxBranch
-                ? inputs.sandboxBranch
-                : 'master'
-            }`}
+            {` ${inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}`}
           </Typography>
-          {
-            (blueprint.id !== 'GIT' && inputs.pushSite) &&
+          {blueprint.id !== 'GIT' && inputs.pushSite && (
             <div>
               <Typography variant="body2" gutterBottom>
                 {formatMessage(messages.pushSite)}
               </Typography>
             </div>
-          }
+          )}
         </Grid>
-        {
-          (blueprint.parameters && !!blueprint.parameters.length) &&
+        {blueprint.parameters && !!blueprint.parameters.length && (
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom className={classes.section}>
               {formatMessage(messages.blueprintParameters)}
@@ -344,7 +327,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
             </Typography>
             {renderBlueprintParameters()}
           </Grid>
-        }
+        )}
       </Grid>
     </div>
   );

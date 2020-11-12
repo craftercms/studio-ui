@@ -14,18 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  useContentTypes,
-  useLogicResource,
-  usePreviewGuest,
-  useSelection
-} from '../../../utils/hooks';
+import { useContentTypes, useLogicResource, usePreviewGuest, useSelection } from '../../../utils/hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
@@ -103,15 +97,13 @@ export default function InPageInstancesPanel() {
   }, [guest]);
 
   const selectedModels = useMemo(() => {
-    return Object.values(models ?? []).filter(
-      (model) => {
-        return model.craftercms.contentTypeId === contentTypeFilter &&
-          (
-            model.craftercms.label.toLowerCase().includes(keyword.toLowerCase()) ||
-            model.craftercms.contentTypeId.toLowerCase().includes(keyword.toLowerCase())
-          );
-      }
-    );
+    return Object.values(models ?? []).filter((model) => {
+      return (
+        model.craftercms.contentTypeId === contentTypeFilter &&
+        (model.craftercms.label.toLowerCase().includes(keyword.toLowerCase()) ||
+          model.craftercms.contentTypeId.toLowerCase().includes(keyword.toLowerCase()))
+      );
+    });
     //filter using .includes(keyword) on model.craftercms.label
   }, [contentTypeFilter, models, keyword]);
 
@@ -134,18 +126,24 @@ export default function InPageInstancesPanel() {
     };
   }, [models]);
 
-  const resource = useLogicResource<ContentInstance[], { models: LookupTable<ContentInstance>; contentTypeFilter: string }>({
-    models,
-    contentTypeFilter
-  }, {
-    shouldRenew: (source, resource) => Boolean(contentTypeFilter) && !keyword && resource.complete,
-    shouldResolve: (source) => Boolean(source.models),
-    shouldReject: (source) => false,
-    errorSelector: (source) => null,
-    resultSelector: (source) => {
-      return Object.values(source.models)?.filter((model) => model.craftercms.contentTypeId === contentTypeFilter);
+  const resource = useLogicResource<
+    ContentInstance[],
+    { models: LookupTable<ContentInstance>; contentTypeFilter: string }
+  >(
+    {
+      models,
+      contentTypeFilter
+    },
+    {
+      shouldRenew: (source, resource) => Boolean(contentTypeFilter) && !keyword && resource.complete,
+      shouldResolve: (source) => Boolean(source.models),
+      shouldReject: (source) => false,
+      errorSelector: (source) => null,
+      resultSelector: (source) => {
+        return Object.values(source.models)?.filter((model) => model.craftercms.contentTypeId === contentTypeFilter);
+      }
     }
-  });
+  );
 
   const handleSearchKeyword = (keyword) => {
     setKeyword(keyword);
@@ -183,17 +181,21 @@ export default function InPageInstancesPanel() {
           displayEmpty
           className={classes.Select}
           onChange={(event: any) => handleSelectChange(event.target.value)}
-          endAdornment={(contentTypes.length && contentTypeLookup) ? null :
-            <CircularProgress size={20} className={classes.selectProgress} />}
+          endAdornment={
+            contentTypes.length && contentTypeLookup ? null : (
+              <CircularProgress size={20} className={classes.selectProgress} />
+            )
+          }
         >
           <MenuItem value="" disabled>
             {formatMessage(translations.selectContentType)}
           </MenuItem>
-          {contentTypeLookup && contentTypes.map((id: string, i: number) =>
-            <MenuItem value={contentTypeLookup[id].id} key={i}>
-              {contentTypeLookup[id].name}
-            </MenuItem>
-          )}
+          {contentTypeLookup &&
+            contentTypes.map((id: string, i: number) => (
+              <MenuItem value={contentTypeLookup[id].id} key={i}>
+                {contentTypeLookup[id].name}
+              </MenuItem>
+            ))}
         </Select>
       </div>
       <Suspencified>
@@ -223,34 +225,32 @@ function InPageInstancesUI(props: InPageInstancesUIProps) {
 
   return (
     <>
-      {
-        (selectedModels.length) ? (
-          selectedModels.map((instance: ContentInstance) =>
-            <ListItem
-              key={instance.craftercms.id}
-              className={classes.item}
-              button={true}
-              onClick={() => onItemClick(instance)}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  {getInitials(instance.craftercms.label)}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={instance.craftercms.label}
-                secondary={instance.craftercms.contentTypeId}
-                classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
-              />
-            </ListItem>
-          )
-        ) : (
-          <EmptyState
-            title={contentTypeFilter ? formatMessage(translations.noResults) : formatMessage(translations.chooseContentType)}
-            classes={{ title: classes.emptyStateTitle }}
-          />
-        )
-      }
+      {selectedModels.length ? (
+        selectedModels.map((instance: ContentInstance) => (
+          <ListItem
+            key={instance.craftercms.id}
+            className={classes.item}
+            button={true}
+            onClick={() => onItemClick(instance)}
+          >
+            <ListItemAvatar>
+              <Avatar>{getInitials(instance.craftercms.label)}</Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={instance.craftercms.label}
+              secondary={instance.craftercms.contentTypeId}
+              classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
+            />
+          </ListItem>
+        ))
+      ) : (
+        <EmptyState
+          title={
+            contentTypeFilter ? formatMessage(translations.noResults) : formatMessage(translations.chooseContentType)
+          }
+          classes={{ title: classes.emptyStateTitle }}
+        />
+      )}
     </>
   );
 }

@@ -146,13 +146,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   const onErrorBoundaryReset = () => setError(null);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClosed}
-      aria-labelledby="editSiteDialogTitle"
-      fullWidth
-      maxWidth="sm"
-    >
+    <Dialog open={open} onClose={onClosed} aria-labelledby="editSiteDialogTitle" fullWidth maxWidth="sm">
       <Suspencified errorBoundaryProps={{ onReset: onErrorBoundaryReset }}>
         <EditSiteDialogUIContainer
           resource={resource}
@@ -253,10 +247,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
               value={siteId}
               disabled
               helperText={
-                <FormattedMessage
-                  id="editSiteDialog.notEditable"
-                  defaultMessage="The site id is not editable"
-                />
+                <FormattedMessage id="editSiteDialog.notEditable" defaultMessage="The site id is not editable" />
               }
             />
           </Grid>
@@ -264,12 +255,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
             <TextField
               id="description"
               name="description"
-              label={
-                <FormattedMessage
-                  id="editSiteDialog.siteDescription"
-                  defaultMessage="Site Description"
-                />
-              }
+              label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Site Description" />}
               fullWidth
               onChange={(event) => onSiteDescriptionChange(event.target.value)}
               onKeyPress={onKeyPress}
