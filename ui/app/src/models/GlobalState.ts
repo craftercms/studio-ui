@@ -122,7 +122,6 @@ export interface GlobalState {
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
-    //toolsPanelPageStack>>pages[]
     selectedTool: PreviewTool;
     previousTool: PreviewTool;
     toolsPanelWidth: number;
@@ -187,7 +186,6 @@ export interface GlobalState {
     error: ApiResponse;
     isFetching: boolean;
     currentSite: string;
-    //preview>toolsPanel>widgets
     preview: {
       sidebar: {
         panels: SidebarPanelConfigEntry[];
