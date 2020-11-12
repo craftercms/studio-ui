@@ -16,7 +16,7 @@
 
 import moment from 'moment-timezone';
 import { defineMessages } from 'react-intl';
-import { intlRef } from './i18n';
+import { getCurrentIntl } from './i18n';
 
 const translations = defineMessages({
   ordinals: {
@@ -40,15 +40,15 @@ export function getTimezones() {
 }
 
 export function asDayMonthDateTime(date: string): string {
-  const parts = intlRef.current.formatDateToParts(date, {
+  const parts = getCurrentIntl().formatDateToParts(date, {
     month: 'long',
     day: 'numeric',
     weekday: 'long',
     year: 'numeric'
   });
-  return `${parts[0].value} ${parts[2].value} ${intlRef.current.formatMessage(translations.ordinals, {
+  return `${parts[0].value} ${parts[2].value} ${getCurrentIntl().formatMessage(translations.ordinals, {
     day: parts[4].value
-  })} ${parts[6].value} @ ${intlRef.current.formatTime(date)}`;
+  })} ${parts[6].value} @ ${getCurrentIntl().formatTime(date)}`;
 }
 
 const datetime = {

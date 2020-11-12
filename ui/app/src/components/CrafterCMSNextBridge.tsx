@@ -28,7 +28,7 @@ import { SnackbarProvider } from 'notistack';
 import { createResource } from '../utils/hooks';
 import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
-import { intlRef } from '../utils/i18n';
+import { getCurrentIntl } from '../utils/i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const storeResource = createResource(() =>
@@ -59,11 +59,11 @@ function Bridge(
 
   const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
-  useEffect(() => setUpLocaleChangeListener(update, intlRef.current), [update]);
+  useEffect(() => setUpLocaleChangeListener(update, getCurrentIntl()), [update]);
 
   return (
     <Provider store={store}>
-      <RawIntlProvider value={intlRef.current}>
+      <RawIntlProvider value={getCurrentIntl()}>
         <ThemeProvider theme={theme}>
           <StylesProvider generateClassName={generateClassName}>
             <SnackbarProvider
@@ -97,7 +97,7 @@ export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlo
 
 function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
   const handler = (e: any) => {
-    if (currentIntl !== intlRef.current) {
+    if (currentIntl !== getCurrentIntl()) {
       update({});
     }
   };

@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { NEVER, Observable, of } from 'rxjs';
+import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
 import {
@@ -49,8 +49,8 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl, showSystemNotification } from '../actions/preview';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { IntlShape } from 'react-intl';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
+import { CrafterCMSEpic } from '../store';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -70,9 +70,9 @@ function getDialogState(type: string, state: GlobalState): { onClose: StandardAc
   return dialog;
 }
 
-export default [
+const dialogEpics: CrafterCMSEpic[] = [
   // region onClose Actions
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(
         closeConfirmDialog.type,
@@ -105,7 +105,7 @@ export default [
     ),
   // endregion
   // region View Version Dialog
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(fetchContentVersion.type),
       withLatestFrom(state$),
@@ -117,19 +117,19 @@ export default [
       )
     ),
   // endregion
-  (action$, state$: Observable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
       switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showDeleteItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemDeleted, {
+            message: getIntl().formatMessage(itemSuccessMessages.itemDeleted, {
               count: payload.items.length
             })
           })
@@ -137,7 +137,7 @@ export default [
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showPublishItemSuccessNotification.type),
       tap(({ payload }) => {
@@ -146,11 +146,11 @@ export default [
           showSystemNotification({
             message:
               payload.schedule === 'now'
-                ? intl.formatMessage(itemSuccessMessages.itemPublishedNow, {
+                ? getIntl().formatMessage(itemSuccessMessages.itemPublishedNow, {
                     count: payload.items.length,
                     environment: payload.environment
                   })
-                : intl.formatMessage(itemSuccessMessages.itemSchedulePublished, {
+                : getIntl().formatMessage(itemSuccessMessages.itemSchedulePublished, {
                     count: payload.items.length,
                     environment: payload.environment
                   })
@@ -159,40 +159,40 @@ export default [
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemEdited)
+            message: getIntl().formatMessage(itemSuccessMessages.itemEdited)
           })
         );
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showCopyItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
+            message: getIntl().formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
           })
         );
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showRevertItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemReverted)
+            message: getIntl().formatMessage(itemSuccessMessages.itemReverted)
           })
         );
       }),
@@ -209,4 +209,6 @@ export default [
         )
       )
     )
-] as Epic[];
+];
+
+export default dialogEpics;

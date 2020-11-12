@@ -48,6 +48,7 @@ interface EditSiteDialogUIProps {
   onKeyPress: (e: React.KeyboardEvent) => void;
   onSubmit: Function;
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
 }
 
 interface EditSiteDialogUIContainerProps {
@@ -57,6 +58,7 @@ interface EditSiteDialogUIContainerProps {
   checkSiteName: Function;
   onSubmit: Function;
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
 }
 
 interface EditSiteDialogBaseProps {
@@ -90,7 +92,17 @@ const messages = defineMessages({
 });
 
 function EditSiteDialog(props: EditSiteDialogProps) {
-  const { site, open, onClosed, onClose, onSaveSuccess } = props;
+  const { open, onClose } = props;
+
+  return (
+    <Dialog open={open} onClose={onClose} aria-labelledby="editSiteDialogTitle" fullWidth maxWidth="sm">
+      <EditSiteDialogWrapper {...props} />
+    </Dialog>
+  );
+}
+
+function EditSiteDialogWrapper(props: EditSiteDialogProps) {
+  const { site, onClosed, onClose, onDismiss, onSaveSuccess } = props;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -138,7 +150,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
       },
       (e) => {
         setSubmitting(false);
-        setError(e);
+        setError(e.response?.response ?? e);
       }
     );
   };
@@ -146,23 +158,22 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   const onErrorBoundaryReset = () => setError(null);
 
   return (
-    <Dialog open={open} onClose={onClosed} aria-labelledby="editSiteDialogTitle" fullWidth maxWidth="sm">
-      <Suspencified errorBoundaryProps={{ onReset: onErrorBoundaryReset }}>
-        <EditSiteDialogUIContainer
-          resource={resource}
-          submitting={submitting}
-          submitDisabled={submitDisabled}
-          checkSiteName={checkSiteName}
-          onSubmit={handleSubmit}
-          onClose={onClose}
-        />
-      </Suspencified>
-    </Dialog>
+    <Suspencified errorBoundaryProps={{ onReset: onErrorBoundaryReset }}>
+      <EditSiteDialogUIContainer
+        resource={resource}
+        submitting={submitting}
+        submitDisabled={submitDisabled}
+        checkSiteName={checkSiteName}
+        onSubmit={handleSubmit}
+        onClose={onClose}
+        onDismiss={onDismiss}
+      />
+    </Suspencified>
   );
 }
 
 function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
-  const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose } = props;
+  const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose, onDismiss } = props;
   const site = resource.read().site;
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
@@ -190,6 +201,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
       onKeyPress={onKeyPress}
       onSubmit={() => onSubmit(site.id, name, description)}
       onClose={onClose}
+      onDismiss={onDismiss}
     />
   );
 }
@@ -205,7 +217,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     submitDisabled,
     onKeyPress,
     onSubmit,
-    onClose
+    onClose,
+    onDismiss
   } = props;
   const { formatMessage } = useIntl();
   return (
@@ -213,6 +226,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
       <DialogHeader
         id="editSiteDialogTitle"
         title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
+        onDismiss={onDismiss}
       />
       <DialogBody>
         <Grid container spacing={1} component="form">
@@ -233,8 +247,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                 !siteName.trim()
                   ? formatMessage(messages.siteNameRequired)
                   : submitDisabled
-                    ? formatMessage(messages.siteNameExists)
-                    : ''
+                  ? formatMessage(messages.siteNameExists)
+                  : ''
               }
             />
           </Grid>
