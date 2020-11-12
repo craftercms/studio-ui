@@ -867,7 +867,11 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       { label: CMgs.format(langBundle, 'height'), name: 'height', type: 'range' },
       { label: CMgs.format(langBundle, 'thumbnailWidth'), name: 'thumbnailWidth', type: 'int' },
       { label: CMgs.format(langBundle, 'thumbnailHeight'), name: 'thumbnailHeight', type: 'int' },
-      { label: CMgs.format(langBundle, 'datasource'), name: 'imageManager', type: 'datasource:image' },
+      {
+        label: CMgs.format(langBundle, 'datasource'),
+        name: 'imageManager',
+        type: 'datasource:image'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
     ];
   },

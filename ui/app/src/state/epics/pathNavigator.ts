@@ -43,9 +43,7 @@ export default [
       switchMap(([{ payload }, state]) => {
         const { id } = payload;
         const site = state.sites.active;
-        const storedState = JSON.parse(
-          localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`)
-        );
+        const storedState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`));
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
           pathNavigatorFetchParentItems({
@@ -84,12 +82,12 @@ export default [
       withLatestFrom(state$),
       mergeMap(
         ([
-           {
-             type,
-             payload: { id, path, excludes }
-           },
-           state
-         ]) => {
+          {
+            type,
+            payload: { id, path, excludes }
+          },
+          state
+        ]) => {
           const site = state.sites.active;
           const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
           const requests: Observable<GetChildrenResponse>[] = [];
@@ -116,12 +114,12 @@ export default [
       withLatestFrom(state$),
       tap(
         ([
-           {
-             type,
-             payload: { id, response }
-           },
-           state
-         ]) => {
+          {
+            type,
+            payload: { id, response }
+          },
+          state
+        ]) => {
           if (response?.length > 0 || type === pathNavigatorSetCollapsed.type) {
             localStorage.setItem(
               `craftercms.pathNavigator.${state.sites.active}.${id}`,
@@ -144,39 +142,50 @@ export default [
         switch (payload.option) {
           case 'delete': {
             if (withoutIndex(payload.item.path) !== withoutIndex(currentPath)) {
-              return [pathNavigatorSetCurrentPath({
-                id: payload.id,
-                path: currentPath
-              })];
+              return [
+                pathNavigatorSetCurrentPath({
+                  id: payload.id,
+                  path: currentPath
+                })
+              ];
             } else {
               return NEVER;
             }
           }
           case 'createFolder': {
             if (withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
-              return [pathNavigatorSetCurrentPath({
-                id: payload.id,
-                path: currentPath
-              })];
+              return [
+                pathNavigatorSetCurrentPath({
+                  id: payload.id,
+                  path: currentPath
+                })
+              ];
             } else {
               return NEVER;
             }
           }
           case 'upload': {
-            if (payload.dropZoneStatus.uploadedFiles > 0 && withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
-              return [pathNavigatorSetCurrentPath({
-                id: payload.id,
-                path: currentPath
-              })];
+            if (
+              payload.dropZoneStatus.uploadedFiles > 0 &&
+              withoutIndex(payload.item.path) === withoutIndex(currentPath)
+            ) {
+              return [
+                pathNavigatorSetCurrentPath({
+                  id: payload.id,
+                  path: currentPath
+                })
+              ];
             } else {
               return NEVER;
             }
           }
           case 'refresh': {
-            return [pathNavigatorSetCurrentPath({
-              id: payload.id,
-              path: currentPath
-            })];
+            return [
+              pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: currentPath
+              })
+            ];
           }
           default: {
             return NEVER;

@@ -99,13 +99,9 @@ export function denormalizeModel(
       if (collection.length) {
         const isNodeSelector = typeof collection[0] === 'string';
         if (isNodeSelector) {
-          model[prop] = collection.map((item) =>
-            denormalizeModel(modelLookup[item], modelLookup)
-          );
+          model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));
         } else {
-          model[prop] = collection.map((item) =>
-            denormalizeModel(item, modelLookup)
-          );
+          model[prop] = collection.map((item) => denormalizeModel(item, modelLookup));
         }
       }
     }

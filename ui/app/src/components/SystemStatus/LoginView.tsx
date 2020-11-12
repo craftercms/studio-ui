@@ -114,8 +114,7 @@ const translations = defineMessages({
   },
   recoverYourPasswordSuccessMessage: {
     id: 'loginView.recoverYourPasswordSuccessMessage',
-    defaultMessage:
-      'Password reset was sent successfully. Please check your email to reset your password.'
+    defaultMessage: 'Password reset was sent successfully. Please check your email to reset your password.'
   },
   resetPasswordFieldPlaceholderLabel: {
     id: 'resetView.resetPasswordFieldPlaceholderLabel',
@@ -303,14 +302,7 @@ function LoginView(props: SubViewProps) {
         {children}
       </DialogContent>
       <DialogActions>
-        <Button
-          type="button"
-          color="primary"
-          onClick={submit}
-          disabled={isFetching}
-          variant="contained"
-          fullWidth
-        >
+        <Button type="button" color="primary" onClick={submit} disabled={isFetching} variant="contained" fullWidth>
           <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
         </Button>
       </DialogActions>
@@ -361,9 +353,7 @@ function RecoverView(props: SubViewProps) {
             value={username}
             onChange={(e: any) => setUsername(e.target.value)}
             className={classes?.username}
-            label={
-              <FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />
-            }
+            label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
           />
           {/* This button is just to have the form submit when pressing enter. */}
           <Button
@@ -397,11 +387,7 @@ function RecoverView(props: SubViewProps) {
           disabled={isFetching}
           onClick={() => setMode('login')}
         >
-          &laquo;{' '}
-          <FormattedMessage
-            id="loginView.recoverYourPasswordBackButtonLabel"
-            defaultMessage="Back"
-          />
+          &laquo; <FormattedMessage id="loginView.recoverYourPasswordBackButtonLabel" defaultMessage="Back" />
         </Button>
       </DialogActions>
     </>
@@ -491,9 +477,7 @@ function ResetView(props: SubViewProps) {
             id="resetFormPasswordConfirmField"
             fullWidth
             helperText={
-              passwordsMismatch
-                ? formatMessage(passwordRequirementMessages.passwordConfirmationMismatch)
-                : null
+              passwordsMismatch ? formatMessage(passwordRequirementMessages.passwordConfirmationMismatch) : null
             }
             error={passwordsMismatch}
             value={newPasswordConfirm}
@@ -502,25 +486,12 @@ function ResetView(props: SubViewProps) {
             placeholder={formatMessage(translations.resetPasswordConfirmFieldPlaceholderLabel)}
           />
           {/* This button is just to have the form submit when pressing enter. */}
-          <Button
-            children=""
-            type="submit"
-            onClick={submit}
-            disabled={isFetching}
-            style={{ display: 'none' }}
-          />
+          <Button children="" type="submit" onClick={submit} disabled={isFetching} style={{ display: 'none' }} />
         </form>
         {children}
       </DialogContent>
       <DialogActions>
-        <Button
-          type="button"
-          color="primary"
-          onClick={submit}
-          disabled={isFetching}
-          variant="contained"
-          fullWidth
-        >
+        <Button type="button" color="primary" onClick={submit} disabled={isFetching} variant="contained" fullWidth>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </Button>
       </DialogActions>
@@ -618,39 +589,40 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
     conditions: captureGroups
       ? captureGroups.map((captureGroup) => {
           let description;
-          let captureGroupKey =
-            captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
+          let captureGroupKey = captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
           if (!namedCaptureGroupSupport) {
             captureGroup = captureGroup.replace(/\?<(.*?)>/g, '');
           }
           switch (captureGroupKey) {
             case 'hasSpecialChars':
-              const allowedChars = (passwordRequirementsRegex.match(
-                /\(\?<hasSpecialChars>(.*)\[(.*?)]\)/
-              ) || ['', '', ''])[2];
+              const allowedChars = (passwordRequirementsRegex.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) || [
+                '',
+                '',
+                ''
+              ])[2];
               description = formatMessage(passwordRequirementMessages.hasSpecialChars, {
                 chars: allowedChars ? `(${allowedChars})` : ''
               });
               break;
             case 'minLength':
-              const min = ((passwordRequirementsRegex.match(/\(\?<minLength>(.*){(.*?)}\)/) || [
-                ''
-              ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
+              const min = ((passwordRequirementsRegex.match(/\(\?<minLength>(.*){(.*?)}\)/) || [''])[0].match(
+                /{(.*?)}/
+              ) || ['', ''])[1].split(',')[0];
               description = formatMessage(passwordRequirementMessages.minLength, { min });
               break;
             case 'maxLength':
-              const max = ((passwordRequirementsRegex.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [
-                ''
-              ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
+              const max = ((passwordRequirementsRegex.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(
+                /{(.*?)}/
+              ) || ['', ''])[1].split(',')[1];
               description = formatMessage(passwordRequirementMessages.maxLength, { max });
               break;
             case 'minMaxLength':
-              const minLength = ((passwordRequirementsRegex.match(
-                /\(\?<minMaxLength>(.*){(.*?)}\)/
-              ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
-              const maxLength = ((passwordRequirementsRegex.match(
-                /\(\?<minMaxLength>(.*){(.*?)}\)/
-              ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
+              const minLength = ((passwordRequirementsRegex.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
+                /{(.*?)}/
+              ) || ['', ''])[1].split(',')[0];
+              const maxLength = ((passwordRequirementsRegex.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
+                /{(.*?)}/
+              ) || ['', ''])[1].split(',')[1];
               description = formatMessage(passwordRequirementMessages.minMaxLength, {
                 minLength,
                 maxLength
@@ -658,8 +630,7 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
               break;
             default:
               description = formatMessage(
-                passwordRequirementMessages[captureGroupKey] ??
-                  passwordRequirementMessages.unnamedGroup
+                passwordRequirementMessages[captureGroupKey] ?? passwordRequirementMessages.unnamedGroup
               );
               break;
           }
@@ -674,10 +645,10 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
 
 function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   const { passwordRequirementsRegex, formatMessage, value, classes, onValidStateChanged } = props;
-  const { regEx, conditions } = useMemo(
-    () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
-    [passwordRequirementsRegex, formatMessage]
-  );
+  const { regEx, conditions } = useMemo(() => getPrimeMatter({ passwordRequirementsRegex, formatMessage }), [
+    passwordRequirementsRegex,
+    formatMessage
+  ]);
   useEffect(() => {
     onValidStateChanged(isBlank(value) ? null : regEx.test(value));
   }, [onValidStateChanged, regEx, value]);
@@ -811,10 +782,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
               fullWidth
               onClick={() => setMode('recover')}
             >
-              <FormattedMessage
-                id="loginView.forgotPasswordButtonLabel"
-                defaultMessage="Forgot your password?"
-              />
+              <FormattedMessage id="loginView.forgotPasswordButtonLabel" defaultMessage="Forgot your password?" />
             </Button>
           </DialogActions>
         )}

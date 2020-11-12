@@ -21,7 +21,11 @@ import { forEach } from './array';
 import { EntityState } from '../models/EntityState';
 import { stringify, StringifyOptions } from 'query-string';
 
-export function pluckProps<T extends object, K extends keyof T>(source: T, omitNull: boolean, ...props: K[]): Pick<T, K>;
+export function pluckProps<T extends object, K extends keyof T>(
+  source: T,
+  omitNull: boolean,
+  ...props: K[]
+): Pick<T, K>;
 export function pluckProps<T extends object, K extends keyof T>(source: T, ...props: K[]): Pick<T, K>;
 export function pluckProps<T extends object, K extends keyof T>(source: T, ...props: K[]): Pick<T, K> {
   let omitNull = false;
@@ -74,31 +78,17 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
 }
 
 export function flattenHierarchical<T>(root: T | T[], childrenProp = 'children'): T[] {
-  return (Array.isArray(root) ? root : [root])
-    .flatMap((node) =>
-      Boolean(node)
-        ? [node, ...flattenHierarchical(node[childrenProp] ?? [], childrenProp)]
-        : null
-    );
-}
-
-export function hierarchicalToLookupTable<T>(
-  root: T | T[],
-  childrenProp = 'children',
-  idProp = 'id'
-): LookupTable<T> {
-  return createLookupTable(
-    normalizeProp(flattenHierarchical(root, childrenProp), idProp, childrenProp),
-    idProp
+  return (Array.isArray(root) ? root : [root]).flatMap((node) =>
+    Boolean(node) ? [node, ...flattenHierarchical(node[childrenProp] ?? [], childrenProp)] : null
   );
 }
 
+export function hierarchicalToLookupTable<T>(root: T | T[], childrenProp = 'children', idProp = 'id'): LookupTable<T> {
+  return createLookupTable(normalizeProp(flattenHierarchical(root, childrenProp), idProp, childrenProp), idProp);
+}
+
 // TODO: Types here could be better.
-export function normalizeProp<T>(
-  list: T[],
-  idProp = 'id',
-  normalizeTargetProp = 'children'
-): T[] {
+export function normalizeProp<T>(list: T[], idProp = 'id', normalizeTargetProp = 'children'): T[] {
   return list.map((item) => ({
     ...item,
     [normalizeTargetProp]: item[normalizeTargetProp]?.map((child) => child[idProp])
@@ -163,11 +153,7 @@ export function ref<T = any>(ref: MutableRefObject<T>): T {
   return ref.current;
 }
 
-export function findParentModelId(
-  modelId: string,
-  childrenMap: LookupTable<Array<string>>,
-  models: any
-) {
+export function findParentModelId(modelId: string, childrenMap: LookupTable<Array<string>>, models: any) {
   const parentId = forEach(
     Object.entries(childrenMap),
     ([id, children]) => {
@@ -180,11 +166,11 @@ export function findParentModelId(
   return nnou(parentId)
     ? // If it has a path, it is not embedded and hence the parent
       // Otherwise, need to keep looking.
-    nnou(models[parentId].craftercms.path)
+      nnou(models[parentId].craftercms.path)
       ? parentId
       : findParentModelId(parentId, childrenMap, models)
     : // No parent found for this model
-    null;
+      null;
 }
 
 export function isPlainObject<T extends any>(obj: T): boolean {
@@ -214,12 +200,7 @@ export function extend(
     return Object.assign(target, source);
   }
   for (let prop in source) {
-    if (
-      source.hasOwnProperty(prop) && (
-        (!options.existingOnly) ||
-        (options.existingOnly && prop in target)
-      )
-    ) {
+    if (source.hasOwnProperty(prop) && (!options.existingOnly || (options.existingOnly && prop in target))) {
       if (prop in target && isPlainObject(target[prop]) && isPlainObject(source[prop])) {
         extend(target[prop], source[prop]);
       } else {
@@ -230,14 +211,11 @@ export function extend(
   return target;
 }
 
-export function toQueryString<T extends {} = {}>(
-  args: T,
-  options?: StringifyOptions & { prefix: string }
-): string {
+export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOptions & { prefix: string }): string {
   if (!args) {
     return '';
   }
-  options = { prefix: '?', ...options }
+  options = { prefix: '?', ...options };
   return `${options.prefix}${stringify(args, options)}`;
 }
 

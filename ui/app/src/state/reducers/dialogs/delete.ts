@@ -31,27 +31,24 @@ const initialState = {
   dependentItems: null
 };
 
-export default createReducer<GlobalState['dialogs']['delete']>(
-  initialState,
-  {
-    [showDeleteDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeDeleteDialog(),
-      onClosed: deleteDialogClosed(),
-      onDismiss: closeDeleteDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
-    [deleteDialogClosed.type]: () => initialState,
-    [fetchDeleteDependencies.type]: (state) => ({
-      ...state,
-      isFetching: true
-    }),
-    [fetchDeleteDependenciesComplete.type]: (state, { payload }) => ({
-      ...state,
-      isFetching: false,
-      ...payload
-    }),
-  }
-);
+export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
+  [showDeleteDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeDeleteDialog(),
+    onClosed: deleteDialogClosed(),
+    onDismiss: closeDeleteDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
+  [deleteDialogClosed.type]: () => initialState,
+  [fetchDeleteDependencies.type]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
+  [fetchDeleteDependenciesComplete.type]: (state, { payload }) => ({
+    ...state,
+    isFetching: false,
+    ...payload
+  })
+});

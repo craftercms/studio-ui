@@ -35,32 +35,35 @@ import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
-const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
-  withLatestFrom(state$),
-  switchMap(([, state]) => getAudiencesPanelPayload(state.sites.active).pipe(
-    map(fetchAudiencesPanelFormDefinitionComplete),
-    catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
-  ))
-);
+const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
+    withLatestFrom(state$),
+    switchMap(([, state]) =>
+      getAudiencesPanelPayload(state.sites.active).pipe(
+        map(fetchAudiencesPanelFormDefinitionComplete),
+        catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
+      )
+    )
+  );
 
-const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(SET_ACTIVE_TARGETING_MODEL),
-  withLatestFrom(state$),
-  switchMap(([, state]) => setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
-    map(response => setActiveTargetingModelCompleteAction(response)),
-    catchAjaxError(setActiveTargetingModelFailed)
-  ))
-);
+const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(SET_ACTIVE_TARGETING_MODEL),
+    withLatestFrom(state$),
+    switchMap(([, state]) =>
+      setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
+        map((response) => setActiveTargetingModelCompleteAction(response)),
+        catchAjaxError(setActiveTargetingModelFailed)
+      )
+    )
+  );
 
-const setActiveTargetingModelComplete: Epic = (action$) => action$.pipe(
-  ofType(SET_ACTIVE_TARGETING_MODEL_COMPLETE),
-  tap(() => getHostToGuestBus().next({ type: RELOAD_REQUEST })),
-  ignoreElements()
-);
+const setActiveTargetingModelComplete: Epic = (action$) =>
+  action$.pipe(
+    ofType(SET_ACTIVE_TARGETING_MODEL_COMPLETE),
+    tap(() => getHostToGuestBus().next({ type: RELOAD_REQUEST })),
+    ignoreElements()
+  );
 
-export default [
-  fetchAudiencesPanel,
-  setActiveTargetingModel,
-  setActiveTargetingModelComplete
-] as Epic[];
+export default [fetchAudiencesPanel, setActiveTargetingModel, setActiveTargetingModelComplete] as Epic[];

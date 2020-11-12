@@ -49,7 +49,11 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
                 cm.editor.contextControl.save();
               };
 
-              var layoutItem = { title: layout.name, onclick: onClickFn, layoutPrototype: prototype };
+              var layoutItem = {
+                title: layout.name,
+                onclick: onClickFn,
+                layoutPrototype: prototype
+              };
 
               m.add(layoutItem);
             }

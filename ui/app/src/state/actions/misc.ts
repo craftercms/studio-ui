@@ -26,6 +26,6 @@ export const dispatchDOMEvent = createAction<{ id: string }>('DISPATCH_DOM_EVENT
 // endregion
 
 // region TemplateActions
-export const changeContentType = createAction<{ contentTypeId: string, path: string }>('CHANGE_CONTENT_TYPE');
+export const changeContentType = createAction<{ contentTypeId: string; path: string }>('CHANGE_CONTENT_TYPE');
 export const editTemplate = createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
 // endregion

@@ -29,29 +29,26 @@ const initialState: HistoryDialogStateProps = {
   open: false
 };
 
-export default createReducer<GlobalState['dialogs']['history']>(
-  initialState,
-  {
-    [showHistoryDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeHistoryDialog(),
-      onClosed: historyDialogClosed(),
-      onDismiss: closeHistoryDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeHistoryDialog.type]: (state) => ({
-      ...state,
-      open: false
-    }),
-    [historyDialogClosed.type]: () => initialState,
-    [showViewVersionDialog.type]: (state) => ({
-      ...state,
-      open: false
-    }),
-    [showCompareVersionsDialog.type]: (state) => ({
-      ...state,
-      open: false
-    })
-  }
-);
+export default createReducer<GlobalState['dialogs']['history']>(initialState, {
+  [showHistoryDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeHistoryDialog(),
+    onClosed: historyDialogClosed(),
+    onDismiss: closeHistoryDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeHistoryDialog.type]: (state) => ({
+    ...state,
+    open: false
+  }),
+  [historyDialogClosed.type]: () => initialState,
+  [showViewVersionDialog.type]: (state) => ({
+    ...state,
+    open: false
+  }),
+  [showCompareVersionsDialog.type]: (state) => ({
+    ...state,
+    open: false
+  })
+});

@@ -677,7 +677,7 @@
           }
         }
 
-        var replaceChars = { ',': ', ', '_': ' ' };
+        var replaceChars = { ',': ', ', _: ' ' };
         audit.actionsInputVal = audit.actions.toString().replace(/,|_/g, function(match) {
           return replaceChars[match];
         });
@@ -971,13 +971,13 @@
 
       publish.maxCommentLength = CrafterCMSNext.system.store.getState().configuration.publishing.submission.commentMaxLength;
 
-      publish.initQueque = function () {
+      publish.initQueque = function() {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
           siteId: $location.search().site
         });
       };
 
-      publish.showModal = function (template, size, verticalCentered, styleClass) {
+      publish.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
@@ -1153,12 +1153,12 @@
 
         adminService
           .bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
-          .success(function (data) {
+          .success(function(data) {
             publish.disable = false;
             spinnerOverlay.close();
             $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
           })
-          .error(function (err) {
+          .error(function(err) {
             publish.error = err.message;
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
             spinnerOverlay.close();
@@ -1166,13 +1166,13 @@
           });
       };
 
-      angular.element(document).ready(function () {
+      angular.element(document).ready(function() {
         const el = document.getElementById('bulkPublishCharCountStatus');
         CrafterCMSNext.render(el, 'CharCountStatusContainer', {
           commentLength: publish && publish.submissionComment ? publish.submissionComment.length : 0
         });
 
-        document.getElementById('submissionComment').addEventListener('keyup', function (e) {
+        document.getElementById('submissionComment').addEventListener('keyup', function(e) {
           CrafterCMSNext.render(el, 'CharCountStatusContainer', {
             commentLength: publish.submissionComment.length
           });
@@ -1184,7 +1184,7 @@
       publish.commitIds;
       publish.publishComment = '';
 
-      publish.commitsPublish = function () {
+      publish.commitsPublish = function() {
         var spinnerOverlay,
           data = {},
           selectedChannelCommit = publish.commitIds.replace(/ /g, '').split(',');
@@ -1197,12 +1197,12 @@
 
         adminService
           .commitsPublish(data)
-          .success(function (data) {
+          .success(function(data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
             $rootScope.showNotification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'));
           })
-          .error(function (err) {
+          .error(function(err) {
             publish.error = err.message;
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
             spinnerOverlay.close();
@@ -1210,13 +1210,13 @@
           });
       };
 
-      angular.element(document).ready(function () {
+      angular.element(document).ready(function() {
         const el = document.getElementById('publishCommentCharCountStatus');
         CrafterCMSNext.render(el, 'CharCountStatusContainer', {
           commentLength: publish && publish.publishComment ? publish.publishComment.length : 0
         });
 
-        document.getElementById('publishComment').addEventListener('keyup', function (e) {
+        document.getElementById('publishComment').addEventListener('keyup', function(e) {
           CrafterCMSNext.render(el, 'CharCountStatusContainer', {
             commentLength: publish.publishComment.length ?? 0
           });
@@ -1413,7 +1413,12 @@
             $rootScope.showNotification(formatMessage(usersAdminMessages.userCreated, { username: user.username }));
           })
           .error(function(response) {
-            $rootScope.showNotification(response.response.message + '. ' + response.response.remedialAction, null, null, 'error');
+            $rootScope.showNotification(
+              response.response.message + '. ' + response.response.remedialAction,
+              null,
+              null,
+              'error'
+            );
           });
       };
       users.resetPasswordDialog = function(user) {
@@ -1445,7 +1450,12 @@
             $scope.hideModal();
           })
           .error(function(error) {
-            $rootScope.showNotification(error.response.message + '. ' + error.response.remedialAction, null, null, 'error');
+            $rootScope.showNotification(
+              error.response.message + '. ' + error.response.remedialAction,
+              null,
+              null,
+              'error'
+            );
           });
         delete user.newPassword;
       };
@@ -1494,7 +1504,12 @@
             $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
           })
           .error(function(error) {
-            $rootScope.showNotification(error.response.message + '. ' + error.response.remedialAction, null, null, 'error');
+            $rootScope.showNotification(
+              error.response.message + '. ' + error.response.remedialAction,
+              null,
+              null,
+              'error'
+            );
           });
 
         users.toggleUserStatus(user);
@@ -1561,7 +1576,19 @@
     '$stateParams',
     '$translate',
     '$location',
-    function($rootScope, $scope, $state, $window, $sce, adminService, $uibModal, $timeout, $stateParams, $translate, $location) {
+    function(
+      $rootScope,
+      $scope,
+      $state,
+      $window,
+      $sce,
+      adminService,
+      $uibModal,
+      $timeout,
+      $stateParams,
+      $translate,
+      $location
+    ) {
       $scope.clusters = {};
       var clusters = $scope.clusters;
 
@@ -1619,7 +1646,11 @@
               if (index !== -1) {
                 $scope.membersCollection.splice(index, 1);
               }
-              $rootScope.showNotification(formatMessage(adminDashboardMessages.clusterDeleted, { cluster: clusterMember.gitUrl }));
+              $rootScope.showNotification(
+                formatMessage(adminDashboardMessages.clusterDeleted, {
+                  cluster: clusterMember.gitUrl
+                })
+              );
             })
             .error(function(data) {
               $scope.error = data.response.message;
@@ -1879,12 +1910,12 @@
       groups.getUsersAutocomplete = function() {
         var params = {};
         params.limit = 1000;
-        adminService.getUsers(params).success(function (data) {
+        adminService.getUsers(params).success(function(data) {
           groups.usersAutocomplete = [];
 
-          data.users.forEach(function (user) {
+          data.users.forEach(function(user) {
             var added = false;
-            groups.usersFromGroupCollection.forEach(function (userCompare) {
+            groups.usersFromGroupCollection.forEach(function(userCompare) {
               if (user.username == userCompare.username) {
                 added = true;
               }
@@ -2006,7 +2037,10 @@
             .success(function() {
               $scope.getGroupMembers(group);
               $rootScope.showNotification(
-                formatMessage(groupsAdminMessages.userRemoved, { username: user.username, group: group.name })
+                formatMessage(groupsAdminMessages.userRemoved, {
+                  username: user.username,
+                  group: group.name
+                })
               );
             })
             .error(function(error) {
@@ -2102,7 +2136,8 @@
       };
 
       function repositoriesReceived(data) {
-        const reachable = [], unreachable = [];
+        const reachable = [],
+          unreachable = [];
         data.remotes.forEach((remote) => {
           if (remote.reachable) {
             reachable.push(remote);
@@ -2191,19 +2226,15 @@
       };
 
       $scope.removeRepo = function(repo) {
-        var deleteRepo = function () {
+        var deleteRepo = function() {
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
           adminService
             .deleteRepository(currentRepo)
             .success(function(data) {
-              repositories.repositories.reachable = repositories.repositories.reachable.filter(
-                r => r !== repo
-              );
-              repositories.repositories.unreachable = repositories.repositories.unreachable.filter(
-                r => r !== repo
-              );
+              repositories.repositories.reachable = repositories.repositories.reachable.filter((r) => r !== repo);
+              repositories.repositories.unreachable = repositories.repositories.unreachable.filter((r) => r !== repo);
               $rootScope.showNotification(`'${repo.name}' ${$translate.instant('admin.repositories.REPO_DELETED')}.`);
             })
             .error(function(error) {

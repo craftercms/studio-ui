@@ -77,7 +77,9 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
       context: this
     };
 
-    CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, { fileTypes: ['video/*'] });
+    CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, {
+      fileTypes: ['video/*']
+    });
   },
 
   getLabel: function() {

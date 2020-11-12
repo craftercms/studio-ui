@@ -23,12 +23,12 @@ export interface Image {
 export interface Video {
   title: string;
   description: string;
-  url: string
+  url: string;
 }
 
 interface Media {
   screenshots: [Image];
-  videos?: [Video] | []
+  videos?: [Video] | [];
 }
 
 interface Version {

@@ -44,11 +44,13 @@ interface CreateFolderBaseProps {
   allowBraces?: boolean;
 }
 
-export type CreateFolderProps = PropsWithChildren<CreateFolderBaseProps & {
-  onClose(): void;
-  onClosed?(): void;
-  onCreated?(response: { path: string, name: string, rename: boolean }): void;
-}>;
+export type CreateFolderProps = PropsWithChildren<
+  CreateFolderBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+    onCreated?(response: { path: string; name: string; rename: boolean }): void;
+  }
+>;
 
 export interface CreateFolderStateProps extends CreateFolderBaseProps {
   onClose?: StandardAction;
@@ -71,12 +73,7 @@ export default function CreateFolderDialog(props: CreateFolderProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateFolderUI
-        {...props}
-        submitted={state.submitted}
-        inProgress={state.inProgress}
-        setState={setState}
-      />
+      <CreateFolderUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>
   );
 }
@@ -88,7 +85,18 @@ interface CreateFolderUIProps extends CreateFolderProps {
 }
 
 function CreateFolderUI(props: CreateFolderUIProps) {
-  const { onClosed, onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '', allowBraces = false } = props;
+  const {
+    onClosed,
+    onClose,
+    path,
+    submitted,
+    inProgress,
+    setState,
+    onCreated,
+    rename = false,
+    value = '',
+    allowBraces = false
+  } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -121,27 +129,28 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           }
         );
       }
-
     }
   };
   return (
     <>
       <DialogHeader
         title={
-          rename
-            ? <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
-            : <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
-
+          rename ? (
+            <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
+          ) : (
+            <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
+          )
         }
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
         <TextField
           label={
-            rename
-              ?
+            rename ? (
               <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
-              : <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+            ) : (
+              <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+            )
           }
           value={name}
           autoFocus
@@ -149,7 +158,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           error={!name && submitted}
           placeholder={formatMessage(translations.placeholder)}
           helperText={
-            (!name && submitted) ? (
+            !name && submitted ? (
               <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
             ) : (
               <FormattedMessage
@@ -163,27 +172,22 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           InputLabelProps={{
             shrink: true
           }}
-          onChange={(event) => setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))}
+          onChange={(event) =>
+            setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+          }
         />
       </DialogBody>
       <DialogFooter>
         <Button onClick={onClose} variant="outlined" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
-        <Button
-          onClick={() => onOk()} variant="contained" color="primary" autoFocus
-          disabled={inProgress}
-        >
-          {
-            inProgress &&
-            <CircularProgress size={15} style={{ marginRight: '5px' }} />
-          }
-          {
-            rename
-              ? <FormattedMessage id="words.rename" defaultMessage="Rename" />
-              : <FormattedMessage id="words.create" defaultMessage="Create" />
-          }
-
+        <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>
+          {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
+          {rename ? (
+            <FormattedMessage id="words.rename" defaultMessage="Rename" />
+          ) : (
+            <FormattedMessage id="words.create" defaultMessage="Create" />
+          )}
         </Button>
       </DialogFooter>
     </>

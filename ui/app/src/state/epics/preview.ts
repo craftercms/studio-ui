@@ -22,18 +22,19 @@ import { setStoredEditModeChoice } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 
 export default [
-  (action$, state$) => action$.pipe(
-    ofType(SELECT_TOOL),
-    withLatestFrom(state$),
-    tap(([{ payload }, state]) => {
-      if (payload) {
-        window.localStorage.setItem(`craftercms.previewSelectedTool.${state.sites.active}`, payload);
-      } else {
-        window.localStorage.removeItem(`craftercms.previewSelectedTool.${state.sites.active}`);
-      }
-    }),
-    ignoreElements()
-  ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(SELECT_TOOL),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        if (payload) {
+          window.localStorage.setItem(`craftercms.previewSelectedTool.${state.sites.active}`, payload);
+        } else {
+          window.localStorage.removeItem(`craftercms.previewSelectedTool.${state.sites.active}`);
+        }
+      }),
+      ignoreElements()
+    ),
   // region setPreviewEditMode
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
@@ -46,5 +47,4 @@ export default [
       ignoreElements()
     )
   // endregion
-
 ] as Epic[];

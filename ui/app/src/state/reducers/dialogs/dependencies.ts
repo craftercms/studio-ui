@@ -16,11 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closeDependenciesDialog,
-  dependenciesDialogClosed,
-  showDependenciesDialog
-} from '../../actions/dialogs';
+import { closeDependenciesDialog, dependenciesDialogClosed, showDependenciesDialog } from '../../actions/dialogs';
 import { DependenciesDialogStateProps } from '../../../modules/Content/Dependencies/DependenciesDialog';
 
 const initialState: DependenciesDialogStateProps = {
@@ -28,18 +24,15 @@ const initialState: DependenciesDialogStateProps = {
   rootPath: '/site/website'
 };
 
-export default createReducer<GlobalState['dialogs']['dependencies']>(
-  initialState,
-  {
-    [showDependenciesDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeDependenciesDialog(),
-      onClosed: dependenciesDialogClosed(),
-      onDismiss: closeDependenciesDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeDependenciesDialog.type]: (state) => ({ ...state, open: false }),
-    [dependenciesDialogClosed.type]: () => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['dependencies']>(initialState, {
+  [showDependenciesDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeDependenciesDialog(),
+    onClosed: dependenciesDialogClosed(),
+    onDismiss: closeDependenciesDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeDependenciesDialog.type]: (state) => ({ ...state, open: false }),
+  [dependenciesDialogClosed.type]: () => initialState
+});

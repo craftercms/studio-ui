@@ -18,20 +18,19 @@ import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/Cont
 import { createLookupTable, retrieveProperty } from './object';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
-  return Object.values(contentType.fields)
-    .reduce((accumulator, field) => {
-      if (
-        (field.type === 'array') &&
-        (field.validations != null) &&
-        ('validations' in field) &&
-        ('allowedContentTypes' in field.validations)
-      ) {
-        field.validations.allowedContentTypes.value.forEach((ctid) =>
-          !accumulator.includes(ctid) && accumulator.push(ctid)
-        );
-      }
-      return accumulator;
-    }, []);
+  return Object.values(contentType.fields).reduce((accumulator, field) => {
+    if (
+      field.type === 'array' &&
+      field.validations != null &&
+      'validations' in field &&
+      'allowedContentTypes' in field.validations
+    ) {
+      field.validations.allowedContentTypes.value.forEach(
+        (ctid) => !accumulator.includes(ctid) && accumulator.push(ctid)
+      );
+    }
+    return accumulator;
+  }, []);
 }
 
 export function isGroupItem(contentType: ContentType, fieldId: string): boolean {
@@ -55,10 +54,7 @@ export function getField(type: ContentType, fieldId: string): ContentTypeField {
   // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
   // we parse it here.
   const parsedFieldId = fieldId.replace(/\./g, '.fields.');
-  return retrieveProperty(
-    Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields,
-    parsedFieldId
-  );
+  return retrieveProperty(Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields, parsedFieldId);
 }
 
 export function getFields(type: ContentType, ...ids: string[]): ContentTypeField[] {

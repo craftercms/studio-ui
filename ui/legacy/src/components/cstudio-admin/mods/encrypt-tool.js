@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function () {
+(function() {
   class EncryptTool {
     constructor(config, el) {
       this.containerEl = el;
@@ -27,7 +27,6 @@
     }
 
     renderWorkarea() {
-
       const workarea = document.querySelector('#cstudio-admin-console-workarea');
       const el = document.createElement('div');
 
@@ -37,10 +36,8 @@
       CrafterCMSNext.render(el, 'EncryptTool', {
         site: CStudioAuthoringContext.site
       });
-
     }
   }
 
   CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-encrypt-tool', EncryptTool);
-
 })();

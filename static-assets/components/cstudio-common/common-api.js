@@ -56,9 +56,9 @@ eventCM.initEvent('crafter.create.contenMenu', true, true);
 var nodeOpen = false,
   studioTimeZone = null;
 
-(function (undefined) {
+(function(undefined) {
   // Private functions
-  var encodePathToNumbers = function (path) {
+  var encodePathToNumbers = function(path) {
     var re1 = new RegExp('/', 'g');
 
     var res = path.replace(re1, '00'); // substitute all forward slash with '00'
@@ -67,7 +67,7 @@ var nodeOpen = false,
     return res;
   };
 
-  var decodeNumbersToPath = function (pathWithNumbers) {
+  var decodeNumbersToPath = function(pathWithNumbers) {
     var res = pathWithNumbers.replace(/00/g, '/');
     res = res.replace(/111/g, '-');
     res = res.replace(/010/g, '.');
@@ -97,7 +97,7 @@ var nodeOpen = false,
        * @param {String} multiple_arguments The namespaces to create
        * @return {Object} the last namespace object created
        */
-      namespace: function () {
+      namespace: function() {
         var imply = arguments[0] !== false,
           oRoot = imply ? CStudioAuthoring : window,
           a = arguments,
@@ -130,7 +130,7 @@ var nodeOpen = false,
        *    and initialize them with the paired value of the namespace (object key)
        * @param {Object} oNamespaces An object containing the namespaces to register & initialize
        */
-      register: function (oNamespaces) {
+      register: function(oNamespaces) {
         var np,
           oNamespace,
           exists = this.isSet,
@@ -164,7 +164,7 @@ var nodeOpen = false,
        * @param {String} namespace The namespace to check to see if initialized. Non-String values will be evaluated for a value != undefined
        * @param {Boolean} imply If true, looks for the namespace inside the CStudioAuthoring object
        */
-      isSet: function (namespace, imply) {
+      isSet: function(namespace, imply) {
         var o = namespace;
         if (Object.prototype.toString.call(namespace) == '[object String]') {
           var props = namespace.split('.'),
@@ -181,25 +181,25 @@ var nodeOpen = false,
   var CSA = CStudioAuthoring;
 
   function CStudioConstant(value) {
-    this.getValue = function () {
+    this.getValue = function() {
       return value;
     };
   }
 
-  CStudioConstant.prototype.toString = function () {
+  CStudioConstant.prototype.toString = function() {
     return this.getValue();
   };
 
-  CStudioConstant.toString = function () {
+  CStudioConstant.toString = function() {
     return 'CStudioAuthoring.Constant';
   };
 
   CSA.register({
-    'Constant': CStudioConstant,
+    Constant: CStudioConstant,
     /**
      * authoring events
      */
-    'Events': {
+    Events: {
       contextNavLoaded: new YAHOO.util.CustomEvent('contextNavLoadedEvent', CSA),
       contextNavReady: new YAHOO.util.CustomEvent('contextNavReadyEvent', CSA),
       moduleActiveContentReady: new YAHOO.util.CustomEvent('modActiveContentEvent', CSA),
@@ -213,7 +213,7 @@ var nodeOpen = false,
     /**
      * general place for constants
      */
-    'Constants': {
+    Constants: {
       /*
        * Permission checking constants */
       PERMISSION_READ: new CStudioConstant('read'),
@@ -289,7 +289,7 @@ var nodeOpen = false,
     /**
      * required resources, exension of the authoring environment bootstrap
      */
-    'OverlayRequiredResources': {
+    OverlayRequiredResources: {
       css: [
         '/static-assets/yui/treeview/assets/skins/sam/treeview.css',
         '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
@@ -318,7 +318,7 @@ var nodeOpen = false,
        * this CSS has dynamically defined contents so load order is important
        * Context must be available
        */
-      loadContextNavCss: function () {
+      loadContextNavCss: function() {
         //CStudioAuthoring.Utils.addCss('/overlay-css?baseUrl=' +
         //                           CStudioAuthoringContext.baseUri);'
         CSA.Utils.addCss('/static-assets/styles/temp.css');
@@ -329,7 +329,7 @@ var nodeOpen = false,
        * load all the resources initially
        * required to run the authoring environment
        */
-      loadRequiredResources: function () {
+      loadRequiredResources: function() {
         for (var i = 0; i < this.css.length; i++) {
           CSA.Utils.addCss(this.css[i]);
         }
@@ -338,68 +338,77 @@ var nodeOpen = false,
         }
       }
     },
-    'Clipboard': {
+    Clipboard: {
       /**
        * constructor
        */
-      init: function () {
-      },
+      init: function() {},
       /**
        * get content items in clipboard
        */
-      getClipboardContent: function (callback) {
+      getClipboardContent: function(callback) {
         CSA.Service.getClipboardItems(CStudioAuthoringContext.site, callback);
       },
       /**
        * copy an content item on to the clipboard
        */
-      copyContent: function (contentTO, callback) {
-        CSA.Service.copyContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function () {
+      copyContent: function(contentTO, callback) {
+        CSA.Service.copyContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function() {
           const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
           const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 1}), null, null, 'default');
+          CStudioAuthoring.Utils.showNotification(
+            formatMessage(messages.itemCopied, { count: 1 }),
+            null,
+            null,
+            'default'
+          );
           callback && callback();
         });
       },
       /**
        * cut a content item on to the clipboard
        */
-      cutContent: function (contentTO, callback) {
-        CSA.Service.cutContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function () {
+      cutContent: function(contentTO, callback) {
+        CSA.Service.cutContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function() {
           const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
           const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 1}), null, null, 'default');
+          CStudioAuthoring.Utils.showNotification(
+            formatMessage(messages.itemCopied, { count: 1 }),
+            null,
+            null,
+            'default'
+          );
           callback && callback();
         });
       },
       /**
        * paste all content as child of contentTO
        */
-      pasteContent: function (contentTO, callback) {
+      pasteContent: function(contentTO, callback) {
         CSA.Service.pasteContentFromClipboard(CStudioAuthoringContext.site, contentTO.uri, callback);
       },
 
       /**
        * permissions to display the items on clipboard
        */
-      getPermissions: function (path, callback) {
+      getPermissions: function(path, callback) {
         CSA.Service.getUserPermissions(CStudioAuthoringContext.site, path, callback);
       }
     },
     /**
      * track content that is currently selected
      */
-    'SelectedContent': {
+    SelectedContent: {
       selectedContent: null,
 
       /**
        * constructor
        */
-      init: function () {
+      init: function() {
         this.selectedContent = [];
       },
 
-      setContent: function (contentTO) {
+      setContent: function(contentTO) {
         this.selectedContent = [contentTO];
         CSA.Events.contentSelected.fire(contentTO);
 
@@ -410,7 +419,7 @@ var nodeOpen = false,
       /**
        * content is selected, track it
        */
-      selectContent: function (contentTO, avoidEvent) {
+      selectContent: function(contentTO, avoidEvent) {
         if (this.at(contentTO) == -1) {
           this.selectedContent.push(contentTO);
           if (!avoidEvent) {
@@ -422,7 +431,7 @@ var nodeOpen = false,
       /**
        * content unselected, stop tracking it
        */
-      unselectContent: function (contentTO, avoidEvent) {
+      unselectContent: function(contentTO, avoidEvent) {
         var position = this.at(contentTO);
 
         if (position != -1) {
@@ -436,21 +445,21 @@ var nodeOpen = false,
       /**
        * return the number of selected content items
        */
-      getSelectedContentCount: function () {
+      getSelectedContentCount: function() {
         return this.selectedContent.length;
       },
 
       /**
        * return the selected content
        */
-      getSelectedContent: function () {
+      getSelectedContent: function() {
         return this.selectedContent;
       },
 
       /**
        * return the position of the item
        */
-      at: function (contentTO) {
+      at: function(contentTO) {
         var retAt = -1;
 
         var atContentToId = CSA.Utils.createContentTOId(contentTO);
@@ -472,7 +481,7 @@ var nodeOpen = false,
        * Unselects or clears all the selected items from the data structure
        *
        */
-      clear: function () {
+      clear: function() {
         this.selectedContent = [];
         CSA.Events.contentUnSelected.fire();
       }
@@ -480,14 +489,14 @@ var nodeOpen = false,
     /**
      * authoring module manager
      */
-    'Module': {
+    Module: {
       loadedModules: new Array(),
       waitingForModule: new Array(),
 
       /**
        * either receive the Module Class or wait for it to be loaded
        */
-      requireModule: function (moduleName, script, moduleConfig, callback) {
+      requireModule: function(moduleName, script, moduleConfig, callback) {
         var moduleClass = this.loadedModules[moduleName];
 
         if (!moduleClass) {
@@ -513,7 +522,7 @@ var nodeOpen = false,
       /**
        * event that module has been loaded for those wating
        */
-      moduleLoaded: function (moduleName, moduleClass) {
+      moduleLoaded: function(moduleName, moduleClass) {
         this.loadedModules[moduleName] = moduleClass;
 
         try {
@@ -547,12 +556,12 @@ var nodeOpen = false,
     /**
      * common operations
      */
-    'Operations': {
-      _showDialogueView: function (oRequest, setZIndex, dialogWidth) {
+    Operations: {
+      _showDialogueView: function(oRequest, setZIndex, dialogWidth) {
         var width = dialogWidth ? dialogWidth : '602px';
         var Loader = CSA.Env.Loader,
           moduleid = oRequest.controller;
-        var fn = function () {
+        var fn = function() {
           var dialogueId = CSA.Utils.getScopedId(moduleid || 'view'),
             Controller,
             dialogue;
@@ -560,7 +569,7 @@ var nodeOpen = false,
           dialogue = new CSA.Component.Dialogue(dialogueId, {
             loadBody: {
               loaderFn: oRequest.fn,
-              callback: function () {
+              callback: function() {
                 /* set timezone dynamically */
                 if (arguments[0] && arguments[0].getResponseHeader && arguments[0].getResponseHeader.Timezone) {
                   var timeZoneText = arguments[0].getResponseHeader.Timezone;
@@ -575,7 +584,7 @@ var nodeOpen = false,
                 var view;
                 if (Controller) {
                   view = new Controller({ context: dialogueId });
-                  view.on('end', function () {
+                  view.on('end', function() {
                     dialogue.destroy();
                   });
                 }
@@ -609,7 +618,7 @@ var nodeOpen = false,
       simpleDialogTypeWARN: 'WARN',
       simpleDialogTypeERROR: 'ERROR',
 
-      showSimpleDialog: function (id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
+      showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
         var dialogId = id;
 
         if (!buttonsArray) {
@@ -682,10 +691,10 @@ var nodeOpen = false,
         return dialog;
       },
 
-      createNavBarDropDown: function (opt) {
+      createNavBarDropDown: function(opt) {
         var dropdown = YDom.get(opt + '-dropdown');
 
-        dropdown.onclick = function () {
+        dropdown.onclick = function() {
           var className = ' ' + this.parentElement.className + ' ';
 
           if (~className.indexOf(' open ')) {
@@ -710,7 +719,7 @@ var nodeOpen = false,
         };
       },
 
-      translateContent: function (langBundle, specificSelector, dataAtt) {
+      translateContent: function(langBundle, specificSelector, dataAtt) {
         var elements,
           dataAtt = dataAtt ? dataAtt : 'data-translation';
         if (specificSelector) {
@@ -724,7 +733,7 @@ var nodeOpen = false,
         }
       },
 
-      deleteContent: function (items, requestDelete, callback) {
+      deleteContent: function(items, requestDelete, callback) {
         const eventIdSuccess = 'deleteDialogSuccess';
         const eventIdCancel = 'deleteDialogCancel';
 
@@ -732,7 +741,7 @@ var nodeOpen = false,
           type: 'SHOW_DELETE_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map((item) => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
@@ -768,23 +777,27 @@ var nodeOpen = false,
             callback && callback();
             const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
             const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-            CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemDeleted, { count: 1}), null, null, 'default');
+            CStudioAuthoring.Utils.showNotification(
+              formatMessage(messages.itemDeleted, { count: 1 }),
+              null,
+              null,
+              'default'
+            );
           }
         });
 
         cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
           unsubscribe();
         });
-
       },
-      viewSchedulingPolicy: function (callback) {
+      viewSchedulingPolicy: function(callback) {
         CSA.Operations._showDialogueView({
           fn: CSA.Service.getSchedulingPolicyView,
           callback: callback
         });
       },
 
-      viewContentHistory: function (contentObj, isWrite, rootPath) {
+      viewContentHistory: function(contentObj, isWrite, rootPath) {
         const item = CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(contentObj);
 
         CrafterCMSNext.system.store.dispatch({
@@ -808,7 +821,7 @@ var nodeOpen = false,
         });
       },
 
-      viewConfigurationHistory: function (contentObj, isWrite) {
+      viewConfigurationHistory: function(contentObj, isWrite) {
         const eventIdOnClose = 'showHistoryDialogConfigOnClose';
         const item = {
           path: contentObj.uri,
@@ -863,7 +876,7 @@ var nodeOpen = false,
         });
       },
 
-      approveCommon: function (site, items, approveType) {
+      approveCommon: function(site, items, approveType) {
         const _self = this;
         const scheduling = approveType ? 'custom' : 'now';
 
@@ -873,7 +886,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(item)),
+            items: items.map((item) => CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(item)),
             scheduling,
             onSuccess: {
               type: 'BATCH_ACTIONS',
@@ -906,10 +919,16 @@ var nodeOpen = false,
           const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
           const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
           let message;
-          if(response.schedule === 'now') {
-            message = formatMessage(messages.itemPublishedNow, { environment: response.environment , count: response.items.length })
-          }else {
-            message = formatMessage(messages.itemSchedulePublished, { environment: response.environment , count: response.items.length })
+          if (response.schedule === 'now') {
+            message = formatMessage(messages.itemPublishedNow, {
+              environment: response.environment,
+              count: response.items.length
+            });
+          } else {
+            message = formatMessage(messages.itemSchedulePublished, {
+              environment: response.environment,
+              count: response.items.length
+            });
           }
           CStudioAuthoring.Utils.showNotification(message, null, null, 'default');
         });
@@ -919,7 +938,7 @@ var nodeOpen = false,
         });
       },
 
-      viewDependencies: function (site, items, approveType, defaultSelection) {
+      viewDependencies: function(site, items, approveType, defaultSelection) {
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
         const dependenciesShown = defaultSelection ? defaultSelection : 'depends-on';
 
@@ -934,7 +953,7 @@ var nodeOpen = false,
         });
       },
 
-      submitContent: function (site, items) {
+      submitContent: function(site, items) {
         const _self = this;
 
         const eventIdSuccess = 'publishDialogSuccess';
@@ -943,7 +962,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(item)),
+            items: items.map((item) => CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(item)),
             onSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
@@ -979,13 +998,13 @@ var nodeOpen = false,
         });
       },
 
-      reloadItems: function (items, args) {
+      reloadItems: function(items, args) {
         var entities = { entities: [] };
 
         if (typeof items === 'string' || items instanceof String) {
           entities.entities.push({ item: items });
         } else {
-          $.each(items, function () {
+          $.each(items, function() {
             entities.entities.push({ item: this.uri });
           });
         }
@@ -993,14 +1012,14 @@ var nodeOpen = false,
         eventNS.data = items;
         eventNS.typeAction = 'publish';
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
-          success: function (response) {
+          success: function(response) {
             var dependenciesObj = JSON.parse(response.responseText).entities,
               dependencies = [];
 
             // add dependencies and their own dependencies
-            $.each(dependenciesObj, function () {
+            $.each(dependenciesObj, function() {
               dependencies.push(this.item);
-              $.each(this.dependencies, function () {
+              $.each(this.dependencies, function() {
                 dependencies.push(this.item);
               });
             });
@@ -1015,14 +1034,14 @@ var nodeOpen = false,
       /**
        * render a preview of the given content
        */
-      renderContentAssetPreview: function (nodeRef, callback) {
+      renderContentAssetPreview: function(nodeRef, callback) {
         CStudioAuthoring.Service.renderContentAssetPreview(nodeRef, callback);
       },
 
       /**
        * open a gallery search page
        */
-      openGallerySearch: function (searchType, searchContext, select, mode, newWindow, callback, searchId) {
+      openGallerySearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId) {
         var openInSameWindow = newWindow ? false : true;
 
         var searchUrl =
@@ -1172,7 +1191,7 @@ var nodeOpen = false,
       /**
        * open a search page
        */
-      openSearch: function (searchContext, newWindow, callback, searchId) {
+      openSearch: function(searchContext, newWindow, callback, searchId) {
         var openInSameWindow = newWindow ? false : true;
 
         var searchUrl = CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site;
@@ -1259,7 +1278,7 @@ var nodeOpen = false,
       /**
        * open a browse page
        */
-      openBrowse: function (searchType, path, select, mode, newWindow, callback, searchId) {
+      openBrowse: function(searchType, path, select, mode, newWindow, callback, searchId) {
         var searchContext = CStudioAuthoring.Service.createSearchContext();
 
         var openInSameWindow = newWindow ? false : true;
@@ -1332,7 +1351,7 @@ var nodeOpen = false,
       /**
        * open a browse page for CMIS repo
        */
-      openCMISBrowse: function (repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
+      openCMISBrowse: function(repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
         var searchId = null;
 
         var openInSameWindow = newWindow ? false : true;
@@ -1400,7 +1419,7 @@ var nodeOpen = false,
       /**
        * open a browse page for CMIS repo
        */
-      openWebDAVBrowse: function (path, profileId, mode, newWindow, callback, filter = 'none') {
+      openWebDAVBrowse: function(path, profileId, mode, newWindow, callback, filter = 'none') {
         var searchId = null;
 
         var openInSameWindow = newWindow ? false : true;
@@ -1465,7 +1484,7 @@ var nodeOpen = false,
       /**
        * open a browse page for S3 repo
        */
-      openS3Browse: function (profileId, path, mode, newWindow, callback, filter = 'none') {
+      openS3Browse: function(profileId, path, mode, newWindow, callback, filter = 'none') {
         var searchId = null;
 
         var openInSameWindow = newWindow ? false : true;
@@ -1526,14 +1545,14 @@ var nodeOpen = false,
         }
       },
 
-      refreshPreviewParent: function () {
+      refreshPreviewParent: function() {
         var previewFrameEl = window.parent.document.getElementById('engineWindow');
         if (previewFrameEl) {
           previewFrameEl.contentWindow.location.reload();
         }
       },
 
-      refreshPreview: function (context) {
+      refreshPreview: function(context) {
         var previewFrameEl = document.getElementById('engineWindow');
         if (previewFrameEl) {
           if (!context || context.isComponent) {
@@ -1552,7 +1571,7 @@ var nodeOpen = false,
         }
       },
 
-      setPreview: function (url) {
+      setPreview: function(url) {
         var previewFrameEl = document.getElementById('engineWindow');
         previewFrameEl.src = url;
       },
@@ -1565,7 +1584,7 @@ var nodeOpen = false,
        *
        * return {string}
        */
-      getPreviewUrl: function (contentTO, useAppBase, noReplaceExtension) {
+      getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
         var url = '';
         var baseUri = useAppBase === false ? '' : CStudioAuthoringContext.previewAppBaseUri;
         var filename = encodeURI(contentTO.pathSegment ? contentTO.pathSegment : contentTO.name);
@@ -1586,7 +1605,7 @@ var nodeOpen = false,
       /**
        * given a transfer object, open a preview URL
        */
-      openPreview: function (contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
+      openPreview: function(contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
         if (!targetWindowId) {
           // if no target is supplied assume local call
           // basically mimics behavior before target was implmented
@@ -1627,7 +1646,7 @@ var nodeOpen = false,
        * @param callback is the callback that should be fired when the form is closed
        * @param newly added includeMetaData
        */
-      openContentWebForm: function (
+      openContentWebForm: function(
         formId,
         id,
         nodeRef,
@@ -1672,7 +1691,7 @@ var nodeOpen = false,
             permissionPath = path;
           }
           CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, permissionPath, {
-            success: function (results) {
+            success: function(results) {
               var isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
               if (isWrite) {
                 readOnly = 'false';
@@ -1693,7 +1712,7 @@ var nodeOpen = false,
                 isFlattenedInclude
               );
             },
-            failure: function () {
+            failure: function() {
               CStudioAuthoring.Operations.openContentWebFormWithPermission(
                 formId,
                 id,
@@ -1726,7 +1745,7 @@ var nodeOpen = false,
        * @param respValue is the ID that is sent back from the form (should map to a field ID)
        * @param newly added includeMetaData
        */
-      openContentWebFormWithPermission: function (
+      openContentWebFormWithPermission: function(
         formId,
         id,
         nodeRef,
@@ -1748,7 +1767,7 @@ var nodeOpen = false,
             CStudioAuthoringContext.site,
             id,
             {
-              success: function (contentTO) {
+              success: function(contentTO) {
                 CStudioAuthoring.Operations.performSimpleIceEdit(
                   contentTO.item,
                   null, // field
@@ -1758,7 +1777,7 @@ var nodeOpen = false,
                   isFlattenedInclude
                 );
               },
-              failure: function (response) {
+              failure: function(response) {
                 callback.failure(response);
               },
               isEdit: edit,
@@ -1785,7 +1804,7 @@ var nodeOpen = false,
        * this method will open a form with the legacy form server
        * this method is maintained for backward compatability and for extremely complex use cases
        */
-      openContentWebFormLegacyFormServer: function (
+      openContentWebFormLegacyFormServer: function(
         formId,
         id,
         noderef,
@@ -1808,7 +1827,7 @@ var nodeOpen = false,
         );
       },
 
-      addMetadata: function (params) {
+      addMetadata: function(params) {
         if (typeof CStudioForms != 'undefined' && CStudioForms) {
           var metadataControl = CStudioForms.nodeManagers['page-metadata'];
           if (metadataControl) {
@@ -1820,7 +1839,7 @@ var nodeOpen = false,
         return params;
       },
 
-      hasParam: function (params, name) {
+      hasParam: function(params, name) {
         for (var i = 0; i < params.length; i++) {
           if (params[i].name == name) return true;
         }
@@ -1830,9 +1849,9 @@ var nodeOpen = false,
       /**
        * open order taxonomy dialog
        */
-      orderTaxonomy: function (site, modelName, level, orderedCb) {
+      orderTaxonomy: function(site, modelName, level, orderedCb) {
         var openDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.modelName,
@@ -1860,9 +1879,9 @@ var nodeOpen = false,
       /**
        * create a new taxonomy item
        */
-      newTaxonomy: function (site, modelName, level, newCb) {
+      newTaxonomy: function(site, modelName, level, newCb) {
         var openDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(moduleConfig.site, moduleConfig.modelName, moduleConfig.level, moduleConfig.newCb);
           }
         };
@@ -1882,7 +1901,7 @@ var nodeOpen = false,
         );
       },
 
-      performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude, openHidden) {
+      performSimpleIceEdit: function(item, field, isEdit, callback, aux, isFlattenedInclude, openHidden) {
         let topWindow = getTopLegacyWindow();
         var editorId = CStudioAuthoring.Utils.generateUUID();
 
@@ -1918,21 +1937,21 @@ var nodeOpen = false,
         animator = new crafter.studio.Animator($modal.find('.studio-ice-dialog'));
 
         !callback &&
-        (callback = {
-          success: function () {
-            if (CStudioAuthoringContext.isPreview) {
-              CStudioAuthoringContext.Service.refreshPreview();
-            } else {
-              window.location.reload();
+          (callback = {
+            success: function() {
+              if (CStudioAuthoringContext.isPreview) {
+                CStudioAuthoringContext.Service.refreshPreview();
+              } else {
+                window.location.reload();
+              }
             }
-          }
-        });
+          });
 
         $modal.appendTo(topWindow.document.body);
 
         animator.fadeIn();
 
-        CSA.Env.Loader.use(controller, function () {
+        CSA.Env.Loader.use(controller, function() {
           topWindow.studioFormZorder = topWindow.studioFormZorder ? topWindow.studioFormZorder + 1 : 9999;
           var template =
             '<iframe ' +
@@ -1965,11 +1984,11 @@ var nodeOpen = false,
             isFlattenedInclude
           );
 
-          view.on('end', function () {
+          view.on('end', function() {
             $modal.remove();
           });
 
-          view.on('updateContent', function (evt, args) {
+          view.on('updateContent', function(evt, args) {
             callback.success();
           });
 
@@ -1977,13 +1996,12 @@ var nodeOpen = false,
             $modal.find('.studio-ice-dialog').resizable({
               minHeight: 50,
               grid: [10000, 1],
-              create: function (event, ui) {
-              },
-              start: function (event, ui) {
+              create: function(event, ui) {},
+              start: function(event, ui) {
                 $('#engineWindow', topWindow.document).css('pointer-events', 'none');
                 $('#in-context-edit-editor-' + editorId, topWindow.document).css('pointer-events', 'none');
               },
-              stop: function (event, ui) {
+              stop: function(event, ui) {
                 $('#engineWindow', topWindow.document).css('pointer-events', 'auto');
                 $('#in-context-edit-editor-' + editorId, topWindow.document).css('pointer-events', 'auto');
               },
@@ -1993,7 +2011,7 @@ var nodeOpen = false,
         });
       },
 
-      openDiff: function (site, path, version, versionTO, escaped) {
+      openDiff: function(site, path, version, versionTO, escaped) {
         let topWindow = getTopLegacyWindow();
         topWindow.studioFormZorder = topWindow.studioFormZorder ? topWindow.studioFormZorder + 1 : 9999;
         var id = CSA.Utils.getScopedId(),
@@ -2001,8 +2019,8 @@ var nodeOpen = false,
           editorId = CStudioAuthoring.Utils.generateUUID(),
           $modal = $(
             '<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' +
-            editorId +
-            '" style="display:none;"><div class="bd"></div></div></div>'
+              editorId +
+              '" style="display:none;"><div class="bd"></div></div></div>'
           ),
           template =
             '<iframe name="diffDialog" id="in-context-edit-editor-' +
@@ -2017,20 +2035,20 @@ var nodeOpen = false,
 
         animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
-        window.setTimeout(function () {
-          $(function () {
-            $modal.find('.studio-ice-dialog').each(function () {
+        window.setTimeout(function() {
+          $(function() {
+            $modal.find('.studio-ice-dialog').each(function() {
               var $this = $(this);
               $this.resizable({
                 minHeight: 50,
                 grid: [10000, 1],
-                start: function (event, ui) {
+                start: function(event, ui) {
                   $('#engineWindow').css('pointer-events', 'none');
                   $('#in-context-edit-editor-' + editorId)
                     .css('pointer-events', 'none')
                     .height('');
                 },
-                stop: function (event, ui) {
+                stop: function(event, ui) {
                   $('#engineWindow').css('pointer-events', 'auto');
                   $('#in-context-edit-editor-' + editorId).css('pointer-events', 'auto');
                 }
@@ -2046,7 +2064,7 @@ var nodeOpen = false,
           .appendTo(parentEl);
         $modal.find('.studio-ice-container').css('z-index', 1040);
 
-        $('body').on('diff-end', function () {
+        $('body').on('diff-end', function() {
           $modal.remove();
         });
 
@@ -2060,7 +2078,7 @@ var nodeOpen = false,
         animator.slideInDown();
       },
 
-      _openIframe: function (url, name) {
+      _openIframe: function(url, name) {
         let topWindow = getTopLegacyWindow();
         var id = CSA.Utils.getScopedId(),
           animator,
@@ -2094,25 +2112,25 @@ var nodeOpen = false,
 
         animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
-        window.setTimeout(function () {
-          $(function () {
+        window.setTimeout(function() {
+          $(function() {
             $modal.find('.studio-ice-dialog').resizable({
               minHeight: 50,
               grid: [10000, 1],
-              start: function (event, ui) {
+              start: function(event, ui) {
                 $('#engineWindow', topWindow.document).css('pointer-events', 'none');
                 $('#in-context-edit-editor-' + editorId, topWindow.document)
                   .css('pointer-events', 'none')
                   .height('');
               },
-              stop: function (event, ui) {
+              stop: function(event, ui) {
                 $('#engineWindow', topWindow.document).css('pointer-events', 'auto');
                 $('#in-context-edit-editor-' + editorId, topWindow.document).css('pointer-events', 'auto');
               }
             });
           }, 1000);
 
-          $modal.on('click', '#colExpButton', function () {
+          $modal.on('click', '#colExpButton', function() {
             var dialog = window.parent.$('.studio-ice-container-' + editorId),
               dialogContainer = dialog.parent(),
               controlContainer = dialog.find('.bd'),
@@ -2155,7 +2173,7 @@ var nodeOpen = false,
         animator.slideInDown();
       },
 
-      openCopyDialog: function (site, uri, callback, args) {
+      openCopyDialog: function(site, uri, callback, args) {
         var idx = uri.lastIndexOf('index.xml');
         var folderPath = uri;
         if (idx > 0) {
@@ -2174,19 +2192,24 @@ var nodeOpen = false,
           getCopyTreeItemRequest = CStudioAuthoring.Service.createServiceUri(serviceUri);
 
         submitDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.createDialog(cut, site);
 
             var fillCopyDialog = {
-              success: function (response) {
+              success: function(response) {
                 var copyTree = eval('(' + response.responseText + ')');
                 const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
                 const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-                CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemCopied, { count: 2}), null, null, 'default');
+                CStudioAuthoring.Utils.showNotification(
+                  formatMessage(messages.itemCopied, { count: 2 }),
+                  null,
+                  null,
+                  'default'
+                );
 
                 dialogClass.updateDialog(copyTree, cut);
               },
-              failure: function () {
+              failure: function() {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'error-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -2214,9 +2237,9 @@ var nodeOpen = false,
       /**
        * Assign a new template to an existing content item
        */
-      assignContentTemplate: function (site, author, path, assignCallback, currentContentType) {
+      assignContentTemplate: function(site, author, path, assignCallback, currentContentType) {
         var chooseTemplateCb = {
-          success: function (contentTypes) {
+          success: function(contentTypes) {
             //Remove current content type from list.
             var originalTypesCount = contentTypes.length;
             if (currentContentType && contentTypes.length > 1) {
@@ -2246,7 +2269,7 @@ var nodeOpen = false,
                   buttons: [
                     {
                       text: CMgs.format(formsLangBundle, 'ok'),
-                      handler: function () {
+                      handler: function() {
                         this.hide();
                       },
                       isDefault: false
@@ -2261,7 +2284,7 @@ var nodeOpen = false,
               dialogEl.dialog.show();
             } else {
               var selectTemplateDialogCb = {
-                moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
                   //filter only related content Types
                   var contentTypes = [];
                   compareContentType,
@@ -2291,13 +2314,13 @@ var nodeOpen = false,
               };
 
               var typeSelectedCb = {
-                success: function (typeSelected) {
+                success: function(typeSelected) {
                   var changeTemplateServiceCb = {
-                    success: function () {
+                    success: function() {
                       this.assignCallback.success(this.typeSelected);
                     },
 
-                    failure: function () {
+                    failure: function() {
                       this.assignCallback.failure();
                     },
 
@@ -2307,7 +2330,7 @@ var nodeOpen = false,
                   changeTemplateServiceCb.success();
                 },
 
-                failure: function () {
+                failure: function() {
                   this.assignCallback.failure();
                 },
 
@@ -2328,28 +2351,27 @@ var nodeOpen = false,
             }
           },
 
-          failure: function () {
-          }
+          failure: function() {}
         };
 
         CStudioAuthoring.Service.lookupAllowedContentTypesForPath(site, path, chooseTemplateCb);
       },
 
-      getImageRequest: function (data) {
+      getImageRequest: function(data) {
         var callback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             data.image.src = data.url;
           },
-          failure: function (oResponse) {
+          failure: function(oResponse) {
             var secondCallback = {
-              success: function (oResponse) {
+              success: function(oResponse) {
                 data.image.src = data.url;
               },
-              failure: function (oResponse) {
+              failure: function(oResponse) {
                 data.image.src = data.url;
               }
             };
-            setTimeout(function () {
+            setTimeout(function() {
               CStudioAuthoring.Service.getImageRequest({ url: data.url, callback: secondCallback });
             }, 700);
           }
@@ -2357,12 +2379,10 @@ var nodeOpen = false,
         CStudioAuthoring.Service.getImageRequest({ url: data.url, callback: callback });
       },
 
-      getloadItems: function (data) {
+      getloadItems: function(data) {
         var callback = {
-          success: function (oResponse) {
-          },
-          failure: function (oResponse) {
-          }
+          success: function(oResponse) {},
+          failure: function(oResponse) {}
         };
         CStudioAuthoring.Service.getImageRequest({ url: data.url, callback: callback });
       },
@@ -2372,7 +2392,7 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * template selection is require (only one option
        */
-      createNewContentForType: function (site, path, type, asPopup, formSaveCb, childForm) {
+      createNewContentForType: function(site, path, type, asPopup, formSaveCb, childForm) {
         var auxParams = [];
         if (childForm && childForm == true) {
           auxParams = [{ name: 'childForm', value: 'true' }];
@@ -2385,7 +2405,7 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * template selection is require (only one option
        */
-      createNewContent: function (
+      createNewContent: function(
         site,
         path,
         asPopup,
@@ -2401,7 +2421,7 @@ var nodeOpen = false,
         }
 
         var callback = {
-          success: function (contentTypes) {
+          success: function(contentTypes) {
             if (filterCB) {
               contentTypes = contentTypes.filter(filterCB);
             }
@@ -2409,35 +2429,27 @@ var nodeOpen = false,
             if (contentTypes.length == 0) {
               var dialogEl = document.getElementById('errMissingRequirements');
               if (!dialogEl) {
-                var dialog = new YAHOO.widget.SimpleDialog(
-                  'errMissingRequirements',
-                  {
-                    width: '400px',
-                    fixedcenter: true,
-                    visible: false,
-                    draggable: false,
-                    close: false,
-                    modal: true,
-                    text:
-                      CMgs.format(formsLangBundle, 'noContentTypes') +
-                      ' ' +
-                      path,
-                    icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    constraintoviewport: true,
-                    buttons: [
-                      {
-                        text: CMgs.format(formsLangBundle, 'ok'),
-                        handler: function () {
-                          this.hide();
-                        },
-                        isDefault: false
-                      }
-                    ]
-                  }
-                );
-                dialog.setHeader(
-                  CMgs.format(formsLangBundle, 'cancelDialogHeader')
-                );
+                var dialog = new YAHOO.widget.SimpleDialog('errMissingRequirements', {
+                  width: '400px',
+                  fixedcenter: true,
+                  visible: false,
+                  draggable: false,
+                  close: false,
+                  modal: true,
+                  text: CMgs.format(formsLangBundle, 'noContentTypes') + ' ' + path,
+                  icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                  constraintoviewport: true,
+                  buttons: [
+                    {
+                      text: CMgs.format(formsLangBundle, 'ok'),
+                      handler: function() {
+                        this.hide();
+                      },
+                      isDefault: false
+                    }
+                  ]
+                });
+                dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
                 dialog.render(document.body);
                 dialogEl = document.getElementById('errMissingRequirements');
                 dialogEl.dialog = dialog;
@@ -2460,15 +2472,11 @@ var nodeOpen = false,
               );
             } else {
               var selectTemplateCb = {
-                success: function (selectedTemplate) {
-                  if (
-                    path === CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES
-                  ) {
+                success: function(selectedTemplate) {
+                  if (path === CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES) {
                     path = '';
                     if (baseRepoPath) {
-                      path = `${baseRepoPath}/${selectedTemplate
-                        .replace(/\//g, '_')
-                        .substr(1)}`;
+                      path = `${baseRepoPath}/${selectedTemplate.replace(/\//g, '_').substr(1)}`;
                     }
                   }
                   CStudioAuthoring.Operations.openContentWebForm(
@@ -2485,7 +2493,7 @@ var nodeOpen = false,
                   );
                 },
 
-                failure: function () {
+                failure: function() {
                   this.formSaveCb.failure();
                 },
 
@@ -2494,14 +2502,8 @@ var nodeOpen = false,
               };
 
               var selectTemplateDialogCb = {
-                moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-                  dialogClass.showDialog(
-                    moduleConfig.contentTypes,
-                    path,
-                    false,
-                    moduleConfig.selectTemplateCb,
-                    false
-                  );
+                moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                  dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
                 }
               };
 
@@ -2519,22 +2521,17 @@ var nodeOpen = false,
             }
           },
 
-          failure: function () {
-          }
+          failure: function() {}
         };
 
-        CStudioAuthoring.Service.lookupAllowedContentTypesForPath(
-          site,
-          path,
-          callback
-        );
+        CStudioAuthoring.Service.lookupAllowedContentTypesForPath(site, path, callback);
       },
       /**
        * Gets the list of files on workflow that will be affected by editing a given item
        * @param params {object} The set of parameters to query the service with
        * @param callback {object} Object containing success and failure callbacks. Success is called with the parsed response as parameter, not the XHR response
        */
-      getWorkflowAffectedFiles: function (params, callback) {
+      getWorkflowAffectedFiles: function(params, callback) {
         var CSA = CStudioAuthoring,
           Connect = YAHOO.util.Connect,
           serviceParams = [],
@@ -2550,15 +2547,14 @@ var nodeOpen = false,
         );
 
         Connect.asyncRequest('GET', encodeURI(serviceURI), {
-          success: function (response) {
+          success: function(response) {
             var content;
             try {
               content = CSA.Utils.decode(response.responseText).items;
-            } catch (ex) {
-            }
+            } catch (ex) {}
             callback.success && callback.success(content);
           },
-          failure: function (response) {
+          failure: function(response) {
             if (callback.failure) callback.failure(response);
             else {
               // TODO can we improve this message to say something useful? will response bring any sort of useful message?
@@ -2575,7 +2571,7 @@ var nodeOpen = false,
                 buttons: [
                   {
                     text: 'Accept',
-                    handler: function () {
+                    handler: function() {
                       this.hide();
                     },
                     isDefault: true
@@ -2597,7 +2593,18 @@ var nodeOpen = false,
        * =>=>=>=> viewcontroller-in-context-edit.initializeContent
        * =>=>=>=>=> constructUrlWebFormSimpleEngine
        */
-      editContent: function (formId, site, mimeType, nodeRef, path, asPopup, callback, auxParams, mode, isFlattenedInclude) {
+      editContent: function(
+        formId,
+        site,
+        mimeType,
+        nodeRef,
+        path,
+        asPopup,
+        callback,
+        auxParams,
+        mode,
+        isFlattenedInclude
+      ) {
         var CSA = CStudioAuthoring,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
@@ -2620,7 +2627,7 @@ var nodeOpen = false,
               uri,
               'default',
               {
-                success: function () {
+                success: function() {
                   if (CStudioAuthoringContext.isPreview) {
                     CStudioAuthoring.Operations.refreshPreview();
                   } else {
@@ -2628,8 +2635,7 @@ var nodeOpen = false,
                   }
                   callback.success && callback.success(nodeRef);
                 },
-                failure: function () {
-                },
+                failure: function() {},
                 callingWindow: window
               },
               null,
@@ -2679,28 +2685,26 @@ var nodeOpen = false,
           unsubscribe();
         });
 
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
-          (items) => {
-            if (items && items.length) {
-              const eventIdSuccess = 'workflowCancellationDialogContinue';
-              CrafterCMSNext.system.store.dispatch({
-                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-                payload: { items }
-              });
-            } else {
-              CrafterCMSNext.system.store.dispatch({
-                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
-              });
-              doEdit();
-            }
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe((items) => {
+          if (items && items.length) {
+            const eventIdSuccess = 'workflowCancellationDialogContinue';
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+              payload: { items }
+            });
+          } else {
+            CrafterCMSNext.system.store.dispatch({
+              type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+            });
+            doEdit();
           }
-        );
+        });
       },
 
       /**
        * view content
        */
-      viewContent: function (formId, site, id, noderef, path, asPopup, callback, auxParams) {
+      viewContent: function(formId, site, id, noderef, path, asPopup, callback, auxParams) {
         if (!auxParams) {
           auxParams = [];
         }
@@ -2713,10 +2717,10 @@ var nodeOpen = false,
       /**
        * Duplicate operation
        */
-      duplicateContent: function (site, path, opCallBack) {
+      duplicateContent: function(site, path, opCallBack) {
         if (path) {
           CStudioAuthoring.Service.lookupContentItem(site, path, {
-            success: function (content) {
+            success: function(content) {
               var contentTO = content.item;
               var parentPath = contentTO.uri;
               if (contentTO.uri.indexOf('index.xml') != -1) {
@@ -2725,7 +2729,7 @@ var nodeOpen = false,
                 parentPath += '/index.xml';
               }
 
-              var refreshFn = function (to, newTo) {
+              var refreshFn = function(to, newTo) {
                 if (!CStudioAuthoringContext.isPreview) {
                   // clear only while on dashboard
                   CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
@@ -2746,24 +2750,24 @@ var nodeOpen = false,
                 site,
                 parentPath,
                 {
-                  success: function (parentItemTo) {
+                  success: function(parentItemTo) {
                     var copyCb = {
-                      success: function () {
+                      success: function() {
                         var pasteCb = {
-                          success: function (pasteResponse) {
+                          success: function(pasteResponse) {
                             var filePath = pasteResponse.status[0];
                             var extension = filePath.split('.')[filePath.split('.').length - 1];
 
                             var editCb = {
-                              success: function (newItem) {
+                              success: function(newItem) {
                                 refreshFn(parentItemTo.item, newItem.item);
                                 opCallBack.success();
                               },
-                              failure: function (errorResponse) {
+                              failure: function(errorResponse) {
                                 opCallBack.failure(errorResponse);
                               },
 
-                              cancelled: function () {
+                              cancelled: function() {
                                 refreshFn(parentItemTo.item, null);
                               }
                             };
@@ -2783,7 +2787,7 @@ var nodeOpen = false,
                               refreshFn(parentItemTo.item, null);
                             }
                           },
-                          failure: function (errorResponse) {
+                          failure: function(errorResponse) {
                             opCallBack.failure(errorResponse);
                           }
                         };
@@ -2791,7 +2795,7 @@ var nodeOpen = false,
                         CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
                       },
 
-                      failure: function (errorResponse) {
+                      failure: function(errorResponse) {
                         opCallBack.failure(errorResponse);
                       }
                     };
@@ -2813,8 +2817,7 @@ var nodeOpen = false,
                       copyData
                     );
                   },
-                  failure: function () {
-                  }
+                  failure: function() {}
                 },
                 false,
                 false
@@ -2827,9 +2830,9 @@ var nodeOpen = false,
       /**
        * create new template
        */
-      createNewTemplate: function (path, templateSaveCb) {
+      createNewTemplate: function(path, templateSaveCb) {
         var createTemplateDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(templateSaveCb, path);
           }
         };
@@ -2850,9 +2853,9 @@ var nodeOpen = false,
       /**
        * create new script
        */
-      createNewScript: function (path, scriptSaveCb) {
+      createNewScript: function(path, scriptSaveCb) {
         var createScriptDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(scriptSaveCb, moduleConfig);
           }
         };
@@ -2873,9 +2876,9 @@ var nodeOpen = false,
       /**
        * open template
        */
-      openTemplateEditor: function (displayTemplate, channel, templateSaveCb, contentType, mode) {
+      openTemplateEditor: function(displayTemplate, channel, templateSaveCb, contentType, mode) {
         var loadTemplateEditorCb = {
-          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+          moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
             var editor = new moduleClass();
             editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType, mode);
           }
@@ -2896,9 +2899,9 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * type selection is require (only one option
        */
-      createNewTaxonomy: function (path, formSaveCb) {
+      createNewTaxonomy: function(path, formSaveCb) {
         var callback = {
-          success: function (contentTypes) {
+          success: function(contentTypes) {
             if (contentTypes.types.length == 0) {
               CStudioAuthoring.Operations.showSimpleDialog(
                 'taxonomy-dialog',
@@ -2910,14 +2913,14 @@ var nodeOpen = false,
                 'studioDialog'
               );
             }
-              //else if (contentTypes.types.length == 1) {
-              // fill in this case
+            //else if (contentTypes.types.length == 1) {
+            // fill in this case
             //}
             else {
               var selectTemplateCb = {
-                success: function (selectedType) {
+                success: function(selectedType) {
                   var createTaxonomyDialogCb = {
-                    moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
                       if (moduleName == 'dialog-create-taxonomy') {
                         dialogClass.showDialog(
                           moduleConfig.taxonomyType,
@@ -2943,7 +2946,7 @@ var nodeOpen = false,
                   );
                 },
 
-                failure: function () {
+                failure: function() {
                   this.formSaveCb.failure();
                 },
 
@@ -2951,7 +2954,7 @@ var nodeOpen = false,
               };
 
               var selectTemplateDialogCb = {
-                moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
                   dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
                 }
               };
@@ -2970,8 +2973,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function () {
-          }
+          failure: function() {}
         };
 
         CStudioAuthoring.Service.lookupAllowedTaxonomyTypesForPath(path, callback);
@@ -2982,8 +2984,8 @@ var nodeOpen = false,
       /**
        * reject content
        */
-      rejectContent: function (site, contentItems) {
-        const eventIdSuccess = 'rejectDialogSuccess'
+      rejectContent: function(site, contentItems) {
+        const eventIdSuccess = 'rejectDialogSuccess';
 
         const sandboxItems = CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(contentItems);
 
@@ -3017,7 +3019,7 @@ var nodeOpen = false,
       /**
        * reload the page action for dialog box buttons.
        */
-      pageReload: function (flow, nodeName) {
+      pageReload: function(flow, nodeName) {
         if (flow) {
           var panel = YDom.getElementsByClassName('yui-panel-container')[0];
           var auxParentPath = '';
@@ -3080,18 +3082,18 @@ var nodeOpen = false,
         //document.dispatchEvent(eventNS);
       },
 
-      uploadAsset: function (site, path, isUploadOverwrite, uploadCb, fileTypes) {
+      uploadAsset: function(site, path, isUploadOverwrite, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openUploadDialog: function (site, path, isUploadOverwrite, callback, fileTypes) {
+      openUploadDialog: function(site, path, isUploadOverwrite, callback, fileTypes) {
         var serviceUri = CStudioAuthoring.Service.writeContentServiceUrl;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3124,7 +3126,7 @@ var nodeOpen = false,
         CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
       },
 
-      cropperImage: function (site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
+      cropperImage: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
         CStudioAuthoring.Operations.openCropDialog(
           site,
           Message,
@@ -3140,9 +3142,9 @@ var nodeOpen = false,
       /**
        *  opens a dialog to crop an image
        */
-      openCropDialog: function (site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
+      openCropDialog: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
         var openCropperDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.message,
@@ -3179,18 +3181,18 @@ var nodeOpen = false,
         CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
       },
 
-      uploadWebDAVAsset: function (site, path, profileId, uploadCb, fileTypes) {
+      uploadWebDAVAsset: function(site, path, profileId, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb, fileTypes);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openWebDAVUploadDialog: function (site, path, profileId, callback, fileTypes) {
+      openWebDAVUploadDialog: function(site, path, profileId, callback, fileTypes) {
         var serviceUri = CStudioAuthoring.Service.writeWebDAVContentUri;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3221,18 +3223,18 @@ var nodeOpen = false,
         );
       },
 
-      uploadCMISAsset: function (site, path, repositoryId, uploadCb, fileTypes) {
+      uploadCMISAsset: function(site, path, repositoryId, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openCMISUploadDialog(site, path, repositoryId, uploadCb, fileTypes);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openCMISUploadDialog: function (site, path, repositoryId, callback, fileTypes) {
+      openCMISUploadDialog: function(site, path, repositoryId, callback, fileTypes) {
         var serviceUri = CStudioAuthoring.Service.writeCMISContentUri;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3263,14 +3265,14 @@ var nodeOpen = false,
         );
       },
 
-      uploadS3Asset: function (site, path, profileId, uploadCb, params) {
+      uploadS3Asset: function(site, path, profileId, uploadCb, params) {
         CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openS3UploadDialog: function (site, path, profileId, callback, params) {
+      openS3UploadDialog: function(site, path, profileId, callback, params) {
         var params = params ? params : {};
         serviceUri =
           params && params.transcode
@@ -3278,7 +3280,7 @@ var nodeOpen = false,
             : CStudioAuthoring.Service.writeS3ContentUri;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3312,20 +3314,20 @@ var nodeOpen = false,
       /**
        * create a folder at a given location within the web project
        */
-      createFolder: function (site, path, callingWindow, callback) {
+      createFolder: function(site, path, callingWindow, callback) {
         CStudioAuthoring.Operations.openCreateNewFolderDialog(site, path, callingWindow, callback);
       },
 
       /**
        * open the create folder dialog
        */
-      openCreateNewFolderDialog: function (site, path, callingWindow, callback) {
+      openCreateNewFolderDialog: function(site, path, callingWindow, callback) {
         if (path.lastIndexOf('.') > 0) {
           path = path.substring(0, path.lastIndexOf('/'));
         }
         var serviceUri = CStudioAuthoring.Service.createFolderServiceUrl;
         var openCreateFolderDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3355,20 +3357,20 @@ var nodeOpen = false,
       /**
        * rename a folder at a given location within the web project
        */
-      renameFolder: function (site, path, callingWindow, callback) {
+      renameFolder: function(site, path, callingWindow, callback) {
         CStudioAuthoring.Operations.openRenameFolderDialog(site, path, callingWindow, callback);
       },
 
       /**
        * open the create folder dialog
        */
-      openRenameFolderDialog: function (site, path, callingWindow, callback) {
+      openRenameFolderDialog: function(site, path, callingWindow, callback) {
         if (path.lastIndexOf('.') > 0) {
           path = path.substring(0, path.lastIndexOf('/'));
         }
         var serviceUri = CStudioAuthoring.Service.renameFolderServiceUrl;
         var openCreateFolderDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               callback,
               moduleConfig.path,
@@ -3398,7 +3400,7 @@ var nodeOpen = false,
       /**
        * handle macros in file paths
        */
-      processPathsForMacros: function (path, model, useUUID) {
+      processPathsForMacros: function(path, model, useUUID) {
         if (path.indexOf('{objectId}') != -1) {
           if (useUUID) {
             path = path.replace('{objectId}', CStudioAuthoring.Utils.generateUUID());
@@ -3456,7 +3458,7 @@ var nodeOpen = false,
        * @param {*} cookieKey - cookey key of the tree that will be updated (depends of tree)
        * @param {*} path - path to be added into the tree cookie (state) -> item uri
        */
-      updateTreeCookiePath: function (treeName, cookieKey, path) {
+      updateTreeCookiePath: function(treeName, cookieKey, path) {
         var url = path,
           treeCookieName,
           treeCookie,
@@ -3522,12 +3524,12 @@ var nodeOpen = false,
      * all services are encapsulated here
      * There should be no use of REST outside this API
      */
-    'Service': {
+    Service: {
       /**
        * Performs an AJAX request with the given configuration
        * @param oRequest
        */
-      request: function (oRequest) {
+      request: function(oRequest) {
         var Connect = YAHOO.util.Connect;
         if (oRequest.resetFormState && Connect._isFormSubmit) {
           Connect.resetFormState();
@@ -3541,7 +3543,7 @@ var nodeOpen = false,
        * Reference to CStudioAuthoring.Service.request
        * @see CStudioAuthoring.Service.request
        */
-      _getView: function (oRequest) {
+      _getView: function(oRequest) {
         var Connect = YAHOO.util.Connect;
         Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
         Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
@@ -3552,7 +3554,7 @@ var nodeOpen = false,
        * Private method for formating a URL with the context site and URI
        * @param url
        */
-      _formatURL: function (url) {
+      _formatURL: function(url) {
         return CStudioAuthoring.StringUtils.keyFormat(url, {
           site: CStudioAuthoringContext.site,
           base: CStudioAuthoringContext.baseUri,
@@ -3560,7 +3562,7 @@ var nodeOpen = false,
         });
       },
 
-      getViewCommon: function (url, callback, version, site) {
+      getViewCommon: function(url, callback, version, site) {
         if (version) {
           url += '?version={version}';
         }
@@ -3579,7 +3581,7 @@ var nodeOpen = false,
         });
       },
 
-      getSchedulingPolicyView: function (callback) {
+      getSchedulingPolicyView: function(callback) {
         var srv = CStudioAuthoring.Service,
           url = srv._formatURL(
             '{base}/service/ui/workflow-actions/schedule-policy?version=' + CStudioAuthoring.UIBuildId + '&site={site}'
@@ -3591,7 +3593,7 @@ var nodeOpen = false,
         });
       },
 
-      getScheduleView: function (callback) {
+      getScheduleView: function(callback) {
         CSA.Service.getViewCommon(
           '{base}/static-assets/components/cstudio-dialogs-templates/schedule.html',
           callback,
@@ -3600,7 +3602,7 @@ var nodeOpen = false,
         );
       },
 
-      getInContextEditView: function (callback) {
+      getInContextEditView: function(callback) {
         CSA.Service.getViewCommon(
           '{base}/static-assets/components/cstudio-dialogs-templates/in-context-edit.html',
           callback,
@@ -3609,11 +3611,11 @@ var nodeOpen = false,
         );
       },
 
-      getImageRequest: function (data) {
+      getImageRequest: function(data) {
         CSA.Service.getViewCommon(data.url, data.callback, false, false);
       },
 
-      getLoadItemsRequest: function (data) {
+      getLoadItemsRequest: function(data) {
         CSA.Service.getViewCommon(data.url, data.callback, false, false);
       },
 
@@ -3756,9 +3758,9 @@ var nodeOpen = false,
        * this method is used in preview overlay
        *
        */
-      lookupAuthoringRole: function (site, user, callback) {
+      lookupAuthoringRole: function(site, user, callback) {
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = {};
             contentResults.roles = response;
             var roles = contentResults;
@@ -3775,7 +3777,7 @@ var nodeOpen = false,
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -3786,7 +3788,7 @@ var nodeOpen = false,
       /**
        * get domain name
        */
-      getDomainName: function (site) {
+      getDomainName: function(site) {
         CStudioAuthoring.Operations.showSimpleDialog(
           'info-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -3801,7 +3803,7 @@ var nodeOpen = false,
       /**
        * add the appropriate base to the service
        */
-      createServiceUri: function (service) {
+      createServiceUri: function(service) {
         var uri = CStudioAuthoringContext.baseUri + service;
         uri += uri.indexOf('?') == -1 ? '?' : '&';
         uri += 'nocache=' + new Date();
@@ -3809,14 +3811,14 @@ var nodeOpen = false,
         return uri;
       },
 
-      createEngineServiceUri: function (service) {
+      createEngineServiceUri: function(service) {
         return CStudioAuthoringContext.previewAppBaseUri + service;
       },
 
       /**
        * pretty Formatting for HTML markup
        */
-      prettyFormatHtmlMarkup: function (markup, callback) {
+      prettyFormatHtmlMarkup: function(markup, callback) {
         var html = markup;
         html = html.replace(/\s{2,}/g, ' ');
         html = html.replace(/\r/g, '');
@@ -3835,7 +3837,7 @@ var nodeOpen = false,
         var indent = 0;
 
         // function to determin if
-        var isContainingTagFn = function (tagName) {
+        var isContainingTagFn = function(tagName) {
           var retContainerTag = false;
 
           for (var j = 0; j < containerTags.length; j++) {
@@ -3912,15 +3914,15 @@ var nodeOpen = false,
       /**
        * set the state of a given object
        */
-      setObjectState: function (site, path, state, callback) {
+      setObjectState: function(site, path, state, callback) {
         var serviceUri = this.setObjectStateServiceUrl;
         serviceUri += '?site=' + site + '&path=' + path + '&state=' + state + '&systemprocessing=false';
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success({ status: 'success' });
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -3931,16 +3933,16 @@ var nodeOpen = false,
       /**
        * clean markuo
        */
-      cleanHtmlMarkup: function (markup, callback) {
+      cleanHtmlMarkup: function(markup, callback) {
         var serviceUri = this.cleanHtmlUrl;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var cleanMarkup = response.responseText;
             callback.success(cleanMarkup);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           },
 
@@ -3956,7 +3958,7 @@ var nodeOpen = false,
       /**
        * write content Asset (NON XML)
        */
-      writeContentAsset: function () {
+      writeContentAsset: function() {
         var serviceUri = this.writeContentAssetServiceUrl;
         // this method is not done.  upload asset is a form based api
         // this api will need to create a hidden form to make this api work
@@ -3966,7 +3968,7 @@ var nodeOpen = false,
       /**
        * this method exists for legacy reasons.  Do not call it, use the actual service instead
        */
-      createWriteServiceUrl: function (
+      createWriteServiceUrl: function(
         path,
         filename,
         oldPath,
@@ -4016,7 +4018,7 @@ var nodeOpen = false,
        * duplicate TRUE if you are duplicating an existing item
        * unlock TRUE if item should be unlocked after the write
        */
-      writeContent: function (
+      writeContent: function(
         path,
         filename,
         oldPath,
@@ -4048,11 +4050,11 @@ var nodeOpen = false,
           'POST',
           this.createServiceUri(serviceUri),
           {
-            success: function (response) {
+            success: function(response) {
               var content = response.responseText;
               callback.success(content);
             },
-            failure: function (response) {
+            failure: function(response) {
               callback.failure(response);
             }
           },
@@ -4063,19 +4065,19 @@ var nodeOpen = false,
       /**
        * get content for a specific field
        */
-      getContentFieldValue: function (itemPath, field, site, callback) {
+      getContentFieldValue: function(itemPath, field, site, callback) {
         var serviceUri = this.getContentFieldValueServiceUrl;
         serviceUri += '?siteId=' + site;
         serviceUri += '&contentPath=' + itemPath;
         serviceUri += '&field=' + field;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var value = response.responseText;
             callback.success(value);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           },
 
@@ -4092,18 +4094,18 @@ var nodeOpen = false,
       /**
        * update content for a specific field
        */
-      updateContentFieldValue: function (itemPath, field, site, content, callback) {
+      updateContentFieldValue: function(itemPath, field, site, content, callback) {
         var serviceUri = this.updateContentFieldValueServiceUrl;
         serviceUri += '?siteId=' + site;
         serviceUri += '&contentPath=' + itemPath;
         serviceUri += '&field=' + field;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success();
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           },
 
@@ -4122,12 +4124,12 @@ var nodeOpen = false,
       /**
        * lookup configuration
        */
-      lookupConfigurtion: function (site, configPath, callback) {
+      lookupConfigurtion: function(site, configPath, callback) {
         var serviceUrl = this.getConfigurationUrl;
         serviceUrl += '?site=' + site;
         serviceUrl += '&path=' + configPath;
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
-          success: function (response) {
+          success: function(response) {
             var res = response.responseText || 'null'; // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
             callback.success(YAHOO.lang.JSON.parse(res));
             try {
@@ -4136,8 +4138,7 @@ var nodeOpen = false,
                   ? previewLangBundle
                   : CMgs.getBundle('previewTools', CStudioAuthoringContext.lang);
               CStudioAuthoring.Operations.translateContent(previewLangBundle);
-            } catch (err) {
-            }
+            } catch (err) {}
           },
           failure: callback.failure
         });
@@ -4146,17 +4147,17 @@ var nodeOpen = false,
       /**
        * lookup configuration
        */
-      getConfiguration: function (site, configPath, callback) {
+      getConfiguration: function(site, configPath, callback) {
         var serviceUrl = this.getConfigurationUrl;
         serviceUrl += '?site=' + site;
         serviceUrl += '&path=' + configPath;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var res = response.responseText || 'null'; // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
             callback.success(YAHOO.lang.JSON.parse(res));
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4166,7 +4167,7 @@ var nodeOpen = false,
       /**
        * login
        */
-      login: function (user, pass, callback) {
+      login: function(user, pass, callback) {
         var serviceUri = this.loginServiceUrl;
         // serviceUri += "?username="+user;
         // serviceUri += "&password="+pass;
@@ -4177,11 +4178,11 @@ var nodeOpen = false,
         };
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success(response.responseText);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4195,14 +4196,14 @@ var nodeOpen = false,
       /**
        * unlock the content item
        */
-      unlockContentItem: function (site, path, callback) {
+      unlockContentItem: function(site, path, callback) {
         var serviceUrl = this.unlockContentItemUrl + '?site=' + site + '&path=' + encodeURI(path);
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure();
           }
         };
@@ -4213,7 +4214,7 @@ var nodeOpen = false,
        *  unlock the content item synchronous
        *  Used on unload event of the window
        */
-      unlockContentItemSync: function (site, path) {
+      unlockContentItemSync: function(site, path) {
         var _self = this;
 
         function isLockedByUser(site, path) {
@@ -4255,16 +4256,16 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available taxonomy types
        */
-      lookupAllowedTaxonomyTypesForPath: function (path, callback) {
+      lookupAllowedTaxonomyTypesForPath: function(path, callback) {
         CStudioAuthoring.Service.lookupGlobalConfigurtion(
           '/taxonomies-config.xml',
 
           {
-            success: function (config) {
+            success: function(config) {
               this.callback.success(config);
             },
 
-            failure: function () {
+            failure: function() {
               this.callback.failure();
             },
 
@@ -4277,14 +4278,14 @@ var nodeOpen = false,
       /**
        * create taxonomy item
        */
-      createTaxonomyItem: function (path, type, title, createCb) {
+      createTaxonomyItem: function(path, type, title, createCb) {
         var serviceUrl = this.createTaxonomyItemUrl + '?type=' + type + '&name=' + title + '&path=' + path;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             createCb.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             createCb.failure();
           }
         };
@@ -4295,14 +4296,14 @@ var nodeOpen = false,
       /**
        * update taxonomy
        */
-      updateTaxonomies: function (site, taxonomies, updateCb) {
+      updateTaxonomies: function(site, taxonomies, updateCb) {
         var serviceUrl = this.updateTaxonomyUrl + '?site=' + site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             updateCb.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             updateCb.failure();
           }
         };
@@ -4316,14 +4317,14 @@ var nodeOpen = false,
       /**
        * update taxonomy
        */
-      updateTaxonomies: function (site, taxonomies, updateCb) {
+      updateTaxonomies: function(site, taxonomies, updateCb) {
         var serviceUrl = this.updateTaxonomyUrl + '?site=' + site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             updateCb.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             updateCb.failure();
           }
         };
@@ -4337,17 +4338,17 @@ var nodeOpen = false,
       /**
        * change template functionality.
        */
-      changeContentType: function (site, contentPath, contentType, changeContentTypeCb) {
+      changeContentType: function(site, contentPath, contentType, changeContentTypeCb) {
         var serviceUrl = this.changeContentTypeUrl;
         serviceUrl += '?site=' + site;
         serviceUrl += '&path=' + contentPath;
         serviceUrl += '&contentType=' + contentType;
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             changeContentTypeCb.success(contentType);
             //window.location.reload();
           },
-          failure: function (response) {
+          failure: function(response) {
             CStudioAuthoring.Operations.showSimpleDialog(
               'changeContTypeError-dialog',
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -4356,7 +4357,7 @@ var nodeOpen = false,
               [
                 {
                   text: 'OK',
-                  handler: function () {
+                  handler: function() {
                     this.hide();
                     changeContentTypeCb.failure();
                   },
@@ -4374,7 +4375,7 @@ var nodeOpen = false,
       /**
        * Constructs get-content service url with the given path as a parameter
        */
-      createGetContentServiceUri: function (path) {
+      createGetContentServiceUri: function(path) {
         return (
           CStudioAuthoringContext.baseUri +
           this.getContentUri +
@@ -4392,12 +4393,12 @@ var nodeOpen = false,
       /**
        * check, if the content is edited by another user.
        */
-      checkContentStatus: function (path, callback) {
+      checkContentStatus: function(path, callback) {
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success(response);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4420,7 +4421,7 @@ var nodeOpen = false,
        *  Returns the item content
        *  If edit equals true, tries to lock the content
        */
-      getContent: function (path, edit, callback) {
+      getContent: function(path, edit, callback) {
         var serviceUrl =
           CStudioAuthoring.Service.getContentUri +
           `?site=${CStudioAuthoringContext.site}` +
@@ -4430,11 +4431,11 @@ var nodeOpen = false,
           `&nocache=${Date.now()}`;
 
         YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), {
-          success: function (content) {
+          success: function(content) {
             var contentData = YAHOO.lang.JSON.parse(content.responseText);
             callback.success(contentData.content);
           },
-          failure: function (err) {
+          failure: function(err) {
             callback.failure(err);
           }
         });
@@ -4442,13 +4443,13 @@ var nodeOpen = false,
       /**
        * determine if content exists
        */
-      contentExists: function (path, callback) {
+      contentExists: function(path, callback) {
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = YAHOO.lang.JSON.parse(response.responseText).content;
             callback.exists(result);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4460,40 +4461,40 @@ var nodeOpen = false,
       /**
        * pull component preview from preview server
        */
-      getComponentPreview: function (componentId, callback) {
+      getComponentPreview: function(componentId, callback) {
         var serviceUrl = this.getComponentPreviewServiceUrl;
         // adding to uid to prevent cached response
         serviceUrl += '?path=' + componentId + '&uid=' + CStudioAuthoring.Utils.generateUUID() + '&preview=true';
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = response.responseText;
             callback.success(result);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
         var cObj = YConnect.asyncRequest('GET', serviceUrl, serviceCallback);
-        setTimeout(function () {
+        setTimeout(function() {
           YConnect.abort(cObj, serviceCallback);
         }, 20000);
       },
       /**
        * copy content to clipboard
        */
-      copyContentToClipboard: function (site, contentId, contentType, callback) {
+      copyContentToClipboard: function(site, contentId, contentType, callback) {
         var serviceUrl = this.copyContentToClipboardServiceUri;
         serviceUrl += '?site=' + site;
         serviceUrl += '&user=' + CStudioAuthoringContext.user;
         serviceUrl += '&contentId=' + contentId;
         serviceUrl += '&contentType=content';
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4502,18 +4503,18 @@ var nodeOpen = false,
       /**
        * cut content to clipboard
        */
-      cutContentToClipboard: function (site, contentId, contentType, callback) {
+      cutContentToClipboard: function(site, contentId, contentType, callback) {
         var serviceUrl = this.cutContentToClipboardServiceUri;
         serviceUrl += '?site=' + site;
         serviceUrl += '&user=' + CStudioAuthoringContext.user;
         serviceUrl += '&contentId=' + contentId;
         serviceUrl += '&contentType=content';
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4522,16 +4523,16 @@ var nodeOpen = false,
       /**
        * copy content to clipboard
        */
-      pasteContentFromClipboard: function (site, toPathContentId, callback) {
+      pasteContentFromClipboard: function(site, toPathContentId, callback) {
         var serviceUrl = this.pasteContentFromClipboardServiceUri;
         serviceUrl += '?site=' + site;
         serviceUrl += '&parentPath=' + toPathContentId;
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             var errorResponse = eval('(' + response.responseText + ')');
             CStudioAuthoring.Operations.showSimpleDialog(
               'pasteContentFromClipboardError-dialog',
@@ -4541,7 +4542,7 @@ var nodeOpen = false,
               [
                 {
                   text: 'OK',
-                  handler: function () {
+                  handler: function() {
                     this.hide();
                     callback.failure(response);
                   },
@@ -4558,29 +4559,29 @@ var nodeOpen = false,
       /**
        * get clipboard items
        */
-      getClipboardItems: function (site, callback) {
+      getClipboardItems: function(site, callback) {
         var serviceUrl = this.getClipboardItemsServiceUri;
         serviceUrl += '?site=' + site;
         serviceUrl += '&user=' + CStudioAuthoringContext.user;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
         YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
       },
 
-      previewServerSyncAll: function (site, callback) {
+      previewServerSyncAll: function(site, callback) {
         var serviceUrl = this.previewSyncAllServiceUrl;
         serviceUrl += '?site=' + site;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = {};
             if (jsonResponse.responseText != '') {
               results = eval('(' + jsonResponse.responseText + ')');
@@ -4588,7 +4589,7 @@ var nodeOpen = false,
 
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4597,14 +4598,14 @@ var nodeOpen = false,
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback);
       },
 
-      syncFromRepo: function (site, callback) {
+      syncFromRepo: function(site, callback) {
         var serviceUrl = this.syncRepoServiceUrl;
         var postData = {
           site_id: site
         };
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = {};
             if (jsonResponse.responseText != 'null' && jsonResponse.responseText != '') {
               results = JSON.parse(jsonResponse.responseText);
@@ -4612,7 +4613,7 @@ var nodeOpen = false,
 
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4625,7 +4626,7 @@ var nodeOpen = false,
       /**
        * crop image
        */
-      cropImage: function (site, path, left, top, height, width, callback) {
+      cropImage: function(site, path, left, top, height, width, callback) {
         var serviceUrl = this.cropImageServiceUri;
         serviceUrl += '?site=' + site;
         serviceUrl += '&path=' + path;
@@ -4634,11 +4635,11 @@ var nodeOpen = false,
         serviceUrl += '&h=' + height;
         serviceUrl += '&w=' + width;
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4648,18 +4649,17 @@ var nodeOpen = false,
       /**
        * Rejection Reason
        */
-      getRejectionReason: function (locale, type, callback) {
+      getRejectionReason: function(locale, type, callback) {
         var serviceUrl = this.getRejectionReasonServiceUri;
         serviceUrl += '?site=' + CStudioAuthoringContext.site;
         serviceUrl += '&locale=' + locale;
         serviceUrl += '&type=' + type;
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
-          }
+          failure: function(response) {}
         };
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
       },
@@ -4667,7 +4667,7 @@ var nodeOpen = false,
       /**
        * load items
        */
-      loadItems: function (callback, data) {
+      loadItems: function(callback, data) {
         var serviceUrl = this.loadItemsServiceUri;
         serviceUrl += '?site=' + CStudioAuthoringContext.site;
         CStudioAuthoring.Service.request({
@@ -4679,7 +4679,7 @@ var nodeOpen = false,
         });
       },
 
-      calculateDependencies: function (data, callback) {
+      calculateDependencies: function(data, callback) {
         var serviceUrl =
           '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site_id=' + CStudioAuthoringContext.site;
         CStudioAuthoring.Service.request({
@@ -4691,7 +4691,7 @@ var nodeOpen = false,
         });
       },
 
-      loadDependencies: function (site, path, callback) {
+      loadDependencies: function(site, path, callback) {
         var serviceUrl =
           '/api/1/services/api/1/dependency/get-simple-dependencies.json' + '?site=' + site + '&path=' + path;
 
@@ -4703,7 +4703,7 @@ var nodeOpen = false,
         });
       },
 
-      loadDependantItems: function (site, path, callback) {
+      loadDependantItems: function(site, path, callback) {
         var serviceUrl = '/api/1/services/api/1/dependency/get-dependant.json' + '?site=' + site + '&path=' + path;
 
         CStudioAuthoring.Service.request({
@@ -4714,7 +4714,7 @@ var nodeOpen = false,
         });
       },
 
-      getGoLive: function (callback, data) {
+      getGoLive: function(callback, data) {
         var serviceUrl = this.getGoLiveServiceUrl;
         serviceUrl += '?site=' + CStudioAuthoringContext.site;
         serviceUrl += '&user=' + CStudioAuthoringContext.user;
@@ -4727,7 +4727,7 @@ var nodeOpen = false,
         });
       },
 
-      getAvailablePublishingChannels: function (callback) {
+      getAvailablePublishingChannels: function(callback) {
         var serviceUrl = this.getAvailablePublishingChannelsServiceUri;
         serviceUrl += '?site=' + CStudioAuthoringContext.site;
         CStudioAuthoring.Service.request({
@@ -4738,15 +4738,15 @@ var nodeOpen = false,
         });
       },
 
-      getUserPermissions: function (site, path, callback) {
+      getUserPermissions: function(site, path, callback) {
         var serviceUrl = this.getPermissionsServiceUrl;
         serviceUrl += '?site=' + site + '&path=' + encodeURI(path) + '&user=' + CStudioAuthoringContext.user;
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4756,7 +4756,7 @@ var nodeOpen = false,
       /**
        * look at perms to see if there is a write in the group
        */
-      isWrite: function (permissions) {
+      isWrite: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'write') {
             return true;
@@ -4766,7 +4766,7 @@ var nodeOpen = false,
         return false;
       },
 
-      validatePermission: function (permissions, permission) {
+      validatePermission: function(permissions, permission) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == permission) {
             return true;
@@ -4776,8 +4776,8 @@ var nodeOpen = false,
         return false;
       },
 
-      createFlatMap: function (itemArray) {
-        var _pupulateMap = function (itemArray, map) {
+      createFlatMap: function(itemArray) {
+        var _pupulateMap = function(itemArray, map) {
           for (var i = 0; i < itemArray.length; i++) {
             var item = itemArray[i];
             map[item.uri] = item;
@@ -4790,7 +4790,7 @@ var nodeOpen = false,
         _pupulateMap(itemArray, map);
         return map;
       },
-      getChildren: function (parentItem, flatMap) {
+      getChildren: function(parentItem, flatMap) {
         var children = new Array();
         for (var key in flatMap) {
           var aItem = flatMap[key];
@@ -4803,7 +4803,7 @@ var nodeOpen = false,
       /**
        * get go live items
        */
-      getGoLiveQueueItems: function (site, includeInprogressItems, sortBy, sortAscDesc, callback, filterByNumber) {
+      getGoLiveQueueItems: function(site, includeInprogressItems, sortBy, sortAscDesc, callback, filterByNumber) {
         callback.beforeServiceCall();
         var serviceUrl = this.getGoLiveQueueItemsServiceUrl;
         serviceUrl += '?site=' + site;
@@ -4820,7 +4820,7 @@ var nodeOpen = false,
           serviceUrl += '&includeInProgress=true';
         }
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap = CStudioAuthoring.Service.createFlatMap(
               results.documents
@@ -4828,7 +4828,7 @@ var nodeOpen = false,
             callback.success(results);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4837,7 +4837,7 @@ var nodeOpen = false,
       /**
        * get user activites items
        */
-      getUserActivitiesServices: function (site, user, sortBy, sortAscDesc, number, filterBy, hideLive, callback) {
+      getUserActivitiesServices: function(site, user, sortBy, sortAscDesc, number, filterBy, hideLive, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getUserActivitiesServiceUrl;
         serviceUrl += '?site=' + site;
@@ -4860,11 +4860,11 @@ var nodeOpen = false,
         serviceUrl += '&filterType=' + filterBy;
         serviceUrl += '&excludeLive=' + (hideLive != undefined && hideLive != null ? hideLive : false);
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4874,18 +4874,18 @@ var nodeOpen = false,
       /**
        * get user info
        */
-      getUserInfo: function (callback, user) {
+      getUserInfo: function(callback, user) {
         var serviceUrl = this.getUserInfoServiceURL;
         var user = !user ? 'me' : user;
         serviceUrl += '/' + user;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             results = results.authenticatedUser;
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4895,7 +4895,7 @@ var nodeOpen = false,
       /**
        * get user roles
        */
-      getUserRoles: function (callback, user) {
+      getUserRoles: function(callback, user) {
         var serviceUrl = this.getUserInfoServiceURL,
           self = this;
         var user = !user ? 'me' : user;
@@ -4905,7 +4905,7 @@ var nodeOpen = false,
           rolesCached;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = jsonResponse.responseText ? eval('(' + jsonResponse.responseText + ')') : jsonResponse;
             if (!rolesCached) {
               results = results.roles;
@@ -4914,12 +4914,12 @@ var nodeOpen = false,
             }
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        var getInfo = function () {
+        var getInfo = function() {
           if (!CStudioAuthoring.processing) {
             rolesCached = cache.get(cacheRolesKey);
 
@@ -4931,7 +4931,7 @@ var nodeOpen = false,
               YConnect.asyncRequest('GET', self.createServiceUri(serviceUrl), serviceCallback);
             }
           } else {
-            setTimeout(function () {
+            setTimeout(function() {
               getInfo();
             }, 100);
           }
@@ -4942,16 +4942,16 @@ var nodeOpen = false,
       /**
        * get global menu
        */
-      getGlobalMenu: function (callback) {
+      getGlobalMenu: function(callback) {
         var serviceUrl = this.getGlobalMenuURL;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             results = results.menuItems;
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4961,17 +4961,17 @@ var nodeOpen = false,
       /**
        * get Quick Create
        */
-      getQuickCreate: function (callback) {
+      getQuickCreate: function(callback) {
         var serviceUrl = this.getQuickCreateURL;
         serviceUrl += '?siteId=' + CStudioAuthoringContext.site;
 
         CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUrl)).subscribe(
-          function (response) {
+          function(response) {
             var results = response.response;
             results = results.items;
             callback.success(results);
           },
-          function (response) {
+          function(response) {
             callback.failure(response);
           }
         );
@@ -4980,10 +4980,10 @@ var nodeOpen = false,
       /**
        * get SSO logout info
        */
-      getSSOLogoutInfo: function (callback) {
+      getSSOLogoutInfo: function(callback) {
         var serviceUrl = this.getLogoutInfoURL;
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
             if (hasResult) {
@@ -4994,7 +4994,7 @@ var nodeOpen = false,
             callback.success(results);
             results = results ? results.result : results;
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         });
@@ -5003,14 +5003,14 @@ var nodeOpen = false,
       /**
        * get Active Environment
        */
-      getActiveEnvironment: function (callback) {
+      getActiveEnvironment: function(callback) {
         var serviceUrl = this.getActiveEnvironmentURL;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             callback.success(jsonResponse);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5020,7 +5020,7 @@ var nodeOpen = false,
       /**
        * get scheduled items
        */
-      getScheduledItems: function (site, sortBy, sortAscDesc, filterBy, callback) {
+      getScheduledItems: function(site, sortBy, sortAscDesc, filterBy, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getScheduledItemsServiceUrl;
         serviceUrl += '?site=' + site;
@@ -5036,12 +5036,12 @@ var nodeOpen = false,
         }
         serviceUrl += '&filterType=' + filterBy;
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5050,7 +5050,7 @@ var nodeOpen = false,
       /**
        * get recently deployed items
        */
-      getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
+      getDeploymentHistory: function(site, sortBy, sortAscDesc, days, number, filterBy, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getDeploymentHistoryServiceUrl;
         serviceUrl += '?site=' + site;
@@ -5071,11 +5071,11 @@ var nodeOpen = false,
         }
         serviceUrl += '&filterType=' + filterBy;
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5085,7 +5085,7 @@ var nodeOpen = false,
       /**
        * revert content item
        */
-      revertContentItem: function (site, contentTO, version, callback) {
+      revertContentItem: function(site, contentTO, version, callback) {
         var serviceUrl = this.getRevertContentServiceUrl;
 
         serviceUrl += '?site=' + site;
@@ -5093,14 +5093,14 @@ var nodeOpen = false,
         serviceUrl += '&version=' + version;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
             const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
             const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
             CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemReverted), null, null, 'default');
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5111,7 +5111,7 @@ var nodeOpen = false,
       /**
        * get version history for given content path
        */
-      getVersionHistory: function (site, contentTO, callback) {
+      getVersionHistory: function(site, contentTO, callback) {
         var serviceUrl = this.getVersionHistoryServiceUrl;
         serviceUrl += '?site=' + site;
 
@@ -5119,11 +5119,11 @@ var nodeOpen = false,
         serviceUrl += '&maxhistory=100';
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5134,7 +5134,7 @@ var nodeOpen = false,
       /**
        * get version history for given configuration path
        */
-      getConfigurationVersionHistory: function (site, configurationTO, callback) {
+      getConfigurationVersionHistory: function(site, configurationTO, callback) {
         var serviceUrl = this.getConfigurationVersionHistoryServiceUrl;
         serviceUrl += '?siteId=' + site;
         serviceUrl += '&module=' + configurationTO.module;
@@ -5143,11 +5143,11 @@ var nodeOpen = false,
         serviceUrl += '&maxhistory=100';
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
             callback.success(results.history);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5158,11 +5158,11 @@ var nodeOpen = false,
       /**
        * get current version history for given content path
        */
-      getCurrentVersion: function (site, uri, callback) {
+      getCurrentVersion: function(site, uri, callback) {
         var contentTO = { uri: uri };
 
         this.getVersionHistory(site, contentTO, {
-          success: function (response) {
+          success: function(response) {
             callback.success(response.versions[0].versionNumber);
           }
         });
@@ -5171,17 +5171,17 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      deleteContentForPathService: function (site, path, callback) {
+      deleteContentForPathService: function(site, path, callback) {
         var serviceUrl = this.deleteContentForPathUrl;
         serviceUrl += '?site=' + site;
         serviceUrl += '&path=' + path;
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             if (callback) {
               callback.success();
             }
           },
-          failure: function (response) {
+          failure: function(response) {
             if (callback) {
               callback.failure(response);
             }
@@ -5192,14 +5192,14 @@ var nodeOpen = false,
       /**
        * Retrieve the content as a JSON object for a given path
        */
-      retrieveWcmMapContent: function (path, callback) {
+      retrieveWcmMapContent: function(path, callback) {
         var serviceUrl = this.wcmMapContentServiceUri + '?site=' + CStudioAuthoringContext.site + '&path=' + path;
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             callback.success(JSON.parse(oResponse.responseText));
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5208,15 +5208,15 @@ var nodeOpen = false,
       /**
        * retrieve the content for a given contextual nav context
        */
-      retrieveContextualNavContent: function (navContext, callback) {
+      retrieveContextualNavContent: function(navContext, callback) {
         navContext = navContext ? navContext : this.defaultNavContext;
         var serviceUrl = this.contextServiceUri + '?site=' + CStudioAuthoringContext.site + '&context=' + navContext;
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var navContent = oResponse.responseText;
             callback.success(navContent);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         });
@@ -5225,15 +5225,15 @@ var nodeOpen = false,
       /**
        * given a context, retrieve the site dropdown context
        */
-      retrieveContextNavConfiguration: function (context, callback) {
+      retrieveContextNavConfiguration: function(context, callback) {
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/context-nav/contextual-nav.xml', {
-          success: function (config) {
+          success: function(config) {
             if (!config.context.length) {
               this.callback.success(config.context);
             }
           },
 
-          failure: function () {
+          failure: function() {
             this.callback.failure();
           },
 
@@ -5245,7 +5245,7 @@ var nodeOpen = false,
       /**
        * given a context, retrieve the site dropdown context
        */
-      retrieveSiteDropdownConfiguration: function (context, callback) {
+      retrieveSiteDropdownConfiguration: function(context, callback) {
         if (this.contextNavInitialized) {
           if (!this.contextNavConfig.contexts.length) {
             callback.success(this.contextNavConfig.contexts.context);
@@ -5254,7 +5254,7 @@ var nodeOpen = false,
           }
         } else {
           CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/context-nav/sidebar.xml', {
-            success: function (config) {
+            success: function(config) {
               this.context.contextNavConfig = config;
               this.context.contextNavInitialized = true;
 
@@ -5265,7 +5265,7 @@ var nodeOpen = false,
               }
             },
 
-            failure: function () {
+            failure: function() {
               this.callback.failure();
             },
 
@@ -5278,7 +5278,7 @@ var nodeOpen = false,
       /**
        * finds the site-content menu root path from item-path
        */
-      getDropDownParentPathFromItemPath: function (dropdownConfig, path) {
+      getDropDownParentPathFromItemPath: function(dropdownConfig, path) {
         var groups = dropdownConfig.groups,
           j,
           k,
@@ -5321,15 +5321,14 @@ var nodeOpen = false,
       /**
        * retrieve site-dropdown and match parent
        */
-      matchDropdownParentNode: function (path) {
+      matchDropdownParentNode: function(path) {
         var retPath = '';
         this.retrieveSiteDropdownConfiguration('default', {
-          success: function (config) {
+          success: function(config) {
             retPath = CStudioAuthoring.Service.getDropDownParentPathFromItemPath(config, path);
           },
 
-          failure: function () {
-          },
+          failure: function() {},
 
           context: this
         });
@@ -5339,24 +5338,24 @@ var nodeOpen = false,
       /**
        * content-menu parent path
        */
-      menuParentPathKeyFromItemUrl: function (path) {
+      menuParentPathKeyFromItemUrl: function(path) {
         return this.matchDropdownParentNode(path) + '-latest-opened-path';
       },
 
       /**
        * retrieve list of channels for a given site
        */
-      retrievePublishingChannels: function (site, callback) {
+      retrievePublishingChannels: function(site, callback) {
         var serviceUrl = this.retrievePublishingChannelsUrl + '?site=' + site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var channels = eval('(' + response.responseText + ')');
 
             callback.success(channels);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5367,12 +5366,12 @@ var nodeOpen = false,
       /**
        * retrieve a list of sites and their metadata
        */
-      retrieveSitesList: function (callback) {
+      retrieveSitesList: function(callback) {
         var retSites = null;
         var serviceUrl = this.retrieveSitesUrl;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var sitesModel = eval('(' + response.responseText + ')');
             var menuModel = [];
 
@@ -5389,7 +5388,7 @@ var nodeOpen = false,
             callback.success(menuModel);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5400,7 +5399,7 @@ var nodeOpen = false,
       /**
        * lookup Content item
        */
-      lookupContentItem: function (site, path, callback, isDraft, populateDependencies) {
+      lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
         // Path is decoded because it may come encoded or decoded. So, if not encoded, path stays the
         // same. Then, knowing that path is decoded, gets encoded. That way we avoid encoded paths to be
         // encoded again.
@@ -5416,14 +5415,13 @@ var nodeOpen = false,
         serviceUri = serviceUri + '&nocache=' + new Date();
 
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
             try {
               callback.success(contentResults, callback.argument);
-            } catch (err) {
-            }
+            } catch (err) {}
           },
-          failure: function (response) {
+          failure: function(response) {
             if (callback.failure) {
               callback.failure('Error loading data', callback.argument);
             }
@@ -5434,7 +5432,7 @@ var nodeOpen = false,
       /**
        * lookup folders
        */
-      lookupSiteFolders: function (site, path, depth, order, callback, populateDependencies) {
+      lookupSiteFolders: function(site, path, depth, order, callback, populateDependencies) {
         if (depth) {
           var serviceUri =
             this.lookupFoldersServiceUri + '?site=' + site + '&path=' + path + '&depth=' + depth + '&order=' + order;
@@ -5447,13 +5445,13 @@ var nodeOpen = false,
         }
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
 
             callback.success(contentResults, callback.argument);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response, callback.argument);
           }
         };
@@ -5464,20 +5462,20 @@ var nodeOpen = false,
       /**
        * lookup pages
        */
-      lookupSiteContent: function (site, path, depth, order, callback) {
+      lookupSiteContent: function(site, path, depth, order, callback) {
         var serviceUri =
           this.lookupContentServiceUri + '?site=' + site + '&path=' + path + '&depth=' + depth + '&order=' + order;
         serviceUri = serviceUri + '&nocache=' + new Date();
         serviceUri = encodeURI(serviceUri);
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
 
             callback.success(contentResults, callback.argument);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response, callback.argument);
           }
         };
@@ -5488,17 +5486,17 @@ var nodeOpen = false,
       /**
        * create workflow jobs
        */
-      createWorkflowJobs: function (jobRequests, callback) {
+      createWorkflowJobs: function(jobRequests, callback) {
         var serviceUri = this.createWorkflowJobsServiceUrl;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var targets = eval('(' + response.responseText + ')');
 
             callback.success(targets);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5514,17 +5512,17 @@ var nodeOpen = false,
       /**
        * lookup translation jobs
        */
-      getWorkflowJobs: function (site, callback) {
+      getWorkflowJobs: function(site, callback) {
         var serviceUri = this.getWorkflowJobsServiceUrl + '?site=' + site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var jobs = eval('(' + response.responseText + ')');
 
             callback.success(jobs);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5535,19 +5533,19 @@ var nodeOpen = false,
       /**
        * lookup user profile
        */
-      getSite: function (key, mappingKey, callback) {
+      getSite: function(key, mappingKey, callback) {
         var serviceUri = this.getSiteServiceUrl + '?key=' + key;
         if (mappingKey != undefined) {
           serviceUri = serviceUrl + '&mappingKey=' + mappingKey;
         }
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = eval('(' + response.responseText + ')');
             callback.success(result.site);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5558,16 +5556,16 @@ var nodeOpen = false,
       /**
        * lookup publish status
        */
-      getPublishStatus: function (site, callback) {
+      getPublishStatus: function(site, callback) {
         var serviceUri = this.getPublishStatusServiceUrl + '?site_id=' + site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = eval('(' + response.responseText + ')');
             callback.success(result);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5578,16 +5576,16 @@ var nodeOpen = false,
       /**
        * start publish status
        */
-      startPublishStatus: function (site, callback) {
+      startPublishStatus: function(site, callback) {
         var serviceUri = this.startPublishStatusServiceUrl;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = eval('(' + response.responseText + ')');
             callback.success(result);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5603,16 +5601,16 @@ var nodeOpen = false,
       /**
        * stop publish status
        */
-      stopPublishStatus: function (site, callback) {
+      stopPublishStatus: function(site, callback) {
         var serviceUri = this.stopPublishStatusServiceUrl;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = eval('(' + response.responseText + ')');
             callback.success(result);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5628,11 +5626,11 @@ var nodeOpen = false,
       /**
        * lookup user profile
        */
-      lookupUserProfile: function (site, user, callback) {
+      lookupUserProfile: function(site, user, callback) {
         var serviceUri = this.lookupUserProfileServiceUrl + '?site=' + site + '&user=' + user;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
 
             contentResults.studioRole = contentResults.contextual == 'SiteManager' ? 'admin' : 'contributor';
@@ -5640,7 +5638,7 @@ var nodeOpen = false,
             callback.success(contentResults, callback.argument);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5649,7 +5647,7 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isCreateFolder: function (permissions) {
+      isCreateFolder: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'create folder') {
             return true;
@@ -5659,7 +5657,7 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isUserAllowed: function (permissions) {
+      isUserAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'not allowed') {
             return false;
@@ -5669,7 +5667,7 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isDeleteAllowed: function (permissions) {
+      isDeleteAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'delete') {
             return true;
@@ -5679,7 +5677,7 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isPublishAllowed: function (permissions) {
+      isPublishAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'publish') {
             return true;
@@ -5689,7 +5687,7 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isCreateContentAllowed: function (permissions) {
+      isCreateContentAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'create content') {
             return true;
@@ -5699,7 +5697,7 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isChangeContentTypeAllowed: function (permissions) {
+      isChangeContentTypeAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
           if (permissions[i] == 'change content type') {
             return true;
@@ -5711,10 +5709,10 @@ var nodeOpen = false,
       /**
        * lookup content type metadata
        */
-      lookupContentType: function (site, type, callback) {
+      lookupContentType: function(site, type, callback) {
         var serviceUri = this.lookupContentTypeServiceUri + '?site=' + site + '&type=' + type;
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText || 'null'; // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
 
             try {
@@ -5731,11 +5729,11 @@ var nodeOpen = false,
       /**
        * given a site id returns the available All content types
        */
-      getAllContentTypesForSite: function (site, callback) {
+      getAllContentTypesForSite: function(site, callback) {
         var serviceUri = this.allContentTypesForSite + '?site=' + site;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
@@ -5750,7 +5748,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5761,7 +5759,7 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      lookupAllowedContentTypesForPath: function (site, path, callback) {
+      lookupAllowedContentTypesForPath: function(site, path, callback) {
         var CMgs = CStudioAuthoring.Messages;
         var formsLangBundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
 
@@ -5773,7 +5771,7 @@ var nodeOpen = false,
         }
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
@@ -5793,7 +5791,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5804,11 +5802,11 @@ var nodeOpen = false,
       /**
        * given a site id returns All searchable content types
        */
-      getAllSearchableContentTypesForSite: function (site, user, callback) {
+      getAllSearchableContentTypesForSite: function(site, user, callback) {
         var serviceUri = this.allSearchableContentTypesForSite + '?site=' + site + '&user=' + user;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
@@ -5819,7 +5817,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5830,12 +5828,12 @@ var nodeOpen = false,
       /**
        * given a list of items return the topdown dependencies
        */
-      lookupContentDependencies: function (site, contentItems, callback) {
+      lookupContentDependencies: function(site, contentItems, callback) {
         var serviceUri = this.lookupContentDependenciesServiceUri + 'site=' + site;
         //var dependencyXml = CStudioAuthoring.Utils.createContentItemsXml(contentItems);
         var dependencyJson = CStudioAuthoring.Utils.createContentItemsJson(contentItems);
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var respJson = oResponse.responseText;
             try {
               var dependencies = eval('(' + respJson + ')');
@@ -5855,7 +5853,7 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      setWindowState: function (userId, pageId, widgetId, stateName, stateValue) {
+      setWindowState: function(userId, pageId, widgetId, stateName, stateValue) {
         var stateId = userId + '-' + pageId + '-' + widgetId + '-' + stateName;
 
         localStorage.setItem(stateId, stateValue);
@@ -5864,7 +5862,7 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      getWindowState: function (userId, pageId, widgetId, stateName, callback) {
+      getWindowState: function(userId, pageId, widgetId, stateName, callback) {
         var stateId = userId + '-' + pageId + '-' + widgetId + '-' + stateName;
         var stateValue = '';
 
@@ -5876,7 +5874,7 @@ var nodeOpen = false,
       /**
        * return all taxonomies
        */
-      getTaxonomies: function (site, callback) {
+      getTaxonomies: function(site, callback) {
         CStudioAuthoring.Operations.showSimpleDialog(
           'notImplemented-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -5885,7 +5883,7 @@ var nodeOpen = false,
           [
             {
               text: 'OK',
-              handler: function () {
+              handler: function() {
                 this.hide();
                 callback.failure();
               },
@@ -5900,7 +5898,7 @@ var nodeOpen = false,
       /**
        * retrieves a given taxonomy
        */
-      getTaxonomy: function (site, modelName, level, currentOnly, elementName, callback) {
+      getTaxonomy: function(site, modelName, level, currentOnly, elementName, callback) {
         var serviceUri = this.getTaxonomyServiceUrl + '?site=' + site + '&elementName=' + elementName + '&format=json';
 
         if (modelName && modelName != null) {
@@ -5913,10 +5911,10 @@ var nodeOpen = false,
         }
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             this.callback.success(JSON.parse(response.responseText));
           },
-          failure: function (response) {
+          failure: function(response) {
             this.callback.failure(response);
           },
 
@@ -5929,13 +5927,13 @@ var nodeOpen = false,
       /**
        * retrieves a possible status of a content
        */
-      getStatusList: function (site, callback) {
+      getStatusList: function(site, callback) {
         var serviceUri = this.getStatusListUrl + '?site=' + site;
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success(JSON.parse(response.responseText));
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5947,20 +5945,20 @@ var nodeOpen = false,
        * DEPRICATED, use getTaxonomy instead
        * Get Product & Version Data
        */
-      getModelData: function (site, modelName, callback) {
+      getModelData: function(site, modelName, callback) {
         CStudioAuthoring.Service.getTaxonomy(site, modelName, -1, false, callback);
       },
 
       /**
        * given a site id and a path retrive the navigation order
        */
-      reorderServiceRequest: function (site, path, order, callback) {
+      reorderServiceRequest: function(site, path, order, callback) {
         if (!path.match('.xml$')) path = path + '/';
 
         var serviceUri = this.reorderServiceSubmitUrl + '?site=' + site + '&order=' + order + '&path=' + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
@@ -5971,7 +5969,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5979,13 +5977,13 @@ var nodeOpen = false,
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getOrderServiceRequest: function (site, path, order, callback) {
+      getOrderServiceRequest: function(site, path, order, callback) {
         if (!path.match('.xml$')) path = path + '/';
 
         var serviceUri = this.getServiceOrderUrl + '?site=' + site + '&order=' + order + '&path=' + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
@@ -5996,7 +5994,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6007,11 +6005,11 @@ var nodeOpen = false,
       /*
        * given a site path retrieves the next sequence order number
        */
-      getNextOrderSequenceRequest: function (site, path, callback) {
+      getNextOrderSequenceRequest: function(site, path, callback) {
         var serviceUri = this.getNextOrderSequenceUrl + '?site=' + site + '&parentpath=' + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var nextValueJson = oResponse.responseText;
             var nextValue = eval('(' + nextValueJson + ')');
             try {
@@ -6021,7 +6019,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6032,9 +6030,9 @@ var nodeOpen = false,
       /**
        *  create the panel on the call back of reorder service request
        */
-      reorderServiceCreatePanel: function (panelid, contentTypes, site, control) {
+      reorderServiceCreatePanel: function(panelid, contentTypes, site, control) {
         var createDialogOrder = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.layout(moduleConfig);
             dialogClass.content(moduleConfig.id, moduleConfig.contentItems, moduleConfig);
             dialogClass.create(moduleConfig.id);
@@ -6059,11 +6057,11 @@ var nodeOpen = false,
       /**
        * given a site id and a path , and order set the navigation
        */
-      reorderServiceSubmit: function (site, path, order, callback) {
+      reorderServiceSubmit: function(site, path, order, callback) {
         var serviceUri = this.reorderServiceSubmitUrl + '?site=' + site + '&order=' + order + '&path=' + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
@@ -6074,7 +6072,7 @@ var nodeOpen = false,
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6085,15 +6083,15 @@ var nodeOpen = false,
       /**
        * renderContentPreview
        */
-      renderContentAssetPreview: function (nodeRef, callback) {
+      renderContentAssetPreview: function(nodeRef, callback) {
         var serviceUri = this.renderContentPreviewUrl + '?nodeRef=' + nodeRef;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success(response.responseText);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure('error retrieving content asset preview');
           }
         };
@@ -6104,7 +6102,7 @@ var nodeOpen = false,
       /**
        * returns a empty search context
        */
-      createSearchContext: function () {
+      createSearchContext: function() {
         return {
           searchTypes: [],
           keywords: '',
@@ -6120,16 +6118,16 @@ var nodeOpen = false,
       /**
        * execute a search
        */
-      search: function (site, searchQuery, callback) {
+      search: function(site, searchQuery, callback) {
         var serviceUrl = this.searchServiceUrl;
         (serviceUrl += '?siteId=' + site), (data = JSON.stringify(searchQuery));
 
         var searchCb = {
-          success: function (response) {
+          success: function(response) {
             var results = eval('(' + response.responseText + ')');
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6140,7 +6138,7 @@ var nodeOpen = false,
         YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, data);
       },
 
-      getCMISContentBySearch: function (site, repoId, path, searchTerm, callback) {
+      getCMISContentBySearch: function(site, repoId, path, searchTerm, callback) {
         var serviceUri =
           this.getCMISContentBySearchUri +
           '?siteId=' +
@@ -6154,12 +6152,12 @@ var nodeOpen = false,
         serviceUri = serviceUri + '&nocache=' + new Date();
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6167,17 +6165,17 @@ var nodeOpen = false,
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getCMISContentByBrowser: function (site, repoId, path, callback) {
+      getCMISContentByBrowser: function(site, repoId, path, callback) {
         var serviceUri = this.getCMISContentByBrowseUri + '?siteId=' + site + '&cmisRepoId=' + repoId + '&path=' + path;
         serviceUri = serviceUri + '&nocache=' + new Date();
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6185,7 +6183,7 @@ var nodeOpen = false,
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getWebDAVContentByBrowser: function (site, profileId, path, callback, filter) {
+      getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
         var serviceUri =
           this.getWebDAVContentByBrowseUri + '?siteId=' + site + '&profileId=' + profileId + '&path=' + path;
 
@@ -6194,12 +6192,12 @@ var nodeOpen = false,
         }
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6207,7 +6205,7 @@ var nodeOpen = false,
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getS3ContentByBrowser: function (site, profileId, path, callback, filter) {
+      getS3ContentByBrowser: function(site, profileId, path, callback, filter) {
         var serviceUri = this.getS3ContentByBrowseUri + '?siteId=' + site + '&profileId=' + profileId;
 
         if (path) {
@@ -6219,12 +6217,12 @@ var nodeOpen = false,
         }
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -6232,7 +6230,7 @@ var nodeOpen = false,
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getBoxURL: function (site, profileId, fileId, filename, callback) {
+      getBoxURL: function(site, profileId, fileId, filename, callback) {
         var serviceUri =
           this.getBoxUrlUri +
           '?site=' +
@@ -6245,22 +6243,22 @@ var nodeOpen = false,
           filename;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = eval('(' + response.responseText + ')');
             callback.success(contentResults);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      contentCloneCMIS: function (paramJson, callback) {
+      contentCloneCMIS: function(paramJson, callback) {
         var serviceUri = this.getCMISCloneUri;
         var cloneJson = CStudioAuthoring.Utils.createContentItemsJson(paramJson);
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var respJson = oResponse.responseText;
             try {
               var clone = eval('(' + respJson + ')');
@@ -6281,13 +6279,13 @@ var nodeOpen = false,
     /**
      * given a list of items return the topdown dependencies
      */
-    'lookupContentDependencies': function (site, contentItems, callback) {
+    lookupContentDependencies: function(site, contentItems, callback) {
       var serviceUri = this.lookupContentDependencies + '?site=' + site;
 
       var dependencyXml = CStudioAuthoring.Utils.createContentItemsXml(contentItems);
 
       var serviceCallback = {
-        success: function (oResponse) {
+        success: function(oResponse) {
           var respJson = oResponse.responseText;
 
           try {
@@ -6298,7 +6296,7 @@ var nodeOpen = false,
           }
         },
 
-        failure: function (response) {
+        failure: function(response) {
           callback.failure(response);
         }
       };
@@ -6312,12 +6310,11 @@ var nodeOpen = false,
     /**
      * Authoring Utility methods
      */
-    'Utils': {
+    Utils: {
       _counter: 0,
       addedCss: [],
       addedJs: [],
-      noop: function () {
-      },
+      noop: function() {},
 
       /**
        * Verifies if the user has a specific permission
@@ -6325,10 +6322,10 @@ var nodeOpen = false,
        * @param userPermssions {Array} The collection of permissions the user is granted
        * @return {boolean} true if user has the permission, false if not
        */
-      hasPerm: function (permission, permssions) {
+      hasPerm: function(permission, permssions) {
         if (permission instanceof CStudioConstant) {
           var has = false;
-          CSA.Utils.each(permssions, function (index, value) {
+          CSA.Utils.each(permssions, function(index, value) {
             if (value === permission.toString() || value === permission.getValue()) {
               has = true;
               return false; // exit the loop
@@ -6343,7 +6340,7 @@ var nodeOpen = false,
       /**
        * Returns a page scope unique integer
        */
-      getScopedInt: function () {
+      getScopedInt: function() {
         return this._counter++;
       },
       /**
@@ -6353,7 +6350,7 @@ var nodeOpen = false,
        * @param prefix {String} A text to prepend to the unique ID
        * @return {String} A unique string within the page scope
        */
-      getScopedId: function (prefix) {
+      getScopedId: function(prefix) {
         return [prefix || '', '_', this.getScopedInt()].join('');
       },
       /**
@@ -6365,7 +6362,7 @@ var nodeOpen = false,
        * @param iterator {Function} Function to execute upon each value in the array/object
        * @param context {Object} Inside the supplied iterator "this" will refer to it
        */
-      each: function (o, iterator, context) {
+      each: function(o, iterator, context) {
         if (YAHOO.lang.isArray(o)) {
           for (var i = 0, l = o.length; i < l; i++) {
             var r = iterator.call(context || o[i], i, o[i]);
@@ -6382,14 +6379,14 @@ var nodeOpen = false,
        * True if user agent has native JSON parsing support else false
        */
       nativeUAJSONSupport: window.JSON && JSON.toString() == '[object JSON]',
-      decode: function (jsonstring) {
+      decode: function(jsonstring) {
         if (this.nativeUAJSONSupport) {
           return JSON.parse(jsonstring);
         } else {
           return eval('(' + jsonstring + ')');
         }
       },
-      encode: function (object) {
+      encode: function(object) {
         if (this.nativeUAJSONSupport) {
           return JSON.stringify(object);
         } else {
@@ -6400,10 +6397,10 @@ var nodeOpen = false,
           }
         }
       },
-      isAdmin: function () {
+      isAdmin: function() {
         return CStudioAuthoringContext.role == 'admin';
       },
-      getIconFWClasses: function (item) {
+      getIconFWClasses: function(item) {
         if (!item) return '';
 
         var CSA = CStudioAuthoring,
@@ -6425,7 +6422,7 @@ var nodeOpen = false,
           ],
           name;
 
-        _each(states, function (i, state) {
+        _each(states, function(i, state) {
           item[state] && classes.push(dashed(state));
         });
         name = classes.join(' ');
@@ -6448,7 +6445,7 @@ var nodeOpen = false,
         return name;
       },
 
-      isItemLocked: function (item) {
+      isItemLocked: function(item) {
         // TODO We need a better way of checking this
         return item.lockOwner != '';
       },
@@ -6456,7 +6453,7 @@ var nodeOpen = false,
       /**
        * get the width of the screen
        */
-      viewportWidth: function () {
+      viewportWidth: function() {
         var viewportwidth;
 
         if (typeof window.innerWidth != 'undefined') {
@@ -6477,7 +6474,7 @@ var nodeOpen = false,
       /**
        * fire the given callback when the given element becomes visible to the user
        */
-      registerEventOnIsVisible: function (el, callback) {
+      registerEventOnIsVisible: function(el, callback) {
         var y = Dom.getY(el);
 
         var o = new YAHOO.util.CustomEvent(
@@ -6514,25 +6511,24 @@ var nodeOpen = false,
        * @param {function}    fn      the callback to invoke
        * @param {boolen}      capture capture or bubble phase
        */
-      addEventListener: (function () {
+      addEventListener: (function() {
         if (window.addEventListener) {
-          return function (el, sType, fn, capture) {
+          return function(el, sType, fn, capture) {
             el.addEventListener(sType, fn, capture);
           };
         } else if (window.attachEvent) {
-          return function (el, sType, fn, capture) {
+          return function(el, sType, fn, capture) {
             el.attachEvent('on' + sType, fn);
           };
         } else {
-          return function () {
-          };
+          return function() {};
         }
       })(),
 
       /**
        * Remove all child nodes from an element
        */
-      emptyElement: function (el) {
+      emptyElement: function(el) {
         while (el.hasChildNodes()) {
           el.removeChild(el.firstChild);
         }
@@ -6542,10 +6538,10 @@ var nodeOpen = false,
       /**
        * Remove all child nodes from an element that have a specific attribute value
        */
-      removeSpecificElements: function (el, attr) {
+      removeSpecificElements: function(el, attr) {
         var attrVal;
         if (el.hasChildNodes()) {
-          for (var i = 0; i < el.childNodes.length;) {
+          for (var i = 0; i < el.childNodes.length; ) {
             attrVal = el.childNodes[i].getAttribute(attr);
             if (!!attrVal) {
               // Attribute value is defined and it's not an empty string
@@ -6561,7 +6557,7 @@ var nodeOpen = false,
       /**
        * utility method to check arrays for values
        */
-      arrayContains: function (value, array) {
+      arrayContains: function(value, array) {
         var i = array.length;
         while (i--) {
           if (array[i] == value) {
@@ -6575,7 +6571,7 @@ var nodeOpen = false,
       /**
        * Add parameters to any provided url : URL?message=Hello
        */
-      addURLParameter: function (url, parameterName, parameterValue) {
+      addURLParameter: function(url, parameterName, parameterValue) {
         var separator = url.indexOf('?') !== -1 ? '&' : '?';
         return url + separator + parameterName + '=' + parameterValue;
       },
@@ -6583,7 +6579,7 @@ var nodeOpen = false,
       /**
        * dynamically add a javascript file
        */
-      addJavascript: function (script, cache, callback) {
+      addJavascript: function(script, cache, callback) {
         if (!this.arrayContains(script, this.addedJs)) {
           this.addedJs.push(script);
 
@@ -6610,7 +6606,7 @@ var nodeOpen = false,
        * @param scriptName - script name including the .js extension
        * @return full script path (including protocol and server name) or null
        */
-      getScriptPath: function (scriptName) {
+      getScriptPath: function(scriptName) {
         var scripts = document.getElementsByTagName('SCRIPT'),
           scriptName = scriptName.replace(/(.js)$/, '\\$1'),
           scriptNameRegExp = new RegExp(scriptName + '$'),
@@ -6629,7 +6625,7 @@ var nodeOpen = false,
       /**
        * dynamically add a css file
        */
-      addCss: function (css) {
+      addCss: function(css) {
         if (!this.arrayContains(css, this.addedCss)) {
           this.addedCss.push(css);
 
@@ -6651,13 +6647,13 @@ var nodeOpen = false,
       /**
        * generate uuid part
        */
-      generateUUIDPart: function () {
+      generateUUIDPart: function() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
       },
       /**
        * generate pho UUID
        */
-      generateUUID: function () {
+      generateUUID: function() {
         return (
           this.generateUUIDPart() +
           this.generateUUIDPart() +
@@ -6677,7 +6673,7 @@ var nodeOpen = false,
       /**
        * given a page or component path retrieves the parent path
        */
-      getParentPath: function (relativePath) {
+      getParentPath: function(relativePath) {
         var parentPath = relativePath;
         if (relativePath) {
           if (relativePath.lastIndexOf('.xml') > -1) {
@@ -6702,12 +6698,12 @@ var nodeOpen = false,
       /**
        * get parameters from url - returns map
        */
-      getUrlParams: function () {
+      getUrlParams: function() {
         var urlParams,
           match,
           pl = /\+/g, // Regex for replacing addition symbol with a space
           search = /([^&=]+)=?([^&]*)/g,
-          decode = function (s) {
+          decode = function(s) {
             return decodeURIComponent(s.replace(pl, ' '));
           },
           query = window.location.search.substring(1),
@@ -6739,7 +6735,7 @@ var nodeOpen = false,
       /**
        * get query variable
        */
-      getQueryVariable: function (query, variable) {
+      getQueryVariable: function(query, variable) {
         variable = variable.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regexS = '[\\?&]' + variable + '=([^&#]*)';
         var regex = new RegExp(regexS);
@@ -6749,28 +6745,28 @@ var nodeOpen = false,
         else return results[1];
       },
 
-      getQueryParameterByName: function (name) {
+      getQueryParameterByName: function(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
           results = regex.exec(location.search);
         return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
       },
 
-      getQueryParameterURL: function (name) {
+      getQueryParameterURL: function(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
           results = regex.exec(location.hash);
         return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
       },
 
-      getQueryParameterURLParentWindow: function (name) {
+      getQueryParameterURLParentWindow: function(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
           results = regex.exec(parent.window.location.hash);
         return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
       },
 
-      replaceQueryParameterURL: function (url, param_name, new_value) {
+      replaceQueryParameterURL: function(url, param_name, new_value) {
         var base = url.substr(0, url.indexOf('?'));
         var query = url.substr(url.indexOf('?') + 1, url.length);
         var a_query = query.split('&');
@@ -6785,7 +6781,7 @@ var nodeOpen = false,
       /**
        * format a date
        */
-      formatDateFromString: function (dateTime, timeFormat) {
+      formatDateFromString: function(dateTime, timeFormat) {
         try {
           if (timeFormat != 'full') {
             var updatedDateTime = '';
@@ -6907,7 +6903,7 @@ var nodeOpen = false,
       /**
        * format a date from UTC to config Date
        */
-      formatDateFromUTC: function (dateTime, newTimeZone, format) {
+      formatDateFromUTC: function(dateTime, newTimeZone, format) {
         try {
           var utcDate = moment.tz(dateTime, 'Etc/UTC'),
             newDate;
@@ -6935,7 +6931,7 @@ var nodeOpen = false,
       /**
        * format a date to UTC
        */
-      parseDateToUTC: function (dateTime, newTimeZone, formatSize, format) {
+      parseDateToUTC: function(dateTime, newTimeZone, formatSize, format) {
         try {
           var currentDate = moment.tz(dateTime, format, newTimeZone),
             newDate;
@@ -6972,7 +6968,7 @@ var nodeOpen = false,
         }
       },
 
-      formatDateFromStringNullToEmpty: function (dateTime, timeFormat) {
+      formatDateFromStringNullToEmpty: function(dateTime, timeFormat) {
         if (dateTime == 'null' || dateTime == null || dateTime == undefined || dateTime == '') return '';
         else return this.formatDateFromString(dateTime, timeFormat);
       },
@@ -6980,14 +6976,14 @@ var nodeOpen = false,
       /**
        * format date to ISO
        */
-      formatDateToISO: function (dateTime) {
+      formatDateToISO: function(dateTime) {
         return moment.parseZone(dateTime).toISOString();
       },
 
       /**
        * format date to Studio format
        */
-      formatDateToStudio: function (dateTime) {
+      formatDateToStudio: function(dateTime) {
         var date =
           moment.parseZone(dateTime).format('MM/DD/YYYY HH:mm:ss') != 'Invalid date'
             ? moment.parseZone(dateTime).format('MM/DD/YYYY HH:mm:ss')
@@ -6995,7 +6991,7 @@ var nodeOpen = false,
         return date;
       },
 
-      formatFileSize: function (size) {
+      formatFileSize: function(size) {
         var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
         return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
       },
@@ -7003,7 +6999,7 @@ var nodeOpen = false,
       /**
        * create loading icon
        */
-      createLoadingIcon: function () {
+      createLoadingIcon: function() {
         var imgEl = document.createElement('i');
         imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw loading';
         imgEl.id = 'loadingElt';
@@ -7013,7 +7009,7 @@ var nodeOpen = false,
       /**
        * remove loading icon
        */
-      removeLoadingIcon: function () {
+      removeLoadingIcon: function() {
         var publishLoading = document.getElementById('loadingElt');
         if (publishLoading) {
           publishLoading.parentNode.removeChild(publishLoading);
@@ -7021,13 +7017,13 @@ var nodeOpen = false,
       },
 
       // Get the date/time formatting for the time converting service
-      getConvertFormat: function (includeDate) {
+      getConvertFormat: function(includeDate) {
         var format = includeDate ? 'MM/dd/yyyy%20HH:mm:ss' : 'HH:mm:ss';
         return format;
       },
 
       // Get a date/time string to use with the time converting service
-      getDateTimeString: function (date, time) {
+      getDateTimeString: function(date, time) {
         // There should always be a time value or else, we risk calculating the date value incorrectly; but, just in case ...
         var dateTimeStr = date ? date + (time ? '%20' + time : '%2000:00:00') : '' + time;
         return dateTimeStr;
@@ -7036,14 +7032,14 @@ var nodeOpen = false,
       /**
        * create yui based datepicker
        */
-      yuiCalendar: function (sourceElement, eventToFire, TargetElement, afterRender) {
+      yuiCalendar: function(sourceElement, eventToFire, TargetElement, afterRender) {
         //Dom.get("settime").checked = true;
 
         var datePicker = Dom.get(sourceElement);
         over_cal = false; // flag for blur events
         targetField = Dom.get(TargetElement);
 
-        Event.addListener(sourceElement, eventToFire, function () {
+        Event.addListener(sourceElement, eventToFire, function() {
           //create a calendar outer container and apply styles to position absolute
           var calendarContainer = document.createElement('div');
           calendarContainer.id = 'calendarContainer';
@@ -7077,11 +7073,11 @@ var nodeOpen = false,
           newCalendar.render();
 
           function setupListeners() {
-            Event.addListener('calendarContainer', 'mouseover', function () {
+            Event.addListener('calendarContainer', 'mouseover', function() {
               over_cal = true;
             });
 
-            Event.addListener('calendarContainer', 'mouseout', function () {
+            Event.addListener('calendarContainer', 'mouseout', function() {
               over_cal = false;
             });
           }
@@ -7128,8 +7124,8 @@ var nodeOpen = false,
        * Return: the element (or false, if the element doesn't exist)
        */
 
-      initCursorPosition: function (elementId, events) {
-        var getSelectionStart = function (o) {
+      initCursorPosition: function(elementId, events) {
+        var getSelectionStart = function(o) {
           if (o.createTextRange) {
             var r = document.selection.createRange().duplicate();
             r.moveEnd('character', o.value.length);
@@ -7138,8 +7134,8 @@ var nodeOpen = false,
           } else return o.selectionStart;
         };
 
-        var addCursorPosListener = function (el, event) {
-          YEvent.addListener(el, event, function () {
+        var addCursorPosListener = function(el, event) {
+          YEvent.addListener(el, event, function() {
             var cursorPos = getSelectionStart(el);
             el.setAttribute('data-cursor', cursorPos);
           });
@@ -7164,8 +7160,8 @@ var nodeOpen = false,
        * that increse the input time
        */
 
-      textFieldTimeIncrementHelper: function (triggerEl, targetEl, event, keyCode) {
-        var incrementHandler = function (type, args) {
+      textFieldTimeIncrementHelper: function(triggerEl, targetEl, event, keyCode) {
+        var incrementHandler = function(type, args) {
           /* CSTUDIO-401: Removing default action when using arrow keys
                      if (args) {
                      var e = args[1];    // the actual event object
@@ -7237,8 +7233,8 @@ var nodeOpen = false,
        * that decrese the input time
        */
 
-      textFieldTimeDecrementHelper: function (triggerEl, targetEl, event, keyCode) {
-        var decrementHandler = function (type, args) {
+      textFieldTimeDecrementHelper: function(triggerEl, targetEl, event, keyCode) {
+        var decrementHandler = function(type, args) {
           /* CSTUDIO-401: Removing default action when using arrow keys
                      if (args) {
                      var e = args[1];    // the actual event object
@@ -7313,7 +7309,7 @@ var nodeOpen = false,
       /**
        * create timepicker that format the input time
        */
-      textFieldTimeHelper: function (sourceElement, eventToFire, targetElement) {
+      textFieldTimeHelper: function(sourceElement, eventToFire, targetElement) {
         //Dom.get("settime").checked = true;
         var Dom = YAHOO.util.Dom,
           Event = YAHOO.util.Event,
@@ -7324,7 +7320,7 @@ var nodeOpen = false,
           {
             re: /^now/i,
             example: new Array('now'),
-            handler: function () {
+            handler: function() {
               return new Date();
             }
           },
@@ -7332,7 +7328,7 @@ var nodeOpen = false,
           {
             re: /(\d{1,2}):(\d{1,2}):(\d{1,2})(?:p| p)/,
             example: new Array('9:55:00 pm', '12:55:00 p.m.', '9:55:00 p', '11:5:10pm', '9:5:1p'),
-            handler: function (bits) {
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
@@ -7345,7 +7341,7 @@ var nodeOpen = false,
           {
             re: /(\d{1,2}):(\d{1,2})(?:p| p)/,
             example: new Array('9:55 pm', '12:55 p.m.', '9:55 p', '11:5pm', '9:5p'),
-            handler: function (bits) {
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
@@ -7358,7 +7354,7 @@ var nodeOpen = false,
           {
             re: /(\d{1,2})(?:p| p)/,
             example: new Array('9 pm', '12 p.m.', '9 p', '11pm', '9p'),
-            handler: function (bits) {
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
@@ -7371,7 +7367,7 @@ var nodeOpen = false,
           {
             re: /(\d{1,2}):(\d{1,2}):(\d{1,2})/,
             example: new Array('9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 a.m.', '11:55:00a'),
-            handler: function (bits) {
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               if (h == 12) {
@@ -7387,7 +7383,7 @@ var nodeOpen = false,
           {
             re: /(\d{1,2}):(\d{1,2})/,
             example: new Array('9:55', '19:55', '19:5', '9:55 a.m.', '11:55a'),
-            handler: function (bits) {
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               if (h == 12) {
@@ -7403,7 +7399,7 @@ var nodeOpen = false,
           {
             re: /(\d{1,6})/,
             example: new Array('9', '9a', '9am', '19', '1950', '195510', '0955'),
-            handler: function (bits) {
+            handler: function(bits) {
               var d = new Date();
               var h = bits[1].substring(0, 2);
               var m = parseInt(bits[1].substring(2, 4), 10);
@@ -7427,7 +7423,7 @@ var nodeOpen = false,
         var isShiftPlusTabPressed = false;
         var isTabPressed = false;
         // attach the event to call the main function
-        Event.addListener(sourceElement, eventToFire, function () {
+        Event.addListener(sourceElement, eventToFire, function() {
           //parse the value using patterns and retrive the date with format
           var inputTime = parseTimeString(this.value);
 
@@ -7440,7 +7436,7 @@ var nodeOpen = false,
               [
                 {
                   text: 'OK',
-                  handler: function () {
+                  handler: function() {
                     this.hide();
                     Dom.get(targetElement).value = '';
                     var oTimeIncBtn = Dom.get('timeIncrementButton');
@@ -7478,7 +7474,7 @@ var nodeOpen = false,
                   [
                     {
                       text: 'OK',
-                      handler: function () {
+                      handler: function() {
                         this.hide();
                         Dom.get('timepicker').focus();
                         var oTimeIncBtn = Dom.get('timeIncrementButton');
@@ -7508,7 +7504,7 @@ var nodeOpen = false,
         });
 
         //on focus of the target element clean the field
-        Event.addListener(targetElement, 'focus', function () {
+        Event.addListener(targetElement, 'focus', function() {
           Dom.get('settime').checked = true;
           Dom.get('datepicker').style.border = '1px solid #0176B1';
           Dom.get('datepicker').style.color = '#000000';
@@ -7518,7 +7514,7 @@ var nodeOpen = false,
         });
 
         //on focus of the target element clean the field
-        Event.addListener(targetElement, 'keypress', function (evt) {
+        Event.addListener(targetElement, 'keypress', function(evt) {
           if (evt.shiftKey && evt.keyCode == 9) {
             isShiftPlusTabPressed = true;
           } else {
@@ -7570,14 +7566,14 @@ var nodeOpen = false,
       /**
        * return true if value starts with second valuie
        */
-      startsWith: function (value, startsWith) {
+      startsWith: function(value, startsWith) {
         return value.match('^' + startsWith) == startsWith;
       },
 
       /**
        *  ends with
        */
-      endsWith: function (stringValue, match) {
+      endsWith: function(stringValue, match) {
         if (match != null) {
           return stringValue.length >= match.length && stringValue.substr(stringValue.length - match.length) == match;
         } else {
@@ -7588,7 +7584,7 @@ var nodeOpen = false,
       /**
        * close the current window
        */
-      closeWindow: function () {
+      closeWindow: function() {
         window.open('', '_self');
         window.close();
       },
@@ -7596,7 +7592,7 @@ var nodeOpen = false,
       /**
        * return the Y Position of an element
        */
-      getY: function (el) {
+      getY: function(el) {
         var val = 0;
 
         while (el != null) {
@@ -7610,7 +7606,7 @@ var nodeOpen = false,
       /**
        * return the x,y coords of an element
        */
-      findPos: function (obj) {
+      findPos: function(obj) {
         var curleft = (curtop = 0);
 
         if (obj.offsetParent) {
@@ -7628,9 +7624,9 @@ var nodeOpen = false,
        * original code: http://code.google.com/u/robnyman/
        * License: MIT
        */
-      getElementsByClassName: function (className, tag, elm) {
+      getElementsByClassName: function(className, tag, elm) {
         if (document.getElementsByClassName) {
-          getElementsByClassName = function (className, tag, elm) {
+          getElementsByClassName = function(className, tag, elm) {
             elm = elm || document;
             var elements = elm.getElementsByClassName(className),
               nodeName = tag ? new RegExp('\\b' + tag + '\\b', 'i') : null,
@@ -7645,7 +7641,7 @@ var nodeOpen = false,
             return returnElements;
           };
         } else if (document.evaluate) {
-          getElementsByClassName = function (className, tag, elm) {
+          getElementsByClassName = function(className, tag, elm) {
             tag = tag || '*';
             elm = elm || document;
             var classes = className.split(' '),
@@ -7656,7 +7652,7 @@ var nodeOpen = false,
               elements,
               node;
             for (var j = 0, jl = classes.length; j < jl; j += 1) {
-              classesToCheck += '[contains(concat(\' \', @class, \' \'), \' ' + classes[j] + ' \')]';
+              classesToCheck += "[contains(concat(' ', @class, ' '), ' " + classes[j] + " ')]";
             }
             try {
               elements = document.evaluate('.//' + tag + classesToCheck, elm, namespaceResolver, 0, null);
@@ -7669,7 +7665,7 @@ var nodeOpen = false,
             return returnElements;
           };
         } else {
-          getElementsByClassName = function (className, tag, elm) {
+          getElementsByClassName = function(className, tag, elm) {
             tag = tag || '*';
             elm = elm || document;
             var classes = className.split(' '),
@@ -7704,14 +7700,14 @@ var nodeOpen = false,
       /**
        * return true if value is undefined, null or an empty string
        */
-      isEmpty: function (value) {
+      isEmpty: function(value) {
         return !value || value == null || value == '';
       },
 
       /**
        * given a list of content items, return an XML
        */
-      createContentItemsXml: function (contentItems) {
+      createContentItemsXml: function(contentItems) {
         var xmlString = '<items>';
 
         for (var i = 0; i < contentItems.length; i++) {
@@ -7726,7 +7722,7 @@ var nodeOpen = false,
       /**
        * given a list of content items, return an json
        */
-      createContentItemsJson: function (contentItems) {
+      createContentItemsJson: function(contentItems) {
         var itemsJson = '[ ';
 
         for (var i = 0; i < contentItems.length; i++) {
@@ -7744,7 +7740,7 @@ var nodeOpen = false,
        * referenced the same way so building composite key allows us to have simple / common
        * approach to loading and storing content without concern for the type
        */
-      createContentTOId: function (contentTO) {
+      createContentTOId: function(contentTO) {
         var id = contentTO.id ? contentTO.id : '';
         var noderef = contentTO.id ? '' : ''; // this is hold over code from client, not 2.x
         var uri = contentTO.uri ? contentTO.uri : '';
@@ -7755,7 +7751,7 @@ var nodeOpen = false,
       /**
        * get full name from search result content TO
        */
-      getAuthorFullNameFromContentTOItem: function (contentTOItem) {
+      getAuthorFullNameFromContentTOItem: function(contentTOItem) {
         var lastName = !CStudioAuthoring.Utils.isEmpty(contentTOItem.userLastName) ? contentTOItem.userLastName : '';
         var separator =
           !CStudioAuthoring.Utils.isEmpty(contentTOItem.userLastName) &&
@@ -7770,7 +7766,7 @@ var nodeOpen = false,
       /**
        * for a given tree node look up the last item
        */
-      getContentItemStatus: function (contentTO, navbarStatus) {
+      getContentItemStatus: function(contentTO, navbarStatus) {
         var status = new Object();
         status.string = '';
         status.key = '';
@@ -7874,7 +7870,7 @@ var nodeOpen = false,
         return status;
       },
 
-      getContentItemWorkflowStatus: function (contentTO) {
+      getContentItemWorkflowStatus: function(contentTO) {
         var statusObj = contentTO.statusObj,
           workflowIcons = CSA.Constants.WORKFLOWICONS,
           statusClass = '';
@@ -7921,7 +7917,7 @@ var nodeOpen = false,
         return statusClass;
       },
 
-      isFont: function (treeNodeTO) {
+      isFont: function(treeNodeTO) {
         var fontTypes = [
           'application/x-font-ttf',
           'application/x-font-truetype',
@@ -7936,7 +7932,7 @@ var nodeOpen = false,
         return fontTypes.indexOf(treeNodeTO.mimeType) > -1;
       },
 
-      getContentItemIcon: function (treeNodeTO) {
+      getContentItemIcon: function(treeNodeTO) {
         var defaultIcons = CSA.Constants.MIMETYPES,
           customIcons = CSA.mimeTypes,
           mainIconClass,
@@ -8024,7 +8020,7 @@ var nodeOpen = false,
       /**
        * given a node, return the proper classes for the item's state
        */
-      getContentItemClassName: function (contentTO) {
+      getContentItemClassName: function(contentTO) {
         var name = 'status-icon ';
         if (contentTO.component != true) {
           if (contentTO.document == true) name = name + ' document ';
@@ -8139,7 +8135,7 @@ var nodeOpen = false,
         return name;
       },
 
-      getScheduledDateTimeUI: function (dateValue, timeValue) {
+      getScheduledDateTimeUI: function(dateValue, timeValue) {
         var dateValueArray = dateValue.split('/');
         var timeValueArray = timeValue.split(' ');
         var timeSplit = timeValueArray[0].split(':');
@@ -8187,17 +8183,17 @@ var nodeOpen = false,
         return scheduledDate;
       },
 
-      getTimeZoneConfig: function () {
+      getTimeZoneConfig: function() {
         if (!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
-            success: function (config) {
+            success: function(config) {
               studioTimeZone = config['default-timezone'];
             }
           });
         }
       },
 
-      buildToolTip: function (
+      buildToolTip: function(
         itemNameLabel,
         label,
         contentType,
@@ -8220,36 +8216,36 @@ var nodeOpen = false,
         if (contentType.indexOf('/component/') != -1)
           contentType = contentType.replace('/component/', '') + '&nbsp;(Component)';
 
-        var iconHTML = icon ? icon.outerHTML : '<span class=\'{2}\'>';
+        var iconHTML = icon ? icon.outerHTML : "<span class='{2}'>";
 
         var toolTipMarkup = [
-          '<table class=\'width300 acn-tooltip\'>',
+          "<table class='width300 acn-tooltip'>",
           '<tr>',
-          '<td class=\'acn-width280 acn-name\' colspan=\'2\'><strong>{1}</strong></td>',
+          "<td class='acn-width280 acn-name' colspan='2'><strong>{1}</strong></td>",
           '</tr>',
-          '<tr><td class=\'acn-width80\'><strong>Content&nbsp;Type:</strong> </td>',
-          '<td class=\'acn-width200\' style=\'text-transform: capitalize;\'>{8}</td>',
+          "<tr><td class='acn-width80'><strong>Content&nbsp;Type:</strong> </td>",
+          "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td>",
           '<tr>'
         ].join('');
 
         if (status) {
           toolTipMarkup += [
-            '<tr><td class=\'acn-width83\'><strong>Status:</strong></td>',
-            '<td class=\'acn-width200\'>',
+            "<tr><td class='acn-width83'><strong>Status:</strong></td>",
+            "<td class='acn-width200'>",
             iconHTML,
             '</span>',
-            '<span style=\'padding-left:2px;\'>{3}</span></td></tr>',
+            "<span style='padding-left:2px;'>{3}</span></td></tr>",
             '</tr>'
           ].join('');
         }
 
         if (modifier && modifier != null && modifier.trim() != '') {
           toolTipMarkup += [
-            '<td class=\'acn-width80\'><strong>Last Edited:</strong> </td>',
-            '<td class=\'acn-width200\'>{4}</td>',
+            "<td class='acn-width80'><strong>Last Edited:</strong> </td>",
+            "<td class='acn-width200'>{4}</td>",
             '</tr><tr>',
-            '<td class=\'acn-width80\'><strong>Edited by:</strong> </td>',
-            '<td class=\'acn-width200\'>{5}</td>',
+            "<td class='acn-width80'><strong>Edited by:</strong> </td>",
+            "<td class='acn-width200'>{5}</td>",
             '</tr>'
           ].join('');
         }
@@ -8257,8 +8253,8 @@ var nodeOpen = false,
         if ((lockOwner || '').trim() !== '') {
           toolTipMarkup += [
             '<tr>',
-            '<td class=\'acn-width80\'><strong>Locked by:</strong> </td>',
-            '<td class=\'acn-width200\'>{6}</td>',
+            "<td class='acn-width80'><strong>Locked by:</strong> </td>",
+            "<td class='acn-width200'>{6}</td>",
             '</tr>'
           ].join('');
         }
@@ -8266,8 +8262,8 @@ var nodeOpen = false,
         if (schedDate) {
           toolTipMarkup += [
             '<tr>',
-            '<td class=\'acn-width80\'><strong>Scheduled:<strong> </td>',
-            '<td class=\'acn-width200\'>{7}</td></tr>'
+            "<td class='acn-width80'><strong>Scheduled:<strong> </td>",
+            "<td class='acn-width200'>{7}</td></tr>"
           ].join('');
         }
 
@@ -8288,7 +8284,7 @@ var nodeOpen = false,
         );
       },
 
-      getTooltipContent: function (item) {
+      getTooltipContent: function(item) {
         var status = this.getContentItemStatus(item).string;
         var style = this.getIconFWClasses(item);
         var internalName = item.internalName;
@@ -8385,20 +8381,20 @@ var nodeOpen = false,
         return retTitle;
       },
 
-      showLoadingImage: function (elementId) {
+      showLoadingImage: function(elementId) {
         if (YDom.get(elementId + '-loading')) {
           YDom.get(elementId + '-loading').style.display = 'block';
         }
       },
 
-      hideLoadingImage: function (elementId) {
+      hideLoadingImage: function(elementId) {
         if (YDom.get(elementId + '-loading')) {
           YDom.get(elementId + '-loading').style.display = 'none';
         }
       },
 
       /** takes String as param and escapes all JSON sensitive character in that String **/
-      escapeJSONSensitiveCharacter: function (str) {
+      escapeJSONSensitiveCharacter: function(str) {
         if (CStudioAuthoring.Utils.isEmpty(str)) return str;
         return str
           .replace(/\\/g, '\\\\')
@@ -8407,16 +8403,16 @@ var nodeOpen = false,
           .replace(/\t/g, '\\t')
           .replace(/\f/g, '\\f')
           .replace(/"/g, '\\"')
-          .replace(/'/g, '\\\'')
+          .replace(/'/g, "\\'")
           .replace(/\&/g, '\\&');
       },
 
-      replaceWithASCIICharacter: function (str) {
+      replaceWithASCIICharacter: function(str) {
         if (CStudioAuthoring.Utils.isEmpty(str)) return str;
         return str.replace(/"/g, '&#34;');
       },
 
-      setDefaultFocusOn: function (focusedButton) {
+      setDefaultFocusOn: function(focusedButton) {
         if (!focusedButton) return;
         focusedButton.focus();
         /*
@@ -8433,22 +8429,14 @@ var nodeOpen = false,
         }
         oDiv.innerHTML = '<style>' + stylePrefix + '::-moz-focus-inner { border:1px dotted; }</style>';
         focusedButton.parentNode.appendChild(oDiv);
-        focusedButton.onblur = function (evt) {
+        focusedButton.onblur = function(evt) {
           oDiv.parentNode.removeChild(oDiv);
           focusedButton.onblur = null;
         };
       },
 
       //More configuration on https://notifyjs.com/
-      showNotification: function (
-        message,
-        positionx,
-        positiony,
-        type,
-        originalx,
-        originaly,
-        classElt
-      ) {
+      showNotification: function(message, positionx, positiony, type, originalx, originaly, classElt) {
         var globalPositionx = positionx ? positionx : 'top',
           globalPositiony = positiony ? positiony : 'right',
           globalPosition = globalPositionx + ' ' + globalPositiony,
@@ -8505,17 +8493,17 @@ var nodeOpen = false,
         }
       },
 
-      showConfirmNotification: function (message, confirmText, callback) {
+      showConfirmNotification: function(message, confirmText, callback) {
         const id = CStudioAuthoring.Utils.generateUUID();
         const styleName = 'material-snackbar-confirm';
         //Creating NotifyStyle
         $.notify.addStyle(styleName, {
           html:
             '<div>' +
-            '<div class=\'message\' data-notify-html=\'title\'/>' +
-            '<div class=\'actions\'>' +
-            '<button class=\'yes btn btn-primary\' data-notify-text=\'button\'></button>' +
-            '<button class=\'no\'><i class=\'fa fa-close\'></i></button>' +
+            "<div class='message' data-notify-html='title'/>" +
+            "<div class='actions'>" +
+            "<button class='yes btn btn-primary' data-notify-text='button'></button>" +
+            "<button class='no'><i class='fa fa-close'></i></button>" +
             '</div>' +
             '</div>'
         });
@@ -8535,12 +8523,12 @@ var nodeOpen = false,
           }
         );
 
-        const onOk = function () {
+        const onOk = function() {
           $(this).trigger('notify-hide');
           callback && callback();
         };
 
-        const onCancel = function () {
+        const onCancel = function() {
           $(this).trigger('notify-hide');
         };
 
@@ -8554,33 +8542,33 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      addPopover: function ($element, title, content) {
+      addPopover: function($element, title, content) {
         $element
           .popover({
             title,
             content,
             trigger: 'manual'
           })
-          .on('inserted.bs.popover', function () {
+          .on('inserted.bs.popover', function() {
             var $pop = $(this);
             $('<div class="help__popover-mask"/>')
-              .click(function () {
+              .click(function() {
                 $('.help__popover-mask').remove();
                 $pop.popover('hide');
               })
               .appendTo('body');
           })
-          .on('hide.bs.popover', function () {
+          .on('hide.bs.popover', function() {
             $('.help__popover-mask').remove();
           })
-          .click(function () {
+          .click(function() {
             $(this).popover('show');
           });
       },
 
-      isReviewer: function (cb) {
+      isReviewer: function(cb) {
         var callback = {
-          success: function (data) {
+          success: function(data) {
             var roles = data,
               isRev = false,
               topRoles = false;
@@ -8602,7 +8590,7 @@ var nodeOpen = false,
             }
             cb(isRev);
           },
-          failure: function (response) {
+          failure: function(response) {
             console.log(response);
           }
         };
@@ -8613,7 +8601,7 @@ var nodeOpen = false,
       /**
        * Icons
        */
-      createIcon: function (conf, defaultIcon, containerClass) {
+      createIcon: function(conf, defaultIcon, containerClass) {
         var iconContainer = document.createElement('div'),
           iconElt = document.createElement('span'),
           styles = conf && conf.icon ? conf.icon.styles : null;
@@ -8656,17 +8644,15 @@ var nodeOpen = false,
       /**
        * Is Editable Form Asset
        */
-      isEditableFormAsset: function (mimeType) {
+      isEditableFormAsset: function(mimeType) {
         return (
           mimeType &&
-          (
-            mimeType.match(/^text\//) ||
+          (mimeType.match(/^text\//) ||
             mimeType === 'application/javascript' ||
             mimeType === 'application/x-javascript+xml' ||
             mimeType === 'application/xml' ||
             mimeType === 'application/json' ||
-            mimeType === 'application/x-sh'
-          )
+            mimeType === 'application/x-sh')
         );
       },
 
@@ -8677,7 +8663,7 @@ var nodeOpen = false,
        * @param type {string} Asset Mime type.
        * @param container {jQuery} The popup element
        */
-      previewAssetDialog: function (source, type) {
+      previewAssetDialog: function(source, type) {
         var $container = $('.cstudio-image-popup-overlay'),
           $mediaContainer,
           CMgs = CStudioAuthoring.Messages,
@@ -8689,13 +8675,13 @@ var nodeOpen = false,
         if ($container.length === 0) {
           $container = $(
             '<div class="cstudio-image-popup-overlay" style="display: none;">' +
-            '<div class="cstudio-image-pop-up">' +
-            '<div>' +
-            '<span class="close fa fa-close"></span>' +
-            '</div>' +
-            '<div class="media-container"></div>' +
-            '</div>' +
-            '</div>'
+              '<div class="cstudio-image-pop-up">' +
+              '<div>' +
+              '<span class="close fa fa-close"></span>' +
+              '</div>' +
+              '<div class="media-container"></div>' +
+              '</div>' +
+              '</div>'
           );
 
           $('body').append($container);
@@ -8726,19 +8712,19 @@ var nodeOpen = false,
 
         $container.show();
 
-        destroy = function () {
+        destroy = function() {
           $(document).unbind('click', clickHandler);
           $(document).unbind('keyup', escHandler);
         };
 
-        clickHandler = function (e) {
+        clickHandler = function(e) {
           if (e.target !== this) return;
 
           $container.remove();
           destroy();
         };
 
-        escHandler = function (e) {
+        escHandler = function(e) {
           if (e.keyCode === 27) {
             $container.remove();
             destroy();
@@ -8746,7 +8732,7 @@ var nodeOpen = false,
         };
 
         // Close - on button click
-        $container.one('click', '.close', function () {
+        $container.one('click', '.close', function() {
           $container.remove();
           destroy();
         });
@@ -8758,7 +8744,7 @@ var nodeOpen = false,
         $(document).bind('keyup', escHandler);
       },
 
-      decreaseFormDialog: function () {
+      decreaseFormDialog: function() {
         if (window.frameElement) {
           var id = window.frameElement.getAttribute('id').split('-editor-')[1];
           if ($('#ice-body').length > 0 && $($('.studio-ice-container-' + id, parent.document)[0]).height() > 212) {
@@ -8768,7 +8754,7 @@ var nodeOpen = false,
       },
 
       form: {
-        getPluginInfo: function (item, url, pluginType) {
+        getPluginInfo: function(item, url, pluginType) {
           var path,
             prefix,
             name,
@@ -8805,8 +8791,8 @@ var nodeOpen = false,
           return { path: path, prefix: prefix, name: name, missingProp: missingProp };
         },
 
-        getPluginError: function (errorObject, CMgs, formsLangBundle) {
-          var message = '<div class=\'postfixErrorContainer\'>' + CMgs.format(formsLangBundle, 'pluginError') + '<ul>',
+        getPluginError: function(errorObject, CMgs, formsLangBundle) {
+          var message = "<div class='postfixErrorContainer'>" + CMgs.format(formsLangBundle, 'pluginError') + '<ul>',
             propertiesMessage;
 
           if (errorObject.control.length > 0) {
@@ -8852,7 +8838,7 @@ var nodeOpen = false,
 
           message +=
             /**/ '</ul>' +
-            /**/ '<p class=\'descriptionMessage\' >' +
+            /**/ "<p class='descriptionMessage' >" +
             CMgs.format(formsLangBundle, 'pluginErrorSolution') +
             '</p>' +
             '</div>';
@@ -8876,7 +8862,7 @@ var nodeOpen = false,
       /**
        * given a select object and a value, set the select box
        */
-      setSelectValue: function (selectEl, value) {
+      setSelectValue: function(selectEl, value) {
         if (selectEl) {
           for (var i = 0; i < selectEl.length; i++) {
             if (selectEl[i].value == value) {
@@ -8891,7 +8877,7 @@ var nodeOpen = false,
      * common sort query string parameter format
      **/
     'Utils.formatSortKey': {
-      init: function (value) {
+      init: function(value) {
         switch (value) {
           case 'Page Name':
             newValue = 'internalName';
@@ -8920,13 +8906,13 @@ var nodeOpen = false,
     /**
      * Useful String manipulation utilities
      **/
-    'StringUtils': {
-      isString: function (value) {
+    StringUtils: {
+      isString: function(value) {
         return Object.prototype.toString.call(value) === '[object String]';
       },
-      format: function (format) {
+      format: function(format) {
         var args = Array.prototype.slice.call(arguments, 1);
-        return format.replace(/\{(\d+)\}/g, function (match, index) {
+        return format.replace(/\{(\d+)\}/g, function(match, index) {
           return args[index];
         });
       },
@@ -8938,13 +8924,13 @@ var nodeOpen = false,
        * @param {Function} iterator The function that formats each placeholder
        * @returns {String} The formatted text
        */
-      advFormat: function (format, iterator) {
-        return format.replace(/\{.*?\}/g, function (match, index) {
+      advFormat: function(format, iterator) {
+        return format.replace(/\{.*?\}/g, function(match, index) {
           return iterator(match.substr(1, match.length - 2), index);
         });
       },
-      keyFormat: function (format, oHash) {
-        return this.advFormat(format, function (match) {
+      keyFormat: function(format, oHash) {
+        return this.advFormat(format, function(match) {
           return oHash[match] || match;
         });
       },
@@ -8954,7 +8940,7 @@ var nodeOpen = false,
        * @param str {String} String to transfor
        * @param separator {String} the separator char
        */
-      toCamelcase: function (str, separator) {
+      toCamelcase: function(str, separator) {
         !separator && (separator = '-');
         var parts = str.split(separator),
           len = parts.length;
@@ -8964,14 +8950,14 @@ var nodeOpen = false,
         for (var i = 1; i < len; i++) camel.push(parts[i].charAt(0).toUpperCase() + parts[i].substring(1));
         return camel.join('');
       },
-      toDashes: function (str) {
+      toDashes: function(str) {
         return str
           .replace(/::/g, '/')
           .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
           .replace(/([a-z\d])([A-Z])/g, '$1-$2')
           .toLowerCase();
       },
-      truncate: function (str, size) {
+      truncate: function(str, size) {
         return str.length <= size ? str : str.substr(0, size - 3) + '...';
       }
     },
@@ -8979,7 +8965,7 @@ var nodeOpen = false,
      * Various storage utilities making use of HTML5 localstorage
      * if supported or falling back to cookies if not
      **/
-    'Storage': {
+    Storage: {
       /**
        * Shorcut to the localStorage object if available
        **/
@@ -8992,7 +8978,7 @@ var nodeOpen = false,
        * @param {Number} hours In case cookie fallback needed, optionally specify a expiration time for the cookie in hours
        * @return The stored value
        **/
-      store: function (key, value, hours) {
+      store: function(key, value, hours) {
         if (this.ls) {
           try {
             this.ls.setItem(key, value);
@@ -9021,7 +9007,7 @@ var nodeOpen = false,
        * @param {String} key The key to retrieve the associated value
        * @return The value associated to the key or an empty string
        **/
-      retrieve: function (key) {
+      retrieve: function(key) {
         var value;
         if (this.ls) {
           value = this.ls.getItem(key);
@@ -9034,7 +9020,7 @@ var nodeOpen = false,
        * @param {String} key The key to delete
        * @return The deleted value
        **/
-      del: function (key) {
+      del: function(key) {
         var value;
         if (this.ls) {
           value = this.ls.getItem(key);
@@ -9048,7 +9034,7 @@ var nodeOpen = false,
        * @param {String} name The name of the cookie to retrieve
        * @return The read value
        */
-      read: function (name) {
+      read: function(name) {
         var cookieValue = '';
         var search = name + '=';
         if (document.cookie.length > 0) {
@@ -9069,7 +9055,7 @@ var nodeOpen = false,
        * @param {Number} hours Hours from the moment of registration
        * @return The stored value
        */
-      write: function (name, value, hours) {
+      write: function(name, value, hours) {
         var expire, domainVal;
         if (hours) {
           expire = new Date(new Date().getTime() + hours * 3600000).toGMTString();
@@ -9098,7 +9084,7 @@ var nodeOpen = false,
        * @param {String} key The cookie name to delete
        * @return The eliminated value
        **/
-      eliminate: function (name) {
+      eliminate: function(name) {
         var value = this.read(name); // retrieve the value before deleting
         this.write(name, '', -168); // Set expiration to a week before now
         return value;
@@ -9111,21 +9097,21 @@ var nodeOpen = false,
       /**
        * given a unit, return enough millis for that unit of hours
        */
-      durationHours: function (unit) {
+      durationHours: function(unit) {
         // 60 * 60 * 1000 = 3600000
         return 3600000 * unit;
       },
       /**
        * given a unit, return enough millis for that unit of hours
        */
-      durationDays: function (unit) {
+      durationDays: function(unit) {
         // 24 * 60 * 60 * 1000 = 86400000
         return 86400000 * unit;
       },
       /**
        * write a cookie
        */
-      createCookie: function (name, value, duration) {
+      createCookie: function(name, value, duration) {
         var expires, date, domainVal;
         if (duration) {
           date = new Date();
@@ -9151,7 +9137,7 @@ var nodeOpen = false,
       /**
        * read a cookie
        */
-      readCookie: function (name) {
+      readCookie: function(name) {
         var nameEQ = name + '=';
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
@@ -9164,7 +9150,7 @@ var nodeOpen = false,
       /**
        * destroy a cookie
        */
-      eraseCookie: function (name) {
+      eraseCookie: function(name) {
         var domainVal =
           CStudioAuthoringContext.cookieDomain.indexOf('.') > -1
             ? 'domain=' + CStudioAuthoringContext.cookieDomain
@@ -9176,7 +9162,7 @@ var nodeOpen = false,
      * pass the correct parameter for sortAscDesc
      **/
     'Utils.sortByAsc': {
-      init: function (sortBy, widgetId) {
+      init: function(sortBy, widgetId) {
         var previousSortedBy = YDom.get('sortedBy-' + widgetId).innerHTML;
         var previousSortType = YDom.get('sort-type-' + widgetId).innerHTML;
         var currentSortBy = sortBy ? sortBy : null;
@@ -9200,12 +9186,12 @@ var nodeOpen = false,
     /**
      * manages child searches
      */
-    'ChildSearchManager': {
+    ChildSearchManager: {
       searches: [],
       /**
        * create a new child form configuration
        */
-      createChildSearchConfig: function () {
+      createChildSearchConfig: function() {
         return { searchId: '', searchUrl: '', openAsTab: '', saveCallback: null };
       },
       /**
@@ -9213,7 +9199,7 @@ var nodeOpen = false,
        * @param searchId name of search
        * @param value returned
        */
-      signalSearchClose: function (searchId, contentTOs) {
+      signalSearchClose: function(searchId, contentTOs) {
         var childSearchConfig = this.searches[searchId];
 
         childSearchConfig.saveCallback.success(searchId, contentTOs);
@@ -9222,7 +9208,7 @@ var nodeOpen = false,
        * open child search
        * @parm form configuration
        */
-      openChildSearch: function (childSearchConfig) {
+      openChildSearch: function(childSearchConfig) {
         if (this.searches == null) {
           this.searches = new Array();
         }
@@ -9240,12 +9226,12 @@ var nodeOpen = false,
     /**
      * Child form Manager
      */
-    'ChildFormManager': {
+    ChildFormManager: {
       forms: {},
       /**
        * create a new child form configuration
        */
-      createChildFormConfig: function () {
+      createChildFormConfig: function() {
         return {
           formName: '',
           formUrl: '',
@@ -9262,7 +9248,7 @@ var nodeOpen = false,
        * @param formName name of form
        * @param value returned
        */
-      signalFormClose: function (formName, name, value) {
+      signalFormClose: function(formName, name, value) {
         var childFormConfig = this.forms[formName];
 
         if (childFormConfig) {
@@ -9273,7 +9259,7 @@ var nodeOpen = false,
       /*
        * @return formId : the form id if the form is open; if not, false
        */
-      getChildFormByName: function (windowName) {
+      getChildFormByName: function(windowName) {
         var form = null;
 
         if (this.forms) {
@@ -9291,7 +9277,7 @@ var nodeOpen = false,
        * open child form
        * @parm form configuration
        */
-      openChildForm: function (childFormConfig) {
+      openChildForm: function(childFormConfig) {
         this.forms = this.forms || {};
 
         var formId = childFormConfig.form;
@@ -9323,13 +9309,13 @@ var nodeOpen = false,
     /**
      * Preview refresh mechanism
      */
-    'WindowManagerProxy': {
+    WindowManagerProxy: {
       lastKey: null,
       flash: false,
       title: document.title,
       currentWindowLocation: document.location,
 
-      init: function () {
+      init: function() {
         if (typeof CStudioAuthoringContext == 'undefined') {
           YAHOO.lang.later(1000, this, CSA.WindowManagerProxy.init);
         } else {
@@ -9347,7 +9333,7 @@ var nodeOpen = false,
               // in some cases where common-api.js is not included in preview
               // this message shows up on the dashboard because the cookie does not get erased.
               // The basic assumption here is preview is not rooted below authoring url
-              YAHOO.lang.later(2000, this, function () {
+              YAHOO.lang.later(2000, this, function() {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'previewLoaded-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -9364,7 +9350,7 @@ var nodeOpen = false,
           YAHOO.lang.later(
             1000,
             this,
-            function () {
+            function() {
               var cookie = CSA.Utils.Cookies.readCookie('cstudio-main-window');
               if (cookie != null) {
                 var pieces = cookie.split('|');
@@ -9392,8 +9378,8 @@ var nodeOpen = false,
     /**
      * added service to get node icon.
      */
-    'IconService': {
-      getItemIcon: function (item) {
+    IconService: {
+      getItemIcon: function(item) {
         var itemIconClass = 'navPage';
         if (item.document) {
           itemIconClass = 'document';
@@ -9440,7 +9426,7 @@ var nodeOpen = false,
    *   add spacer between form and controls
    */
   CSA.register({
-    CommandToolbar: function (containerId, addSpacer) {
+    CommandToolbar: function(containerId, addSpacer) {
       this.init(containerId, addSpacer);
     }
   });
@@ -9448,7 +9434,7 @@ var nodeOpen = false,
    * initialize the form command toolbar
    * @param {String} id ID of the container element for the toolbar
    */
-  CSA.CommandToolbar.prototype.init = function (id, addSpacer) {
+  CSA.CommandToolbar.prototype.init = function(id, addSpacer) {
     this.container = document.getElementById(id);
     this.controlBox = null;
     if (this.container != null) {
@@ -9483,7 +9469,7 @@ var nodeOpen = false,
    * @param actionCallback
    *    function to be executed when button is pushed
    */
-  CSA.CommandToolbar.prototype.addControl = function (controlId, label, actionCallback) {
+  CSA.CommandToolbar.prototype.addControl = function(controlId, label, actionCallback) {
     if (this.controlBox != null) {
       //var buttonControl = document.createElement("button");
       var buttonControl = document.createElement('input');
@@ -9496,7 +9482,7 @@ var nodeOpen = false,
       YDom.addClass(buttonControl, 'btn btn-default');
       this.controlBox.appendChild(buttonControl);
 
-      buttonControl.onclick = function () {
+      buttonControl.onclick = function() {
         if (actionCallback.click) {
           actionCallback.click();
         } else {
@@ -9512,14 +9498,13 @@ var nodeOpen = false,
    * @param controlId
    *    id of button
    */
-  CSA.CommandToolbar.prototype.disableControl = function (controlId) {
+  CSA.CommandToolbar.prototype.disableControl = function(controlId) {
     if (this.controlBox != null) {
       var buttonControl = document.getElementById(controlId);
 
       if (buttonControl != null) {
         buttonControl.className = 'cstudio-xform-button-disabled';
-        buttonControl.onclick = function () {
-        };
+        buttonControl.onclick = function() {};
       }
     }
   };
@@ -9542,7 +9527,7 @@ var nodeOpen = false,
 CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
   bundles: {},
 
-  registerBundle: function (namespace, lang, bundle) {
+  registerBundle: function(namespace, lang, bundle) {
     var M = CStudioAuthoring.Messages;
 
     if (!M.bundles[namespace]) {
@@ -9552,7 +9537,7 @@ CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
     M.bundles[namespace][lang] = bundle;
   },
 
-  getBundle: function (namespace, lang) {
+  getBundle: function(namespace, lang) {
     var bundle;
     var M = CStudioAuthoring.Messages;
     var namespace = M.bundles[namespace];
@@ -9570,7 +9555,7 @@ CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
     return bundle;
   },
 
-  format: function (bundle, messageId, a, b, c, d, e, f, g) {
+  format: function(bundle, messageId, a, b, c, d, e, f, g) {
     var formattedMessage = messageId;
     var spaceRegex = new RegExp(' ', 'g');
     var starRegex = new RegExp('\\*', 'g');
@@ -9594,7 +9579,7 @@ CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
     return formattedMessage;
   },
 
-  display: function (bundle, messageId, a, b, c, d, e, f, g) {
+  display: function(bundle, messageId, a, b, c, d, e, f, g) {
     var formattedMessage = CStudioAuthoring.Messages.format(bundle, messageId, a, b, c, d, e, f, g);
     document.write(formattedMessage);
   }
@@ -9607,12 +9592,12 @@ CStudioAuthoring.InContextEdit = {
     let topWindow = getTopLegacyWindow();
     amplify.publish('FORM_ENGINE_MESSAGE_POSTED', message);
     topWindow.iceDialogs &&
-    topWindow.iceDialogs.forEach(({ iframe }) => {
-      iframe && iframe.contentWindow && iframe.contentWindow.postMessage(message, location.origin);
-    });
+      topWindow.iceDialogs.forEach(({ iframe }) => {
+        iframe && iframe.contentWindow && iframe.contentWindow.postMessage(message, location.origin);
+      });
   },
 
-  registerDialog: function (editorId, context) {
+  registerDialog: function(editorId, context) {
     let topWindow = getTopLegacyWindow();
     const iframe = topWindow.document.getElementById(`in-context-edit-editor-${editorId}`);
     if (!topWindow.iceDialogs) {
@@ -9621,7 +9606,7 @@ CStudioAuthoring.InContextEdit = {
     topWindow.iceDialogs.push({ key: editorId, value: context, iframe });
   },
 
-  registerIceCallback: function (editorId, callback) {
+  registerIceCallback: function(editorId, callback) {
     let topWindow = getTopLegacyWindow();
     if (!topWindow.iceCallback) {
       topWindow.iceCallback = [];
@@ -9631,7 +9616,7 @@ CStudioAuthoring.InContextEdit = {
     topWindow.iceCallback[topWindow.iceCallback.length] = { key: editorId, value: callback };
   },
 
-  getIceCallback: function (editorId) {
+  getIceCallback: function(editorId) {
     let topWindow = getTopLegacyWindow();
     var iceWindowCallback;
 
@@ -9642,7 +9627,7 @@ CStudioAuthoring.InContextEdit = {
     return iceWindowCallback;
   },
 
-  unstackDialog: function (editorId) {
+  unstackDialog: function(editorId) {
     let topWindow = getTopLegacyWindow();
     if (topWindow.iceDialogs) {
       let dialog = topWindow.iceDialogs.find((dialog) => dialog.key === editorId);
@@ -9656,7 +9641,7 @@ CStudioAuthoring.InContextEdit = {
     }
   },
 
-  collapseDialog: function (editorId) {
+  collapseDialog: function(editorId) {
     var dialog = window.parent.$('.studio-ice-container-' + editorId),
       controlBar = $('#formContainer .cstudio-form-controls-container')[0],
       ctrlBar = $(controlBar),
@@ -9686,14 +9671,14 @@ CStudioAuthoring.InContextEdit = {
     }
   },
 
-  isDialogCollapsed: function () {
+  isDialogCollapsed: function() {
     const $controlBar = $('#formContainer .cstudio-form-controls-container').first();
     return $controlBar.hasClass('collapseForm');
   },
 
   regions: [],
 
-  initializeEditRegion: function (regionElId, formField, regionLabel) {
+  initializeEditRegion: function(regionElId, formField, regionLabel) {
     this.regions.push({ id: regionElId, formId: formField, label: regionLabel });
 
     var regionEl = document.getElementById(regionElId);
@@ -9735,12 +9720,12 @@ CStudioAuthoring.InContextEdit = {
     controlBoxEl.style.display = 'none';
 
     var iceToolsModuleCb = {
-      moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-        CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function () {
+      moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+        CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
           controlBoxEl.style.display = 'none';
         });
 
-        CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function () {
+        CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
           controlBoxEl.style.display = 'inline';
           controlBoxEl.style.width = '20px';
         });
@@ -9755,7 +9740,7 @@ CStudioAuthoring.InContextEdit = {
     );
   },
 
-  editControlClicked: function () {
+  editControlClicked: function() {
     if (this.content.itemIsLoaded == true) {
       CStudioAuthoring.Operations.performSimpleIceEdit(
         CStudioAuthoring.SelectedContent.getSelectedContent()[0],
@@ -9766,7 +9751,7 @@ CStudioAuthoring.InContextEdit = {
       );
     } else {
       var lookupContentCb = {
-        success: function (contentTO) {
+        success: function(contentTO) {
           CStudioAuthoring.Operations.performSimpleIceEdit(
             contentTO.item,
             this.field
@@ -9788,11 +9773,11 @@ CStudioAuthoring.InContextEdit = {
     }
   },
 
-  initializeComponentEditRegion: function (regionElId, regionLabel) {
+  initializeComponentEditRegion: function(regionElId, regionLabel) {
     var id = regionElId.replace('cstudio-component-', '');
 
     var lookupContentCb = {
-      success: function (contentTO) {
+      success: function(contentTO) {
         var regionEl = document.getElementById(regionElId);
         var registerEl = document.createElement('div');
         registerEl.style.display = 'none';
@@ -9809,16 +9794,15 @@ CStudioAuthoring.InContextEdit = {
         controlBoxEl.style.cursor = 'pointer';
 
         var onSaveCb = {
-          success: function () {
+          success: function() {
             if (!CStudioAuthoringContext.channel || CStudioAuthoringContext.channel == 'web') {
               document.location = document.location;
             } else {
               var cb = {
-                moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+                moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                   try {
                     moduleClass.render();
-                  } catch (e) {
-                  }
+                  } catch (e) {}
                 },
 
                 self: this
@@ -9827,20 +9811,19 @@ CStudioAuthoring.InContextEdit = {
               CStudioAuthoring.Module.requireModule(
                 'medium-panel-' + CStudioAuthoringContext.channel,
                 '/static-assets/components/cstudio-preview-tools/mods/agent-plugins/' +
-                channel.value +
-                '/' +
-                CStudioAuthoringContext.channel +
-                '.js',
+                  channel.value +
+                  '/' +
+                  CStudioAuthoringContext.channel +
+                  '.js',
                 0,
                 cb
               );
             }
           },
-          failure: function () {
-          }
+          failure: function() {}
         };
 
-        editControlEl.onclick = function () {
+        editControlEl.onclick = function() {
           CStudioAuthoring.Operations.performSimpleIceEdit(
             contentTO.item
             // field
@@ -9850,7 +9833,7 @@ CStudioAuthoring.InContextEdit = {
           );
         };
 
-        editTemplateControlEl.onclick = function () {
+        editTemplateControlEl.onclick = function() {
           var contentType = contentTO.item.renderingTemplates[0].uri;
 
           if (CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != 'web') {
@@ -9876,12 +9859,12 @@ CStudioAuthoring.InContextEdit = {
         controlBoxEl.style.display = 'none';
 
         var iceToolsModuleCb = {
-          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-            CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function () {
+          moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+            CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
               controlBoxEl.style.display = 'none';
             });
 
-            CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function () {
+            CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
               regionEl.style.display = 'inline-block';
               controlBoxEl.style.display = 'inline';
             });
@@ -9895,14 +9878,13 @@ CStudioAuthoring.InContextEdit = {
           iceToolsModuleCb
         );
       },
-      failure: function () {
-      }
+      failure: function() {}
     };
 
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, id, lookupContentCb, false);
   },
 
-  autoInitializeEditRegions: function () {
+  autoInitializeEditRegions: function() {
     var iceEls = YAHOO.util.Dom.getElementsByClassName('cstudio-ice', null, document.body);
 
     if (iceEls) {
@@ -9918,7 +9900,7 @@ CStudioAuthoring.InContextEdit = {
     }
   },
 
-  autoSizeIceDialog: function (editorId) {
+  autoSizeIceDialog: function(editorId) {
     var el = document.getElementById('in-context-edit-editor-' + editorId);
     var containerEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0_c');
     if (!containerEl) return;
@@ -9937,7 +9919,7 @@ CStudioAuthoring.InContextEdit = {
 };
 
 CStudioAuthoring.FilesDiff = {
-  autoSizeIceDialog: function (editorId) {
+  autoSizeIceDialog: function(editorId) {
     var el = document.getElementById('in-context-edit-editor-' + editorId);
     var containerEl = document.getElementById('studio-ice-container-' + editorId);
     if (!containerEl) return;
@@ -9950,7 +9932,7 @@ CStudioAuthoring.FilesDiff = {
   }
 };
 
-(function (w) {
+(function(w) {
   var Dom = YAHOO.util.Dom,
     Event = YAHOO.util.Event;
 
@@ -9958,19 +9940,19 @@ CStudioAuthoring.FilesDiff = {
     aElements = [],
     getStyle = Dom.getStyle,
     isString = YAHOO.lang.isString,
-    offset = function (elem) {
+    offset = function(elem) {
       var aXY = Dom.getXY(elem);
       return {
         left: aXY[0],
         top: aXY[1]
       };
     },
-    height = function (elem) {
+    height = function(elem) {
       var v = elem.offsetHeight;
       /* TODO: required to consider other elements to really get this value */
       return v;
     },
-    width = function (elem) {
+    width = function(elem) {
       var v = elem.offsetWidth;
       /* TODO: required to consider other elements to really get this value */
       return v;
@@ -9981,7 +9963,7 @@ CStudioAuthoring.FilesDiff = {
     tds,
     trustOffsets;
 
-  div.innerHTML = '<table><tr><td style=\'padding:0;border:0;display:none\'></td><td>t</td></tr></table>';
+  div.innerHTML = "<table><tr><td style='padding:0;border:0;display:none'></td><td>t</td></tr></table>";
   tds = div.getElementsByTagName('td');
 
   trustOffsets = tds[0].offsetHeight === 0;
@@ -9991,7 +9973,7 @@ CStudioAuthoring.FilesDiff = {
 
   trustOffsets = trustOffsets && tds[0].offsetHeight === 0;
 
-  isVisible = function (element) {
+  isVisible = function(element) {
     var width = element.offsetWidth,
       height = element.offsetHeight;
     return !(
@@ -10000,7 +9982,7 @@ CStudioAuthoring.FilesDiff = {
     );
   };
 
-  var scroll = function () {
+  var scroll = function() {
     if (!aElements.length) {
       return CrafterStudioUtils._removeScrollListener();
     }
@@ -10030,7 +10012,7 @@ CStudioAuthoring.FilesDiff = {
   };
 
   CrafterStudioUtils.isVisible = isVisible;
-  CrafterStudioUtils.onVisible = function (elem, handler) {
+  CrafterStudioUtils.onVisible = function(elem, handler) {
     if (isString(elem)) elem = document.getElementById(elem);
     if (elem && handler) {
       elem._onVisibleHandler = handler;
@@ -10039,13 +10021,13 @@ CStudioAuthoring.FilesDiff = {
       scroll();
     }
   };
-  CrafterStudioUtils._addScrollListener = function () {
+  CrafterStudioUtils._addScrollListener = function() {
     if (!CrafterStudioUtils._addScrollListener.listeningScroll) {
       Event.addListener(w, 'scroll', scroll);
       CrafterStudioUtils._addScrollListener.listeningScroll = true;
     }
   };
-  CrafterStudioUtils._removeScrollListener = function () {
+  CrafterStudioUtils._removeScrollListener = function() {
     Event.removeListener(w, 'scroll', scroll);
     CrafterStudioUtils._addScrollListener.listeningScroll = false;
   };
@@ -10056,16 +10038,16 @@ CStudioAuthoring.FilesDiff = {
 /*
  * Create crafterSite cookie on DOM Ready (so CStudioAuthoringContext object is available)
  */
-(function (w) {
+(function(w) {
   // Parameter 'win' of the anonymous function will be the object passed as parameter 'w'
-  YAHOO.util.Event.onDOMReady(function (e, args, win) {
+  YAHOO.util.Event.onDOMReady(function(e, args, win) {
     //
     if (!(!window.ActiveXObject && 'ActiveXObject' in window)) {
       CrafterCMSNext.util.auth.setSiteCookie(win.CStudioAuthoringContext.site);
     }
 
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/mime-type.xml', {
-      success: function (data) {
+      success: function(data) {
         var mimeTypes = {}, //object to be stored
           confMimeType, //current mimeType json object from service
           mimeType,

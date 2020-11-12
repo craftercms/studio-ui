@@ -26,15 +26,16 @@ import { search } from '../../services/search';
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 
-const fetchAssets: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_ASSETS_PANEL_ITEMS),
-  withLatestFrom(state$),
-  switchMap(([, state]) => search(state.sites.active, state.preview.assets.query).pipe(
-    map(fetchAssetsPanelItemsComplete),
-    catchAjaxError(fetchAssetsPanelItemsFailed)
-  ))
-);
+const fetchAssets: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(FETCH_ASSETS_PANEL_ITEMS),
+    withLatestFrom(state$),
+    switchMap(([, state]) =>
+      search(state.sites.active, state.preview.assets.query).pipe(
+        map(fetchAssetsPanelItemsComplete),
+        catchAjaxError(fetchAssetsPanelItemsFailed)
+      )
+    )
+  );
 
-export default [
-  fetchAssets
-] as Epic[];
+export default [fetchAssets] as Epic[];

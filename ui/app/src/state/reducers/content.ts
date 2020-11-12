@@ -29,10 +29,7 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import { createPresenceTable } from '../../utils/array';
-import {
-  pathNavigatorFetchParentItemsComplete,
-  pathNavigatorFetchPathComplete
-} from '../actions/pathNavigator';
+import { pathNavigatorFetchParentItemsComplete, pathNavigatorFetchPathComplete } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
@@ -83,7 +80,9 @@ const reducer = createReducer<ContentState>(initialState, {
       ...state.items,
       permissionsByPath: {
         ...state.items.permissionsByPath,
-        [payload.path]: createPresenceTable(payload.permissions.map(value => value.replaceAll(' ', '_').replace(/-/g, '_')))
+        [payload.path]: createPresenceTable(
+          payload.permissions.map((value) => value.replaceAll(' ', '_').replace(/-/g, '_'))
+        )
       }
     }
   }),
@@ -112,7 +111,9 @@ const reducer = createReducer<ContentState>(initialState, {
         byPath: {
           [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
           ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
-          ...(response.levelDescriptor && { [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor) }),
+          ...(response.levelDescriptor && {
+            [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor)
+          }),
           ...state.items.byPath
         }
       }
@@ -120,7 +121,7 @@ const reducer = createReducer<ContentState>(initialState, {
   },
   [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { response } }) => {
     let items = [];
-    response.forEach(childResponse => {
+    response.forEach((childResponse) => {
       items.push(parseSandBoxItemToDetailedItem(childResponse.parent));
       items = [...items, ...parseSandBoxItemToDetailedItem(childResponse as SandboxItem[])];
       if (childResponse.levelDescriptor) {

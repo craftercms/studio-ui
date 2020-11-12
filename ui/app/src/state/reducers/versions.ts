@@ -115,7 +115,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     selected: payload ? [payload.id] : []
   }),
   [compareToPreviousVersion.type]: (state, { payload }) => {
-    let i = state.allVersions.findIndex(version => version.versionNumber === payload.id);
+    let i = state.allVersions.findIndex((version) => version.versionNumber === payload.id);
     let previous = state.allVersions?.[i + 1].versionNumber;
     return {
       ...state,
@@ -147,7 +147,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     }
   }),
   [revertToPreviousVersion.type]: (state, { payload }) => {
-    let i = state.allVersions.findIndex(version => version.versionNumber === payload.id);
+    let i = state.allVersions.findIndex((version) => version.versionNumber === payload.id);
     let previous = state.allVersions?.[i + 1].versionNumber;
     return {
       ...state,

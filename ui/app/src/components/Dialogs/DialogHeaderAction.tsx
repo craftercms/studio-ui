@@ -21,7 +21,7 @@ import HistoryIcon from '@material-ui/icons/HistoryRounded';
 import BackIcon from '@material-ui/icons/ArrowBackIosRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 
-export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon'
+export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon';
 
 const ActionsIconMap: { [key in ActionIcon]: ElementType } = {
   CloseIcon: CloseIcon,

@@ -28,7 +28,9 @@ export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_
 
 // region Permissions
 export const fetchUserPermissions = createAction<{ path: string }>('FETCH_USER_PERMISSIONS');
-export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: string[] }>('FETCH_USER_PERMISSIONS_COMPLETE');
+export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: string[] }>(
+  'FETCH_USER_PERMISSIONS_COMPLETE'
+);
 export const fetchUserPermissionsFailed = createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
 // endregion
 
@@ -46,9 +48,6 @@ export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
 // region duplicate
-export const itemDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ITEM_DUPlICATE');
-export const assetDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ASSET_DUPlICATE');
+export const itemDuplicate = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_DUPlICATE');
+export const assetDuplicate = createAction<{ path: string; onSuccess: StandardAction }>('ASSET_DUPlICATE');
 // endregion
-
-
-

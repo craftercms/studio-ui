@@ -20,7 +20,7 @@ import { reversePluckProps } from '../../../utils/object';
 import { MinimizedDialog } from '../../../models/MinimizedDialog';
 
 interface Payload {
-  id: string
+  id: string;
 }
 
 export const pushDialog = createAction<MinimizedDialog>('PUSH_DIALOG');

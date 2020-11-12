@@ -17,8 +17,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
-export default function (props) {
-
+export default function(props) {
   const portalRef = useRef<HTMLElement>(null);
   if (portalRef.current === null) {
     portalRef.current = document.createElement('craftercms-portal');
@@ -33,9 +32,5 @@ export default function (props) {
     };
   }, []);
 
-  return ReactDOM.createPortal(
-    props.children,
-    portalRef.current
-  );
-
-};
+  return ReactDOM.createPortal(props.children, portalRef.current);
+}

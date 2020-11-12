@@ -22,10 +22,7 @@ var YEvent = YAHOO.util.Event;
  */
 CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.WcmQuickCreate || {
   CMgs: CStudioAuthoring.Messages,
-  contextNavLangBundle: CStudioAuthoring.Messages.getBundle(
-    'contextnav',
-    CStudioAuthoringContext.lang
-  ),
+  contextNavLangBundle: CStudioAuthoring.Messages.getBundle('contextnav', CStudioAuthoringContext.lang),
 
   /**
    * initialize module
@@ -61,12 +58,12 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       let unmount;
       let previewItem;
 
-      if(CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length) {
-        const { internalName, uri } = CStudioAuthoring.SelectedContent.selectedContent[0]
+      if (CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length) {
+        const { internalName, uri } = CStudioAuthoring.SelectedContent.selectedContent[0];
         previewItem = {
           label: internalName,
           path: uri
-        }
+        };
       } else {
         // TODO: "Home" should probably be translated
         // TODO: Should the "default" path come from some sort of config?
@@ -78,7 +75,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       const editDialogSuccess = 'editDialogSuccess';
       const editDialogCancel = 'editDialogCancel';
 
-      const showEditDialog = function (payload) {
+      const showEditDialog = function(payload) {
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_EDIT_DIALOG',
           payload: {
@@ -133,10 +130,9 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogCancel, () => {
           unsubscribe();
         });
-
       };
 
-      const onNewContentSelected = function () {
+      const onNewContentSelected = function() {
         const contentTypeSelected = 'contentTypeSelected';
         const contentDialogCancel = 'contentDialogCancel';
 
@@ -180,7 +176,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       const onQuickCreateItemSelected = (src) => {
         showEditDialog({
           src,
-          inProgress: false,
+          inProgress: false
         });
       };
 
@@ -191,7 +187,6 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         onQuickCreateItemSelected,
         onClose: () => unmount()
       }).then((done) => (unmount = done.unmount));
-
     }
 
     quickCreateWrapper.click((e) => renderQuickCreate(e.currentTarget));

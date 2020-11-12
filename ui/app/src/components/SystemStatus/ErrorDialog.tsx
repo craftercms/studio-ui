@@ -24,24 +24,28 @@ import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useUnmount } from '../../utils/hooks';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1)
-  }
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1)
+    }
+  })
+);
 
 interface ErrorDialogBaseProps {
   open: boolean;
   error: ApiResponse;
 }
 
-export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type ErrorDialogProps = PropsWithChildren<
+  ErrorDialogBaseProps & {
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onClose?: StandardAction;
@@ -51,10 +55,7 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
 
 export default function ErrorDialog(props: ErrorDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-    >
+    <Dialog open={props.open} onClose={props.onClose}>
       <ErrorDialogWrapper {...props} />
     </Dialog>
   );
@@ -67,17 +68,10 @@ function ErrorDialogWrapper(props: ErrorDialogProps) {
 
   return (
     <>
-      <IconButton
-        aria-label="close"
-        className={classes.closeButton}
-        onClick={() => onDismiss()}
-      >
+      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()}>
         <CloseIcon />
       </IconButton>
-      {
-        error &&
-        <ErrorState error={error} />
-      }
+      {error && <ErrorState error={error} />}
     </>
   );
 }

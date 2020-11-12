@@ -134,16 +134,16 @@ const MobileStepper = React.forwardRef(function MobileStepper(props: MobileStepp
 });
 
 interface MobileStepperProps {
-  activeStep?: number,
-  backButton?: ReactNode,
-  onDotClick?: Function,
-  classes: any,
-  className?: string,
-  LinearProgressProps?: any,
-  nextButton?: ReactNode,
-  position?: 'bottom' | 'top' | 'static',
-  steps: number,
-  variant: 'text' | 'dots' | 'progress'
+  activeStep?: number;
+  backButton?: ReactNode;
+  onDotClick?: Function;
+  classes: any;
+  className?: string;
+  LinearProgressProps?: any;
+  nextButton?: ReactNode;
+  position?: 'bottom' | 'top' | 'static';
+  steps: number;
+  variant: 'text' | 'dots' | 'progress';
 }
 
 // @ts-ignore

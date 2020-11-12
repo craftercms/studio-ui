@@ -66,117 +66,95 @@ interface UppyProps {
 }
 
 export default function SingleFileUpload(props: UppyProps) {
-  const
-    {
-      url,
-      formTarget,
-      onUploadStart,
-      onComplete,
-      onError,
-      fileTypes
-    } = props;
+  const { url, formTarget, onUploadStart, onComplete, onError, fileTypes } = props;
 
   const { formatMessage } = useIntl();
-  const [description, setDescription] = useState<string>(
-    formatMessage(messages.selectFileMessage)
-  );
+  const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
   const [fileName, setFileName] = useState<string>();
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
 
   const classes = singleFileUploadStyles();
 
-  useEffect(
-    () => {
+  useEffect(() => {
+    const uppy = Core({
+      autoProceed: true,
+      ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {})
+    });
 
-      const uppy = Core({
-        autoProceed: true,
-        ...(
-          (fileTypes)
-            ? { restrictions: { allowedFileTypes: fileTypes } }
-            : {}
-        )
-      });
+    let uploadBtn: HTMLInputElement;
 
-      let uploadBtn: HTMLInputElement;
-
-      const instance = uppy
-        .use(FileInput, {
-          target: '.uppy-file-input-container',
-          replaceTargetContent: false,
-          locale: {
-            strings: {
-              chooseFiles: formatMessage(messages.chooseFile)
-            }
+    const instance = uppy
+      .use(FileInput, {
+        target: '.uppy-file-input-container',
+        replaceTargetContent: false,
+        locale: {
+          strings: {
+            chooseFiles: formatMessage(messages.chooseFile)
           }
-        })
-        .use(Form, {
-          target: formTarget,
-          getMetaFromForm: true,
-          addResultToForm: true,
-          submitOnSuccess: false,
-          triggerUploadOnSubmit: false
-        })
-        .use(ProgressBar, {
-          target: '.uppy-progress-bar',
-          hideAfterFinish: false
-        })
-        .use(XHRUpload, {
-          endpoint: url,
-          formData: true,
-          fieldName: 'file',
-          timeout: 0
-        });
-
-      uppy.on('file-added', (file) => {
-        uploadBtn = document.querySelector('.uppy-FileInput-btn');
-        setDescription(`${formatMessage(messages.uploadingFile)}:`);
-        setFileName(file.name);
-        setFileNameErrorClass('');
-        uploadBtn.disabled = true;
-        onUploadStart();
+        }
+      })
+      .use(Form, {
+        target: formTarget,
+        getMetaFromForm: true,
+        addResultToForm: true,
+        submitOnSuccess: false,
+        triggerUploadOnSubmit: false
+      })
+      .use(ProgressBar, {
+        target: '.uppy-progress-bar',
+        hideAfterFinish: false
+      })
+      .use(XHRUpload, {
+        endpoint: url,
+        formData: true,
+        fieldName: 'file',
+        timeout: 0
       });
 
-      uppy.on('upload-success', (file) => {
-        setDescription(`${formatMessage(messages.uploadedFile)}:`);
-        uploadBtn.disabled = false;
-      });
+    uppy.on('file-added', (file) => {
+      uploadBtn = document.querySelector('.uppy-FileInput-btn');
+      setDescription(`${formatMessage(messages.uploadingFile)}:`);
+      setFileName(file.name);
+      setFileNameErrorClass('');
+      uploadBtn.disabled = true;
+      onUploadStart();
+    });
 
-      uppy.on('complete', onComplete);
+    uppy.on('upload-success', (file) => {
+      setDescription(`${formatMessage(messages.uploadedFile)}:`);
+      uploadBtn.disabled = false;
+    });
 
-      uppy.on('upload-error', (file, error, response) => {
-        uppy.cancelAll();
-        uploadBtn.disabled = false;
-        setFileNameErrorClass('text-danger');
-        onError && onError(file, error, response);
-      });
+    uppy.on('complete', onComplete);
 
-      return () => {
-        // https://uppy.io/docs/uppy/#uppy-close
-        instance.reset();
-        instance.close();
-      };
+    uppy.on('upload-error', (file, error, response) => {
+      uppy.cancelAll();
+      uploadBtn.disabled = false;
+      setFileNameErrorClass('text-danger');
+      onError && onError(file, error, response);
+    });
 
-    },
-    [fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, url]
-  );
+    return () => {
+      // https://uppy.io/docs/uppy/#uppy-close
+      instance.reset();
+      instance.close();
+    };
+  }, [fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, url]);
 
   return (
     <>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
-        <h5 className="single-file-upload--description">
-          {description}
-        </h5>
+        <h5 className="single-file-upload--description">{description}</h5>
         <div className="uppy-file-input-container" />
-        {
-          fileName &&
+        {fileName && (
           <em
             className={`single-file-upload--filename ${fileNameErrorClass} ${classes.fileNameTrimmed}`}
             title={fileName}
           >
             {fileName}
           </em>
-        }
+        )}
       </div>
     </>
   );

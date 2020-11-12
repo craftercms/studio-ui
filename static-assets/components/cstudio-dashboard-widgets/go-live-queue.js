@@ -249,8 +249,8 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             '"',
             this.widgetId == currentDashboard &&
             currentCheckItem &&
-              CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-              item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+            CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
               ? ' checked'
               : '',
             item.deleted || item.inFlight ? ' disabled' : '',
@@ -282,7 +282,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             "<td title='fullUri' class='width0'>",
             uri,
             '</td>',
-            '<td title=\'server\'>',
+            "<td title='server'>",
             environment,
             '</td>',
             '<td class="">',
@@ -290,10 +290,10 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
               ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat')
               : '',
             '</td>',
-            '<td class=\'alignRight username trim\'>',
+            "<td class='alignRight username trim'>",
             WcmDashboardWidgetCommon.getDisplayName(item),
             '</td>',
-            '<td class=\'alignRight ttThColLast\'>',
+            "<td class='alignRight ttThColLast'>",
             CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
             '</td>'
           ]);
@@ -302,8 +302,8 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
         if (
           this.widgetId == currentDashboard &&
           currentCheckItem &&
-            CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+          CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
+          item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
         ) {
           CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
         }

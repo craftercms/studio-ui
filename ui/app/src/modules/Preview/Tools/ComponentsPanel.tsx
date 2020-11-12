@@ -34,10 +34,7 @@ import { useSelectorResource } from '../../../utils/hooks';
 import { nnou, reversePluckProps } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
-import {
-  PropsWithResource,
-  SuspenseWithEmptyState
-} from '../../../components/SystemStatus/Suspencified';
+import { PropsWithResource, SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { EntityState } from '../../../models/EntityState';
 
 const translations = defineMessages({
@@ -62,37 +59,24 @@ const translations = defineMessages({
 type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
 
 export default function ComponentsPanel() {
-  const resource = useSelectorResource<ContentType[], EntityState<ContentType>>(
-    (state) => state.contentTypes,
-    {
-      shouldRenew: (source, resource) => resource.complete,
-      shouldResolve: (source) => !source.isFetching && nnou(source.byId),
-      shouldReject: (source) => nnou(source.error),
-      errorSelector: (source) => source.error,
-      resultSelector: (source) => Object.values(reversePluckProps(source.byId, '/component/level-descriptor'))
-    }
-  );
+  const resource = useSelectorResource<ContentType[], EntityState<ContentType>>((state) => state.contentTypes, {
+    shouldRenew: (source, resource) => resource.complete,
+    shouldResolve: (source) => !source.isFetching && nnou(source.byId),
+    shouldReject: (source) => nnou(source.error),
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => Object.values(reversePluckProps(source.byId, '/component/level-descriptor'))
+  });
 
   return (
     <ToolPanel title={translations.componentsPanel}>
       <SuspenseWithEmptyState
         resource={resource}
         loadingStateProps={{
-          title: (
-            <FormattedMessage
-              id="componentsPanel.suspenseStateMessage"
-              defaultMessage="Retrieving Page Model"
-            />
-          )
+          title: <FormattedMessage id="componentsPanel.suspenseStateMessage" defaultMessage="Retrieving Page Model" />
         }}
         withEmptyStateProps={{
           emptyStateProps: {
-            title: (
-              <FormattedMessage
-                id="componentsPanel.emptyStateMessage"
-                defaultMessage="No components found"
-              />
-            ),
+            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
             subtitle: (
               <FormattedMessage
                 id="componentsPanel.emptyStateMessageSubtitle"
@@ -118,29 +102,30 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
-  const componentTypes = useMemo(
-    () => contentTypes.filter((contentType) => contentType.type === 'component'),
-    [contentTypes]
-  );
+  const componentTypes = useMemo(() => contentTypes.filter((contentType) => contentType.type === 'component'), [
+    contentTypes
+  ]);
 
-  const onDragStart = (contentType) =>
-    hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
 
   const onMenuClose = () => setMenuContext(null);
 
   const onBrowseSharedInstancesClicked = () => {
-    dispatch(browseSharedInstance({
+    dispatch(
+      browseSharedInstance({
         contentType: menuContext.contentType.id
       })
     );
   };
 
   const onListInPageInstancesClick = () => {
-    dispatch(inPageInstances({
-      contentType: menuContext.contentType.id
-    }));
+    dispatch(
+      inPageInstances({
+        contentType: menuContext.contentType.id
+      })
+    );
   };
 
   const onListReceptaclesClick = () => {
@@ -167,15 +152,9 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       </List>
 
       <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
-        <MenuItem onClick={onListInPageInstancesClick}>
-          {formatMessage(translations.listInPageInstances)}
-        </MenuItem>
-        <MenuItem onClick={onBrowseSharedInstancesClicked}>
-          {formatMessage(translations.browse)}
-        </MenuItem>
-        <MenuItem onClick={onListReceptaclesClick}>
-          {formatMessage(translations.listReceptacles)}
-        </MenuItem>
+        <MenuItem onClick={onListInPageInstancesClick}>{formatMessage(translations.listInPageInstances)}</MenuItem>
+        <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
+        <MenuItem onClick={onListReceptaclesClick}>{formatMessage(translations.listReceptacles)}</MenuItem>
       </Menu>
     </>
   );

@@ -36,7 +36,7 @@ export function getTimezones() {
     });
   });
 
-  return offsetTmz.sort((a, b) => (parseInt(a.timezoneOffset) > parseInt(b.timezoneOffset)) ? 1 : -1);
+  return offsetTmz.sort((a, b) => (parseInt(a.timezoneOffset) > parseInt(b.timezoneOffset) ? 1 : -1));
 }
 
 export function asDayMonthDateTime(date: string): string {
@@ -46,7 +46,9 @@ export function asDayMonthDateTime(date: string): string {
     weekday: 'long',
     year: 'numeric'
   });
-  return `${parts[0].value} ${parts[2].value} ${getCurrentIntl().formatMessage(translations.ordinals, { day: parts[4].value })} ${parts[6].value} @ ${getCurrentIntl().formatTime(date)}`;
+  return `${parts[0].value} ${parts[2].value} ${getCurrentIntl().formatMessage(translations.ordinals, {
+    day: parts[4].value
+  })} ${parts[6].value} @ ${getCurrentIntl().formatTime(date)}`;
 }
 
 const datetime = {

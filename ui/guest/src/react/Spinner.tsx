@@ -27,16 +27,22 @@ interface SpinnerProps {
 
 export default function Spinner(props: SpinnerProps) {
   return (
-    <svg className={props.className}
-         width={props.width}
-         height={props.height}
-         viewBox="0 0 66 66"
-         xmlns="http://www.w3.org/2000/svg">
-      <circle className={props.circleClassName}
-              fill="none"
-              strokeWidth={props.strokeWidth}
-              strokeLinecap={props.strokeLineCap}
-              cx="33" cy="33" r="30"/>
+    <svg
+      className={props.className}
+      width={props.width}
+      height={props.height}
+      viewBox="0 0 66 66"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        className={props.circleClassName}
+        fill="none"
+        strokeWidth={props.strokeWidth}
+        strokeLinecap={props.strokeLineCap}
+        cx="33"
+        cy="33"
+        r="30"
+      />
     </svg>
   );
 }

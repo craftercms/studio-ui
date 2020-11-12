@@ -47,9 +47,7 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
   }
   const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
   if (preloadState) {
-    return of(createStoreSync(preloadState)).pipe(
-      tap((s) => (store = s))
-    );
+    return of(createStoreSync(preloadState)).pipe(tap((s) => (store = s)));
   } else {
     return fetchInitialState().pipe(
       map((initialState) => createStoreSync(initialState)),
@@ -63,13 +61,15 @@ export function getStore(): CrafterCMSStore {
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, { getIntl: () => IntlShape }>({
+  const epicMiddleware = createEpicMiddleware<
+    StandardAction,
+    StandardAction,
+    GlobalState,
+    { getIntl: () => IntlShape }
+  >({
     dependencies: { getIntl: getCurrentIntl }
   });
-  const middleware = [
-    ...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }),
-    epicMiddleware
-  ];
+  const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({
     reducer,
     middleware,
@@ -91,8 +91,7 @@ export function retrieveInitialStateScript(): GlobalState {
       }
     } catch {
       // The login screen won't have the preloaded state
-      !window.location.href.includes('/login') &&
-      console.error('[GlobalContext] Malformed initial global state.');
+      !window.location.href.includes('/login') && console.error('[GlobalContext] Malformed initial global state.');
       // TODO: Login view should be built separately from the main app to avoid this hack and specially to avoid the bulky build
     }
   } else {
@@ -175,6 +174,3 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
 }
 
 export default createStore;
-
-
-

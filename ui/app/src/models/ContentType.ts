@@ -30,7 +30,7 @@ export interface ContentTypeFieldValidation {
 }
 
 export type ValidationKeys =
-  'allowedContentTypeTags'
+  | 'allowedContentTypeTags'
   | 'allowedContentTypes'
   | 'minCount'
   | 'maxCount'
@@ -40,7 +40,7 @@ export type ValidationKeys =
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
-}
+};
 
 export interface ContentTypeField {
   id: string;

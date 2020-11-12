@@ -233,7 +233,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
         $content = $('.studio-preview, .site-dashboard, #admin-console, .cstudio-search'),
         contentTop = $content.css('top').replace('px', '');
 
-
       // sync position of bar and preview/dashboard/site-config
       if (studioBarHeight !== parseInt(contentTop)) {
         $('.studio-preview, .site-dashboard')
@@ -245,11 +244,11 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 };
 
 CStudioAuthoring.ContextualNav.LeftModulesMap = {
-  'wcm_logo': '.navbar-brand',
-  'wcm_dropdown': '#acn-dropdown-wrapper',
+  wcm_logo: '.navbar-brand',
+  wcm_dropdown: '#acn-dropdown-wrapper',
   'quick-create': '#quick-create',
-  'wcm_content': '#activeContentActions',
-  'admin_console': '#acn-admin-console'
+  wcm_content: '#activeContentActions',
+  admin_console: '#acn-admin-console'
 };
 
 CStudioAuthoring.ContextualNav.RightModulesMap = {

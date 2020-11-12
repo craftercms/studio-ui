@@ -15,24 +15,14 @@
  */
 
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
-import {
-  debounceTime,
-  filter,
-  map,
-  share,
-  takeUntil,
-  throttleTime,
-  withLatestFrom
-} from 'rxjs/operators';
+import { debounceTime, filter, map, share, takeUntil, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { ElementRecord } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
 import { GuestStateObservable } from './models/GuestStore';
 
 export const clearAndListen$ = new Subject();
 
-export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
-  filter((e) => e.key === 'Escape')
-);
+export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
 
 let active = false;
 
@@ -50,13 +40,11 @@ export { getDragOver as dragover$, getScrolling as scrolling$ };
 
 export function initializeDragSubjects(state$: GuestStateObservable) {
   if (!active) {
-
     active = true;
 
     killSignal$ = new Subject();
     dragover$ = new Subject();
     scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
-
   }
   return merge(
     dragover$.pipe(
@@ -82,7 +70,6 @@ export function initializeDragSubjects(state$: GuestStateObservable) {
 
 export function destroyDragSubjects() {
   if (active) {
-
     active = false;
 
     // scrolling$ is terminated by killSignal$
@@ -94,6 +81,5 @@ export function destroyDragSubjects() {
     dragover$.complete();
     dragover$.unsubscribe();
     dragover$ = null;
-
   }
 }

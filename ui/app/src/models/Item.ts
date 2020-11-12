@@ -14,8 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type States = 'new' | 'modified' | 'deleted' | 'userLocked' | 'systemProcessing' | 'inWorkflow' |
-  'scheduled' | 'staged' | 'live' | 'translationUpToDate' | 'translationPending' | 'translationInProgress';
+type States =
+  | 'new'
+  | 'modified'
+  | 'deleted'
+  | 'userLocked'
+  | 'systemProcessing'
+  | 'inWorkflow'
+  | 'scheduled'
+  | 'staged'
+  | 'live'
+  | 'translationUpToDate'
+  | 'translationPending'
+  | 'translationInProgress';
 
 export interface BaseItem {
   id: string;
@@ -49,13 +60,9 @@ interface PublishEnvProps {
   commitId: string;
 }
 
-export interface LocalizationItem extends BaseItem {
+export interface LocalizationItem extends BaseItem {}
 
-}
-
-export interface SandboxItem extends BaseItem, SandboxEnvProps {
-
-}
+export interface SandboxItem extends BaseItem, SandboxEnvProps {}
 
 export interface DetailedItem extends BaseItem {
   sandbox: SandboxEnvProps;
@@ -80,9 +87,7 @@ export interface PublishingDashboardItem {
   environment: string;
 }
 
-export interface DashboardItem {
-
-}
+export interface DashboardItem {}
 
 export interface LegacyItem {
   uri: string;
@@ -96,5 +101,5 @@ export interface LegacyItem {
 
 export interface CopyItem {
   uri?: string;
-  children?: CopyItem[]
+  children?: CopyItem[];
 }

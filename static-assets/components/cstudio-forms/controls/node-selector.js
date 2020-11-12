@@ -496,8 +496,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     if (this.maxSize > 0) {
       if (this.items.length >= this.maxSize) {
         validation.successful = false;
-        validation.message =
-          "You can't add more items, Remove one and try again.";
+        validation.message = "You can't add more items, Remove one and try again.";
       }
     }
 
@@ -700,10 +699,22 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return [
       { label: CMgs.format(langBundle, 'minSize'), name: 'minSize', type: 'int' },
       { label: CMgs.format(langBundle, 'maxSize'), name: 'maxSize', type: 'int' },
-      { label: CMgs.format(langBundle, 'itemManager'), name: 'itemManager', type: 'datasource:item' },
+      {
+        label: CMgs.format(langBundle, 'itemManager'),
+        name: 'itemManager',
+        type: 'datasource:item'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'disableFlatteningSearch'), name: 'disableFlattening', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' }
+      {
+        label: CMgs.format(langBundle, 'disableFlatteningSearch'),
+        name: 'disableFlattening',
+        type: 'boolean'
+      },
+      {
+        label: CMgs.format(langBundle, 'singleValueFilename'),
+        name: 'useSingleValueFilename',
+        type: 'boolean'
+      }
     ];
   },
 

@@ -25,5 +25,4 @@ const cardTitleStyles = {
   wordBreak: 'break-all'
 };
 
-
 export default cardTitleStyles;

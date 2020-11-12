@@ -25,12 +25,7 @@ import { controlBaseStyles } from './commonStyles';
 const useStyles = makeStyles((theme: Theme) => createStyles(controlBaseStyles));
 
 export default function Input(props: Control) {
-  const {
-    field,
-    value = '',
-    onChange,
-    disabled
-  } = props;
+  const { field, value = '', onChange, disabled } = props;
   const classes = useStyles({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,10 +34,7 @@ export default function Input(props: Control) {
 
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel
-        className={classes.inputLabel}
-        htmlFor={field.id}
-      >
+      <InputLabel className={classes.inputLabel} htmlFor={field.id}>
         {field.name}
       </InputLabel>
       <TextField

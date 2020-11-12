@@ -42,31 +42,28 @@ export const initialState: GlobalState['sites'] = {
   isFetching: false
 };
 
-const reducer = createReducer<GlobalState['sites']>(
-  initialState,
-  {
-    INITIAL_STATE: (state, { payload: { sites } }) => ({ ...state, byId: createLookupTable(sites) }),
-    [CHANGE_SITE]: (state, { payload }) =>
-      payload.nextSite === state.active
-        ? state
-        : {
+const reducer = createReducer<GlobalState['sites']>(initialState, {
+  INITIAL_STATE: (state, { payload: { sites } }) => ({ ...state, byId: createLookupTable(sites) }),
+  [CHANGE_SITE]: (state, { payload }) =>
+    payload.nextSite === state.active
+      ? state
+      : {
           ...state,
           active: payload.nextSite
         },
-    [fetchSites.type]: (state, action) => ({
-      ...state,
-      isFetching: true
-    }),
-    [fetchSitesComplete.type]: (state, { payload }) => ({
-      ...state,
-      byId: createLookupTable(payload),
-      isFetching: false
-    }),
-    [fetchSitesFailed.type]: (state, action) => ({
-      ...state,
-      isFetching: false
-    })
-  }
-);
+  [fetchSites.type]: (state, action) => ({
+    ...state,
+    isFetching: true
+  }),
+  [fetchSitesComplete.type]: (state, { payload }) => ({
+    ...state,
+    byId: createLookupTable(payload),
+    isFetching: false
+  }),
+  [fetchSitesFailed.type]: (state, action) => ({
+    ...state,
+    isFetching: false
+  })
+});
 
 export default reducer;

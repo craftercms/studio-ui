@@ -512,8 +512,16 @@
 
     getSupportedProperties: function() {
       return [
-        { label: formatMessage(checkboxGroupControlMessages.datasource), name: 'datasource', type: 'datasource:item' },
-        { label: formatMessage(checkboxGroupControlMessages.showSelectAll), name: 'selectAll', type: 'boolean' },
+        {
+          label: formatMessage(checkboxGroupControlMessages.datasource),
+          name: 'datasource',
+          type: 'datasource:item'
+        },
+        {
+          label: formatMessage(checkboxGroupControlMessages.showSelectAll),
+          name: 'selectAll',
+          type: 'boolean'
+        },
         {
           label: formatMessage(checkboxGroupControlMessages.listDirection),
           name: 'listDirection',
@@ -531,7 +539,11 @@
             }
           ]
         },
-        { label: formatMessage(checkboxGroupControlMessages.readonly), name: 'readonly', type: 'boolean' }
+        {
+          label: formatMessage(checkboxGroupControlMessages.readonly),
+          name: 'readonly',
+          type: 'boolean'
+        }
       ];
     },
 

@@ -53,9 +53,7 @@ export function setLabel(record: ElementRecord): void {
   const models = contentController.getCachedModels();
   record.iceIds.forEach((iceId) => {
     const iceRecord = iceRegistry.getById(iceId);
-    const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(
-      iceRecord
-    );
+    const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(iceRecord);
     if (notNullOrUndefined(field)) {
       if (field.type === 'node-selector') {
         if (notNullOrUndefined(index)) {
@@ -159,12 +157,12 @@ export function deregister(id: string | number): ElementRecord {
   if (notNullOrUndefined(record)) {
     const { iceIds } = record;
     iceIds.forEach((iceId) => {
-      if(registry[iceId].length === 1) {
+      if (registry[iceId].length === 1) {
         delete registry[iceId];
       } else if (registry[iceId].length > 1) {
         registry[iceId].splice(registry[iceId].indexOf(record.id), 1);
       }
-      iceRegistry.deregister(iceId)
+      iceRegistry.deregister(iceId);
     });
     delete db[id];
   }
@@ -175,7 +173,7 @@ export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    function (iceId): boolean | number {
+    function(iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }
@@ -218,7 +216,7 @@ export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
   if (!recordsIds) {
     return null;
   } else if (recordsIds.length > 1) {
-    recordsIds.forEach(recordId => {
+    recordsIds.forEach((recordId) => {
       let record = db[recordId];
       let registry = createIntermediateElementRecord(record, iceId);
       if (registry) {
@@ -336,28 +334,29 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
     index: index
   });
 
-  if(recordId !== -1) {
-    const registryEntry = fromICEId(recordId)
-    if(registryEntry) {
-      return registryEntry.element
+  if (recordId !== -1) {
+    const registryEntry = fromICEId(recordId);
+    if (registryEntry) {
+      return registryEntry.element;
     } else {
-      return null
+      return null;
     }
   } else {
-    return null
+    return null;
   }
-
 }
-export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+export function getParentElementFromICEProps(
+  modelId: string,
+  fieldId: string,
+  index: string | number
+): JQuery<Element> {
   const recordId = iceRegistry.exists({
     modelId: modelId,
     fieldId: fieldId,
-    index: fieldId.includes('.')
-      ? parseInt(removeLastPiece(index as string))
-      : null
+    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
   });
 
-  return (recordId === -1) ? null : $(fromICEId(recordId).element);
+  return recordId === -1 ? null : $(fromICEId(recordId).element);
 }
 
 const ElementRegistry = {

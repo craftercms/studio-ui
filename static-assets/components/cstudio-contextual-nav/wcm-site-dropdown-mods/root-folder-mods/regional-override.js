@@ -35,7 +35,10 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
     p_aArgs.addItems([
       {
         text: CMgs.format(siteDropdownLangBundle, 'Add Regional Content'),
-        onclick: { fn: CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride.createRegionalContent, obj: data }
+        onclick: {
+          fn: CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride.createRegionalContent,
+          obj: data
+        }
       }
     ]);
   },

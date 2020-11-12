@@ -34,7 +34,7 @@ export default function RepeatGroupItem(props: SvgIconProps) {
       </g>
       <defs>
         <clipPath id="clip0">
-          <rect x="0.5" y="0.615234" width="24.0006" height="24"/>
+          <rect x="0.5" y="0.615234" width="24.0006" height="24" />
         </clipPath>
       </defs>
     </SvgIcon>

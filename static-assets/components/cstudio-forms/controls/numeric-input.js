@@ -91,10 +91,11 @@
             break;
           }
 
-          const numType = obj.id.substring(obj.id.indexOf("_"));
+          const numType = obj.id.substring(obj.id.indexOf('_'));
           let numTypeRegex;
           let numTypeErrMessage;
-          if (numType === '_f' || numType === '_d') {   // with decimals
+          if (numType === '_f' || numType === '_d') {
+            // with decimals
             numTypeRegex = /^(\d|-)?(\d|,)*\.?\d*$/;
           } else {
             numTypeRegex = /^([+-]?[1-9]\d*|0)$/;
@@ -115,7 +116,6 @@
             validationExist = true;
             validationResult = false;
           }
-
         }
       }
       // actual validation is checked by # of errors
@@ -141,7 +141,7 @@
       const self = this;
       clearTimeout(el.inputTimeout);
 
-      el.inputTimeout = setTimeout(function () {
+      el.inputTimeout = setTimeout(function() {
         const element = el ? el : self,
           max = element.maxValue,
           min = element.minValue;
@@ -272,9 +272,22 @@
 
     getSupportedProperties: function() {
       return [
-        { label: CMgs.format(langBundle, 'displaySize'), name: 'size', type: 'int', defaultValue: '50' },
-        { label: formatMessage(numericInputControlMessages.maximun), name: 'maxValue', type: 'float' },
-        { label: formatMessage(numericInputControlMessages.minimun), name: 'minValue', type: 'float' },
+        {
+          label: CMgs.format(langBundle, 'displaySize'),
+          name: 'size',
+          type: 'int',
+          defaultValue: '50'
+        },
+        {
+          label: formatMessage(numericInputControlMessages.maximun),
+          name: 'maxValue',
+          type: 'float'
+        },
+        {
+          label: formatMessage(numericInputControlMessages.minimun),
+          name: 'minValue',
+          type: 'float'
+        },
         { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
         { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' }
       ];

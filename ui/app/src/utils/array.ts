@@ -21,13 +21,12 @@ export function forEach<T = any>(
   fn: (item: T, index: number, array: T[]) => any,
   emptyReturnValue: any = undefined
 ): any {
-  if ((emptyReturnValue != null) && (array?.length === 0)) {
+  if (emptyReturnValue != null && array?.length === 0) {
     return emptyReturnValue;
   }
   for (let i = 0, l = array.length; i < l; i++) {
     const result = fn(array[i], i, array);
     if (result === 'continue') {
-
     } else if (result === 'break') {
       break;
     } else if (result !== undefined) {
@@ -43,7 +42,7 @@ export function asArray<T = unknown>(value: T): T[] {
 
 export function createPresenceTable(list: string[]): LookupTable<boolean> {
   const table = {};
-  list.forEach(value => table[value] = true);
+  list.forEach((value) => (table[value] = true));
   return table;
 }
 

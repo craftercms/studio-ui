@@ -39,12 +39,7 @@ import ReceptaclesPanel from './Tools/ReceptaclesPanel';
 import InPageInstancesPanel from './Tools/InPageInstancesPanel';
 import { selectTool, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveSiteId,
-  usePreviewState,
-  useSelection,
-  useSidebarPanels
-} from '../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection, useSidebarPanels } from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import PageExplorer from './Tools/PageExplorer';
@@ -165,11 +160,7 @@ function UnknownPanel(props: UnknownPanelProps) {
   const classes = useStyles({});
   return (
     <ToolPanel title={translations.unknownPanelTitle}>
-      <Typography
-        component="div"
-        variant="body1"
-        className={`${classes.panelBodyInner} ${classes.center}`}
-      >
+      <Typography component="div" variant="body1" className={`${classes.panelBodyInner} ${classes.center}`}>
         <div>
           <WarningRounded />
         </div>
@@ -280,19 +271,14 @@ export default function ToolsPanel() {
         {site ? (
           <ConditionalLoadingState isLoading={!Boolean(tools)}>
             {Boolean(selectedTool) ? (
-              <Tool id={toolMeta?.id} {...toolMeta?.parameters}/>
+              <Tool id={toolMeta?.id} {...toolMeta?.parameters} />
             ) : (
               <ToolSelector tools={tools} />
             )}
           </ConditionalLoadingState>
         ) : (
           <EmptyState
-            title={
-              <FormattedMessage
-                id="previewTools.choseSiteMessage"
-                defaultMessage="Please choose site."
-              />
-            }
+            title={<FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose site." />}
             image={`${baseUrl}/static-assets/images/choose_option.svg`}
             classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
           />

@@ -268,7 +268,10 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         }
       },
       built: function() {
-        $image.cropper('setData', { width: parseInt(widthCropBox), height: parseInt(heightCropBox) });
+        $image.cropper('setData', {
+          width: parseInt(widthCropBox),
+          height: parseInt(heightCropBox)
+        });
         $dataHeight.val(heightCropBox);
         $dataWidth.val(widthCropBox);
         $('#zoomMessage').addClass('hidden');

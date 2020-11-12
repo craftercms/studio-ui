@@ -61,22 +61,13 @@ interface ResizeableDrawerProps extends DrawerProps {
 export default function ResizeableDrawer(props: ResizeableDrawerProps) {
   const classes = useStyles();
   const [hovered, setHovered] = useState(false);
-  const {
-    open,
-    children,
-    width,
-    onWidthChange,
-    className,
-    classes: propsClasses,
-    PaperProps,
-    ...rest
-  } = props;
+  const { open, children, width, onWidthChange, className, classes: propsClasses, PaperProps, ...rest } = props;
 
   const handleMouseMove = useCallback(
     (e) => {
       e.preventDefault();
       const newWidth = e.clientX - document.body.offsetLeft;
-      onWidthChange(newWidth+5);
+      onWidthChange(newWidth + 5);
     },
     [onWidthChange]
   );
@@ -102,7 +93,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
       PaperProps={{ ...PaperProps, style: { width } }}
       {...rest}
     >
-      <div onMouseDown={handleMouseDown} className={ clsx(classes.dragger, hovered && 'hovered')} />
+      <div onMouseDown={handleMouseDown} className={clsx(classes.dragger, hovered && 'hovered')} />
       {children}
     </Drawer>
   );

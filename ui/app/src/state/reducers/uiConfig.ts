@@ -16,11 +16,7 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  fetchSiteUiConfig,
-  fetchSiteUiConfigComplete,
-  fetchSiteUiConfigFailed
-} from '../actions/configuration';
+import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,

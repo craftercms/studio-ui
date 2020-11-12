@@ -75,8 +75,14 @@ CStudioForms.Controls.Time =
       { key: 'Etc/GMT', value: '(GMT) Coordinated Universal Time' },
       { key: 'Europe/London', value: '(GMT) Dublin, Edinburgh, Lisbon, London' },
       { key: 'Atlantic/Reykjavik', value: '(GMT) Monrovia, Reykjavik' },
-      { key: 'Europe/Berlin', value: '(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' },
-      { key: 'Europe/Budapest', value: '(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague' },
+      {
+        key: 'Europe/Berlin',
+        value: '(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna'
+      },
+      {
+        key: 'Europe/Budapest',
+        value: '(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague'
+      },
       { key: 'Europe/Paris', value: '(GMT+01:00) Brussels, Copenhagen, Madrid, Paris' },
       { key: 'Europe/Warsaw', value: '(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb' },
       { key: 'Africa/Lagos', value: '(GMT+01:00) West Central Africa' },
@@ -1258,9 +1264,24 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 
   getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, 'showClear'), name: 'showClear', type: 'boolean', defaultValue: 'false' },
-      { label: CMgs.format(langBundle, 'setNowLink'), name: 'showNowLink', type: 'boolean', defaultValue: 'false' },
-      { label: CMgs.format(langBundle, 'populated'), name: 'populate', type: 'boolean', defaultValue: 'true' },
+      {
+        label: CMgs.format(langBundle, 'showClear'),
+        name: 'showClear',
+        type: 'boolean',
+        defaultValue: 'false'
+      },
+      {
+        label: CMgs.format(langBundle, 'setNowLink'),
+        name: 'showNowLink',
+        type: 'boolean',
+        defaultValue: 'false'
+      },
+      {
+        label: CMgs.format(langBundle, 'populated'),
+        name: 'populate',
+        type: 'boolean',
+        defaultValue: 'true'
+      },
       {
         label: CMgs.format(langBundle, 'populateExpression'),
         name: 'populateDateExp',
@@ -1274,7 +1295,12 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
         defaultValue: 'false'
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'readonlyOnEdit'), name: 'readonlyEdit', type: 'boolean', defaultValue: 'false' }
+      {
+        label: CMgs.format(langBundle, 'readonlyOnEdit'),
+        name: 'readonlyEdit',
+        type: 'boolean',
+        defaultValue: 'false'
+      }
     ];
   },
 

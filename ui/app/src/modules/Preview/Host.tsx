@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) =>
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
-      }),
+      })
       //width: `calc(100% - ${DRAWER_WIDTH}px)`,
       //marginLeft: DRAWER_WIDTH
     }
@@ -93,21 +93,10 @@ interface HostPropsUI {
 const meta = { craftercms: true, source: 'host' };
 
 export function HostUI(props: HostPropsUI) {
-
   const classes = useStyles({});
   const { formatMessage } = useIntl();
 
-  const {
-    url,
-    site,
-    width,
-    origin,
-    height,
-    border,
-    className,
-    onMessage,
-    postMessage$ = NEVER
-  } = props;
+  const { url, site, width, origin, height, border, className, onMessage, postMessage$ = NEVER } = props;
   const iframeRef = useRef(null);
   const cls = clsx(classes.iframe, {
     [className || '']: !!className,
@@ -117,11 +106,8 @@ export function HostUI(props: HostPropsUI) {
   });
 
   useEffect(() => {
-
     const broadcastChannel =
-      window.BroadcastChannel !== undefined
-        ? new BroadcastChannel('org.craftercms.accommodationChannel')
-        : null;
+      window.BroadcastChannel !== undefined ? new BroadcastChannel('org.craftercms.accommodationChannel') : null;
 
     broadcastChannel?.addEventListener(
       'message',
@@ -146,20 +132,17 @@ export function HostUI(props: HostPropsUI) {
       )
       .subscribe(onMessage);
 
-    const hostToGuestSubscription = postMessage$
-      .pipe(map((action) => ({ ...action, meta })))
-      .subscribe((action) => {
-        const contentWindow = iframeRef.current.contentWindow;
-        contentWindow.postMessage(action, '*');
-        broadcastChannel?.postMessage(action);
-      });
+    const hostToGuestSubscription = postMessage$.pipe(map((action) => ({ ...action, meta }))).subscribe((action) => {
+      const contentWindow = iframeRef.current.contentWindow;
+      contentWindow.postMessage(action, '*');
+      broadcastChannel?.postMessage(action);
+    });
 
     return () => {
       guestToHostSubscription.unsubscribe();
       hostToGuestSubscription.unsubscribe();
       broadcastChannel && broadcastChannel.close();
     };
-
   }, [origin, onMessage, postMessage$]);
 
   return (
@@ -175,20 +158,14 @@ export function HostUI(props: HostPropsUI) {
       />
     </>
   );
-
 }
 
 export default function Host() {
-
   const classes = useStyles({});
   const site = useActiveSiteId();
-  const guestBase = useSelection<string>(state => state.env.guestBase);
+  const guestBase = useSelection<string>((state) => state.env.guestBase);
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
-  const {
-    hostSize,
-    currentUrl,
-    showToolsPanel
-  } = usePreviewState();
+  const { hostSize, currentUrl, showToolsPanel } = usePreviewState();
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
@@ -198,7 +175,7 @@ export default function Host() {
 
   return (
     <div
-      style={ showToolsPanel? { width: `calc(100% - ${toolsPanelWidth}px)` ,marginLeft: toolsPanelWidth} : {}}
+      style={showToolsPanel ? { width: `calc(100% - ${toolsPanelWidth}px)`, marginLeft: toolsPanelWidth } : {}}
       className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
     >
       <HostUI
@@ -213,5 +190,4 @@ export default function Host() {
       />
     </div>
   );
-
 }

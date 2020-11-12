@@ -51,7 +51,9 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
         searchId: null,
         itemsPerPage: 12,
         keywords: '',
-        filters: { 'mime-type': ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp'] },
+        filters: {
+          'mime-type': ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp']
+        },
         sortBy: 'internalName',
         sortOrder: 'asc',
         numFilters: 1,

@@ -28,10 +28,10 @@ export interface DropMarkerPositionArgs {
 }
 
 export interface DropMarkerPosition {
-  height?: number,
-  width?: number,
-  top: number,
-  left: number
+  height?: number;
+  width?: number;
+  top: number;
+  left: number;
 }
 
 export interface Highlight {
