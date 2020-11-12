@@ -61,7 +61,12 @@ export function getStore(): CrafterCMSStore {
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, { getIntl: () => IntlShape }>({
+  const epicMiddleware = createEpicMiddleware<
+    StandardAction,
+    StandardAction,
+    GlobalState,
+    { getIntl: () => IntlShape }
+  >({
     dependencies: { getIntl: getCurrentIntl }
   });
   const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
