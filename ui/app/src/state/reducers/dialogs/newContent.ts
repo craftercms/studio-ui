@@ -15,11 +15,7 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  closeNewContentDialog,
-  newContentDialogClosed,
-  showNewContentDialog
-} from '../../actions/dialogs';
+import { closeNewContentDialog, newContentDialogClosed, showNewContentDialog } from '../../actions/dialogs';
 import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
 
 const initialState: NewContentDialogStateProps = {

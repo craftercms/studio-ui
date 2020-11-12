@@ -35,7 +35,6 @@ import misc from './misc';
 import system from './system';
 import { CrafterCMSEpic } from '../store';
 
-
 const epic: CrafterCMSEpic = combineEpics.apply(this, [
   (action$) =>
     action$.pipe(

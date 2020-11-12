@@ -21,11 +21,7 @@ import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
 import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-  MuiPickersUtilsProvider
-} from '@material-ui/pickers';
+import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../../utils/datetime';

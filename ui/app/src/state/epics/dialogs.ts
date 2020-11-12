@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { Epic, ofType } from 'redux-observable';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -127,3 +127,5 @@ const dialogEpics: CrafterCMSEpic[] = [
       )
     )
 ] as Epic[];
+
+export default dialogEpics;

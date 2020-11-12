@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
@@ -51,7 +51,6 @@ import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
-import { makeStyles } from '@material-ui/core';
 
 const translations = defineMessages({
   title: {

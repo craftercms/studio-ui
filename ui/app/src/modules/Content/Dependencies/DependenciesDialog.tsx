@@ -46,11 +46,7 @@ import { useDispatch } from 'react-redux';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
-import {
-  showCodeEditorDialog,
-  showEditDialog,
-  showHistoryDialog
-} from '../../../state/actions/dialogs';
+import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../../state/actions/dialogs';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import { getRootPath } from '../../../utils/path';

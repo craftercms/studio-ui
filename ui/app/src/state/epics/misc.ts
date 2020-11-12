@@ -24,11 +24,7 @@ import {
   editTemplate as editTemplateAction
 } from '../actions/misc';
 import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
-import {
-  showCodeEditorDialog,
-  showEditDialog,
-  showWorkflowCancellationDialog
-} from '../actions/dialogs';
+import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
 import { showEditItemSuccessNotification } from '../actions/system';
 
