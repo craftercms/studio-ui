@@ -125,7 +125,13 @@ interface VersionListProps {
   selected?: string[];
   current?: string;
   onItemClick(version: LegacyVersion): void;
-  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, permissions: LookupTable<boolean>): void;
+  onOpenMenu?(
+    anchorEl: Element,
+    version: LegacyVersion,
+    isCurrent: boolean,
+    permissions: LookupTable<boolean>,
+    lastOne: boolean
+  ): void;
 }
 
 export function VersionList(props: VersionListProps) {
@@ -150,7 +156,10 @@ export function VersionList(props: VersionListProps) {
             divider={versions.length - 1 !== i}
             button
             onClick={() => onItemClick(version)}
-            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
+            className={clsx(
+              classes.listItem,
+              selected?.includes(version.versionNumber) && 'selected'
+            )}
           >
             <ListItemText
               classes={{
@@ -163,7 +172,9 @@ export function VersionList(props: VersionListProps) {
                   <AsDayMonthDateTime date={version.lastModifiedDate} />
                   {current === version.versionNumber && (
                     <Chip
-                      label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
+                      label={
+                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
+                      }
                       className={classes.chip}
                     />
                   )}
@@ -171,17 +182,24 @@ export function VersionList(props: VersionListProps) {
               }
               secondary={version.comment}
             />
-            {
-              onOpenMenu &&
+            {onOpenMenu && (
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
-                  onClick={(e) => onOpenMenu(e.currentTarget, version, current === version.versionNumber, permissions)}
+                  onClick={(e) =>
+                    onOpenMenu(
+                      e.currentTarget,
+                      version,
+                      current === version.versionNumber,
+                      permissions,
+                      versions.length === i + 1
+                    )
+                  }
                 >
                   <MoreVertIcon />
                 </IconButton>
               </ListItemSecondaryAction>
-            }
+            )}
           </ListItem>
         );
       })}

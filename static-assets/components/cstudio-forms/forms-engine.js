@@ -1688,19 +1688,18 @@ var CStudioForms =
               }
               //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
               sendMessage({ type: FORM_CANCEL });
-              var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
+              var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0],
+                editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
               if (acnDraftContent) {
                 unlockBeforeCancel(path);
               } else {
                 if (path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
-
                   CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
                     (response) => {
                       YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                       if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
-                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         var componentsOn = !!sessionStorage.getItem('components-on');
                         if (componentsOn) {
@@ -1714,6 +1713,8 @@ var CStudioForms =
                       }
                     }
                   );
+                } else {
+                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               }
             }

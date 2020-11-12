@@ -2866,7 +2866,11 @@
           var supportedProperty = supportedProps[i];
           //Assign default value if it exists
           var val = supportedProperty.defaultValue ? supportedProperty.defaultValue : '';
-          newDataSource.properties[newDataSource.properties.length] = { name: supportedProperty.name, value: val };
+          newDataSource.properties[newDataSource.properties.length] = {
+            name: supportedProperty.name,
+            value: val,
+            type: supportedProperty.type
+          };
         }
 
         form.datasources[form.datasources.length] = newDataSource;
