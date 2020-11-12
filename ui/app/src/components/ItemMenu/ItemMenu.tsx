@@ -69,9 +69,9 @@ import {
   assetDuplicate,
   itemCut,
   itemDuplicate,
+  itemPasted,
   reloadDetailedItem,
-  setClipBoard,
-  unSetClipBoard
+  setClipBoard
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import { makeStyles } from '@material-ui/core/styles';
@@ -79,13 +79,10 @@ import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
 import { rand } from '../Navigation/PathNavigator/utils';
 import {
-  emitSystemEvent,
-  itemsPasted,
   showCopyItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
-  showPasteItemSuccessNotification,
   showPublishItemSuccessNotification
 } from '../../state/actions/system';
 import Typography from '@material-ui/core/Typography';
@@ -105,7 +102,7 @@ interface ItemMenuUIProps {
   resource: { item: Resource<DetailedItem>; permissions: Resource<LookupTable<boolean>> };
   classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
   clipboard: {
-    type: 'cut | copy';
+    type: 'cut' | 'copy';
     paths: string[];
     sourceRootPath: string;
   };
@@ -145,16 +142,13 @@ export function ItemMenu(props: ItemMenuProps) {
     errorSelector: (source) => null
   });
 
-  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(
-    itemPermissions,
-    {
-      shouldResolve: (source) => Boolean(source),
-      shouldReject: (source) => false,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: (source) => source,
-      errorSelector: (source) => null
-    }
-  );
+  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(itemPermissions, {
+    shouldResolve: (source) => Boolean(source),
+    shouldReject: (source) => false,
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source,
+    errorSelector: (source) => null
+  });
 
   const onMenuItemClicked = (option: SectionItem) => {
     switch (option.id) {
@@ -177,10 +171,7 @@ export function ItemMenu(props: ItemMenuProps) {
                 items,
                 onContinue: showEditDialog({
                   src,
-                  onSaveSuccess: batchActions([
-                    showEditItemSuccessNotification(),
-                    reloadDetailedItem({ path })
-                  ])
+                  onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
                 })
               })
             );
@@ -188,10 +179,7 @@ export function ItemMenu(props: ItemMenuProps) {
             dispatch(
               showEditDialog({
                 src,
-                onSaveSuccess: batchActions([
-                  showEditItemSuccessNotification(),
-                  reloadDetailedItem({ path })
-                ])
+                onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
               })
             );
           }
@@ -261,18 +249,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'cut': {
-        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-          if (items?.length > 0) {
-            dispatch(
-              showWorkflowCancellationDialog({
-                items,
-                onContinue: itemCut({ path })
-              })
-            );
-          } else {
-            dispatch(itemCut({ path }));
-          }
-        });
+        dispatch(itemCut({ path }));
         break;
       }
       case 'copy': {
@@ -331,24 +308,22 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'paste': {
-        paste(site, item.path).subscribe(
-          (resultingPaths) => {
-            dispatch(
-              batchActions([
-                emitSystemEvent(itemsPasted({ target: item.path, resultingPaths })),
-                unSetClipBoard(),
-                showPasteItemSuccessNotification()
-              ])
-            );
-          },
-          (response) => {
-            dispatch(
-              showErrorDialog({
-                error: response
-              })
-            );
-          }
-        );
+        if (clipboard.type === 'cut') {
+          fetchWorkflowAffectedItems(site, clipboard.paths[0]).subscribe((items) => {
+            if (items?.length > 0) {
+              dispatch(
+                showWorkflowCancellationDialog({
+                  items,
+                  onContinue: itemPasted({ path: item.path })
+                })
+              );
+            } else {
+              dispatch(itemPasted({ path: item.path }));
+            }
+          });
+        } else {
+          dispatch(itemPasted({ path: item.path }));
+        }
         break;
       }
       case 'duplicateAsset': {
@@ -480,9 +455,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'viewCodeEditor': {
-        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(
-          item.path
-        )}&type=asset&readonly=true`;
+        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset&readonly=true`;
         dispatch(showCodeEditorDialog({ src }));
         break;
       }
@@ -535,13 +508,10 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
-  const hasClipboard =
-    clipboard?.paths.length && clipboard.sourceRootPath === getRootPath(item.path);
+  const hasClipboard = clipboard?.paths.length && clipboard.sourceRootPath === getRootPath(item.path);
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
-  return (
-    <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />
-  );
+  return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;
 }
 
 export const Loader = React.memo((props: { numOfItems?: number }) => {
@@ -551,12 +521,7 @@ export const Loader = React.memo((props: { numOfItems?: number }) => {
   return (
     <div className={classes.loadingWrapper}>
       {items.map((value, i) => (
-        <Typography
-          key={i}
-          variant="body2"
-          className={classes.typo}
-          style={{ width: `${rand(85, 100)}%` }}
-        >
+        <Typography key={i} variant="body2" className={classes.typo} style={{ width: `${rand(85, 100)}%` }}>
           <Skeleton animation="wave" width="100%" />
         </Typography>
       ))}

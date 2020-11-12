@@ -132,8 +132,7 @@ const useStyles = makeStyles((theme) =>
         height: '100%',
         top: '0',
         left: '7px',
-        backgroundColor:
-          theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light2,
+        backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light2,
         borderRadius: '5px'
       }
     },
@@ -268,11 +267,7 @@ function PublishForm(props: PublishFormProps) {
         <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>
           {formatMessage(messages.scheduling)}
         </InputLabel>
-        <RadioGroup
-          className={classes.radioGroup}
-          value={inputs.scheduling}
-          onChange={handleInputChange('scheduling')}
-        >
+        <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
           <FormControlLabel
             value="now"
             control={<Radio color="primary" className={classes.radioInput} />}
@@ -314,9 +309,7 @@ function PublishForm(props: PublishFormProps) {
 
       <div className={classes.formSection}>
         <FormControl fullWidth>
-          <InputLabel className={classes.sectionLabel}>
-            {formatMessage(messages.environment)}
-          </InputLabel>
+          <InputLabel className={classes.sectionLabel}>{formatMessage(messages.environment)}</InputLabel>
           {!publishingChannels && (
             <>
               <div className={classes.environmentLoaderContainer}>

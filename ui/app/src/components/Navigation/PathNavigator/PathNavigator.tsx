@@ -65,7 +65,6 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import {
-  fileUploaded,
   folderCreated,
   folderRenamed,
   itemCreated,
@@ -75,7 +74,7 @@ import {
   itemUpdated
 } from '../../../state/actions/system';
 import List from '@material-ui/core/List';
-import { PathNavigatorSkeletonItem } from './PathNavigatorSkeletonItem';
+import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 
 export interface WidgetProps {
   id: string;
@@ -132,15 +131,7 @@ const menuOptions = {
 
 // PathNavigator
 export default function PathNavigator(props: WidgetProps) {
-  const {
-    label,
-    icon = {},
-    container = {},
-    rootPath: path,
-    id = label?.replace(/\s/g, ''),
-    locale,
-    excludes
-  } = props;
+  const { label, icon = {}, container = {}, rootPath: path, id = label?.replace(/\s/g, ''), locale, excludes } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -190,64 +181,61 @@ export default function PathNavigator(props: WidgetProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      fileUploaded.type
+      itemCreated.type
     ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$
-      .pipe(filter((e) => events.includes(e.type)))
-      .subscribe(({ type, payload }) => {
-        switch (type) {
-          case itemCreated.type:
-          case itemUpdated.type:
-          case fileUploaded.type:
-          case folderRenamed.type:
-          case itemDuplicated.type: {
-            const parentPath = getParentPath(payload.target);
-            if (parentPath === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-            if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
-              dispatch(
-                pathNavigatorUpdate({
-                  id,
-                  leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
-                })
-              );
-            }
-            break;
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case itemCreated.type:
+        case itemUpdated.type:
+        case folderRenamed.type:
+        case itemDuplicated.type: {
+          const parentPath = getParentPath(payload.target);
+          if (parentPath === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
           }
-          case folderCreated.type:
-          case itemsPasted.type: {
-            if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-            if (state.leaves.some((path) => withoutIndex(path) === payload.target)) {
-              dispatch(
-                pathNavigatorUpdate({
-                  id,
-                  leaves: state.leaves.filter((path) => withoutIndex(path) !== payload.target)
-                })
-              );
-            }
-            break;
+          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
+              })
+            );
           }
-          case itemsDeleted.type: {
-            payload.targets.forEach((path) => {
-              if (withoutIndex(path) === withoutIndex(state.currentPath)) {
-                dispatch(
-                  pathNavigatorSetCurrentPath({
-                    id,
-                    path: getParentPath(withoutIndex(path))
-                  })
-                );
-              } else if (state.itemsInPath.includes(path)) {
-                dispatch(pathNavigatorRefresh({ id }));
-              }
-            });
-            break;
-          }
+          break;
         }
-      });
+        case folderCreated.type:
+        case itemsPasted.type: {
+          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
+          if (state.leaves.some((path) => withoutIndex(path) === payload.target)) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== payload.target)
+              })
+            );
+          }
+          break;
+        }
+        case itemsDeleted.type: {
+          payload.targets.forEach((path) => {
+            if (withoutIndex(path) === withoutIndex(state.currentPath)) {
+              dispatch(
+                pathNavigatorSetCurrentPath({
+                  id,
+                  path: getParentPath(withoutIndex(path))
+                })
+              );
+            } else if (state.itemsInPath.includes(path)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+          });
+          break;
+        }
+      }
+    });
     return () => {
       subscription.unsubscribe();
     };
@@ -473,10 +461,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
   // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<
-    DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
-  >(
+  const resource = useLogicResource<DetailedItem[], { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -487,8 +472,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
       },
       shouldRenew: (items, resource) => resource.complete,
       shouldReject: () => false,
-      resultSelector: ({ itemsInPath, itemsByPath }) =>
-        itemsInPath.map((path) => itemsByPath[path]),
+      resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
       errorSelector: null
     }
   );
@@ -517,9 +501,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
         }}
       >
         <Header
-          iconClassName={`${icon.baseClass} ${
-            state.collapsed ? icon.collapsedClass : icon.expandedClass
-          }`}
+          iconClassName={`${icon.baseClass} ${state.collapsed ? icon.collapsedClass : icon.expandedClass}`}
           style={{
             ...icon.baseStyle,
             ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
@@ -527,18 +509,12 @@ export function PathNavigatorUI(props: WidgetUIProps) {
           title={title}
           locale={state.localeCode}
           onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
-          onLanguageMenu={
-            siteLocales?.localeCodes?.length
-              ? (anchor) => onHeaderButtonClick(anchor, 'language')
-              : null
-          }
+          onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
         />
         <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
           <Breadcrumbs
             keyword={state.keyword}
-            breadcrumb={state.breadcrumb.map(
-              (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
-            )}
+            breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
             onMenu={onCurrentParentMenu}
             onSearch={(keyword) => onSearch(keyword)}
             onCrumbSelected={onBreadcrumbSelected}

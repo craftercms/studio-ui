@@ -25,32 +25,20 @@ export const itemCreated = createAction<{ target: string }>('ITEM_CREATED');
 
 export const folderCreated = createAction<{ target: string; name: string }>('FOLDER_CREATED');
 
-export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>(
-  'FOLDER_RENAMED'
-);
+export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
 
-export const itemsPasted = createAction<{ target: string; resultingPaths: string[] }>(
-  'ITEM_PASTED'
-);
+export const itemsPasted = createAction<{ target: string; resultingPaths: string[] }>('ITEM_PASTED');
 
 export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED');
 
-export const fileUploaded = createAction<{ target: string }>('FILE_UPLOADED');
-
-export const itemDuplicated = createAction<{ target: string; resultPath: string }>(
-  'ITEM_DUPLICATED'
-);
+export const itemDuplicated = createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
 
 //endregion
 
 // region Notifications
-export const showDeleteItemSuccessNotification = createAction(
-  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
-);
+export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
 
-export const showPublishItemSuccessNotification = createAction(
-  'SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION'
-);
+export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 
 export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
@@ -58,17 +46,11 @@ export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCC
 
 export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showPasteItemSuccessNotification = createAction(
-  'SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION'
-);
+export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
 
-export const showDuplicatedItemSuccessNotification = createAction(
-  'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
-);
+export const showDuplicatedItemSuccessNotification = createAction('SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION');
 
-export const showRevertItemSuccessNotification = createAction(
-  'SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION'
-);
+export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
 // endregion
 
 export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');

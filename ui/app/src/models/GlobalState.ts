@@ -100,7 +100,7 @@ export interface GlobalState {
       permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
     clipboard: {
-      type: 'cut | copy';
+      type: 'cut' | 'copy';
       paths: string[];
       sourceRootPath: string;
     };

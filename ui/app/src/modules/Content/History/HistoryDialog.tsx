@@ -52,7 +52,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchUserPermissions } from '../../../state/actions/content';
 import { asDayMonthDateTime } from '../../../utils/datetime';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const translations = defineMessages({
   previousPage: {
@@ -233,24 +233,20 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (versionsBranch) =>
-      Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => resource.complete,
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(
-    permissions,
-    {
-      shouldResolve: (permissions) => Boolean(permissions),
-      shouldReject: () => false,
-      shouldRenew: (permissions, resource) => resource.complete,
-      resultSelector: (permissions) => permissions,
-      errorSelector: () => null
-    }
-  );
+  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(permissions, {
+    shouldResolve: (permissions) => Boolean(permissions),
+    shouldReject: () => false,
+    shouldRenew: (permissions, resource) => resource.complete,
+    resultSelector: (permissions) => permissions,
+    errorSelector: () => null
+  });
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, permissions, initialCommit) => {
@@ -318,11 +314,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
 
   const compareTo = (versionNumber: string) => {
     dispatch(
-      batchActions([
-        fetchContentTypes(),
-        compareVersion({ id: versionNumber }),
-        compareVersionDialogWithActions()
-      ])
+      batchActions([fetchContentTypes(), compareVersion({ id: versionNumber }), compareVersionDialogWithActions()])
     );
   };
 
@@ -354,10 +346,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
-        onOk: batchActions([
-          closeConfirmDialog(),
-          revertToPreviousVersion({ id: activeItem.versionNumber })
-        ])
+        onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ id: activeItem.versionNumber })])
       })
     );
   };
@@ -370,10 +359,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
-        onOk: batchActions([
-          closeConfirmDialog(),
-          revertContent({ path, versionNumber: activeItem.versionNumber })
-        ])
+        onOk: batchActions([closeConfirmDialog(), revertContent({ path, versionNumber: activeItem.versionNumber })])
       })
     );
   };
@@ -440,12 +426,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           selectedItem={item}
           onItemClicked={(item) => {
             setOpenSelector(false);
-            dispatch(
-              batchActions([
-                versionsChangeItem({ item }),
-                fetchUserPermissions({ path: item.path })
-              ])
-            );
+            dispatch(batchActions([versionsChangeItem({ item }), fetchUserPermissions({ path: item.path })]));
           }}
         />
         <SuspenseWithEmptyState resource={versionsResource}>
@@ -459,9 +440,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
-        {count > 0 && (
-          <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
-        )}
+        {count > 0 && <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />}
       </DialogFooter>
       {Boolean(menu.anchorEl) && (
         <ContextMenu
@@ -504,9 +483,7 @@ export function Pagination(props: PaginationProps) {
       nextIconButtonProps={{
         'aria-label': formatMessage(translations.nextPage)
       }}
-      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
-        props.onPageChanged(nextPage)
-      }
+      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => props.onPageChanged(nextPage)}
     />
   );
 }

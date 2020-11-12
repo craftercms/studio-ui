@@ -46,9 +46,7 @@ export default [
       switchMap(([{ payload }, state]) => {
         const { id } = payload;
         const site = state.sites.active;
-        const storedState = JSON.parse(
-          localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`)
-        );
+        const storedState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`));
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
           pathNavigatorFetchParentItems({

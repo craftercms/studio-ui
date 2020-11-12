@@ -50,7 +50,7 @@ import { useDispatch } from 'react-redux';
 import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
-import { emitSystemEvent, fileUploaded } from '../../state/actions/system';
+import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { makeStyles } from '@material-ui/core';
 
 const translations = defineMessages({
@@ -262,16 +262,11 @@ function UppyItem(props: UppyItemProps) {
 
   return (
     <Card className={classes.cardRoot}>
-      {file.preview && (
-        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />
-      )}
+      {file.preview && <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />}
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography
-              variant="body2"
-              className={clsx(file.progress.status === 'failed' && classes.textFailed)}
-            >
+            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
@@ -318,14 +313,7 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const {
-    onStatusChange,
-    path,
-    site,
-    maxSimultaneousUploads,
-    onFileUploaded,
-    cancelRequestObservable$
-  } = props;
+  const { onStatusChange, path, site, maxSimultaneousUploads, onFileUploaded, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
@@ -389,9 +377,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy
-      .getFiles()
-      .some((file) => file.name === newFile.name && file.type === newFile.type);
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -552,12 +538,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                 filesPerPath[fileId].map(
                   (id: string) =>
                     files[id] && (
-                      <UppyItem
-                        file={files[id]}
-                        key={id}
-                        retryFileUpload={retryFileUpload}
-                        onRemove={onRemove}
-                      />
+                      <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} onRemove={onRemove} />
                     )
                 )}
             </div>
@@ -651,7 +632,7 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
 
   const onFileUploaded = useCallback(
     (path: string) => {
-      dispatch(emitSystemEvent(fileUploaded({ target: path })));
+      dispatch(emitSystemEvent(itemCreated({ target: path })));
     },
     [dispatch]
   );

@@ -29,7 +29,7 @@ import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
 import LookupTable from '../../../models/LookupTable';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({
@@ -126,10 +126,7 @@ export function VersionList(props: VersionListProps) {
             divider={versions.length - 1 !== i}
             button
             onClick={() => onItemClick(version)}
-            className={clsx(
-              classes.listItem,
-              selected?.includes(version.versionNumber) && 'selected'
-            )}
+            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
           >
             <ListItemText
               classes={{
@@ -142,9 +139,7 @@ export function VersionList(props: VersionListProps) {
                   <AsDayMonthDateTime date={version.lastModifiedDate} />
                   {current === version.versionNumber && (
                     <Chip
-                      label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
-                      }
+                      label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
                       className={classes.chip}
                     />
                   )}

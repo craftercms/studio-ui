@@ -76,12 +76,7 @@ export default function CreateFolderDialog(props: CreateFolderProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateFolderUI
-        {...props}
-        submitted={state.submitted}
-        inProgress={state.inProgress}
-        setState={setState}
-      />
+      <CreateFolderUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>
   );
 }
@@ -121,9 +116,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
             onRenamed?.({ path, name, rename });
-            dispatch(
-              emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
-            );
+            dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
@@ -186,9 +179,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
             shrink: true
           }}
           onChange={(event) =>
-            setName(
-              event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '')
-            )
+            setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
           }
         />
       </DialogBody>
@@ -196,13 +187,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         <Button onClick={onClose} variant="contained" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
-        <Button
-          onClick={() => onOk()}
-          variant="contained"
-          color="primary"
-          autoFocus
-          disabled={inProgress}
-        >
+        <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />

@@ -216,8 +216,7 @@ const messages = defineMessages({
   },
   videoProcessed: {
     id: 'search.videoProcessed',
-    defaultMessage:
-      'Video is being processed, preview will be available when processing is complete'
+    defaultMessage: 'Video is being processed, preview will be available when processing is complete'
   },
   selectAll: {
     id: 'search.selectAll',
@@ -261,10 +260,7 @@ export default function Search(props: SearchProps) {
   const { current: refs } = useRef<any>({});
   const { history, location, mode = 'default', onSelect } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
-  const searchParameters = useMemo(
-    () => setSearchParameters(initialSearchParameters, queryParams),
-    [queryParams]
-  );
+  const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
@@ -305,16 +301,14 @@ export default function Search(props: SearchProps) {
   }, [searchParameters, site]);
 
   useEffect(() => {
-    const subscription = onSearch$
-      .pipe(debounceTime(400), distinctUntilChanged())
-      .subscribe((keywords: string) => {
-        if (!keywords) keywords = undefined;
-        let qs = refs.createQueryString({ name: 'keywords', value: keywords });
-        history.push({
-          pathname: '/',
-          search: `?${qs}`
-        });
+    const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
+      if (!keywords) keywords = undefined;
+      let qs = refs.createQueryString({ name: 'keywords', value: keywords });
+      history.push({
+        pathname: '/',
+        search: `?${qs}`
       });
+    });
     return () => subscription.unsubscribe();
   }, [history, onSearch$, refs]);
 
@@ -354,12 +348,7 @@ export default function Search(props: SearchProps) {
         );
       });
     } else {
-      return (
-        <EmptyState
-          title={formatMessage(messages.noResults)}
-          subtitle={formatMessage(messages.changeQuery)}
-        />
-      );
+      return <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)} />;
     }
   }
 
@@ -413,11 +402,7 @@ export default function Search(props: SearchProps) {
         filter.value !== '_score'
       ) {
         newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'asc' };
-      } else if (
-        filter.name === 'sortBy' &&
-        queryParams['sortBy'] !== '_score' &&
-        filter.value === '_score'
-      ) {
+      } else if (filter.name === 'sortBy' && queryParams['sortBy'] !== '_score' && filter.value === '_score') {
         newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'desc' };
       } else {
         newFilters = { ...queryParams, [filter.name]: filter.value };
@@ -426,10 +411,7 @@ export default function Search(props: SearchProps) {
     return queryString.stringify(newFilters);
   }
 
-  function setSearchParameters(
-    initialSearchParameters: ElasticParams,
-    queryParams: Partial<ElasticParams>
-  ) {
+  function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: Partial<ElasticParams>) {
     let formatParameters = { ...queryParams };
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
@@ -455,10 +437,7 @@ export default function Search(props: SearchProps) {
     return { ...initialSearchParameters, ...formatParameters };
   }
 
-  function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number
-  ) {
+  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     let offset = newPage * searchParameters.limit;
     let qs = refs.createQueryString({ name: 'offset', value: offset });
     history.push({
@@ -467,9 +446,7 @@ export default function Search(props: SearchProps) {
     });
   }
 
-  function handleChangeRowsPerPage(
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     let qs = refs.createQueryString({ name: 'limit', value: parseInt(event.target.value, 10) });
     history.push({
       pathname: '/',
@@ -548,9 +525,7 @@ export default function Search(props: SearchProps) {
   const onNavigate = (item: MediaItem) => {
     if (item.path) {
       let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(
-        item.path
-      )}&site=${site}`;
+      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(item.path)}&site=${site}`;
     }
   };
 
@@ -700,9 +675,7 @@ export default function Search(props: SearchProps) {
             />
           )}
           <IconButton className={classes.avatarContent} onClick={handleChangeView}>
-            <Avatar className={classes.avatar}>
-              {currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}
-            </Avatar>
+            <Avatar className={classes.avatar}>{currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}</Avatar>
           </IconButton>
         </div>
       </header>
@@ -752,11 +725,7 @@ export default function Search(props: SearchProps) {
         {apiState.error ? (
           <ErrorState error={apiState.errorResponse} />
         ) : (
-          <Grid
-            container
-            spacing={3}
-            className={searchResults?.items.length === 0 ? classes.empty : ''}
-          >
+          <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
             {searchResults === null ? (
               <Spinner background="inherit" />
             ) : (
@@ -835,9 +804,7 @@ function SimpleMenu(props: SimpleMenuProps) {
       <Suspense
         fallback={
           <div className={classes.loadingWrapper}>
-            <Loader
-              numOfItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2}
-            />
+            <Loader numOfItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2} />
           </div>
         }
       >
@@ -892,9 +859,7 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
           {messages.preview}
         </MenuItem>
       )}
-      {!isWriteAllowed && !isDeleteAllowed && (
-        <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>
-      )}
+      {!isWriteAllowed && !isDeleteAllowed && <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>}
     </>
   );
 }

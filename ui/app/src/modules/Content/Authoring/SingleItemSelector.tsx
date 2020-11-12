@@ -128,9 +128,7 @@ interface SingleItemSelectorState extends PaginationOptions {
   breadcrumb: DetailedItem[];
 }
 
-const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (
-  props: SingleItemSelectorProps
-) => ({
+const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props: SingleItemSelectorProps) => ({
   byId: null,
   isFetching: null,
   error: null,
@@ -191,8 +189,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       const { currentPath, rootPath, byId } = state;
       let nextItems: any = { ...byId };
       let items = [];
-      let parentPath =
-        withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
+      let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
 
       payload.forEach((response: GetChildrenResponse, i: number) => {
         if (i === payload.length - 1) {
@@ -237,13 +234,9 @@ export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH'
 
 export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
 
-export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>(
-  'FETCH_PARENTS_ITEMS_COMPLETE'
-);
+export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>('FETCH_PARENTS_ITEMS_COMPLETE');
 
-export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>(
-  'FETCH_CHILDREN_BY_PATH_COMPLETE'
-);
+export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>('FETCH_CHILDREN_BY_PATH_COMPLETE');
 
 export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 

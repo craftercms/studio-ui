@@ -569,8 +569,7 @@ const codeEditorMessages = defineMessages({
   },
   localesConfirmBody: {
     id: 'codeEditor.localesConfirmBody',
-    defaultMessage:
-      'The template for the locale you selected does not exist. Do you want to create it now?'
+    defaultMessage: 'The template for the locale you selected does not exist. Do you want to create it now?'
   },
   localesSnackBarTitle: {
     id: 'codeEditor.localesSnackBarTitle',
@@ -704,13 +703,11 @@ const formEngineMessages = defineMessages({
 const dragAndDropMessages = defineMessages({
   componentNotWelcomeWithinDropZone: {
     id: 'dragAndDropMessages.componentNotWelcomeWithinDropZone',
-    defaultMessage:
-      'The drop zone does not support this type of component. Check your content model.'
+    defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
   },
   embeddedComponentsDndNotSupported: {
     id: 'dragAndDropMessages.embeddedComponentsDndNotSupported',
-    defaultMessage:
-      "Drag and drop on embedded components it's not supported yet. Please use the forms to edit content."
+    defaultMessage: "Drag and drop on embedded components it's not supported yet. Please use the forms to edit content."
   },
   embeddedComponentsDragWithinParentOnly: {
     id: 'dragAndDropMessages.embeddedComponentsDragWithinParentOnly',
@@ -859,8 +856,7 @@ const adminConfigurationMessages = defineMessages({
   },
   noEncryptItems: {
     id: 'adminConfigurations.noEncryptItems',
-    defaultMessage:
-      'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
+    defaultMessage: 'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
   },
   allEncrypted: {
     id: 'adminConfigurations.allEncrypted',
@@ -888,8 +884,7 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt2: {
     id: 'adminConfigurations.encryptHinPt2',
-    defaultMessage:
-      '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
+    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
   },
   encryptHintPt3: {
     id: 'adminConfigurations.encryptHinPt3',
@@ -983,8 +978,7 @@ const rteControlMessages = defineMessages({
 const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
-    defaultMessage:
-      'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
   }
 });
 
@@ -1002,8 +996,7 @@ const bulkUploadConfirmDialogMessages = defineMessages({
   },
   description: {
     id: 'bulkUploadConfirmDialogMessages.description',
-    defaultMessage:
-      'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
+    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
   }
 });
 
@@ -1397,8 +1390,7 @@ export const itemSuccessMessages = defineMessages({
   },
   itemCopied: {
     id: 'item.copied',
-    defaultMessage:
-      '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
+    defaultMessage: '{count, plural, one {Item copied to clipboard} other {Items copied to clipboard}}'
   },
   itemPasted: {
     id: 'item.pasted',

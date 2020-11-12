@@ -39,10 +39,7 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
-    [pathNavigatorInit.type]: (
-      state,
-      { payload: { id, path, locale = 'en', collapsed = false } }
-    ) => {
+    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {
       return {
         ...state,
         [id]: {
@@ -83,10 +80,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorConditionallySetPathComplete.type]: (
-      state,
-      { payload: { id, path, response } }
-    ) => {
+    [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, response } }) => {
       if (response.length > 0) {
         return {
           ...state,

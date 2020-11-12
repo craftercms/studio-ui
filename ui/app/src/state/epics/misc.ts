@@ -45,10 +45,7 @@ const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
           map(() =>
             showEditDialog({
               src,
-              onSaveSuccess: batchActions([
-                showEditItemSuccessNotification(),
-                reloadDetailedItem({ path })
-              ])
+              onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
             })
           )
         );

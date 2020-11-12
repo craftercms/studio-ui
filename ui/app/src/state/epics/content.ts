@@ -30,10 +30,18 @@ import {
   fetchUserPermissionsFailed,
   itemCut,
   itemDuplicate,
-  reloadDetailedItem
+  itemPasted,
+  reloadDetailedItem,
+  unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { cut, duplicate, fetchQuickCreateList, getDetailedItem } from '../../services/content';
+import {
+  cut,
+  duplicate,
+  fetchQuickCreateList,
+  getDetailedItem,
+  paste
+} from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -41,7 +49,13 @@ import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
-import { emitSystemEvent, itemDuplicated, showCutItemSuccessNotification } from '../actions/system';
+import {
+  emitSystemEvent,
+  itemDuplicated,
+  itemsPasted,
+  showCutItemSuccessNotification,
+  showPasteItemSuccessNotification
+} from '../actions/system';
 import { batchActions } from '../actions/misc';
 
 const content = [
@@ -51,10 +65,7 @@ const content = [
       ofType(fetchQuickCreateListAction.type),
       withLatestFrom($state),
       switchMap(([, { sites: { active } }]) =>
-        fetchQuickCreateList(active).pipe(
-          map(fetchQuickCreateListComplete),
-          catchAjaxError(fetchQuickCreateListFailed)
-        )
+        fetchQuickCreateList(active).pipe(map(fetchQuickCreateListComplete), catchAjaxError(fetchQuickCreateListFailed))
       )
     ),
   // endregion
@@ -171,6 +182,24 @@ const content = [
             } else {
               return NEVER;
             }
+          })
+        );
+      })
+    ),
+  // endregion
+  // region Item Pasted
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(itemPasted.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return paste(state.sites.active, payload.path).pipe(
+          map((resultingPaths) => {
+            return batchActions([
+              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths })),
+              unSetClipBoard(),
+              showPasteItemSuccessNotification()
+            ]);
           })
         );
       })

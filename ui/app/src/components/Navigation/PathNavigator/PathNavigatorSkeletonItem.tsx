@@ -21,17 +21,11 @@ import Typography from '@material-ui/core/Typography';
 import { rand } from './utils';
 import React from 'react';
 
-export function PathNavigatorSkeletonItem() {
+export default function PathNavigatorSkeletonItem() {
   const classes = useStyles();
   return (
     <ListItem className={classes.navItem} style={{ height: '25px' }}>
-      <Skeleton
-        animation="wave"
-        variant="circle"
-        className={classes.typeIcon}
-        height={15}
-        width={15}
-      />
+      <Skeleton animation="wave" variant="circle" className={classes.typeIcon} height={15} width={15} />
       <Typography variant="body2" style={{ width: `${rand(70, 80)}%` }}>
         <Skeleton animation="wave" width="100%" />
       </Typography>

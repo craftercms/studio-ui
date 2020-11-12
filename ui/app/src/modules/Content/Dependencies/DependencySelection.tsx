@@ -164,15 +164,9 @@ export function DependencySelection(props: DependencySelectionProps) {
 
   return (
     <>
-      <div
-        className={`${classes.dependencySelection} ${
-          disabled ? classes.dependencySelectionDisabled : ''
-        }`}
-      >
+      <div className={`${classes.dependencySelection} ${disabled ? classes.dependencySelectionDisabled : ''}`}>
         <SelectionList
-          title={
-            <FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />
-          }
+          title={<FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />}
           items={items}
           onItemClicked={onClickSetChecked}
           onSelectAllClicked={onSelectAllClicked}
@@ -184,35 +178,17 @@ export function DependencySelection(props: DependencySelectionProps) {
         {deps == null ? null : (
           <>
             <SelectionList
-              title={
-                <FormattedMessage
-                  id="publishDialog.hardDependencies"
-                  defaultMessage="Hard Dependencies"
-                />
-              }
+              title={<FormattedMessage id="publishDialog.hardDependencies" defaultMessage="Hard Dependencies" />}
               subtitle={
-                <FormattedMessage
-                  id="publishDialog.submissionMandatory"
-                  defaultMessage="Submission Mandatory"
-                />
+                <FormattedMessage id="publishDialog.submissionMandatory" defaultMessage="Submission Mandatory" />
               }
               uris={deps.items1}
               displayItemTitle={false}
               disabled={disabled}
             />
             <SelectionList
-              title={
-                <FormattedMessage
-                  id="publishDialog.softDependencies"
-                  defaultMessage="Soft Dependencies"
-                />
-              }
-              subtitle={
-                <FormattedMessage
-                  id="publishDialog.submissionOptional"
-                  defaultMessage="Submission Optional"
-                />
-              }
+              title={<FormattedMessage id="publishDialog.softDependencies" defaultMessage="Soft Dependencies" />}
+              subtitle={<FormattedMessage id="publishDialog.submissionOptional" defaultMessage="Submission Optional" />}
               uris={deps.items2}
               onItemClicked={setCheckedSoftDep}
               onSelectAllClicked={onSelectAllSoftClicked}
@@ -240,16 +216,8 @@ export function DependencySelection(props: DependencySelectionProps) {
           // If no onClickShowAllDeps function defined, don't show button
           showDepsButton &&
           onClickShowAllDeps && (
-            <Button
-              color="primary"
-              onClick={onClickShowAllDeps}
-              size="small"
-              className={classes.showAllBtn}
-            >
-              <FormattedMessage
-                id="publishDialog.showAllDependencies"
-                defaultMessage="Show All Dependencies"
-              />
+            <Button color="primary" onClick={onClickShowAllDeps} size="small" className={classes.showAllBtn}>
+              <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
             </Button>
           )
         )}
@@ -313,22 +281,13 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
       <>
         <SelectionList
           title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
-          subtitle={
-            <FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />
-          }
+          subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
           uris={resultItems.childItems}
           displayItemTitle={false}
         />
         <SelectionList
-          title={
-            <FormattedMessage id="deleteDialog.dependentItems" defaultMessage="Dependent Items" />
-          }
-          subtitle={
-            <FormattedMessage
-              id="deleteDialog.brokenItems"
-              defaultMessage="Will have broken references"
-            />
-          }
+          title={<FormattedMessage id="deleteDialog.dependentItems" defaultMessage="Dependent Items" />}
+          subtitle={<FormattedMessage id="deleteDialog.brokenItems" defaultMessage="Will have broken references" />}
           uris={resultItems.dependentItems}
           displayItemTitle={false}
           showEdit

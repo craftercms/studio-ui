@@ -124,9 +124,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
         {onOpenItemMenu && (
           <IconButton
-            aria-label={
-              isLeaf ? formatMessage(translations.view) : formatMessage(translations.noChildren)
-            }
+            aria-label={isLeaf ? formatMessage(translations.view) : formatMessage(translations.noChildren)}
             className={classes.itemIconButton}
             onClick={(event) => {
               event.stopPropagation();

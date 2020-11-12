@@ -140,9 +140,7 @@ const getDateTimeMoment = (dateString, timezoneObj) => {
   switch (typeof dateString) {
     case 'string':
     case 'number':
-      dateMoment = timezoneObj
-        ? moment.tz(dateString, timezoneObj.timezoneName)
-        : moment.tz(dateString);
+      dateMoment = timezoneObj ? moment.tz(dateString, timezoneObj.timezoneName) : moment.tz(dateString);
       break;
     case 'object':
       // moment object, stays the same
@@ -190,9 +188,7 @@ function DateTimePicker(props: DateTimePickerProps) {
 
   let dateMoment;
   let timeMoment;
-  let timezoneObj = timezones.find(
-    (tz) => tz.timezoneName === unescape(timeZonePickerProps.timezone)
-  );
+  let timezoneObj = timezones.find((tz) => tz.timezoneName === unescape(timeZonePickerProps.timezone));
   dateMoment = getDateTimeMoment(date, timezoneObj);
   timeMoment = getDateTimeMoment(date, timezoneObj);
   const { formatMessage } = useIntl();
@@ -301,9 +297,7 @@ function DateTimePicker(props: DateTimePickerProps) {
       {controls.includes('timezone') && (
         <Autocomplete
           options={timezones}
-          getOptionLabel={(timezone: timezoneType) =>
-            `${timezone.timezoneName} (GMT${timezone.timezoneOffset})`
-          }
+          getOptionLabel={(timezone: timezoneType) => `${timezone.timezoneName} (GMT${timezone.timezoneOffset})`}
           defaultValue={timezoneObj}
           onChange={handleTimezoneChange}
           size="small"

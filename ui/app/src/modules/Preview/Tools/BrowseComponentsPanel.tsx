@@ -151,9 +151,7 @@ export default function BrowseComponentsPanel() {
   const [keyword, setKeyword] = useState(initialKeyword);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const contentTypes = contentTypesBranch.byId
-    ? Object.values(contentTypesBranch.byId).filter(
-        (contentType) => contentType.type === 'component'
-      )
+    ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
     : null;
   const isFetching = useSelection((state) => state.preview.components.isFetching);
   const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
@@ -169,17 +167,9 @@ export default function BrowseComponentsPanel() {
         const items =
           source.page[source.pageNumber]
             ?.map((id: string) => source.byId[id])
-            .filter(
-              (item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter
-            ) || [];
+            .filter((item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter) || [];
         return {
-          ...pluckProps(
-            source,
-            'count',
-            'query.limit' as 'limit',
-            'pageNumber',
-            'contentTypeFilter'
-          ),
+          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber', 'contentTypeFilter'),
           items
         } as ComponentResource;
       }
@@ -207,10 +197,7 @@ export default function BrowseComponentsPanel() {
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function onPageChanged(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number
-  ) {
+  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchComponentsByContentType(null, { offset: newPage }));
   }
 
@@ -293,14 +280,7 @@ interface BrowsePanelUIProps {
 }
 
 function BrowsePanelUI(props: BrowsePanelUIProps) {
-  const {
-    componentsResource,
-    classes,
-    onPageChanged,
-    onDragStart,
-    onDragEnd,
-    chooseContentTypeImageUrl
-  } = props;
+  const { componentsResource, classes, onPageChanged, onDragStart, onDragEnd, chooseContentTypeImageUrl } = props;
   const { formatMessage } = useIntl();
   const components = componentsResource.read();
   const { count, pageNumber, items, limit, contentTypeFilter } = components;
@@ -325,9 +305,7 @@ function BrowsePanelUI(props: BrowsePanelUIProps) {
                 'aria-label': formatMessage(translations.nextPage),
                 size: 'small'
               }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-                onPageChanged(e, page * limit)
-              }
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
             />
           </div>
           <List className={classes.list}>

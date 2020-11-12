@@ -102,14 +102,7 @@ export default function ChangeContentTypeDialog(props: ChangeContentTypeDialogPr
 }
 
 function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
-  const {
-    onDismiss,
-    item,
-    onContentTypeSelected,
-    compact = false,
-    rootPath,
-    selectedContentType
-  } = props;
+  const { onDismiss, item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -138,9 +131,7 @@ function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
     if (selectedItem.path) {
       fetchLegacyContentTypes(site, selectedItem.path).subscribe(
         (response) => {
-          setContentTypes(
-            response.filter((contentType) => contentType.type === selectedItem.systemType)
-          );
+          setContentTypes(response.filter((contentType) => contentType.type === selectedItem.systemType));
         },
         (response) => {
           dispatch(showErrorDialog({ error: response }));
@@ -201,12 +192,7 @@ function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
             />
           </Box>
           <Box className={classes.searchBox}>
-            <SearchBar
-              onChange={onSearch}
-              keyword={keyword}
-              autoFocus
-              showActionButton={Boolean(keyword)}
-            />
+            <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
           </Box>
         </Box>
         <SuspenseWithEmptyState
@@ -240,13 +226,7 @@ function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
       <DialogFooter>
         <FormControlLabel
           className={classes.compact}
-          control={
-            <Checkbox
-              checked={isCompact}
-              onChange={() => setIsCompact(!isCompact)}
-              color="primary"
-            />
-          }
+          control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
           label={formatMessage(translations.compactInput)}
         />
       </DialogFooter>

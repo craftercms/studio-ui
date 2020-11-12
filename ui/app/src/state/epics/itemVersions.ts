@@ -54,10 +54,7 @@ export default [
               payload.module ?? state.versions.module
             )
           : getContentHistory(state.sites.active, payload.path ?? state.versions.item.path);
-        return service.pipe(
-          map(fetchItemVersionsComplete),
-          catchAjaxError(fetchItemVersionsFailed)
-        );
+        return service.pipe(map(fetchItemVersionsComplete), catchAjaxError(fetchItemVersionsFailed));
       })
     ),
   (action$, state$: StateObservable<GlobalState>) =>

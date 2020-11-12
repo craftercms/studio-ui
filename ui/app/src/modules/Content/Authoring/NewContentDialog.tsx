@@ -168,9 +168,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   };
 
   const onSelectedContentType = (contentType: LegacyFormConfig) => {
-    const path = selectedItem?.path.endsWith('.xml')
-      ? selectedItem.path.replace(/[^/]*$/, '')
-      : selectedItem?.path;
+    const path = selectedItem?.path.endsWith('.xml') ? selectedItem.path.replace(/[^/]*$/, '') : selectedItem?.path;
     onContentTypeSelected?.({
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
       onSaveSuccess: batchActions([closeNewContentDialog(), newContentCreationComplete()])
@@ -191,11 +189,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   }, [dispatch, selectedItem, site]);
 
   const resource = useLogicResource(
-    useMemo(() => ({ contentTypes, selectedFilter, debounceKeyword }), [
-      contentTypes,
-      selectedFilter,
-      debounceKeyword
-    ]),
+    useMemo(() => ({ contentTypes, selectedFilter, debounceKeyword }), [contentTypes, selectedFilter, debounceKeyword]),
     {
       shouldResolve: ({ contentTypes }) => Boolean(contentTypes),
       shouldReject: () => null,
@@ -248,12 +242,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
             />
           </Box>
           <Box className={classes.searchBox}>
-            <SearchBar
-              onChange={onSearch}
-              keyword={keyword}
-              autoFocus
-              showActionButton={Boolean(keyword)}
-            />
+            <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
           </Box>
         </Box>
         <SuspenseWithEmptyState
@@ -267,10 +256,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
                 image: classes.emptyStateImg
               },
               title: (
-                <FormattedMessage
-                  id="newContentDialog.emptyStateMessage"
-                  defaultMessage="No Content Types Found"
-                />
+                <FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />
               )
             }
           }}
@@ -286,20 +272,10 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
       <DialogFooter>
         <FormControlLabel
           className={classes.compact}
-          control={
-            <Checkbox
-              checked={isCompact}
-              onChange={() => setIsCompact(!isCompact)}
-              color="primary"
-            />
-          }
+          control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
           label={formatMessage(translations.compactInput)}
         />
-        <ContentTypesFilter
-          filters={filters}
-          selected={selectedFilter}
-          onFilterChange={setSelectedFilter}
-        />
+        <ContentTypesFilter filters={filters} selected={selectedFilter} onFilterChange={setSelectedFilter} />
       </DialogFooter>
     </>
   );

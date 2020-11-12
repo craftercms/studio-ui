@@ -112,9 +112,7 @@ export default [
   (action$, state$: Observable<GlobalState>) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
-      switchMap(({ payload }) =>
-        payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER
-      )
+      switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
     ),
   (action$, state$) =>
     action$.pipe(

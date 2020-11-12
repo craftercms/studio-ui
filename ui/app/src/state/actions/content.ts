@@ -22,9 +22,7 @@ import StandardAction from '../../models/StandardAction';
 
 // region Quick Create
 export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
-export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>(
-  'FETCH_QUICK_CREATE_LIST_COMPLETE'
-);
+export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>('FETCH_QUICK_CREATE_LIST_COMPLETE');
 export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
@@ -55,11 +53,9 @@ export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
 // region item
-export const itemDuplicate = createAction<{ path: string; onSuccess: StandardAction }>(
-  'ITEM_DUPlICATE'
-);
-export const assetDuplicate = createAction<{ path: string; onSuccess: StandardAction }>(
-  'ASSET_DUPlICATE'
-);
-export const itemCut = createAction<{ path: string }>('ITEM_CUT');
+export const itemDuplicate = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_ITEM_DUPlICATE');
+export const assetDuplicate = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_ASSET_DUPlICATE');
+export const itemCut = createAction<{ path: string }>('ITEM_MENU_ITEM_CUT');
+
+export const itemPasted = createAction<{ path: string }>('ITEM_MENU_ITEM_PASTED');
 // endregion

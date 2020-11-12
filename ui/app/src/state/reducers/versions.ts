@@ -31,9 +31,7 @@ interface HistoryConfigProps {
 
 export const fetchItemVersions = createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
 
-export const fetchItemVersionsComplete = createAction<VersionsResponse>(
-  'FETCH_ITEM_VERSIONS_COMPLETE'
-);
+export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
 
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 

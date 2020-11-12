@@ -158,25 +158,20 @@ export default function AssetsPanel() {
   const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useSelectorResource<AssetResource, PagedEntityState<MediaItem>>(
-    (state) => state.preview.assets,
-    {
-      shouldRenew: (source, resource) => resource.complete,
-      shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
-      shouldReject: (source) => nnou(source.error),
-      errorSelector: (source) => source.error,
-      resultSelector: (source) => {
-        const items = source.page[source.pageNumber].map((id) => source.byId[id]);
-        return {
-          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber'),
-          items
-        } as AssetResource;
-      }
+  const resource = useSelectorResource<AssetResource, PagedEntityState<MediaItem>>((state) => state.preview.assets, {
+    shouldRenew: (source, resource) => resource.complete,
+    shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
+    shouldReject: (source) => nnou(source.error),
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => {
+      const items = source.page[source.pageNumber].map((id) => source.byId[id]);
+      return {
+        ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber'),
+        items
+      } as AssetResource;
     }
-  );
-  const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>(
-    (state) => state.env
-  );
+  });
+  const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
   const elementRef = useRef();
@@ -265,17 +260,13 @@ export default function AssetsPanel() {
     }
   }, [dragInProgress, onDragDrop]);
 
-  const onSearch = useCallback(
-    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })),
-    [dispatch]
-  );
+  const onSearch = useCallback((keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })), [
+    dispatch
+  ]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function onPageChanged(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number
-  ) {
+  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
   }
 
@@ -285,17 +276,10 @@ export default function AssetsPanel() {
   }
 
   return (
-    <ToolPanel
-      title={translations.assetsPanel}
-      classes={dragInProgress ? { body: classes.noScroll } : null}
-    >
+    <ToolPanel title={translations.assetsPanel} classes={dragInProgress ? { body: classes.noScroll } : null}>
       <div ref={elementRef}>
         <div className={classes.search}>
-          <SearchBar
-            showActionButton={Boolean(keyword)}
-            onChange={handleSearchKeyword}
-            keyword={keyword}
-          />
+          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
         </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
           {dragInProgress && (
@@ -320,15 +304,7 @@ export default function AssetsPanel() {
 interface AssetsPanelUIProps {
   guestBase: string;
   classes?: Partial<
-    Record<
-      | 'assetsPanelWrapper'
-      | 'pagination'
-      | 'toolbar'
-      | 'card'
-      | 'noResultsImage'
-      | 'noResultsTitle',
-      string
-    >
+    Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>
   >;
   assetsResource: Resource<AssetResource>;
   onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
@@ -360,9 +336,7 @@ export function AssetsPanelUI(props: AssetsPanelUIProps) {
           'aria-label': formatMessage(translations.nextPage),
           size: 'small'
         }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-          onPageChanged(e, page * limit)
-        }
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
       />
       {items.map((item: MediaItem) => {
         return (

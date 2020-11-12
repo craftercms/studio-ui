@@ -127,14 +127,7 @@ interface QuickCreateSectionProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const {
-    open,
-    onClose,
-    anchorEl,
-    resource,
-    onNewContentSelected,
-    onQuickCreateItemSelected
-  } = props;
+  const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected } = props;
   const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const baseFormSrc = `${authoringBase}/legacy/form`;
@@ -159,11 +152,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
         <Suspencified loadingStateProps={{ classes: { graphic: classes.quickCreateLoadingState } }}>
-          <QuickCreateSection
-            classes={classes}
-            resource={resource}
-            onItemSelected={onFormDisplay}
-          />
+          <QuickCreateSection classes={classes} resource={resource} onItemSelected={onFormDisplay} />
         </Suspencified>
       </Menu>
     </>
@@ -224,7 +213,7 @@ function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
       onClick={onMenuBtnClick}
       aria-label={formatMessage(translations.quickCreateBtnLabel)}
     >
-      <AddCircleIcon fontSize="large"  />
+      <AddCircleIcon fontSize="large" />
     </IconButton>
   );
 }

@@ -71,17 +71,12 @@ import { fetchUserPermissions } from '../../../state/actions/content';
 
 const assetsTypes = {
   'all-deps': {
-    label: (
-      <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies" />
-    ),
+    label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies" />,
     filter: () => true
   },
   'content-items': {
-    label: (
-      <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only" />
-    ),
-    filter: (dependency: SandboxItem) =>
-      dependency.systemType === 'component' || dependency.systemType === 'page'
+    label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only" />,
+    filter: (dependency: SandboxItem) => dependency.systemType === 'component' || dependency.systemType === 'page'
   },
   assets: {
     label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
@@ -183,10 +178,7 @@ interface DependenciesListProps {
   compactView: boolean;
   showTypes: string;
 
-  handleContextMenuClick(
-    event: React.MouseEvent<HTMLButtonElement>,
-    dependency: DetailedItem
-  ): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
 }
 
 function DependenciesList(props: DependenciesListProps) {
@@ -249,10 +241,7 @@ interface DependenciesDialogUIProps {
   handleHistoryDisplay(item: DetailedItem): void;
   contextMenu: any;
 
-  handleContextMenuClick(
-    event: React.MouseEvent<HTMLButtonElement>,
-    dependency: DetailedItem
-  ): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
 
   handleContextMenuClose(): void;
 }
@@ -315,10 +304,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 />
               </MenuItem>
               <MenuItem value="depends-on-me">
-                <FormattedMessage
-                  id="dependenciesDialog.dependsOnMe"
-                  defaultMessage="Dependencies of selected item"
-                />
+                <FormattedMessage id="dependenciesDialog.dependsOnMe" defaultMessage="Dependencies of selected item" />
               </MenuItem>
             </Select>
           </FormControl>
@@ -359,12 +345,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             showTypes={showTypes}
             handleContextMenuClick={handleContextMenuClick}
           />
-          <Menu
-            anchorEl={contextMenu.el}
-            keepMounted
-            open={Boolean(contextMenu.el)}
-            onClose={handleContextMenuClose}
-          >
+          <Menu anchorEl={contextMenu.el} keepMounted open={Boolean(contextMenu.el)} onClose={handleContextMenuClose}>
             {contextMenu.dependency && isEditableItem(contextMenu.dependency.path) && (
               <MenuItem
                 onClick={() => {
@@ -382,10 +363,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                   handleContextMenuClose();
                 }}
               >
-                <FormattedMessage
-                  id="dependenciesDialog.dependencies"
-                  defaultMessage="Dependencies"
-                />
+                <FormattedMessage id="dependenciesDialog.dependencies" defaultMessage="Dependencies" />
               </MenuItem>
             )}
             <MenuItem
@@ -542,16 +520,13 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
     return { deps, error };
   }, [deps, error]);
 
-  const resource = useLogicResource<DetailedItem[], { deps: DetailedItem[]; error: ApiResponse }>(
-    depsSource,
-    {
-      shouldResolve: (source) => Boolean(source.deps),
-      shouldReject: (source) => Boolean(source.error),
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: (source) => source.deps,
-      errorSelector: (source) => source.error
-    }
-  );
+  const resource = useLogicResource<DetailedItem[], { deps: DetailedItem[]; error: ApiResponse }>(depsSource, {
+    shouldResolve: (source) => Boolean(source.deps),
+    shouldReject: (source) => Boolean(source.error),
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source.deps,
+    errorSelector: (source) => source.error
+  });
 
   const getDepsItems = useCallback(
     (siteId: string, path: string, newItem?: boolean) => {
@@ -629,10 +604,7 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
     setDialog({ dependenciesShown });
   };
 
-  const handleContextMenuClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    dependency: DetailedItem
-  ) => {
+  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
     setContextMenu({
       el: event.currentTarget,
       dependency

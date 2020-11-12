@@ -141,15 +141,12 @@ export default function InPageInstancesPanel() {
       contentTypeFilter
     },
     {
-      shouldRenew: (source, resource) =>
-        Boolean(contentTypeFilter) && !keyword && resource.complete,
+      shouldRenew: (source, resource) => Boolean(contentTypeFilter) && !keyword && resource.complete,
       shouldResolve: (source) => Boolean(source.models),
       shouldReject: (source) => false,
       errorSelector: (source) => null,
       resultSelector: (source) => {
-        return Object.values(source.models)?.filter(
-          (model) => model.craftercms.contentTypeId === contentTypeFilter
-        );
+        return Object.values(source.models)?.filter((model) => model.craftercms.contentTypeId === contentTypeFilter);
       }
     }
   );
@@ -255,9 +252,7 @@ function InPageInstancesUI(props: InPageInstancesUIProps) {
       ) : (
         <EmptyState
           title={
-            contentTypeFilter
-              ? formatMessage(translations.noResults)
-              : formatMessage(translations.chooseContentType)
+            contentTypeFilter ? formatMessage(translations.noResults) : formatMessage(translations.chooseContentType)
           }
           classes={{ title: classes.emptyStateTitle }}
         />

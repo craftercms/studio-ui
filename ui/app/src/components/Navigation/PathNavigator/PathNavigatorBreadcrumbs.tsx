@@ -86,10 +86,7 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
                   variant="subtitle2"
                   underline="always"
                   TypographyClasses={{
-                    root: clsx(
-                      classes.breadcrumbsTypography,
-                      maxIndex === i && classes.breadcrumbLast
-                    )
+                    root: clsx(classes.breadcrumbsTypography, maxIndex === i && classes.breadcrumbLast)
                   }}
                   onClick={() => onCrumbSelected(item)}
                   children={item.label}
@@ -115,11 +112,7 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               </IconButton>
             )}
             {onSearch && (
-              <IconButton
-                aria-label="search"
-                className={clsx(classes.iconButton)}
-                onClick={() => setShowSearch(true)}
-              >
+              <IconButton aria-label="search" className={clsx(classes.iconButton)} onClick={() => setShowSearch(true)}>
                 <SearchRoundedIcon />
               </IconButton>
             )}

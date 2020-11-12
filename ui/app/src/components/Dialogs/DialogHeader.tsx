@@ -92,14 +92,8 @@ export type DialogTitleProps<
 > = PropsWithChildren<{
   id?: string;
   title: ReactNode;
-  titleTypographyProps?: TypographyProps<
-    PrimaryTypographyComponent,
-    { component?: PrimaryTypographyComponent }
-  >;
-  subtitleTypographyProps?: TypographyProps<
-    SecondaryTypographyComponent,
-    { component?: SecondaryTypographyComponent }
-  >;
+  titleTypographyProps?: TypographyProps<PrimaryTypographyComponent, { component?: PrimaryTypographyComponent }>;
+  subtitleTypographyProps?: TypographyProps<SecondaryTypographyComponent, { component?: SecondaryTypographyComponent }>;
   subtitle?: ReactNode;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
@@ -140,11 +134,7 @@ export default function DialogHeader(props: DialogTitleProps) {
   } = props;
   // endregion
   return (
-    <MuiDialogTitle
-      id={id}
-      disableTypography
-      classes={{ root: clsx(classes.root, props.classes?.root) }}
-    >
+    <MuiDialogTitle id={id} disableTypography classes={{ root: clsx(classes.root, props.classes?.root) }}>
       <section className={clsx(classes.titleWrapper, props.classes?.titleWrapper)}>
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
@@ -155,11 +145,9 @@ export default function DialogHeader(props: DialogTitleProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {leftActions?.map(
-              ({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-                <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
-              )
-            )}
+            {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+            ))}
           </div>
         )}
         <Typography className={classes.title} {...titleTypographyProps}>
@@ -167,11 +155,9 @@ export default function DialogHeader(props: DialogTitleProps) {
         </Typography>
         {(rightActions || onDismiss) && (
           <div className={classes.rightActions}>
-            {rightActions?.map(
-              ({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-                <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
-              )
-            )}
+            {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+            ))}
             {onDismiss && (
               <Tooltip title={formatMessage(translations.dismiss)}>
                 <IconButton aria-label="close" onClick={onDismiss}>

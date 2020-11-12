@@ -147,9 +147,7 @@ const submitMessages = defineMessages({
   }
 });
 
-export const checkState: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (
-  items
-) => {
+export const checkState: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
   return (items || []).reduce((table: LookupTable<boolean>, item) => {
     table[item.path] = true;
     return table;
@@ -231,10 +229,7 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     apiState
   } = props;
 
-  const {
-    items,
-    publishingChannels
-  }: { items: DetailedItem[]; publishingChannels: any } = resource.read();
+  const { items, publishingChannels }: { items: DetailedItem[]; publishingChannels: any } = resource.read();
 
   return (
     <>
@@ -309,10 +304,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
           withEmptyStateProps={{
             emptyStateProps: {
               title: (
-                <FormattedMessage
-                  id="publishDialog.noItemsSelected"
-                  defaultMessage="No items have been selected"
-                />
+                <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="No items have been selected" />
               )
             },
             isEmpty: (value) => value.items.length === 0
@@ -346,10 +338,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
           className={classes.leftAlignedAction}
           disabled={showDepsDisabled || apiState.submitting}
         >
-          <FormattedMessage
-            id="publishDialog.showAllDependencies"
-            defaultMessage="Show All Dependencies"
-          />
+          <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
         </Button>
 
         <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
@@ -457,8 +446,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   );
 
   const resource = useLogicResource<Return, Source>(publishSource, {
-    shouldResolve: (source) =>
-      !source.items?.some((item) => !item.live) && Boolean(source.publishingChannels),
+    shouldResolve: (source) => !source.items?.some((item) => !item.live) && Boolean(source.publishingChannels),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => ({

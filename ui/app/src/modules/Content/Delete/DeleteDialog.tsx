@@ -142,14 +142,7 @@ const deleteDialogStyles = makeStyles((theme) =>
 );
 
 function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
-  const {
-    resource,
-    items,
-    submissionComment,
-    setSubmissionComment,
-    onSelectionChange,
-    onEditDependency
-  } = props;
+  const { resource, items, submissionComment, setSubmissionComment, onSelectionChange, onEditDependency } = props;
   const classes = deleteDialogStyles({});
   const deleteDependencies: DeleteDependencies = resource.read();
 
@@ -168,12 +161,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
           <form className={classes.submissionCommentField} noValidate autoComplete="off">
             <TextFieldWithMax
-              label={
-                <FormattedMessage
-                  id="deleteDialog.submissionCommentLabel"
-                  defaultMessage="Submission Comment"
-                />
-              }
+              label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}
               multiline
               rows="4"
               defaultValue={submissionComment}
@@ -264,10 +252,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     submitting: false
   });
   const siteId = useActiveSiteId();
-  const deleteDependencies = useSelector<
-    GlobalState,
-    { childItems: string[]; dependentItems: string[] }
-  >((state) => ({
+  const deleteDependencies = useSelector<GlobalState, { childItems: string[]; dependentItems: string[] }>((state) => ({
     childItems: state.dialogs.delete.childItems,
     dependentItems: state.dialogs.delete.dependentItems
   }));

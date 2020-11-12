@@ -72,12 +72,7 @@ export default function CreateFileDialog(props: CreateFileProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateFileUI
-        {...props}
-        submitted={state.submitted}
-        inProgress={state.inProgress}
-        setState={setState}
-      />
+      <CreateFileUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>
   );
 }
@@ -143,15 +138,9 @@ function CreateFileUI(props: CreateFileUIProps) {
           helperText={
             !name && submitted ? (
               type === 'controller' ? (
-                <FormattedMessage
-                  id="newFile.controller.required"
-                  defaultMessage="Controller name is required."
-                />
+                <FormattedMessage id="newFile.controller.required" defaultMessage="Controller name is required." />
               ) : (
-                <FormattedMessage
-                  id="newFile.controller.required"
-                  defaultMessage="Template name is required."
-                />
+                <FormattedMessage id="newFile.controller.required" defaultMessage="Template name is required." />
               )
             ) : (
               <FormattedMessage
@@ -172,13 +161,7 @@ function CreateFileUI(props: CreateFileUIProps) {
         <Button onClick={onClose} variant="contained" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
-        <Button
-          onClick={() => onOk()}
-          variant="contained"
-          color="primary"
-          autoFocus
-          disabled={inProgress}
-        >
+        <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           <FormattedMessage id="words.create" defaultMessage="Create" />
         </Button>

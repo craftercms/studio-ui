@@ -199,10 +199,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
   return (
     <>
       {inProgress && (
-        <LoadingState
-          title={formatMessage(translations.loadingForm)}
-          classes={{ root: classes.loadingRoot }}
-        />
+        <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
       <iframe
         ref={iframeRef}
@@ -231,12 +228,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   };
 
   return (
-    <Dialog
-      open={props.open && !minimized}
-      keepMounted={minimized}
-      fullScreen
-      onClose={props.onClose}
-    >
+    <Dialog open={props.open && !minimized} keepMounted={minimized} fullScreen onClose={props.onClose}>
       <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );
