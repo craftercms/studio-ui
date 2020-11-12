@@ -16,17 +16,19 @@
 
 import React from 'react';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
-  themedFill: {
-    fill: theme.palette.type === 'dark' ? '#fff' : '#000'
-  },
-  gear: {
-    fill: '#f00'
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    themedFill: {
+      fill: theme.palette.type === 'dark' ? '#fff' : '#000'
+    },
+    gear: {
+      fill: '#f00'
+    }
+  })
+);
 
 interface IconProps extends Omit<SvgIconProps, 'classes'> {
   classes?: SvgIconProps['classes'] & { gear?: string; letter?: string; chevron?: string };

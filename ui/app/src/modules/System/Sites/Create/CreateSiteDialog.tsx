@@ -23,7 +23,7 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
 import Spinner from '../../../../components/SystemStatus/Spinner';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
@@ -111,8 +111,7 @@ const messages = defineMessages({
   },
   gitBlueprintDescription: {
     id: 'createSiteDialog.gitBlueprintDescription',
-    defaultMessage:
-      'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
+    defaultMessage: 'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
   },
   createSite: {
     id: 'createSiteDialog.createSite',
@@ -594,22 +593,14 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function validateForm() {
-    if (
-      !site.siteId ||
-      site.siteIdExist ||
-      !site.siteName ||
-      site.siteNameExist ||
-      site.invalidSiteId
-    ) {
+    if (!site.siteId || site.siteIdExist || !site.siteName || site.siteNameExist || site.invalidSiteId) {
       return false;
     } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
     } else if (site.pushSite || site.blueprint.id === 'GIT') {
       if (!site.repoUrl) return false;
-      else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword))
-        return false;
-      else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken))
-        return false;
+      else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword)) return false;
+      else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken)) return false;
       else return !(site.repoAuthentication === 'key' && !site.repoKey);
     } else {
       return checkAdditionalFields();
@@ -835,14 +826,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             {site.selectedView === 0 && (
               <div className={classes.tabs}>
                 <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                  <Tab
-                    label={formatMessage(messages.privateBlueprints)}
-                    className={classes.simpleTab}
-                  />
-                  <Tab
-                    label={formatMessage(messages.publicMarketplace)}
-                    className={classes.simpleTab}
-                  />
+                  <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab} />
+                  <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab} />
                 </CustomTabs>
                 <SearchIcon
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
@@ -854,9 +839,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                     control={
                       <Checkbox
                         checked={site.showIncompatible}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                          handleShowIncompatibleChange(e)
-                        }
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
                         color="primary"
                         className={classes.showIncompatibleCheckbox}
                       />
@@ -886,13 +869,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 </div>
               )}
               {site.selectedView === 0 && (
-                <div
-                  className={clsx(
-                    classes.slide,
-                    classes.fadeIn,
-                    search.searchSelected && 'selected'
-                  )}
-                >
+                <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
                   {tab === 0 ? (
                     <Grid container spacing={3}>
                       {renderBlueprints(filteredBlueprints)}
@@ -920,9 +897,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               )}
               {site.selectedView === 2 && (
                 <div className={clsx(classes.slide, classes.fadeIn)}>
-                  {site.blueprint && (
-                    <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint} />
-                  )}
+                  {site.blueprint && <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint} />}
                 </div>
               )}
             </DialogBody>

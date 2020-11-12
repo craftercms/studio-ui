@@ -15,34 +15,36 @@
  */
 
 import React, { ElementType, PropsWithChildren } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Gears from './Gears';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
-  loadingView: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    margin: `${theme.spacing(2)}px auto`
-  },
-  gearContainer: {
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  title: {
-    marginTop: '40px',
-    marginBottom: '15px'
-  },
-  paragraph: {
-    marginBottom: '10px'
-  },
-  graphic: {
-    width: 150
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    loadingView: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      textAlign: 'center',
+      margin: `${theme.spacing(2)}px auto`
+    },
+    gearContainer: {
+      display: 'flex',
+      justifyContent: 'center'
+    },
+    title: {
+      marginTop: '40px',
+      marginBottom: '15px'
+    },
+    paragraph: {
+      marginBottom: '10px'
+    },
+    graphic: {
+      width: 150
+    }
+  })
+);
 
 export interface LoadingStateProps {
   title?: string | JSX.Element;
@@ -58,8 +60,7 @@ export interface LoadingStateProps {
   };
 }
 
-export type ConditionalLoadingStateProps = LoadingStateProps &
-  PropsWithChildren<{ isLoading: boolean }>;
+export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren<{ isLoading: boolean }>;
 
 export default function LoadingState(props: LoadingStateProps) {
   const classes = useStyles({});
@@ -72,11 +73,7 @@ export default function LoadingState(props: LoadingStateProps) {
         </Typography>
       )}
       {props.subtitle && (
-        <Typography
-          variant="subtitle1"
-          component="p"
-          className={clsx(classes.paragraph, propClasses?.subtitle)}
-        >
+        <Typography variant="subtitle1" component="p" className={clsx(classes.paragraph, propClasses?.subtitle)}>
           {props.subtitle}
         </Typography>
       )}

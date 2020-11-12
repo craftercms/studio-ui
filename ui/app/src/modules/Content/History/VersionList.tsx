@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@material-ui/core/List';
@@ -157,10 +156,7 @@ export function VersionList(props: VersionListProps) {
             divider={versions.length - 1 !== i}
             button
             onClick={() => onItemClick(version)}
-            className={clsx(
-              classes.listItem,
-              selected?.includes(version.versionNumber) && 'selected'
-            )}
+            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
           >
             <ListItemText
               classes={{
@@ -173,9 +169,7 @@ export function VersionList(props: VersionListProps) {
                   <AsDayMonthDateTime date={version.lastModifiedDate} />
                   {current === version.versionNumber && (
                     <Chip
-                      label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
-                      }
+                      label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
                       className={classes.chip}
                     />
                   )}

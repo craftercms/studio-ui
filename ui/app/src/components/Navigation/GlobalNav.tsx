@@ -226,9 +226,7 @@ function Tile(props: TileProps) {
           <Icon className={classes.icon} />
         )}
       </Avatar>
-      <Typography color="textPrimary">
-        {title}
-      </Typography>
+      <Typography color="textPrimary">{title}</Typography>
     </Link>
   );
 }
@@ -378,11 +376,7 @@ function SiteConfigLink({ authoringUrl }) {
 function SiteSearchLink({ authoringUrl }) {
   const { formatMessage } = useIntl();
   return (
-    <LinkWithIcon
-      link={getLink('search', authoringUrl)}
-      label={formatMessage(messages.search)}
-      icon={SearchIcon}
-    />
+    <LinkWithIcon link={getLink('search', authoringUrl)} label={formatMessage(messages.search)} icon={SearchIcon} />
   );
 }
 
@@ -390,10 +384,7 @@ function SitePreviewLink({ site, authoringUrl }) {
   const { formatMessage } = useIntl();
   return (
     <LinkWithIcon
-      link={getLink(
-        getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview',
-        authoringUrl
-      )}
+      link={getLink(getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview', authoringUrl)}
       label={formatMessage(messages.preview)}
       icon={Preview}
     />
@@ -409,18 +400,7 @@ const ItemToComponentMap = {
 };
 
 export default function GlobalNav(props: GlobalNavProps) {
-  const {
-    anchor,
-    onMenuClose,
-    logoutUrl,
-    authoringUrl,
-    version,
-    site,
-    sites,
-    user,
-    rolesBySite,
-    siteNavLinks
-  } = props;
+  const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user, rolesBySite, siteNavLinks } = props;
   const classes = globalNavStyles();
   const [menuItems, setMenuItems] = useState(null);
   const [apiState, setApiState] = useState({
@@ -443,10 +423,7 @@ export default function GlobalNav(props: GlobalNavProps) {
       {
         name: formatMessage(messages.preview),
         href(site) {
-          return getLink(
-            getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview',
-            authoringUrl
-          );
+          return getLink(getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview', authoringUrl);
         },
         onClick(site) {
           setSiteCookie(site);
@@ -470,15 +447,8 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
-    if (
-      window.location.href.includes('/preview') ||
-      window.location.href.includes('#/globalMenu')
-    ) {
-      navigateTo(
-        getStoredPreviewChoice(id) === '2'
-          ? `${authoringUrl}/next/preview`
-          : `${authoringUrl}/preview`
-      );
+    if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
+      navigateTo(getStoredPreviewChoice(id) === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
     } else {
       setTimeout(() => {
         window.location.reload();
@@ -567,12 +537,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   </List>
                 ) : (
                   <EmptyState
-                    title={
-                      <FormattedMessage
-                        id="globalMenu.noSitesMessage"
-                        defaultMessage="No sites to display."
-                      />
-                    }
+                    title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No sites to display." />}
                   />
                 )}
               </div>
@@ -585,11 +550,7 @@ export default function GlobalNav(props: GlobalNavProps) {
             </Grid>
           </Hidden>
           <Grid item xs={12} md={8} className={classes.rightRail}>
-            <IconButton
-              aria-label="close"
-              className={classes.closeButton}
-              onClick={(event) => onMenuClose(event)}
-            >
+            <IconButton aria-label="close" className={classes.closeButton} onClick={(event) => onMenuClose(event)}>
               <CloseIcon />
             </IconButton>
             <div className={classes.railTop}>
@@ -624,13 +585,9 @@ export default function GlobalNav(props: GlobalNavProps) {
                   link={getLink('settings', authoringUrl)}
                   disabled={!site}
                 />
-                <Tile
-                  icon={About}
-                  link={getLink('about', authoringUrl)}
-                  title={formatMessage(messages.about)}
-                />
+                <Tile icon={About} link={getLink('about', authoringUrl)} title={formatMessage(messages.about)} />
               </nav>
-              {(site && siteLinks.length > 0) && (
+              {site && siteLinks.length > 0 && (
                 <>
                   <Typography variant="subtitle1" component="h2" className={classes.title}>
                     {formatMessage(messages.site)}
@@ -638,14 +595,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   <nav className={classes.sitesApps}>
                     {siteLinks.map((link, index) => {
                       const Component = ItemToComponentMap[link.id ?? 'default'];
-                      return (
-                        <Component
-                          key={index}
-                          {...link.parameters}
-                          site={site}
-                          authoringUrl={authoringUrl}
-                        />
-                      );
+                      return <Component key={index} {...link.parameters} site={site} authoringUrl={authoringUrl} />;
                     })}
                   </nav>
                 </>
@@ -667,10 +617,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   }
                   action={
                     logoutUrl && (
-                      <IconButton
-                        aria-label={formatMessage(messages.signOut)}
-                        onClick={() => onLogout(logoutUrl)}
-                      >
+                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => onLogout(logoutUrl)}>
                         <ExitToAppRoundedIcon />
                       </IconButton>
                     )

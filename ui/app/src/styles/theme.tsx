@@ -14,12 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  createGenerateClassName,
-  createMuiTheme,
-  fade,
-  ThemeOptions
-} from '@material-ui/core/styles';
+import { createGenerateClassName, createMuiTheme, fade, ThemeOptions } from '@material-ui/core/styles';
 import palette from './palette';
 import { GenerateId } from 'jss';
 
@@ -60,6 +55,17 @@ export const defaultThemeOptions: ThemeOptions = (function() {
           '&.Mui-selected, &.Mui-selected:hover': {
             backgroundColor: palette.blue.highlight
           }
+        }
+      },
+      MuiListItemIcon: {
+        root: {
+          marginRight: 10,
+          minWidth: 'auto'
+        }
+      },
+      MuiListItemSecondaryAction: {
+        root: {
+          right: 5
         }
       },
       MuiFormLabel: {

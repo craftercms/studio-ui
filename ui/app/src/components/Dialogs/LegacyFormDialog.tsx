@@ -19,8 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { createStyles } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
@@ -79,12 +78,14 @@ interface LegacyFormDialogBaseProps {
   onMinimized?(): void;
 }
 
-export type LegacyFormDialogProps = PropsWithChildren<LegacyFormDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
-  onSaveSuccess?(response?: any): any;
-}>;
+export type LegacyFormDialogProps = PropsWithChildren<
+  LegacyFormDialogBaseProps & {
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSaveSuccess?(response?: any): any;
+  }
+>;
 
 export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
   onSaveSuccess?: StandardAction;
@@ -94,14 +95,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 }
 
 function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
-  const {
-    src,
-    inProgress,
-    onSaveSuccess,
-    onDismiss,
-    onClosed,
-    onMinimized
-  } = props;
+  const { src, inProgress, onSaveSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -189,10 +183,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
   return (
     <>
       {inProgress && (
-        <LoadingState
-          title={formatMessage(translations.loadingForm)}
-          classes={{ root: classes.loadingRoot }}
-        />
+        <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
       <iframe
         ref={iframeRef}
@@ -221,12 +212,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   };
 
   return (
-    <Dialog
-      open={props.open && !minimized}
-      keepMounted={minimized}
-      fullScreen
-      onClose={props.onClose}
-    >
+    <Dialog open={props.open && !minimized} keepMounted={minimized} fullScreen onClose={props.onClose}>
       <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );

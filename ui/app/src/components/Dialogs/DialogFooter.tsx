@@ -16,10 +16,8 @@
 
 import React from 'react';
 import MuiDialogActions, { DialogActionsProps } from '@material-ui/core/DialogActions';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Theme } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,10 +31,5 @@ const styles = makeStyles((theme: Theme) =>
 
 export default function DialogFooter(props: DialogActionsProps) {
   const classes = styles();
-  return (
-    <MuiDialogActions
-      {...props}
-      className={clsx(classes.root, props.className)}
-    />
-  );
+  return <MuiDialogActions {...props} className={clsx(classes.root, props.className)} />;
 }

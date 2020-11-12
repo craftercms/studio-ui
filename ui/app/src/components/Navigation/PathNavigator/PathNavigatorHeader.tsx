@@ -26,7 +26,7 @@ interface HeaderProps {
   locale: string;
   title: string;
   iconClassName: string;
-  style: object;
+  iconStyle: object;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
 }
@@ -34,21 +34,13 @@ interface HeaderProps {
 // PathNavigatorHeader
 export default function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
-  const { title, iconClassName, locale, onLanguageMenu, onContextMenu, style } = props;
+  const { title, iconClassName, iconStyle, locale, onLanguageMenu, onContextMenu } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
-    <AccordionSummary
-      style={style}
-      classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}
-    >
+    <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
       <div className={classes.accordionSummaryTitle}>
-        {iconClassName && <span className={iconClassName} />}
-        <Typography
-          variant="body1"
-          component="h6"
-          className={classes.headerTitle}
-          children={title}
-        />
+        {iconClassName && <span className={iconClassName} style={iconStyle} />}
+        <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
       </div>
       <div className={classes.accordionSummaryActions}>
         {onLanguageMenu && (

@@ -137,15 +137,7 @@ const menuOptions = {
 
 // PathNavigator
 export default function PathNavigator(props: WidgetProps) {
-  const {
-    label,
-    icon = {},
-    container = {},
-    rootPath: path,
-    id = label?.replace(/\s/g, ''),
-    locale,
-    excludes
-  } = props;
+  const { label, icon = {}, container = {}, rootPath: path, id = label?.replace(/\s/g, ''), locale, excludes } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -414,10 +406,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
   // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<
-    DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
-  >(
+  const resource = useLogicResource<DetailedItem[], { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -428,8 +417,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
       },
       shouldRenew: (items, resource) => resource.complete,
       shouldReject: () => false,
-      resultSelector: ({ itemsInPath, itemsByPath }) =>
-        itemsInPath.map((path) => itemsByPath[path]),
+      resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
       errorSelector: null
     }
   );
@@ -458,28 +446,20 @@ export function PathNavigatorUI(props: WidgetUIProps) {
         }}
       >
         <Header
-          iconClassName={`${icon.baseClass} ${
-            state.collapsed ? icon.collapsedClass : icon.expandedClass
-          }`}
-          style={{
+          iconClassName={clsx(icon.baseClass, state.collapsed ? icon.collapsedClass : icon.expandedClass)}
+          iconStyle={{
             ...icon.baseStyle,
             ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
           }}
           title={title}
           locale={state.localeCode}
           onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
-          onLanguageMenu={
-            siteLocales?.localeCodes?.length
-              ? (anchor) => onHeaderButtonClick(anchor, 'language')
-              : null
-          }
+          onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
         />
         <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
           <Breadcrumbs
             keyword={state.keyword}
-            breadcrumb={state.breadcrumb.map(
-              (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
-            )}
+            breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
             onMenu={onCurrentParentMenu}
             onSearch={(keyword) => onSearch(keyword)}
             onCrumbSelected={onBreadcrumbSelected}

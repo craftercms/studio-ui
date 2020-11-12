@@ -17,7 +17,7 @@
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -26,7 +26,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Box from '@material-ui/core/Box';
-import { createStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -80,10 +79,7 @@ export default function SiteCard(props: TitleCardProps) {
         onClick={() => onCardClick(value)}
         className={clsx(classes.card, props.classes?.root)}
       >
-        <ListItemText
-          primary={title}
-          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
-        />
+        <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
         {options && (
           <ListItemSecondaryAction>
             <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>

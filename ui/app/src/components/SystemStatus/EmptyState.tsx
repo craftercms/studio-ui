@@ -15,30 +15,32 @@
  */
 
 import React, { ReactNode } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import emptyImage from '../../assets/desert.svg';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    margin: theme.spacing(2)
-  },
-  title: {
-    margin: `${theme.spacing(1)}px 0`
-  },
-  subtitle: {
-    textAlign: 'center'
-  },
-  graphic: {
-    width: 150,
-    maxWidth: '80%'
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      margin: theme.spacing(2)
+    },
+    title: {
+      margin: `${theme.spacing(1)}px 0`
+    },
+    subtitle: {
+      textAlign: 'center'
+    },
+    graphic: {
+      width: 150,
+      maxWidth: '80%'
+    }
+  })
+);
 
 export interface EmptyStateProps {
   image?: string;

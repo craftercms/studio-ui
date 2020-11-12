@@ -18,7 +18,7 @@ import React from 'react';
 import { Parameter } from '../../../../models/Blueprint';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../../../../components/Controls/PasswordTextField';
@@ -53,7 +53,13 @@ export default function FormBuilder(props: FormBuilderProps) {
   const { parameters, handleInputChange, inputs, onKeyPress } = props;
   const { formatMessage } = useIntl();
 
-  function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean) {
+  function renderHelperText(
+    name: string,
+    value: string = '',
+    helperText: string,
+    required: boolean,
+    submitted: boolean
+  ) {
     if (required && !value && submitted) {
       return formatMessage(messages.required, { name: name });
     } else {
@@ -65,37 +71,47 @@ export default function FormBuilder(props: FormBuilderProps) {
     return parameters.map((parameter, index) => {
       return (
         <Grid item xs={12} key={index}>
-          {
-            (parameter.type === 'STRING') ? (
-              <TextField
-                id={parameter.name}
-                fullWidth
-                name={parameter.name}
-                label={parameter.label}
-                required={parameter.required}
-                onKeyPress={onKeyPress}
-                InputLabelProps={{ shrink: !!parameter.defaultValue }}
-                placeholder={parameter.defaultValue}
-                onChange={(event) => handleInputChange(event, 'blueprintFields')}
-                value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
-                error={(parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name])}
-                helperText={renderHelperText(parameter.label, inputs.blueprintFields[parameter.name], parameter.description, parameter.required, inputs.submitted)}
-              />
-            ) : (
-              <PasswordTextField
-                id={parameter.name}
-                fullWidth
-                name={parameter.name}
-                label={parameter.label}
-                required={parameter.required}
-                onKeyPress={onKeyPress}
-                onChange={(event: React.ChangeEvent) => handleInputChange(event, 'blueprintFields')}
-                value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
-                error={(parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name])}
-                helperText={renderHelperText(parameter.label, inputs.blueprintFields[parameter.name], parameter.description, parameter.required, inputs.submitted)}
-              />
-            )
-          }
+          {parameter.type === 'STRING' ? (
+            <TextField
+              id={parameter.name}
+              fullWidth
+              name={parameter.name}
+              label={parameter.label}
+              required={parameter.required}
+              onKeyPress={onKeyPress}
+              InputLabelProps={{ shrink: !!parameter.defaultValue }}
+              placeholder={parameter.defaultValue}
+              onChange={(event) => handleInputChange(event, 'blueprintFields')}
+              value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
+              error={parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name]}
+              helperText={renderHelperText(
+                parameter.label,
+                inputs.blueprintFields[parameter.name],
+                parameter.description,
+                parameter.required,
+                inputs.submitted
+              )}
+            />
+          ) : (
+            <PasswordTextField
+              id={parameter.name}
+              fullWidth
+              name={parameter.name}
+              label={parameter.label}
+              required={parameter.required}
+              onKeyPress={onKeyPress}
+              onChange={(event: React.ChangeEvent) => handleInputChange(event, 'blueprintFields')}
+              value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
+              error={parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name]}
+              helperText={renderHelperText(
+                parameter.label,
+                inputs.blueprintFields[parameter.name],
+                parameter.description,
+                parameter.required,
+                inputs.submitted
+              )}
+            />
+          )}
         </Grid>
       );
     });

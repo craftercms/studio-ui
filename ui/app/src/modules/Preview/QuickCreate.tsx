@@ -23,18 +23,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import {
-  usePreviewState,
-  useQuickCreateListResource,
-  useSelection,
-  useSystemVersionResource
-} from '../../utils/hooks';
+import { usePreviewState, useQuickCreateListResource, useSelection, useSystemVersionResource } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import {
-  newContentCreationComplete,
-  showEditDialog,
-  showNewContentDialog
-} from '../../state/actions/dialogs';
+import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -127,14 +118,7 @@ interface QuickCreateSectionProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const {
-    open,
-    onClose,
-    anchorEl,
-    resource,
-    onNewContentSelected,
-    onQuickCreateItemSelected
-  } = props;
+  const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected } = props;
   const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const baseFormSrc = `${authoringBase}/legacy/form`;
@@ -150,12 +134,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   return (
     <>
-      <Menu
-        classes={{ paper: classes.menu }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={onClose}
-      >
+      <Menu classes={{ paper: classes.menu }} anchorEl={anchorEl} open={open} onClose={onClose}>
         <MenuItem className={classes.menuTitle} onClick={onNewContentSelected}>
           <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>
@@ -164,11 +143,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
         <Suspencified loadingStateProps={{ classes: { graphic: classes.quickCreateLoadingState } }}>
-          <QuickCreateSection
-            classes={classes}
-            resource={resource}
-            onItemSelected={onFormDisplay}
-          />
+          <QuickCreateSection classes={classes} resource={resource} onItemSelected={onFormDisplay} />
         </Suspencified>
       </Menu>
     </>
@@ -229,7 +204,7 @@ function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
       onClick={onMenuBtnClick}
       aria-label={formatMessage(translations.quickCreateBtnLabel)}
     >
-      <AddCircleIcon fontSize="large"  />
+      <AddCircleIcon fontSize="large" />
     </IconButton>
   );
 }

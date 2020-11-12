@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
@@ -175,14 +175,14 @@ const messages = defineMessages({
 });
 
 interface PluginDetailsViewProps {
-  selectedIndex?: number,
-  blueprint: Blueprint,
-  interval: number,
-  marketplace: boolean,
+  selectedIndex?: number;
+  blueprint: Blueprint;
+  interval: number;
+  marketplace: boolean;
 
-  onCloseDetails(event: any): any,
+  onCloseDetails(event: any): any;
 
-  onBlueprintSelected(blueprint: Blueprint, view: number): any,
+  onBlueprintSelected(blueprint: Blueprint, view: number): any;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -215,9 +215,9 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   }
 
   function renderMedias() {
-    let videos: any = (media && media.videos) ? { ...media.videos, type: 'video' } : [];
+    let videos: any = media && media.videos ? { ...media.videos, type: 'video' } : [];
     videos = videos.length ? videos.map((obj: any) => ({ ...obj, type: 'video' })) : [];
-    let screenshots: any = (media && media.screenshots) ? media.screenshots : [];
+    let screenshots: any = media && media.screenshots ? media.screenshots : [];
     const merged = [...videos, ...screenshots];
 
     return merged.map((item, index) => {
@@ -230,7 +230,12 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
       } else {
         return (
           <video
-            key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay} onEnded={handleEnded}
+            key={index}
+            controls
+            className={classes.video}
+            autoPlay={play}
+            onPlaying={handlePlay}
+            onEnded={handleEnded}
           >
             <source src={item.url} type="video/mp4" />
             Your browser does not support the video tag.
@@ -241,8 +246,8 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   }
 
   let steps = 0;
-  (blueprint.media && blueprint.media.screenshots) ? steps = blueprint.media.screenshots.length : steps = 0;
-  (blueprint.media && blueprint.media.videos) ? steps += blueprint.media.videos.length : steps += 0;
+  blueprint.media && blueprint.media.screenshots ? (steps = blueprint.media.screenshots.length) : (steps = 0);
+  blueprint.media && blueprint.media.videos ? (steps += blueprint.media.videos.length) : (steps += 0);
 
   return (
     <div className={clsx(classes.detailsView, classes.fadeIn)}>
@@ -253,21 +258,16 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         <Typography variant="h5" component="h1">
           {name}
         </Typography>
-        {
-          ((marketplace && compatible) || !marketplace) &&      // if it's from marketplace and compatible, or not from marketplace (private bps)
+        {((marketplace && compatible) || !marketplace) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
           <Button
             variant="contained"
             color="primary"
             className={classes.useBtn}
-            onClick={
-              () => onBlueprintSelected(blueprint, 1)
-            }
+            onClick={() => onBlueprintSelected(blueprint, 1)}
           >
-            {
-              formatMessage(messages.use)
-            }
+            {formatMessage(messages.use)}
           </Button>
-        }
+        )}
       </div>
       <AutoPlaySwipeableViews
         index={index}
@@ -279,74 +279,62 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
       >
         {renderMedias()}
       </AutoPlaySwipeableViews>
-      {steps > 1 &&
-      <MobileStepper
-        variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
-        activeStep={index}
-      />}
+      {steps > 1 && (
+        <MobileStepper
+          variant="dots"
+          steps={steps}
+          onDotClick={onDotClick}
+          className={classes.dots}
+          position={'static'}
+          activeStep={index}
+        />
+      )}
       <div className={classes.detailsContainer}>
         <Grid container spacing={3}>
           <Grid item xs={8}>
-            {
-              marketplace && !compatible &&
+            {marketplace && !compatible && (
               <Alert severity="error" className={classes.detailsNotCompatible}>
                 <FormattedMessage
                   id="pluginDetails.notCompatible"
                   defaultMessage="This blueprint is not compatible with your current version of Crafter CMS."
                 />
               </Alert>
-            }
+            )}
 
-            <Typography variant="body1">
-              {description}
-            </Typography>
+            <Typography variant="body1">{description}</Typography>
           </Grid>
           <Grid item xs={4}>
             <div className={classes.section}>
-              {
-                developer &&
-                <Typography variant="subtitle2">
-                  {formatMessage(messages.developer)}
-                </Typography>
-              }
-              {
-                (developer && developer.company) &&
+              {developer && <Typography variant="subtitle2">{formatMessage(messages.developer)}</Typography>}
+              {developer && developer.company && (
                 <Typography variant="subtitle2" color={'textSecondary'}>
                   {developer.company.name}
                 </Typography>
-              }
-              {
-                (developer && developer.people) &&
+              )}
+              {developer && developer.people && (
                 <Typography variant="subtitle2" color={'textSecondary'}>
                   {developer.people.name}
                 </Typography>
-              }
+              )}
             </div>
             <div className={classes.section}>
-              {
-                website &&
-                <Typography variant="subtitle2">
-                  {formatMessage(messages.website)}
-                </Typography>
-              }
-              {
-                (website && website.name) &&
+              {website && <Typography variant="subtitle2">{formatMessage(messages.website)}</Typography>}
+              {website && website.name && (
                 <Typography variant="subtitle2" component="p">
-                  <a className={classes.link} href={website.url} target={'blank'}>{website.name} <OpenInNewIcon /></a>
+                  <a className={classes.link} href={website.url} target={'blank'}>
+                    {website.name} <OpenInNewIcon />
+                  </a>
                 </Typography>
-              }
+              )}
             </div>
-            {
-              searchEngine &&
+            {searchEngine && (
               <div className={classes.section}>
-                <Typography variant="subtitle2">
-                  {formatMessage(messages.searchEngine)}
-                </Typography>
+                <Typography variant="subtitle2">{formatMessage(messages.searchEngine)}</Typography>
                 <Typography variant="subtitle2" color={'textSecondary'}>
                   {searchEngine}
                 </Typography>
               </div>
-            }
+            )}
             <div className={classes.sectionChips}>
               <div className={classes.chip}>
                 <label>{formatMessage(messages.version)}</label>

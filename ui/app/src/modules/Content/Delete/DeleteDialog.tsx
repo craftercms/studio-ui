@@ -16,17 +16,11 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { SandboxItem } from '../../../models/Item';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  useSpreadState,
-  useUnmount
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import StandardAction from '../../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Resource } from '../../../models/Resource';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
@@ -72,12 +66,14 @@ interface DeleteDialogBaseProps {
   isFetching: boolean;
 }
 
-export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
-  onSuccess?(response?: any): any;
-}>;
+export type DeleteDialogProps = PropsWithChildren<
+  DeleteDialogBaseProps & {
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSuccess?(response?: any): any;
+  }
+>;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
   childItems: string[];
@@ -140,14 +136,7 @@ const deleteDialogStyles = makeStyles((theme) =>
 );
 
 function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
-  const {
-    resource,
-    items,
-    submissionComment,
-    setSubmissionComment,
-    onSelectionChange,
-    onEditDependency
-  } = props;
+  const { resource, items, submissionComment, setSubmissionComment, onSelectionChange, onEditDependency } = props;
   const classes = deleteDialogStyles({});
   const deleteDependencies: DeleteDependencies = resource.read();
 
@@ -166,12 +155,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
           <form className={classes.submissionCommentField} noValidate autoComplete="off">
             <TextFieldWithMax
-              label={
-                <FormattedMessage
-                  id="deleteDialog.submissionCommentLabel"
-                  defaultMessage="Submission Comment"
-                />
-              }
+              label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}
               multiline
               rows="4"
               defaultValue={submissionComment}
@@ -183,7 +167,6 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
               }}
             />
           </form>
-
         </Grid>
       </Grid>
     </>
@@ -263,7 +246,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     submitting: false
   });
   const siteId = useActiveSiteId();
-  const deleteDependencies = useSelector<GlobalState, { childItems: string[], dependentItems: string[] }>((state) => ({
+  const deleteDependencies = useSelector<GlobalState, { childItems: string[]; dependentItems: string[] }>((state) => ({
     childItems: state.dialogs.delete.childItems,
     dependentItems: state.dialogs.delete.dependentItems
   }));
@@ -293,10 +276,12 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   }, [dispatch, selectedItems, setApiState, siteId]);
 
   const onEditDependency = (src) => {
-    dispatch(showEditDialog({
-      src,
-      onClosed: fetchDeleteDependencies(selectedItems)
-    }));
+    dispatch(
+      showEditDialog({
+        src,
+        onClosed: fetchDeleteDependencies(selectedItems)
+      })
+    );
   };
 
   const handleSubmit = () => {
@@ -311,7 +296,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
         setApiState({ submitting: false });
         onSuccess?.({
           ...response,
-          items: selectedItems.map(path => items.find(item => item.id === path))
+          items: selectedItems.map((path) => items.find((item) => item.id === path))
         });
       },
       (error) => {

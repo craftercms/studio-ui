@@ -57,11 +57,7 @@ const DefaultCardContent = (props) => {
   const { headerTitle, subheader, classes, img, imgTitle } = props;
   return (
     <>
-      <CardHeader
-        title={headerTitle}
-        subheader={subheader}
-        titleTypographyProps={{ variant: 'body1' }}
-      />
+      <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
       <Divider />
       <CardMedia className={classes.media} image={img} title={imgTitle} />
     </>
@@ -73,11 +69,7 @@ const CompactCardContent = (props) => {
   return (
     <>
       <CardMedia className={classes.compactMedia} image={img} title={imgTitle} />
-      <CardHeader
-        title={headerTitle}
-        subheader={subheader}
-        titleTypographyProps={{ variant: 'body1' }}
-      />
+      <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
     </>
   );
 };

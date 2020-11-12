@@ -19,8 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { createStyles } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
@@ -75,12 +74,14 @@ interface LegacyCodeEditorDialogBaseProps {
   onMinimized?(): void;
 }
 
-export type LegacyCodeEditorDialogProps = PropsWithChildren<LegacyCodeEditorDialogBaseProps & {
-  onSuccess?(response?: any): void;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type LegacyCodeEditorDialogProps = PropsWithChildren<
+  LegacyCodeEditorDialogBaseProps & {
+    onSuccess?(response?: any): void;
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialogBaseProps {
   onSuccess?: StandardAction;
@@ -90,14 +91,7 @@ export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialog
 }
 
 function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
-  const {
-    src,
-    inProgress,
-    onSuccess,
-    onDismiss,
-    onClosed,
-    onMinimized
-  } = props;
+  const { src, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -150,10 +144,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
   return (
     <>
       {inProgress && (
-        <LoadingState
-          title={formatMessage(translations.loadingForm)}
-          classes={{ root: classes.loadingRoot }}
-        />
+        <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
       <iframe
         ref={iframeRef}
@@ -181,12 +172,7 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
   };
 
   return (
-    <Dialog
-      open={props.open && !minimized}
-      keepMounted={minimized}
-      fullScreen
-      onClose={props.onClose}
-    >
+    <Dialog open={props.open && !minimized} keepMounted={minimized} fullScreen onClose={props.onClose}>
       <EmbeddedLegacyCodeEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );

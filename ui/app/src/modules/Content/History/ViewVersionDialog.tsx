@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { useLogicResource, useUnmount } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
@@ -24,10 +24,7 @@ import ContentType from '../../../models/ContentType';
 import { LookupTable } from '../../../models/LookupTable';
 import { ApiResponse } from '../../../models/ApiResponse';
 import { EntityState } from '../../../models/EntityState';
-import DialogHeader, {
-  DialogHeaderAction,
-  DialogHeaderStateAction
-} from '../../../components/Dialogs/DialogHeader';
+import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
 import Dialog from '@material-ui/core/Dialog';
@@ -162,13 +159,9 @@ function ViewVersionDialogBody(props: ViewVersionDialogProps) {
   useUnmount(props.onClosed);
   const resource = useLogicResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) =>
-      source.version &&
-      source.contentTypesBranch.byId &&
-      !source.isFetching &&
-      !source.contentTypesBranch.isFetching,
+      source.version && source.contentTypesBranch.byId && !source.isFetching && !source.contentTypesBranch.isFetching,
     shouldReject: (source) => Boolean(source.error) || Boolean(source.contentTypesBranch.error),
-    shouldRenew: (source, resource) =>
-      (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,
+    shouldRenew: (source, resource) => (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,
     resultSelector: (source) => ({
       version: source.version,
       contentTypes: source.contentTypesBranch.byId
@@ -178,12 +171,7 @@ function ViewVersionDialogBody(props: ViewVersionDialogProps) {
   return (
     <>
       <DialogHeader
-        title={
-          <FormattedMessage
-            id="viewVersionDialog.headerTitle"
-            defaultMessage="Viewing item version"
-          />
-        }
+        title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
         rightActions={rightActions}
         onDismiss={onDismiss}
       />
@@ -203,7 +191,9 @@ function LegacyVersionDialog(props: VersionViewProps) {
     <iframe
       title="View version"
       className={classes.iframe}
-      src={`http://localhost:8080/studio/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${version.versionNumber}&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
+      src={`http://localhost:8080/studio/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
+        version.versionNumber
+      }&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
     />
   );
 }

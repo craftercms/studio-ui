@@ -26,13 +26,7 @@ import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import NewContentCard from './NewContentCard';
 import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
-import {
-  useActiveSiteId,
-  useDebouncedInput,
-  useLogicResource,
-  useSelection,
-  useUnmount
-} from '../../../utils/hooks';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useSelection, useUnmount } from '../../../utils/hooks';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Typography from '@material-ui/core/Typography';
@@ -148,12 +142,14 @@ interface NewContentDialogBaseProps {
   selectedContentType?: string;
 }
 
-export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
-  onContentTypeSelected?(response?: any): any;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type NewContentDialogProps = PropsWithChildren<
+  NewContentDialogBaseProps & {
+    onContentTypeSelected?(response?: any): any;
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
   onContentTypeSelected?: StandardAction;
@@ -186,27 +182,14 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
 
 export default function NewContentDialog(props: NewContentDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <NewContentDialogBody {...props} />
     </Dialog>
   );
 }
 
 function NewContentDialogBody(props: NewContentDialogProps) {
-  const {
-    onDismiss,
-    item,
-    onContentTypeSelected,
-    compact,
-    rootPath,
-    type,
-    selectedContentType
-  } = props;
+  const { onDismiss, item, onContentTypeSelected, compact, rootPath, type, selectedContentType } = props;
   const [openSelector, setOpenSelector] = useState(false);
   const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
@@ -224,8 +207,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   const defaultFormSrc = `${authoringBase}/legacy/form`;
   useUnmount(props.onClosed);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
-  const defaultPrevImgUrl =
-    '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
+  const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   const path = previewItem?.path.endsWith('.xml') ? previewItem.path.replace(/[^/]*$/, '') : previewItem?.path;
   const contentTypesFilters = [
     {
@@ -249,16 +231,13 @@ function NewContentDialogBody(props: NewContentDialogProps) {
       type: 'favorite'
     }
   ];
-  const resource = useLogicResource(
-    filterContentTypes,
-    {
-      shouldResolve: (source) => !!source,
-      shouldReject: (source) => !source,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: (source) => source,
-      errorSelector: () => 'Error'
-    }
-  );
+  const resource = useLogicResource(filterContentTypes, {
+    shouldResolve: (source) => !!source,
+    shouldReject: (source) => !source,
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source,
+    errorSelector: () => 'Error'
+  });
 
   const onTypeOpen = (contentType: LegacyFormConfig) => () => {
     onContentTypeSelected?.({
@@ -293,8 +272,8 @@ function NewContentDialogBody(props: NewContentDialogProps) {
       !keyword
         ? onResetFilter()
         : setFilterContentTypes(
-        contentTypes.current.filter((content) => content.label.toLowerCase().includes(formatValue))
-        );
+            contentTypes.current.filter((content) => content.label.toLowerCase().includes(formatValue))
+          );
     },
     [contentTypes, onResetFilter]
   );
@@ -312,9 +291,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   };
 
   const getPrevImg = (content) =>
-    content?.imageThumbnail
-      ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
-      : defaultPrevImgUrl;
+    content?.imageThumbnail ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}` : defaultPrevImgUrl;
 
   useEffect(() => {
     setIsCompact(compact);
@@ -377,17 +354,14 @@ function NewContentDialogBody(props: NewContentDialogProps) {
                 title: classes.emptyStateTitle
               },
               title: (
-                <FormattedMessage
-                  id="newContentDialog.emptyStateMessage"
-                  defaultMessage="No Content Types Found"
-                />
+                <FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />
               ),
               subtitle: (
                 <FormattedMessage
                   id="newContentDialog.emptyStateMessageSubtitle"
                   defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
                   values={{
-                    catalog: (msg) =>
+                    catalog: (msg) => (
                       <Typography
                         variant="subtitle1"
                         component="a"
@@ -397,6 +371,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
                       >
                         {msg}
                       </Typography>
+                    )
                   }}
                 />
               )
@@ -420,12 +395,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
       <DialogFooter classes={{ root: classes.dialogActions }}>
         <FormControlLabel
           control={
-            <Checkbox
-              checked={isCompact || false}
-              onChange={onCompactCheck}
-              color="primary"
-              disabled={loading}
-            />
+            <Checkbox checked={isCompact || false} onChange={onCompactCheck} color="primary" disabled={loading} />
           }
           label={formatMessage(translations.compactInput)}
         />

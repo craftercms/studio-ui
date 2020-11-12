@@ -117,12 +117,7 @@ export default function SearchBar(props: SearchBarProps) {
   return (
     <Box
       boxShadow={focus ? 4 : 0}
-      className={clsx(
-        classes.search,
-        focus && 'focus',
-        showActionButton && 'noPadded',
-        props.classes?.root
-      )}
+      className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && <DecoratorIcon className={classes.searchIcon} />}
       <InputBase
@@ -144,10 +139,7 @@ export default function SearchBar(props: SearchBarProps) {
         inputProps={{ 'aria-label': 'search' }}
       />
       {showActionButton && (
-        <IconButton
-          onClick={onActionButtonClick ? onActionButtonClick : () => onChange('')}
-          className={classes.icon}
-        >
+        <IconButton onClick={onActionButtonClick ? onActionButtonClick : () => onChange('')} className={classes.icon}>
           <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       )}

@@ -18,8 +18,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
@@ -263,16 +262,11 @@ function UppyItem(props: UppyItemProps) {
 
   return (
     <Card className={classes.cardRoot}>
-      {file.preview && (
-        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />
-      )}
+      {file.preview && <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />}
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography
-              variant="body2"
-              className={clsx(file.progress.status === 'failed' && classes.textFailed)}
-            >
+            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
@@ -382,9 +376,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy
-      .getFiles()
-      .some((file) => file.name === newFile.name && file.type === newFile.type);
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -544,12 +536,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                 filesPerPath[fileId].map(
                   (id: string) =>
                     files[id] && (
-                      <UppyItem
-                        file={files[id]}
-                        key={id}
-                        retryFileUpload={retryFileUpload}
-                        onRemove={onRemove}
-                      />
+                      <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} onRemove={onRemove} />
                     )
                 )}
             </div>

@@ -21,30 +21,36 @@ import ko from '../translations/locales/ko.json';
 import { updateIntl } from './codebase-bridge';
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 
-const Locales: any = {
+type BundledSystemLocaleCodes = 'en' | 'es' | 'de' | 'ko' | 'kr';
+
+type BundledSystemLocales = { [T in BundledSystemLocaleCodes]: object };
+
+const locales: BundledSystemLocales = {
   en,
   es,
   de,
   ko,
-  kr: ko // TODO: Currently studio uses the wrong code for korean
+  kr: ko // TODO: Currently old studio UI uses the wrong code for korean
 };
 
-export function getTranslation(key: string, table: any, formatMessage = (descriptor) => descriptor) {
-  return formatMessage(table[key] || {
-    id: 'translationNotAvailable',
-    defaultMessage: (key || '(check configuration)')
-  });
-}
+const intlRef = { current: createIntlInstance(getCurrentLocale()) };
 
-export const intlRef = { current: getIntl(getCurrentLocale()) };
-
-function getIntl(locale: string): IntlShape {
+function createIntlInstance(locale: string): IntlShape {
   return createIntl(
     {
       locale: locale,
-      messages: Locales[locale] || en
+      messages: locales[locale] || en
     },
     createIntlCache()
+  );
+}
+
+export function getTranslation(key: string, table: any, formatMessage = (descriptor) => descriptor) {
+  return formatMessage(
+    table[key] || {
+      id: 'translationNotAvailable',
+      defaultMessage: key || '(check configuration)'
+    }
   );
 }
 
@@ -56,12 +62,20 @@ export function getCurrentLocale(): string {
   return locale ? locale : 'en';
 }
 
+export function getCurrentIntl(): IntlShape {
+  return intlRef.current;
+}
+
+export function getBundledSystemLocales(): BundledSystemLocales {
+  return locales;
+}
+
 // @ts-ignore
 document.addEventListener(
   'setlocale',
   (e: CustomEvent<string>) => {
     if (e.detail && e.detail !== intlRef.current.locale) {
-      intlRef.current = getIntl(e.detail);
+      intlRef.current = createIntlInstance(e.detail);
       updateIntl(intlRef.current);
       document.documentElement.setAttribute('lang', e.detail);
     }

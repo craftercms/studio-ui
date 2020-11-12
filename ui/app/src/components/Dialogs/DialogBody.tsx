@@ -16,8 +16,7 @@
 
 import React from 'react';
 import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogContent';
-import makeStyles from '@material-ui/styles/makeStyles';
-import { createStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const styles = makeStyles((theme: Theme) =>
@@ -34,10 +33,5 @@ const styles = makeStyles((theme: Theme) =>
 
 export default function DialogBody(props: DialogContentProps) {
   const classes = styles();
-  return (
-    <MuiDialogContent
-      {...props}
-      className={clsx(classes.root, props.className)}
-    />
-  );
+  return <MuiDialogContent {...props} className={clsx(classes.root, props.className)} />;
 }

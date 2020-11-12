@@ -54,10 +54,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
       }
     };
     return this.state.error ? (
-      <ErrorState
-        {...errorStateProps}
-        error={{ message: this.state.error.message || this.state.error }}
-      />
+      <ErrorState {...errorStateProps} error={{ message: this.state.error.message || this.state.error }} />
     ) : (
       this.props.children
     );

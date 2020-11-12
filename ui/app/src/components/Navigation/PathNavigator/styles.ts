@@ -193,11 +193,8 @@ export const useStyles = makeStyles(
         '&.opacity': {
           opacity: '0.7'
         },
-        '&.select-mode': {
-          color: palette.black
-        },
-        '&.non-navigable': {
-          color: theme.palette.text.secondary
+        '&.select-mode, &.non-navigable': {
+          color: theme.palette.text.primary
         }
       },
       navItemCheckbox: {
