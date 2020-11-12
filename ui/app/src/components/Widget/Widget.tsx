@@ -46,17 +46,19 @@ export function Widget(props: WidgetProps) {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
       // TODO: Replace for actual plugin load call.
       // import(/* webpackIgnore: true */ buildFileUrl(plugin))
-      import(/* webpackIgnore: true */ `${process.env.PUBLIC_URL}/${plugin.type}${plugin.name}${plugin.file}`).then(() => {
-        return {
-          default: function() {
-            if (components.has(id)) {
-              return <Widget {...props} />;
-            } else {
-              return <div>Component not found.</div>;
+      import(/* webpackIgnore: true */ `${process.env.PUBLIC_URL}/${plugin.type}${plugin.name}${plugin.file}`).then(
+        () => {
+          return {
+            default: function() {
+              if (components.has(id)) {
+                return <Widget {...props} />;
+              } else {
+                return <div>Component not found.</div>;
+              }
             }
-          }
-        };
-      })
+          };
+        }
+      )
     );
     return <Component {...props} />;
   }
