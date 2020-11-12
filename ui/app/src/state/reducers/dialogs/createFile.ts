@@ -16,11 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closeCreateFileDialog,
-  createFileDialogClosed,
-  showCreateFileDialog
-} from '../../actions/dialogs';
+import { closeCreateFileDialog, createFileDialogClosed, showCreateFileDialog } from '../../actions/dialogs';
 import { CreateFileStateProps } from '../../../components/Dialogs/CreateFileDialog';
 
 const initialState: CreateFileStateProps = {

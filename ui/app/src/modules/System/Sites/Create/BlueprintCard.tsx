@@ -24,7 +24,7 @@ import CardActions from '@material-ui/core/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import { Blueprint } from '../../../../models/Blueprint';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from '../../../../components/MobileStepper';
@@ -36,13 +36,13 @@ import clsx from 'clsx';
 import cardTitleStyles from '../../../../styles/card';
 
 interface BlueprintCardProps {
-  blueprint: Blueprint,
-  interval: number,
-  marketplace: boolean,
+  blueprint: Blueprint;
+  interval: number;
+  marketplace: boolean;
 
-  onBlueprintSelected(blueprint: Blueprint, view: number): any,
+  onBlueprintSelected(blueprint: Blueprint, view: number): any;
 
-  onDetails(blueprint: Blueprint, index?: number): any,
+  onDetails(blueprint: Blueprint, index?: number): any;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -254,9 +254,9 @@ function BlueprintCard(props: BlueprintCardProps) {
   }
 
   function renderMedias(id: string) {
-    let videos: any = (media && media.videos) ? { ...media.videos, type: 'video' } : [];
+    let videos: any = media && media.videos ? { ...media.videos, type: 'video' } : [];
     videos = videos.length ? videos.map((obj: any) => ({ ...obj, type: 'video' })) : [];
-    let screenshots: any = (media && media.screenshots) ? media.screenshots : [];
+    let screenshots: any = media && media.screenshots ? media.screenshots : [];
     const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
       if (item.type !== 'video') {
@@ -289,20 +289,21 @@ function BlueprintCard(props: BlueprintCardProps) {
   }
 
   let steps = 0;
-  (blueprint.media && blueprint.media.screenshots) ? steps = blueprint.media.screenshots.length : steps = 0;
-  (blueprint.media && blueprint.media.videos) ? steps += blueprint.media.videos.length : steps += 0;
+  blueprint.media && blueprint.media.screenshots ? (steps = blueprint.media.screenshots.length) : (steps = 0);
+  blueprint.media && blueprint.media.videos ? (steps += blueprint.media.videos.length) : (steps += 0);
 
   return (
     <Card className={classes.card}>
-      {
-        (id !== 'GIT') &&
-        <CardActionArea onClick={(e) => {
-          if ((marketplace && !blueprint.compatible)) {
-            onImageClick(e);
-          } else {
-            onBlueprintSelected(blueprint, 1);
-          }
-        }}>
+      {id !== 'GIT' && (
+        <CardActionArea
+          onClick={(e) => {
+            if (marketplace && !blueprint.compatible) {
+              onImageClick(e);
+            } else {
+              onBlueprintSelected(blueprint, 1);
+            }
+          }}
+        >
           {/*
           // @ts-ignore */}
           <CardHeader
@@ -320,7 +321,7 @@ function BlueprintCard(props: BlueprintCardProps) {
             }}
           />
         </CardActionArea>
-      }
+      )}
       <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
         <AutoPlaySwipeableViews
           index={index}
@@ -331,9 +332,8 @@ function BlueprintCard(props: BlueprintCardProps) {
         >
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
-        {
-          (id === 'GIT') &&
-          <CardContent className='cardContent'>
+        {id === 'GIT' && (
+          <CardContent className="cardContent">
             <Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
               {name}
             </Typography>
@@ -341,10 +341,9 @@ function BlueprintCard(props: BlueprintCardProps) {
               {blueprint.description}
             </Typography>
           </CardContent>
-        }
+        )}
       </CardActionArea>
-      {
-        (steps > 0) && (id !== 'GIT') &&
+      {steps > 0 && id !== 'GIT' && (
         <MobileStepper
           variant="dots"
           steps={steps}
@@ -353,12 +352,10 @@ function BlueprintCard(props: BlueprintCardProps) {
           position={'static'}
           activeStep={index}
         />
-      }
-      {
-        (id !== 'GIT') &&
+      )}
+      {id !== 'GIT' && (
         <CardActions className={'cardActions'}>
-          {
-            ((marketplace && blueprint.compatible) || !marketplace) &&    // if it's from marketplace and compatible, or not from marketplace (private bps)
+          {((marketplace && blueprint.compatible) || !marketplace) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
             <Button
               variant="outlined"
               color="primary"
@@ -367,12 +364,12 @@ function BlueprintCard(props: BlueprintCardProps) {
             >
               {formatMessage(messages.use)}
             </Button>
-          }
+          )}
           <Button className={classes.more} onClick={() => onDetails(blueprint)}>
             {formatMessage(messages.more)}
           </Button>
         </CardActions>
-      }
+      )}
     </Card>
   );
 }

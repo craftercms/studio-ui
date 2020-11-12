@@ -87,7 +87,12 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
           { value: 'mediaconvert', label: 'MediaConvert', selected: false }
         ]
       },
-      { label: 'Profile ID', name: 'profile_id', type: 'string', defaultValue: 'elastic-transcoder-default' }
+      {
+        label: 'Profile ID',
+        name: 'profile_id',
+        type: 'string',
+        defaultValue: 'elastic-transcoder-default'
+      }
     ];
   },
 

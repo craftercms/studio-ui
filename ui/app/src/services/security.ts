@@ -22,9 +22,7 @@ import { toQueryString } from '../utils/object';
 export function encrypt(text: string): Observable<string>;
 export function encrypt(text: string, site: string): Observable<string>;
 export function encrypt(text: string, site: string = ''): Observable<string> {
-  return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
-    pluck('response', 'item')
-  );
+  return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(pluck('response', 'item'));
 }
 
 export function getUserPermissions(site: string, path: string, user: string): Observable<string[]> {

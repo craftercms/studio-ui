@@ -15,13 +15,13 @@
  */
 
 export interface Package {
-  id: string,
-  siteId: string,
-  schedule: string,
-  approver: string,
-  state: string,
-  environment: string
-  comment: string
+  id: string;
+  siteId: string;
+  schedule: string;
+  approver: string;
+  state: string;
+  environment: string;
+  comment: string;
 }
 
 export interface Selected {
@@ -29,16 +29,15 @@ export interface Selected {
 }
 
 export interface File {
-  contentTypeClass: string
-  mimeType: string
-  path: string
+  contentTypeClass: string;
+  mimeType: string;
+  path: string;
 }
 
 export interface CurrentFilters {
   environment: string;
   path: string;
   state: Array<string>;
-  limit: number,
-  page: number
+  limit: number;
+  page: number;
 }
-

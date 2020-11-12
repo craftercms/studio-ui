@@ -209,7 +209,11 @@ CStudioAuthoring.Module.requireModule(
               type: 'string',
               defaultValue: 'generic'
             },
-            { label: CMgs.format(langBundle, 'imageManager'), name: 'imageManager', type: 'datasource:image' }
+            {
+              label: CMgs.format(langBundle, 'imageManager'),
+              name: 'imageManager',
+              type: 'datasource:image'
+            }
           ];
         },
 
@@ -501,7 +505,9 @@ CStudioAuthoring.Module.requireModule(
                 break;
               case 'width':
                 this.rteWidth = typeof prop.value == 'string' && prop.value ? prop.value : '400';
-                width = this.resizeTextView(containerEl, this.rteWidth, { 'rte-container': controlWidgetContainerEl });
+                width = this.resizeTextView(containerEl, this.rteWidth, {
+                  'rte-container': controlWidgetContainerEl
+                });
                 break;
               case 'height':
                 var height;
@@ -1088,14 +1094,14 @@ CStudioAuthoring.Module.requireModule(
           }
           g = c.add(l, 'td');
           g = c.add(g, 'a', {
-            'role': 'option',
-            'href': 'javascript:;',
-            'style': { backgroundColor: '#' + i },
-            'title': p.editor.getLang('colors.' + i, i),
+            role: 'option',
+            href: 'javascript:;',
+            style: { backgroundColor: '#' + i },
+            title: p.editor.getLang('colors.' + i, i),
             'data-mce-color': '#' + i
           });
           if (p.editor.forcedHighContrastMode) {
-            g = c.add(g, 'canvas', { 'width': 16, 'height': 16, 'aria-hidden': 'true' });
+            g = c.add(g, 'canvas', { width: 16, height: 16, 'aria-hidden': 'true' });
             if (g.getContext && (f = g.getContext('2d'))) {
               f.fillStyle = '#' + i;
               f.fillRect(0, 0, 16, 16);
@@ -1171,7 +1177,11 @@ CStudioAuthoring.Module.requireModule(
         c.show(f.id + '_menu');
         c.addClass(i, 'mceSplitButtonSelected');
         h = c.getPos(i);
-        c.setStyles(f.id + '_menu', { left: h.x - 1, top: h.y - window.pageYOffset + i.clientHeight, zIndex: 200000 });
+        c.setStyles(f.id + '_menu', {
+          left: h.x - 1,
+          top: h.y - window.pageYOffset + i.clientHeight,
+          zIndex: 200000
+        });
         i = 0;
         a.add(c.doc, 'mousedown', f.hideMenu, f);
         f.onShowMenu.dispatch(f);

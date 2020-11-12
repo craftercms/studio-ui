@@ -18,29 +18,31 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LoginView, { LoginViewProps } from '../components/SystemStatus/LoginView';
 
-const useStyles = makeStyles(() => createStyles({
-  '@global': {
-    'html, body, #root, #studioSPARoot': {
-      margin: 0,
-      padding: 0,
-      height: '100%'
+const useStyles = makeStyles(() =>
+  createStyles({
+    '@global': {
+      'html, body, #root, #studioSPARoot': {
+        margin: 0,
+        padding: 0,
+        height: '100%'
+      }
+    },
+    root: {
+      height: '100%',
+      background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',
+      backgroundSize: 'cover'
+    },
+    video: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      minWidth: '100%',
+      position: 'fixed',
+      minHeight: '100%'
     }
-  },
-  root: {
-    height: '100%',
-    background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',
-    backgroundSize: 'cover'
-  },
-  video: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    minWidth: '100%',
-    position: 'fixed',
-    minHeight: '100%'
-  }
-}));
+  })
+);
 
 export default function Login(props: LoginViewProps) {
   const classes = useStyles({});
@@ -75,4 +77,3 @@ export default function Login(props: LoginViewProps) {
     </div>
   );
 }
-

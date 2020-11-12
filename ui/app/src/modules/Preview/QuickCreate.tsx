@@ -23,18 +23,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import {
-  usePreviewState,
-  useQuickCreateListResource,
-  useSelection,
-  useSystemVersionResource
-} from '../../utils/hooks';
+import { usePreviewState, useQuickCreateListResource, useSelection, useSystemVersionResource } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import {
-  newContentCreationComplete,
-  showEditDialog,
-  showNewContentDialog
-} from '../../state/actions/dialogs';
+import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';

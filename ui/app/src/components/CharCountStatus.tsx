@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles';
 import palette from '../styles/palette';
 import { Grid } from '@material-ui/core';
@@ -24,15 +24,17 @@ import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  countContainer: {
-    padding: '5px'
-  },
-  submissionCommentCount: {
-    fontSize: '14px',
-    color: palette.gray.medium4
-  }
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    countContainer: {
+      padding: '5px'
+    },
+    submissionCommentCount: {
+      fontSize: '14px',
+      color: palette.gray.medium4
+    }
+  })
+);
 
 interface CharCountStatusContainerProps {
   commentLength: number;
@@ -75,12 +77,7 @@ export function CharCountStatusContainer(props: CharCountStatusContainerProps) {
     (state) => state.configuration.publishing.submission.commentMaxLength
   );
 
-  return (
-    <CharCountStatus
-      commentLength={commentLength}
-      commentMaxLength={commentMaxLength}
-    ></CharCountStatus>
-  );
+  return <CharCountStatus commentLength={commentLength} commentMaxLength={commentMaxLength}></CharCountStatus>;
 }
 
 export default CharCountStatus;

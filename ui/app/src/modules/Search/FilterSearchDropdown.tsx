@@ -24,7 +24,7 @@ import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
 import { camelize, formatBytes } from '../../utils/string';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import FormGroup from '@material-ui/core/FormGroup';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -314,11 +314,7 @@ function Filter(props: FilterProps) {
   return (
     <div className={classes.singleFilter}>
       <div className={classes.filterActions}>
-        <Button
-          variant="outlined"
-          className={classes.button}
-          onClick={() => handleClearClick(facet)}
-        >
+        <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(facet)}>
           {formatMessage(messages.clear)}
         </Button>
         {facetsLookupTable[facet].multiple && (
@@ -349,11 +345,7 @@ function Filter(props: FilterProps) {
               checkedFilters={checkedFilters}
             />
             {facetsLookupTable[facet].range && !facetsLookupTable[facet].date && (
-              <RangeSelector
-                facet={facet}
-                handleFilterChange={handleFilterChange}
-                checkedFilters={checkedFilters}
-              />
+              <RangeSelector facet={facet} handleFilterChange={handleFilterChange} checkedFilters={checkedFilters} />
             )}
           </>
         )}
@@ -380,9 +372,7 @@ function FilterRadios(props: FilterRadiosProps) {
     if (facetData.date) {
       return `${value.from}TODATE${value.to}ID${facet}${key}`;
     } else if (facetData.range) {
-      return `${value.from !== '-Infinity' ? value.from : ''}TO${
-        value.to !== 'Infinity' ? value.to : ''
-      }`;
+      return `${value.from !== '-Infinity' ? value.from : ''}TO${value.to !== 'Infinity' ? value.to : ''}`;
     } else {
       return key;
     }
@@ -421,11 +411,7 @@ function FilterRadios(props: FilterRadiosProps) {
             name={key}
             onChange={(e: any) => handleRadioClick(e.target.value, facet)}
             control={
-              <Radio
-                checked={checkedFilters && checkedFilters[facet] === value}
-                color="primary"
-                value={value}
-              />
+              <Radio checked={checkedFilters && checkedFilters[facet] === value} color="primary" value={value} />
             }
             label={`${label} (${count})`}
             labelPlacement="start"
@@ -460,9 +446,7 @@ function FilterCheckboxes(props: FilterCheckboxesProps) {
             control={
               <Checkbox
                 color="primary"
-                checked={
-                  (checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false
-                }
+                checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
                 value={key}
                 onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
               />
@@ -789,22 +773,13 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
       let name = camelize(key);
       return (
         <div key={i}>
-          <ListItem
-            button
-            classes={{ root: classes.listPadding }}
-            onClick={() => handleExpandClick(name)}
-          >
+          <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick(name)}>
             <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
               <Typography variant="body1">
                 <strong>{formatMessage(messages[name])}</strong>
               </Typography>
               {checkedFilters[key] && <CheckIcon className={classes.filterChecked} />}
-              <ExpandMoreIcon
-                className={clsx(
-                  classes.expand,
-                  !!(expanded && expanded[name]) && classes.expandOpen
-                )}
-              />
+              <ExpandMoreIcon className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)} />
             </header>
           </ListItem>
           <Collapse in={!!(expanded && expanded[name])} timeout={300} onEntered={refreshPopover}>
@@ -854,22 +829,13 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
       >
         <List classes={{ padding: classes.listPadding }}>
           <div>
-            <ListItem
-              button
-              classes={{ root: classes.listPadding }}
-              onClick={() => handleExpandClick('path')}
-            >
+            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
               <header className={clsx(classes.header, !!(expanded && expanded['path']) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.path)}</strong>
                 </Typography>
                 {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
-                <ExpandMoreIcon
-                  className={clsx(
-                    classes.expand,
-                    expanded && expanded['path'] && classes.expandOpen
-                  )}
-                />
+                <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
               </header>
             </ListItem>
             <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
@@ -883,33 +849,20 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
             </Collapse>
           </div>
           <div>
-            <ListItem
-              button
-              classes={{ root: classes.listPadding }}
-              onClick={() => handleExpandClick('sortBy')}
-            >
-              <header
-                className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}
-              >
+            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
+              <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.sortBy)}</strong>
                 </Typography>
                 {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
                 <ExpandMoreIcon
-                  className={clsx(
-                    classes.expand,
-                    expanded && expanded['sortBy'] && classes.expandOpen
-                  )}
+                  className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)}
                 />
               </header>
             </ListItem>
             <Collapse in={expanded && expanded['sortBy']} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
-                <SortBy
-                  queryParams={queryParams}
-                  filterKeys={filterKeys}
-                  handleFilterChange={handleFilterChange}
-                />
+                <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
                 <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
               </div>
             </Collapse>

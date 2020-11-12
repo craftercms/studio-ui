@@ -22,12 +22,7 @@ import { BaseItem, DetailedItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  useSpreadState,
-  useUnmount
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
 import Grid from '@material-ui/core/Grid';

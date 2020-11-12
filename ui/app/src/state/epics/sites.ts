@@ -28,9 +28,7 @@ export default [
     action$.pipe(
       ofType(changeSite.type),
       withLatestFrom(state$),
-      tap(([{ payload: { nextSite } }, { env: { siteCookieName } }]) =>
-        setSiteCookie(nextSite)
-      ),
+      tap(([{ payload: { nextSite } }, { env: { siteCookieName } }]) => setSiteCookie(nextSite)),
       ignoreElements()
     ),
   // endregion

@@ -16,15 +16,10 @@
 
 import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ToolPanel from './ToolPanel';
-import {
-  useActiveSiteId,
-  useDebouncedInput,
-  useLogicResource,
-  useMount
-} from '../../../utils/hooks';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../../utils/hooks';
 import SearchBar from '../../../components/Controls/SearchBar';
 import {
   ComponentsContentTypeParams,
@@ -164,19 +159,19 @@ export default function SearchPanel() {
   // const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useLogicResource<
-    Array<ContentInstance | SearchItem>,
-    ContentInstancePage | SearchResult
-  >(searchResults, {
-    shouldResolve: (data) => Boolean(data),
-    shouldReject: () => Boolean(error),
-    shouldRenew: (data, resourceArg) => resourceArg.complete,
-    // TODO: Components
-    // resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
-    // @ts-ignore TODO: Remove ts-ignore
-    resultSelector: (data) => data.items,
-    errorSelector: () => error
-  });
+  const resource = useLogicResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(
+    searchResults,
+    {
+      shouldResolve: (data) => Boolean(data),
+      shouldReject: () => Boolean(error),
+      shouldRenew: (data, resourceArg) => resourceArg.complete,
+      // TODO: Components
+      // resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
+      // @ts-ignore TODO: Remove ts-ignore
+      resultSelector: (data) => data.items,
+      errorSelector: () => error
+    }
+  );
 
   useMount(() => {
     onSearch();
@@ -235,9 +230,7 @@ export default function SearchPanel() {
   return (
     <ToolPanel
       title={
-        keyword
-          ? formatMessage(translations.titleKeyword, { keyword: keyword })
-          : formatMessage(translations.title)
+        keyword ? formatMessage(translations.titleKeyword, { keyword: keyword }) : formatMessage(translations.title)
       }
     >
       <div className={classes.searchContainer}>
@@ -261,15 +254,13 @@ export default function SearchPanel() {
             page={pageNumber}
             backIconButtonProps={{
               'aria-label': formatMessage(translations.previousPage),
-              'size': 'small'
+              size: 'small'
             }}
             nextIconButtonProps={{
               'aria-label': formatMessage(translations.nextPage),
-              'size': 'small'
+              size: 'small'
             }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-              onPageChanged(e, page)
-            }
+            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page)}
           />
         </div>
       )}

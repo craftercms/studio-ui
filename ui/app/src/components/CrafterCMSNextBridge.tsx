@@ -16,17 +16,9 @@
 
 import '../styles/index.scss';
 
-import React, {
-  PropsWithChildren,
-  Suspense,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { IntlShape, RawIntlProvider } from 'react-intl';
-import { StylesProvider, ThemeProvider } from '@material-ui/styles';
-import { createMuiTheme, ThemeOptions } from '@material-ui/core/styles';
+import { createMuiTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
@@ -36,7 +28,7 @@ import { SnackbarProvider } from 'notistack';
 import { createResource } from '../utils/hooks';
 import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
-import { intlRef } from '../utils/i18n';
+import { getCurrentIntl } from '../utils/i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const storeResource = createResource(() =>
@@ -67,11 +59,11 @@ function Bridge(
 
   const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
-  useEffect(() => setUpLocaleChangeListener(update, intlRef.current), [update]);
+  useEffect(() => setUpLocaleChangeListener(update, getCurrentIntl()), [update]);
 
   return (
     <Provider store={store}>
-      <RawIntlProvider value={intlRef.current}>
+      <RawIntlProvider value={getCurrentIntl()}>
         <ThemeProvider theme={theme}>
           <StylesProvider generateClassName={generateClassName}>
             <SnackbarProvider
@@ -91,9 +83,7 @@ function Bridge(
   );
 }
 
-export default function CrafterCMSNextBridge(
-  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>
-) {
+export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>) {
   return (
     <Suspense fallback={<LoadingState />}>
       <Bridge
@@ -107,7 +97,7 @@ export default function CrafterCMSNextBridge(
 
 function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
   const handler = (e: any) => {
-    if (currentIntl !== intlRef.current) {
+    if (currentIntl !== getCurrentIntl()) {
       update({});
     }
   };

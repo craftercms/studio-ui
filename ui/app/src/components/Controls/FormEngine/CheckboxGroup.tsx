@@ -26,45 +26,32 @@ import { controlBaseStyles } from './commonStyles';
 const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 
 export default function CheckboxGroup(props: Control) {
-  const {
-    field,
-    value = [],
-    onChange,
-    disabled
-  } = props;
+  const { field, value = [], onChange, disabled } = props;
   const classes = useStyles({});
 
-  const handleChange = (e) => onChange(
-    (e.target.checked)
-      ? value.concat(e.target.value)
-      : value.filter(val => val !== e.target.value)
-  );
+  const handleChange = (e) =>
+    onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
 
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel
-        className={classes.inputLabel}
-        htmlFor={field.id}
-      >
+      <InputLabel className={classes.inputLabel} htmlFor={field.id}>
         {field.name}
       </InputLabel>
-      {
-        field.values?.map((possibleValue: any) => (
-          <FormControlLabel
-            key={possibleValue.value}
-            control={
-              <Checkbox
-                value={possibleValue.value}
-                color="primary"
-                checked={value.includes(possibleValue.value)}
-                onChange={handleChange}
-                disabled={disabled}
-              />
-            }
-            label={possibleValue.label}
-          />
-        ))
-      }
+      {field.values?.map((possibleValue: any) => (
+        <FormControlLabel
+          key={possibleValue.value}
+          control={
+            <Checkbox
+              value={possibleValue.value}
+              color="primary"
+              checked={value.includes(possibleValue.value)}
+              onChange={handleChange}
+              disabled={disabled}
+            />
+          }
+          label={possibleValue.label}
+        />
+      ))}
     </FormControl>
   );
 }

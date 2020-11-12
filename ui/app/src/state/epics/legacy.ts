@@ -26,5 +26,5 @@ export default [
         document.dispatchEvent(event);
       }),
       ignoreElements()
-    ),
+    )
 ] as Epic[];

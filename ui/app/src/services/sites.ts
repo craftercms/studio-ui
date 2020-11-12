@@ -26,23 +26,28 @@ export function fetchBlueprints() {
 }
 
 export function fetchSites(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
-  const options: PaginationOptions = Object.assign({
-    limit: 100,
-    offset: 0
-  }, paginationOptions || {});
+  const options: PaginationOptions = Object.assign(
+    {
+      limit: 100,
+      offset: 0
+    },
+    paginationOptions || {}
+  );
   return get(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`).pipe(
-    map(({ response }) => Object.assign(
-      response.sites.map(site => ({
-        id: site.siteId,
-        name: site.name ?? site.siteId,
-        description: site.desc
-      })),
-      {
-        limit: response.limit,
-        offset: response.offset,
-        total: response.total
-      }
-    ))
+    map(({ response }) =>
+      Object.assign(
+        response.sites.map((site) => ({
+          id: site.siteId,
+          name: site.name ?? site.siteId,
+          description: site.desc
+        })),
+        {
+          limit: response.limit,
+          offset: response.offset,
+          total: response.total
+        }
+      )
+    )
   );
 }
 

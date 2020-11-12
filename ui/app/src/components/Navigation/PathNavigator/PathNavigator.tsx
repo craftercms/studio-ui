@@ -501,8 +501,8 @@ export function PathNavigatorUI(props: WidgetUIProps) {
         }}
       >
         <Header
-          iconClassName={`${icon.baseClass} ${state.collapsed ? icon.collapsedClass : icon.expandedClass}`}
-          style={{
+          iconClassName={clsx(icon.baseClass, state.collapsed ? icon.collapsedClass : icon.expandedClass)}
+          iconStyle={{
             ...icon.baseStyle,
             ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
           }}

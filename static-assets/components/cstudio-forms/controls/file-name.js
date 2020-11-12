@@ -496,7 +496,12 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   getSupportedProperties: function() {
     return [
       { label: CMgs.format(langBundle, 'size'), name: 'size', type: 'int', defaultValue: '50' },
-      { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int', defaultValue: '50' },
+      {
+        label: CMgs.format(langBundle, 'maxLength'),
+        name: 'maxlength',
+        type: 'int',
+        defaultValue: '50'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
     ];
   },

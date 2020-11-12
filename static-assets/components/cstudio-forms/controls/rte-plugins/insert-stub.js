@@ -49,7 +49,11 @@ CStudioForms.Controls.RTE.InsertStub = CStudioForms.Controls.RTE.InsertStub || {
                 ed.contextControl.save();
               };
 
-              var layoutItem = { title: layout.name, onclick: onClickFn, layoutPrototype: prototype };
+              var layoutItem = {
+                title: layout.name,
+                onclick: onClickFn,
+                layoutPrototype: prototype
+              };
 
               m.add(layoutItem);
             }

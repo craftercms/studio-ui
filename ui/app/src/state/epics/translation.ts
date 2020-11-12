@@ -21,21 +21,15 @@ import GlobalState from '../../models/GlobalState';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { getSiteLocales } from '../../services/translation';
 import { catchAjaxError } from '../../utils/ajax';
-import {
-  FETCH_SITE_LOCALES,
-  fetchSiteLocalesComplete,
-  fetchSiteLocalesFailed
-} from '../actions/translation';
+import { FETCH_SITE_LOCALES, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 
-const fetchSiteLocales: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_SITE_LOCALES),
-  withLatestFrom(state$),
-  switchMap(([, state]) => getSiteLocales(state.sites.active).pipe(
-    map(fetchSiteLocalesComplete),
-    catchAjaxError(fetchSiteLocalesFailed)
-  ))
-);
+const fetchSiteLocales: Epic = (action$, state$: Observable<GlobalState>) =>
+  action$.pipe(
+    ofType(FETCH_SITE_LOCALES),
+    withLatestFrom(state$),
+    switchMap(([, state]) =>
+      getSiteLocales(state.sites.active).pipe(map(fetchSiteLocalesComplete), catchAjaxError(fetchSiteLocalesFailed))
+    )
+  );
 
-export default [
-  fetchSiteLocales
-] as Epic[];
+export default [fetchSiteLocales] as Epic[];

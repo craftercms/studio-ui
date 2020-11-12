@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { createStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
@@ -32,7 +32,6 @@ import { getTimezones } from '../../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
 import { nnou, nou } from '../../utils/object';
 import palette from '../../styles/palette';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const translations = defineMessages({
   datePlaceholder: {

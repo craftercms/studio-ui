@@ -16,11 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closeEditSiteDialog,
-  editSiteDialogClosed,
-  showEditSiteDialog
-} from '../../actions/dialogs';
+import { closeEditSiteDialog, editSiteDialogClosed, showEditSiteDialog } from '../../actions/dialogs';
 import { EditSiteDialogStateProps } from '../../../modules/System/Sites/Edit/EditSiteDialog';
 
 const initialState: EditSiteDialogStateProps = {
@@ -28,18 +24,15 @@ const initialState: EditSiteDialogStateProps = {
   site: null
 };
 
-export default createReducer<GlobalState['dialogs']['editSite']>(
-  initialState,
-  {
-    [showEditSiteDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeEditSiteDialog(),
-      onClosed: editSiteDialogClosed(),
-      onDismiss: closeEditSiteDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeEditSiteDialog.type]: (state) => ({ ...state, open: false }),
-    [editSiteDialogClosed.type]: (state) => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['editSite']>(initialState, {
+  [showEditSiteDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeEditSiteDialog(),
+    onClosed: editSiteDialogClosed(),
+    onDismiss: closeEditSiteDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeEditSiteDialog.type]: (state) => ({ ...state, open: false }),
+  [editSiteDialogClosed.type]: (state) => initialState
+});

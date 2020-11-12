@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { NEVER, Observable, of } from 'rxjs';
+import { ofType } from 'redux-observable';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
 import {
@@ -43,6 +43,7 @@ import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl } from '../actions/preview';
+import { CrafterCMSEpic } from '../store';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -62,9 +63,9 @@ function getDialogState(type: string, state: GlobalState): { onClose: StandardAc
   return dialog;
 }
 
-export default [
+const dialogEpics: CrafterCMSEpic[] = [
   // region onClose Actions
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(
         closeConfirmDialog.type,
@@ -97,7 +98,7 @@ export default [
     ),
   // endregion
   // region View Version Dialog
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(fetchContentVersion.type),
       withLatestFrom(state$),
@@ -109,7 +110,7 @@ export default [
       )
     ),
   // endregion
-  (action$, state$: Observable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
       switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))

@@ -39,11 +39,11 @@ YAHOO.extend(
       valueEl.value = value;
       valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('focus', function () {
+      $(valueEl).on('focus', function() {
         valueEl.setAttribute('type', 'number');
       });
 
-      $(valueEl).on('blur', function (e) {
+      $(valueEl).on('blur', function(e) {
         valueEl.setAttribute('type', 'text');
         if (updateFieldFn) {
           updateFieldFn(e, this);

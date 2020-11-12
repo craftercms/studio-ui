@@ -16,8 +16,7 @@
 
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles } from '@material-ui/core';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ToolPanel from './ToolPanel';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -105,8 +104,7 @@ const LinkWithIcon = (props: LinkWithIconProps) => {
       <ListItemText
         primary={
           <>
-            <i className={`${classes.icon} ${icon.baseClass}`} style={{ ...icon.baseStyle }} />{' '}
-            {label}
+            <i className={`${classes.icon} ${icon.baseClass}`} style={{ ...icon.baseStyle }} /> {label}
           </>
         }
       />
@@ -177,9 +175,7 @@ export function SiteExplorerContainer({ widgets }: SiteExplorerContainerProps) {
       const supported = widgets.filter((item) => {
         const userRoles = rolesBySite[site];
         const itemRoles = item.roles;
-        const hasPermission = itemRoles?.length
-          ? userRoles.some((role) => itemRoles.includes(role))
-          : true;
+        const hasPermission = itemRoles?.length ? userRoles.some((role) => itemRoles.includes(role)) : true;
         return (
           [
             'craftercms.linkWithIcon',

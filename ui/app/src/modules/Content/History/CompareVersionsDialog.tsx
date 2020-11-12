@@ -21,10 +21,7 @@ import { useLogicResource, useUnmount } from '../../../utils/hooks';
 import { AsDayMonthDateTime, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
-import DialogHeader, {
-  DialogHeaderAction,
-  DialogHeaderStateAction
-} from '../../../components/Dialogs/DialogHeader';
+import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../../../components/Dialogs/DialogHeader';
 import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../../models/Version';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
@@ -36,8 +33,7 @@ import {
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ContentType from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
@@ -111,16 +107,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     disableItemSwitching = false,
     contentTypesBranch
   } = props;
-  const {
-    count,
-    page,
-    limit,
-    selected,
-    compareVersionsBranch,
-    current,
-    item,
-    rootPath
-  } = versionsBranch;
+  const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
@@ -131,8 +118,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   useUnmount(props.onClosed);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (_versionsBranch) =>
-      Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
+    shouldResolve: (_versionsBranch) => Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
     shouldReject: (_versionsBranch) => Boolean(_versionsBranch.error),
     shouldRenew: (_versionsBranch, resource) => resource.complete,
     resultSelector: (_versionsBranch) => _versionsBranch.versions,
@@ -158,8 +144,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       !contentTypesBranch.isFetching,
     shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
       Boolean(compareVersionsBranch.error || contentTypesBranch.error),
-    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
-      resource.complete,
+    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => resource.complete,
     resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
       a: compareVersionsBranch.compareVersions?.[0],
       b: compareVersionsBranch.compareVersions?.[1],
@@ -186,12 +171,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   return (
     <>
       <DialogHeader
-        title={
-          <FormattedMessage
-            id="compareVersionsDialog.headerTitle"
-            defaultMessage="Compare item versions"
-          />
-        }
+        title={<FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />}
         subtitle={
           selectMode ? (
             <FormattedMessage
@@ -255,10 +235,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         ) : (
           <EmptyState
             title={
-              <FormattedMessage
-                id="compareVersionsDialog.pleaseContentItem"
-                defaultMessage="Please content item"
-              />
+              <FormattedMessage id="compareVersionsDialog.pleaseContentItem" defaultMessage="Please content item" />
             }
           >
             <section>

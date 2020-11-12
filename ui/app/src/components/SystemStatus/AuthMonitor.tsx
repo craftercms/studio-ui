@@ -30,7 +30,7 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
-import { getLogoutInfoURL} from '../../services/auth';
+import { getLogoutInfoURL } from '../../services/auth';
 import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -51,7 +51,7 @@ const translations = defineMessages({
   postSSOLoginMismatch: {
     id: 'authMonitor.postSSOLoginMismatchMessage',
     defaultMessage:
-      'Looks like you\'ve logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed.'
+      "Looks like you've logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed."
   }
 });
 
@@ -210,20 +210,9 @@ type SSOFormProps = PropsWithChildren<{
 }>;
 
 function SSOForm(props: SSOFormProps) {
-  const {
-    username,
-    onSubmit,
-    authoringUrl,
-    ssoButtonClicked,
-    onSetSSOButtonClicked,
-    classes
-  } = props;
+  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked, classes } = props;
   const onOpenLogin = () => {
-    window.open(
-      `${authoringUrl}/login/resume`,
-      '_blank',
-      'toolbar=0,location=0,menubar=0,dependent=true'
-    );
+    window.open(`${authoringUrl}/login/resume`, '_blank', 'toolbar=0,location=0,menubar=0,dependent=true');
     onSetSSOButtonClicked(true);
   };
   return (
@@ -234,9 +223,7 @@ function SSOForm(props: SSOFormProps) {
         type="email"
         value={username}
         className={classes?.input}
-        label={
-          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username" />
-        }
+        label={<FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username" />}
       />
       <section className={classes?.ssoAction}>
         <Button
@@ -246,10 +233,7 @@ function SSOForm(props: SSOFormProps) {
           onClick={onOpenLogin}
           endIcon={<OpenInNewRounded />}
         >
-          <FormattedMessage
-            id="authMonitor.openSSOLoginButtonLabel"
-            defaultMessage="Open Login Form"
-          />
+          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open Login Form" />
         </Button>
         <Typography variant="caption">
           <FormattedMessage

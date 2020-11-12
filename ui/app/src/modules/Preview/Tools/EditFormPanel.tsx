@@ -25,8 +25,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { createStyles } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import { ModelHelper } from '../../../utils/model';
@@ -49,32 +48,34 @@ const translations = defineMessages({
   }
 });
 
-const styles = makeStyles((theme) => createStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    margin: theme.spacing(1),
-    position: 'absolute',
-    top: 64 + theme.spacing(1),
-    left: theme.spacing(1),
-    zIndex: theme.zIndex.drawer,
-    width: 250
-  },
-  formWrapper: {
-    textAlign: 'center',
-    padding: '20px 0',
-    display: 'flex',
-    flexDirection: 'column',
-    '& button': {
-      margin: '10px 20px'
+const styles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      flexDirection: 'column',
+      margin: theme.spacing(1),
+      position: 'absolute',
+      top: 64 + theme.spacing(1),
+      left: theme.spacing(1),
+      zIndex: theme.zIndex.drawer,
+      width: 250
+    },
+    formWrapper: {
+      textAlign: 'center',
+      padding: '20px 0',
+      display: 'flex',
+      flexDirection: 'column',
+      '& button': {
+        margin: '10px 20px'
+      }
+    },
+    closeButton: {
+      position: 'absolute',
+      top: '10px',
+      right: '10px'
     }
-  },
-  closeButton: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px'
-  }
-}));
+  })
+);
 
 function createBackHandler(dispatch) {
   const hostToGuest$ = getHostToGuestBus();
@@ -88,43 +89,39 @@ export default function EditFormPanel(props) {
   const classes = styles();
   return (
     <Grow in={props.open}>
-      <Paper
-        elevation={4}
-        className={classes.root}
-      >
-        {
-          props.open &&
-          <EditFormPanelBody/>
-        }
+      <Paper elevation={4} className={classes.root}>
+        {props.open && <EditFormPanelBody />}
       </Paper>
     </Grow>
   );
 }
 
 function EditFormPanelBody() {
-
   const dispatch = useDispatch();
-  const { guest: { selected, models, childrenMap } } = usePreviewState();
-  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const {
+    guest: { selected, models, childrenMap }
+  } = usePreviewState();
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const classes = styles();
   const onBack = createBackHandler(dispatch);
-  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const defaultSrc = `${authoringBase}/legacy/form?`;
 
   const item = selected[0];
   const model = models[item.modelId];
   const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentTypeId);
-  const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
-    ? model.craftercms.label
-    : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
+  const title =
+    item.fieldId.length > 1 || item.fieldId.length === 0
+      ? model.craftercms.label
+      : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
   const fieldId = item.fieldId[0];
   let selectedId;
   if (fieldId) {
     selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
-    selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
+    selectedId = typeof selectedId === 'string' && item.index !== undefined ? selectedId : item.modelId;
   } else {
     selectedId = item.modelId;
   }
@@ -132,33 +129,36 @@ function EditFormPanelBody() {
   const path = ModelHelper.prop(models[selectedId], 'path');
   const selectedContentType = ModelHelper.prop(models[selectedId], 'contentTypeId');
 
-  const getSrc = useCallback((type: string) => {
-    switch (type) {
-      case 'form': {
-        if (path) {
-          return `${defaultSrc}site=${site}&path=${path}&type=form`;
-        } else {
-          let parentPath;
-          if (model === models[selectedId]) {
-            let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
-            parentPath = models[parentId].craftercms.path;
+  const getSrc = useCallback(
+    (type: string) => {
+      switch (type) {
+        case 'form': {
+          if (path) {
+            return `${defaultSrc}site=${site}&path=${path}&type=form`;
           } else {
-            parentPath = models[model.craftercms.id].craftercms.path;
+            let parentPath;
+            if (model === models[selectedId]) {
+              let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+              parentPath = models[parentId].craftercms.path;
+            } else {
+              parentPath = models[model.craftercms.id].craftercms.path;
+            }
+            return `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
           }
-          return `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
+        }
+        case 'template': {
+          const template = contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate;
+          return `${defaultSrc}site=${site}&path=${template}&type=template`;
+        }
+        case 'controller': {
+          let pageName = popPiece(selectedContentType, '/');
+          let groovyPath = `/scripts/pages/${pageName}.groovy`;
+          return `${defaultSrc}site=${site}&path=${groovyPath}&type=controller`;
         }
       }
-      case 'template': {
-        const template = contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate;
-        return `${defaultSrc}site=${site}&path=${template}&type=template`;
-      }
-      case 'controller': {
-        let pageName = popPiece(selectedContentType, '/');
-        let groovyPath = `/scripts/pages/${pageName}.groovy`;
-        return `${defaultSrc}site=${site}&path=${groovyPath}&type=controller`;
-      }
-    }
-  }, [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]);
+    },
+    [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]
+  );
 
   function openDialog(type: string) {
     if (type === 'form') {
@@ -174,7 +174,6 @@ function EditFormPanelBody() {
         })
       );
     }
-
   }
 
   useEffect(() => {
@@ -191,14 +190,8 @@ function EditFormPanelBody() {
     // TODO: Implement Multi-mode...
     return (
       <>
-        <ToolPanel
-          BackIcon={CloseRounded}
-          onBack={onBack}
-          title="Not Implemented."
-        >
-          <Typography>
-            This condition is not yet.
-          </Typography>
+        <ToolPanel BackIcon={CloseRounded} onBack={onBack} title="Not Implemented.">
+          <Typography>This condition is not yet.</Typography>
         </ToolPanel>
       </>
     );
@@ -206,36 +199,19 @@ function EditFormPanelBody() {
 
   return (
     <>
-      <ToolPanel
-        title={title}
-        onBack={onBack}
-        BackIcon={CloseRounded}
-      >
+      <ToolPanel title={title} onBack={onBack} BackIcon={CloseRounded}>
         <div className={classes.formWrapper}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={e => openDialog('form')}
-          >
+          <Button variant="outlined" color="primary" onClick={(e) => openDialog('form')}>
             {formatMessage(translations.openComponentForm)}
           </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={e => openDialog('template')}
-          >
+          <Button variant="outlined" color="primary" onClick={(e) => openDialog('template')}>
             {formatMessage(translations.editTemplate)}
           </Button>
-          {
-            (selectedContentType.includes('/page')) &&
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={e => openDialog('controller')}
-            >
+          {selectedContentType.includes('/page') && (
+            <Button variant="outlined" color="primary" onClick={(e) => openDialog('controller')}>
               {formatMessage(translations.editController)}
             </Button>
-          }
+          )}
         </div>
       </ToolPanel>
     </>

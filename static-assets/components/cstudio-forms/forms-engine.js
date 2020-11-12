@@ -1289,7 +1289,7 @@ var CStudioForms =
           var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
           var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-          var saveFn = function (preview, draft, embeddedIceDraft, action) {
+          var saveFn = function(preview, draft, embeddedIceDraft, action) {
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
@@ -1392,7 +1392,7 @@ var CStudioForms =
                     YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                     var getContentItemCb = {
-                      success: function (contentTO) {
+                      success: function(contentTO) {
                         var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
                         path = entityId;
                         var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
@@ -1688,19 +1688,19 @@ var CStudioForms =
               }
               //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
               sendMessage({ type: FORM_CANCEL });
-              var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
+              var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0],
+                editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
               if (acnDraftContent) {
                 unlockBeforeCancel(path);
               } else {
                 if (path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
-
-                  CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
-                    (response) => {
+                  CrafterCMSNext.services.content
+                    .unlock(CStudioAuthoringContext.site, entityId)
+                    .subscribe((response) => {
                       YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                       if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
-                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         var componentsOn = !!sessionStorage.getItem('components-on');
                         if (componentsOn) {
@@ -1712,8 +1712,9 @@ var CStudioForms =
                           CStudioAuthoring.Operations.refreshPreviewParent();
                         }
                       }
-                    }
-                  );
+                    });
+                } else {
+                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               }
             }
@@ -1736,7 +1737,6 @@ var CStudioForms =
           });
 
           if (!form.readOnly) {
-
             var cancelButtonEl = document.createElement('input');
             cancelButtonEl.id = 'cancelBtn';
             YDom.addClass(cancelButtonEl, 'btn btn-default');
@@ -1745,7 +1745,7 @@ var CStudioForms =
             formButtonContainerEl.appendChild(cancelButtonEl);
 
             const buttonsContainer = document.createElement('div');
-            buttonsContainer.id = 'splitButtonContainer'
+            buttonsContainer.id = 'splitButtonContainer';
             formButtonContainerEl.appendChild(buttonsContainer);
 
             //In Context Edit, the preview button must not be shown
@@ -1753,7 +1753,7 @@ var CStudioForms =
 
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
-              success: function (type) {
+              success: function(type) {
                 const options = [
                   {
                     label: formatMessage(formEngineMessages.save),
@@ -1778,14 +1778,12 @@ var CStudioForms =
                   });
                 }
                 if (type.previewable) {
-                  options.push(
-                    {
-                      label: formatMessage(formEngineMessages.saveAndPreview),
-                      callback: () => {
-                        saveFn(true, false, null, 'saveAndPreview');
-                      }
+                  options.push({
+                    label: formatMessage(formEngineMessages.saveAndPreview),
+                    callback: () => {
+                      saveFn(true, false, null, 'saveAndPreview');
                     }
-                  );
+                  });
                 }
                 CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
                   options,
@@ -1810,7 +1808,7 @@ var CStudioForms =
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
-            setTimeout(function () {
+            setTimeout(function() {
               focusEl.focus();
             }, 500);
           }
@@ -1824,7 +1822,7 @@ var CStudioForms =
             YAHOO.util.Event.addListener(
               colExpButtonEl,
               'click',
-              function () {
+              function() {
                 collapseFn();
               },
               me
@@ -1834,7 +1832,7 @@ var CStudioForms =
           var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
           YDom.addClass(overlayContainer, 'overlay');
 
-          $(document).on('keyup', function (e) {
+          $(document).on('keyup', function(e) {
             if (e.keyCode === 27) {
               // esc
               if (e.currentTarget.activeElement) {
@@ -2592,8 +2590,7 @@ var CStudioForms =
         html += '</div>';
         html += '</div>'; // end form
 
-        html +=
-          "<div class='cstudio-form-controls-container'>" + '</div>'; // command bar
+        html += "<div class='cstudio-form-controls-container'>" + '</div>'; // command bar
         html += '</div>';
 
         return html;
@@ -3014,15 +3011,15 @@ var CStudioForms =
         // Add valid fields from form sections
 
         function getValidFields(section, isRepeat) {
-          section.fields.forEach(field => {
-            let fieldId = isRepeat? `${section.id}.${field.id}` : field.id;
+          section.fields.forEach((field) => {
+            let fieldId = isRepeat ? `${section.id}.${field.id}` : field.id;
             validFields.push(fieldId);
             let fieldInstruction = { tokenize: false };
             fieldInstructions[fieldId] = fieldInstruction;
             let fieldList = { list: false };
             fieldLists[fieldId] = fieldList;
 
-            field.properties.forEach(property => {
+            field.properties.forEach((property) => {
               try {
                 if (property.name == 'tokenize' && property.value == 'true') {
                   fieldInstruction.tokenize = true;
@@ -3038,20 +3035,20 @@ var CStudioForms =
                   'studioDialog'
                 );
               }
-            })
+            });
 
             if (field.type === 'repeat' || field.type === 'node-selector') {
               fieldList.list = true;
-              if(field.fields){
+              if (field.fields) {
                 getValidFields(field, true);
               }
             }
-          })
+          });
         }
 
-        formSections.forEach( section => {
-          getValidFields(section)
-        })
+        formSections.forEach((section) => {
+          getValidFields(section);
+        });
 
         // Add valid fields from form config
         if (formConfig && formConfig.customFields) {
@@ -3137,7 +3134,7 @@ var CStudioForms =
       },
 
       recursiveRetrieveItemValues: function(item, output, key, fieldInstructions) {
-        item.forEach(repeatItem => {
+        item.forEach((repeatItem) => {
           let attributes;
           attributes = repeatItem.datasource ? `datasource=\"${repeatItem.datasource}\"` : '';
           if (repeatItem.inline) {
@@ -3149,8 +3146,12 @@ var CStudioForms =
               var repeatValue = repeatItem[fieldName],
                 isRemote = CStudioRemote[key] && fieldName === 'url' ? true : false,
                 isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
-                isTokenized = (!!fieldInstructions[`${key}.${fieldName}`]) && fieldInstructions[`${key}.${fieldName}`].tokenize === true,
-                repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${isTokenized ? 'tokenized="true"' : ''}`;
+                isTokenized =
+                  !!fieldInstructions[`${key}.${fieldName}`] &&
+                  fieldInstructions[`${key}.${fieldName}`].tokenize === true,
+                repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${
+                  isTokenized ? 'tokenized="true"' : ''
+                }`;
               output += '\t<' + fieldName + repeatAttr + '>';
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
@@ -3164,7 +3165,7 @@ var CStudioForms =
             }
           }
           output += '\t</item>';
-        })
+        });
         return output;
       },
 

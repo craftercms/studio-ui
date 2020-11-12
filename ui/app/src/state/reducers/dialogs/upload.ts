@@ -26,21 +26,18 @@ const initialState: BulkUploadStateProps = {
   site: null
 };
 
-export default createReducer<GlobalState['dialogs']['upload']>(
-  initialState,
-  {
-    [showUploadDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeUploadDialog(),
-      onClosed: uploadDialogClosed(),
-      onCreate: closeUploadDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeUploadDialog.type]: (state) => ({
-      ...state,
-      open: false
-    }),
-    [uploadDialogClosed.type]: () => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['upload']>(initialState, {
+  [showUploadDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeUploadDialog(),
+    onClosed: uploadDialogClosed(),
+    onCreate: closeUploadDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeUploadDialog.type]: (state) => ({
+    ...state,
+    open: false
+  }),
+  [uploadDialogClosed.type]: () => initialState
+});

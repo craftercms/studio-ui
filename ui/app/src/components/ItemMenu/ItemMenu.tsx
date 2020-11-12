@@ -19,13 +19,7 @@ import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
 import { LookupTable } from '../../models/LookupTable';
-import {
-  useActiveSiteId,
-  useEnv,
-  useLogicResource,
-  usePermissions,
-  useSelection
-} from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
 import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin } from '@material-ui/core';
@@ -53,12 +47,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
-import {
-  copy,
-  fetchWorkflowAffectedItems,
-  getLegacyItemsTree,
-  paste
-} from '../../services/content';
+import { copy, cut, fetchWorkflowAffectedItems, getLegacyItemsTree, paste } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -74,8 +63,7 @@ import {
   setClipBoard
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
-import { makeStyles } from '@material-ui/core/styles';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { translations } from './translations';
 import { rand } from '../Navigation/PathNavigator/utils';
 import {

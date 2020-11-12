@@ -43,7 +43,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 
   renderJobsList: function() {
     var actions = [
-      { name: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'), context: this, method: this.setStates }
+      {
+        name: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'),
+        context: this,
+        method: this.setStates
+      }
     ];
     CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 

@@ -15,7 +15,7 @@
  */
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import AppsIcon from '@material-ui/icons/Apps';
 import IconButton from '@material-ui/core/IconButton';
@@ -58,7 +58,6 @@ import { useActiveSiteId, useLogicResource, usePermissions, useSelection } from 
 import { fetchUserPermissions } from '../../state/actions/content';
 import { Resource } from '../../models/Resource';
 import { LookupTable } from '../../models/LookupTable';
-import createStyles from '@material-ui/styles/createStyles';
 import { Loader } from '../../components/ItemMenu/ItemMenu';
 import { isEditableAsset } from '../../utils/content';
 import Menu from '@material-ui/core/Menu';

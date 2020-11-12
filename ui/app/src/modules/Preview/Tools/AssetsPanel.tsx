@@ -17,15 +17,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import {
-  useActiveSiteId,
-  useDebouncedInput,
-  useSelection,
-  useSelectorResource
-} from '../../../utils/hooks';
+import { useActiveSiteId, useDebouncedInput, useSelection, useSelectorResource } from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import SearchBar from '../../../components/Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
@@ -33,11 +28,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../previewContext';
-import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  fetchAssetsPanelItems
-} from '../../../state/actions/preview';
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from '../../../components/SystemStatus/EmptyState';

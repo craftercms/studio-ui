@@ -19,7 +19,7 @@ import reducer from './reducers/root';
 import { createLookupTable, nou } from '../utils/object';
 import Cookies from 'js-cookie';
 import GlobalState from '../models/GlobalState';
-import { createEpicMiddleware } from 'redux-observable';
+import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -30,10 +30,14 @@ import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
 import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
-import { intlRef } from '../utils/i18n';
+import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 
+export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
+
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
+
+export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>;
 
 let store: CrafterCMSStore;
 
@@ -43,9 +47,7 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
   }
   const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
   if (preloadState) {
-    return of(createStoreSync(preloadState)).pipe(
-      tap((s) => (store = s))
-    );
+    return of(createStoreSync(preloadState)).pipe(tap((s) => (store = s)));
   } else {
     return fetchInitialState().pipe(
       map((initialState) => createStoreSync(initialState)),
@@ -54,14 +56,20 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
   }
 }
 
+export function getStore(): CrafterCMSStore {
+  return store;
+}
+
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, { intlRef: { current: IntlShape } }>({
-    dependencies: { intlRef }
+  const epicMiddleware = createEpicMiddleware<
+    StandardAction,
+    StandardAction,
+    GlobalState,
+    { getIntl: () => IntlShape }
+  >({
+    dependencies: { getIntl: getCurrentIntl }
   });
-  const middleware = [
-    ...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }),
-    epicMiddleware
-  ];
+  const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({
     reducer,
     middleware,
@@ -83,8 +91,7 @@ export function retrieveInitialStateScript(): GlobalState {
       }
     } catch {
       // The login screen won't have the preloaded state
-      !window.location.href.includes('/login') &&
-      console.error('[GlobalContext] Malformed initial global state.');
+      !window.location.href.includes('/login') && console.error('[GlobalContext] Malformed initial global state.');
       // TODO: Login view should be built separately from the main app to avoid this hack and specially to avoid the bulky build
     }
   } else {
@@ -167,6 +174,3 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
 }
 
 export default createStore;
-
-
-

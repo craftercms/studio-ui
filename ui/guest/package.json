@@ -38,7 +38,15 @@
     "compile": "tsc --build tsconfig.json"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "prettier",
+      "prettier/react"
+    ],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": ["error"]
+    }
   },
   "browserslist": {
     "production": [

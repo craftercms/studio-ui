@@ -18,11 +18,7 @@ import { Epic, ofType } from 'redux-observable';
 import { map, switchMap } from 'rxjs/operators';
 import { version } from '../../services/monitoring';
 import { catchAjaxError } from '../../utils/ajax';
-import {
-  fetchSystemVersion,
-  fetchSystemVersionComplete,
-  fetchSystemVersionFailed
-} from '../actions/env';
+import { fetchSystemVersion, fetchSystemVersionComplete, fetchSystemVersionFailed } from '../actions/env';
 
 export default [
   (action$) =>

@@ -16,7 +16,7 @@
 
 // Next UI code disabled temporarily
 
-import makeStyles from '@material-ui/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import ContentInstance from '../../../models/ContentInstance';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';

@@ -31,7 +31,7 @@ const plugins = [
   babel({
     exclude: 'node_modules/**',
     // TODO: @babel/preset-env breaks the build of AMD-style third party libs (e.g. jQuery, js-cookie)
-    presets: [/*'@babel/preset-env', */'@babel/preset-react', '@babel/preset-typescript'],
+    presets: [/*'@babel/preset-env', */ '@babel/preset-react', '@babel/preset-typescript'],
     plugins: [
       'babel-plugin-transform-react-remove-prop-types',
       '@babel/plugin-proposal-nullish-coalescing-operator',
@@ -58,7 +58,7 @@ const plugins = [
       ],
       'react-is': ['isValidElementType', 'ForwardRef', 'isContextConsumer'],
       'prop-types': ['elementType'],
-      'react': [
+      react: [
         'Children',
         'createRef',
         'Component',
@@ -112,7 +112,6 @@ const baseConfig = {
 };
 
 export default [
-
   /* UMD build */
   {
     input,
@@ -144,5 +143,4 @@ export default [
     },
     ...baseConfig
   }
-
 ];

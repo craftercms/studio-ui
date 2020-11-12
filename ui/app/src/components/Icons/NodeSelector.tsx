@@ -34,7 +34,7 @@ export default function NodeSelector(props: SvgIconProps) {
       </g>
       <defs>
         <clipPath id="clip0">
-          <rect y="0.615234" width="24" height="24"/>
+          <rect y="0.615234" width="24" height="24" />
         </clipPath>
       </defs>
     </SvgIcon>

@@ -28,18 +28,37 @@ module.exports = {
     filename: 'monaco.0.20.0.js'
   },
   module: {
-    rules: [{
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader']
-    }, {
-      test: /\.ttf$/,
-      use: ['file-loader']
-    }]
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.ttf$/,
+        use: ['file-loader']
+      }
+    ]
   },
   plugins: [
     new MonacoWebpackPlugin({
       publicPath,
-      languages: ['css', 'dockerfile', 'graphql', 'handlebars', 'html', 'java', 'javascript', 'json', 'less', 'markdown',  'scss', 'shell', 'typescript', 'xml', 'yaml']
+      languages: [
+        'css',
+        'dockerfile',
+        'graphql',
+        'handlebars',
+        'html',
+        'java',
+        'javascript',
+        'json',
+        'less',
+        'markdown',
+        'scss',
+        'shell',
+        'typescript',
+        'xml',
+        'yaml'
+      ]
     })
   ]
 };

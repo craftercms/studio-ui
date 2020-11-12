@@ -34,8 +34,7 @@
             <img src="/studio/static-assets/images/choose_option.svg" alt="">
             <div>${formatMessage(contentTypesMessages.siteConfigLandingMessage)}</div>
           </div>
-        </div>
-    `;
+        </div>`;
 
       CStudioAuthoring.Service.lookupConfigurtion(
         CStudioAuthoringContext.site,
@@ -109,7 +108,6 @@
         }
       }
 
-
       var validatorContainer = document.createElement('div');
       YDom.addClass(validatorContainer, 'craftercms-entitlement');
 
@@ -124,7 +122,6 @@
       validatorContainer.appendChild(logo);
       validatorContainer.appendChild(entitlementValidatorP);
       document.getElementById('categories-panel').appendChild(validatorContainer);
-
     }
   };
 
@@ -217,12 +214,14 @@
           params.toolbar.selectedEl = self;
           YDom.addClass(self, 'cstudio-admin-console-item-selected');
           params.tool.renderWorkarea();
-
         }
       };
 
       onRenderWorkAreaFn.containerEl = toolContainerEl;
-      YAHOO.util.Event.on(toolContainerEl, 'click', onRenderWorkAreaFn, { tool: tool, toolbar: this });
+      YAHOO.util.Event.on(toolContainerEl, 'click', onRenderWorkAreaFn, {
+        tool: tool,
+        toolbar: this
+      });
 
       this.tools[this.tools.length] = tool;
     }

@@ -18,7 +18,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import Popover from '@material-ui/core/Popover';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -199,22 +199,11 @@ export default function FilterDropdown(props: FilterDropdownProps) {
               value={currentFilters.environment}
               onChange={handleFilterChange}
             >
-              <FormControlLabel
-                value=""
-                control={<Radio color="primary" />}
-                label={formatMessage(messages.all)}
-              />
-              {
-                filters.environments &&
-                filters.environments.map((filter: string, index: number) =>
-                  <FormControlLabel
-                    key={index}
-                    value={filter}
-                    control={<Radio color="primary" />}
-                    label={filter}
-                  />
-                )
-              }
+              <FormControlLabel value="" control={<Radio color="primary" />} label={formatMessage(messages.all)} />
+              {filters.environments &&
+                filters.environments.map((filter: string, index: number) => (
+                  <FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
+                ))}
             </RadioGroup>
           </div>
         </section>
@@ -238,23 +227,21 @@ export default function FilterDropdown(props: FilterDropdownProps) {
                   />
                 }
               />
-              {
-                filters.states.map((filter: string, index: number) =>
-                  <FormControlLabel
-                    key={index}
-                    value={filter}
-                    control={
-                      <Checkbox
-                        color="primary"
-                        value={filter}
-                        checked={currentFilters.state.includes(filter)}
-                        onChange={handleFilterChange}
-                      />
-                    }
-                    label={formatMessage(messages[filter])}
-                  />
-                )
-              }
+              {filters.states.map((filter: string, index: number) => (
+                <FormControlLabel
+                  key={index}
+                  value={filter}
+                  control={
+                    <Checkbox
+                      color="primary"
+                      value={filter}
+                      checked={currentFilters.state.includes(filter)}
+                      onChange={handleFilterChange}
+                    />
+                  }
+                  label={formatMessage(messages[filter])}
+                />
+              ))}
             </FormGroup>
           </div>
         </section>

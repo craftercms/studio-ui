@@ -36,9 +36,9 @@ export function cancelPackage(siteId: string, packageIds: any) {
 export function fetchPublishingTargets(
   site: string
 ): Observable<Array<{ name: string; order: number; publish: boolean; updateStatus: boolean }>> {
-  return get(
-    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`
-  ).pipe(pluck('response', 'availablePublishChannels'));
+  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`).pipe(
+    pluck('response', 'availablePublishChannels')
+  );
 }
 
 export function submitToGoLive(siteId: string, user: string, data): Observable<any> {
@@ -49,10 +49,10 @@ export function submitToGoLive(siteId: string, user: string, data): Observable<a
 }
 
 export function goLive(siteId: string, user: string, data): Observable<any> {
-  return postJSON(
-    `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
-    data
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  return postJSON(`/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`, data).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function reject(

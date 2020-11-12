@@ -23,15 +23,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useAutocomplete } from '@material-ui/lab';
 import { SearchItem } from '../../models/Search';
 import clsx from 'clsx';
-import {
-  CircularProgress,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper
-} from '@material-ui/core';
+import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@material-ui/core';
 import LoadingState from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
 import Page from '../Icons/Page';
@@ -103,14 +95,7 @@ export default function PagesSearchAhead(props) {
   const [items, setItems] = useState(null);
   const [dirty, setDirty] = useState(false);
 
-  const {
-    getRootProps,
-    getInputProps,
-    getListboxProps,
-    getOptionProps,
-    groupedOptions,
-    popupOpen
-  } = useAutocomplete({
+  const { getRootProps, getInputProps, getListboxProps, getOptionProps, groupedOptions, popupOpen } = useAutocomplete({
     freeSolo: true,
     inputValue: keyword,
     onInputChange: (e, value, reason) => {

@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
-import createStyles from '@material-ui/styles/createStyles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';

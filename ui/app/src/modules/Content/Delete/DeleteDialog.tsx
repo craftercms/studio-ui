@@ -16,17 +16,11 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { SandboxItem } from '../../../models/Item';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  useSpreadState,
-  useUnmount
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import StandardAction from '../../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Resource } from '../../../models/Resource';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';

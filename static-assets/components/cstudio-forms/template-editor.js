@@ -859,11 +859,8 @@ CStudioAuthoring.Module.requireModule(
                   filename = localeCode ? `${baseName}_${localeCode}.ftl` : `${baseName}.ftl`;
                 }
 
-                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${
-                  CStudioAuthoringContext.site
-                }&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&user=${
-                  CStudioAuthoringContext.user
-                }&unlock=${unlock}`;
+                // prettier-ignore
+                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
 
                 fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
                   method: 'POST',

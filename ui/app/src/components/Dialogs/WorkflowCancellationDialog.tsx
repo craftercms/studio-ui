@@ -52,12 +52,14 @@ interface WorkflowCancellationDialogBaseProps {
   items?: SandboxItem[];
 }
 
-export type WorkflowCancellationDialogProps = PropsWithChildren<WorkflowCancellationDialogBaseProps & {
-  onClose?(response?: any): any;
-  onClosed?(response?: any): any;
-  onDismiss?(response?: any): any;
-  onContinue?(response?: any): any;
-}>;
+export type WorkflowCancellationDialogProps = PropsWithChildren<
+  WorkflowCancellationDialogBaseProps & {
+    onClose?(response?: any): any;
+    onClosed?(response?: any): any;
+    onDismiss?(response?: any): any;
+    onContinue?(response?: any): any;
+  }
+>;
 
 export interface WorkflowCancellationDialogStateProps extends WorkflowCancellationDialogBaseProps {
   onClose?: StandardAction;
@@ -88,13 +90,7 @@ const useStyles = makeStyles(() =>
 );
 
 function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
-  const {
-    resource,
-    onClose,
-    onDismiss,
-    onContinue,
-    classes
-  } = props;
+  const { resource, onClose, onDismiss, onContinue, classes } = props;
 
   const items = resource.read();
 
@@ -102,11 +98,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
     <>
       <DialogHeader
         id="workflowCancellationDialogTitle"
-        title={
-          <FormattedMessage
-            id="workflowCancellation.title" defaultMessage="Warning: Workflow Cancellation"
-          />
-        }
+        title={<FormattedMessage id="workflowCancellation.title" defaultMessage="Warning: Workflow Cancellation" />}
         subtitle={
           <FormattedMessage
             id="workflowCancellation.subtitle"
@@ -119,13 +111,11 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
         <Grid container spacing={3} className={classes.contentRoot}>
           <Grid item xs={12}>
             <List className={classes.filesList}>
-              {
-                items.map(item =>
-                  <ListItem key={item.path}>
-                    <ListItemText primary={item.label} secondary={item.path} />
-                  </ListItem>
-                )
-              }
+              {items.map((item) => (
+                <ListItem key={item.path}>
+                  <ListItemText primary={item.label} secondary={item.path} />
+                </ListItem>
+              ))}
             </List>
           </Grid>
         </Grid>
@@ -147,13 +137,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
 }
 
 export default function WorkflowCancellationDialog(props: WorkflowCancellationDialogProps) {
-  const {
-    items,
-    onClose,
-    onClosed,
-    onDismiss,
-    onContinue
-  } = props;
+  const { items, onClose, onClosed, onDismiss, onContinue } = props;
   const classes = useStyles();
   useUnmount(props.onClosed);
 
@@ -182,15 +166,10 @@ export default function WorkflowCancellationDialog(props: WorkflowCancellationDi
         resource={resource}
         withEmptyStateProps={{
           emptyStateProps: {
-            title: (
-              <FormattedMessage
-                id="publishDialog.noItemsSelected"
-                defaultMessage="There are no affected files"
-              />
-            )
+            title: <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="There are no affected files" />
           }
         }}
-        loadingStateProps = {{
+        loadingStateProps={{
           classes: {
             root: classes.suspense
           }
@@ -208,4 +187,3 @@ export default function WorkflowCancellationDialog(props: WorkflowCancellationDi
     </Dialog>
   );
 }
-

@@ -620,7 +620,11 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
 
   getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, 'datasource'), name: 'videoManager', type: 'datasource:transcoded-video' },
+      {
+        label: CMgs.format(langBundle, 'datasource'),
+        name: 'videoManager',
+        type: 'datasource:transcoded-video'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
     ];
   },

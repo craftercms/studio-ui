@@ -84,11 +84,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
       case 'image':
         return <img src={props.url} alt="" />;
       case 'video':
-        return (
-          <AsyncVideoPlayer
-            playerOptions={{ src: props.url, autoplay: true }}
-          />
-        );
+        return <AsyncVideoPlayer playerOptions={{ src: props.url, autoplay: true }} />;
       case 'page':
         return (
           <>
@@ -105,12 +101,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
       case 'editor': {
         return (
           <ConditionalLoadingState isLoading={!props.content}>
-            <AceEditor
-              value={props.content}
-              className={classes.editor}
-              mode={`ace/mode/${props.mode}`}
-              readOnly
-            />
+            <AceEditor value={props.content} className={classes.editor} mode={`ace/mode/${props.mode}`} readOnly />
           </ConditionalLoadingState>
         );
       }

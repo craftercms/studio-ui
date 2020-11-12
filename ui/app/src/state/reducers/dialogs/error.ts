@@ -19,9 +19,7 @@ import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
 import { ErrorDialogStateProps } from '../../../components/SystemStatus/ErrorDialog';
 
-export const showErrorDialog = createAction<Partial<ErrorDialogStateProps>>(
-  'SHOW_ERROR_DIALOG'
-);
+export const showErrorDialog = createAction<Partial<ErrorDialogStateProps>>('SHOW_ERROR_DIALOG');
 
 export const closeErrorDialog = createAction<StandardAction>('CLOSE_ERROR_DIALOG');
 export const errorDialogClosed = createAction<StandardAction>('ERROR_DIALOG_CLOSED');
@@ -31,17 +29,14 @@ const initialState: ErrorDialogStateProps = {
   error: null
 };
 
-export default createReducer<GlobalState['dialogs']['error']>(
-  initialState,
-  {
-    [showErrorDialog.type]: (state, { payload }) => ({
-      onClose: closeErrorDialog(),
-      onClosed: errorDialogClosed(),
-      onDismiss: closeErrorDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeErrorDialog.type]: (state) => ({ ...state, open: false }),
-    [errorDialogClosed.type]: () => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['error']>(initialState, {
+  [showErrorDialog.type]: (state, { payload }) => ({
+    onClose: closeErrorDialog(),
+    onClosed: errorDialogClosed(),
+    onDismiss: closeErrorDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeErrorDialog.type]: (state) => ({ ...state, open: false }),
+  [errorDialogClosed.type]: () => initialState
+});

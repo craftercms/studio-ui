@@ -27,54 +27,53 @@ interface AsyncVideoPlayerProps {
 const messages = defineMessages({
   videoBeingProcessed: {
     id: 'asyncVideoPlayer.videoBeingProcessed',
-    defaultMessage:
-      'Video is being processed, preview will be available when processing is complete'
+    defaultMessage: 'Video is being processed, preview will be available when processing is complete'
   }
 });
 
 function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
   const { formatMessage } = useIntl();
-  const
-    {
-      playerOptions,
-      nonPlayableMessage = formatMessage(messages.videoBeingProcessed)
-    } = props,
+  const { playerOptions, nonPlayableMessage = formatMessage(messages.videoBeingProcessed) } = props,
     [playable, setPlayable] = useState(null),
     errMessageStyle = {
       height: playerOptions.height ? playerOptions.height : 150,
       width: playerOptions.width ? playerOptions.width : 300
     };
 
-  useEffect(
-    () => {
-      // async request to check for 404
-      // if response is 200 setPlayable(true)
-      fetch(playerOptions.src)
-        .then(function (response) {
-          if (response.status === 200) {
-            setPlayable(true);
-          } else {
-            setPlayable(false);
-          }
-        }).catch(function () {
+  useEffect(() => {
+    // async request to check for 404
+    // if response is 200 setPlayable(true)
+    fetch(playerOptions.src)
+      .then(function(response) {
+        if (response.status === 200) {
+          setPlayable(true);
+        } else {
+          setPlayable(false);
+        }
+      })
+      .catch(function() {
         setPlayable(false);
       });
-    },
-    [playerOptions.src]
-  );
+  }, [playerOptions.src]);
 
   if (playable) {
     return (
-      <section className="async-video-player"><VideoPlayer {...playerOptions} /></section>
+      <section className="async-video-player">
+        <VideoPlayer {...playerOptions} />
+      </section>
     );
   } else {
     if (playable === null) {
       return (
-        <div className="async-video-player--loading" style={errMessageStyle}>Loading...</div>
+        <div className="async-video-player--loading" style={errMessageStyle}>
+          Loading...
+        </div>
       );
     } else {
       return (
-        <div className="async-video-player--unavailable-message" style={errMessageStyle}>{nonPlayableMessage}</div>
+        <div className="async-video-player--unavailable-message" style={errMessageStyle}>
+          {nonPlayableMessage}
+        </div>
       );
     }
   }

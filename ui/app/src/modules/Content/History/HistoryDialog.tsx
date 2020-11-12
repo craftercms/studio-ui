@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
@@ -52,7 +52,6 @@ import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchUserPermissions } from '../../../state/actions/content';
 import { asDayMonthDateTime } from '../../../utils/datetime';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const translations = defineMessages({
   previousPage: {

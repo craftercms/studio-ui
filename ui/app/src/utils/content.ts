@@ -20,60 +20,60 @@ import { reversePluckProps } from './object';
 
 export function isEditableAsset(path: string) {
   return (
-    path.endsWith('.ftl')
-    || path.endsWith('.css')
-    || path.endsWith('.js')
-    || path.endsWith('.groovy')
-    || path.endsWith('.txt')
-    || path.endsWith('.html')
-    || path.endsWith('.hbs')
-    || path.endsWith('.xml')
-    || path.endsWith('.tmpl')
-    || path.endsWith('.htm')
+    path.endsWith('.ftl') ||
+    path.endsWith('.css') ||
+    path.endsWith('.js') ||
+    path.endsWith('.groovy') ||
+    path.endsWith('.txt') ||
+    path.endsWith('.html') ||
+    path.endsWith('.hbs') ||
+    path.endsWith('.xml') ||
+    path.endsWith('.tmpl') ||
+    path.endsWith('.htm')
   );
 }
 
 export function isAsset(path: string) {
   return (
-    path.endsWith('.jpg')
-    || path.endsWith('.png')
-    || path.endsWith('.svg')
-    || path.endsWith('.jpeg')
-    || path.endsWith('.gif')
-    || path.endsWith('.pdf')
-    || path.endsWith('.doc')
-    || path.endsWith('.docx')
-    || path.endsWith('.xls')
-    || path.endsWith('.xlsx')
-    || path.endsWith('.ppt')
-    || path.endsWith('.pptx')
-    || path.endsWith('.mp4')
-    || path.endsWith('.avi')
-    || path.endsWith('.webm')
-    || path.endsWith('.mpg')
+    path.endsWith('.jpg') ||
+    path.endsWith('.png') ||
+    path.endsWith('.svg') ||
+    path.endsWith('.jpeg') ||
+    path.endsWith('.gif') ||
+    path.endsWith('.pdf') ||
+    path.endsWith('.doc') ||
+    path.endsWith('.docx') ||
+    path.endsWith('.xls') ||
+    path.endsWith('.xlsx') ||
+    path.endsWith('.ppt') ||
+    path.endsWith('.pptx') ||
+    path.endsWith('.mp4') ||
+    path.endsWith('.avi') ||
+    path.endsWith('.webm') ||
+    path.endsWith('.mpg')
   );
 }
 
 export function isCode(path: string) {
   return (
-    path.endsWith('.ftl')
-    || path.endsWith('.css')
-    || path.endsWith('.js')
-    || path.endsWith('.groovy')
-    || path.endsWith('.html')
-    || path.endsWith('.hbs')
-    || path.endsWith('.tmpl')
-    || path.endsWith('.htm')
+    path.endsWith('.ftl') ||
+    path.endsWith('.css') ||
+    path.endsWith('.js') ||
+    path.endsWith('.groovy') ||
+    path.endsWith('.html') ||
+    path.endsWith('.hbs') ||
+    path.endsWith('.tmpl') ||
+    path.endsWith('.htm')
   );
 }
 
 export function isImage(path: string) {
   return (
-    path.endsWith('.jpg')
-    || path.endsWith('.png')
-    || path.endsWith('.svg')
-    || path.endsWith('.jpeg')
-    || path.endsWith('.gif')
+    path.endsWith('.jpg') ||
+    path.endsWith('.png') ||
+    path.endsWith('.svg') ||
+    path.endsWith('.jpeg') ||
+    path.endsWith('.gif')
   );
 }
 
@@ -101,7 +101,7 @@ function getLegacyItemSystemType(item: LegacyItem) {
     case item.container: {
       return 'folder';
     }
-    case (item.contentType === 'taxonomy'): {
+    case item.contentType === 'taxonomy': {
       return 'taxonomy';
     }
     default: {
@@ -117,7 +117,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     contentTypeId: item.contentType,
     path: item.uri ?? item.path,
     // Assuming folders aren't navigable
-    previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
+    previewUrl: item.uri?.includes('index.xml') ? item.browserUri || '/' : null,
     systemType: getLegacyItemSystemType(item),
     mimeType: item.mimeType,
     state: null,
@@ -134,7 +134,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
 export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
   if (Array.isArray(item)) {
     // If no internalName then skipping (e.g. level descriptors)
-    return item.flatMap(i => i.internalName || i.name ? [parseLegacyItemToSandBoxItem(i)] : []);
+    return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToSandBoxItem(i)] : []));
   }
 
   return {
@@ -153,7 +153,7 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem[]): DetailedItem[
 export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): DetailedItem | DetailedItem[] {
   if (Array.isArray(item)) {
     // If no internalName then skipping (e.g. level descriptors)
-    return item.flatMap(i => i.internalName || i.name ? [parseLegacyItemToDetailedItem(i)] : []);
+    return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToDetailedItem(i)] : []));
   }
 
   return {
@@ -181,7 +181,7 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedIte
 export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]): DetailedItem | DetailedItem[] {
   if (Array.isArray(item)) {
     // including level descriptors to avoid issues on pathNavigator;
-    return item.map(i => parseSandBoxItemToDetailedItem(i));
+    return item.map((i) => parseSandBoxItemToDetailedItem(i));
   }
   return {
     sandbox: {
@@ -194,7 +194,15 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
     },
     staging: null,
     live: null,
-    ...reversePluckProps(item, 'creator', 'createdDate', 'modifier', 'lastModifiedDate', 'commitId', 'sizeInBytes') as BaseItem
+    ...(reversePluckProps(
+      item,
+      'creator',
+      'createdDate',
+      'modifier',
+      'lastModifiedDate',
+      'commitId',
+      'sizeInBytes'
+    ) as BaseItem)
   };
 }
 

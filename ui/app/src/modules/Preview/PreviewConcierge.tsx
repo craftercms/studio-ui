@@ -90,11 +90,7 @@ import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
 import PreviewTool from '../../models/PreviewTool';
-import {
-  getStoredEditModeChoice,
-  getStoredPreviewChoice,
-  setStoredPreviewChoice
-} from '../../utils/state';
+import { getStoredEditModeChoice, getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 
@@ -178,7 +174,6 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode preference retrieval
   // and contentType subject cleanup.
   useMount(() => {
-
     const localEditMode = getStoredEditModeChoice(site) === 'true';
     if (editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
@@ -219,7 +214,7 @@ export function PreviewConcierge(props: any) {
             previewNextCheckInNotificationRef.current = true;
             let previousChoice = getStoredPreviewChoice(site);
             if (previousChoice === null) {
-              setStoredPreviewChoice(site, previousChoice = '1');
+              setStoredPreviewChoice(site, (previousChoice = '1'));
             }
             if (previousChoice && !compatibilityAsk) {
               if (previousChoice === '1') {
@@ -462,10 +457,7 @@ export function PreviewConcierge(props: any) {
           );
           const sub = hostToHost$.subscribe((action) => {
             const { type, payload: uploadFile } = action;
-            if (
-              type === DESKTOP_ASSET_UPLOAD_STARTED &&
-              uploadFile.record.id === payload.record.id
-            ) {
+            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.record.id === payload.record.id) {
               sub.unsubscribe();
               uppySubscription.unsubscribe();
             }
@@ -491,12 +483,7 @@ export function PreviewConcierge(props: any) {
         }
         case 'VALIDATION_MESSAGE': {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
-            variant:
-              payload.level === 'required'
-                ? 'error'
-                : payload.level === 'suggestion'
-                ? 'warning'
-                : 'info'
+            variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
           });
           break;
         }
@@ -596,11 +583,7 @@ function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   return interval(2500)
     .pipe(
       take(1),
-      takeUntil(
-        guestToHost$.pipe(
-          filter(({ type }) => type === GUEST_CHECK_IN || type === 'GUEST_SITE_LOAD')
-        )
-      )
+      takeUntil(guestToHost$.pipe(filter(({ type }) => type === GUEST_CHECK_IN || type === 'GUEST_SITE_LOAD')))
     )
     .subscribe(() => {
       enqueueSnackbar(
@@ -610,12 +593,7 @@ function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
         />,
         {
           action: (key) => (
-            <Button
-              key="learnMore"
-              color="secondary"
-              size="small"
-              onClick={() => closeSnackbar(key)}
-            >
+            <Button key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}>
               Learn More
             </Button>
           )

@@ -2,10 +2,10 @@ import StandardAction from './StandardAction';
 import { LookupTable } from './LookupTable';
 
 export interface MinimizedDialogStatus {
-  status?: string,
-  files?: number,
-  uploadedFiles?: number,
-  progress?: number
+  status?: string;
+  files?: number;
+  uploadedFiles?: number;
+  progress?: number;
 }
 
 export interface MinimizedDialog {

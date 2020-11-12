@@ -9,9 +9,14 @@ node_modules
 /ui/services
 /scripts/*
 /ui/app/public/*
+/ui/app/build
+/ui/app/build_tsc
+/ui/guest/build
+/ui/guest/build_tsc
 /static-assets/libs/ace/*
 /static-assets/components/cstudio-common/amplify-core.js
 /static-assets/components/cstudio-common/heatmap-support.js
+/static-assets/components/cstudio-preview-tools/mods/annotate
 /static-assets/libs/*
 /static-assets/js/*
 /static-assets/modules/*

@@ -17,24 +17,11 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { DetailedItem, SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  useSelection,
-  useSpreadState,
-  useUnmount
-} from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSelection, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import {
-  isAsset,
-  isCode,
-  isEditableAsset,
-  isImage,
-  parseLegacyItemToSandBoxItem
-} from '../../../utils/content';
+import { isAsset, isCode, isEditableAsset, isImage, parseLegacyItemToSandBoxItem } from '../../../utils/content';
 import StandardAction from '../../../models/StandardAction';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Resource } from '../../../models/Resource';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';

@@ -140,7 +140,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
 
     const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
-    inputEl.value = (this.value === '_not-set') ? config.defaultValue : valueToSet;
+    inputEl.value = this.value === '_not-set' ? config.defaultValue : valueToSet;
 
     YAHOO.util.Event.on(inputEl, 'change', this._onChangeVal, this);
     YAHOO.util.Event.on(inputEl, 'blur', this._onChange, this);
@@ -236,11 +236,20 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     return [
       { label: CMgs.format(langBundle, 'columns'), name: 'cols', type: 'int', defaultValue: '50' },
       { label: CMgs.format(langBundle, 'rows'), name: 'rows', type: 'int', defaultValue: '5' },
-      { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int', defaultValue: '100000' },
-      { label: CMgs.format(langBundle, 'allowResize'), name: 'allowResize', type: 'boolean', defaultValue: 'true' },
+      {
+        label: CMgs.format(langBundle, 'maxLength'),
+        name: 'maxlength',
+        type: 'int',
+        defaultValue: '100000'
+      },
+      {
+        label: CMgs.format(langBundle, 'allowResize'),
+        name: 'allowResize',
+        type: 'boolean',
+        defaultValue: 'true'
+      },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       {
-
         label: this.formatMessage(this.controlsCommonMessages.escapeContent),
         name: 'escapeContent',
         type: 'boolean',

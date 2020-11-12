@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics, Epic, ofType } from 'redux-observable';
+import { combineEpics, ofType } from 'redux-observable';
 import auth from './auth';
 import sites from './sites';
 import contentTypes from './contentTypes';
@@ -29,14 +29,14 @@ import content from './content';
 import translation from './translation';
 import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
-import GlobalState from '../../models/GlobalState';
-import StandardAction from '../../models/StandardAction';
 import configuration from './configuration';
 import pathNavigator from './pathNavigator';
 import misc from './misc';
 import system from './system';
+import { CrafterCMSEpic } from '../store';
 
-const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.apply(this, [
+
+const epic: CrafterCMSEpic = combineEpics.apply(this, [
   (action$) =>
     action$.pipe(
       ofType(batchActions.type),

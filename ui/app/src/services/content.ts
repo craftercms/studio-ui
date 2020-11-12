@@ -14,36 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  CONTENT_TYPE_JSON,
-  del,
-  errorSelectorApi1,
-  get,
-  getText,
-  post,
-  postJSON
-} from '../utils/ajax';
+import { CONTENT_TYPE_JSON, del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import {
-  createElements,
-  fromString,
-  getInnerHtml,
-  serialize,
-  wrapElementInAuxDocument
-} from '../utils/xml';
+import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import {
-  dataUriToBlob,
-  decodeHTML,
-  fileNameFromPath,
-  isBlank,
-  popPiece,
-  removeLastPiece
-} from '../utils/string';
+import { dataUriToBlob, decodeHTML, fileNameFromPath, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';

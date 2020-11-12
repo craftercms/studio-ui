@@ -15,13 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  foo,
-  HORIZONTAL,
-  VERTICAL,
-  X_AXIS,
-  Y_AXIS
-} from '../utils/util';
+import { foo, HORIZONTAL, VERTICAL, X_AXIS, Y_AXIS } from '../utils/util';
 import { Coordinates } from '../models/Positioning';
 import { DropZone, ElementRecord } from '../models/InContextEditing';
 import { notNullOrUndefined } from '../utils/object';
@@ -38,16 +32,8 @@ interface DropMarkerProps {
 }
 
 export default function DropMarker(props: DropMarkerProps) {
-
   const //
-    {
-      over,
-      prev,
-      next,
-      dropZone,
-      coordinates,
-      onDropPosition
-    } = props,
+    { over, prev, next, dropZone, coordinates, onDropPosition } = props,
     { current: r } = useRef({ targetIndex: null }),
     [style, setStyle] = useState({}),
     { element } = over;
@@ -62,38 +48,24 @@ export default function DropMarker(props: DropMarkerProps) {
 
   return (
     // @ts-ignore
-    <craftercms-drop-marker
-      style={style}
-      class={`${dropZone.arrangement === HORIZONTAL ? VERTICAL : HORIZONTAL}`}
-    />
+    <craftercms-drop-marker style={style} class={`${dropZone.arrangement === HORIZONTAL ? VERTICAL : HORIZONTAL}`} />
   );
 
   function dragOver(): void {
-
-    let
-      nextStyle = null,
+    let nextStyle = null,
       targetIndex;
 
     if (element === dropZone.element) {
-
       if (element.children.length > 0) {
-
-        const
-          closestChildIndex = findClosestRect(
-            dropZone.rect,
-            dropZone.childrenRects,
-            coordinates
-          ),
+        const closestChildIndex = findClosestRect(dropZone.rect, dropZone.childrenRects, coordinates),
           closestRect = dropZone.childrenRects[closestChildIndex],
           closestChild = dropZone.children[closestChildIndex],
-          before = (dropZone.arrangement === HORIZONTAL)
-            ? (
-              // Is it to the left of the center of the rect?
-              coordinates.x <= (closestRect.left + (closestRect.width / 2))
-            ) : (
-              // Is it to the north of the center of the rect?
-              coordinates.y <= (closestRect.top + (closestRect.height / 2))
-            );
+          before =
+            dropZone.arrangement === HORIZONTAL
+              ? // Is it to the left of the center of the rect?
+                coordinates.x <= closestRect.left + closestRect.width / 2
+              : // Is it to the north of the center of the rect?
+                coordinates.y <= closestRect.top + closestRect.height / 2;
 
         nextStyle = getDropMarkerPosition({
           arrangement: dropZone.arrangement,
@@ -106,7 +78,6 @@ export default function DropMarker(props: DropMarkerProps) {
         });
 
         targetIndex = before ? closestChildIndex : closestChildIndex + 1;
-
       } else {
         // Drop zone is empty
         // onDropPosition({ targetIndex: 0 });
@@ -114,9 +85,7 @@ export default function DropMarker(props: DropMarkerProps) {
         const virtualRects = splitRect(
           dropZone.rect,
           // Using the larger space to display the drop marker makes it more visible
-          (dropZone.rect.width > dropZone.rect.height)
-            ? X_AXIS
-            : Y_AXIS
+          dropZone.rect.width > dropZone.rect.height ? X_AXIS : Y_AXIS
         );
 
         nextStyle = getDropMarkerPosition({
@@ -128,11 +97,8 @@ export default function DropMarker(props: DropMarkerProps) {
         });
 
         targetIndex = 0;
-
       }
-
     } else {
-
       let //
         prevRect = prev,
         nextRect = next,
@@ -140,57 +106,44 @@ export default function DropMarker(props: DropMarkerProps) {
         rectStats = getInRectStats(rect, coordinates);
 
       if (rectStats.inRect) {
-
-        const
-          insertPosition = (
-            dropZone.arrangement === HORIZONTAL &&
-            rectStats.percents.x >= 50
-          ) || (
-            dropZone.arrangement === VERTICAL &&
-            rectStats.percents.y >= 50
-          ) ? 'after' : 'before',
-          before = (insertPosition === 'before');
+        const insertPosition =
+            (dropZone.arrangement === HORIZONTAL && rectStats.percents.x >= 50) ||
+            (dropZone.arrangement === VERTICAL && rectStats.percents.y >= 50)
+              ? 'after'
+              : 'before',
+          before = insertPosition === 'before';
 
         nextStyle = getDropMarkerPosition({
           insertPosition,
           arrangement: dropZone.arrangement,
           refElement: element,
           refElementRect: rect,
-          nextOrPrevRect: before
-            ? prevRect
-            : nextRect
+          nextOrPrevRect: before ? prevRect : nextRect
         });
 
         targetIndex = dropZone.children.findIndex((e) => e === element);
         if (!before) {
           ++targetIndex;
         }
-
       } else {
         console.log('DropMarker:dragOver unhandled path');
       }
-
     }
 
     if (notNullOrUndefined(nextStyle)) {
-      forEach(
-        Object.keys(nextStyle),
-        (key) => {
-          if (style[key] !== nextStyle[key]) {
-            setStyle(nextStyle);
-            return 'break';
-          }
+      forEach(Object.keys(nextStyle), (key) => {
+        if (style[key] !== nextStyle[key]) {
+          setStyle(nextStyle);
+          return 'break';
         }
-      );
+      });
     }
 
     if (r.targetIndex !== targetIndex) {
       r.targetIndex = targetIndex;
       onDropPosition({ targetIndex });
     }
-
   }
-
 }
 
 DropMarker.defaultProps = {

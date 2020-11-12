@@ -26,13 +26,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Typography from '@material-ui/core/Typography';
-import {
-  checkState,
-  onClickSetChecked,
-  selectAllDeps,
-  updateCheckedList
-} from '../Publish/PublishDialog';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { checkState, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import { useActiveSiteId, useSelection } from '../../../utils/hooks';

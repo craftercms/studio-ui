@@ -112,7 +112,8 @@
 
             if (
               (currentField.id || currentField.id !== '') &&
-              currentField.title && currentField.title !== '' &&
+              currentField.title &&
+              currentField.title !== '' &&
               !CStudioAdminConsole.ignorePostfixFields.includes(currentField.id)
             ) {
               const type = currentField.type,
@@ -143,7 +144,8 @@
                 }
                 if (
                   (!currentSubField.id || currentSubField.id == '') &&
-                  currentSubField.title && currentSubField.title != ''
+                  currentSubField.title &&
+                  currentSubField.title != ''
                 ) {
                   idError.push(currentSubField.title);
                 }
@@ -804,7 +806,7 @@
               );
             })(j);
           } catch (err) {
-            console.log(err)
+            console.log(err);
           }
 
           if (pluginInfo.missingProp.length > 0) {
@@ -1075,13 +1077,13 @@
       /**
        * render form visualization
        */
-      render: function (config) {
+      render: function(config) {
         var that = this;
         this.config = this.config ? this.config : config;
         if (CStudioAdminConsole.Tool.ContentTypes.FormDefMain.dragActionTimer) {
           // If the drag action timer is set, changes are still occurring to the form
           // Call the render method again in a few milliseconds
-          setTimeout(function () {
+          setTimeout(function() {
             that.render();
           }, 10);
         }
@@ -1445,23 +1447,26 @@
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
-        const controlExists = (this.config.controls.control.filter(control => {
-          const controlName = control.plugin ? control.plugin.name : control.name;
-          return (controlName === field.type);
-        }).length) > 0;
+        const controlExists =
+          this.config.controls.control.filter((control) => {
+            const controlName = control.plugin ? control.plugin.name : control.name;
+            return controlName === field.type;
+          }).length > 0;
         if (!controlExists) {
           $(fieldContainerEl)
             .addClass('disabled')
-            .append(`<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`);
+            .append(
+              `<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`
+            );
         }
 
-        var fieldClickFn = function (evt) {
+        var fieldClickFn = function(evt) {
           fieldEvent = true;
           formItemSelectedEvent.fire(this);
           YAHOO.util.Event.stopEvent(evt);
         };
 
-        var fieldSelectedFn = function (evt, selectedEl) {
+        var fieldSelectedFn = function(evt, selectedEl) {
           var listeningEl = arguments[2];
 
           if (selectedEl[0] != listeningEl) {
@@ -1535,7 +1540,9 @@
         };
 
         formItemSelectedEvent.subscribe(fieldSelectedFn, fieldContainerEl);
-        $(fieldContainerEl).not('.disabled').on('click', fieldClickFn);
+        $(fieldContainerEl)
+          .not('.disabled')
+          .on('click', fieldClickFn);
       }
     };
 
@@ -2348,9 +2355,15 @@
             property.defaultValue,
             property.type,
             sheetEl,
-            function (e, el) {
+            function(e, el) {
               updatePropertyFn(el.fieldName, el.value);
-            }, null, null, null, null, null, property
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            property
           );
         }
       },
@@ -2521,7 +2534,7 @@
           '',
           'variable',
           sheetEl,
-          function (e, el) {
+          function(e, el) {
             item.id = el.value;
             CStudioAdminConsole.isDirty = true;
           },
@@ -2742,13 +2755,15 @@
           )
             .popover({
               container: 'body',
-              title: `<span>${helpTitle}</span>` +
+              title:
+                `<span>${helpTitle}</span>` +
                 `<button type="button" class="close fa fa-times" onclick="$(\'#help-${fName}\').popover('hide');"/>`,
               html: true,
               content: helpHTML,
               placement: 'left',
               trigger: 'manual',
-              template: '<div class="popover properties-help" role="tooltip"><div class="arrow">' +
+              template:
+                '<div class="popover properties-help" role="tooltip"><div class="arrow">' +
                 '</div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
             })
             .appendTo(labelEl)
@@ -2866,7 +2881,11 @@
           var supportedProperty = supportedProps[i];
           //Assign default value if it exists
           var val = supportedProperty.defaultValue ? supportedProperty.defaultValue : '';
-          newDataSource.properties[newDataSource.properties.length] = { name: supportedProperty.name, value: val };
+          newDataSource.properties[newDataSource.properties.length] = {
+            name: supportedProperty.name,
+            value: val,
+            type: supportedProperty.type
+          };
         }
 
         form.datasources[form.datasources.length] = newDataSource;
@@ -3681,7 +3700,7 @@
       const $input = $(identifier).siblings('input'),
         controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
         postfixes = CStudioAdminConsole.getPostfixes(type, controls),
-        currentPostfix = postfixes.filter(postfix => $input.val().endsWith(postfix)),
+        currentPostfix = postfixes.filter((postfix) => $input.val().endsWith(postfix)),
         hasPostfix = currentPostfix.length > 0;
 
       if (hasPostfix) {

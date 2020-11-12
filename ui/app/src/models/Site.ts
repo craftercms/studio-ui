@@ -48,16 +48,16 @@ export interface SiteState {
   repoKey: string;
   submitted: boolean;
   selectedView: number;
-  details: { blueprint: Blueprint, index: number };
+  details: { blueprint: Blueprint; index: number };
   blueprintFields?: {
     [key: string]: string;
   };
   expanded: {
-    basic: boolean,
-    token: boolean,
-    key: boolean
-  },
-  showIncompatible: boolean,
+    basic: boolean;
+    token: boolean;
+    key: boolean;
+  };
+  showIncompatible: boolean;
 
   [key: string]: string | boolean | Blueprint | number | object;
 }
@@ -82,7 +82,7 @@ export interface CreateSiteMeta {
   createOption?: string;
   siteParams?: {
     [key: string]: string;
-  }
+  };
 
   [key: string]: any;
 }
@@ -92,13 +92,13 @@ export interface MarketplaceSite {
   name?: string;
   blueprintId: string;
   blueprintVersion: {
-    major: number,
-    minor: number,
-    patch: number,
-  },
+    major: number;
+    minor: number;
+    patch: number;
+  };
   siteParams?: {
     [key: string]: string;
-  }
+  };
 
   [key: string]: any;
 }

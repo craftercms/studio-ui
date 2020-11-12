@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@material-ui/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@material-ui/core/List';
@@ -29,7 +29,6 @@ import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
 import LookupTable from '../../../models/LookupTable';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({

@@ -41,13 +41,11 @@ const translations = defineMessages({
   },
   nextCompatibility: {
     id: 'previewCompatDialog.nextCompatMessage',
-    defaultMessage:
-      'This page is compatible with the new editing experience. Would you like to go there now?'
+    defaultMessage: 'This page is compatible with the new editing experience. Would you like to go there now?'
   },
   legacyCompatibility: {
     id: 'previewCompatDialog.legacyCompatMessage',
-    defaultMessage:
-      'This page is compatible with the previous editing experience. Would you like to go there now?'
+    defaultMessage: 'This page is compatible with the previous editing experience. Would you like to go there now?'
   },
   rememberChoice: {
     id: 'previewCompatDialog.rememberChoice',
@@ -102,30 +100,16 @@ export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProp
       <DialogHeader id="previewCompatDialogTitle" title={formatMessage(translations.title)} />
       <DialogBody id="previewCompatDialogBody">
         <DialogContentText color="textPrimary">
-          {formatMessage(
-            isPreviewNext ? translations.nextCompatibility : translations.legacyCompatibility
-          )}
+          {formatMessage(isPreviewNext ? translations.nextCompatibility : translations.legacyCompatibility)}
         </DialogContentText>
       </DialogBody>
-      <DialogFooter
-        style={{ width: '100%', display: 'flex', placeContent: 'center space-between' }}
-      >
+      <DialogFooter style={{ width: '100%', display: 'flex', placeContent: 'center space-between' }}>
         <FormControlLabel
           label={formatMessage(translations.rememberChoice)}
-          control={
-            <Checkbox
-              color="primary"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-            />
-          }
+          control={<Checkbox color="primary" checked={remember} onChange={(e) => setRemember(e.target.checked)} />}
         />
         <div>
-          <Button
-            onClick={() => onCancel({ remember })}
-            variant="outlined"
-            style={{ marginRight: 5 }}
-          >
+          <Button onClick={() => onCancel({ remember })} variant="outlined" style={{ marginRight: 5 }}>
             {formatMessage(translations.stay)}
           </Button>
           <Button onClick={() => onOk({ remember })} variant="contained" color="primary" autoFocus>

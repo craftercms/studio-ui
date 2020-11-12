@@ -22,9 +22,9 @@ import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 
 export interface GraphiQLProps {
-  url?: string,
-  storageKey?: string,
-  method?: string
+  url?: string;
+  storageKey?: string;
+  method?: string;
 }
 
 const storages: any = {};
@@ -48,7 +48,7 @@ function getStorage(storageKey: string) {
 
 function getGraphQLFetcher(url: string, method = 'post') {
   return (graphQLParams: object) => {
-    url = url ?? (window.location.origin + '/api/1/site/graphql');
+    url = url ?? window.location.origin + '/api/1/site/graphql';
     method = method.toLowerCase();
 
     if ('get' === method) {
@@ -65,15 +65,14 @@ function getGraphQLFetcher(url: string, method = 'post') {
     return fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      ...method === 'post' ? { body: JSON.stringify(graphQLParams) } : {}
-    }).then(function (responseBody: any) {
+      ...(method === 'post' ? { body: JSON.stringify(graphQLParams) } : {})
+    }).then(function(responseBody: any) {
       try {
         return responseBody.json();
       } catch (error) {
         return responseBody;
       }
     });
-
   };
 }
 
@@ -98,7 +97,7 @@ function Graphi(props: GraphiQLProps) {
   useEffect(() => {
     graphQLFetcher({
       query: getIntrospectionQuery()
-    }).then(result => {
+    }).then((result) => {
       setSchema(buildClientSchema(result.data));
     });
   }, [graphQLFetcher]);
@@ -110,9 +109,7 @@ function Graphi(props: GraphiQLProps) {
         schema={schema}
         query={query}
         onEdit={onEditQuery}
-        onRunOperation={(operationName: any) =>
-          graphiql.current.handleRunQuery(operationName)
-        }
+        onRunOperation={(operationName: any) => graphiql.current.handleRunQuery(operationName)}
         explorerIsOpen={explorerIsOpen}
         onToggleExplorer={handleToggleExplorer}
       />
@@ -135,11 +132,7 @@ function Graphi(props: GraphiQLProps) {
             label="History"
             title="Show History"
           />
-          <GraphiQL.Button
-            onClick={handleToggleExplorer}
-            label="Explorer"
-            title="Toggle Explorer"
-          />
+          <GraphiQL.Button onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
         </GraphiQL.Toolbar>
       </GraphiQL>
     </div>

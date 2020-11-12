@@ -52,23 +52,27 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  select: {
-    width: '100%',
-    padding: '15px',
-    '& > div': {
-      width: '100%'
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    select: {
+      width: '100%',
+      padding: '15px',
+      '& > div': {
+        width: '100%'
+      }
     }
-  }
-}));
+  })
+);
 
 export default function ReceptaclesPanel() {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
-  const receptaclesBranch = useSelection(state => state.preview.receptacles);
-  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const receptaclesBranch = useSelection((state) => state.preview.receptacles);
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
   const selectedContentTypeName = contentTypesBranch.byId[receptaclesBranch.selectedContentType]?.name;
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
+  const contentTypes = contentTypesBranch.byId
+    ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
+    : null;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
@@ -95,38 +99,43 @@ export default function ReceptaclesPanel() {
     });
   }
 
-  const receptacleResource = useLogicResource<ContentTypeReceptacle[], { selectedContentType: string, byId: LookupTable<ContentTypeReceptacle> }>(receptaclesBranch, {
+  const receptacleResource = useLogicResource<
+    ContentTypeReceptacle[],
+    { selectedContentType: string; byId: LookupTable<ContentTypeReceptacle> }
+  >(receptaclesBranch, {
     shouldResolve: (source) => Boolean(source.selectedContentType) && Boolean(source.byId),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => Object.values(source.byId).filter((receptacle) => receptacle.contentTypeId === receptaclesBranch.selectedContentType),
+    resultSelector: (source) =>
+      Object.values(source.byId).filter(
+        (receptacle) => receptacle.contentTypeId === receptaclesBranch.selectedContentType
+      ),
     errorSelector: (source) => null
   });
 
   return (
-    <ToolPanel
-      title={formatMessage(translations.receptaclesPanel, { name: selectedContentTypeName })}
-    >
+    <ToolPanel title={formatMessage(translations.receptaclesPanel, { name: selectedContentTypeName })}>
       <div className={classes.select}>
         <Select
           value={receptaclesBranch.selectedContentType || ''}
           displayEmpty
           onChange={(event: any) => handleSelectChange(event.target.value)}
         >
-          <MenuItem value="" disabled>{formatMessage(translations.selectContentType)}</MenuItem>
-          {
-            contentTypes.map((contentType: ContentType, i: number) => {
-              return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>;
-            })
-          }
+          <MenuItem value="" disabled>
+            {formatMessage(translations.selectContentType)}
+          </MenuItem>
+          {contentTypes.map((contentType: ContentType, i: number) => {
+            return (
+              <MenuItem value={contentType.id} key={i}>
+                {contentType.name}
+              </MenuItem>
+            );
+          })}
         </Select>
       </div>
       <List>
         <SuspenseWithEmptyState resource={receptacleResource}>
-          <ReceptaclesList
-            resource={receptacleResource}
-            onSelectedDropZone={onSelectedDropZone}
-          />
+          <ReceptaclesList resource={receptacleResource} onSelectedDropZone={onSelectedDropZone} />
         </SuspenseWithEmptyState>
       </List>
     </ToolPanel>
@@ -142,20 +151,16 @@ function ReceptaclesList(props: ReceptaclesListProps) {
   const receptacles = props.resource.read();
   return (
     <>
-      {
-        receptacles?.map((receptacle: ContentTypeReceptacle) =>
-          <ListItem key={receptacle.id} button onClick={() => props.onSelectedDropZone(receptacle)}>
-            <ListItemAvatar>
-              <Avatar>
-                <MoveToInboxRounded />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={receptacle.label}
-            />
-          </ListItem>
-        )
-      }
+      {receptacles?.map((receptacle: ContentTypeReceptacle) => (
+        <ListItem key={receptacle.id} button onClick={() => props.onSelectedDropZone(receptacle)}>
+          <ListItemAvatar>
+            <Avatar>
+              <MoveToInboxRounded />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={receptacle.label} />
+        </ListItem>
+      ))}
     </>
   );
 }

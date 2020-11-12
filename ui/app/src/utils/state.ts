@@ -18,9 +18,9 @@ import { LegacyItem } from '../models/Item';
 
 export function getStateMapFromLegacyItem(item: LegacyItem) {
   return {
-    ...item.isDeleted && { deleted: true },
-    ...item.isSubmitted && { submitted: true },
-    ...item.isScheduled && { scheduled: true }
+    ...(item.isDeleted && { deleted: true }),
+    ...(item.isSubmitted && { submitted: true }),
+    ...(item.isScheduled && { scheduled: true })
   };
 }
 

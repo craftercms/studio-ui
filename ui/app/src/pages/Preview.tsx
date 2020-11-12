@@ -23,12 +23,7 @@ export default function Preview(topProps: any) {
     <>
       <AuthMonitor />
       <HashRouter>
-        <Route
-          path="/"
-          render={
-            (routeProps: any) => <PreviewComponent {...topProps} {...routeProps} />
-          }
-        />
+        <Route path="/" render={(routeProps: any) => <PreviewComponent {...topProps} {...routeProps} />} />
       </HashRouter>
     </>
   );

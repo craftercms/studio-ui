@@ -16,11 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closeCreateFolderDialog,
-  createFolderDialogClosed,
-  showCreateFolderDialog
-} from '../../actions/dialogs';
+import { closeCreateFolderDialog, createFolderDialogClosed, showCreateFolderDialog } from '../../actions/dialogs';
 
 import { CreateFolderStateProps } from '../../../components/Dialogs/CreateFolderDialog';
 

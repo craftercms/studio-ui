@@ -271,15 +271,15 @@ const dragleave: GuestReducer = (state, action) => {
   const leavingDropZone = !state.dragContext?.dropZone?.element.contains(action.payload.event.relatedTarget);
   return dragOk(state.status)
     ? {
-      ...state,
-      dragContext: {
-        ...state.dragContext,
-        over: null,
-        inZone: false,
-        targetIndex: null,
-        dropZone: leavingDropZone ? null : state.dragContext.dropZone
+        ...state,
+        dragContext: {
+          ...state.dragContext,
+          over: null,
+          inZone: false,
+          targetIndex: null,
+          dropZone: leavingDropZone ? null : state.dragContext.dropZone
+        }
       }
-    }
     : state;
 };
 // endregion
@@ -358,11 +358,14 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
     status: EditingStatus.SELECT_FIELD,
     draggable: iceRegistry.isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
     highlighted: { [registryEntries[0].id]: highlight },
-    fieldSwitcher: registryEntries.length > 1 ? {
-      iceId,
-      currentElement: 0,
-      registryEntryIds: registryEntries.map(entry => entry.id)
-    } : null
+    fieldSwitcher:
+      registryEntries.length > 1
+        ? {
+            iceId,
+            currentElement: 0,
+            registryEntryIds: registryEntries.map((entry) => entry.id)
+          }
+        : null
   };
 };
 
@@ -401,12 +404,12 @@ const dblclick: GuestReducer = (state, action) => {
   const { record } = action.payload;
   return state.status === EditingStatus.LISTENING
     ? {
-      ...state,
-      status: EditingStatus.EDITING_COMPONENT_INLINE,
-      editable: {
-        [record.id]: record
+        ...state,
+        status: EditingStatus.EDITING_COMPONENT_INLINE,
+        editable: {
+          [record.id]: record
+        }
       }
-    }
     : state;
 };
 // endregion
@@ -457,9 +460,7 @@ const computed_dragover: GuestReducer = (state, action) => {
           inZone: true,
           over: record,
           coordinates: { x: event.clientX, y: event.clientY },
-          dropZone: dragContext.dropZones.find(
-            (dz) => dz.element === element || dz.children.includes(element)
-          )
+          dropZone: dragContext.dropZones.find((dz) => dz.element === element || dz.children.includes(element))
         }
       };
     } else {
@@ -471,10 +472,7 @@ const computed_dragover: GuestReducer = (state, action) => {
 
 // region desktop_asset_upload_complete
 // TODO: Carry or retrieve record for these events
-const desktop_asset_upload_complete: GuestReducer = (
-  state,
-  action: GuestStandardAction<{ record: ElementRecord }>
-) => {
+const desktop_asset_upload_complete: GuestReducer = (state, action: GuestStandardAction<{ record: ElementRecord }>) => {
   const { record } = action.payload;
   return {
     ...state,
@@ -600,7 +598,9 @@ const drop_zone_enter: GuestReducer = (state, action) => {
     length = length - 1;
   }
 
-  const maxCount = !currentDropZone.origin ? iceRegistry.runValidation(currentDropZone.iceId as number, 'maxCount', [length]) : null;
+  const maxCount = !currentDropZone.origin
+    ? iceRegistry.runValidation(currentDropZone.iceId as number, 'maxCount', [length])
+    : null;
 
   if (maxCount) {
     rest.maxCount = maxCount;
@@ -664,9 +664,7 @@ const drop_zone_leave: GuestReducer = (state, action) => {
 // region set_edit_mode
 const set_edit_mode = (state, action) => ({
   ...state,
-  status: action.payload.editMode
-    ? EditingStatus.LISTENING
-    : EditingStatus.OFF
+  status: action.payload.editMode ? EditingStatus.LISTENING : EditingStatus.OFF
 });
 // endregion
 

@@ -16,11 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closeRejectDialog,
-  showRejectDialog,
-  rejectDialogClosed
-} from '../../actions/dialogs';
+import { closeRejectDialog, showRejectDialog, rejectDialogClosed } from '../../actions/dialogs';
 
 export default createReducer<GlobalState['dialogs']['reject']>(
   { open: false },

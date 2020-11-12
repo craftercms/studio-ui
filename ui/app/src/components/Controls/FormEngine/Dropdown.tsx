@@ -28,12 +28,7 @@ import { controlBaseStyles } from './commonStyles';
 const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 
 export default function Dropdown(props: Control) {
-  const {
-    field,
-    value = '',
-    onChange,
-    disabled
-  } = props;
+  const { field, value = '', onChange, disabled } = props;
   const classes = useStyles({});
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -42,28 +37,16 @@ export default function Dropdown(props: Control) {
 
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel
-        className={classes.inputLabel}
-      >
-        {field.name}
-      </InputLabel>
-      <Select
-        value={value}
-        onChange={handleSelectChange}
-        disabled={disabled}
-        displayEmpty
-      >
+      <InputLabel className={classes.inputLabel}>{field.name}</InputLabel>
+      <Select value={value} onChange={handleSelectChange} disabled={disabled} displayEmpty>
         <MenuItem value="">
-          <FormattedMessage
-            id="audiencesPanelControl.optionSelectorNoOptionSelected"
-            defaultMessage="Select Option"
-          />
+          <FormattedMessage id="audiencesPanelControl.optionSelectorNoOptionSelected" defaultMessage="Select Option" />
         </MenuItem>
-        {
-          field.values?.map((possibleValue: any) => (
-            <MenuItem value={possibleValue.value} key={possibleValue.value}>{possibleValue.label}</MenuItem>
-          ))
-        }
+        {field.values?.map((possibleValue: any) => (
+          <MenuItem value={possibleValue.value} key={possibleValue.value}>
+            {possibleValue.label}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );

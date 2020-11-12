@@ -24,7 +24,7 @@ import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { EditingStatus } from '../../constants';
 
 interface T {
-  [K: string]: any
+  [K: string]: any;
 }
 
 // TODO: Types
@@ -61,7 +61,7 @@ export interface GuestState {
     iceId: number;
     currentElement: number;
     registryEntryIds: number[];
-  }
+  };
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

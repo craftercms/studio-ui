@@ -19,7 +19,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
@@ -37,73 +37,75 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
-  card: {
-    '& .cardTitle': {
-      ...cardTitleStyles,
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    card: {
+      '& .cardTitle': {
+        ...cardTitleStyles
+      },
+      '& .cardSubtitle': {
+        overflow: 'hidden',
+        display: '-webkit-box',
+        '-webkit-line-clamp': 1,
+        '-webkit-box-orient': 'vertical'
+      }
     },
-    '& .cardSubtitle': {
+    cardHeaderRoot: {
+      padding: '9px 0',
+      cursor: 'pointer',
+      width: '100%'
+    },
+    avatar: {
+      color: palette.black,
+      margin: '0 10px'
+    },
+    cardHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      width: '100%'
+    },
+    cardOptions: {
+      marginLeft: 'auto'
+    },
+    media: {
+      height: 0,
+      paddingTop: '56.25%' // 16:9
+    },
+    listActionArea: {
+      paddingTop: 0,
+      height: '80px',
+      width: '80px',
+      order: -1
+    },
+    mediaIcon: {
+      paddingTop: '56.25%',
+      position: 'relative',
       overflow: 'hidden',
-      display: '-webkit-box',
-      '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical'
-    }
-  },
-  cardHeaderRoot: {
-    padding: '9px 0',
-    cursor: 'pointer',
-    width: '100%'
-  },
-  avatar: {
-    color: palette.black,
-    margin: '0 10px'
-  },
-  cardHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%'
-  },
-  cardOptions: {
-    marginLeft: 'auto'
-  },
-  media: {
-    height: 0,
-    paddingTop: '56.25%' // 16:9
-  },
-  listActionArea: {
-    paddingTop: 0,
-    height: '80px',
-    width: '80px',
-    order: -1
-  },
-  mediaIcon: {
-    paddingTop: '56.25%',
-    position: 'relative',
-    overflow: 'hidden',
-    '& .media-icon': {
+      '& .media-icon': {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        color: palette.gray.medium4,
+        fontSize: '50px'
+      },
+      '&.list': {
+        height: '80px',
+        width: '80px',
+        paddingTop: '0',
+        order: -1
+      }
+    },
+    videoThumbnail: {
       position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      color: palette.gray.medium4,
-      fontSize: '50px'
+      width: '100%'
     },
-    '&.list': {
-      height: '80px',
-      width: '80px',
-      paddingTop: '0',
-      order: -1
-    }
-  },
-  videoThumbnail: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '100%'
-  },
-  checkbox: {}
-}));
+    checkbox: {}
+  })
+);
 
 interface MediaCardProps {
   item: MediaItem;
@@ -178,39 +180,30 @@ function MediaCard(props: MediaCardProps) {
       default:
         break;
     }
-    return (
-      onPreview ? (
-        <CardActionArea
-          onClick={() => onPreview(item)}
-          className={clsx(isList && classes.listActionArea)}
-        >
-          <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
-            {
-              (type === 'Video') ? (
-                <video className={classes.videoThumbnail}>
-                  <source src={path} type="video/mp4" />
-                  <i className={iconName} />
-                </video>
-              ) : (
-                <i className={iconName} />
-              )
-            }
-          </div>
-        </CardActionArea>
-      ) : (
+    return onPreview ? (
+      <CardActionArea onClick={() => onPreview(item)} className={clsx(isList && classes.listActionArea)}>
         <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
-          {
-            (type === 'Video') ? (
-              <video className={classes.videoThumbnail}>
-                <source src={path} type="video/mp4" />
-                <i className={iconName} />
-              </video>
-            ) : (
+          {type === 'Video' ? (
+            <video className={classes.videoThumbnail}>
+              <source src={path} type="video/mp4" />
               <i className={iconName} />
-            )
-          }
+            </video>
+          ) : (
+            <i className={iconName} />
+          )}
         </div>
-      )
+      </CardActionArea>
+    ) : (
+      <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
+        {type === 'Video' ? (
+          <video className={classes.videoThumbnail}>
+            <source src={path} type="video/mp4" />
+            <i className={iconName} />
+          </video>
+        ) : (
+          <i className={iconName} />
+        )}
+      </div>
     );
   };
 
@@ -221,8 +214,7 @@ function MediaCard(props: MediaCardProps) {
       onDragStart={() => onDragStart(item)}
       onDragEnd={() => onDragEnd(item)}
     >
-      {
-        (isList && onSelect) &&
+      {isList && onSelect && (
         <FormGroup className={clsx(classes.checkbox, props.classes?.checkbox)}>
           <Checkbox
             checked={selected.includes(path)}
@@ -230,10 +222,9 @@ function MediaCard(props: MediaCardProps) {
             color="primary"
           />
         </FormGroup>
-      }
+      )}
       <header className={clsx(classes.cardHeader, props.classes?.header)}>
-        {
-          (!isList && onSelect) &&
+        {!isList && onSelect && (
           <FormGroup>
             <Checkbox
               checked={selected.includes(path)}
@@ -241,7 +232,7 @@ function MediaCard(props: MediaCardProps) {
               color="primary"
             />
           </FormGroup>
-        }
+        )}
         {/*
         // @ts-ignore */}
         <CardHeader
@@ -249,7 +240,7 @@ function MediaCard(props: MediaCardProps) {
           subheader={hasSubheader ? type : null}
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={ () => onPreview(item)}
+          onClick={() => onPreview(item)}
           titleTypographyProps={{
             variant: 'subtitle2',
             component: 'h2',
@@ -262,8 +253,7 @@ function MediaCard(props: MediaCardProps) {
             color: 'textSecondary'
           }}
         />
-        {
-          onHeaderButtonClick &&
+        {onHeaderButtonClick && (
           <IconButton
             aria-label={formatMessage(translations.options)}
             className={classes.cardOptions}
@@ -271,32 +261,27 @@ function MediaCard(props: MediaCardProps) {
           >
             <HeaderButtonIcon />
           </IconButton>
-        }
+        )}
       </header>
-      {
-        (type === 'Image') ? (
-          onPreview ? (
-            <CardActionArea
-              onClick={() => onPreview(item)}
-              className={clsx(isList && classes.listActionArea)}
-            >
-              <CardMedia
-                className={clsx(classes.media, props.classes?.media)}
-                image={`${previewAppBaseUri}${path}`}
-                title={name}
-              />
-            </CardActionArea>
-          ) : (
+      {type === 'Image' ? (
+        onPreview ? (
+          <CardActionArea onClick={() => onPreview(item)} className={clsx(isList && classes.listActionArea)}>
             <CardMedia
               className={clsx(classes.media, props.classes?.media)}
               image={`${previewAppBaseUri}${path}`}
               title={name}
             />
-          )
+          </CardActionArea>
         ) : (
-          renderIcon(type)
+          <CardMedia
+            className={clsx(classes.media, props.classes?.media)}
+            image={`${previewAppBaseUri}${path}`}
+            title={name}
+          />
         )
-      }
+      ) : (
+        renderIcon(type)
+      )}
     </Card>
   );
 }

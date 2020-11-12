@@ -26,21 +26,12 @@ import { controlBaseStyles } from './commonStyles';
 const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 
 export default function DateTime(props: DateTimeControl) {
-  const {
-    field,
-    value,
-    timezone,
-    onChange,
-    disabled
-  } = props;
+  const { field, value, timezone, onChange, disabled } = props;
   const classes = useStyles({});
 
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel
-        className={classes.inputLabel}
-        htmlFor={field.id}
-      >
+      <InputLabel className={classes.inputLabel} htmlFor={field.id}>
         {field.name}
       </InputLabel>
       <DateTimePicker

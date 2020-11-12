@@ -14,18 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  useContentTypes,
-  useLogicResource,
-  usePreviewGuest,
-  useSelection
-} from '../../../utils/hooks';
+import { useContentTypes, useLogicResource, usePreviewGuest, useSelection } from '../../../utils/hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import createStyles from '@material-ui/core/styles/createStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../../../components/SystemStatus/Suspencified';

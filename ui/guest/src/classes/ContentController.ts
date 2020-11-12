@@ -52,10 +52,11 @@ import { getDefaultValue } from '../utils/contentType';
 // TODO: Notice
 // Not so sure about this assumption. Maybe best to just leave it up to the consumer
 // app to set the crafter URL via `crafterConf` if it wants something different?
-(crafterConf.getConfig().baseUrl === '') && crafterConf.configure({
-  baseUrl: (window.location.hostname === 'localhost') ? 'http://localhost:8080' : window.location.origin,
-  site: Cookies.get('crafterSite')
-});
+crafterConf.getConfig().baseUrl === '' &&
+  crafterConf.configure({
+    baseUrl: window.location.hostname === 'localhost' ? 'http://localhost:8080' : window.location.origin,
+    site: Cookies.get('crafterSite')
+  });
 // }
 
 const operations$ = new Subject<Operation>();
@@ -77,16 +78,12 @@ const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
   /*'modelId': { ...modelData }*/
 });
 
-const modelsObs$ = _models$.asObservable().pipe(
-  filter((objects) => Object.keys(objects).length > 0)
-);
+const modelsObs$ = _models$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
 
 const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
   /*...*/
 });
-const contentTypesObs$ = _contentTypes$.asObservable().pipe(
-  filter((objects) => Object.keys(objects).length > 0)
-);
+const contentTypesObs$ = _contentTypes$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
 
 // endregion
 
@@ -208,10 +205,7 @@ function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
     // TODO: Remove hardcoded url
     crafterConf.getConfig()
   ).pipe(
-    tap(
-      ({ total }) =>
-        total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)
-    ),
+    tap(({ total }) => total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)),
     map<any, ContentInstance[]>(({ hits }) =>
       hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
     ),
@@ -257,9 +251,7 @@ function fetchContentType(contentTypeId: string): boolean {
 
 function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
 function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
-function contentTypesResponseReceived(
-  responseContentTypes: LookupTable<ContentType> | ContentType[]
-): void {
+function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
   if (Array.isArray(responseContentTypes)) {
     (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
   }
@@ -278,7 +270,7 @@ function contentTypesResponseReceived(
 function collectReferrers(modelId) {
   const models = getCachedModels();
   const parentModels = [];
-  const modelsToUpdate = {  };
+  const modelsToUpdate = {};
   let currentID = getParentModelId(modelId, models, children);
   while (currentID) {
     parentModels.push(currentID);
@@ -288,12 +280,7 @@ function collectReferrers(modelId) {
   return modelsToUpdate;
 }
 
-export function updateField(
-  modelId: string,
-  fieldId: string,
-  index: string | number,
-  value: unknown
-): void {
+export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
   const parentModelId = getParentModelId(modelId, models, children);
@@ -323,12 +310,7 @@ export function updateField(
   });
 }
 
-export function insertItem(
-  modelId: string,
-  fieldId: string,
-  index: number | string,
-  item: ContentInstance
-): void {
+export function insertItem(modelId: string, fieldId: string, index: number | string, item: ContentInstance): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
   const collection = Model.value(model, fieldId);
@@ -485,10 +467,8 @@ export function sortItem(
 ): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
-  const currentIndexParsed =
-    typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
-  const targetIndexParsed =
-    typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
+  const currentIndexParsed = typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
+  const targetIndexParsed = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
   const collection = getCollection(model, fieldId, currentIndex);
   const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
@@ -528,13 +508,10 @@ export function moveItem(
   const models = getCachedModels();
 
   // Parse indexes to clear out dot notation for nested repeat/collection items.
-  let originalIndexParsed =
-    typeof originalIndex === 'number' ? originalIndex : parseInt(popPiece(originalIndex));
-  let targetIndexParsed =
-    typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
+  let originalIndexParsed = typeof originalIndex === 'number' ? originalIndex : parseInt(popPiece(originalIndex));
+  let targetIndexParsed = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
 
-  const symmetricOriginal =
-    originalFieldId.split('.').length === `${originalIndex}`.split('.').length;
+  const symmetricOriginal = originalFieldId.split('.').length === `${originalIndex}`.split('.').length;
   const symmetricTarget = targetFieldId.split('.').length === `${targetIndex}`.split('.').length;
 
   if (!symmetricOriginal) {
@@ -570,11 +547,7 @@ export function moveItem(
   const getFieldItem = (model, field, index) => {
     let item;
     if (symmetricOriginal) {
-      item = Model.extractCollectionItem(
-        model,
-        removeLastPiece(`${field}`),
-        removeLastPiece(`${index}`)
-      );
+      item = Model.extractCollectionItem(model, removeLastPiece(`${field}`), removeLastPiece(`${index}`));
     } else {
       debugger;
     }
@@ -631,9 +604,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
   const models = getCachedModels();
   const model = models[modelId];
-  const collection = isStringIndex
-    ? Model.extractCollection(model, fieldId, index)
-    : Model.value(model, fieldId);
+  const collection = isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
@@ -662,9 +633,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 // endregion
 
 // Listen for host content type updates
-fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) =>
-  contentTypesResponseReceived(data.payload)
-);
+fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => contentTypesResponseReceived(data.payload));
 
 const ContentController = {
   children,

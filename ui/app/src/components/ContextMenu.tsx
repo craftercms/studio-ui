@@ -31,7 +31,8 @@ export const useStyles = makeStyles((theme) =>
       padding: '10px',
       textAlign: 'center'
     }
-  }));
+  })
+);
 
 export interface Option {
   id: string;
@@ -52,7 +53,7 @@ interface CustomMenuProps {
   emptyState?: {
     icon?: ElementType;
     message: string;
-  }
+  };
 
   onClose?(): void;
 
@@ -72,21 +73,16 @@ export default function ContextMenu(props: CustomMenuProps) {
       anchorOrigin={anchorOrigin}
     >
       <div>
-        <ContextMenuItems
-          sections={sections}
-          classes={classes}
-          onMenuItemClicked={onMenuItemClicked}
-        />
+        <ContextMenuItems sections={sections} classes={classes} onMenuItemClicked={onMenuItemClicked} />
       </div>
-      {
-        (sections.length === 0 && emptyState?.message) &&
+      {sections.length === 0 && emptyState?.message && (
         <div className={emptyStyles.root}>
           <ErrorOutlineOutlinedIcon fontSize={'small'} />
           <Typography variant="caption" display="block">
             {emptyState.message}
           </Typography>
         </div>
-      }
+      )}
     </Menu>
   );
 }
@@ -102,29 +98,28 @@ export function ContextMenuItems(props: ContextMenuItemsProps) {
   const { formatMessage } = useIntl();
   return (
     <>
-      {
-        sections.map((section: any, i: number) =>
-          section.map((sectionItem: SectionItem, y: number) =>
-            (sectionItem.type === 'text') ? (
-              <div>
-                <Typography variant="body1" className={classes?.helperText}>
-                  {formatMessage(sectionItem.label, sectionItem.values)}
-                </Typography>
-                <Divider />
-              </div>
-            ) : (
-              <MenuItem
-                key={sectionItem.id}
-                divider={(i !== sections.length - 1) && (y === section.length - 1)}
-                onClick={() => onMenuItemClicked(sectionItem)}
-                classes={{ root: classes?.itemRoot }}
-                dense
-              >
+      {sections.map((section: any, i: number) =>
+        section.map((sectionItem: SectionItem, y: number) =>
+          sectionItem.type === 'text' ? (
+            <div>
+              <Typography variant="body1" className={classes?.helperText}>
                 {formatMessage(sectionItem.label, sectionItem.values)}
-              </MenuItem>
-            )
+              </Typography>
+              <Divider />
+            </div>
+          ) : (
+            <MenuItem
+              key={sectionItem.id}
+              divider={i !== sections.length - 1 && y === section.length - 1}
+              onClick={() => onMenuItemClicked(sectionItem)}
+              classes={{ root: classes?.itemRoot }}
+              dense
+            >
+              {formatMessage(sectionItem.label, sectionItem.values)}
+            </MenuItem>
           )
-        )}
+        )
+      )}
     </>
   );
 }

@@ -35,7 +35,7 @@ interface SplitButtonProps {
 }
 
 export default function SplitButton(props: SplitButtonProps) {
-  const { options, defaultSelected = 0 , disablePortal = true} = props;
+  const { options, defaultSelected = 0, disablePortal = true } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(defaultSelected);
@@ -44,10 +44,7 @@ export default function SplitButton(props: SplitButtonProps) {
     options[selectedIndex]?.callback();
   };
 
-  const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    index: number
-  ) => {
+  const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
     setSelectedIndex(index);
     setOpen(false);
     options[index]?.callback();

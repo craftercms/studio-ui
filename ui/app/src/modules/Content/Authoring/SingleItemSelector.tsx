@@ -36,13 +36,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
 import { getChildrenByPath } from '../../../services/content';
-import {
-  getParentPath,
-  getParentsFromPath,
-  itemsFromPath,
-  withIndex,
-  withoutIndex
-} from '../../../utils/path';
+import { getParentPath, getParentsFromPath, itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin, Observable } from 'rxjs';
 import palette from '../../../styles/palette';
