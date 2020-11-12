@@ -24,12 +24,14 @@ import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import { CrafterCMSStore, createStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import { createResource } from '../utils/hooks';
 import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
 import { getCurrentIntl } from '../utils/i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 const storeResource = createResource(() =>
   createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise()
@@ -70,6 +72,7 @@ function Bridge(
               maxSnack={5}
               autoHideDuration={5000}
               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              action={(id) => <SnackbarCloseButton id={id} />}
             >
               <>
                 <Suspense fallback="" children={props.children} />
@@ -103,4 +106,14 @@ function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
   };
   document.addEventListener('setlocale', handler, false);
   return () => document.removeEventListener('setlocale', handler, false);
+}
+
+function SnackbarCloseButton({ id }) {
+  const { closeSnackbar } = useSnackbar();
+
+  return (
+    <IconButton onClick={() => closeSnackbar(id)} size="small" color="secondary">
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  );
 }
