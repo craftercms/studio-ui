@@ -101,9 +101,7 @@ const reducer = createReducer<ContentState>(initialState, {
       ...state.items,
       permissionsByPath: {
         ...state.items.permissionsByPath,
-        [payload.path]: createPresenceTable(
-          payload.permissions.map((value) => value.replaceAll(' ', '_').replace(/-/g, '_'))
-        )
+        [payload.path]: createPresenceTable(payload.permissions.map((value) => value.replace(/[\s-]/g, '_')))
       }
     }
   }),

@@ -16,7 +16,7 @@
 
 import { useStyles } from './styles';
 import ListItem from '@material-ui/core/ListItem';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/lab/Skeleton';
 import Typography from '@material-ui/core/Typography';
 import { rand } from './utils';
 import React from 'react';

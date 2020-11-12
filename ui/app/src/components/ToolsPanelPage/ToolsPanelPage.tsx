@@ -18,6 +18,8 @@ import React, { useContext } from 'react';
 import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { renderWidgets, TempTestContext } from '../Widget/Widget';
 
+//console.log(formatMessage({ id: 'words.cancel', defaultMessage: 'words.cancel' }));
+
 export default function ToolsPanelPage(props) {
   const { pop } = useContext(TempTestContext);
   return (

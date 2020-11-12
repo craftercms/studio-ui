@@ -124,12 +124,12 @@ export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
 export default function NewContentDialog(props: NewContentDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <NewContentDialogWrapper {...props} />
+      <NewContentDialogBody {...props} />
     </Dialog>
   );
 }
 
-function NewContentDialogWrapper(props: NewContentDialogProps) {
+function NewContentDialogBody(props: NewContentDialogProps) {
   const { onDismiss, item, onContentTypeSelected, compact = false, rootPath } = props;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();

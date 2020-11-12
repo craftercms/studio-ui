@@ -21,7 +21,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
 import { CopyItem, LegacyItem } from '../../models/Item';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { TreeView } from '@material-ui/lab';
+import TreeView from '@material-ui/lab/TreeView';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';

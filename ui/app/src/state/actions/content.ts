@@ -46,16 +46,15 @@ export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_I
 export const setClipBoard = createAction<{
   type: 'cut' | 'copy';
   paths?: string[];
-  sourceRootPath: string;
+  sourcePath: string;
 }>('SET_CLIPBOARD');
 
 export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
 // region item
-export const itemDuplicate = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_ITEM_DUPlICATE');
-export const assetDuplicate = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_ASSET_DUPlICATE');
-export const itemCut = createAction<{ path: string }>('ITEM_MENU_ITEM_CUT');
-
-export const itemPasted = createAction<{ path: string }>('ITEM_MENU_ITEM_PASTED');
+export const duplicateItem = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_DUPlICATE_ITEM');
+export const duplicateAsset = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_DUPlICATE_ASSET');
+export const cutItem = createAction<{ path: string }>('ITEM_MENU_CUT_ITEM');
+export const pasteItem = createAction<{ path: string }>('ITEM_MENU_PASTE_ITEM');
 // endregion

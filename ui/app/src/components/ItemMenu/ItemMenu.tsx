@@ -24,7 +24,7 @@ import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin } from '@material-ui/core';
 import {
-  closeChangeContentTypeDialog,
+  CloseChangeContentTypeDialog,
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
@@ -55,10 +55,10 @@ import { batchActions, changeContentType, editTemplate } from '../../state/actio
 import { fetchItemVersions } from '../../state/reducers/versions';
 import { getRootPath, withoutIndex } from '../../utils/path';
 import {
-  assetDuplicate,
-  itemCut,
-  itemDuplicate,
-  itemPasted,
+  cutItem,
+  duplicateAsset,
+  duplicateItem,
+  pasteItem,
   reloadDetailedItem,
   setClipBoard
 } from '../../state/actions/content';
@@ -74,7 +74,8 @@ import {
   showPublishItemSuccessNotification
 } from '../../state/actions/system';
 import Typography from '@material-ui/core/Typography';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { Clipboard } from '../../models/GlobalState';
 
 interface ItemMenuProps {
   path: string;
@@ -89,11 +90,7 @@ interface ItemMenuProps {
 interface ItemMenuUIProps {
   resource: { item: Resource<DetailedItem>; permissions: Resource<LookupTable<boolean>> };
   classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
-  clipboard: {
-    type: 'cut' | 'copy';
-    paths: string[];
-    sourceRootPath: string;
-  };
+  clipboard: Clipboard;
   onMenuItemClicked(section: SectionItem): void;
 }
 
@@ -227,7 +224,7 @@ export function ItemMenu(props: ItemMenuProps) {
                 rootPath: getRootPath(item.path),
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
-                  closeChangeContentTypeDialog(),
+                  CloseChangeContentTypeDialog(),
                   changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
                 ])
               })
@@ -237,7 +234,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'cut': {
-        dispatch(itemCut({ path }));
+        dispatch(cutItem({ path }));
         break;
       }
       case 'copy': {
@@ -253,7 +250,7 @@ export function ItemMenu(props: ItemMenuProps) {
                     closeCopyDialog(),
                     setClipBoard({
                       type: 'copy',
-                      sourceRootPath: getRootPath(item.path)
+                      sourcePath: item.path
                     }),
                     showCopyItemSuccessNotification()
                   ])
@@ -268,7 +265,7 @@ export function ItemMenu(props: ItemMenuProps) {
                         setClipBoard({
                           type: 'copy',
                           paths: [item.path],
-                          sourceRootPath: getRootPath(item.path)
+                          sourcePath: item.path
                         }),
                         showCopyItemSuccessNotification()
                       ])
@@ -302,15 +299,15 @@ export function ItemMenu(props: ItemMenuProps) {
               dispatch(
                 showWorkflowCancellationDialog({
                   items,
-                  onContinue: itemPasted({ path: item.path })
+                  onContinue: pasteItem({ path: item.path })
                 })
               );
             } else {
-              dispatch(itemPasted({ path: item.path }));
+              dispatch(pasteItem({ path: item.path }));
             }
           });
         } else {
-          dispatch(itemPasted({ path: item.path }));
+          dispatch(pasteItem({ path: item.path }));
         }
         break;
       }
@@ -322,7 +319,7 @@ export function ItemMenu(props: ItemMenuProps) {
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              assetDuplicate({
+              duplicateAsset({
                 path: item.path,
                 onSuccess: showDuplicatedItemSuccessNotification()
               })
@@ -339,7 +336,7 @@ export function ItemMenu(props: ItemMenuProps) {
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              itemDuplicate({
+              duplicateItem({
                 path: item.path,
                 onSuccess: showDuplicatedItemSuccessNotification()
               })
@@ -422,7 +419,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'template',
-            onCreated: batchActions([closeCreateFileDialog()])
+            onCreated: closeCreateFileDialog()
           })
         );
         break;
@@ -432,7 +429,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: batchActions([closeCreateFileDialog()])
+            onCreated: closeCreateFileDialog()
           })
         );
         break;
@@ -462,7 +459,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showUploadDialog({
             path: item.path,
             site,
-            onClose: batchActions([closeUploadDialog()])
+            onClose: closeUploadDialog()
           })
         );
         break;
@@ -496,7 +493,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
-  const hasClipboard = clipboard?.paths.length && clipboard.sourceRootPath === getRootPath(item.path);
+  const hasClipboard = clipboard?.paths.length && getRootPath(clipboard.sourcePath) === getRootPath(item.path);
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
   return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;

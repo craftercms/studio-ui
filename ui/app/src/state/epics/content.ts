@@ -17,8 +17,10 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
-  assetDuplicate,
   completeDetailedItem,
+  cutItem,
+  duplicateAsset,
+  duplicateItem,
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
@@ -28,9 +30,7 @@ import {
   fetchUserPermissions,
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
-  itemCut,
-  itemDuplicate,
-  itemPasted,
+  pasteItem,
   reloadDetailedItem,
   unSetClipBoard
 } from '../actions/content';
@@ -120,7 +120,7 @@ const content = [
   // region Item Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(itemDuplicate.type),
+      ofType(duplicateItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
@@ -140,7 +140,7 @@ const content = [
   // region Asset Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(assetDuplicate.type),
+      ofType(duplicateAsset.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
@@ -166,7 +166,7 @@ const content = [
   // region Item Cut
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(itemCut.type),
+      ofType(cutItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return cut(state.sites.active, payload.path).pipe(
@@ -184,7 +184,7 @@ const content = [
   // region Item Pasted
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(itemPasted.type),
+      ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return paste(state.sites.active, payload.path).pipe(

@@ -18,7 +18,6 @@ import { Epic, ofType } from 'redux-observable';
 import { ignoreElements, tap } from 'rxjs/operators';
 import { showSystemNotification } from '../actions/preview';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { IntlShape } from 'react-intl';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
@@ -42,14 +41,14 @@ export default [
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showDeleteItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemDeleted, {
+            message: getIntl().formatMessage(itemSuccessMessages.itemDeleted, {
               count: payload.items.length
             })
           })
@@ -57,7 +56,7 @@ export default [
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showPublishItemSuccessNotification.type),
       tap(({ payload }) => {
@@ -66,11 +65,11 @@ export default [
           showSystemNotification({
             message:
               payload.schedule === 'now'
-                ? intl.formatMessage(itemSuccessMessages.itemPublishedNow, {
+                ? getIntl().formatMessage(itemSuccessMessages.itemPublishedNow, {
                     count: payload.items.length,
                     environment: payload.environment
                   })
-                : intl.formatMessage(itemSuccessMessages.itemSchedulePublished, {
+                : getIntl().formatMessage(itemSuccessMessages.itemSchedulePublished, {
                     count: payload.items.length,
                     environment: payload.environment
                   })
@@ -79,27 +78,27 @@ export default [
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemEdited)
+            message: getIntl().formatMessage(itemSuccessMessages.itemEdited)
           })
         );
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showCopyItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemCopied, {
+            message: getIntl().formatMessage(itemSuccessMessages.itemCopied, {
               count: payload?.paths.length ?? 1
             })
           })
@@ -107,53 +106,53 @@ export default [
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showCutItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemCut)
+            message: getIntl().formatMessage(itemSuccessMessages.itemCut)
           })
         );
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showPasteItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemPasted)
+            message: getIntl().formatMessage(itemSuccessMessages.itemPasted)
           })
         );
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showDuplicatedItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemDuplicated)
+            message: getIntl().formatMessage(itemSuccessMessages.itemDuplicated)
           })
         );
       }),
       ignoreElements()
     ),
-  (action$, state$, { intlRef: { current: intl } }: { intlRef: { current: IntlShape } }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showRevertItemSuccessNotification.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: intl.formatMessage(itemSuccessMessages.itemReverted)
+            message: getIntl().formatMessage(itemSuccessMessages.itemReverted)
           })
         );
       }),

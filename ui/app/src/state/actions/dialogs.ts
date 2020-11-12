@@ -95,7 +95,7 @@ export const newContentDialogClosed = createAction('NEW_CONTENT_DIALOG_CLOSED');
 export const showChangeContentTypeDialog = createAction<Partial<ChangeContentTypeDialogStateProps>>(
   'SHOW_CHANGE_CONTENT_TYPE_DIALOG'
 );
-export const closeChangeContentTypeDialog = createAction<StandardAction>('CLOSE_CHANGE_CONTENT_TYPE_DIALOG');
+export const CloseChangeContentTypeDialog = createAction<StandardAction>('CLOSE_CHANGE_CONTENT_TYPE_DIALOG');
 export const ChangeContentTypeDialogClosed = createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
 // endregion
 

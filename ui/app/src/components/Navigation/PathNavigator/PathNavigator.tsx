@@ -434,6 +434,7 @@ export default function PathNavigator(props: WidgetProps) {
 
 export function PathNavigatorUI(props: WidgetUIProps) {
   const classes = useStyles();
+  // region consts {...} = props
   const {
     state,
     itemsByPath,

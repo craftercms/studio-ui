@@ -77,6 +77,12 @@ export interface GuestData {
   itemBeingDragged: boolean;
 }
 
+export interface Clipboard {
+  type: 'cut' | 'copy';
+  paths: string[];
+  sourcePath: string;
+}
+
 export interface GlobalState {
   auth: {
     error: ApiResponse;
@@ -99,11 +105,7 @@ export interface GlobalState {
       byPath: LookupTable<DetailedItem>;
       permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
-    clipboard: {
-      type: 'cut' | 'copy';
-      paths: string[];
-      sourceRootPath: string;
-    };
+    clipboard: Clipboard;
   };
   contentTypes: EntityState<ContentType>;
   env: {
@@ -120,6 +122,7 @@ export interface GlobalState {
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
+    //toolsPanelPageStack>>pages[]
     selectedTool: PreviewTool;
     previousTool: PreviewTool;
     toolsPanelWidth: number;
@@ -184,6 +187,7 @@ export interface GlobalState {
     error: ApiResponse;
     isFetching: boolean;
     currentSite: string;
+    //preview>toolsPanel>widgets
     preview: {
       sidebar: {
         panels: SidebarPanelConfigEntry[];
