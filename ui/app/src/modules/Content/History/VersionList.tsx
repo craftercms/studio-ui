@@ -156,10 +156,7 @@ export function VersionList(props: VersionListProps) {
             divider={versions.length - 1 !== i}
             button
             onClick={() => onItemClick(version)}
-            className={clsx(
-              classes.listItem,
-              selected?.includes(version.versionNumber) && 'selected'
-            )}
+            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
           >
             <ListItemText
               classes={{
@@ -172,9 +169,7 @@ export function VersionList(props: VersionListProps) {
                   <AsDayMonthDateTime date={version.lastModifiedDate} />
                   {current === version.versionNumber && (
                     <Chip
-                      label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
-                      }
+                      label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
                       className={classes.chip}
                     />
                   )}
