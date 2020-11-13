@@ -69,6 +69,7 @@
       const routes = {};
       toolsNames.forEach((name) => {
         routes[name] = function() {
+          _self.currentRoute = name;
           if (_self.toolsModules[name]) {
             CStudioAdminConsole.renderWorkArea(null, {
               tool: _self.toolsModules[name],
@@ -112,6 +113,13 @@
                   this.context.toolsModules[tool.config.config.name] = tool;
                   tool.initialize(moduleConfig.config);
                   this.context.toolbar.addToolbarItem(tool, this.toolContainerEl);
+
+                  if (this.context.currentRoute === tool.config.name) {
+                    CStudioAdminConsole.renderWorkArea(null, {
+                      tool,
+                      toolbar: this.context.toolbar
+                    });
+                  }
                 } catch (e) {
                   // in preview, this function undefined raises error -- unlike dashboard.
                   // I agree, not a good solution!
