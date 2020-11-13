@@ -47,8 +47,8 @@ interface EditSiteDialogUIProps {
   onSiteNameChange(event: React.ChangeEvent): void;
   onSiteDescriptionChange(value: string): void;
   onSubmit(): void;
-  onClose?(response?: any): any;
-  onDismiss?(response?: any): any;
+  onClose?(): void;
+  onDismiss?(): void;
 }
 
 interface EditSiteDialogUIContainerProps {
