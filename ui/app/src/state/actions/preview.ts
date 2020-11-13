@@ -306,3 +306,8 @@ export const showSystemNotification = createAction<{
   message: string;
   options?: OptionsObject;
 }>('SHOW_SYSTEM_NOTIFICATION');
+
+// region toolsPanelPageStack
+export const pushPageStack = createAction<any>('PUSH_PAGE_STACK');
+export const popPageStack = createAction<any>('POP_PAGE_STACK');
+// endregion

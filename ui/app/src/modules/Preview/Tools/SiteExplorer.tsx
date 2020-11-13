@@ -27,11 +27,10 @@ import { useActiveSiteId, useLogicResource, useRoles } from '../../../utils/hook
 import Alert from '@material-ui/lab/Alert';
 import Link from '@material-ui/core/Link';
 import palette from '../../../styles/palette';
-import { SidebarPanelConfigEntry } from '../../../models/UiConfig';
 
 type SiteExplorerResource = {
-  supported: SidebarPanelConfigEntry[];
-  notSupported: SidebarPanelConfigEntry[];
+  supported: any[];
+  notSupported: any[];
 };
 
 interface SiteExplorerProps {
@@ -161,7 +160,7 @@ export function SiteExplorer(props: SiteExplorerProps) {
 }
 
 interface SiteExplorerContainerProps {
-  widgets: SidebarPanelConfigEntry[];
+  [key: string]: any;
 }
 
 export function SiteExplorerContainer({ widgets }: SiteExplorerContainerProps) {

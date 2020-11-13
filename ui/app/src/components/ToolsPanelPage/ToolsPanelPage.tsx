@@ -16,7 +16,7 @@
 
 import React, { useContext } from 'react';
 import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
-import { renderWidgets, TempTestContext } from '../Widget/Widget';
+import { renderWidgets, TempTestContext } from '../Widget';
 
 export default function ToolsPanelPage(props) {
   const { pop } = useContext(TempTestContext);

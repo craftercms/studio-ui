@@ -22,8 +22,6 @@ import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
-import { SidebarPanelConfigEntry, SiteNavConfigEntry } from '../models/UiConfig';
-import { asArray } from '../utils/array';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
 
 type CrafterCMSModules = 'studio' | 'engine';
@@ -211,57 +209,10 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 // region SidebarConfig
 
 export function getSiteUiConfig(site: string): Observable<any> {
-  const widgetParser = (items): SidebarPanelConfigEntry[] => {
-    let array = asArray(items.widget);
-    return array.map((item) => ({
-      id: item.id,
-      ...(item.roles?.role && { roles: asArray(item.roles.role) }),
-      ...(item.parameters && {
-        parameters: {
-          ...item.parameters,
-          ...(item.parameters.excludes && { excludes: asArray(item.parameters.excludes.exclude) })
-        }
-      })
-    }));
-  };
-
-  const panelsParser = (items): SidebarPanelConfigEntry[] => {
-    let array = asArray(items.panel);
-    return array.map((item) => ({
-      id: item.id,
-      ...(item.roles?.role && { roles: asArray(item.roles.role) }),
-      ...(item.parameters && {
-        parameters: {
-          ...item.parameters,
-          ...(item.parameters.widgets && { widgets: widgetParser(item.parameters.widgets) }),
-          ...(item.parameters.devices && { devices: asArray(item.parameters.devices.device) })
-        }
-      })
-    }));
-  };
-
-  const linksParser = (items): SiteNavConfigEntry[] => {
-    let array = asArray(items.link);
-    return array.map((item) => ({
-      ...item,
-      ...(item.roles?.role && { roles: asArray(item.roles.role) })
-    }));
-  };
-
-  return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
+  return getConfigurationDOM(site, '/ui2.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
         const parsed = deserialize(xml).ui;
-        return {
-          preview: {
-            sidebar: {
-              panels: panelsParser(parsed.preview.sidebar.panels)
-            },
-            siteNav: {
-              links: linksParser(parsed.preview.siteNav.links)
-            }
-          }
-        };
       } else {
         return uiConfigDefaults;
       }

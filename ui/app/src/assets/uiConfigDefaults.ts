@@ -16,161 +16,82 @@
 
 const uiConfigDefaults = {
   preview: {
-    sidebar: {
-      panels: [
+    toolsPanel: {
+      widgets: [
         {
-          id: 'craftercms.searchPanel'
-        },
-        {
-          id: 'craftercms.componentsPanel'
-        },
-        {
-          id: 'craftercms.assetsPanel'
-        },
-        {
-          id: 'craftercms.audiencesPanel'
-        },
-        {
-          id: 'craftercms.pageExplorerPanel'
-        },
-        {
-          id: 'craftercms.simulatorPanel',
-          parameters: {
-            devices: [
-              {
-                title: 'smartPhone',
-                width: 375,
-                height: 667
-              },
-              {
-                title: 'tablet',
-                width: 768,
-                height: 1024
-              }
-            ]
+          id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+          roles: ['admin'],
+          configuration: {
+            title: 'Search',
+            icon: {
+              baseClass: 'fa fa-sitemap'
+            },
+            widget: {
+              id: 'craftercms.component.search'
+            }
           }
         },
         {
-          id: 'craftercms.siteExplorerPanel',
-          roles: ['admin', 'developer'],
-          parameters: {
+          id: 'craftercms.component.PathNavigator',
+          roles: [],
+          configuration: {
+            id: 'Pages',
+            label: 'Pages',
+            rootPath: '/site/website',
+            locale: 'en',
+            icon: {
+              baseClass: 'fa',
+              expandedClass: 'fa-file-text-o',
+              collapsedClass: 'fa-file-text'
+            },
+            container: {
+              baseClass: 'next-pages-widget',
+              expandedClass: 'next-pages-widget-open',
+              collapsedClass: 'next-pages-widget-closed',
+              baseStyle: {},
+              expandedStyle: {},
+              collapsedStyle: {}
+            }
+          }
+        },
+        {
+          id: 'craftercms.component.ToolsPanelPageButton',
+          roles: [],
+          configuration: {
+            title: 'Search',
+            icon: {
+              baseClass: 'fa fa-sitemap'
+            },
             widgets: [
               {
-                id: 'craftercms.siteDashboardLink'
+                id: 'craftercms.component.search',
+                roles: [],
+                configuration: {}
               },
               {
-                id: 'craftercms.siteConfigLink',
-                roles: ['admin', 'developer']
-              },
-              {
-                id: 'craftercms.pathNavigator',
-                roles: ['admin', 'developer'],
-                parameters: {
-                  id: 'Pages',
-                  label: 'Pages',
-                  rootPath: '/site/website',
-                  locale: 'en',
-                  icon: {
-                    baseClass: 'fa',
-                    expandedClass: 'fa-file-text-o',
-                    collapsedClass: 'fa-file-text-o',
-                    baseStyle: {},
-                    expandedStyle: {},
-                    collapsedStyle: {}
-                  },
-                  container: {
-                    baseClass: 'next-pages-widget',
-                    expandedClass: 'next-pages-widget-open',
-                    collapsedClass: 'next-pages-widget-closed',
-                    baseStyle: {},
-                    expandedStyle: {},
-                    collapsedStyle: {}
-                  }
+                id: 'org.craftercms.sampleComponentLibraryPlugin.components.reactComponent',
+                plugin: {
+                  type: 'plugin',
+                  name: '/',
+                  file: 'index.umd.js'
+                },
+                configuration: {
+                  text: 'John Doe'
                 }
               },
               {
-                id: 'craftercms.pathNavigator',
-                roles: ['admin', 'developer'],
-                parameters: {
-                  id: 'Components',
-                  label: 'Components',
-                  rootPath: '/site/components',
-                  locale: 'en',
-                  icon: {
-                    baseClass: 'fa fa-puzzle-piece'
-                  }
-                }
-              },
-              {
-                id: 'craftercms.pathNavigator',
-                roles: ['admin', 'developer'],
-                parameters: {
-                  id: 'Taxonomy',
-                  label: 'Taxonomy',
-                  rootPath: '/site/taxonomy',
-                  icon: {
-                    baseClass: 'fa fa-tags'
-                  }
-                }
-              },
-              {
-                id: 'craftercms.pathNavigator',
-                roles: ['admin', 'developer'],
-                parameters: {
-                  id: 'StaticAssets',
-                  label: 'Static Assets',
-                  rootPath: '/static-assets',
-                  icon: {
-                    baseClass: 'fa fa-image'
-                  }
-                }
-              },
-              {
-                id: 'craftercms.pathNavigator',
-                roles: ['admin', 'developer'],
-                parameters: {
-                  id: 'Templates',
-                  label: 'Templates',
-                  rootPath: '/templates',
-                  icon: {
-                    baseClass: 'fa fa-file-code-o'
-                  }
-                }
-              },
-              {
-                id: 'craftercms.pathNavigator',
-                roles: ['admin', 'developer'],
-                parameters: {
-                  id: 'Scripts',
-                  label: 'Scripts',
-                  rootPath: '/scripts',
-                  icon: {
-                    baseClass: 'fa fa-code'
-                  }
+                id: 'org.craftercms.sampleComponentLibraryPlugin.components.nonReactComponent',
+                plugin: {
+                  type: 'plugin',
+                  name: '/',
+                  file: 'index.umd.js'
+                },
+                configuration: {
+                  fontColor: 'red'
                 }
               }
             ]
           }
-        }
-      ]
-    },
-    siteNav: {
-      links: [
-        {
-          id: 'craftercms.siteDashboardLink',
-          roles: ['admin', 'developer']
-        },
-        {
-          id: 'craftercms.sitePreviewLink',
-          roles: ['admin', 'developer']
-        },
-        {
-          id: 'craftercms.siteConfigLink',
-          roles: ['admin', 'developer']
-        },
-        {
-          id: 'craftercms.siteSearchLink',
-          roles: ['admin', 'developer']
         }
       ]
     }

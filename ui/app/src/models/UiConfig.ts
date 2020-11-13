@@ -22,24 +22,3 @@ export interface StateStylingProps {
   expandedStyle: object;
   collapsedStyle: object;
 }
-
-export interface SiteNavConfigEntry {
-  id?: string;
-  roles?: string[];
-  parameters?: {
-    label: string;
-    icon: string;
-    link: string;
-    target: string;
-  };
-}
-
-export interface SidebarPanelConfigEntry {
-  id: string;
-  roles?: string[];
-  parameters?: {
-    label: string;
-    icon: Partial<StateStylingProps>;
-    container: Partial<StateStylingProps>;
-  };
-}

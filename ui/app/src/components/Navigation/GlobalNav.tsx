@@ -25,7 +25,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { getGlobalMenuItems } from '../../services/configuration';
 import ErrorState from '../SystemStatus/ErrorState';
-import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import Link from '@material-ui/core/Link';
@@ -340,11 +339,6 @@ interface GlobalNavProps {
   authoringUrl: string;
   onMenuClose: (e: any) => void;
 }
-
-const LinkWithIcon = (props) => {
-  const { label, icon, link, target } = props;
-  return <Tile title={label} icon={icon} link={link} target={target} />;
-};
 
 export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
