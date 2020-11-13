@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -28,12 +28,10 @@ import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
-import SearchIcon from '@material-ui/icons/SearchRounded';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { LookupTable } from '../../models/LookupTable';
 import { useMount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
@@ -51,7 +49,6 @@ import { User } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
-import { SiteNavConfigEntry } from '../../models/UiConfig';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 
@@ -342,8 +339,6 @@ interface GlobalNavProps {
   logoutUrl: string;
   authoringUrl: string;
   onMenuClose: (e: any) => void;
-  rolesBySite: LookupTable<string[]>;
-  siteNavLinks: SiteNavConfigEntry[];
 }
 
 const LinkWithIcon = (props) => {
@@ -351,56 +346,8 @@ const LinkWithIcon = (props) => {
   return <Tile title={label} icon={icon} link={link} target={target} />;
 };
 
-function SiteDashboardLink({ authoringUrl }) {
-  const { formatMessage } = useIntl();
-  return (
-    <LinkWithIcon
-      link={getLink('siteDashboard', authoringUrl)}
-      label={formatMessage(messages.dashboard)}
-      icon="fa fa-tasks"
-    />
-  );
-}
-
-function SiteConfigLink({ authoringUrl }) {
-  const { formatMessage } = useIntl();
-  return (
-    <LinkWithIcon
-      link={getLink('siteConfig', authoringUrl)}
-      label={formatMessage(messages.siteConfig)}
-      icon="fa fa-sliders"
-    />
-  );
-}
-
-function SiteSearchLink({ authoringUrl }) {
-  const { formatMessage } = useIntl();
-  return (
-    <LinkWithIcon link={getLink('search', authoringUrl)} label={formatMessage(messages.search)} icon={SearchIcon} />
-  );
-}
-
-function SitePreviewLink({ site, authoringUrl }) {
-  const { formatMessage } = useIntl();
-  return (
-    <LinkWithIcon
-      link={getLink(getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview', authoringUrl)}
-      label={formatMessage(messages.preview)}
-      icon={Preview}
-    />
-  );
-}
-
-const ItemToComponentMap = {
-  'craftercms.sitePreviewLink': SitePreviewLink,
-  'craftercms.siteConfigLink': SiteConfigLink,
-  'craftercms.siteDashboardLink': SiteDashboardLink,
-  'craftercms.siteSearchLink': SiteSearchLink,
-  default: LinkWithIcon
-};
-
 export default function GlobalNav(props: GlobalNavProps) {
-  const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user, rolesBySite, siteNavLinks } = props;
+  const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles();
   const [menuItems, setMenuItems] = useState(null);
   const [apiState, setApiState] = useState({
@@ -408,7 +355,6 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const [siteLinks, setSiteLinks] = useState([]);
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
@@ -474,17 +420,6 @@ export default function GlobalNav(props: GlobalNavProps) {
       }
     );
   });
-
-  useEffect(() => {
-    if (siteNavLinks && rolesBySite && site) {
-      const links = siteNavLinks.filter((item) => {
-        const userRoles = rolesBySite[site];
-        const itemRoles = item.roles ?? [];
-        return itemRoles.length ? userRoles.some((role) => itemRoles.includes(role)) : true;
-      });
-      setSiteLinks(links);
-    }
-  }, [siteNavLinks, rolesBySite, site]);
 
   return (
     <Popover
@@ -587,19 +522,6 @@ export default function GlobalNav(props: GlobalNavProps) {
                 />
                 <Tile icon={About} link={getLink('about', authoringUrl)} title={formatMessage(messages.about)} />
               </nav>
-              {site && siteLinks.length > 0 && (
-                <>
-                  <Typography variant="subtitle1" component="h2" className={classes.title}>
-                    {formatMessage(messages.site)}
-                  </Typography>
-                  <nav className={classes.sitesApps}>
-                    {siteLinks.map((link, index) => {
-                      const Component = ItemToComponentMap[link.id ?? 'default'];
-                      return <Component key={index} {...link.parameters} site={site} authoringUrl={authoringUrl} />;
-                    })}
-                  </nav>
-                </>
-              )}
             </div>
             <div className={classes.railBottom}>
               <Card className={classes.userCardRoot}>

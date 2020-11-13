@@ -115,6 +115,9 @@ export interface GlobalState {
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
+    toolsPanelPageStack: {
+      pages: any[];
+    };
     selectedTool: PreviewTool;
     previousTool: PreviewTool;
     toolsPanelWidth: number;
