@@ -116,6 +116,15 @@ input[type="checkbox"].content-type-selector--checkbox {
   margin-left: 239px;
 }
 
+#admin-console.embedded #categories-panel{
+  display: none;
+}
+
+#admin-console.embedded #cstudio-admin-console-workarea {
+  width: 100%;
+  margin-left: 0;
+}
+
 .cstudio-admin-console-item {
   font-size: 14px;
   line-height: 25px;

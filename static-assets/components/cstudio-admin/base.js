@@ -24,11 +24,16 @@
 
     render: function(containerEl) {
       this.containerEl = containerEl;
+      const isEmbedded = $('#admin-console').hasClass('embedded');
 
-      containerEl.innerHTML = `
+      if (!isEmbedded) {
+        containerEl.innerHTML = `
 				<div id="categories-panel" class="categories-panel">
 				  <div id="categoriesPanelWrapper"></div>
-				</div>
+				</div>`;
+      }
+
+      containerEl.innerHTML += `
 				<div id="cstudio-admin-console-workarea">
           <div class="work-area-empty">
             <img src="/studio/static-assets/images/choose_option.svg" alt="">
@@ -58,6 +63,24 @@
       );
     },
 
+    initRouter(tools) {
+      const _self = this;
+      const toolsNames = tools.map((tool) => tool.name);
+      const routes = {};
+      toolsNames.forEach((name) => {
+        routes[name] = function() {
+          if (_self.toolsModules[name]) {
+            CStudioAdminConsole.renderWorkArea(null, {
+              tool: _self.toolsModules[name],
+              toolbar: _self.toolbar
+            });
+          }
+        };
+      });
+
+      routie(routes);
+    },
+
     buildModules: function(config, panelEl) {
       amplify.subscribe('/content-type/loaded', function() {
         var catEl = document.getElementById('admin-console');
@@ -70,6 +93,8 @@
       }
 
       if (config.tools.tool.length) {
+        this.toolsModules = {};
+        this.initRouter(config.tools.tool);
         for (var j = 0; j < config.tools.tool.length; j++) {
           try {
             var toolContainerEl = document.createElement('div');
@@ -84,6 +109,7 @@
               moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                 try {
                   var tool = new moduleClass(moduleConfig, this.toolContainerEl);
+                  this.context.toolsModules[tool.config.config.name] = tool;
                   tool.initialize(moduleConfig.config);
                   this.context.toolbar.addToolbarItem(tool, this.toolContainerEl);
                 } catch (e) {
@@ -122,6 +148,53 @@
       validatorContainer.appendChild(logo);
       validatorContainer.appendChild(entitlementValidatorP);
       document.getElementById('categories-panel').appendChild(validatorContainer);
+    },
+
+    renderWorkArea(evt, params) {
+      if (CStudioAdminConsole.isDirty) {
+        CStudioAuthoring.Operations.showSimpleDialog(
+          'error-dialog',
+          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+          CMgs.format(langBundle, 'notification'),
+          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+          [
+            {
+              text: CMgs.format(formsLangBundle, 'yes'),
+              handler: function() {
+                CStudioAdminConsole.isDirty = false;
+                selectedItem();
+                this.destroy();
+              },
+              isDefault: false
+            },
+            {
+              text: CMgs.format(formsLangBundle, 'no'),
+              handler: function() {
+                this.destroy();
+              },
+              isDefault: false
+            }
+          ],
+          YAHOO.widget.SimpleDialog.ICON_WARN,
+          'studioDialog'
+        );
+      } else {
+        CStudioAdminConsole.isDirty = false;
+        selectedItem();
+      }
+
+      function selectedItem() {
+        if (params.toolbar.selectedEl) {
+          YDom.removeClass(params.toolbar.selectedEl, 'cstudio-admin-console-item-selected');
+          CStudioAdminConsole.CommandBar.hide();
+        }
+
+        amplify.publish('TOOL_SELECTED');
+
+        params.toolbar.selectedEl = params.tool.containerEl;
+        YDom.addClass(params.tool.containerEl, 'cstudio-admin-console-item-selected');
+        params.tool.renderWorkarea();
+      }
     }
   };
 
@@ -168,59 +241,8 @@
       var elId = label.replace(/\s+/g, '-').toLowerCase();
       toolContainerEl.id = elId;
 
-      var onRenderWorkAreaFn = function(evt, params) {
-        var self = this;
-
-        if (CStudioAdminConsole.isDirty) {
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'error-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(langBundle, 'notification'),
-            CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-            [
-              {
-                text: CMgs.format(formsLangBundle, 'yes'),
-                handler: function() {
-                  CStudioAdminConsole.isDirty = false;
-                  selectedItem();
-                  this.destroy();
-                },
-                isDefault: false
-              },
-              {
-                text: CMgs.format(formsLangBundle, 'no'),
-                handler: function() {
-                  this.destroy();
-                },
-                isDefault: false
-              }
-            ],
-            YAHOO.widget.SimpleDialog.ICON_WARN,
-            'studioDialog'
-          );
-        } else {
-          CStudioAdminConsole.isDirty = false;
-          selectedItem();
-        }
-
-        function selectedItem() {
-          if (params.toolbar.selectedEl) {
-            YDom.removeClass(params.toolbar.selectedEl, 'cstudio-admin-console-item-selected');
-            CStudioAdminConsole.CommandBar.hide();
-          }
-
-          amplify.publish('TOOL_SELECTED');
-
-          params.toolbar.selectedEl = self;
-          YDom.addClass(self, 'cstudio-admin-console-item-selected');
-          params.tool.renderWorkarea();
-        }
-      };
-
-      onRenderWorkAreaFn.containerEl = toolContainerEl;
-      YAHOO.util.Event.on(toolContainerEl, 'click', onRenderWorkAreaFn, {
-        tool: tool,
-        toolbar: this
+      $(toolContainerEl).on('click', (e) => {
+        window.location.hash = tool.config.name;
       });
 
       this.tools[this.tools.length] = tool;
