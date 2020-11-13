@@ -21,12 +21,13 @@
 
   CStudioAdminConsole = {
     toolContainerEls: [],
+    isEmbedded: false,
 
     render: function(containerEl) {
       this.containerEl = containerEl;
-      const isEmbedded = $('#admin-console').hasClass('embedded');
+      this.isEmbedded = $('#admin-console').hasClass('embedded');
 
-      if (!isEmbedded) {
+      if (!this.isEmbedded) {
         containerEl.innerHTML = `
 				<div id="categories-panel" class="categories-panel">
 				  <div id="categoriesPanelWrapper"></div>
@@ -112,7 +113,7 @@
           try {
             var toolContainerEl = document.createElement('div');
             this.toolContainerEls[this.toolContainerEls.length] = toolContainerEl;
-            panelEl.appendChild(toolContainerEl);
+            panelEl && panelEl.appendChild(toolContainerEl);
 
             if (j == 0) {
               YDom.addClass(toolContainerEl, 'cstudio-admin-console-item-first');
@@ -167,20 +168,22 @@
         }
       }
 
-      var validatorContainer = document.createElement('div');
-      YDom.addClass(validatorContainer, 'craftercms-entitlement');
+      if (!this.isEmbedded) {
+        var validatorContainer = document.createElement('div');
+        YDom.addClass(validatorContainer, 'craftercms-entitlement');
 
-      var logo = document.createElement('img');
-      logo.className = 'craftercms-entitlement-logo';
-      logo.src = '/studio/static-assets/images/logo.svg';
+        var logo = document.createElement('img');
+        logo.className = 'craftercms-entitlement-logo';
+        logo.src = '/studio/static-assets/images/logo.svg';
 
-      var entitlementValidatorP = document.createElement('p');
-      YDom.addClass(entitlementValidatorP, 'craftercms-entitlement-copy');
-      entitlementValidatorP.innerHTML = entitlementValidator;
+        var entitlementValidatorP = document.createElement('p');
+        YDom.addClass(entitlementValidatorP, 'craftercms-entitlement-copy');
+        entitlementValidatorP.innerHTML = entitlementValidator;
 
-      validatorContainer.appendChild(logo);
-      validatorContainer.appendChild(entitlementValidatorP);
-      document.getElementById('categories-panel').appendChild(validatorContainer);
+        validatorContainer.appendChild(logo);
+        validatorContainer.appendChild(entitlementValidatorP);
+        document.getElementById('categories-panel').appendChild(validatorContainer);
+      }
     },
 
     renderWorkArea(evt, params) {
