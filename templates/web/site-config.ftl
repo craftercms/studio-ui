@@ -58,14 +58,14 @@
   <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
 </head>
-<body class="yui-skin-cstudioTheme">
-  <#if RequestParameters.mode?? && RequestParameters.mode == "embedded">
-    <#assign mode = RequestParameters.mode />
-  <#else>
-    <#assign mode = ""/>
-  </#if>
+<#if RequestParameters.mode?? && RequestParameters.mode == "embedded">
+  <#assign mode = RequestParameters.mode />
+<#else>
+  <#assign mode = ""/>
+</#if>
 
-  <div id="admin-console" class="categories-panel-active ${mode}"></div>
+<body class="yui-skin-cstudioTheme ${mode}">
+  <div id="admin-console" class="categories-panel-active"></div>
 </body>
 </html>
 <#else>

@@ -25,7 +25,7 @@
 
     render: function(containerEl) {
       this.containerEl = containerEl;
-      this.isEmbedded = $('#admin-console').hasClass('embedded');
+      this.isEmbedded = $('body').hasClass('embedded');
 
       if (!this.isEmbedded) {
         containerEl.innerHTML = `
