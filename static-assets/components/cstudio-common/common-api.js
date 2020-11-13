@@ -512,8 +512,9 @@ var nodeOpen = false,
 
           waiting.push({ callback: callback, moduleConfig: moduleConfig });
           this.waitingForModule[moduleName] = waiting;
+          const onError = moduleConfig ? moduleConfig.onError : null;
 
-          CSA.Utils.addJavascript(script, moduleConfig.onError);
+          CSA.Utils.addJavascript(script, onError);
         } else {
           callback.moduleLoaded(moduleName, moduleClass, moduleConfig);
         }

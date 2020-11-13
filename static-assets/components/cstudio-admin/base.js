@@ -78,6 +78,7 @@
             });
           }
         } else {
+          $('#activeContentActions').empty();
           const elem = document.createElement('div');
           elem.className = 'work-area-error';
           $('#cstudio-admin-console-workarea').html(elem);
