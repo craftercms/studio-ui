@@ -405,6 +405,14 @@ const contentTypesMessages = defineMessages({
   controlNotAvailable: {
     id: 'siteConfig.controlNotAvailable',
     defaultMessage: 'Control not available'
+  },
+  loadModuleError: {
+    id: 'siteConfig.loadModuleError',
+    defaultMessage: 'Unable to load "{tool}". Check Site tools configuration.'
+  },
+  toolNotFound: {
+    id: 'siteConfig.toolNotFound',
+    defaultMessage: 'Tool not found.'
   }
 });
 

@@ -513,7 +513,7 @@ var nodeOpen = false,
           waiting.push({ callback: callback, moduleConfig: moduleConfig });
           this.waitingForModule[moduleName] = waiting;
 
-          CSA.Utils.addJavascript(script);
+          CSA.Utils.addJavascript(script, moduleConfig.onError);
         } else {
           callback.moduleLoaded(moduleName, moduleClass, moduleConfig);
         }
@@ -6579,7 +6579,7 @@ var nodeOpen = false,
       /**
        * dynamically add a javascript file
        */
-      addJavascript: function(script, cache, callback) {
+      addJavascript: function(script, onError) {
         if (!this.arrayContains(script, this.addedJs)) {
           this.addedJs.push(script);
 
@@ -6596,6 +6596,11 @@ var nodeOpen = false,
           var newScript = document.createElement('script');
           newScript.type = 'text/javascript';
           newScript.src = script;
+          newScript.onerror = onError
+            ? function(e) {
+                onError(e);
+              }
+            : null;
           if (script.indexOf('undefined.js') === -1) {
             headID.appendChild(newScript);
           }

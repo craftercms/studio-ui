@@ -68,7 +68,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   margin: 0 5px;
 }
 
-.work-area-empty {
+.work-area-empty, .work-area-error {
   height: 100vh;
   display: flex;
   margin-top: 50px;
@@ -77,7 +77,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   flex-direction: column;
 }
 
-.work-area-empty img {
+.work-area-empty img, .work-area-error img {
   width: 200px;
   margin-bottom: 20px;
   display: block;

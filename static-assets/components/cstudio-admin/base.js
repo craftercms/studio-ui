@@ -66,9 +66,9 @@
     initRouter(tools) {
       const _self = this;
       const toolsNames = tools.map((tool) => tool.name);
-      const routes = {};
-      toolsNames.forEach((name) => {
-        routes[name] = function() {
+
+      routie('tool/:name?', function(name) {
+        if (toolsNames.includes(name)) {
           _self.currentRoute = name;
           if (_self.toolsModules[name]) {
             CStudioAdminConsole.renderWorkArea(null, {
@@ -76,10 +76,22 @@
               toolbar: _self.toolbar
             });
           }
-        };
+        } else {
+          const elem = document.createElement('div');
+          elem.className = 'work-area-error';
+          $('#cstudio-admin-console-workarea').html(elem);
+          CrafterCMSNext.render(elem, 'ErrorState', {
+            graphicUrl: '/studio/static-assets/images/warning_state.svg',
+            classes: {
+              root: 'craftercms-error-state'
+            },
+            error: {
+              code: '',
+              message: formatMessage(contentTypesMessages.toolNotFound)
+            }
+          });
+        }
       });
-
-      routie(routes);
     },
 
     buildModules: function(config, panelEl) {
@@ -129,11 +141,24 @@
               context: this,
               toolContainerEl: toolContainerEl
             };
-
+            const tool = config.tools.tool[j];
             CStudioAuthoring.Module.requireModule(
-              'cstudio-console-tools-' + config.tools.tool[j].name,
-              '/static-assets/components/cstudio-admin/mods/' + config.tools.tool[j].name + '.js',
-              { config: config.tools.tool[j] },
+              'cstudio-console-tools-' + tool.name,
+              '/static-assets/components/cstudio-admin/mods/' + tool.name + '.js',
+              {
+                config: tool,
+                onError: function() {
+                  CStudioAuthoring.Utils.showNotification(
+                    formatMessage(contentTypesMessages.loadModuleError, { tool: tool.name }),
+                    'top',
+                    'right',
+                    'error',
+                    60,
+                    0,
+                    'tool-not-loaded'
+                  );
+                }
+              },
               cb
             );
           } catch (err) {
@@ -250,7 +275,7 @@
       toolContainerEl.id = elId;
 
       $(toolContainerEl).on('click', (e) => {
-        window.location.hash = tool.config.name;
+        window.location.hash = 'tool/' + tool.config.name;
       });
 
       this.tools[this.tools.length] = tool;
