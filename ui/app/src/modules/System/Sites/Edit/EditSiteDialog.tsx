@@ -41,24 +41,24 @@ interface EditSiteDialogUIProps {
   siteId: string;
   siteName: string;
   siteDescription: string;
-  onSiteNameChange: Function;
-  onSiteDescriptionChange: Function;
   submitting: boolean;
   submitDisabled: boolean;
   onKeyPress: (e: React.KeyboardEvent) => void;
-  onSubmit: Function;
-  onClose?(response?: any): any;
-  onDismiss?(response?: any): any;
+  onSiteNameChange(event: React.ChangeEvent): void;
+  onSiteDescriptionChange(value: string): void;
+  onSubmit(): void;
+  onClose?(): void;
+  onDismiss?(): void;
 }
 
 interface EditSiteDialogUIContainerProps {
   resource: Resource<Pick<Source, 'site'>>;
   submitting: boolean;
   submitDisabled: boolean;
-  checkSiteName: Function;
-  onSubmit: Function;
-  onClose?(response?: any): any;
-  onDismiss?(response?: any): any;
+  checkSiteName(event: React.ChangeEvent, currentSiteName: string): void;
+  onSubmit(id: string, name: string, description: string): void;
+  onClose?(): void;
+  onDismiss?(): void;
 }
 
 interface EditSiteDialogBaseProps {
@@ -68,9 +68,9 @@ interface EditSiteDialogBaseProps {
 
 export type EditSiteDialogProps = PropsWithChildren<EditSiteDialogBaseProps> & {
   onSaveSuccess?(response?: any): any;
-  onClose?(response?: any): any;
-  onClosed?(response?: any): any;
-  onDismiss?(response?: any): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 };
 
 export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps {
@@ -127,7 +127,7 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
     errorSelector: (source) => source.error
   });
 
-  function checkSiteName(event: any, currentSiteName: string) {
+  function checkSiteName(event: React.ChangeEvent<HTMLInputElement>, currentSiteName: string) {
     if (
       (currentSiteName !== event.target.value &&
         sites &&
@@ -178,7 +178,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
 
-  const onSiteNameChange = (event) => {
+  const onSiteNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     checkSiteName(event, site.name);
     setName(event.target.value);
   };
