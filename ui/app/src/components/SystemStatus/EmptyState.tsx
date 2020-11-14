@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
+import { CSSProperties } from '@material-ui/styles';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import emptyImage from '../../assets/desert.svg';
 import clsx from 'clsx';
-import { CSSProperties } from '@material-ui/styles/withStyles/withStyles';
 
 type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
 
