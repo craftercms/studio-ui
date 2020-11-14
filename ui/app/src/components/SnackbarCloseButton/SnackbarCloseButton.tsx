@@ -19,9 +19,12 @@ import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 
-export default function SnackbarCloseButton({ id }) {
-  const { closeSnackbar } = useSnackbar();
+export interface SnackbarCloseButtonProps {
+  id: string;
+}
 
+export default function SnackbarCloseButton({ id }: SnackbarCloseButtonProps) {
+  const { closeSnackbar } = useSnackbar();
   return (
     <IconButton onClick={() => closeSnackbar(id)} size="small" color="secondary">
       <CloseIcon fontSize="small" />
