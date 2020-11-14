@@ -28,8 +28,9 @@ import { SnackbarProvider } from 'notistack';
 import { createResource } from '../utils/hooks';
 import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
-import { getCurrentIntl } from '../utils/i18n';
+import { getCurrentIntl, intl$ } from '../utils/i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { delay } from 'rxjs/operators';
 
 const storeResource = createResource(() =>
   createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise()
@@ -45,6 +46,7 @@ function Bridge(
   const store = props.resource.read();
   const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [intl, setIntl] = useState<IntlShape>(getCurrentIntl());
   const theme = useMemo(
     () =>
       createMuiTheme({
@@ -57,13 +59,18 @@ function Bridge(
     [prefersDarkMode, props.themeOptions]
   );
 
-  const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
-  useEffect(() => setUpLocaleChangeListener(update, getCurrentIntl()), [update]);
+  useEffect(() => {
+    // When plugins load and register translations, react may be
+    // in the middle of a render cycle (via Widget) and throws
+    // if we dispatch this immediately — hence the delay.
+    const sub = intl$.pipe(delay(0)).subscribe(setIntl);
+    return () => sub.unsubscribe();
+  }, []);
 
   return (
     <Provider store={store}>
-      <RawIntlProvider value={getCurrentIntl()}>
+      <RawIntlProvider value={intl}>
         <ThemeProvider theme={theme}>
           <StylesProvider generateClassName={generateClassName}>
             <SnackbarProvider
@@ -93,14 +100,4 @@ export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlo
       />
     </Suspense>
   );
-}
-
-function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
-  const handler = (e: any) => {
-    if (currentIntl !== getCurrentIntl()) {
-      update({});
-    }
-  };
-  document.addEventListener('setlocale', handler, false);
-  return () => document.removeEventListener('setlocale', handler, false);
 }

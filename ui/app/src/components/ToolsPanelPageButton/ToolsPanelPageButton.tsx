@@ -29,5 +29,5 @@ export default function ToolsPanelPageButton(props) {
       }
     ]);
   };
-  return <ToolsPanelListItemButton {...props} onClick={turnPage} />;
+  return <ToolsPanelListItemButton displaySecondaryAction {...props} onClick={turnPage} />;
 }

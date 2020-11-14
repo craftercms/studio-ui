@@ -15,9 +15,8 @@
  */
 
 import React, { useRef } from 'react';
-import { useStore } from 'react-redux';
 import { useMount } from '../../utils/hooks';
-import { NonReactComponentRecord } from '../../utils/craftercms';
+import craftercms, { NonReactComponentRecord } from '../../utils/craftercms';
 
 interface NonReactWidgetProps {
   widget: NonReactComponentRecord;
@@ -26,10 +25,7 @@ interface NonReactWidgetProps {
 
 function NonReactWidget(props: NonReactWidgetProps) {
   const ref = useRef();
-  const store = useStore();
-  useMount(() => {
-    return props.widget.main({ store, element: ref.current, configuration: props.configuration });
-  });
+  useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration }));
   return <div ref={ref} />;
 }
 
