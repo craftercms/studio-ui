@@ -74,9 +74,6 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 'auto',
       paddingRight: '16px'
     },
-    EmptyImage: {
-      width: '100px'
-    },
     highlighted: {
       display: 'inline-block',
       background: 'yellow'
@@ -204,7 +201,11 @@ export default function PagesSearchAhead(props) {
           {!isFetching && groupedOptions.length === 0 && (
             <EmptyState
               title={<FormattedMessage id="searchAhead.noResults" defaultMessage="No Results." />}
-              classes={{ image: classes.EmptyImage }}
+              styles={{
+                image: {
+                  width: 100
+                }
+              }}
             />
           )}
         </Paper>

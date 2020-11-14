@@ -14,57 +14,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { CSSProperties } from '@material-ui/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import emptyImage from '../../assets/desert.svg';
 import clsx from 'clsx';
 
+type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
+
+type EmptyStateStyles = Partial<Record<EmptyStateClassKey, CSSProperties>>;
+
 const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
+  createStyles<EmptyStateClassKey, EmptyStateStyles>({
+    root: (styles) => ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'column',
-      margin: theme.spacing(2)
-    },
-    title: {
-      margin: `${theme.spacing(1)}px 0`
-    },
-    subtitle: {
-      textAlign: 'center'
-    },
-    graphic: {
+      margin: theme.spacing(2),
+      ...styles.root
+    }),
+    title: (styles) => ({
+      margin: `${theme.spacing(1)}px 0`,
+      ...styles.title
+    }),
+    subtitle: (styles) => ({
+      textAlign: 'center',
+      ...styles.subtitle
+    }),
+    image: (styles) => ({
       width: 150,
-      maxWidth: '80%'
-    }
+      maxWidth: '80%',
+      ...styles.image
+    })
   })
 );
 
-export interface EmptyStateProps {
+export type EmptyStateProps = React.PropsWithChildren<{
   image?: string;
   title: string | JSX.Element;
   subtitle?: string | JSX.Element;
-  classes?: {
-    root?: string;
-    title?: string;
-    subtitle?: string;
-    image?: string;
-  };
-  children?: ReactNode;
-}
+  classes?: Partial<Record<EmptyStateClassKey, string>>;
+  styles?: EmptyStateStyles;
+}>;
 
 export default function EmptyState(props: EmptyStateProps) {
-  const classes = useStyles({});
+  const classes = useStyles(props.styles);
   const { image = emptyImage, title, subtitle, classes: propClasses, children } = props;
-
   return (
     <div className={clsx(classes.root, propClasses?.root)}>
-      {image && <img className={clsx(classes.graphic, propClasses?.image)} src={image} alt="" />}
+      {image && <img className={clsx(classes.image, propClasses?.image)} src={image} alt="" />}
       {title && (
         <Typography
-          variant="h6"
+          variant="body1"
           component="h3"
           className={clsx(classes.title, propClasses?.title)}
           color="textSecondary"
@@ -74,7 +77,7 @@ export default function EmptyState(props: EmptyStateProps) {
       )}
       {subtitle && (
         <Typography
-          variant="subtitle1"
+          variant="body2"
           component="p"
           className={clsx(classes.subtitle, propClasses?.subtitle)}
           color="textSecondary"

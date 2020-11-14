@@ -23,18 +23,39 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronRounded from '@material-ui/icons/ChevronRightRounded';
 import React from 'react';
 
-export default function ToolsPanelListItemButton(props) {
+export interface ToolsPanelListItemButtonProps {
+  title: string;
+  subtitle: string;
+  icon: { baseClass: string };
+  onClick(): void;
+  displaySecondaryAction?: boolean;
+  secondaryActionIcon?: React.ReactNode;
+  onSecondaryActionClick?(): void;
+}
+
+export default function ToolsPanelListItemButton(props: ToolsPanelListItemButtonProps) {
+  const {
+    icon,
+    title,
+    subtitle,
+    onClick,
+    displaySecondaryAction = false,
+    secondaryActionIcon = <ChevronRounded />,
+    onSecondaryActionClick
+  } = props;
   return (
-    <ListItem button onClick={props.onClick} ContainerComponent="div">
+    <ListItem button onClick={onClick} ContainerComponent="div">
       <ListItemIcon>
-        <Icon fontSize="small" className={props.icon.baseClass} />
+        <Icon fontSize="small" className={icon?.baseClass} />
       </ListItemIcon>
-      <ListItemText primary={props.title} />
-      <ListItemSecondaryAction>
-        <IconButton size="small">
-          <ChevronRounded />
-        </IconButton>
-      </ListItemSecondaryAction>
+      <ListItemText primary={title} secondary={subtitle} />
+      {displaySecondaryAction && (
+        <ListItemSecondaryAction>
+          <IconButton size="small" onClick={onSecondaryActionClick ?? onClick}>
+            {secondaryActionIcon}
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
     </ListItem>
   );
 }

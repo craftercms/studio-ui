@@ -44,7 +44,7 @@ import createStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
-import { getCurrentIntl } from './i18n';
+import { getCurrentIntl, intl$ } from './i18n';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -312,3 +312,5 @@ export function createCodebaseBridge() {
     Bridge.system.store = store;
   });
 }
+
+intl$.subscribe(updateIntl);
