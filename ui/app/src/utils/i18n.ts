@@ -18,14 +18,15 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
-import { updateIntl } from './codebase-bridge';
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
+import { Subject } from 'rxjs';
 
-type BundledSystemLocaleCodes = 'en' | 'es' | 'de' | 'ko' | 'kr';
+export type BundledTranslationsLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
-type BundledSystemLocales = { [T in BundledSystemLocaleCodes]: object };
+export type BundledTranslations = { [T in BundledTranslationsLocaleCodes | 'kr']: object };
 
-const locales: BundledSystemLocales = {
+/* private */
+const bundledTranslations: BundledTranslations = {
   en,
   es,
   de,
@@ -33,16 +34,38 @@ const locales: BundledSystemLocales = {
   kr: ko // TODO: Currently old studio UI uses the wrong code for korean
 };
 
-const intlRef = { current: createIntlInstance(getCurrentLocale()) };
+/* private */
+const intl$$ = new Subject<IntlShape>();
+
+/* public */
+export const intl$ = intl$$.asObservable();
+
+/* private */
+let currentTranslations = bundledTranslations;
+
+/* private */
+let intl = createIntlInstance(getCurrentLocale());
 
 function createIntlInstance(locale: string): IntlShape {
   return createIntl(
     {
       locale: locale,
-      messages: locales[locale] || en
+      messages: currentTranslations[locale] || en
     },
     createIntlCache()
   );
+}
+
+export function augmentTranslations(translations: { [localeCode: string]: object }): void {
+  if (translations) {
+    const nextCurrentTranslations = { ...currentTranslations };
+    Object.entries(translations).forEach(([locale, translations]) => {
+      nextCurrentTranslations[locale] = { ...nextCurrentTranslations[locale], ...translations };
+    });
+    currentTranslations = nextCurrentTranslations;
+    intl = createIntlInstance(intl.locale);
+    intl$$.next(intl);
+  }
 }
 
 export function getTranslation(key: string, table: any, formatMessage = (descriptor) => descriptor) {
@@ -63,21 +86,21 @@ export function getCurrentLocale(): string {
 }
 
 export function getCurrentIntl(): IntlShape {
-  return intlRef.current;
+  return intl;
 }
 
-export function getBundledSystemLocales(): BundledSystemLocales {
-  return locales;
+export function getBundledTranslations(): BundledTranslations {
+  return bundledTranslations;
 }
 
 // @ts-ignore
 document.addEventListener(
   'setlocale',
   (e: CustomEvent<string>) => {
-    if (e.detail && e.detail !== intlRef.current.locale) {
-      intlRef.current = createIntlInstance(e.detail);
-      updateIntl(intlRef.current);
+    if (e.detail && e.detail !== intl.locale) {
+      intl = createIntlInstance(e.detail);
       document.documentElement.setAttribute('lang', e.detail);
+      intl$$.next(intl);
     }
   },
   false
