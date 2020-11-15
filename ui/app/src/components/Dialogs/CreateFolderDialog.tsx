@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
+import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
 
 export const translations = defineMessages({
   placeholder: {
@@ -49,6 +50,7 @@ export type CreateFolderProps = PropsWithChildren<
     onClose(): void;
     onClosed?(): void;
     onCreated?(response: { path: string; name: string; rename: boolean }): void;
+    onRenamed?(response: { path: string; name: string; rename: boolean }): void;
   }
 >;
 
@@ -56,6 +58,7 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onCreated?: StandardAction;
+  onRenamed?: StandardAction;
 }
 
 export default function CreateFolderDialog(props: CreateFolderProps) {
@@ -93,6 +96,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     inProgress,
     setState,
     onCreated,
+    onRenamed,
     rename = false,
     value = '',
     allowBraces = false
@@ -111,7 +115,8 @@ function CreateFolderUI(props: CreateFolderUIProps) {
       if (rename) {
         renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
-            onCreated?.({ path, name, rename });
+            onRenamed?.({ path, name, rename });
+            dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
@@ -122,6 +127,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         createFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
             onCreated?.({ path, name, rename });
+            dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
@@ -178,7 +184,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         />
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onClose} variant="outlined" disabled={inProgress}>
+        <Button onClick={onClose} variant="contained" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
         <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>

@@ -35,8 +35,10 @@ import {
   versionsChangeItem
 } from '../reducers/versions';
 import { NEVER, of } from 'rxjs';
-import { historyDialogClosed, showRevertItemSuccessNotification } from '../actions/dialogs';
+import { historyDialogClosed } from '../actions/dialogs';
 import { getHistory as getConfigurationHistory } from '../../services/configuration';
+import { reloadDetailedItem } from '../actions/content';
+import { showRevertItemSuccessNotification } from '../actions/system';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -77,13 +79,20 @@ export default [
           state.sites.active,
           payload.path ?? state.versions.item.path,
           payload.versionNumber ?? state.versions.previous
-        ).pipe(map(revertContentComplete), catchAjaxError(revertContentFailed))
+        ).pipe(
+          map(() => revertContentComplete({ path: payload.path })),
+          catchAjaxError(revertContentFailed)
+        )
       )
     ),
   (action$) =>
     action$.pipe(
       ofType(revertContentComplete.type),
-      switchMap((args) => [fetchItemVersions(args), showRevertItemSuccessNotification()])
+      switchMap(({ payload }) => [
+        fetchItemVersions(),
+        showRevertItemSuccessNotification(),
+        reloadDetailedItem({ path: payload.path })
+      ])
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(

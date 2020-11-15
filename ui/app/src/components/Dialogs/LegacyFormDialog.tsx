@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
@@ -38,6 +38,8 @@ import StandardAction from '../../models/StandardAction';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
+import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
+import { getQueryVariable } from '../../utils/path';
 
 const translations = defineMessages({
   title: {
@@ -110,11 +112,24 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     onDismiss();
   };
 
+  const onSave = useCallback(
+    (data) => {
+      onSaveSuccess?.(data);
+      if (data.isNew) {
+        dispatch(emitSystemEvent(itemCreated({ target: data.item.uri })));
+      } else {
+        const path = getQueryVariable(src, 'path') as string;
+        dispatch(emitSystemEvent(itemUpdated({ target: path })));
+      }
+    },
+    [dispatch, onSaveSuccess, src]
+  );
+
   useEffect(() => {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
-          onSaveSuccess?.(e.data);
+          onSave(e.data);
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
           switch (e.data.action) {
             case 'save': {
@@ -146,7 +161,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
-          onSaveSuccess?.(e.data);
+          onSave(e.data);
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
@@ -176,7 +191,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSaveSuccess, messages, dispatch, onMinimized, onDismiss]);
+  }, [inProgress, onSave, messages, dispatch, onMinimized, onDismiss]);
 
   useUnmount(onClosed);
 

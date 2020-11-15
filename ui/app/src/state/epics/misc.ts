@@ -23,33 +23,25 @@ import {
   changeContentType as changeContentTypeAction,
   editTemplate as editTemplateAction
 } from '../actions/misc';
-import queryString from 'query-string';
 import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
-import {
-  showCodeEditorDialog,
-  showEditDialog,
-  showEditItemSuccessNotification,
-  showWorkflowCancellationDialog
-} from '../actions/dialogs';
-import { pathNavigatorItemActionSuccess } from '../actions/pathNavigator';
+import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
+import { reloadDetailedItem } from '../actions/content';
+import { showEditItemSuccessNotification } from '../actions/system';
 
 const changeTemplate: Epic = (action$, state$: Observable<GlobalState>) =>
   action$.pipe(
     ofType(changeContentTypeAction.type),
     withLatestFrom(state$),
     switchMap(([{ payload }, state]) => {
-      const contentType = queryString.parse(payload.src).contentTypeId as string;
+      const newContentTypeId = payload.newContentTypeId;
       const path = payload.path;
-      if (payload.contentTypeId !== contentType) {
-        let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${contentType}`;
-        return changeContentType(state.sites.active, path, contentType).pipe(
+      if (payload.originalContentTypeId !== newContentTypeId) {
+        let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${newContentTypeId}`;
+        return changeContentType(state.sites.active, path, newContentTypeId).pipe(
           map(() =>
             showEditDialog({
               src,
-              onSaveSuccess: batchActions([
-                showEditItemSuccessNotification,
-                pathNavigatorItemActionSuccess({ id: payload.id, option: 'refresh' })
-              ])
+              onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
             })
           )
         );

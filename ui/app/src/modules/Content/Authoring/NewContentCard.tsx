@@ -22,6 +22,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
 import palette from '../../../styles/palette';
 import clsx from 'clsx';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const useStyles = makeStyles(() => ({
   defaultCard: {
@@ -92,6 +93,32 @@ export default function NewContentCard(props: NewContentCardProps) {
         <DefaultCardContent {...props} classes={classes} />
       ) : (
         <CompactCardContent {...props} classes={classes} />
+      )}
+    </Card>
+  );
+}
+
+export function ContentSkeletonCard(props: { isCompact: boolean }) {
+  const classes = useStyles();
+  const rootClass = !props.isCompact ? classes.defaultCard : classes.compactCard;
+  return (
+    <Card className={rootClass}>
+      {!props.isCompact ? (
+        <>
+          <CardHeader
+            title={<Skeleton animation="wave" height={10} width="40%" />}
+            subheader={<Skeleton animation="wave" height={10} width="80%" />}
+          />
+          <Skeleton animation="wave" variant="rect" className={classes.media} />
+        </>
+      ) : (
+        <>
+          <Skeleton animation="wave" variant="rect" className={classes.compactMedia} />
+          <CardHeader
+            title={<Skeleton animation="wave" height={10} width="40%" />}
+            subheader={<Skeleton animation="wave" height={10} width="80%" />}
+          />
+        </>
       )}
     </Card>
   );

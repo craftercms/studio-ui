@@ -15,28 +15,33 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../../models/GlobalState';
-import { closeCreateFileDialog, createFileDialogClosed, showCreateFileDialog } from '../../actions/dialogs';
-import { CreateFileStateProps } from '../../../components/Dialogs/CreateFileDialog';
+import {
+  ChangeContentTypeDialogClosed,
+  CloseChangeContentTypeDialog,
+  showChangeContentTypeDialog
+} from '../../actions/dialogs';
+import { ChangeContentTypeDialogStateProps } from '../../../modules/Content/Authoring/ChangeContentTypeDialog';
 
-const initialState: CreateFileStateProps = {
+const initialState: ChangeContentTypeDialogStateProps = {
   open: false,
-  path: null,
-  type: null
+  compact: false,
+  item: null,
+  rootPath: '/site/website',
+  selectedContentType: null
 };
 
-export default createReducer<GlobalState['dialogs']['createFile']>(initialState, {
-  [showCreateFileDialog.type]: (state, { payload }) => ({
+export default createReducer<ChangeContentTypeDialogStateProps>(initialState, {
+  [showChangeContentTypeDialog.type]: (state, { payload }) => ({
     ...state,
-    onClose: closeCreateFileDialog(),
-    onClosed: createFileDialogClosed(),
-    onCreated: closeCreateFileDialog(),
+    onClose: CloseChangeContentTypeDialog(),
+    onClosed: ChangeContentTypeDialogClosed(),
+    onDismiss: CloseChangeContentTypeDialog(),
     ...payload,
     open: true
   }),
-  [closeCreateFileDialog.type]: (state) => ({
+  [CloseChangeContentTypeDialog.type]: (state) => ({
     ...state,
     open: false
   }),
-  [createFileDialogClosed.type]: () => initialState
+  [ChangeContentTypeDialogClosed.type]: () => initialState
 });

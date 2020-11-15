@@ -15,20 +15,14 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  closeNewContentDialog,
-  newContentCreationComplete,
-  newContentDialogClosed,
-  showNewContentDialog
-} from '../../actions/dialogs';
+import { closeNewContentDialog, newContentDialogClosed, showNewContentDialog } from '../../actions/dialogs';
 import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
 
 const initialState: NewContentDialogStateProps = {
   open: false,
   compact: false,
   item: null,
-  rootPath: '/site/website',
-  type: 'new'
+  rootPath: '/site/website'
 };
 
 export default createReducer<NewContentDialogStateProps>(initialState, {
@@ -42,10 +36,6 @@ export default createReducer<NewContentDialogStateProps>(initialState, {
   }),
   [closeNewContentDialog.type]: (state) => ({
     ...state,
-    open: false
-  }),
-  [newContentCreationComplete.type]: (state, { payload }) => ({
-    onClose: state.onClose,
     open: false
   }),
   [newContentDialogClosed.type]: () => initialState

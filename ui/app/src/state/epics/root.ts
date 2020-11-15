@@ -32,6 +32,7 @@ import { batchActions } from '../actions/misc';
 import configuration from './configuration';
 import pathNavigator from './pathNavigator';
 import misc from './misc';
+import system from './system';
 import { CrafterCMSEpic } from '../store';
 
 const epic: CrafterCMSEpic = combineEpics.apply(this, [
@@ -54,7 +55,8 @@ const epic: CrafterCMSEpic = combineEpics.apply(this, [
   ...translation,
   ...configuration,
   ...pathNavigator,
-  ...misc
+  ...misc,
+  ...system
 ]);
 
 export default epic;

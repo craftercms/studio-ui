@@ -861,7 +861,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               {search.searchSelected && site.selectedView === 0 && (
                 <div className={classes.searchContainer}>
                   <SearchBar
-                    onActionButtonClick={() => handleOnSearchChange('')}
+                    showActionButton={Boolean(search.searchKey)}
                     onChange={handleOnSearchChange}
                     keyword={search.searchKey}
                     autoFocus={true}

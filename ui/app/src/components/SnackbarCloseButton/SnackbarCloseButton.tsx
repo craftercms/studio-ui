@@ -14,22 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction } from '@reduxjs/toolkit';
-import StandardAction from '../../models/StandardAction';
+import { useSnackbar } from 'notistack';
+import { IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import React from 'react';
 
-// region Batch Actions
-export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
-// endregion
+export interface SnackbarCloseButtonProps {
+  id: string;
+}
 
-// region dispatch DOM Event
-export const dispatchDOMEvent = createAction<{ id: string }>('DISPATCH_DOM_EVENT');
-// endregion
-
-// region TemplateActions
-export const changeContentType = createAction<{
-  originalContentTypeId: string;
-  path: string;
-  newContentTypeId?: string;
-}>('CHANGE_CONTENT_TYPE');
-export const editTemplate = createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
-// endregion
+export default function SnackbarCloseButton({ id }: SnackbarCloseButtonProps) {
+  const { closeSnackbar } = useSnackbar();
+  return (
+    <IconButton onClick={() => closeSnackbar(id)} size="small" color="secondary">
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  );
+}

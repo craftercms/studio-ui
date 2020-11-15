@@ -30,6 +30,7 @@ import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
 import { getCurrentIntl, intl$ } from '../utils/i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { SnackbarCloseButton } from './SnackbarCloseButton/SnackbarCloseButton';
 import { delay } from 'rxjs/operators';
 
 const storeResource = createResource(() =>
@@ -77,6 +78,7 @@ function Bridge(
               maxSnack={5}
               autoHideDuration={5000}
               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              action={(id) => <SnackbarCloseButton id={id} />}
             >
               <>
                 <Suspense fallback="" children={props.children} />

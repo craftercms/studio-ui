@@ -171,7 +171,7 @@ export default function InPageInstancesPanel() {
     <ToolPanel title={translations.title}>
       <div className={classes.search}>
         <SearchBar
-          onActionButtonClick={() => handleSearchKeyword('')}
+          showActionButton={Boolean(keyword)}
           onChange={handleSearchKeyword}
           keyword={keyword}
           disabled={!Boolean(contentTypeFilter)}

@@ -21,6 +21,7 @@ import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorClearChecked,
+  pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete,
@@ -79,44 +80,42 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, response } }) => {
-      const path = state[id].currentPath;
-      // Check and handle if the item has no children
-      if (
-        response.length === 0 &&
-        // If it is the root path, we want to show the empty state,
-        // vs child paths, want to show the previous path and inform
-        // that there aren't any items at that path
-        withoutIndex(path) !== withoutIndex(state[id].rootPath)
-      ) {
-        let pieces = path.split('/').slice(0);
-        pieces.pop();
-        if (path.includes('index.xml')) {
-          pieces.pop();
-        }
-        let nextPath = pieces.join('/');
+    [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, response } }) => {
+      if (response.length > 0) {
         return {
           ...state,
           [id]: {
             ...state[id],
-            // Revert path to previous (parent) path
-            currentPath: nextPath,
-            leaves: state[id].leaves.concat(path)
+            currentPath: path,
+            breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
+            itemsInPath: response.map((item) => item.id),
+            levelDescriptor: response.levelDescriptor?.path,
+            count: response.length
           }
         };
       } else {
-        const widgetState = {
-          ...state[id],
-          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
-          itemsInPath: response.map((item) => item.id),
-          ...(response.levelDescriptor && { levelDescriptor: response.levelDescriptor.path }),
-          count: response.length
-        };
         return {
           ...state,
-          [id]: widgetState
+          [id]: {
+            ...state[id],
+            leaves: state[id].leaves.concat(path)
+          }
         };
       }
+    },
+    [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, response } }) => {
+      const path = state[id].currentPath;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
+          itemsInPath: response.length === 0 ? [] : response.map((item) => item.id),
+          levelDescriptor: response.levelDescriptor?.path,
+          count: response.length,
+          leaves: response.length === 0 ? state[id].leaves.concat(path) : state[id].leaves
+        }
+      };
     },
     [pathNavigatorFetchParentItems.type]: (state, { payload: { id, path } }) => {
       return {
