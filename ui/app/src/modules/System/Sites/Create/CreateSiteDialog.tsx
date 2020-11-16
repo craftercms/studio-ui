@@ -29,7 +29,6 @@ import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import LoadingState from '../../../../components/SystemStatus/LoadingState';
-import ErrorState from '../../../../components/SystemStatus/ErrorState';
 import ConfirmDialog from '../../../../components/Dialogs/ConfirmDialog';
 import { Blueprint } from '../../../../models/Blueprint';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
@@ -59,6 +58,7 @@ import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
+import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -564,7 +564,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
     if (site.selectedView === 2) {
       setApiState({ creatingSite: true });
-      //it is a marketplace blueprint
+      // it is a marketplace blueprint
       if (site.blueprint.source === 'GIT') {
         const marketplaceParams: MarketplaceSite = createMarketplaceParams();
         createNewSiteFromMarketplace(marketplaceParams);
@@ -661,7 +661,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       if (Object.keys(site.blueprintFields).length) params.siteParams = site.blueprintFields;
       params.createOption = site.pushSite ? 'push' : 'clone';
 
-      //TODO# remove this when change to Api2
+      // TODO: remove this when change to Api2
       let _params: any = {};
       Object.keys(params).forEach((key) => {
         _params[underscore(key)] = params[key];
@@ -722,7 +722,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           }
         },
         ({ response }) => {
-          //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+          // TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
           const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
           setApiState({ creatingSite: false, error: true, errorResponse: _response });
         }
@@ -793,10 +793,10 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           </div>
         )) ||
         (apiState.error && (
-          <ErrorState
+          <ApiResponseErrorState
             classes={{ root: classes.errorPaperRoot }}
             error={apiState.errorResponse}
-            onBack={handleErrorBack}
+            onButtonClick={handleErrorBack}
           />
         )) ||
         (site.details && (
@@ -902,7 +902,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               )}
             </DialogBody>
           ) : apiState.error ? (
-            <ErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
+            <ApiResponseErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
           ) : (
             <div className={classes.loading}>
               <Spinner />

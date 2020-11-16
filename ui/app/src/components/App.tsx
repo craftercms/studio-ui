@@ -19,22 +19,27 @@ import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 import crafterIconUrl from '../assets/crafter-icon.svg';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../styles/palette';
+import AuthBoundary from './AuthBoundary';
 
 // eslint-disable-next-line
 const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
 
 export default function App() {
-  return (
-    <CrafterCMSNextBridge>
-      <DevServerRoot />
-    </CrafterCMSNextBridge>
+  return Boolean(process.env.REACT_APP_OMIT_BRIDGE) ? (
+    <DevServerRoot />
+  ) : (
+    <AuthBoundary>
+      <CrafterCMSNextBridge>
+        <DevServerRoot />
+      </CrafterCMSNextBridge>
+    </AuthBoundary>
   );
 }
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     '@global': {
-      'body, html, #studioSPARoot': {
+      'body, html, #studioAppRootElement': {
         display: 'flex',
         height: '100%',
         textAlign: 'center',

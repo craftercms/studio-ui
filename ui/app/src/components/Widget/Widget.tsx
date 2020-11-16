@@ -15,9 +15,8 @@
  */
 
 import React, { ComponentType, memo } from 'react';
-import { components, registerPlugin } from '../../utils/craftercms';
 import NonReactWidget from '../NonReactWidget/NonReactWidget';
-import { importFile, PluginFileBuilder } from '../../services/plugin';
+import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
 import EmptyState from '../SystemStatus/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
 
@@ -54,13 +53,9 @@ const Widget = memo(function(props: WidgetProps) {
     }
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
-      importFile(plugin).then((module) => ({
+      importPlugin(plugin).then(() => ({
         default: function(props) {
-          const componentDefined = components.has(id);
-          if (module.default && !componentDefined) {
-            registerPlugin(module.default);
-          }
-          if (componentDefined) {
+          if (components.has(id)) {
             return <Widget {...props} />;
           } else {
             return <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />;

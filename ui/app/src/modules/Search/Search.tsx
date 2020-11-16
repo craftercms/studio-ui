@@ -31,7 +31,6 @@ import EmptyState from '../../components/SystemStatus/EmptyState';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import FilterSearchDropdown from './FilterSearchDropdown';
 import queryString from 'query-string';
-import ErrorState from '../../components/SystemStatus/ErrorState';
 import TablePagination from '@material-ui/core/TablePagination';
 import Typography from '@material-ui/core/Typography';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -65,6 +64,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { getPreviewURLFromPath } from '../../utils/path';
+import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -722,7 +722,7 @@ export default function Search(props: SearchProps) {
       )}
       <section className={classes.content}>
         {apiState.error ? (
-          <ErrorState error={apiState.errorResponse} />
+          <ApiResponseErrorState error={apiState.errorResponse} />
         ) : (
           <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
             {searchResults === null ? (

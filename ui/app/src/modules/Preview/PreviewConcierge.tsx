@@ -169,7 +169,7 @@ export function PreviewConcierge(props: any) {
       getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
     }
   }, [dispatch, write, editMode]);
-  //endregion
+  // endregion
 
   // Guest detection, document domain restoring, editMode preference retrieval
   // and contentType subject cleanup.
@@ -521,7 +521,7 @@ export function PreviewConcierge(props: any) {
           nou(audiencesPanel.model) &&
           nou(audiencesPanel.error)
         ) {
-          //TODO: Jose Vega re-render when this panel is opened and site is changed;
+          // TODO: Jose Vega re-render when this panel is opened and site is changed;
           dispatch(fetchAudiencesPanelFormDefinition());
         }
         break;

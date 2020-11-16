@@ -24,7 +24,6 @@ import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { getGlobalMenuItems } from '../../services/configuration';
-import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
@@ -54,6 +53,7 @@ import { setSiteCookie } from '../../utils/auth';
 import { SiteNavConfigEntry } from '../../models/UiConfig';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import ApiResponseErrorState from '../ApiResponseErrorState';
 
 const tileStyles = makeStyles((theme) =>
   createStyles({
@@ -502,10 +502,10 @@ export default function GlobalNav(props: GlobalNavProps) {
       }}
     >
       {apiState.error ? (
-        <ErrorState
+        <ApiResponseErrorState
           classes={{ root: classes.errorPaperRoot }}
           error={apiState.errorResponse}
-          onBack={handleErrorBack}
+          onButtonClick={handleErrorBack}
         />
       ) : menuItems !== null ? (
         <Grid container spacing={0} className={classes.gridContainer}>

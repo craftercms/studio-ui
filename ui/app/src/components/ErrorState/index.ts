@@ -14,20 +14,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from 'react';
-import { useMount } from '../../utils/hooks';
-import craftercms from '../../utils/craftercms';
-import { NonReactComponentRecord } from '../../services/plugin';
-
-interface NonReactWidgetProps {
-  widget: NonReactComponentRecord;
-  configuration: any;
-}
-
-function NonReactWidget(props: NonReactWidgetProps) {
-  const ref = useRef();
-  useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration }));
-  return <div ref={ref} />;
-}
-
-export default NonReactWidget;
+export { default } from './ErrorState';
+export * from './ErrorState';

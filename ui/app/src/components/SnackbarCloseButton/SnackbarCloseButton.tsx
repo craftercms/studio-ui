@@ -20,10 +20,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 
 export interface SnackbarCloseButtonProps {
-  id: string;
+  id: number | string;
 }
 
-export default function SnackbarCloseButton({ id }: SnackbarCloseButtonProps) {
+export function SnackbarCloseButton(props: SnackbarCloseButtonProps) {
+  const { id } = props;
   const { closeSnackbar } = useSnackbar();
   return (
     <IconButton onClick={() => closeSnackbar(id)} size="small" color="secondary">
@@ -31,3 +32,5 @@ export default function SnackbarCloseButton({ id }: SnackbarCloseButtonProps) {
     </IconButton>
   );
 }
+
+export default SnackbarCloseButton;

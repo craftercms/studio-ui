@@ -20,7 +20,7 @@ import clsx from 'clsx';
 
 interface CrafterCMSLogoProps {
   className?: string;
-  width?: number;
+  width?: number | 'auto';
 }
 
 let UND;
@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme) =>
     root: {
       // aspect ratio = 4.1062801932
       width: (props: CrafterCMSLogoProps) => props.width ?? 200,
-      height: (props: CrafterCMSLogoProps) => (props.width !== UND ? props.width / 4.1062801932 : 48.7),
+      height: (props: CrafterCMSLogoProps) =>
+        props.width !== UND ? (props.width === 'auto' ? 'auto' : props.width / 4.1062801932) : 48.7,
       fill: 'currentColor',
       display: 'inline-block',
       transition: 'fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',

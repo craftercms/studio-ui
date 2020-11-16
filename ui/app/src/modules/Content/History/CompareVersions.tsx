@@ -80,7 +80,7 @@ import { Resource } from '../../../models/Resource';
       backgroundColor: palette.gray.light1
     }
   })
-);*/
+); */
 
 /*const ContentInstanceComponentsStyles = makeStyles(() =>
   createStyles({
@@ -125,7 +125,7 @@ import { Resource } from '../../../models/Resource';
       color: palette.gray.medium4
     }
   })
-);*/
+); */
 
 /*const translations = defineMessages({
   changed: {
@@ -148,7 +148,7 @@ import { Resource } from '../../../models/Resource';
     id: 'compareVersionsDialog.noItemsStatus',
     defaultMessage: 'No items'
   }
-});*/
+}); */
 
 export interface CompareVersionsResource {
   a: ContentInstance;
@@ -230,13 +230,13 @@ export function CompareVersions(props: CompareVersionsProps) {
       </section>
     </>
   );
-}*/
+} */
 
 /*interface CompareFieldPanelProps {
   a: ContentInstance;
   b: ContentInstance;
   field: ContentTypeField;
-}*/
+} */
 
 /*function CompareFieldPanel(props: CompareFieldPanelProps) {
   const classes = CompareVersionsStyles({});
@@ -320,12 +320,12 @@ export function CompareVersions(props: CompareVersionsProps) {
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
-}*/
+} */
 
 /*interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
-}*/
+} */
 
 /*function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB } = props;
@@ -381,12 +381,12 @@ export function CompareVersions(props: CompareVersionsProps) {
       }
     </section>
   );
-}*/
+} */
 
 /*interface MonacoWrapperProps {
   contentA: string;
   contentB: string;
-}*/
+} */
 
 /*function MonacoWrapper(props: MonacoWrapperProps) {
   const classes = CompareVersionsStyles({});
@@ -412,4 +412,4 @@ export function CompareVersions(props: CompareVersionsProps) {
   return (
     <div ref={ref} className={classes.monacoWrapper} />
   );
-}*/
+} */

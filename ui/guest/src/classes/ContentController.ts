@@ -418,8 +418,8 @@ export function insertComponent(
   });
 }
 
-//insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
-//insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
+// insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
+// insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
 export function insertInstance(
   modelId: string,
   fieldId: string,

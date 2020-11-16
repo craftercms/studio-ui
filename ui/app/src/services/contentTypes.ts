@@ -120,10 +120,10 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
   const fields = {};
   const sections = [];
-  //const dataSources = {};
+  // const dataSources = {};
   const receptaclesLookup: LookupTable<LegacyDataSource> = {};
 
-  //get receptacles dataSources
+  // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
       if (datasource.type === 'receptacles') receptaclesLookup[datasource.id] = datasource;

@@ -219,9 +219,8 @@ function parseContentXML(
 }
 
 // Code disabled temporarily
-
 // noinspection DuplicatedCode
-/*function parseContentXMLWithoutContentTypes(
+/* function parseContentXMLWithoutContentTypes(
   doc: XMLDocument,
   path: string = null,
   instanceLookup: LookupTable<ContentInstance> = {}
@@ -312,7 +311,7 @@ function parseContentXMLWithoutContentTypes_processFields(
       }
     }
   });
-}*/
+} */
 
 const systemPropsList = [
   'content-type',
@@ -738,7 +737,7 @@ function insertCollectionItem(
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
   let index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
 
-  //If currentIndex it means the op is a 'sort', and the index(targetIndex) needs to plus 1 or no
+  // If currentIndex it means the op is a 'sort', and the index(targetIndex) needs to plus 1 or no
   if (nnou(currentIndex)) {
     let currentIndexParsed = typeof currentIndex === 'string' ? parseInt(popPiece(currentIndex)) : currentIndex;
     let targetIndexParsed = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;

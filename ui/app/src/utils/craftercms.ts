@@ -22,8 +22,8 @@ import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import { IntlShape } from 'react-intl';
 import { CrafterCMSStore, getStore } from '../state/store';
-import { augmentTranslations, getCurrentIntl } from './i18n';
-import LookupTable from '../models/LookupTable';
+import { getCurrentIntl } from './i18n';
+import { ComponentRecord, components, PluginDescriptor, plugins, registerPlugin } from '../services/plugin';
 
 declare global {
   interface Window {
@@ -53,30 +53,13 @@ export interface CrafterCMSGlobal {
   // services: {};
   getIntl(): IntlShape;
   getStore(): CrafterCMSStore;
-  registerPlugin(plugin: PluginDescriptor): boolean;
   define: {
     (): void;
     amd: true;
   };
 }
 
-export interface PluginDescriptor {
-  id: string;
-  locales: LookupTable<object>;
-  widgets: LookupTable<ComponentRecord>;
-}
-
-export type NonReactComponentRecord = {
-  main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): void | (() => void);
-};
-
-export type ComponentRecord = NonReactComponentRecord | React.ComponentType<any>;
-
 let UND;
-
-export const plugins = new Map<string, PluginDescriptor>();
-
-export const components = new Map<string, ComponentRecord>();
 
 const libs: CrafterCMSGlobal['libs'] = {
   jss,
@@ -120,40 +103,13 @@ const define = function(id, deps, factory) {
 
 define.amd = true;
 
-export function registerPlugin(plugin: PluginDescriptor): boolean {
-  // Skip registration if plugin with same id already exists
-  if (!plugins.has(plugin.id)) {
-    plugins.set(plugin.id, plugin);
-    registerComponents(plugin.widgets);
-    augmentTranslations(plugin.locales);
-    return true;
-  } else {
-    console.error(`Attempt to register a duplicate plugin "${plugin.id}" skipped.`);
-    return false;
-  }
-}
-
-function registerComponents(widgets: LookupTable<ComponentRecord>) {
-  Object.entries(widgets).forEach(([id, widget]) => {
-    // Skip registration if component with same id already exists
-    if (!components.has(id)) {
-      components.set(id, widget);
-    } else {
-      console.error(`Attempt to register a duplicate component id "${id}" skipped.`);
-    }
-  });
-}
-
 const craftercms: CrafterCMSGlobal = {
   libs,
   plugins,
   components,
   define,
-  registerPlugin,
   getStore,
-  getIntl(): IntlShape {
-    return getCurrentIntl();
-  }
+  getIntl: getCurrentIntl
 };
 
 window.craftercms = craftercms;

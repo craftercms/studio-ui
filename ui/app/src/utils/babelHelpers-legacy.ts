@@ -40,8 +40,7 @@
   code.push(`};`);
   code.push(`\n`);
 
-  *
-***/
+ */
 
 // import _AsyncGenerator from '@babel/runtime/helpers/AsyncGenerator';
 // import _AwaitValue from '@babel/runtime/helpers/AwaitValue';

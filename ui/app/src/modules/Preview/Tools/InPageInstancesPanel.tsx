@@ -104,12 +104,12 @@ export default function InPageInstancesPanel() {
           model.craftercms.contentTypeId.toLowerCase().includes(keyword.toLowerCase()))
       );
     });
-    //filter using .includes(keyword) on model.craftercms.label
+    // filter using .includes(keyword) on model.craftercms.label
   }, [contentTypeFilter, models, keyword]);
 
   const [contentTypes, setContentTypes] = useState([]);
 
-  //setting contentTypes
+  // setting contentTypes
   useEffect(() => {
     if (models) {
       const contentTypes = [];
