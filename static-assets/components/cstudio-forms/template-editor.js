@@ -261,9 +261,6 @@ CStudioAuthoring.Module.requireModule(
                         "<option value='chrome'>Light Theme</option>" +
                         "<option value='tomorrow_night'>Dark Theme</option>" +
                         '</select>' +
-                        "<div class='template-editor-update-button'>" +
-                        formatMessage(words.update) +
-                        '</div>' +
                         "<div class='dropup inline-block relative'>" +
                         "<button data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='template-editor-cancel-button'>" +
                         formatMessage(words.cancel) +
@@ -277,6 +274,9 @@ CStudioAuthoring.Module.requireModule(
                         formatMessage(messages.confirm) +
                         '</a></li>' +
                         '</ul>' +
+                        '</div>' +
+                        "<div class='template-editor-update-button'>" +
+                        formatMessage(words.update) +
                         '</div>' +
                         '<div/>';
                     } else {

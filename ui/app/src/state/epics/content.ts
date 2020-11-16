@@ -17,8 +17,10 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
-  assetDuplicate,
   completeDetailedItem,
+  cutItem,
+  duplicateAsset,
+  duplicateItem,
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
@@ -28,11 +30,12 @@ import {
   fetchUserPermissions,
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
-  itemDuplicate,
-  reloadDetailedItem
+  pasteItem,
+  reloadDetailedItem,
+  unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem } from '../../services/content';
+import { cut, duplicate, fetchQuickCreateList, getDetailedItem, paste } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -40,6 +43,14 @@ import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
+import {
+  emitSystemEvent,
+  itemDuplicated,
+  itemsPasted,
+  showCutItemSuccessNotification,
+  showPasteItemSuccessNotification
+} from '../actions/system';
+import { batchActions } from '../actions/misc';
 
 const content = [
   // region Quick Create
@@ -106,27 +117,30 @@ const content = [
       })
     ),
   // endregion
-  // region itemDuplicate
+  // region Item Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(itemDuplicate.type),
+      ofType(duplicateItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          map((path) => {
-            return showEditDialog({
-              src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
-              onSaveSuccess: payload.onSuccess
-            });
-          })
+          map((path) =>
+            batchActions([
+              emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
+              showEditDialog({
+                src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
+                onSaveSuccess: payload.onSuccess
+              })
+            ])
+          )
         );
       })
     ),
   // endregion
-  // region assetDuplicate
+  // region Asset Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(assetDuplicate.type),
+      ofType(duplicateAsset.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
@@ -134,10 +148,52 @@ const content = [
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
               const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
-              return showCodeEditorDialog({ src, onSuccess: payload.onSuccess });
+              return batchActions([
+                emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
+                showCodeEditorDialog({
+                  src,
+                  onSuccess: payload.onSuccess
+                })
+              ]);
             } else {
-              return payload.onSuccess;
+              return emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path }));
             }
+          })
+        );
+      })
+    ),
+  // endregion
+  // region Item Cut
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(cutItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return cut(state.sites.active, payload.path).pipe(
+          map(({ success }) => {
+            if (success) {
+              return showCutItemSuccessNotification();
+            } else {
+              return NEVER;
+            }
+          })
+        );
+      })
+    ),
+  // endregion
+  // region Item Pasted
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pasteItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return paste(state.sites.active, payload.path).pipe(
+          map((resultingPaths) => {
+            return batchActions([
+              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths })),
+              unSetClipBoard(),
+              showPasteItemSuccessNotification()
+            ]);
           })
         );
       })

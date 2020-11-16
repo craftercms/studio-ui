@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, Suspense, useState } from 'react';
+import React, { Suspense } from 'react';
 import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
@@ -24,53 +24,58 @@ import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin } from '@material-ui/core';
 import {
+  CloseChangeContentTypeDialog,
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
-  closeCreateFolderDialog,
   closeDeleteDialog,
-  closeNewContentDialog,
   closePublishDialog,
   closeUploadDialog,
+  showChangeContentTypeDialog,
   showCodeEditorDialog,
   showConfirmDialog,
   showCopyDialog,
-  showCopyItemSuccessNotification,
   showCreateFileDialog,
   showCreateFolderDialog,
   showDeleteDialog,
-  showDeleteItemSuccessNotification,
   showDependenciesDialog,
   showEditDialog,
-  showEditItemSuccessNotification,
   showHistoryDialog,
   showNewContentDialog,
   showPreviewDialog,
   showPublishDialog,
-  showPublishItemSuccessNotification,
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
-import { copy, cut, fetchWorkflowAffectedItems, getLegacyItemsTree, paste } from '../../services/content';
+import { copy, fetchWorkflowAffectedItems, getLegacyItemsTree } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
-import StandardAction from '../../models/StandardAction';
 import { getRootPath, withoutIndex } from '../../utils/path';
 import {
-  assetDuplicate,
-  itemDuplicate,
+  cutItem,
+  duplicateAsset,
+  duplicateItem,
+  pasteItem,
   reloadDetailedItem,
-  setClipBoard,
-  unSetClipBoard
+  setClipBoard
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { translations } from './translations';
-import ContentLoader from 'react-content-loader';
 import { rand } from '../Navigation/PathNavigator/utils';
+import {
+  showCopyItemSuccessNotification,
+  showDeleteItemSuccessNotification,
+  showDuplicatedItemSuccessNotification,
+  showEditItemSuccessNotification,
+  showPublishItemSuccessNotification
+} from '../../state/actions/system';
+import Typography from '@material-ui/core/Typography';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { Clipboard } from '../../models/GlobalState';
 
 interface ItemMenuProps {
   path: string;
@@ -80,32 +85,33 @@ interface ItemMenuProps {
   anchorOrigin?: PopoverOrigin;
   loaderItems?: number;
   onClose(): void;
-  onItemMenuActionSuccessCreator?(args: object): StandardAction;
 }
 
 interface ItemMenuUIProps {
   resource: { item: Resource<DetailedItem>; permissions: Resource<LookupTable<boolean>> };
   classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
-  hasClipboard?: boolean;
+  clipboard: Clipboard;
   onMenuItemClicked(section: SectionItem): void;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     loadingWrapper: {
       width: '135px',
       padding: '0px 15px'
+    },
+    typo: {
+      padding: '6px 0'
     }
   })
 );
 
 export function ItemMenu(props: ItemMenuProps) {
-  const { path, onClose, onItemMenuActionSuccessCreator, loaderItems = 8 } = props;
-  const classes = useStyles({});
+  const { path, onClose, loaderItems = 8 } = props;
   const site = useActiveSiteId();
   const permissions = usePermissions();
   const items = useSelection((state) => state.content.items);
-  const hasClipboard = useSelection((state) => state.content.clipboard);
+  const clipboard = useSelection((state) => state.content.clipboard);
   const item = items.byPath?.[path];
   const itemPermissions = permissions?.[path];
   const { authoringBase } = useEnv();
@@ -141,21 +147,24 @@ export function ItemMenu(props: ItemMenuProps) {
         const path = item.path;
         const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
         // TODO: open a embedded form needs the following:
-        //src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
+        // src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(
               showWorkflowCancellationDialog({
                 items,
-                onContinue: showEditDialog({ src })
+                onContinue: showEditDialog({
+                  src,
+                  onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
+                })
               })
             );
           } else {
             dispatch(
               showEditDialog({
                 src,
-                onSaveSuccess: showEditItemSuccessNotification()
+                onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
               })
             );
           }
@@ -166,11 +175,7 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showCreateFolderDialog({
             path: withoutIndex(item.path),
-            allowBraces: item.path.startsWith('/scripts/rest'),
-            onCreated: batchActions([
-              closeCreateFolderDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: option.id })
-            ])
+            allowBraces: item.path.startsWith('/scripts/rest')
           })
         );
         break;
@@ -181,11 +186,7 @@ export function ItemMenu(props: ItemMenuProps) {
             path: withoutIndex(item.path),
             allowBraces: item.path.startsWith('/scripts/rest'),
             rename: true,
-            value: item.label,
-            onCreated: batchActions([
-              closeCreateFolderDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-            ])
+            value: item.label
           })
         );
         break;
@@ -193,10 +194,8 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'createContent': {
         dispatch(
           showNewContentDialog({
-            open: true,
             item,
-            rootPath: item.path,
-            compact: true,
+            rootPath: getRootPath(item.path),
             onContentTypeSelected: showEditDialog({})
           })
         );
@@ -207,13 +206,7 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showDeleteDialog({
             items,
-            onSuccess: batchActions(
-              [
-                showDeleteItemSuccessNotification(),
-                onItemMenuActionSuccessCreator?.({ item, option: option.id }),
-                closeDeleteDialog()
-              ].filter(Boolean)
-            )
+            onSuccess: batchActions([showDeleteItemSuccessNotification(), closeDeleteDialog()])
           })
         );
         break;
@@ -226,15 +219,13 @@ export function ItemMenu(props: ItemMenuProps) {
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              showNewContentDialog({
-                open: true,
-                rootPath: path,
+              showChangeContentTypeDialog({
                 item,
-                type: 'change',
+                rootPath: getRootPath(item.path),
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
-                  closeNewContentDialog(),
-                  changeContentType({ contentTypeId: item.contentTypeId, path })
+                  CloseChangeContentTypeDialog(),
+                  changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
                 ])
               })
             ])
@@ -243,20 +234,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'cut': {
-        cut(site, item).subscribe(
-          ({ success }) => {
-            if (success) {
-              dispatch(batchActions([setClipBoard({ path: item.path }), showCopyItemSuccessNotification()]));
-            }
-          },
-          (response) => {
-            dispatch(
-              showErrorDialog({
-                error: response
-              })
-            );
-          }
-        );
+        dispatch(cutItem({ path }));
         break;
       }
       case 'copy': {
@@ -270,7 +248,10 @@ export function ItemMenu(props: ItemMenuProps) {
                   item: legacyItem,
                   onOk: batchActions([
                     closeCopyDialog(),
-                    setClipBoard({ path: item.path }),
+                    setClipBoard({
+                      type: 'copy',
+                      sourcePath: item.path
+                    }),
                     showCopyItemSuccessNotification()
                   ])
                 })
@@ -279,7 +260,16 @@ export function ItemMenu(props: ItemMenuProps) {
               copy(site, item.path).subscribe(
                 (response) => {
                   if (response.success) {
-                    dispatch(batchActions([setClipBoard({ path: item.path }), showCopyItemSuccessNotification()]));
+                    dispatch(
+                      batchActions([
+                        setClipBoard({
+                          type: 'copy',
+                          paths: [item.path],
+                          sourcePath: item.path
+                        }),
+                        showCopyItemSuccessNotification()
+                      ])
+                    );
                   }
                 },
                 (response) => {
@@ -303,18 +293,22 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'paste': {
-        paste(site, item.path).subscribe(
-          () => {
-            dispatch(unSetClipBoard());
-          },
-          (response) => {
-            dispatch(
-              showErrorDialog({
-                error: response
-              })
-            );
-          }
-        );
+        if (clipboard.type === 'cut') {
+          fetchWorkflowAffectedItems(site, clipboard.paths[0]).subscribe((items) => {
+            if (items?.length > 0) {
+              dispatch(
+                showWorkflowCancellationDialog({
+                  items,
+                  onContinue: pasteItem({ path: item.path })
+                })
+              );
+            } else {
+              dispatch(pasteItem({ path: item.path }));
+            }
+          });
+        } else {
+          dispatch(pasteItem({ path: item.path }));
+        }
         break;
       }
       case 'duplicateAsset': {
@@ -325,9 +319,9 @@ export function ItemMenu(props: ItemMenuProps) {
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              assetDuplicate({
+              duplicateAsset({
                 path: item.path,
-                onSuccess: onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+                onSuccess: showDuplicatedItemSuccessNotification()
               })
             ])
           })
@@ -342,9 +336,9 @@ export function ItemMenu(props: ItemMenuProps) {
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              itemDuplicate({
+              duplicateItem({
                 path: item.path,
-                onSuccess: onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+                onSuccess: showDuplicatedItemSuccessNotification()
               })
             ])
           })
@@ -425,10 +419,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'template',
-            onCreated: batchActions([
-              closeCreateFileDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-            ])
+            onCreated: closeCreateFileDialog()
           })
         );
         break;
@@ -438,10 +429,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: batchActions([
-              closeCreateFileDialog(),
-              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-            ])
+            onCreated: closeCreateFileDialog()
           })
         );
         break;
@@ -471,7 +459,7 @@ export function ItemMenu(props: ItemMenuProps) {
           showUploadDialog({
             path: item.path,
             site,
-            onClose: batchActions([closeUploadDialog(), onItemMenuActionSuccessCreator?.({ item, option: 'upload' })])
+            onClose: closeUploadDialog()
           })
         );
         break;
@@ -489,18 +477,12 @@ export function ItemMenu(props: ItemMenuProps) {
       onClose={props.onClose}
       anchorOrigin={props.anchorOrigin}
     >
-      <Suspense
-        fallback={
-          <div className={classes.loadingWrapper}>
-            <Loader loaderItems={loaderItems} />
-          </div>
-        }
-      >
+      <Suspense fallback={<Loader numOfItems={loaderItems} />}>
         <ItemMenuUI
           resource={{ item: resourceItem, permissions: resourcePermissions }}
           classes={props.classes}
           onMenuItemClicked={onMenuItemClicked}
-          hasClipboard={Boolean(hasClipboard)}
+          clipboard={clipboard}
         />
       </Suspense>
     </Menu>
@@ -508,36 +490,26 @@ export function ItemMenu(props: ItemMenuProps) {
 }
 
 function ItemMenuUI(props: ItemMenuUIProps) {
-  const { resource, classes, onMenuItemClicked, hasClipboard } = props;
+  const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
+  const hasClipboard = clipboard?.paths.length && getRootPath(clipboard.sourcePath) === getRootPath(item.path);
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
   return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;
 }
 
-export function Loader(props) {
-  const [items] = useState(() => {
-    const numOfItems = props.loaderItems;
-    const start = 20;
-    return new Array(numOfItems).fill(null).map((_, i) => ({
-      y: start + 32 * i,
-      width: rand(85, 100)
-    }));
-  });
+export const Loader = React.memo((props: { numOfItems?: number }) => {
+  const { numOfItems = 5 } = props;
+  const classes = useStyles();
+  const items = new Array(numOfItems).fill(null);
   return (
-    <ContentLoader
-      speed={2}
-      width="100%"
-      height={`${props.loaderItems * 32}`}
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ecebeb"
-    >
-      {items.map(({ y, width }, i) => (
-        <Fragment key={i}>
-          <rect x="0" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
-        </Fragment>
+    <div className={classes.loadingWrapper}>
+      {items.map((value, i) => (
+        <Typography key={i} variant="body2" className={classes.typo} style={{ width: `${rand(85, 100)}%` }}>
+          <Skeleton animation="wave" width="100%" />
+        </Typography>
       ))}
-    </ContentLoader>
+    </div>
   );
-}
+});

@@ -37,7 +37,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
-import palette from '../../../styles/palette';
 import LookupTable from '../../../models/LookupTable';
 
 // region Typings
@@ -193,36 +192,8 @@ const dialogInitialState = {
 
 const useStyles = makeStyles(() =>
   createStyles({
-    titleRoot: {
-      margin: 0,
-      padding: '13px 20px 11px',
-      background: palette.white
-    },
-    title: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingBottom: 10
-    },
-    subtitle: {
-      fontSize: '14px',
-      lineHeight: '18px',
-      paddingRight: '35px'
-    },
     leftAlignedAction: {
       marginRight: 'auto'
-    },
-    errorPaperRoot: {
-      maxHeight: '586px',
-      height: '100vh',
-      padding: 0
-    },
-    loadingStateRoot: {
-      height: '100%'
-    },
-    loadingStateGraphic: {
-      flexGrow: 1,
-      padding: '50px 0'
     },
     btnSpinner: {
       marginLeft: 11,

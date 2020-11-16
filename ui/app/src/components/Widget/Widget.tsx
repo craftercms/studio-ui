@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType } from 'react';
-import { components } from '../../utils/craftercms';
+import React, { ComponentType, memo } from 'react';
 import NonReactWidget from '../NonReactWidget/NonReactWidget';
-import { PluginFileBuilder } from '../../services/plugin';
+import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
+import EmptyState from '../SystemStatus/EmptyState';
+import { defineMessages, useIntl } from 'react-intl';
 
 // TODO: Temporary/remove after testing.
 export const TempTestContext = React.createContext<any>({});
@@ -28,13 +29,21 @@ interface WidgetProps {
   configuration: any;
 }
 
+const messages = defineMessages({
+  componentNotFound: {
+    id: 'widgetComponent.componentNotFound',
+    defaultMessage: 'Component not found'
+  }
+});
+
 function isComponent(record): record is React.ComponentType<any> {
   return typeof record !== 'object';
 }
 
-export function Widget(props: WidgetProps) {
+const Widget = memo(function(props: WidgetProps) {
   const { id, plugin, configuration } = props;
   const record = components.get(id);
+  const { formatMessage } = useIntl();
   if (record) {
     if (isComponent(record)) {
       const Component = record;
@@ -44,25 +53,21 @@ export function Widget(props: WidgetProps) {
     }
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
-      // TODO: Replace for actual plugin load call.
-      // import(/* webpackIgnore: true */ buildFileUrl(plugin))
-      import(/* webpackIgnore: true */ `${process.env.PUBLIC_URL}/${plugin.type}${plugin.name}${plugin.file}`).then(
-        () => {
-          return {
-            default: function() {
-              if (components.has(id)) {
-                return <Widget {...props} />;
-              } else {
-                return <div>Component not found.</div>;
-              }
-            }
-          };
+      importPlugin(plugin).then(() => ({
+        default: function(props) {
+          if (components.has(id)) {
+            return <Widget {...props} />;
+          } else {
+            return <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />;
+          }
         }
-      )
+      }))
     );
     return <Component {...props} />;
   }
-}
+});
+
+export { Widget };
 
 export function renderWidgets(widgets, roles: string[]) {
   return widgets

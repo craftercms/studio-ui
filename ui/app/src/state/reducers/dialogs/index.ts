@@ -36,6 +36,7 @@ import upload from './upload';
 import preview from './preview';
 import editSite from './editSite';
 import pathSelection from './pathSelection';
+import changeContentType from './changeContentType';
 
 export default combineReducers({
   confirm,
@@ -58,5 +59,6 @@ export default combineReducers({
   copy,
   upload,
   preview,
-  pathSelection
+  pathSelection,
+  changeContentType
 });

@@ -38,7 +38,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
-import { findParentModelId, hierarchicalToLookupTable } from '../../../utils/object';
+import { hierarchicalToLookupTable } from '../../../utils/object';
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
@@ -54,6 +54,7 @@ import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { ItemMenu } from '../../../components/ItemMenu/ItemMenu';
+import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 
 const rootPrefix = '{root}_';
 
@@ -81,7 +82,7 @@ const useStyles = makeStyles((theme) =>
     },
     rootIcon: {
       fontSize: '1.2em',
-      color: palette.gray.medium7
+      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium7
     },
     breadcrumbs: {
       display: 'flex',
@@ -99,15 +100,15 @@ const useStyles = makeStyles((theme) =>
       display: 'flex'
     },
     breadcrumbsTypography: {
-      color: palette.gray.medium4
+      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium4
     },
     currentContentItems: {
       fontWeight: 600,
-      color: palette.gray.medium7,
+      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium7,
       padding: '10px 12px 2px 12px'
     },
     chevron: {
-      color: palette.gray.medium3,
+      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium3,
       fontSize: '1.4rem'
     }
   })
@@ -171,11 +172,11 @@ const treeItemStyles = makeStyles((theme) =>
       padding: '6px'
     },
     chevron: {
-      color: palette.gray.medium3,
+      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium3,
       fontSize: '1.4rem'
     },
     nameLabel: {
-      color: palette.gray.medium4
+      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium4
     }
   })
 );
@@ -187,6 +188,7 @@ export interface RenderTree {
   type: string;
   modelId?: string;
   parentId?: string;
+  path?: string;
   embeddedParentPath?: string;
   fieldId?: string;
   index?: string | number;
@@ -311,6 +313,7 @@ function getChildren(
       type,
       children: subChildren,
       modelId: model.craftercms.id,
+      path: model.craftercms.path,
       fieldId: fieldName
     });
   });
@@ -377,7 +380,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     if (!isOver) {
       timeout.current = setTimeout(() => {
         isMounted.current && setOver(false);
-      }, 10);
+      }, 50);
     } else {
       isMounted.current && setOver(isOver);
     }
@@ -414,7 +417,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
               </>
             )}
           </p>
-          {over && isPageOrComponent(node.type) && (
+          {over && node.path && (
             <IconButton
               className={classes.options}
               onMouseOver={(e) => setOverState(e, true)}
@@ -463,7 +466,6 @@ export default function PageExplorer() {
   const site = useActiveSiteId();
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
-    embeddedParentPath: null,
     anchorEl: null,
     path: null
   });
@@ -478,7 +480,6 @@ export default function PageExplorer() {
 
   const ContentTypesById = contentTypesBranch?.byId;
   const models = guest?.models;
-  const childrenMap = guest?.childrenMap;
 
   const processedModels = useRef({});
 
@@ -580,6 +581,7 @@ export default function PageExplorer() {
             name: `${contentType.name}: ${model.craftercms.label}`,
             children: [],
             type: contentType.type,
+            path: model.craftercms.path,
             modelId: model.craftercms.id
           };
           shouldSetState = true;
@@ -664,17 +666,18 @@ export default function PageExplorer() {
   const handleOptions = (event: any, node: RenderTree) => {
     event.stopPropagation();
 
-    const parentModelId = findParentModelId(node.modelId, childrenMap, models);
-    const path = models[node.modelId].craftercms.path;
-    const embeddedParentPath = !path && parentModelId ? models[parentModelId].craftercms.path : null;
+    const path = node.path;
 
-    setOptionsMenu({
-      ...optionsMenu,
-      modelId: node.modelId,
-      embeddedParentPath,
-      path,
-      anchorEl: event.currentTarget
-    });
+    if (path) {
+      setOptionsMenu({
+        ...optionsMenu,
+        modelId: node.modelId,
+        path,
+        anchorEl: event.currentTarget
+      });
+      dispatch(fetchUserPermissions({ path }));
+      dispatch(completeDetailedItem({ path }));
+    }
   };
 
   const handleClose = () => setOptionsMenu({ ...optionsMenu, anchorEl: null });
@@ -725,7 +728,6 @@ interface PageExplorerUIProps {
   resource: Resource<any>;
   optionsMenu: {
     modelId: string;
-    embeddedParentPath: string;
     anchorEl: Element;
     path: null;
   };
@@ -836,12 +838,14 @@ function PageExplorerUI(props: PageExplorerUIProps) {
           handleOptions={handleOptions}
         />
       )}
-      <ItemMenu
-        path={optionsMenu.path}
-        open={Boolean(optionsMenu.anchorEl)}
-        anchorEl={optionsMenu.anchorEl}
-        onClose={handleClose}
-      />
+      {Boolean(optionsMenu.anchorEl) && (
+        <ItemMenu
+          path={optionsMenu.path}
+          open={Boolean(optionsMenu.anchorEl)}
+          anchorEl={optionsMenu.anchorEl}
+          onClose={handleClose}
+        />
+      )}
     </>
   );
 }

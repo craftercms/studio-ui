@@ -14,46 +14,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
-import NewContentCard from './NewContentCard';
-import SearchBar from '../../../components/Controls/SearchBar';
-import ContentTypesFilter from './ContentTypesFilter';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useSelection, useUnmount } from '../../../utils/hooks';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import Typography from '@material-ui/core/Typography';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { LegacyFormConfig } from '../../../models/ContentType';
+import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
-import { useDispatch } from 'react-redux';
+import { DetailedItem } from '../../../models/Item';
+import { useActiveSiteId, useLogicResource, useSelection, useSubject } from '../../../utils/hooks';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
+import SearchBar from '../../../components/Controls/SearchBar';
+import ContentTypesFilter from './ContentTypesFilter';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import { Box, Checkbox, FormControlLabel, Grid } from '@material-ui/core';
+import DialogBody from '../../../components/Dialogs/DialogBody';
 import SingleItemSelector from './SingleItemSelector';
-import { SandboxItem } from '../../../models/Item';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
-import palette from '../../../styles/palette';
-import { newContentCreationComplete } from '../../../state/actions/dialogs';
 import { fetchLegacyContentTypes } from '../../../services/contentTypes';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import { debounceTime } from 'rxjs/operators';
+import { closeNewContentDialog, newContentCreationComplete } from '../../../state/actions/dialogs';
+import { batchActions } from '../../../state/actions/misc';
 
 const translations = defineMessages({
   title: {
     id: 'newContentDialog.title',
     defaultMessage: 'Create Content'
-  },
-  chooseContentType: {
-    id: 'newContentDialog.chooseContentType',
-    defaultMessage: 'Choose Content Type'
-  },
-  chooseContentTypeSubtitle: {
-    id: 'newContentDialog.chooseContentTypeSubtitle',
-    defaultMessage: 'The following starter templates are available for use within this section.'
   },
   subtitle: {
     id: 'newContentDialog.subtitle',
@@ -74,51 +63,27 @@ const translations = defineMessages({
   contentTypeComponentLabel: {
     id: 'newContentDialog.contentTypeComponentLabel',
     defaultMessage: 'Components only'
-  },
-  contentTypeQuickCreateLabel: {
-    id: 'newContentDialog.contentTypeQuickCreateLabel',
-    defaultMessage: 'Quick create only'
-  },
-  contentTypeFavoriteLabel: {
-    id: 'newContentDialog.contentTypeFavoriteLabel',
-    defaultMessage: 'Favorites only'
   }
 });
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    dialogActions: {
-      padding: '10px 22px',
-      display: 'flex',
-      justifyContent: 'space-between'
+    compact: {
+      marginRight: 'auto',
+      paddingLeft: '20px'
     },
     dialogContent: {
-      padding: theme.spacing(2),
-      overflow: 'auto',
       minHeight: 455
     },
     cardsContainer: {
       marginTop: 14
     },
-    submitBtn: {
-      marginLeft: 17
-    },
     searchBox: {
       minWidth: '33%'
-    },
-    emptyStateLink: {
-      cursor: 'pointer',
-      textDecoration: 'underline'
     },
     emptyStateImg: {
       width: 250,
       marginBottom: 17
-    },
-    loadingGraphic: {
-      width: 250
-    },
-    emptyStateTitle: {
-      color: palette.gray.medium6
     }
   })
 );
@@ -135,11 +100,9 @@ interface ContentTypesGridProps {
 
 interface NewContentDialogBaseProps {
   open: boolean;
-  item: SandboxItem;
+  item: DetailedItem;
   rootPath: string;
   compact: boolean;
-  type?: 'new' | 'change';
-  selectedContentType?: string;
 }
 
 export type NewContentDialogProps = PropsWithChildren<
@@ -158,28 +121,6 @@ export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-function ContentTypesGrid(props: ContentTypesGridProps) {
-  const { resource, isCompact, onTypeOpen, getPrevImg, selectedContentType } = props;
-  const classes = useStyles({});
-  const filterContentTypes = resource.read();
-  return (
-    <Grid container spacing={3} className={classes.cardsContainer}>
-      {filterContentTypes.map((content) => (
-        <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
-          <NewContentCard
-            isCompact={isCompact}
-            headerTitle={content.label}
-            subheader={content.form}
-            img={getPrevImg(content)}
-            onClick={onTypeOpen(content)}
-            isSelected={content.name === selectedContentType}
-          />
-        </Grid>
-      ))}
-    </Grid>
-  );
-}
-
 export default function NewContentDialog(props: NewContentDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
@@ -189,27 +130,23 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 }
 
 function NewContentDialogBody(props: NewContentDialogProps) {
-  const { onDismiss, item, onContentTypeSelected, compact, rootPath, type, selectedContentType } = props;
-  const [openSelector, setOpenSelector] = useState(false);
-  const defaultFilterType = 'all';
-  const { formatMessage } = useIntl();
+  const { onDismiss, item, onContentTypeSelected, compact = false, rootPath } = props;
   const site = useActiveSiteId();
-  const classes = useStyles({});
-  const contentTypes = useRef(null);
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const [filterContentTypes, setFilterContentTypes] = useState([]);
-  const [isCompact, setIsCompact] = useState(compact);
-  const [search, setSearch] = useState('');
-  const [previewItem, setPreviewItem] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
+  const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const defaultFormSrc = `${authoringBase}/legacy/form`;
-  useUnmount(props.onClosed);
-  const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
-  const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const path = previewItem?.path.endsWith('.xml') ? previewItem.path.replace(/[^/]*$/, '') : previewItem?.path;
-  const contentTypesFilters = [
+
+  const [isCompact, setIsCompact] = useState(compact);
+  const [openSelector, setOpenSelector] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(item);
+  const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
+  const [keyword, setKeyword] = useState('');
+  const [debounceKeyword, setDebounceKeyword] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('all');
+
+  const filters = [
     {
       label: formatMessage(translations.contentTypeAllLabel),
       type: 'all'
@@ -221,107 +158,71 @@ function NewContentDialogBody(props: NewContentDialogProps) {
     {
       label: formatMessage(translations.contentTypeComponentLabel),
       type: 'component'
-    },
-    {
-      label: formatMessage(translations.contentTypeQuickCreateLabel),
-      type: 'quickCreate'
-    },
-    {
-      label: formatMessage(translations.contentTypeFavoriteLabel),
-      type: 'favorite'
     }
   ];
-  const resource = useLogicResource(filterContentTypes, {
-    shouldResolve: (source) => !!source,
-    shouldReject: (source) => !source,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: () => 'Error'
-  });
 
-  const onTypeOpen = (contentType: LegacyFormConfig) => () => {
+  const getPrevImg = (content: LegacyFormConfig) => {
+    return content?.imageThumbnail
+      ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
+      : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
+  };
+
+  const onSelectedContentType = (contentType: LegacyFormConfig) => {
+    const path = selectedItem?.path.endsWith('.xml') ? selectedItem.path.replace(/[^/]*$/, '') : selectedItem?.path;
     onContentTypeSelected?.({
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
-      inProgress: false,
-      onSaveSuccess: newContentCreationComplete()
+      onSaveSuccess: batchActions([closeNewContentDialog(), newContentCreationComplete()])
     });
   };
 
-  const onCompactCheck = () => setIsCompact(!isCompact);
-
-  const onResetFilter = useCallback(() => {
-    setResetFilterType(defaultFilterType);
-    setFilterContentTypes(contentTypes.current);
-  }, [contentTypes]);
-
-  const onTypeChange = useCallback(
-    (type) => {
-      resetFilterType && setResetFilterType('');
-
-      type !== defaultFilterType
-        ? setFilterContentTypes(contentTypes.current.filter((content) => content.type === type))
-        : onResetFilter();
-    },
-    [contentTypes, resetFilterType, onResetFilter]
-  );
-
-  const onSearch = useCallback(
-    (keyword) => {
-      const formatValue = keyword.toLowerCase();
-
-      !keyword
-        ? onResetFilter()
-        : setFilterContentTypes(
-            contentTypes.current.filter((content) => content.label.toLowerCase().includes(formatValue))
-          );
-    },
-    [contentTypes, onResetFilter]
-  );
-
-  const onSearch$ = useDebouncedInput(onSearch, 400);
-
-  const onSearchChange = (keyword) => {
-    setSearch(keyword);
-    onSearch$.next(keyword);
-  };
-
-  const onParentItemClick = (item) => {
-    setLoading(true);
-    setPreviewItem(item);
-  };
-
-  const getPrevImg = (content) =>
-    content?.imageThumbnail ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}` : defaultPrevImgUrl;
-
   useEffect(() => {
-    setIsCompact(compact);
-  }, [compact]);
-
-  useEffect(() => {
-    if (item) setPreviewItem(item);
-  }, [item]);
-
-  useEffect(() => {
-    if (path) {
-      fetchLegacyContentTypes(site, path).subscribe(
+    if (selectedItem.path) {
+      fetchLegacyContentTypes(site, selectedItem.path).subscribe(
         (response) => {
-          setFilterContentTypes(response);
-          contentTypes.current = response;
-          setLoading(false);
+          setContentTypes(response);
         },
         (response) => {
           dispatch(showErrorDialog({ error: response }));
-          setFilterContentTypes(null);
         }
       );
     }
-  }, [dispatch, path, site]);
+  }, [dispatch, selectedItem, site]);
+
+  const resource = useLogicResource(
+    useMemo(() => ({ contentTypes, selectedFilter, debounceKeyword }), [contentTypes, selectedFilter, debounceKeyword]),
+    {
+      shouldResolve: ({ contentTypes }) => Boolean(contentTypes),
+      shouldReject: () => null,
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: ({ contentTypes, debounceKeyword, selectedFilter }) => {
+        return contentTypes.filter(
+          (contentType) =>
+            contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase()) &&
+            (selectedFilter === 'all' || contentType.type === selectedFilter)
+        );
+      },
+      errorSelector: () => null
+    }
+  );
+
+  const onSearch$ = useSubject<string>();
+
+  useEffect(() => {
+    onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
+      setDebounceKeyword(keywords);
+    });
+  });
+
+  const onSearch = (keyword: string) => {
+    onSearch$.next(keyword);
+    setKeyword(keyword);
+  };
 
   return (
     <>
       <DialogHeader
-        title={formatMessage(type === 'new' ? translations.title : translations.chooseContentType)}
-        subtitle={formatMessage(type === 'new' ? translations.subtitle : translations.chooseContentTypeSubtitle)}
+        title={formatMessage(translations.title)}
+        subtitle={formatMessage(translations.subtitle)}
         onDismiss={onDismiss}
       />
       <DialogBody classes={{ root: classes.dialogContent }}>
@@ -331,81 +232,87 @@ function NewContentDialogBody(props: NewContentDialogProps) {
               label="Item"
               open={openSelector}
               onClose={() => setOpenSelector(false)}
-              onDropdownClick={type === 'new' ? () => setOpenSelector(!openSelector) : null}
+              onDropdownClick={() => setOpenSelector(!openSelector)}
               rootPath={rootPath}
-              selectedItem={previewItem}
+              selectedItem={selectedItem}
               onItemClicked={(item) => {
                 setOpenSelector(false);
-                onParentItemClick(item);
+                setSelectedItem(item);
               }}
             />
           </Box>
           <Box className={classes.searchBox}>
-            <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
+            <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
           </Box>
         </Box>
-
         <SuspenseWithEmptyState
           resource={resource}
+          suspenseProps={{
+            fallback: <ContentTypesLoader isCompact={isCompact} />
+          }}
           withEmptyStateProps={{
             emptyStateProps: {
               classes: {
-                image: classes.emptyStateImg,
-                title: classes.emptyStateTitle
+                image: classes.emptyStateImg
               },
               title: (
                 <FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />
-              ),
-              subtitle: (
-                <FormattedMessage
-                  id="newContentDialog.emptyStateMessageSubtitle"
-                  defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
-                  values={{
-                    catalog: (msg) => (
-                      <Typography
-                        variant="subtitle1"
-                        component="a"
-                        className={classes.emptyStateLink}
-                        color="textSecondary"
-                        onClick={onResetFilter}
-                      >
-                        {msg}
-                      </Typography>
-                    )
-                  }}
-                />
               )
-            }
-          }}
-          loadingStateProps={{
-            classes: {
-              graphic: classes.loadingGraphic
             }
           }}
         >
           <ContentTypesGrid
             resource={resource}
             isCompact={isCompact}
-            onTypeOpen={onTypeOpen}
+            onTypeOpen={onSelectedContentType}
             getPrevImg={getPrevImg}
-            selectedContentType={selectedContentType}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
-      <DialogFooter classes={{ root: classes.dialogActions }}>
+      <DialogFooter>
         <FormControlLabel
-          control={
-            <Checkbox checked={isCompact || false} onChange={onCompactCheck} color="primary" disabled={loading} />
-          }
+          className={classes.compact}
+          control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
           label={formatMessage(translations.compactInput)}
         />
-        <ContentTypesFilter
-          filters={contentTypesFilters}
-          onTypeChange={onTypeChange}
-          disabled={loading}
-          resetType={resetFilterType}
-        />
+        <ContentTypesFilter filters={filters} selected={selectedFilter} onFilterChange={setSelectedFilter} />
       </DialogFooter>
     </>
+  );
+}
+
+export function ContentTypesLoader(props: { numOfItems?: number; isCompact: boolean }) {
+  const { numOfItems = 6, isCompact } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <Grid container spacing={3} style={{ marginTop: '14px' }}>
+      {items.map((value, i) => (
+        <Grid item key={i} xs={12} sm={!isCompact ? 4 : 6}>
+          <ContentSkeletonCard isCompact={isCompact} />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
+export function ContentTypesGrid(props: ContentTypesGridProps) {
+  const { resource, isCompact, onTypeOpen, getPrevImg, selectedContentType } = props;
+  const classes = useStyles();
+  const filterContentTypes = resource.read();
+  return (
+    <Grid container spacing={3} className={classes.cardsContainer}>
+      {filterContentTypes.map((content) => (
+        <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
+          <NewContentCard
+            isCompact={isCompact}
+            headerTitle={content.label}
+            subheader={content.form}
+            img={getPrevImg(content)}
+            onClick={() => onTypeOpen(content)}
+            isSelected={content.name === selectedContentType}
+          />
+        </Grid>
+      ))}
+    </Grid>
   );
 }

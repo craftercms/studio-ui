@@ -29,7 +29,11 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import { createPresenceTable } from '../../utils/array';
-import { pathNavigatorFetchParentItemsComplete, pathNavigatorFetchPathComplete } from '../actions/pathNavigator';
+import {
+  pathNavigatorConditionallySetPathComplete,
+  pathNavigatorFetchParentItemsComplete,
+  pathNavigatorFetchPathComplete
+} from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
@@ -48,6 +52,23 @@ const initialState: ContentState = {
     permissionsByPath: null
   },
   clipboard: null
+};
+
+const updateItemByPath = (state, { payload: { response } }) => {
+  return {
+    ...state,
+    items: {
+      ...state.items,
+      byPath: {
+        [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
+        ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
+        ...(response.levelDescriptor && {
+          [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor)
+        }),
+        ...state.items.byPath
+      }
+    }
+  };
 };
 
 const reducer = createReducer<ContentState>(initialState, {
@@ -80,9 +101,7 @@ const reducer = createReducer<ContentState>(initialState, {
       ...state.items,
       permissionsByPath: {
         ...state.items.permissionsByPath,
-        [payload.path]: createPresenceTable(
-          payload.permissions.map((value) => value.replaceAll(' ', '_').replace(/-/g, '_'))
-        )
+        [payload.path]: createPresenceTable(payload.permissions.map((value) => value.replace(/[\s-]/g, '_')))
       }
     }
   }),
@@ -97,28 +116,14 @@ const reducer = createReducer<ContentState>(initialState, {
   },
   [setClipBoard.type]: (state, { payload }) => ({
     ...state,
-    clipboard: payload.path
+    clipboard: payload
   }),
   [unSetClipBoard.type]: (state) => ({
     ...state,
     clipboard: null
   }),
-  [pathNavigatorFetchPathComplete.type]: (state, { payload: { response } }) => {
-    return {
-      ...state,
-      items: {
-        ...state.items,
-        byPath: {
-          [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
-          ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
-          ...(response.levelDescriptor && {
-            [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor)
-          }),
-          ...state.items.byPath
-        }
-      }
-    };
-  },
+  [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
+  [pathNavigatorFetchPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { response } }) => {
     let items = [];
     response.forEach((childResponse) => {

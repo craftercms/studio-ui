@@ -197,11 +197,11 @@ export default function GuestProxy() {
         }
         case MOVE_ITEM_OPERATION: {
           const [
-            modelId /*: string*/,
-            fieldId /*: string*/,
-            index /*: number*/,
-            targetModelId /*: string*/,
-            targetFieldId /*: string*/,
+            modelId /* : string */,
+            fieldId /* : string */,
+            index /* : number */,
+            targetModelId /* : string */,
+            targetFieldId /* : string */,
             targetIndex
           ] = op.args;
 

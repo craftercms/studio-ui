@@ -35,14 +35,16 @@ import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog'
 import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
+import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
+import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 
-//region History
+// region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 export const historyDialogClosed = createAction('HISTORY_DIALOG_CLOSED');
 // endregion
 
-//region View Versions
+// region View Versions
 export const showViewVersionDialog = createAction<Partial<ViewVersionDialogStateProps>>('SHOW_VIEW_VERSION_DIALOG');
 export const closeViewVersionDialog = createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
 export const viewVersionDialogClosed = createAction<StandardAction>('VERSION_DIALOG_CLOSED');
@@ -54,13 +56,13 @@ export const fetchContentVersionComplete = createAction<any>('FETCH_CONTENT_VERS
 export const fetchContentVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
 // endregion
 
-//region Compare Versions
+// region Compare Versions
 export const showCompareVersionsDialog = createAction<Partial<CompareVersionsDialogStateProps>>(
   'SHOW_COMPARE_VERSIONS_DIALOG'
 );
 export const closeCompareVersionsDialog = createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
 export const compareVersionsDialogClosed = createAction('COMPARE_VERSIONS_DIALOG_CLOSED');
-//endregion
+// endregion
 
 // region Confirm
 export const showConfirmDialog = createAction<Partial<ConfirmDialogStateProps>>('SHOW_CONFIRM_DIALOG');
@@ -87,6 +89,14 @@ export const fetchDeleteDependenciesFailed = createAction('FETCH_DELETE_DEPENDEN
 export const showNewContentDialog = createAction<Partial<NewContentDialogStateProps>>('SHOW_NEW_CONTENT_DIALOG');
 export const closeNewContentDialog = createAction<StandardAction>('CLOSE_NEW_CONTENT_DIALOG');
 export const newContentDialogClosed = createAction('NEW_CONTENT_DIALOG_CLOSED');
+// endregion
+
+// region Change ContentType
+export const showChangeContentTypeDialog = createAction<Partial<ChangeContentTypeDialogStateProps>>(
+  'SHOW_CHANGE_CONTENT_TYPE_DIALOG'
+);
+export const CloseChangeContentTypeDialog = createAction<StandardAction>('CLOSE_CHANGE_CONTENT_TYPE_DIALOG');
+export const ChangeContentTypeDialogClosed = createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
 // endregion
 
 // region Dependencies
@@ -136,7 +146,7 @@ export const createFileDialogClosed = createAction('CREATE_FILE_DIALOG_CLOSED');
 // endregion
 
 // region Copy Dialog
-export const showCopyDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_COPY_DIALOG');
+export const showCopyDialog = createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
 export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');
 export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
 // endregion
@@ -169,11 +179,5 @@ export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
 // endregion
 
 // region items notification
-
-export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
-export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
-export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
-export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
-export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
 
 // endregion

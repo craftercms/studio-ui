@@ -15,6 +15,7 @@
  */
 
 import { DetailedItem } from '../../../models/Item';
+import { isRootPath } from '../../../utils/path';
 
 export function isNavigable(item: DetailedItem): boolean {
   return item.systemType === 'page';
@@ -36,11 +37,11 @@ export function isFolder(item: DetailedItem): boolean {
 
 export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   if (isNavigable(item)) {
-    return 13;
+    return isRootPath(item.path) ? 11 : 16;
   } else if (isFolder(item)) {
-    return 6;
+    return isRootPath(item.path) ? 3 : 6;
   } else if (isPreviewable(item)) {
-    return 11;
+    return 10;
   }
 }
 export function rand(min: number, max: number) {

@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
@@ -50,6 +50,7 @@ import { useDispatch } from 'react-redux';
 import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
+import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 
 const translations = defineMessages({
   title: {
@@ -91,17 +92,15 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     dialogContent: {
-      backgroundColor: palette.gray.light0,
       flexDirection: 'row'
     },
     dragZone: {
       height: '300px',
       width: '100%',
       border: `2px dashed ${palette.gray.medium2}`,
-      backgroundColor: palette.white,
       borderRadius: '7px',
       display: 'flex',
       alignItems: 'center',
@@ -116,7 +115,7 @@ const useStyles = makeStyles(() =>
         cursor: 'inherit'
       },
       '&.over': {
-        backgroundColor: palette.gray.light4,
+        backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark4 : palette.gray.light4,
         borderColor: palette.blue.tint
       },
       '& button:focus': {
@@ -166,11 +165,11 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const UppyItemStyles = makeStyles(() =>
+const UppyItemStyles = makeStyles((theme) =>
   createStyles({
     cardRoot: {
       display: 'flex',
-      backgroundColor: palette.gray.light0,
+      backgroundColor: theme.palette.background.paper,
       position: 'relative',
       marginBottom: '12px',
       '&:last-child': {
@@ -307,12 +306,13 @@ interface DropZoneProps {
   cancelRequestObservable$: Observable<any>;
 
   onStatusChange(status: DropZoneStatus): void;
+  onFileUploaded(path: string): void;
 }
 
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
+  const { onStatusChange, path, site, maxSimultaneousUploads, onFileUploaded, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
@@ -477,7 +477,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }, [filesPerPath, onStatusChange, path, setFiles]);
 
   useEffect(() => {
-    const handleUploadSuccess = () => {
+    const handleUploadSuccess = (file, response) => {
+      onFileUploaded(response.body.message.uri);
       setUploadedFiles(uploadedFiles + 1);
       onStatusChange({ uploadedFiles: uploadedFiles + 1 });
     };
@@ -500,7 +501,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('complete', handleComplete);
       uppy.off('error', handleError);
     };
-  }, [onStatusChange, totalFiles, uploadedFiles]);
+  }, [onStatusChange, totalFiles, uploadedFiles, onFileUploaded]);
 
   useEffect(() => {
     if (files !== null) {
@@ -628,6 +629,13 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
     e.preventDefault();
   };
 
+  const onFileUploaded = useCallback(
+    (path: string) => {
+      dispatch(emitSystemEvent(itemCreated({ target: path })));
+    },
+    [dispatch]
+  );
+
   const onStatusChange = useCallback(
     (status: DropZoneStatus) => {
       setDropZoneStatus(status);
@@ -670,6 +678,7 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
         {...props}
         onMinimized={onMinimized}
         dropZoneStatus={dropZoneStatus}
+        onFileUploaded={onFileUploaded}
         onStatusChange={onStatusChange}
       />
     </Dialog>
@@ -680,6 +689,7 @@ interface BulkUploadUIProps extends BulkUploadProps {
   dropZoneStatus: DropZoneStatus;
   onMinimized?(): void;
   onStatusChange(status: DropZoneStatus): void;
+  onFileUploaded(path: string): void;
 }
 
 function BulkUploadUI(props: BulkUploadUIProps) {
@@ -693,6 +703,7 @@ function BulkUploadUI(props: BulkUploadUIProps) {
     maxSimultaneousUploads = 1,
     onMinimized,
     onStatusChange,
+    onFileUploaded,
     dropZoneStatus
   } = props;
   const inputRef = useRef(null);
@@ -742,6 +753,7 @@ function BulkUploadUI(props: BulkUploadUIProps) {
       />
       <DialogBody className={classes.dialogContent}>
         <DropZone
+          onFileUploaded={onFileUploaded}
           onStatusChange={onStatusChange}
           path={path}
           site={site}

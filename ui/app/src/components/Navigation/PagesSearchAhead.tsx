@@ -20,7 +20,7 @@ import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { useActiveSiteId, useContentTypeList, useSubject } from '../../utils/hooks';
 import { search } from '../../services/search';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useAutocomplete } from '@material-ui/lab';
+import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import { SearchItem } from '../../models/Search';
 import clsx from 'clsx';
 import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@material-ui/core';
@@ -73,9 +73,6 @@ const useStyles = makeStyles((theme: Theme) =>
     listItemIcon: {
       minWidth: 'auto',
       paddingRight: '16px'
-    },
-    EmptyImage: {
-      width: '100px'
     },
     highlighted: {
       display: 'inline-block',
@@ -204,7 +201,11 @@ export default function PagesSearchAhead(props) {
           {!isFetching && groupedOptions.length === 0 && (
             <EmptyState
               title={<FormattedMessage id="searchAhead.noResults" defaultMessage="No Results." />}
-              classes={{ image: classes.EmptyImage }}
+              styles={{
+                image: {
+                  width: 100
+                }
+              }}
             />
           )}
         </Paper>

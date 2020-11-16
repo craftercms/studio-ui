@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
+import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 
 interface CreateFileBaseProps {
   open: boolean;
@@ -99,6 +100,7 @@ function CreateFileUI(props: CreateFileUIProps) {
       createFile(site, path, fileName).subscribe(
         () => {
           onCreated?.({ path, fileName, type });
+          dispatch(emitSystemEvent(itemCreated({ target: path })));
         },
         (response) => {
           setState({ inProgress: false, submitted: true });
@@ -156,7 +158,7 @@ function CreateFileUI(props: CreateFileUIProps) {
         />
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onClose} variant="outlined" disabled={inProgress}>
+        <Button onClick={onClose} variant="contained" disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </Button>
         <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>

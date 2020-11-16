@@ -30,7 +30,7 @@ export default createReducer<GlobalState['dialogs']['createFile']>(initialState,
     ...state,
     onClose: closeCreateFileDialog(),
     onClosed: createFileDialogClosed(),
-    onCreate: closeCreateFileDialog(),
+    onCreated: closeCreateFileDialog(),
     ...payload,
     open: true
   }),

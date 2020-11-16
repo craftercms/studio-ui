@@ -236,7 +236,6 @@ export default function QuickCreate() {
     dispatch(
       showNewContentDialog({
         item: currentPreview,
-        compact: false,
         onContentTypeSelected: showEditDialog({})
       })
     );

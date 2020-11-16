@@ -15,12 +15,20 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ErrorState, { ErrorStateProps } from './ErrorState';
+import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';
+import ApiResponseErrorState from '../ApiResponseErrorState';
 
 export type ErrorBoundaryProps = PropsWithChildren<{
   onReset?(): void;
-  errorStateProps?: Omit<ErrorStateProps, 'error'>;
+  errorStateProps?: ErrorStateProps;
 }>;
+
+function isApiResponse(source: object): boolean {
+  return (
+    Object.prototype.hasOwnProperty.call(source ?? {}, 'code') &&
+    Object.prototype.hasOwnProperty.call(source ?? {}, 'message')
+  );
+}
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
   state = { error: null };
@@ -41,7 +49,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
     const errorStateProps = {
       ...this.props.errorStateProps,
       onBack: (e) => {
-        this.props.errorStateProps?.onBack?.(e);
+        this.props.errorStateProps?.onButtonClick?.(e);
         if (this.props.onReset) {
           this.props.onReset();
           // Move the ErrorBoundary's reset to the next cycle so any
@@ -54,7 +62,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
       }
     };
     return this.state.error ? (
-      <ErrorState {...errorStateProps} error={{ message: this.state.error.message || this.state.error }} />
+      isApiResponse(this.state.error) ? (
+        <ApiResponseErrorState {...errorStateProps} error={this.state.error} />
+      ) : (
+        <ErrorState {...errorStateProps} message={this.state.error.message ?? this.state.error} />
+      )
     ) : (
       this.props.children
     );

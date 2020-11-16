@@ -39,7 +39,7 @@ export const translations = defineMessages({
   },
   changeContentType: {
     id: 'itemMenu.changeContentType',
-    defaultMessage: 'Change Template'
+    defaultMessage: 'Change Type'
   },
   schedule: {
     id: 'words.schedule',

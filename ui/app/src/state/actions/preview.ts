@@ -24,7 +24,6 @@ import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 import { OptionsObject } from 'notistack';
-
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
 
@@ -295,10 +294,8 @@ export const setChildrenMap = createAction<object>(CHILDREN_MAP_UPDATE);
 
 export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
-// endregion
-
-// region Edit Mode
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+
 // endregion
 
 // notification

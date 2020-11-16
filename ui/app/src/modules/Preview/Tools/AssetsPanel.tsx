@@ -270,11 +270,7 @@ export default function AssetsPanel() {
     <ToolPanel title={translations.assetsPanel} classes={dragInProgress ? { body: classes.noScroll } : null}>
       <div ref={elementRef}>
         <div className={classes.search}>
-          <SearchBar
-            onActionButtonClick={() => handleSearchKeyword('')}
-            onChange={handleSearchKeyword}
-            keyword={keyword}
-          />
+          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
         </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
           {dragInProgress && (

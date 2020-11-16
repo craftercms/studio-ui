@@ -157,7 +157,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             case EditingStatus.SORTING_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
                 moveComponent(dragContext);
-                //return of({ type: 'move_component' });
+                // return of({ type: 'move_component' });
               }
               break;
             }
@@ -174,7 +174,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     contentType
                   );
                 });
-                //return of({ type: 'insert_component' });
+                // return of({ type: 'insert_component' });
               }
               break;
             }
@@ -191,7 +191,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     instance
                   );
                 });
-                //return of({ type: 'insert_instance' });
+                // return of({ type: 'insert_instance' });
               }
               break;
             }
@@ -425,7 +425,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           post({ type: INSTANCE_DRAG_ENDED });
         }
         Object.values(validations).forEach((validation) => {
-          //We dont want to show a validation message for maxCount on Leaving Dropzone
+          // We dont want to show a validation message for maxCount on Leaving Dropzone
           if (validations.maxCount) {
             return;
           }

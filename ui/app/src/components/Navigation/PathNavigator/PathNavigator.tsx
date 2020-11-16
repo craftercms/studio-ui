@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, Fragment, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
@@ -31,35 +31,50 @@ import {
 } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import Suspencified, { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
-import { withIndex, withoutIndex } from '../../../utils/path';
+import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import NavItem from './PathNavigatorItem';
 import Nav from './PathNavigatorList';
-import ContentLoader from 'react-content-loader';
 import { languages } from '../../../utils/i18n-legacy';
 import {
+  pathNavigatorConditionallySetPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
+  pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode
+  pathNavigatorSetLocaleCode,
+  pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
-import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable, rand } from './utils';
+import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
 import { StateStylingProps } from '../../../models/UiConfig';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { getHostToHostBus } from '../../../modules/Preview/previewContext';
+import { filter } from 'rxjs/operators';
+import {
+  folderCreated,
+  folderRenamed,
+  itemCreated,
+  itemDuplicated,
+  itemsDeleted,
+  itemsPasted,
+  itemUpdated
+} from '../../../state/actions/system';
+import List from '@material-ui/core/List';
+import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 
 export interface WidgetProps {
   id: string;
@@ -106,27 +121,6 @@ interface WidgetUIProps {
   // TODO: add props
   [key: string]: any;
 }
-
-const MyLoader = React.memo(function() {
-  const [items] = useState(() => {
-    const numOfItems = 5;
-    const start = 20;
-    return new Array(numOfItems).fill(null).map((_, i) => ({
-      y: start + 30 * i,
-      width: rand(70, 85)
-    }));
-  });
-  return (
-    <ContentLoader speed={2} width="100%" backgroundColor="#f3f3f3" foregroundColor="#ecebeb">
-      {items.map(({ y, width }, i) => (
-        <Fragment key={i}>
-          <circle cx="10" cy={y} r="8" />
-          <rect x="25" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
-        </Fragment>
-      ))}
-    </ContentLoader>
-  );
-});
 
 const menuOptions = {
   refresh: {
@@ -177,13 +171,83 @@ export default function PathNavigator(props: WidgetProps) {
     }
   }, [dispatch, id, siteLocales.defaultLocaleCode]);
 
+  // Item Updates Propagation
+  useEffect(() => {
+    const events = [
+      itemsPasted.type,
+      itemUpdated.type,
+      folderCreated.type,
+      folderRenamed.type,
+      itemsDeleted.type,
+      itemDuplicated.type,
+      itemCreated.type,
+      itemCreated.type
+    ];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case itemCreated.type:
+        case itemUpdated.type:
+        case folderRenamed.type:
+        case itemDuplicated.type: {
+          const parentPath = getParentPath(payload.target);
+          if (parentPath === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
+          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
+              })
+            );
+          }
+          break;
+        }
+        case folderCreated.type:
+        case itemsPasted.type: {
+          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
+          if (state.leaves.some((path) => withoutIndex(path) === payload.target)) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== payload.target)
+              })
+            );
+          }
+          break;
+        }
+        case itemsDeleted.type: {
+          payload.targets.forEach((path) => {
+            if (withoutIndex(path) === withoutIndex(state.currentPath)) {
+              dispatch(
+                pathNavigatorSetCurrentPath({
+                  id,
+                  path: getParentPath(withoutIndex(path))
+                })
+              );
+            } else if (state.itemsInPath.includes(path)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+          });
+          break;
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [state, id, dispatch]);
+
   if (!state) {
     return <LoadingState />;
   }
 
   const onPathSelected = (item: DetailedItem) => {
     dispatch(
-      pathNavigatorSetCurrentPath({
+      pathNavigatorConditionallySetPath({
         id,
         path: item.path
       })
@@ -322,18 +386,12 @@ export default function PathNavigator(props: WidgetProps) {
     onCloseSimpleMenu();
     if (section.id === 'refresh') {
       dispatch(
-        pathNavigatorSetCurrentPath({
-          id,
-          path: state.currentPath
+        pathNavigatorRefresh({
+          id
         })
       );
     }
   };
-
-  const onItemMenuActionSuccessCreator = (args) => ({
-    type: 'PATH_NAVIGATOR_ITEM_ACTION_SUCCESS',
-    payload: { id, ...args }
-  });
 
   const onChangeCollapsed = (collapsed: boolean) => {
     dispatch(pathNavigatorSetCollapsed({ id, collapsed }));
@@ -369,7 +427,6 @@ export default function PathNavigator(props: WidgetProps) {
         onCloseItemMenu={onCloseItemMenu}
         onCloseSimpleMenu={onCloseSimpleMenu}
         onSimpleMenuClick={onSimpleMenuClick}
-        onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
       />
     </Suspencified>
   );
@@ -400,8 +457,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
     onPageChanged,
     onCloseItemMenu,
     onCloseSimpleMenu,
-    onSimpleMenuClick,
-    onItemMenuActionSuccessCreator
+    onSimpleMenuClick
   } = props;
   // endregion
   const { formatMessage } = useIntl();
@@ -467,9 +523,6 @@ export function PathNavigatorUI(props: WidgetUIProps) {
           />
           <SuspenseWithEmptyState
             resource={resource}
-            loadingStateProps={{
-              graphicProps: { className: classes.stateGraphics }
-            }}
             errorBoundaryProps={{
               errorStateProps: { classes: { graphic: classes.stateGraphics } }
             }}
@@ -480,7 +533,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
               }
             }}
             suspenseProps={{
-              fallback: <MyLoader />
+              fallback: <NavLoader numOfItems={state.limit} />
             }}
           >
             {levelDescriptor && (
@@ -527,7 +580,6 @@ export function PathNavigatorUI(props: WidgetUIProps) {
           loaderItems={itemMenu.loaderItems}
           anchorEl={itemMenu.anchorEl}
           onClose={onCloseItemMenu}
-          onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
         />
       )}
       <ContextMenu
@@ -541,3 +593,15 @@ export function PathNavigatorUI(props: WidgetUIProps) {
     </>
   );
 }
+
+const NavLoader = React.memo((props: { numOfItems?: number }) => {
+  const { numOfItems = 5 } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <List component="nav" disablePadding={true}>
+      {items.map((value, i) => (
+        <PathNavigatorSkeletonItem key={i} />
+      ))}
+    </List>
+  );
+});

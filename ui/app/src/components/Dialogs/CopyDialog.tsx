@@ -21,11 +21,10 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
 import { CopyItem, LegacyItem } from '../../models/Item';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { TreeView } from '@material-ui/lab';
+import TreeView from '@material-ui/lab/TreeView';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
-import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
 import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
@@ -57,9 +56,9 @@ const messages = defineMessages({
 
 const simpleItemsSelectionsStyles = makeStyles((theme: Theme) => ({
   simpleItemsSelectionRoot: {
-    background: palette.white,
     border: '1px solid rgba(0, 0, 0, .125)',
-    minHeight: '30vh'
+    background: theme.palette.background.paper,
+    flexGrow: 1
   },
   simpleItemsSelectionHeader: {
     padding: '10px 10px 0 10px'
@@ -104,7 +103,7 @@ export type CopyDialogProps = PropsWithChildren<
   CopyBaseProps & {
     onClose(): void;
     onClosed?(): void;
-    onOk?(item: CopyItem): void;
+    onOk?(response: { paths: string[] }): void;
   }
 >;
 
@@ -280,7 +279,7 @@ function CopyDialogUI(props: CopyDialogProps) {
     copy(site, copyItem).subscribe(
       (response) => {
         if (response.success) {
-          onOk?.(copyItem);
+          onOk?.({ paths: selected });
         }
       },
       (response) => {
@@ -298,7 +297,7 @@ function CopyDialogUI(props: CopyDialogProps) {
   return (
     <>
       <DialogHeader title={title} subtitle={subtitle} onDismiss={onClose} />
-      <DialogBody>
+      <DialogBody style={{ minHeight: '30vh' }}>
         <ItemSelectorTree
           item={item}
           selected={selected}

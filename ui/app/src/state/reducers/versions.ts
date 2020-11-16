@@ -53,7 +53,7 @@ export const compareBothVersionsFailed = createAction<any>('COMPARE_BOTH_VERSION
 
 export const revertContent = createAction<FetchContentVersion>('REVERT_CONTENT');
 
-export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
+export const revertContentComplete = createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
 
 export const revertContentFailed = createAction<AjaxResponse>('REVERT_CONTENT_FAILED');
 

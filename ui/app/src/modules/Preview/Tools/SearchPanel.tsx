@@ -141,7 +141,7 @@ const initialSearchParameters: Partial<ElasticParams> = {
   limit: 10
   // sortBy: '_score',
   // sortOrder: 'desc',
-  //filters: {}
+  // filters: {}
 };
 
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
@@ -154,7 +154,7 @@ export default function SearchPanel() {
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
   // TODO: Components
-  //const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
+  // const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
   // const contentTypesIds = contentTypes?.map(item => item.id);
   // const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
@@ -198,7 +198,7 @@ export default function SearchPanel() {
         keywords,
         ...options,
         // TODO: Use this when api support OR operator
-        //filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
+        // filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
         filters: { 'mime-type': mimeTypes }
       }).subscribe(
         (result) => {

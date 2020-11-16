@@ -16,91 +16,69 @@
 
 import '../styles/index.scss';
 
-import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { IntlShape, RawIntlProvider } from 'react-intl';
-import { createMuiTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
-import { defaultThemeOptions, generateClassName } from '../styles/theme';
+import React, { PropsWithChildren, Suspense, useLayoutEffect, useState } from 'react';
+import { ThemeOptions } from '@material-ui/core/styles';
 import { setRequestForgeryToken } from '../utils/auth';
-import { Provider } from 'react-redux';
 import { CrafterCMSStore, createStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
 import { SnackbarProvider } from 'notistack';
 import { createResource } from '../utils/hooks';
-import LoadingState from './SystemStatus/LoadingState';
 import { Resource } from '../models/Resource';
-import { getCurrentIntl } from '../utils/i18n';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-
-const storeResource = createResource(() =>
-  createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise()
-);
+import Suspencified from './SystemStatus/Suspencified';
+import I18nProvider from './I18nProvider';
+import StoreProvider from './StoreProvider';
+import CrafterThemeProvider from './CrafterThemeProvider';
+import SnackbarCloseButton from './SnackbarCloseButton';
 
 function Bridge(
   props: PropsWithChildren<{
     mountGlobalDialogManager?: boolean;
+    mountSnackbarProvider?: boolean;
     resource: Resource<CrafterCMSStore>;
     themeOptions?: ThemeOptions;
   }>
 ) {
-  const store = props.resource.read();
-  const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = useMemo(
-    () =>
-      createMuiTheme({
-        ...(props.themeOptions ?? defaultThemeOptions),
-        palette: {
-          ...(props.themeOptions ?? defaultThemeOptions).palette,
-          type: prefersDarkMode ? 'dark' : 'light'
-        }
-      }),
-    [prefersDarkMode, props.themeOptions]
-  );
-
-  const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
-  useEffect(() => setUpLocaleChangeListener(update, getCurrentIntl()), [update]);
-
+  const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
+  const mountSnackbarProvider = props.mountSnackbarProvider ?? true;
+  const body = (
+    <>
+      <Suspense fallback="" children={props.children} />
+      {mountGlobalDialogManager && <GlobalDialogManager />}
+    </>
+  );
   return (
-    <Provider store={store}>
-      <RawIntlProvider value={getCurrentIntl()}>
-        <ThemeProvider theme={theme}>
-          <StylesProvider generateClassName={generateClassName}>
+    <StoreProvider resource={props.resource}>
+      <I18nProvider>
+        <CrafterThemeProvider themeOptions={props.themeOptions}>
+          {mountSnackbarProvider ? (
             <SnackbarProvider
               maxSnack={5}
               autoHideDuration={5000}
               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              <>
-                <Suspense fallback="" children={props.children} />
-                {mountGlobalDialogManager && <GlobalDialogManager />}
-              </>
-            </SnackbarProvider>
-          </StylesProvider>
-        </ThemeProvider>
-      </RawIntlProvider>
-    </Provider>
+              action={(id) => <SnackbarCloseButton id={id} />}
+              children={body}
+            />
+          ) : (
+            body
+          )}
+        </CrafterThemeProvider>
+      </I18nProvider>
+    </StoreProvider>
   );
 }
 
 export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>) {
+  const [storeResource] = useState(() =>
+    createResource(() => createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise())
+  );
   return (
-    <Suspense fallback={<LoadingState />}>
+    <Suspencified>
       <Bridge
         mountGlobalDialogManager={props.mountGlobalDialogManager}
         resource={storeResource}
         children={props.children}
       />
-    </Suspense>
+    </Suspencified>
   );
-}
-
-function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
-  const handler = (e: any) => {
-    if (currentIntl !== getCurrentIntl()) {
-      update({});
-    }
-  };
-  document.addEventListener('setlocale', handler, false);
-  return () => document.removeEventListener('setlocale', handler, false);
 }

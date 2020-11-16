@@ -118,12 +118,12 @@ const historyStyles = makeStyles(() =>
   })
 );
 
-const paginationStyles = makeStyles(() =>
+const paginationStyles = makeStyles((theme) =>
   createStyles({
     pagination: {
       marginLeft: 'auto',
-      background: 'white',
-      color: 'black',
+      background: theme.palette.background.paper,
+      color: theme.palette.text.primary,
       '& p': {
         padding: 0
       },
