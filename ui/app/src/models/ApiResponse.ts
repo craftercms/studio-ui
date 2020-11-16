@@ -16,7 +16,6 @@
 
 export interface ApiResponse {
   code?: number | string;
-  title?: string; // Title is a UI-only property
   message?: string;
   remedialAction?: string;
   documentationUrl?: string;

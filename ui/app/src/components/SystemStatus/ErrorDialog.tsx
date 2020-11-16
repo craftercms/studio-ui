@@ -19,10 +19,10 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useUnmount } from '../../utils/hooks';
+import ApiResponseErrorState from '../ApiResponseErrorState';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,7 +71,7 @@ function ErrorDialogWrapper(props: ErrorDialogProps) {
       <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()}>
         <CloseIcon />
       </IconButton>
-      {error && <ErrorState error={error} />}
+      {error && <ApiResponseErrorState error={error} />}
     </>
   );
 }

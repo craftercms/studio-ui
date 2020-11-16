@@ -49,6 +49,7 @@ import { filter } from 'rxjs/operators';
 import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import { getCurrentLocale } from '../../utils/i18n';
+import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 
 setRequestForgeryToken();
 
@@ -148,10 +149,7 @@ const useStyles = makeStyles((theme) =>
     },
     dialogPaper: {
       minWidth: 300,
-      backgroundColor: 'rgba(255, 255, 255, .8)',
-      '& .MuiInputLabel-root': {
-        color: '#000'
-      }
+      backgroundColor: theme.palette.type === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
     },
     logo: {
       maxWidth: 250,
@@ -160,14 +158,14 @@ const useStyles = makeStyles((theme) =>
     },
     username: {
       marginBottom: theme.spacing(2),
-      '& .MuiInput-input': { backgroundColor: '#fff' }
+      '& .MuiInput-input': { backgroundColor: theme.palette.background.paper }
     },
     password: {
-      '& .MuiInput-input': { backgroundColor: '#fff' }
+      '& .MuiInput-input': { backgroundColor: theme.palette.background.paper }
     },
     languageSelect: {
       margin: 0,
-      backgroundColor: '#fff'
+      backgroundColor: theme.palette.background.paper
     },
     languageSelectLabel: {
       marginTop: theme.spacing(1),
@@ -765,11 +763,8 @@ export default function LoginViewContainer(props: LoginViewProps) {
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">
-          <img
-            className={classes.logo}
-            src="/studio/static-assets/images/logo.svg"
-            alt={formatMessage(translations.loginDialogTitle)}
-          />
+          <Typography variant="srOnly">{formatMessage(translations.loginDialogTitle)}</Typography>
+          <CrafterCMSLogo className={classes.logo} width="auto" />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
         {mode === 'login' && (

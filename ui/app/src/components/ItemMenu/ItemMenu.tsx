@@ -141,7 +141,7 @@ export function ItemMenu(props: ItemMenuProps) {
         const path = item.path;
         const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
         // TODO: open a embedded form needs the following:
-        //src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
+        // src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {

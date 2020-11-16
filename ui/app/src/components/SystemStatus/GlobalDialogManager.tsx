@@ -20,7 +20,7 @@ import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
@@ -30,6 +30,8 @@ import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { showSystemNotification } from '../../state/actions/preview';
 import { filter } from 'rxjs/operators';
+import Snackbar from '@material-ui/core/Snackbar';
+import { defineMessages, useIntl } from 'react-intl';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -103,12 +105,20 @@ export const useStyles = makeStyles(() =>
   })
 );
 
+const messages = defineMessages({
+  loadingDialogs: {
+    id: 'globalDialogManager.loadingDialogs',
+    defaultMessage: 'Loading dialogs...'
+  }
+});
+
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
   const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const { enqueueSnackbar } = useSnackbar();
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -124,7 +134,19 @@ function GlobalDialogManager() {
   }, [enqueueSnackbar]);
 
   return (
-    <Suspense fallback="">
+    <Suspense
+      fallback={
+        <Snackbar
+          open
+          onClose={() => void 0}
+          message={formatMessage(messages.loadingDialogs)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+        />
+      }
+    >
       {/* region Confirm */}
       <ConfirmDialog
         open={state.confirm.open}
@@ -338,7 +360,7 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Bulk Upload*/}
+      {/* region Bulk Upload */}
       <BulkUploadDialog
         open={state.upload.open}
         path={state.upload.path}

@@ -36,13 +36,13 @@ import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog'
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 
-//region History
+// region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 export const historyDialogClosed = createAction('HISTORY_DIALOG_CLOSED');
 // endregion
 
-//region View Versions
+// region View Versions
 export const showViewVersionDialog = createAction<Partial<ViewVersionDialogStateProps>>('SHOW_VIEW_VERSION_DIALOG');
 export const closeViewVersionDialog = createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
 export const viewVersionDialogClosed = createAction<StandardAction>('VERSION_DIALOG_CLOSED');
@@ -54,13 +54,13 @@ export const fetchContentVersionComplete = createAction<any>('FETCH_CONTENT_VERS
 export const fetchContentVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
 // endregion
 
-//region Compare Versions
+// region Compare Versions
 export const showCompareVersionsDialog = createAction<Partial<CompareVersionsDialogStateProps>>(
   'SHOW_COMPARE_VERSIONS_DIALOG'
 );
 export const closeCompareVersionsDialog = createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
 export const compareVersionsDialogClosed = createAction('COMPARE_VERSIONS_DIALOG_CLOSED');
-//endregion
+// endregion
 
 // region Confirm
 export const showConfirmDialog = createAction<Partial<ConfirmDialogStateProps>>('SHOW_CONFIRM_DIALOG');

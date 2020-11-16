@@ -87,7 +87,7 @@ export function useQuickCreateListResource() {
 
 // TODO: Assess drawbacks & improve.
 // Might need to refactor the state to have the isFetching there.
-let /*private*/ systemVersionRequested = false;
+let /* private */ systemVersionRequested = false;
 /**
  * Will only fetch the system version once. It's controlled by the
  * `systemVersionRequested` private to control whether it's been requested.

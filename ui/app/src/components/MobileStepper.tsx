@@ -18,7 +18,6 @@ import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Paper from '@material-ui/core/Paper';
-//import { capitalize } from "@material-ui/core/utils";
 import { LinearProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { RedColor } from '../styles/theme';

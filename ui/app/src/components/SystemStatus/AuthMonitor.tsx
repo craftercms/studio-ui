@@ -27,7 +27,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { login, validateSession } from '../../state/actions/auth';
 import LoadingState from './LoadingState';
-import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
 import { getLogoutInfoURL } from '../../services/auth';
@@ -38,6 +37,8 @@ import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
 import { LogInForm } from './LoginForm';
 import { ClassNameMap } from '@material-ui/styles/withStyles';
 import { me } from '../../services/users';
+import ApiResponseErrorState from '../ApiResponseErrorState';
+import ErrorState from '../ErrorState/ErrorState';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -148,12 +149,12 @@ export default function AuthMonitor() {
         ) : (
           <>
             {error ? (
-              <ErrorState error={error} classes={{ graphic: classes.graphic }} />
+              <ApiResponseErrorState error={error} classes={{ image: classes.graphic }} />
             ) : (
               <ErrorState
-                graphicUrl={loginGraphicUrl}
-                classes={{ graphic: classes.graphic }}
-                error={{ message: formatMessage(translations.sessionExpired) }}
+                imageUrl={loginGraphicUrl}
+                classes={{ image: classes.graphic }}
+                message={formatMessage(translations.sessionExpired)}
               />
             )}
             {isSSO ? (

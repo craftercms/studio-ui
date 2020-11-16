@@ -28,7 +28,6 @@ import ConfirmDropdown from '../../../../components/Controls/ConfirmDropdown';
 import FilterDropdown from '../../Sites/Create/FilterDropdown';
 import { setRequestForgeryToken } from '../../../../utils/auth';
 import TablePagination from '@material-ui/core/TablePagination';
-import ErrorState from '../../../../components/SystemStatus/ErrorState';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOffRounded';
@@ -39,6 +38,7 @@ import { useSpreadState } from '../../../../utils/hooks';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from '../constants';
 import palette from '../../../../styles/palette';
+import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
 
 const messages = defineMessages({
   selectAll: {
@@ -425,7 +425,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         </div>
       )}
       {apiState.error && apiState.errorResponse ? (
-        <ErrorState error={apiState.errorResponse} />
+        <ApiResponseErrorState error={apiState.errorResponse} />
       ) : (
         <div className={classes.queueList}>
           {packages === null && <Spinner />}

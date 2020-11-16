@@ -77,7 +77,7 @@ interface VersionResource {
   singleItemSelector: {
     marginBottom: '10px'
   }
-}));*/
+})); */
 
 const getLegacyDialogStyles = makeStyles(() => ({
   iframe: {
@@ -136,7 +136,7 @@ const getLegacyDialogStyles = makeStyles(() => ({
       </section>
     </>
   );
-}*/
+} */
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps {
   leftActions?: DialogHeaderStateAction[];

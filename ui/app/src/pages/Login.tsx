@@ -21,7 +21,7 @@ import LoginView, { LoginViewProps } from '../components/SystemStatus/LoginView'
 const useStyles = makeStyles(() =>
   createStyles({
     '@global': {
-      'html, body, #root, #studioSPARoot': {
+      'html, body, #root, #studioAppRootElement': {
         margin: 0,
         padding: 0,
         height: '100%'

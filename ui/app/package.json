@@ -81,9 +81,21 @@
       "prettier",
       "prettier/react"
     ],
-    "plugins": ["prettier"],
+    "plugins": [
+      "prettier"
+    ],
     "rules": {
-      "prettier/prettier": ["error"]
+      "prettier/prettier": [
+        "error"
+      ],
+      "spaced-comment": ["error", "always", {
+        "line": { "markers": ["/", "#"] },
+        "block": {
+          "markers": ["!", "*", "function", "const", "if", "export", "interface"],
+          "exceptions": ["!", "*", "function", "const", "if", "export", "interface"],
+          "balanced": true
+        }
+      }]
     }
   },
   "browserslist": {

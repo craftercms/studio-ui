@@ -14,20 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from 'react';
-import { useMount } from '../../utils/hooks';
-import craftercms from '../../utils/craftercms';
-import { NonReactComponentRecord } from '../../services/plugin';
+import React, { PropsWithChildren } from 'react';
+import { Resource } from '../../models/Resource';
+import { CrafterCMSStore } from '../../state/store';
+import { Provider } from 'react-redux';
 
-interface NonReactWidgetProps {
-  widget: NonReactComponentRecord;
-  configuration: any;
+export type StoreProviderProps = PropsWithChildren<{ resource: Resource<CrafterCMSStore> }>;
+
+export function StoreProvider(props: StoreProviderProps) {
+  const store = props.resource.read();
+  return <Provider children={props.children} store={store} />;
 }
 
-function NonReactWidget(props: NonReactWidgetProps) {
-  const ref = useRef();
-  useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration }));
-  return <div ref={ref} />;
-}
-
-export default NonReactWidget;
+export default StoreProvider;

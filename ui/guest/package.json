@@ -45,7 +45,13 @@
     ],
     "plugins": ["prettier"],
     "rules": {
-      "prettier/prettier": ["error"]
+      "prettier/prettier": ["error"],
+      "spaced-comment": ["error", "always", {
+        "line": { "markers": ["/", "#"] },
+        "block": {
+          "balanced": true
+        }
+      }]
     }
   },
   "browserslist": {

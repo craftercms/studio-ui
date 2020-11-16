@@ -64,8 +64,8 @@ const useStyles = makeStyles((theme) =>
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
       })
-      //width: `calc(100% - ${DRAWER_WIDTH}px)`,
-      //marginLeft: DRAWER_WIDTH
+      // width: `calc(100% - ${DRAWER_WIDTH}px)`,
+      // marginLeft: DRAWER_WIDTH
     }
   })
 );

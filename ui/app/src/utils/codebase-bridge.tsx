@@ -39,14 +39,14 @@ import security from '../services/security';
 import authService from '../services/auth';
 import translation from '../services/translation';
 import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
-import { generateClassName, defaultThemeOptions } from '../styles/theme';
+import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import createStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
 import { getCurrentIntl, intl$ } from './i18n';
 
-const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
+const ErrorState = lazy(() => import('../components/ErrorState/ErrorState'));
 
 /**
  *
@@ -217,12 +217,8 @@ export function createCodebaseBridge() {
         Component = function() {
           return (
             <ErrorState
-              graphicUrl="/studio/static-assets/images/warning_state.svg"
-              error={{
-                code: '',
-                message: `The supplied component name ('${component}') is not a know component of CrafterCMSNext`,
-                remedialAction: `Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`
-              }}
+              imageUrl="/studio/static-assets/images/warning_state.svg"
+              message={`The supplied component name ('${component}') is not a know component of CrafterCMSNext. Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`}
             />
           );
         };
