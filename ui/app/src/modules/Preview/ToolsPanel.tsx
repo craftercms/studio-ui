@@ -25,12 +25,13 @@ import { ErrorBoundary } from '../../components/SystemStatus/ErrorBoundary';
 import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbeddedAppViewButton';
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
 import PathNavigator from '../../components/Navigation/PathNavigator/PathNavigator';
-import ToolsPanelPage from '../../components/ToolsPanelPage';
+import ToolsPanelPageComponent from '../../components/ToolsPanelPage';
 import { components } from '../../utils/craftercms';
 import { fetchSiteUiConfig } from '../../state/actions/configuration';
 import GlobalState from '../../models/GlobalState';
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import { renderWidgets } from '../../components/Widget';
+import LookupTable from '../../models/LookupTable';
 
 const translations = defineMessages({
   unknownPanelTitle: {
@@ -75,12 +76,18 @@ const translations = defineMessages({
   }
 });
 
+export interface ToolsPanelPage {
+  id: string;
+  roles: string[];
+  configuration: LookupTable<string>;
+}
+
 export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
-  const pages = useSelection<any>((state) => state.preview.toolsPanelPageStack.pages);
+  const pages = useSelection<ToolsPanelPage[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
 
   const widgetResource = useLogicResource(uiConfig, {
@@ -101,7 +108,7 @@ export default function ToolsPanel() {
 
   useEffect(() => {
     dispatch(fetchSiteUiConfig({ site }));
-  }, []);
+  }, [dispatch, site]);
 
   return (
     <ResizeableDrawer
@@ -141,7 +148,7 @@ Object.entries({
   'craftercms.component.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.component.search': Search,
   'craftercms.component.PathNavigator': PathNavigator,
-  'craftercms.component.ToolsPanelPage': ToolsPanelPage
+  'craftercms.component.ToolsPanelPage': ToolsPanelPageComponent
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

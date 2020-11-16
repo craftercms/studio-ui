@@ -50,6 +50,7 @@ import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
+import { ToolsPanelPage } from '../modules/Preview/ToolsPanel';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -114,9 +115,7 @@ export interface GlobalState {
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
-    toolsPanelPageStack: {
-      pages: any[];
-    };
+    toolsPanelPageStack: ToolsPanelPage[];
     selectedTool: PreviewTool;
     previousTool: PreviewTool;
     toolsPanelWidth: number;

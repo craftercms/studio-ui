@@ -40,8 +40,8 @@ import {
   GUEST_MODELS_RECEIVED,
   IN_PAGE_INSTANCES,
   OPEN_TOOLS,
-  popPageStack,
-  pushPageStack,
+  popToolsPanelPage,
+  pushToolsPanelPage,
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
@@ -109,9 +109,7 @@ const reducer = createReducer<GlobalState['preview']>(
     // The src of the iframe
     currentUrl: previewLanding,
     hostSize: { width: null, height: null },
-    toolsPanelPageStack: {
-      pages: []
-    },
+    toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
     previousTool: null,
     // Don't change/commit the tool you're working with. Use your .env.development to set it
@@ -536,11 +534,16 @@ const reducer = createReducer<GlobalState['preview']>(
         toolsPanelWidth: payload.width
       };
     },
-    [pushPageStack.type]: (state, { payload }) => {
-      return state;
+    [pushToolsPanelPage.type]: (state, { payload }) => {
+      return {
+        ...state,
+        toolsPanelPageStack: [...state.toolsPanelPageStack, payload.page]
+      };
     },
-    [popPageStack.type]: (state, { payload }) => {
-      return state;
+    [popToolsPanelPage.type]: (state, { payload }) => {
+      return {
+        ...state
+      };
     }
   }
 );

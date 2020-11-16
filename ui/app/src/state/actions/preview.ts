@@ -308,6 +308,6 @@ export const showSystemNotification = createAction<{
 }>('SHOW_SYSTEM_NOTIFICATION');
 
 // region toolsPanelPageStack
-export const pushPageStack = createAction<any>('PUSH_PAGE_STACK');
-export const popPageStack = createAction<any>('POP_PAGE_STACK');
+export const pushToolsPanelPage = createAction<any>('PUSH_TOOLS_PANEL_PAGE');
+export const popToolsPanelPage = createAction<any>('POP_TOOLS_PANEL_PAGE');
 // endregion
