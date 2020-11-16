@@ -30,8 +30,8 @@ import { checkState, onClickSetChecked, selectAllDeps, updateCheckedList } from 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-import palette from '../../../styles/palette';
 import { useActiveSiteId, useSelection } from '../../../utils/hooks';
+
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
   siteId?: string; // for dependencySelectionDelete
@@ -79,12 +79,12 @@ const CenterCircularProgress = withStyles({
   }
 })(CircularProgress);
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   dependencySelection: {
     padding: '11px 12px',
-    backgroundColor: palette.white,
+    background: theme.palette.background.paper,
     border: '1px solid',
-    borderColor: palette.gray.light5,
+    borderColor: 'rgba(0, 0, 0, .125)',
     height: 'calc(100% - 24px)',
     minHeight: '374px',
     overflowY: 'hidden'
@@ -93,7 +93,7 @@ const useStyles = makeStyles(() => ({
     overflowY: 'auto'
   },
   dependencySelectionDisabled: {
-    backgroundColor: palette.gray.light1
+    opacity: 0.7
   },
   selectionListTitle: {
     margin: '6px auto 6px',

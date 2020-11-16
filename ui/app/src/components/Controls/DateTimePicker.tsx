@@ -82,7 +82,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     pickerInput: {
       padding: '8px 12px',
-      backgroundColor: palette.white,
       fontSize: '14px'
     },
     pickerButton: {
@@ -106,8 +105,7 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '22px'
     },
     autocompleteRoot: {
-      marginTop: '16px',
-      backgroundColor: palette.white
+      marginTop: '16px'
     },
     autocompleteInputRoot: {
       paddingTop: '4px !important',

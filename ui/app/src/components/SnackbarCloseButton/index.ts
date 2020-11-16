@@ -14,22 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction } from '@reduxjs/toolkit';
-import StandardAction from '../../models/StandardAction';
+export { default } from './SnackbarCloseButton';
 
-// region Batch Actions
-export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
-// endregion
-
-// region dispatch DOM Event
-export const dispatchDOMEvent = createAction<{ id: string }>('DISPATCH_DOM_EVENT');
-// endregion
-
-// region TemplateActions
-export const changeContentType = createAction<{
-  originalContentTypeId: string;
-  path: string;
-  newContentTypeId?: string;
-}>('CHANGE_CONTENT_TYPE');
-export const editTemplate = createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
-// endregion
+export * from './SnackbarCloseButton';

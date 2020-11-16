@@ -40,6 +40,7 @@ const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSi
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
+const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
@@ -213,12 +214,24 @@ function GlobalDialogManager() {
         item={state.newContent.item}
         rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
-        type={state.newContent.type}
-        selectedContentType={state.newContent.selectedContentType}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Change ContentType */}
+      <ChangeContentTypeDialog
+        open={state.changeContentType.open}
+        item={state.changeContentType.item}
+        rootPath={state.changeContentType.rootPath}
+        compact={state.changeContentType.compact}
+        selectedContentType={state.changeContentType.selectedContentType}
+        onContentTypeSelected={createCallback(state.changeContentType.onContentTypeSelected, dispatch)}
+        onClose={createCallback(state.changeContentType.onClose, dispatch)}
+        onClosed={createCallback(state.changeContentType.onClosed, dispatch)}
+        onDismiss={createCallback(state.changeContentType.onDismiss, dispatch)}
       />
       {/* endregion */}
 
@@ -334,6 +347,7 @@ function GlobalDialogManager() {
         onClose={createCallback(state.createFolder.onClose, dispatch)}
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}
+        onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
       />
       {/* endregion */}
 

@@ -94,15 +94,15 @@ export function getParentPath(path: string): string {
   return splitPath.join('/');
 }
 
+export function isRootPath(path: string): boolean {
+  return getRootPath(path) === withoutIndex(path);
+}
+
 export function getRootPath(path: string): string {
-  if (path.includes('/site/website')) {
-    return '/site/website';
-  } else {
-    return path
-      .split('/')
-      .slice(0, 2)
-      .join('/');
-  }
+  return withoutIndex(path)
+    .split('/')
+    .slice(0, path.startsWith('/site') ? 3 : 2)
+    .join('/');
 }
 
 export function getParentsFromPath(path: string, rootPath: string): string[] {

@@ -39,6 +39,18 @@ export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: st
   'PATH_NAVIGATOR_SET_CURRENT_PATH'
 );
 
+export const pathNavigatorConditionallySetPath = createAction<PayloadWithId<{ path: string }>>(
+  'PATH_NAVIGATOR_CONDITIONALLY_SET_PATH'
+);
+
+export const pathNavigatorConditionallySetPathComplete = createAction<
+  PayloadWithId<{ path: string; response: GetChildrenResponse }>
+>('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_COMPLETE');
+
+export const pathNavigatorConditionallySetPathFailed = createAction('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED');
+
+export const pathNavigatorRefresh = createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
+
 export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_ITEM_CHECKED'
 );
@@ -64,7 +76,3 @@ export const pathNavigatorFetchParentItemsComplete = createAction<PayloadWithId<
 export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
 
 export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
-
-export const pathNavigatorItemActionSuccess = createAction<PayloadWithId<{ option: string; item?: DetailedItem }>>(
-  'PATH_NAVIGATOR_ITEM_ACTION_SUCCESS'
-);

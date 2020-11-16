@@ -803,7 +803,7 @@ function SimpleMenu(props: SimpleMenuProps) {
       <Suspense
         fallback={
           <div className={classes.loadingWrapper}>
-            <Loader loaderItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2} />
+            <Loader numOfItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2} />
           </div>
         }
       >

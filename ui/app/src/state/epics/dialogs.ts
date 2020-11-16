@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { Epic, ofType } from 'redux-observable';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -34,12 +34,7 @@ import {
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
   fetchDeleteDependenciesFailed,
-  newContentCreationComplete,
-  showCopyItemSuccessNotification,
-  showDeleteItemSuccessNotification,
-  showEditItemSuccessNotification,
-  showPublishItemSuccessNotification,
-  showRevertItemSuccessNotification
+  newContentCreationComplete
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { getVersion } from '../../services/content';
@@ -47,9 +42,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { changeCurrentUrl, showSystemNotification } from '../actions/preview';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { itemSuccessMessages } from '../../utils/i18n-legacy';
+import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
 
 function getDialogNameFromType(type: string): string {
@@ -122,82 +115,6 @@ const dialogEpics: CrafterCMSEpic[] = [
       ofType(newContentCreationComplete.type),
       switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
     ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(showDeleteItemSuccessNotification.type),
-      tap(({ payload }) => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(
-          showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemDeleted, {
-              count: payload.items.length
-            })
-          })
-        );
-      }),
-      ignoreElements()
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(showPublishItemSuccessNotification.type),
-      tap(({ payload }) => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(
-          showSystemNotification({
-            message:
-              payload.schedule === 'now'
-                ? getIntl().formatMessage(itemSuccessMessages.itemPublishedNow, {
-                    count: payload.items.length,
-                    environment: payload.environment
-                  })
-                : getIntl().formatMessage(itemSuccessMessages.itemSchedulePublished, {
-                    count: payload.items.length,
-                    environment: payload.environment
-                  })
-          })
-        );
-      }),
-      ignoreElements()
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(showEditItemSuccessNotification.type),
-      tap(({ payload }) => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(
-          showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemEdited)
-          })
-        );
-      }),
-      ignoreElements()
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(showCopyItemSuccessNotification.type),
-      tap(({ payload }) => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(
-          showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemCopied, { count: payload?.children.length ?? 1 })
-          })
-        );
-      }),
-      ignoreElements()
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(showRevertItemSuccessNotification.type),
-      tap(({ payload }) => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(
-          showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemReverted)
-          })
-        );
-      }),
-      ignoreElements()
-    ),
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDeleteDependencies.type),
@@ -209,6 +126,6 @@ const dialogEpics: CrafterCMSEpic[] = [
         )
       )
     )
-];
+] as Epic[];
 
 export default dialogEpics;

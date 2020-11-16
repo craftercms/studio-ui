@@ -128,7 +128,7 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   error: null,
   items: [],
   leaves: [],
-  keywords: 'string',
+  keywords: '',
   pageNumber: 0,
   breadcrumb: [],
   offset: null,

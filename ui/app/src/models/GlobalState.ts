@@ -51,6 +51,7 @@ import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 import { SidebarPanelConfigEntry, SiteNavConfigEntry } from './UiConfig';
+import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -76,6 +77,12 @@ export interface GuestData {
   itemBeingDragged: boolean;
 }
 
+export interface Clipboard {
+  type: 'cut' | 'copy';
+  paths: string[];
+  sourcePath: string;
+}
+
 export interface GlobalState {
   auth: {
     error: ApiResponse;
@@ -98,7 +105,7 @@ export interface GlobalState {
       byPath: LookupTable<DetailedItem>;
       permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
-    clipboard: string;
+    clipboard: Clipboard;
   };
   contentTypes: EntityState<ContentType>;
   env: {
@@ -158,6 +165,7 @@ export interface GlobalState {
     preview: PreviewDialogStateProps;
     editSite: EditSiteDialogStateProps;
     pathSelection: PathSelectionDialogStateProps;
+    changeContentType: ChangeContentTypeDialogStateProps;
   };
   translation: {
     siteLocales: {

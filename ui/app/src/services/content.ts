@@ -888,17 +888,18 @@ export function getChildrenByPath(
   return get(`/studio/api/1/services/api/1/content/get-items-tree.json${qs}`).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),
-    map(({ item }) =>
-      Object.assign(parseLegacyItemToSandBoxItem(item.children), {
+    map(({ item }) => {
+      const levelDescriptor = item.children.find((item) => item.contentType === '/component/level-descriptor');
+      return Object.assign(parseLegacyItemToSandBoxItem(item.children), {
         parent: parseLegacyItemToSandBoxItem(item),
-        ...(item.children[0].contentType === '/component/level-descriptor' && {
-          levelDescriptor: {
-            ...parseLegacyItemToSandBoxItem(item.children[0]),
-            label: 'Section Defaults'
-          }
-        })
-      })
-    ),
+        levelDescriptor: levelDescriptor
+          ? {
+              ...parseLegacyItemToSandBoxItem(levelDescriptor),
+              label: 'Section Defaults'
+            }
+          : null
+      });
+    }),
     catchError(errorSelectorApi1)
   );
 }
@@ -913,18 +914,18 @@ export function copy(site: string, itemOrPath: string | CopyItem): Observable<{ 
   );
 }
 
-export function cut(site: string, item: DetailedItem): Observable<any> {
+export function cut(site: string, path: string): Observable<any> {
   return post(
     `/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`,
-    { item: [{ uri: item.path }] },
+    { item: [{ uri: path }] },
     CONTENT_TYPE_JSON
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function paste(site: string, path: string): Observable<{ site: string; status: string[] }> {
+export function paste(site: string, path: string): Observable<string[]> {
   return get(
     `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(path)}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  ).pipe(pluck('response', 'status'), catchError(errorSelectorApi1));
 }
 
 export function duplicate(site: string, path: string): Observable<string> {
@@ -935,7 +936,7 @@ export function duplicate(site: string, path: string): Observable<string> {
   return copy(site, path).pipe(
     switchMap(() => paste(site, getParentPath(parentPath))),
     // Duplicate only does shallow copy, so return the copied path
-    pluck('status', '0')
+    pluck('0')
   );
 }
 

@@ -77,7 +77,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       width: 'auto'
@@ -91,7 +91,7 @@ const useStyles = makeStyles(() =>
       marginBottom: '20px'
     },
     sectionLabel: {
-      color: palette.black,
+      color: theme.palette.text.primary,
       width: '100%',
       fontSize: '16px'
     },
@@ -104,8 +104,7 @@ const useStyles = makeStyles(() =>
       marginRight: '7px'
     },
     selectInput: {
-      padding: '10px 12px',
-      backgroundColor: palette.white
+      padding: '10px 12px'
     },
     environmentLoaderContainer: {
       paddingTop: '24px',
@@ -133,7 +132,7 @@ const useStyles = makeStyles(() =>
         height: '100%',
         top: '0',
         left: '7px',
-        backgroundColor: '#F2F2F7',
+        backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light2,
         borderRadius: '5px'
       }
     },
@@ -153,7 +152,6 @@ const useStyles = makeStyles(() =>
       paddingBottom: 0
     },
     textField: {
-      backgroundColor: palette.white,
       padding: 0
     }
   })

@@ -28,6 +28,7 @@ import Suspencified from './SystemStatus/Suspencified';
 import I18nProvider from './I18nProvider';
 import StoreProvider from './StoreProvider';
 import CrafterThemeProvider from './CrafterThemeProvider';
+import SnackbarCloseButton from './SnackbarCloseButton';
 
 function Bridge(
   props: PropsWithChildren<{
@@ -46,6 +47,7 @@ function Bridge(
             maxSnack={5}
             autoHideDuration={5000}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              action={(id) => <SnackbarCloseButton id={id} />}
           >
             <>
               <Suspense fallback="" children={props.children} />

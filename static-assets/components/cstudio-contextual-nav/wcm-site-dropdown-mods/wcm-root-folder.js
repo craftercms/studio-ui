@@ -3696,6 +3696,14 @@
               var myJSON = YAHOO.lang.JSON.stringify(pasteFormatItem);
               var oncomplete = {
                 success: function() {
+                  const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+                  const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+                  CStudioAuthoring.Utils.showNotification(
+                    formatMessage(messages.itemCopied, { count: 1 }),
+                    null,
+                    null,
+                    'default'
+                  );
                   CStudioAuthoring.ContextualNav.WcmRootFolder.resetNodeStyles();
                 },
                 failure: function() {}

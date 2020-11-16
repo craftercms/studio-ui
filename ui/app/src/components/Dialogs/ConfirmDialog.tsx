@@ -94,7 +94,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
       </DialogBody>
       <DialogFooter>
         {onCancel && (
-          <Button onClick={onCancel} variant="outlined">
+          <Button onClick={onCancel} variant="contained">
             {formatMessage(messages.cancel)}
           </Button>
         )}
