@@ -16,7 +16,6 @@
 
 import { Epic, ofType } from 'redux-observable';
 import { ignoreElements, tap } from 'rxjs/operators';
-import { showSystemNotification } from '../actions/preview';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
@@ -28,7 +27,8 @@ import {
   showEditItemSuccessNotification,
   showPasteItemSuccessNotification,
   showPublishItemSuccessNotification,
-  showRevertItemSuccessNotification
+  showRevertItemSuccessNotification,
+  showSystemNotification
 } from '../actions/system';
 
 export default [

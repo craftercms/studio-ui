@@ -33,27 +33,35 @@ import SnackbarCloseButton from './SnackbarCloseButton';
 function Bridge(
   props: PropsWithChildren<{
     mountGlobalDialogManager?: boolean;
+    mountSnackbarProvider?: boolean;
     resource: Resource<CrafterCMSStore>;
     themeOptions?: ThemeOptions;
   }>
 ) {
-  const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
   useLayoutEffect(setRequestForgeryToken, []);
+  const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
+  const mountSnackbarProvider = props.mountSnackbarProvider ?? true;
+  const body = (
+    <>
+      <Suspense fallback="" children={props.children} />
+      {mountGlobalDialogManager && <GlobalDialogManager />}
+    </>
+  );
   return (
     <StoreProvider resource={props.resource}>
       <I18nProvider>
         <CrafterThemeProvider themeOptions={props.themeOptions}>
-          <SnackbarProvider
-            maxSnack={5}
-            autoHideDuration={5000}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          {mountSnackbarProvider ? (
+            <SnackbarProvider
+              maxSnack={5}
+              autoHideDuration={5000}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               action={(id) => <SnackbarCloseButton id={id} />}
-          >
-            <>
-              <Suspense fallback="" children={props.children} />
-              {mountGlobalDialogManager && <GlobalDialogManager />}
-            </>
-          </SnackbarProvider>
+              children={body}
+            />
+          ) : (
+            body
+          )}
         </CrafterThemeProvider>
       </I18nProvider>
     </StoreProvider>

@@ -171,7 +171,7 @@ export default function PathNavigator(props: WidgetProps) {
     }
   }, [dispatch, id, siteLocales.defaultLocaleCode]);
 
-  //Item Updates Propagation
+  // Item Updates Propagation
   useEffect(() => {
     const events = [
       itemsPasted.type,

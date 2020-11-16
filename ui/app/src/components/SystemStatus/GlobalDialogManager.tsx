@@ -28,10 +28,10 @@ import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { showSystemNotification } from '../../state/actions/preview';
 import { filter } from 'rxjs/operators';
 import Snackbar from '@material-ui/core/Snackbar';
 import { defineMessages, useIntl } from 'react-intl';
+import { showSystemNotification } from '../../state/actions/system';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));

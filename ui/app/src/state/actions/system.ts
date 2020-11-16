@@ -16,8 +16,9 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
+import { OptionsObject } from 'notistack';
 
-//region Item Events
+// region Item Events
 
 export const itemUpdated = createAction<{ target: string }>('ITEM_UPDATED');
 
@@ -33,9 +34,10 @@ export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED')
 
 export const itemDuplicated = createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
 
-//endregion
+// endregion
 
 // region Notifications
+
 export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
 
 export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
@@ -51,6 +53,12 @@ export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SU
 export const showDuplicatedItemSuccessNotification = createAction('SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION');
 
 export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
+
+export const showSystemNotification = createAction<{
+  message: string;
+  options?: OptionsObject;
+}>('SHOW_SYSTEM_NOTIFICATION');
+
 // endregion
 
 export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
