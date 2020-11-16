@@ -18,9 +18,8 @@ import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import ToolPanel from './ToolPanel';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../../utils/hooks';
-import SearchBar from '../../../components/Controls/SearchBar';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../../../utils/hooks';
+import SearchBar from '../../../../components/Controls/SearchBar';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -28,30 +27,26 @@ import {
   MediaItem,
   SearchItem,
   SearchResult
-} from '../../../models/Search';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { DraggablePanelListItem } from './DraggablePanelListItem';
+} from '../../../../models/Search';
+import { SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
+import { DraggablePanelListItem } from '../DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
-import { getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../../previewContext';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED
-} from '../../../state/actions/preview';
+} from '../../../../state/actions/preview';
 // import { createLookupTable } from '../../../utils/object';
-import ContentInstance from '../../../models/ContentInstance';
-import { search } from '../../../services/search';
-import { ApiResponse } from '../../../models/ApiResponse';
+import ContentInstance from '../../../../models/ContentInstance';
+import { search } from '../../../../services/search';
+import { ApiResponse } from '../../../../models/ApiResponse';
 
 const translations = defineMessages({
-  title: {
-    id: 'previewSearchTool.title',
-    defaultMessage: 'Search Everywhere'
-  },
-  titleKeyword: {
-    id: 'previewSearchTool.titleKeyword',
-    defaultMessage: 'Search "{keyword}"'
+  previewSearchPanelTitle: {
+    id: 'previewSearchPanel.title',
+    defaultMessage: 'Search'
   },
   previousPage: {
     id: 'pagination.previousPage',
@@ -146,7 +141,7 @@ const initialSearchParameters: Partial<ElasticParams> = {
 
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
 
-export default function SearchPanel() {
+export default function PreviewSearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState('');
@@ -228,11 +223,7 @@ export default function SearchPanel() {
   }
 
   return (
-    <ToolPanel
-      title={
-        keyword ? formatMessage(translations.titleKeyword, { keyword: keyword }) : formatMessage(translations.title)
-      }
-    >
+    <>
       <div className={classes.searchContainer}>
         <SearchBar
           keyword={keyword}
@@ -272,6 +263,6 @@ export default function SearchPanel() {
       >
         <SearchResults resource={resource} />
       </SuspenseWithEmptyState>
-    </ToolPanel>
+    </>
   );
 }

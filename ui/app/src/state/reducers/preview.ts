@@ -70,7 +70,7 @@ import { changeSite } from './sites';
 import { envInitialState } from './env';
 
 const audiencesPanelInitialState = {
-  isFetching: false,
+  isFetching: null,
   isApplying: false,
   error: null,
   contentType: null,
@@ -537,12 +537,15 @@ const reducer = createReducer<GlobalState['preview']>(
     [pushToolsPanelPage.type]: (state, { payload }) => {
       return {
         ...state,
-        toolsPanelPageStack: [...state.toolsPanelPageStack, payload.page]
+        toolsPanelPageStack: [...state.toolsPanelPageStack, payload]
       };
     },
-    [popToolsPanelPage.type]: (state, { payload }) => {
+    [popToolsPanelPage.type]: (state) => {
+      let stack = [...state.toolsPanelPageStack];
+      stack.pop();
       return {
-        ...state
+        ...state,
+        toolsPanelPageStack: stack
       };
     }
   }

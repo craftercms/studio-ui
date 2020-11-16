@@ -14,21 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
-import { useDispatch } from 'react-redux';
-import { pushToolsPanelPage } from '../../state/actions/preview';
+export { default } from './PreviewSearchPanel';
 
-export default function ToolsPanelPageButton(props) {
-  const dispatch = useDispatch();
-  const turnPage = () => {
-    dispatch(
-      pushToolsPanelPage({
-        id: 'craftercms.component.ToolsPanelPage',
-        roles: [],
-        configuration: props
-      })
-    );
-  };
-  return <ToolsPanelListItemButton displaySecondaryAction {...props} onClick={turnPage} />;
-}
+export * from './PreviewSearchPanel';

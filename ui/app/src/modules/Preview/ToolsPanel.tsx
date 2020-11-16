@@ -26,68 +26,31 @@ import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbedded
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
 import PathNavigator from '../../components/Navigation/PathNavigator/PathNavigator';
 import ToolsPanelPageComponent from '../../components/ToolsPanelPage';
-import { components } from '../../utils/craftercms';
 import { fetchSiteUiConfig } from '../../state/actions/configuration';
 import GlobalState from '../../models/GlobalState';
 import Suspencified from '../../components/SystemStatus/Suspencified';
-import { renderWidgets } from '../../components/Widget';
-import LookupTable from '../../models/LookupTable';
+import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
+import { components } from '../../services/plugin';
+import PreviewSearchPanel from './Tools/PreviewSearchPanel';
+import PreviewComponentsPanel from './Tools/PreviewComponentsPanel';
+import PreviewAssetsPanel from './Tools/PreviewAssetsPanel';
+import PreviewAudiencesPanel from './Tools/PreviewAudiencesPanel';
+import PreviewPageExplorerPanel from './Tools/PreviewPageExplorerPanel';
+import PreviewSimulatorPanel from './Tools/PreviewSimulatorPanel';
 
-const translations = defineMessages({
-  unknownPanelTitle: {
-    id: 'unknownPanel.title',
-    defaultMessage: 'Unknown Panel'
-  },
-  componentsPanelTitle: {
-    id: 'componentsPanel.title',
-    defaultMessage: 'Components'
-  },
-  assetsPanelTitle: {
-    id: 'assetsPanel.title',
-    defaultMessage: 'Assets'
-  },
-  audiencesPanelTitle: {
-    id: 'audiencesPanel.title',
-    defaultMessage: 'Audience Targeting'
-  },
-  simulatorPanelTitle: {
-    id: 'simulatorPanelTitle.title',
-    defaultMessage: 'Device Simulator'
-  },
-  browseComponentsPanelTitle: {
-    id: 'browseComponentsPanel.title',
-    defaultMessage: 'Browse Components'
-  },
-  pageExplorerPanelTitle: {
-    id: 'pageExplorerPanel.title',
-    defaultMessage: 'Page Explorer'
-  },
-  searchPanelTitle: {
-    id: 'searchPanel.title',
-    defaultMessage: 'Search Everywhere'
-  },
-  loading: {
-    id: 'words.loading',
-    defaultMessage: 'Loading'
-  },
-  siteExplorerPanelTitle: {
-    id: 'siteExplorerPanel.title',
+defineMessages({
+  previewSiteExplorerPanelTitle: {
+    id: 'previewSiteExplorerPanel.title',
     defaultMessage: 'Site Explorer'
   }
 });
-
-export interface ToolsPanelPage {
-  id: string;
-  roles: string[];
-  configuration: LookupTable<string>;
-}
 
 export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
-  const pages = useSelection<ToolsPanelPage[]>((state) => state.preview.toolsPanelPageStack);
+  const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
 
   const widgetResource = useLogicResource(uiConfig, {
@@ -103,7 +66,7 @@ export default function ToolsPanel() {
     resultSelector: (source) => source,
     shouldReject: (source) => null,
     shouldResolve: (source) => Boolean(source),
-    shouldRenew: (source) => null
+    shouldRenew: (source, resource) => resource.complete
   });
 
   useEffect(() => {
@@ -148,7 +111,13 @@ Object.entries({
   'craftercms.component.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.component.search': Search,
   'craftercms.component.PathNavigator': PathNavigator,
-  'craftercms.component.ToolsPanelPage': ToolsPanelPageComponent
+  'craftercms.component.ToolsPanelPage': ToolsPanelPageComponent,
+  'craftercms.component.PreviewSearchPanel': PreviewSearchPanel,
+  'craftercms.component.PreviewComponentsPanel': PreviewComponentsPanel,
+  'craftercms.component.PreviewAssetsPanel': PreviewAssetsPanel,
+  'craftercms.component.PreviewAudiencesPanel': PreviewAudiencesPanel,
+  'craftercms.component.PreviewPageExplorerPanel': PreviewPageExplorerPanel,
+  'craftercms.component.PreviewSimulatorPanel': PreviewSimulatorPanel
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

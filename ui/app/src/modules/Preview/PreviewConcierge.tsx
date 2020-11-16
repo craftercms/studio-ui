@@ -32,7 +32,6 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
-  fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
   fetchComponentsByContentType,
   GUEST_CHECK_IN,
@@ -511,9 +510,6 @@ export function PreviewConcierge(props: any) {
 
   useEffect(() => {
     switch (selectedTool) {
-      case 'craftercms.assetsPanel':
-        site && dispatch(fetchAssetsPanelItems({}));
-        break;
       case 'craftercms.audiencesPanel':
         if (
           !audiencesPanel.isFetching &&

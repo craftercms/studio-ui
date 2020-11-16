@@ -16,40 +16,39 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import ToolPanel from './ToolPanel';
-import { useActiveSiteId, useDebouncedInput, useSelection, useSelectorResource } from '../../../utils/hooks';
-import { MediaItem } from '../../../models/Search';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useSelection } from '../../../../utils/hooks';
+import { MediaItem } from '../../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import SearchBar from '../../../components/Controls/SearchBar';
+import SearchBar from '../../../../components/Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
-import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
+import GlobalState, { PagedEntityState } from '../../../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { getHostToGuestBus } from '../previewContext';
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
-import MediaCard from '../../../components/MediaCard';
+import { getHostToGuestBus } from '../../previewContext';
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../../state/actions/preview';
+import MediaCard from '../../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
+import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import UploadIcon from '@material-ui/icons/Publish';
-import { nnou, pluckProps } from '../../../utils/object';
-import { uploadDataUrl } from '../../../services/content';
-import Suspencified from '../../../components/SystemStatus/Suspencified';
-import palette from '../../../styles/palette';
-import { Resource } from '../../../models/Resource';
+import { nnou, pluckProps } from '../../../../utils/object';
+import { uploadDataUrl } from '../../../../services/content';
+import Suspencified from '../../../../components/SystemStatus/Suspencified';
+import palette from '../../../../styles/palette';
+import { Resource } from '../../../../models/Resource';
 
 const translations = defineMessages({
-  assetsPanel: {
-    id: 'craftercms.ice.assets.title',
+  previewAssetsPanelTitle: {
+    id: 'previewAssetsPanel.title',
     defaultMessage: 'Assets'
   },
   itemsPerPage: {
-    id: 'craftercms.ice.assets.itemsPerPage',
+    id: 'previewAssetsPanel.itemsPerPage',
     defaultMessage: 'Items per page:'
   },
   noResults: {
-    id: 'craftercms.ice.assets.noResults',
+    id: 'previewAssetsPanel.noResults',
     defaultMessage: ' No results found.'
   },
   previousPage: {
@@ -61,7 +60,7 @@ const translations = defineMessages({
     defaultMessage: 'Next page'
   },
   retrieveAssets: {
-    id: 'craftercms.ice.assets.retrieveAssets',
+    id: 'previewAssetsPanel.retrieveAssets',
     defaultMessage: 'Retrieving Site Assets'
   }
 });
@@ -142,14 +141,24 @@ interface AssetResource {
   items: Array<MediaItem>;
 }
 
-export default function AssetsPanel() {
+export default function PreviewAssetsPanel() {
   const classes = assetsPanelStyles({});
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
+  const site = useActiveSiteId();
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useSelectorResource<AssetResource, PagedEntityState<MediaItem>>((state) => state.preview.assets, {
+  const assets = useSelection((state) => state.preview.assets);
+
+  useEffect(() => {
+    // TODO: needs to find a way to re-fetch when the site changes
+    if (site && assets.isFetching === null) {
+      dispatch(fetchAssetsPanelItems({}));
+    }
+  }, [assets, dispatch, site]);
+
+  const resource = useLogicResource<AssetResource, PagedEntityState<MediaItem>>(assets, {
     shouldRenew: (source, resource) => resource.complete,
     shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
     shouldReject: (source) => nnou(source.error),
@@ -164,7 +173,6 @@ export default function AssetsPanel() {
   });
   const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
   const { formatMessage } = useIntl();
-  const site = useActiveSiteId();
   const elementRef = useRef();
 
   const onDragStart = (mediaItem: MediaItem) =>
@@ -267,7 +275,7 @@ export default function AssetsPanel() {
   }
 
   return (
-    <ToolPanel title={translations.assetsPanel} classes={dragInProgress ? { body: classes.noScroll } : null}>
+    <div className={dragInProgress ? classes.noScroll : null}>
       <div ref={elementRef}>
         <div className={classes.search}>
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
@@ -288,7 +296,7 @@ export default function AssetsPanel() {
           />
         </Suspencified>
       </div>
-    </ToolPanel>
+    </div>
   );
 }
 

@@ -16,17 +16,18 @@
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Icon from '@material-ui/core/Icon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronRounded from '@material-ui/icons/ChevronRightRounded';
 import React from 'react';
+import SystemIcon from '../SystemIcon';
+import { useIntl } from 'react-intl';
 
 export interface ToolsPanelListItemButtonProps {
   title: string;
   subtitle: string;
-  icon: { baseClass: string };
+  icon: { id: string; baseClass: string; baseStyle: object };
   onClick(): void;
   displaySecondaryAction?: boolean;
   secondaryActionIcon?: React.ReactNode;
@@ -43,12 +44,13 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
     secondaryActionIcon = <ChevronRounded />,
     onSecondaryActionClick
   } = props;
+  const { formatMessage } = useIntl();
   return (
     <ListItem button onClick={onClick} ContainerComponent="div">
       <ListItemIcon>
-        <Icon fontSize="small" className={icon?.baseClass} />
+        <SystemIcon icon={icon} />
       </ListItemIcon>
-      <ListItemText primary={title} secondary={subtitle} />
+      <ListItemText primary={formatMessage({ id: title, defaultMessage: title })} secondary={subtitle} />
       {displaySecondaryAction && (
         <ListItemSecondaryAction>
           <IconButton size="small" onClick={onSecondaryActionClick ?? onClick}>

@@ -14,26 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from 'react';
-import ToolPanel from './ToolPanel';
+import React, { PropsWithChildren, useEffect } from 'react';
+import ToolPanel from '../ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import { useSelection, useLogicResource } from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSelection } from '../../../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { setActiveTargetingModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
-import ContentType, { ContentTypeField } from '../../../models/ContentType';
-import { nnou, nou } from '../../../utils/object';
-import GlobalState from '../../../models/GlobalState';
-import ContentInstance from '../../../models/ContentInstance';
-import Input from '../../../components/Controls/FormEngine/Input';
-import Dropdown from '../../../components/Controls/FormEngine/Dropdown';
-import CheckboxGroup from '../../../components/Controls/FormEngine/CheckboxGroup';
-import DateTime from '../../../components/Controls/FormEngine/DateTime';
-import Suspencified from '../../../components/SystemStatus/Suspencified';
+import {
+  fetchAudiencesPanelFormDefinition,
+  setActiveTargetingModel,
+  updateAudiencesPanelModel
+} from '../../../../state/actions/preview';
+import ContentType, { ContentTypeField } from '../../../../models/ContentType';
+import { nnou, nou } from '../../../../utils/object';
+import GlobalState from '../../../../models/GlobalState';
+import ContentInstance from '../../../../models/ContentInstance';
+import Input from '../../../../components/Controls/FormEngine/Input';
+import Dropdown from '../../../../components/Controls/FormEngine/Dropdown';
+import CheckboxGroup from '../../../../components/Controls/FormEngine/CheckboxGroup';
+import DateTime from '../../../../components/Controls/FormEngine/DateTime';
+import Suspencified from '../../../../components/SystemStatus/Suspencified';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,11 +73,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const translations = defineMessages({
   audiencesPanel: {
-    id: 'craftercms.ice.audiences.title',
+    id: 'previewAudiencesPanel.title',
     defaultMessage: 'Audience Targeting'
   },
   audiencesPanelLoading: {
-    id: 'craftercms.ice.audiences.loading',
+    id: 'previewAudiencesPanel.loading',
     defaultMessage: 'Retrieving targeting options'
   }
 });
@@ -173,8 +177,19 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   );
 }
 
-export default function AudiencesPanel() {
+export default function PreviewAudiencesPanel() {
+  const site = useActiveSiteId();
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
   const panelState = useSelection<GlobalState['preview']['audiencesPanel']>((state) => state.preview.audiencesPanel);
+
+  useEffect(() => {
+    // TODO: needs to find a way to re-fetch when the site changes
+    if (site && panelState.isFetching === null) {
+      dispatch(fetchAudiencesPanelFormDefinition());
+    }
+  }, [site, panelState, dispatch]);
+
   const resource = useLogicResource(panelState, {
     shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
     shouldResolve: (source) => !source.isFetching && nnou(source.contentType) && nnou(source.model),
@@ -182,9 +197,6 @@ export default function AudiencesPanel() {
     errorSelector: (source) => source.error,
     resultSelector: (source) => source.contentType
   });
-
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
 
   const onChange = (model: ContentInstance) => {
     dispatch(updateAudiencesPanelModel(model));

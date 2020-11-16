@@ -23,11 +23,14 @@ import { defineMessages, useIntl } from 'react-intl';
 // TODO: Temporary/remove after testing.
 export const TempTestContext = React.createContext<any>({});
 
-interface WidgetProps {
+export interface WidgetDescriptor {
   id: string;
-  plugin: PluginFileBuilder;
-  configuration: any;
+  roles?: string[];
+  plugin?: PluginFileBuilder;
+  configuration?: any;
 }
+
+interface WidgetProps extends WidgetDescriptor {}
 
 const messages = defineMessages({
   componentNotFound: {
@@ -51,6 +54,8 @@ const Widget = memo(function(props: WidgetProps) {
     } else {
       return <NonReactWidget widget={record} configuration={configuration} />;
     }
+  } else if (!plugin) {
+    return <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />;
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
       importPlugin(plugin).then(() => ({

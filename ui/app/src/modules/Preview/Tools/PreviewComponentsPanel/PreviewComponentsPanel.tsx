@@ -15,13 +15,12 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
-import ContentType from '../../../models/ContentType';
+import ContentType from '../../../../models/ContentType';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import { getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../../previewContext';
 import {
   browseSharedInstance,
   COMPONENT_DRAG_ENDED,
@@ -29,36 +28,36 @@ import {
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   inPageInstances,
   selectTool
-} from '../../../state/actions/preview';
-import { useSelectorResource } from '../../../utils/hooks';
-import { nnou, reversePluckProps } from '../../../utils/object';
-import { DraggablePanelListItem } from './DraggablePanelListItem';
+} from '../../../../state/actions/preview';
+import { useSelectorResource } from '../../../../utils/hooks';
+import { nnou, reversePluckProps } from '../../../../utils/object';
+import { DraggablePanelListItem } from '../DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
-import { PropsWithResource, SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { EntityState } from '../../../models/EntityState';
+import { PropsWithResource, SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
+import { EntityState } from '../../../../models/EntityState';
 
 const translations = defineMessages({
-  componentsPanel: {
-    id: 'previewComponentsTool.title',
+  previewComponentsPanelTitle: {
+    id: 'previewComponentsPanel.title',
     defaultMessage: 'Components'
   },
   browse: {
-    id: 'previewComponentsTool.browse',
+    id: 'previewComponentsPanel.browse',
     defaultMessage: 'Browse existing'
   },
   listReceptacles: {
-    id: 'previewComponentsTool.listReceptacles',
+    id: 'previewComponentsPanel.listReceptacles',
     defaultMessage: 'List receptacles'
   },
   listInPageInstances: {
-    id: 'previewComponentsTool.listInPageInstances',
+    id: 'previewComponentsPanel.listInPageInstances',
     defaultMessage: 'List in-page instances'
   }
 });
 
 type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
 
-export default function ComponentsPanel() {
+export default function PreviewComponentsPanel() {
   const resource = useSelectorResource<ContentType[], EntityState<ContentType>>((state) => state.contentTypes, {
     shouldRenew: (source, resource) => resource.complete,
     shouldResolve: (source) => !source.isFetching && nnou(source.byId),
@@ -68,7 +67,7 @@ export default function ComponentsPanel() {
   });
 
   return (
-    <ToolPanel title={translations.componentsPanel}>
+    <>
       <SuspenseWithEmptyState
         resource={resource}
         loadingStateProps={{
@@ -88,7 +87,7 @@ export default function ComponentsPanel() {
       >
         <ComponentsPanelUI resource={resource} />
       </SuspenseWithEmptyState>
-    </ToolPanel>
+    </>
   );
 }
 
