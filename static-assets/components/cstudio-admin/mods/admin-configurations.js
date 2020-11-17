@@ -69,7 +69,8 @@
         CStudioAuthoring.Service.getActiveEnvironment({
           success: function(data) {
             self.environment = JSON.parse(data.responseText).environment;
-            CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+            CStudioAuthoring.ContextualNav.AdminConsoleNav &&
+              CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
             self.renderJobsList();
 
             var historyEl = document.createElement('li');

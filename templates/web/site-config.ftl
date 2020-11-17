@@ -42,6 +42,7 @@
 
   <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/routie/routie-0.3.2.min.js"></script>
 
   <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -57,8 +58,14 @@
   <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
 </head>
-<body class="yui-skin-cstudioTheme">
-<div id="admin-console" class="categories-panel-active"></div>
+<#if RequestParameters.mode?? && RequestParameters.mode == "embedded">
+  <#assign embedded = true />
+<#else>
+  <#assign embedded = false />
+</#if>
+
+<body class="yui-skin-cstudioTheme <#if embedded>embedded</#if>">
+  <div id="admin-console" class="categories-panel-active"></div>
 </body>
 </html>
 <#else>

@@ -1828,12 +1828,6 @@ li.CodeMirror-hint-active {
   height: auto;
 }
 
-/* position container under topbar */
-#graphContainer {
-  margin-top: 51px;
-  height: calc(100vh - 51px);
-}
-
 #graphContainer .doc-explorer-title-bar,
 #graphContainer .history-title-bar {
   height: 47px;
