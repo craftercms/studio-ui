@@ -144,8 +144,8 @@
             };
             const tool = config.tools.tool[j];
             CStudioAuthoring.Module.requireModule(
-              'cstudio-console-tools-' + tool.name,
-              '/static-assets/components/cstudio-admin/mods/' + tool.name + '.js',
+              `cstudio-console-tools-${tool.name}`,
+              `/static-assets/components/cstudio-admin/mods/${tool.name}.js`,
               {
                 config: tool,
                 onError: function() {
