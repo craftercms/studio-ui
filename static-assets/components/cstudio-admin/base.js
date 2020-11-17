@@ -82,14 +82,11 @@
           elem.className = 'work-area-error';
           $('#cstudio-admin-console-workarea').html(elem);
           CrafterCMSNext.render(elem, 'ErrorState', {
-            graphicUrl: '/studio/static-assets/images/warning_state.svg',
+            imageUrl: '/studio/static-assets/images/warning_state.svg',
             classes: {
               root: 'craftercms-error-state'
             },
-            error: {
-              code: '',
-              message: formatMessage(contentTypesMessages.toolNotFound, { tool: name })
-            }
+            message: formatMessage(contentTypesMessages.toolNotFound, { tool: name })
           });
         }
       });
