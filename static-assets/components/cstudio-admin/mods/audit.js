@@ -34,7 +34,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.Audit, CStudioAdminConsole.Tool, {
       actions = [];
 
     workareaEl.innerHTML =
-      '<div class="iframe-container" style="position: relative; top: 50px; height: calc(100vh - 50px);">' +
+      '<div class="iframe-container">' +
       '<iframe src="' +
       auditUrl +
       '" style="width: 100%; height: 100%;"></iframe>' +
