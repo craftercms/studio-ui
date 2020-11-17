@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  BROWSE_COMPONENT_INSTANCES,
+  browseSharedInstance,
   CHANGE_CURRENT_URL,
   CHILDREN_MAP_UPDATE,
   CLEAR_RECEPTACLES,
@@ -38,13 +38,11 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
-  IN_PAGE_INSTANCES,
+  inPageInstances,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
   SELECT_FOR_EDIT,
-  SELECT_PREVIOUS_TOOL,
-  SELECT_TOOL,
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   SET_ACTIVE_TARGETING_MODEL_FAILED,
@@ -65,7 +63,6 @@ import {
   SearchResult
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
-import PreviewTool from '../../models/PreviewTool';
 import { changeSite } from './sites';
 import { envInitialState } from './env';
 
@@ -77,6 +74,18 @@ const audiencesPanelInitialState = {
   model: null,
   applied: false
 };
+
+const assetsPanelInitialState = createEntityState({
+  page: [],
+  query: {
+    keywords: '',
+    offset: 0,
+    limit: 10,
+    filters: {
+      'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+    }
+  }
+}) as PagedEntityState<MediaItem>;
 
 const componentsInitialState = createEntityState({
   page: [],
@@ -111,22 +120,9 @@ const reducer = createReducer<GlobalState['preview']>(
     hostSize: { width: null, height: null },
     toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
-    previousTool: null,
-    // Don't change/commit the tool you're working with. Use your .env.development to set it
-    selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
     toolsPanelWidth: 240,
     guest: null,
-    assets: createEntityState({
-      page: [],
-      query: {
-        keywords: '',
-        offset: 0,
-        limit: 10,
-        filters: {
-          'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
-        }
-      }
-    }) as PagedEntityState<MediaItem>,
+    assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
     components: componentsInitialState,
     receptacles: {
@@ -135,18 +131,6 @@ const reducer = createReducer<GlobalState['preview']>(
     }
   },
   {
-    [SELECT_TOOL]: (state, { payload }) => ({
-      ...state,
-      previousTool: state.selectedTool,
-      selectedTool: payload
-    }),
-    [SELECT_PREVIOUS_TOOL]: (state, { payload }) => {
-      return {
-        ...state,
-        previousTool: state.selectedTool,
-        selectedTool: payload
-      };
-    },
     [OPEN_TOOLS]: (state) => {
       return {
         ...state,
@@ -313,7 +297,8 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         tools: null,
         audiencesPanel: audiencesPanelInitialState,
-        components: componentsInitialState
+        components: componentsInitialState,
+        assets: assetsPanelInitialState
       };
 
       // TODO: If there's a guest it would have checked out?
@@ -461,19 +446,15 @@ const reducer = createReducer<GlobalState['preview']>(
       ...state,
       components: { ...state.components, error: payload.response, isFetching: false }
     }),
-    [IN_PAGE_INSTANCES]: (state, { payload }) => ({
+    [inPageInstances.type]: (state, { payload }) => ({
       ...state,
-      previousTool: 'craftercms.componentsPanel',
-      selectedTool: 'craftercms.inPageInstancesPanel',
       components: {
         ...state.components,
         contentTypeFilter: payload.contentType
       }
     }),
-    [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
+    [browseSharedInstance.type]: (state, { payload }) => ({
       ...state,
-      previousTool: 'craftercms.componentsPanel',
-      selectedTool: 'craftercms.browseComponentsPanel',
       components: {
         ...state.components,
         contentTypeFilter: payload.contentType,

@@ -63,11 +63,6 @@ export const defaultThemeOptions: ThemeOptions = (function() {
           minWidth: 'auto'
         }
       },
-      MuiListItemSecondaryAction: {
-        root: {
-          right: 5
-        }
-      },
       MuiFormLabel: {
         root: {
           transform: 'translate(0, 1.5px) scale(1) !important',

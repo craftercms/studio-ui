@@ -19,7 +19,6 @@ import { User } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
-import PreviewTool from './PreviewTool';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
@@ -123,8 +122,6 @@ export interface GlobalState {
     computedUrl: string;
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
-    selectedTool: PreviewTool;
-    previousTool: PreviewTool;
     toolsPanelWidth: number;
     hostSize: WidthAndHeight;
     guest: GuestData;

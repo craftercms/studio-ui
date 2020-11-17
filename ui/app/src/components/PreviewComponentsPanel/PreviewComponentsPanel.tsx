@@ -17,24 +17,25 @@
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
-import ContentType from '../../../../models/ContentType';
+import ContentType from '../../models/ContentType';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import { getHostToGuestBus } from '../../previewContext';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   browseSharedInstance,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   inPageInstances,
-  selectTool
-} from '../../../../state/actions/preview';
-import { useSelectorResource } from '../../../../utils/hooks';
-import { nnou, reversePluckProps } from '../../../../utils/object';
-import { DraggablePanelListItem } from '../DraggablePanelListItem';
+  pushToolsPanelPage
+} from '../../state/actions/preview';
+import { useSelectorResource } from '../../utils/hooks';
+import { nnou, reversePluckProps } from '../../utils/object';
+import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
-import { PropsWithResource, SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
-import { EntityState } from '../../../../models/EntityState';
+import { PropsWithResource, SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { EntityState } from '../../models/EntityState';
+import { batchActions } from '../../state/actions/misc';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -113,22 +114,61 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
 
   const onBrowseSharedInstancesClicked = () => {
     dispatch(
-      browseSharedInstance({
-        contentType: menuContext.contentType.id
-      })
+      batchActions([
+        browseSharedInstance({
+          contentType: menuContext.contentType.id
+        }),
+        pushToolsPanelPage({
+          id: 'craftercms.component.ToolsPanelPage',
+          configuration: {
+            title: 'previewBrowseComponentsPanel.title',
+            widgets: [
+              {
+                id: 'craftercms.component.PreviewBrowseComponentsPanel'
+              }
+            ]
+          }
+        })
+      ])
     );
   };
 
   const onListInPageInstancesClick = () => {
     dispatch(
-      inPageInstances({
-        contentType: menuContext.contentType.id
-      })
+      batchActions([
+        inPageInstances({
+          contentType: menuContext.contentType.id
+        }),
+        pushToolsPanelPage({
+          id: 'craftercms.component.ToolsPanelPage',
+          configuration: {
+            title: 'previewInPageInstancesPanel.title',
+            widgets: [
+              {
+                id: 'craftercms.component.PreviewInPageInstancesPanel'
+              }
+            ]
+          }
+        })
+      ])
     );
   };
 
   const onListReceptaclesClick = () => {
-    dispatch(selectTool('craftercms.contentTypeReceptaclesPanel'));
+    dispatch(
+      pushToolsPanelPage({
+        id: 'craftercms.component.ToolsPanelPage',
+        configuration: {
+          title: 'previewReceptaclesPanel.title',
+          widgets: [
+            {
+              id: 'craftercms.component.PreviewReceptaclesPanel'
+            }
+          ]
+        }
+      })
+    );
+    // TODO: Receptacles panel cant not restore the state
     hostToGuest$.next({
       type: CONTENT_TYPE_RECEPTACLES_REQUEST,
       payload: menuContext.contentType.id

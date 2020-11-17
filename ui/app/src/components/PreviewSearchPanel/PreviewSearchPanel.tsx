@@ -18,8 +18,8 @@ import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../../../utils/hooks';
-import SearchBar from '../../../../components/Controls/SearchBar';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../utils/hooks';
+import SearchBar from '../Controls/SearchBar';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -27,21 +27,21 @@ import {
   MediaItem,
   SearchItem,
   SearchResult
-} from '../../../../models/Search';
-import { SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
-import { DraggablePanelListItem } from '../DraggablePanelListItem';
+} from '../../models/Search';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
-import { getHostToGuestBus } from '../../previewContext';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED
-} from '../../../../state/actions/preview';
+} from '../../state/actions/preview';
 // import { createLookupTable } from '../../../utils/object';
-import ContentInstance from '../../../../models/ContentInstance';
-import { search } from '../../../../services/search';
-import { ApiResponse } from '../../../../models/ApiResponse';
+import ContentInstance from '../../models/ContentInstance';
+import { search } from '../../services/search';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {

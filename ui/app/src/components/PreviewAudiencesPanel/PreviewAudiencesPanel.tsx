@@ -15,29 +15,28 @@
  */
 
 import React, { PropsWithChildren, useEffect } from 'react';
-import ToolPanel from '../ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import { useActiveSiteId, useLogicResource, useSelection } from '../../../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   fetchAudiencesPanelFormDefinition,
   setActiveTargetingModel,
   updateAudiencesPanelModel
-} from '../../../../state/actions/preview';
-import ContentType, { ContentTypeField } from '../../../../models/ContentType';
-import { nnou, nou } from '../../../../utils/object';
-import GlobalState from '../../../../models/GlobalState';
-import ContentInstance from '../../../../models/ContentInstance';
-import Input from '../../../../components/Controls/FormEngine/Input';
-import Dropdown from '../../../../components/Controls/FormEngine/Dropdown';
-import CheckboxGroup from '../../../../components/Controls/FormEngine/CheckboxGroup';
-import DateTime from '../../../../components/Controls/FormEngine/DateTime';
-import Suspencified from '../../../../components/SystemStatus/Suspencified';
+} from '../../state/actions/preview';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
+import { nnou, nou } from '../../utils/object';
+import GlobalState from '../../models/GlobalState';
+import ContentInstance from '../../models/ContentInstance';
+import Input from '../Controls/FormEngine/Input';
+import Dropdown from '../Controls/FormEngine/Dropdown';
+import CheckboxGroup from '../Controls/FormEngine/CheckboxGroup';
+import DateTime from '../Controls/FormEngine/DateTime';
+import Suspencified from '../SystemStatus/Suspencified';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -137,7 +136,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   };
 
   return (
-    <ToolPanel title={translations.audiencesPanel}>
+    <>
       {
         <>
           <Grid className={classes.panelMargin}>
@@ -173,7 +172,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
           </Grid>
         </>
       }
-    </ToolPanel>
+    </>
   );
 }
 
@@ -184,7 +183,6 @@ export default function PreviewAudiencesPanel() {
   const panelState = useSelection<GlobalState['preview']['audiencesPanel']>((state) => state.preview.audiencesPanel);
 
   useEffect(() => {
-    // TODO: needs to find a way to re-fetch when the site changes
     if (site && panelState.isFetching === null) {
       dispatch(fetchAudiencesPanelFormDefinition());
     }

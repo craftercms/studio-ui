@@ -209,10 +209,10 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 // region SidebarConfig
 
 export function getSiteUiConfig(site: string): Observable<any> {
-  return getConfigurationDOM(site, '/ui2.xml', 'studio').pipe(
+  return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
-        const parsed = deserialize(xml).ui;
+        const parsed = deserialize(xml).siteUi;
       } else {
         return uiConfigDefaults;
       }

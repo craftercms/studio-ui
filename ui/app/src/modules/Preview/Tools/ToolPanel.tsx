@@ -21,7 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { selectTool } from '../../../state/actions/preview';
+import { popToolsPanelPage } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -70,7 +70,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { title, BackIcon, onBack = () => dispatch(selectTool()), classes } = props;
+  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes } = props;
   return (
     <>
       <PanelHeader

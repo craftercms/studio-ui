@@ -14,16 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type PreviewTool =
-  | 'craftercms.componentsPanel'
-  | 'craftercms.assetsPanel'
-  | 'craftercms.audiencesPanel'
-  | 'craftercms.simulatorPanel'
-  | 'craftercms.browseComponentsPanel'
-  | 'craftercms.inPageInstancesPanel'
-  | 'craftercms.contentTypeReceptaclesPanel'
-  | 'craftercms.pageExplorerPanel'
-  | 'craftercms.searchPanel'
-  | 'craftercms.siteExplorerPanel';
+export { default } from './PreviewBrowseComponentsPanel';
 
-export default PreviewTool;
+export * from './PreviewBrowseComponentsPanel';

@@ -29,13 +29,13 @@ export interface SystemIconProps {
 }
 
 const iconsMap = {
-  'material.icons.search': SearchIcon,
-  'material.icons.component': Component,
-  'material.icons.asset': Asset,
-  'material.icons.audiences': Audiences,
-  'material.icons.pageExplorer': PageExplorer,
-  'material.icons.simulator': Simulator,
-  'material.icons.siteExplorer': SiteExplorer
+  '@material-ui/icons/SearchRounded': SearchIcon,
+  '@material-ui/icons/ExtensionRounded': Component,
+  '@material-ui/icons/ImageOutlined': Asset,
+  '@material-ui/icons/EmojiPeopleRounded': Audiences,
+  '@material-ui/icons/DevicesRounded': Simulator,
+  'craftercms.icons.pageExplorer': PageExplorer,
+  'craftercms.icons.siteExplorer': SiteExplorer
 };
 
 export default function SystemIcon(props: SystemIconProps) {

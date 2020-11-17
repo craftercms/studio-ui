@@ -14,29 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
-import Typography from '@material-ui/core/Typography';
+import React, { useEffect, useMemo } from 'react';
 import { defineMessages } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useLogicResource, usePreviewState, useSelection } from '../../utils/hooks';
 import ResizeableDrawer from './ResizeableDrawer';
-import { ErrorBoundary } from '../../components/SystemStatus/ErrorBoundary';
 import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbeddedAppViewButton';
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
 import PathNavigator from '../../components/Navigation/PathNavigator/PathNavigator';
 import ToolsPanelPageComponent from '../../components/ToolsPanelPage';
 import { fetchSiteUiConfig } from '../../state/actions/configuration';
 import GlobalState from '../../models/GlobalState';
-import Suspencified from '../../components/SystemStatus/Suspencified';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { components } from '../../services/plugin';
-import PreviewSearchPanel from './Tools/PreviewSearchPanel';
-import PreviewComponentsPanel from './Tools/PreviewComponentsPanel';
-import PreviewAssetsPanel from './Tools/PreviewAssetsPanel';
-import PreviewAudiencesPanel from './Tools/PreviewAudiencesPanel';
-import PreviewPageExplorerPanel from './Tools/PreviewPageExplorerPanel';
-import PreviewSimulatorPanel from './Tools/PreviewSimulatorPanel';
+import PreviewSearchPanel from '../../components/PreviewSearchPanel';
+import PreviewComponentsPanel from '../../components/PreviewComponentsPanel';
+import PreviewAssetsPanel from '../../components/PreviewAssetsPanel';
+import PreviewAudiencesPanel from '../../components/PreviewAudiencesPanel';
+import PreviewPageExplorerPanel from '../../components/PreviewPageExplorerPanel';
+import PreviewSimulatorPanel from '../../components/PreviewSimulatorPanel';
+import { Resource } from '../../models/Resource';
+import PreviewBrowseComponentsPanel from '../../components/PreviewBrowseComponentsPanel/PreviewBrowseComponentsPanel';
+import Suspencified from '../../components/SystemStatus/Suspencified';
+import PreviewInPageInstancesPanel from '../../components/PreviewInPageInstancesPanel';
+import PreviewReceptaclesPanel from '../../components/PreviewReceptaclesPanel';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -53,21 +55,20 @@ export default function ToolsPanel() {
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
 
-  const widgetResource = useLogicResource(uiConfig, {
-    errorSelector: (source) => source.error,
-    resultSelector: (source) => source.preview.toolsPanel.widgets,
-    shouldReject: (source) => Boolean(source.error),
-    shouldResolve: (source) => Boolean(source.preview.toolsPanel),
-    shouldRenew: (source) => source.isFetching && Boolean(source.preview.toolsPanel)
-  });
-
-  const pagesResource = useLogicResource(pages, {
-    errorSelector: (source) => null,
-    resultSelector: (source) => source,
-    shouldReject: (source) => null,
-    shouldResolve: (source) => Boolean(source),
-    shouldRenew: (source, resource) => resource.complete
-  });
+  const resource = useLogicResource<
+    WidgetDescriptor[],
+    { pages: WidgetDescriptor[]; uiConfig: GlobalState['uiConfig'] }
+  >(
+    useMemo(() => ({ pages, uiConfig }), [pages, uiConfig]),
+    {
+      errorSelector: (source) => source.uiConfig.error,
+      resultSelector: (source) =>
+        source.pages.length ? pages.slice(pages.length - 1) : source.uiConfig.preview.toolsPanel.widgets,
+      shouldReject: (source) => Boolean(source.uiConfig.error),
+      shouldResolve: (source) => Boolean(source.uiConfig.preview.toolsPanel.widgets),
+      shouldRenew: (source, resource) => source.uiConfig.isFetching || resource.complete
+    }
+  );
 
   useEffect(() => {
     dispatch(fetchSiteUiConfig({ site }));
@@ -85,31 +86,25 @@ export default function ToolsPanel() {
         );
       }}
     >
-      <ErrorBoundary>
-        <Suspencified>
-          <ToolsPaneBody resource={{ widgetResource, pagesResource }} />
-        </Suspencified>
-      </ErrorBoundary>
+      <Suspencified>
+        <ToolsPaneBody resource={resource} />
+      </Suspencified>
     </ResizeableDrawer>
   );
 }
 
-function ToolsPaneBody(props) {
-  const widget = props.resource.widgetResource.read();
-  const pages = props.resource.pagesResource.read();
-  const stack = pages.length ? pages : widget;
-
-  return <>{renderWidgets(stack, ['admin'])}</>;
+interface ToolsPaneBodyProps {
+  resource: Resource<WidgetDescriptor[]>;
 }
 
-function Search() {
-  return <Typography>Hello, this is the search app.</Typography>;
+function ToolsPaneBody(props: ToolsPaneBodyProps) {
+  const stack = props.resource.read();
+  return <>{renderWidgets(stack, ['admin'])}</>;
 }
 
 Object.entries({
   'craftercms.component.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.component.ToolsPanelPageButton': ToolsPanelPageButton,
-  'craftercms.component.search': Search,
   'craftercms.component.PathNavigator': PathNavigator,
   'craftercms.component.ToolsPanelPage': ToolsPanelPageComponent,
   'craftercms.component.PreviewSearchPanel': PreviewSearchPanel,
@@ -117,7 +112,10 @@ Object.entries({
   'craftercms.component.PreviewAssetsPanel': PreviewAssetsPanel,
   'craftercms.component.PreviewAudiencesPanel': PreviewAudiencesPanel,
   'craftercms.component.PreviewPageExplorerPanel': PreviewPageExplorerPanel,
-  'craftercms.component.PreviewSimulatorPanel': PreviewSimulatorPanel
+  'craftercms.component.PreviewSimulatorPanel': PreviewSimulatorPanel,
+  'craftercms.component.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
+  'craftercms.component.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
+  'craftercms.component.PreviewReceptaclesPanel': PreviewReceptaclesPanel
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

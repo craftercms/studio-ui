@@ -32,8 +32,6 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
-  fetchAudiencesPanelFormDefinition,
-  fetchComponentsByContentType,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -47,8 +45,8 @@ import {
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
+  pushToolsPanelPage,
   selectForEdit,
-  selectTool,
   setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
@@ -83,12 +81,11 @@ import {
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
-import { nnou, nou, pluckProps } from '../../utils/object';
+import { nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
-import PreviewTool from '../../models/PreviewTool';
 import { getStoredEditModeChoice, getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
@@ -129,12 +126,10 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, selectedTool, currentUrl, computedUrl } = usePreviewState();
+  const { guest, currentUrl, computedUrl } = usePreviewState();
   const contentTypes = useContentTypeList();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
-  const contentTypeComponents = useSelection((state) => state.preview.components);
-  const audiencesPanel = useSelection((state) => state.preview.audiencesPanel);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
   const models = guest?.models;
@@ -179,9 +174,9 @@ export function PreviewConcierge(props: any) {
     }
 
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
-    const storedTool = window.localStorage.getItem(`craftercms.previewSelectedTool.${site}`);
-    if (storedTool) {
-      dispatch(selectTool(storedTool as PreviewTool));
+    const storedPage = window.localStorage.getItem(`craftercms.previewToolsPanelPage.${site}`);
+    if (storedPage) {
+      dispatch(pushToolsPanelPage(JSON.parse(storedPage)));
     }
     return () => {
       sub.unsubscribe();
@@ -506,34 +501,6 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     editMode,
     handlePreviewCompatibilityDialogGo
-  ]);
-
-  useEffect(() => {
-    switch (selectedTool) {
-      case 'craftercms.audiencesPanel':
-        if (
-          !audiencesPanel.isFetching &&
-          nou(audiencesPanel.contentType) &&
-          nou(audiencesPanel.model) &&
-          nou(audiencesPanel.error)
-        ) {
-          // TODO: Jose Vega re-render when this panel is opened and site is changed;
-          dispatch(fetchAudiencesPanelFormDefinition());
-        }
-        break;
-      case 'craftercms.browseComponentsPanel':
-        contentTypeComponents.contentTypeFilter && site && dispatch(fetchComponentsByContentType());
-        break;
-    }
-  }, [
-    audiencesPanel.contentType,
-    audiencesPanel.error,
-    audiencesPanel.isFetching,
-    audiencesPanel.model,
-    contentTypeComponents.contentTypeFilter,
-    dispatch,
-    selectedTool,
-    site
   ]);
 
   useEffect(() => {

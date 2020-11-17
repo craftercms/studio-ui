@@ -16,7 +16,7 @@
 
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
-import { getTranslation } from '../../../../utils/i18n';
+import { getTranslation } from '../../utils/i18n';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
@@ -28,10 +28,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
-import { setHostSize } from '../../../../state/actions/preview';
+import { setHostSize } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useSelection } from '../../../../utils/hooks';
-import { WidthAndHeight } from '../../../../models/WidthAndHeight';
+import { useSelection } from '../../utils/hooks';
+import { WidthAndHeight } from '../../models/WidthAndHeight';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorPanel.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorPanel.custom';

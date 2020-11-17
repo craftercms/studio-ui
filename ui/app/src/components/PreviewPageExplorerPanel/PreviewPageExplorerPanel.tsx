@@ -32,34 +32,34 @@ import {
   useSelection,
   useSpreadState,
   useUnmount
-} from '../../../../utils/hooks';
-import { ContentType, ContentTypeField } from '../../../../models/ContentType';
-import Page from '../../../../components/Icons/Page';
-import ContentTypeFieldIcon from '../../../../components/Icons/ContentTypeField';
-import Component from '../../../../components/Icons/Component';
-import NodeSelector from '../../../../components/Icons/NodeSelector';
-import RepeatGroupItem from '../../../../components/Icons/RepeatGroupItem';
+} from '../../utils/hooks';
+import { ContentType, ContentTypeField } from '../../models/ContentType';
+import Page from '../Icons/Page';
+import ContentTypeFieldIcon from '../Icons/ContentTypeField';
+import Component from '../Icons/Component';
+import NodeSelector from '../Icons/NodeSelector';
+import RepeatGroupItem from '../Icons/RepeatGroupItem';
 import Root from '@material-ui/icons/HomeRounded';
 import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
-import { LookupTable } from '../../../../models/LookupTable';
-import ContentInstance from '../../../../models/ContentInstance';
-import RepeatGroup from '../../../../components/Icons/RepeatGroup';
-import { hierarchicalToLookupTable } from '../../../../utils/object';
+import { LookupTable } from '../../models/LookupTable';
+import ContentInstance from '../../models/ContentInstance';
+import RepeatGroup from '../Icons/RepeatGroup';
+import { hierarchicalToLookupTable } from '../../utils/object';
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
   DELETE_ITEM_OPERATION_COMPLETE,
   SORT_ITEM_OPERATION_COMPLETE
-} from '../../../../state/actions/preview';
-import { getHostToGuestBus, getHostToHostBus } from '../../previewContext';
-import Suspencified from '../../../../components/SystemStatus/Suspencified';
-import { Resource } from '../../../../models/Resource';
-import palette from '../../../../styles/palette';
+} from '../../state/actions/preview';
+import { getHostToGuestBus, getHostToHostBus } from '../../modules/Preview/previewContext';
+import Suspencified from '../SystemStatus/Suspencified';
+import { Resource } from '../../models/Resource';
+import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import { ItemMenu } from '../../../../components/ItemMenu/ItemMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../../../state/actions/content';
+import { ItemMenu } from '../ItemMenu/ItemMenu';
+import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 
 const rootPrefix = '{root}_';
 

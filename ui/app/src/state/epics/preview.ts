@@ -16,7 +16,7 @@
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
-import { SELECT_TOOL, setPreviewEditMode } from '../actions/preview';
+import { popToolsPanelPage, pushToolsPanelPage, setPreviewEditMode } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { setStoredEditModeChoice } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
@@ -24,13 +24,30 @@ import GlobalState from '../../models/GlobalState';
 export default [
   (action$, state$) =>
     action$.pipe(
-      ofType(SELECT_TOOL),
+      ofType(pushToolsPanelPage.type),
       withLatestFrom(state$),
-      tap(([{ payload }, state]) => {
+      tap(([{ type, payload }, state]) => {
         if (payload) {
-          window.localStorage.setItem(`craftercms.previewSelectedTool.${state.sites.active}`, payload);
+          window.localStorage.setItem(
+            `craftercms.previewToolsPanelPage.${state.sites.active}`,
+            JSON.stringify(payload)
+          );
+        }
+      }),
+      ignoreElements()
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(popToolsPanelPage.type),
+      withLatestFrom(state$),
+      tap(([, state]) => {
+        if (state.preview.toolsPanelPageStack.length) {
+          window.localStorage.setItem(
+            `craftercms.previewToolsPanelPage.${state.sites.active}`,
+            JSON.stringify(state.preview.toolsPanelPageStack.slice(state.preview.toolsPanelPageStack.length - 1))
+          );
         } else {
-          window.localStorage.removeItem(`craftercms.previewSelectedTool.${state.sites.active}`);
+          window.localStorage.removeItem(`craftercms.previewToolsPanelPage.${state.sites.active}`);
         }
       }),
       ignoreElements()

@@ -24,7 +24,6 @@ import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { getGlobalMenuItems } from '../../services/configuration';
-import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import Link from '@material-ui/core/Link';

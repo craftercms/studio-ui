@@ -18,7 +18,6 @@ import { StandardAction } from '../../models/StandardAction';
 import ContentType from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
-import PreviewTool from '../../models/PreviewTool';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
@@ -62,8 +61,6 @@ export const DESKTOP_ASSET_UPLOAD_PROGRESS = 'DESKTOP_ASSET_UPLOAD_PROGRESS';
 export const DESKTOP_ASSET_UPLOAD_STARTED = 'DESKTOP_ASSET_UPLOAD_STARTED';
 export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
 export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
-export const BROWSE_COMPONENT_INSTANCES = 'BROWSE_COMPONENT_INSTANCES';
-export const IN_PAGE_INSTANCES = 'IN_PAGE_INSTANCES';
 export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
 export const COMPONENT_INSTANCE_HTML_RESPONSE = 'COMPONENT_INSTANCE_HTML_RESPONSE';
 export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
@@ -77,10 +74,8 @@ export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
 
 // region Actions
 
-export const SELECT_TOOL = 'SELECT_TOOL';
 export const SELECT_FOR_EDIT = 'SELECT_FOR_EDIT';
 export const CLEAR_SELECT_FOR_EDIT = 'CLEAR_SELECT_FOR_EDIT';
-export const SELECT_PREVIOUS_TOOL = 'SELECT_PREVIOUS_TOOL';
 export const OPEN_TOOLS = 'OPEN_TOOLS';
 export const CLOSE_TOOLS = 'CLOSE_TOOLS';
 export const SET_HOST_SIZE = 'SET_HOST_SIZE';
@@ -120,15 +115,6 @@ export const LEGACY_CODE_EDITOR_RENDERED = 'LEGACY_CODE_EDITOR_RENDERED';
 // endregion
 
 // region Action Creators
-
-export function selectTool(tool: PreviewTool = null): StandardAction {
-  return {
-    type: SELECT_TOOL,
-    payload: tool
-  };
-}
-
-export const selectPreviousTool = createAction(SELECT_TOOL);
 
 export function selectForEdit(data: { modelId: string; fields: string[] }): StandardAction {
   return {
@@ -278,9 +264,9 @@ export const fetchComponentsByContentTypeComplete = createAction<ContentInstance
 
 export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const browseSharedInstance = createAction<{ contentType: string }>(BROWSE_COMPONENT_INSTANCES);
+export const browseSharedInstance = createAction<{ contentType: string }>('BROWSE_COMPONENT_INSTANCES');
 
-export const inPageInstances = createAction<{ contentType: string }>(IN_PAGE_INSTANCES);
+export const inPageInstances = createAction<{ contentType: string }>('IN_PAGE_INSTANCES');
 
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 

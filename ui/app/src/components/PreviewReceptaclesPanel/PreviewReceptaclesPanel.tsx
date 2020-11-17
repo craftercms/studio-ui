@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
-import { getHostToGuestBus } from '../previewContext';
-import { useMount, useSelection, useLogicResource } from '../../../utils/hooks';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { useLogicResource, useMount, useSelection } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core';
-import { ContentTypeReceptacle } from '../../../models/ContentTypeReceptacle';
+import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -29,22 +28,22 @@ import Avatar from '@material-ui/core/Avatar';
 import MoveToInboxRounded from '@material-ui/icons/MoveToInboxRounded';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import ContentType from '../../../models/ContentType';
+import ContentType from '../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import {
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   clearReceptacles,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   SCROLL_TO_RECEPTACLE
-} from '../../../state/actions/preview';
-import { Resource } from '../../../models/Resource';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { LookupTable } from '../../../models/LookupTable';
+} from '../../state/actions/preview';
+import { Resource } from '../../models/Resource';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { LookupTable } from '../../models/LookupTable';
 
 const translations = defineMessages({
   receptaclesPanel: {
-    id: 'previewContentTypeReceptaclesTool.title',
-    defaultMessage: '{name} Receptacles'
+    id: 'previewReceptaclesPanel.title',
+    defaultMessage: 'Receptacles'
   },
   selectContentType: {
     id: 'previewContentTypeReceptaclesTool.selectContentType',
@@ -64,12 +63,11 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function ReceptaclesPanel() {
+export default function PreviewReceptaclesPanel() {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
   const receptaclesBranch = useSelection((state) => state.preview.receptacles);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
-  const selectedContentTypeName = contentTypesBranch.byId[receptaclesBranch.selectedContentType]?.name;
   const contentTypes = contentTypesBranch.byId
     ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
     : null;
@@ -114,7 +112,7 @@ export default function ReceptaclesPanel() {
   });
 
   return (
-    <ToolPanel title={formatMessage(translations.receptaclesPanel, { name: selectedContentTypeName })}>
+    <>
       <div className={classes.select}>
         <Select
           value={receptaclesBranch.selectedContentType || ''}
@@ -138,7 +136,7 @@ export default function ReceptaclesPanel() {
           <ReceptaclesList resource={receptacleResource} onSelectedDropZone={onSelectedDropZone} />
         </SuspenseWithEmptyState>
       </List>
-    </ToolPanel>
+    </>
   );
 }
 

@@ -16,27 +16,27 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useSelection } from '../../../../utils/hooks';
-import { MediaItem } from '../../../../models/Search';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useSelection } from '../../utils/hooks';
+import { MediaItem } from '../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import SearchBar from '../../../../components/Controls/SearchBar';
+import SearchBar from '../Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
-import GlobalState, { PagedEntityState } from '../../../../models/GlobalState';
+import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { getHostToGuestBus } from '../../previewContext';
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../../state/actions/preview';
-import MediaCard from '../../../../components/MediaCard';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../state/actions/preview';
+import MediaCard from '../MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
-import EmptyState from '../../../../components/SystemStatus/EmptyState';
+import EmptyState from '../SystemStatus/EmptyState';
 import UploadIcon from '@material-ui/icons/Publish';
-import { nnou, pluckProps } from '../../../../utils/object';
-import { uploadDataUrl } from '../../../../services/content';
-import Suspencified from '../../../../components/SystemStatus/Suspencified';
-import palette from '../../../../styles/palette';
-import { Resource } from '../../../../models/Resource';
+import { nnou, pluckProps } from '../../utils/object';
+import { uploadDataUrl } from '../../services/content';
+import Suspencified from '../SystemStatus/Suspencified';
+import palette from '../../styles/palette';
+import { Resource } from '../../models/Resource';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {
@@ -68,7 +68,7 @@ const translations = defineMessages({
 const assetsPanelStyles = makeStyles(() =>
   createStyles({
     assetsPanelWrapper: {
-      padding: '15px 15px 55px 15px',
+      padding: '15px',
       '&.dragInProgress': {
         background: 'red'
       }
@@ -152,7 +152,6 @@ export default function PreviewAssetsPanel() {
   const assets = useSelection((state) => state.preview.assets);
 
   useEffect(() => {
-    // TODO: needs to find a way to re-fetch when the site changes
     if (site && assets.isFetching === null) {
       dispatch(fetchAssetsPanelItems({}));
     }
