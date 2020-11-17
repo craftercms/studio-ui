@@ -21,13 +21,11 @@
 
   CStudioAdminConsole = {
     toolContainerEls: [],
-    isEmbedded: false,
 
     render: function(containerEl) {
       this.containerEl = containerEl;
-      this.isEmbedded = $('body').hasClass('embedded');
 
-      if (!this.isEmbedded) {
+      if (!$('body').hasClass('embedded')) {
         containerEl.innerHTML = `
 				<div id="categories-panel" class="categories-panel">
 				  <div id="categoriesPanelWrapper"></div>
@@ -170,7 +168,7 @@
         }
       }
 
-      if (!this.isEmbedded) {
+      if (!$('body').hasClass('embedded')) {
         var validatorContainer = document.createElement('div');
         YDom.addClass(validatorContainer, 'craftercms-entitlement');
 
