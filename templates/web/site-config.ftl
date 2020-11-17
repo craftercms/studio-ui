@@ -59,12 +59,12 @@
 
 </head>
 <#if RequestParameters.mode?? && RequestParameters.mode == "embedded">
-  <#assign mode = RequestParameters.mode />
+  <#assign embedded = true />
 <#else>
-  <#assign mode = ""/>
+  <#assign embedded = false />
 </#if>
 
-<body class="yui-skin-cstudioTheme ${mode}">
+<body class="yui-skin-cstudioTheme <#if embedded>embedded</#if>">
   <div id="admin-console" class="categories-panel-active"></div>
 </body>
 </html>
