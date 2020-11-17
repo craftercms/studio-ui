@@ -412,7 +412,7 @@ const contentTypesMessages = defineMessages({
   },
   toolNotFound: {
     id: 'siteConfig.toolNotFound',
-    defaultMessage: 'Tool not found.'
+    defaultMessage: '"{tool}" tool not found.'
   }
 });
 

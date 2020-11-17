@@ -79,6 +79,7 @@
           }
         } else {
           $('#activeContentActions').empty();
+          CStudioAdminConsole.CommandBar.hide();
           const elem = document.createElement('div');
           elem.className = 'work-area-error';
           $('#cstudio-admin-console-workarea').html(elem);
@@ -89,7 +90,7 @@
             },
             error: {
               code: '',
-              message: formatMessage(contentTypesMessages.toolNotFound)
+              message: formatMessage(contentTypesMessages.toolNotFound, { tool: name })
             }
           });
         }
