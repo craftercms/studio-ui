@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useEffect } from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
@@ -178,6 +178,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 export default function PreviewAudiencesPanel(props) {
   const site = useActiveSiteId();
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
   const { fields } = props;
   const panelState = useSelection<GlobalState['preview']['audiencesPanel']>((state) => state.preview.audiencesPanel);
 
@@ -198,6 +199,7 @@ export default function PreviewAudiencesPanel(props) {
   return (
     <ConditionalLoadingState
       isLoading={panelState.isApplying || panelState.isFetching === null || panelState.isFetching !== false}
+      title={formatMessage(translations.audiencesPanelLoading)}
     >
       <AudiencesPanelUI
         model={panelState.model}

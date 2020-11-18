@@ -19,7 +19,7 @@ import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
-import { createLookupTable, reversePluckProps } from '../utils/object';
+import { applyDeserializedXMLTransforms, createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
@@ -200,7 +200,21 @@ export function getSiteUiConfig(site: string): Observable<any> {
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
-        const parsed = deserialize(xml).siteUi;
+        const widgets = xml.querySelector('[id|="craftercms.component.ToolsPanel"] > configuration > widgets');
+        if (widgets) {
+          const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+          const lookupTables = ['fields'];
+          const renameTable = { permittedRoles: 'roles' };
+
+          return {
+            preview: {
+              // @ts-ignore
+              toolsPanel: applyDeserializedXMLTransforms(deserialize(widgets), { arrays, lookupTables, renameTable })
+            }
+          };
+        } else {
+          return uiConfigDefaults;
+        }
       } else {
         return uiConfigDefaults;
       }
