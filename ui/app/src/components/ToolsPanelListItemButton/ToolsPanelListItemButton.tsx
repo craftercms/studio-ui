@@ -52,7 +52,7 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
       </ListItemIcon>
       <ListItemText primary={formatMessage({ id: title, defaultMessage: title })} secondary={subtitle} />
       {displaySecondaryAction && (
-        <ListItemSecondaryAction>
+        <ListItemSecondaryAction style={{ right: '5px' }}>
           <IconButton size="small" onClick={onSecondaryActionClick ?? onClick}>
             {secondaryActionIcon}
           </IconButton>

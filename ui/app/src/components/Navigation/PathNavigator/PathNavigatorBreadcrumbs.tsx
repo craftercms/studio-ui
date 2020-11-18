@@ -59,7 +59,14 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           autoFocus
           onChange={onChange}
           keyword={keyword}
-          showActionButton={Boolean(keyword)}
+          onActionButtonClick={() => {
+            if (keyword === '') {
+              setShowSearch(false);
+            } else {
+              onSearch('');
+            }
+          }}
+          showActionButton={true}
           classes={{
             root: clsx(classes.searchRoot, props.classes?.searchRoot),
             inputInput: classes.searchInput,

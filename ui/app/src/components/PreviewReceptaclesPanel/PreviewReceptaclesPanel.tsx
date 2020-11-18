@@ -46,8 +46,16 @@ const translations = defineMessages({
     defaultMessage: 'Receptacles'
   },
   selectContentType: {
-    id: 'previewContentTypeReceptaclesTool.selectContentType',
+    id: 'previewReceptaclesPanel.selectContentType',
     defaultMessage: 'Select content type'
+  },
+  noResults: {
+    id: 'previewReceptaclesPanel.noResults',
+    defaultMessage: 'No results found.'
+  },
+  chooseContentType: {
+    id: 'previewReceptaclesPanel.chooseContentType',
+    defaultMessage: 'Please choose a content type.'
   }
 });
 
@@ -101,13 +109,15 @@ export default function PreviewReceptaclesPanel() {
     ContentTypeReceptacle[],
     { selectedContentType: string; byId: LookupTable<ContentTypeReceptacle> }
   >(receptaclesBranch, {
-    shouldResolve: (source) => Boolean(source.selectedContentType) && Boolean(source.byId),
+    shouldResolve: (source) => source.selectedContentType === null || Boolean(source.byId),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) =>
-      Object.values(source.byId).filter(
-        (receptacle) => receptacle.contentTypeId === receptaclesBranch.selectedContentType
-      ),
+      source.byId
+        ? Object.values(source.byId).filter(
+            (receptacle) => receptacle.contentTypeId === receptaclesBranch.selectedContentType
+          )
+        : [],
     errorSelector: (source) => null
   });
 
@@ -122,7 +132,7 @@ export default function PreviewReceptaclesPanel() {
           <MenuItem value="" disabled>
             {formatMessage(translations.selectContentType)}
           </MenuItem>
-          {contentTypes.map((contentType: ContentType, i: number) => {
+          {contentTypes?.map((contentType: ContentType, i: number) => {
             return (
               <MenuItem value={contentType.id} key={i}>
                 {contentType.name}
@@ -132,7 +142,16 @@ export default function PreviewReceptaclesPanel() {
         </Select>
       </div>
       <List>
-        <SuspenseWithEmptyState resource={receptacleResource}>
+        <SuspenseWithEmptyState
+          resource={receptacleResource}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: receptaclesBranch.selectedContentType
+                ? formatMessage(translations.noResults)
+                : formatMessage(translations.chooseContentType)
+            }
+          }}
+        >
           <ReceptaclesList resource={receptacleResource} onSelectedDropZone={onSelectedDropZone} />
         </SuspenseWithEmptyState>
       </List>

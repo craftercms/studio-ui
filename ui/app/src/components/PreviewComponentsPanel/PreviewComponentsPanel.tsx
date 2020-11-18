@@ -168,7 +168,6 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         }
       })
     );
-    // TODO: Receptacles panel cant not restore the state
     hostToGuest$.next({
       type: CONTENT_TYPE_RECEPTACLES_REQUEST,
       payload: menuContext.contentType.id

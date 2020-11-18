@@ -163,7 +163,7 @@ const uiConfigDefaults = {
                       configuration: {
                         title: 'Content Types',
                         icon: {
-                          baseClass: 'fa fa-lock'
+                          baseClass: 'fa fa-th-large'
                         },
                         widget: {
                           id: 'craftercms.component.LegacySiteToolsFrame',
@@ -193,7 +193,7 @@ const uiConfigDefaults = {
                       configuration: {
                         title: 'Configuration',
                         icon: {
-                          baseClass: 'fa fa-lock'
+                          baseClass: 'fa fa-cogs'
                         },
                         widget: {
                           id: 'craftercms.component.LegacySiteToolsFrame',
@@ -208,7 +208,7 @@ const uiConfigDefaults = {
                       configuration: {
                         title: 'Audit',
                         icon: {
-                          baseClass: 'fa fa-lock'
+                          baseClass: 'fa fa-align-justify'
                         },
                         widget: {
                           id: 'craftercms.component.LegacySiteToolsFrame',
@@ -223,7 +223,7 @@ const uiConfigDefaults = {
                       configuration: {
                         title: 'Workflow States',
                         icon: {
-                          baseClass: 'fa fa-lock'
+                          baseClass: 'fa fa-cog'
                         },
                         widget: {
                           id: 'craftercms.component.LegacySiteToolsFrame',
@@ -238,7 +238,7 @@ const uiConfigDefaults = {
                       configuration: {
                         title: 'Log Console',
                         icon: {
-                          baseClass: 'fa fa-cloud-upload'
+                          baseClass: 'fa fa-align-left'
                         },
                         widget: {
                           id: 'craftercms.component.LegacySiteToolsFrame',

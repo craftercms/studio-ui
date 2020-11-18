@@ -42,15 +42,15 @@ const translations = defineMessages({
     defaultMessage: 'In this Page'
   },
   noResults: {
-    id: 'inPageInstances.noResults',
+    id: 'previewInPageInstancesPanel.noResults',
     defaultMessage: 'No results found.'
   },
   selectContentType: {
-    id: 'craftercms.ice.browseComponents.selectContentType',
+    id: 'previewInPageInstancesPanel.selectContentType',
     defaultMessage: 'Select content type'
   },
   chooseContentType: {
-    id: 'craftercms.ice.browseComponents.chooseContentType',
+    id: 'previewInPageInstancesPanel.chooseContentType',
     defaultMessage: 'Please choose a content type.'
   }
 });

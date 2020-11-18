@@ -44,7 +44,7 @@ export default [
         if (state.preview.toolsPanelPageStack.length) {
           window.localStorage.setItem(
             `craftercms.previewToolsPanelPage.${state.sites.active}`,
-            JSON.stringify(state.preview.toolsPanelPageStack.slice(state.preview.toolsPanelPageStack.length - 1))
+            JSON.stringify(state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1])
           );
         } else {
           window.localStorage.removeItem(`craftercms.previewToolsPanelPage.${state.sites.active}`);
