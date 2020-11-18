@@ -15,28 +15,28 @@
  */
 
 import React, { PropsWithChildren, useEffect } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import { useActiveSiteId, useLogicResource, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
-  fetchAudiencesPanelFormDefinition,
+  fetchAudiencesPanelModel,
   setActiveTargetingModel,
   updateAudiencesPanelModel
 } from '../../state/actions/preview';
-import ContentType, { ContentTypeField } from '../../models/ContentType';
-import { nnou, nou } from '../../utils/object';
+import { ContentTypeField } from '../../models/ContentType';
 import GlobalState from '../../models/GlobalState';
 import ContentInstance from '../../models/ContentInstance';
 import Input from '../Controls/FormEngine/Input';
 import Dropdown from '../Controls/FormEngine/Dropdown';
 import CheckboxGroup from '../Controls/FormEngine/CheckboxGroup';
 import DateTime from '../Controls/FormEngine/DateTime';
-import Suspencified from '../SystemStatus/Suspencified';
+import LookupTable from '../../models/LookupTable';
+import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -89,19 +89,19 @@ const controlsMap = {
 };
 
 interface AudiencesPanelUIProps {
-  audiencesResource: any;
   model: ContentInstance;
+  fields: LookupTable<ContentTypeField>;
   modelApplying: boolean;
   modelApplied: boolean;
   onChange: Function;
   onSaveModel: Function;
 }
 
-const getDefaultModel = (contentType: ContentType) => {
+const getDefaultModel = (fields: LookupTable<ContentTypeField>) => {
   const props = {};
 
-  Object.keys(contentType.fields).forEach((fieldId: string) => {
-    const propValue = contentType.fields[fieldId].defaultValue;
+  Object.keys(fields).forEach((fieldId: string) => {
+    const propValue = fields[fieldId].defaultValue;
     props[fieldId] = propValue;
   });
 
@@ -110,8 +110,7 @@ const getDefaultModel = (contentType: ContentType) => {
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   const classes = useStyles({});
-  const { audiencesResource, model, modelApplying, onChange, onSaveModel } = props;
-  const contentType = audiencesResource.read();
+  const { model, modelApplying, onChange, onSaveModel, fields } = props;
 
   const onFieldChange = (fieldId: string, type: string) => (value: any) => {
     let props;
@@ -140,12 +139,12 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
       {
         <>
           <Grid className={classes.panelMargin}>
-            {Object.keys(contentType.fields).map((fieldId: string) => {
-              const type = contentType.fields[fieldId].type;
+            {Object.keys(fields).map((fieldId: string) => {
+              const type = fields[fieldId].type;
               const Control = controlsMap[type];
 
               const controlProps = {
-                field: contentType.fields[fieldId],
+                field: fields[fieldId],
                 value: model[fieldId] ?? undefined,
                 onChange: onFieldChange(fieldId, type),
                 disabled: modelApplying
@@ -156,14 +155,14 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
               }
 
               return (
-                <AudiencesFormSection field={contentType.fields[fieldId]} key={fieldId} showDivider>
+                <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
                   <Control {...controlProps} />
                 </AudiencesFormSection>
               );
             })}
           </Grid>
           <Grid className={classes.actionButton}>
-            <Button variant="contained" onClick={() => onChange(getDefaultModel(contentType))}>
+            <Button variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
               <FormattedMessage id="audiencesPanel.defaults" defaultMessage={`Defaults`} />
             </Button>
             <Button variant="contained" color="primary" onClick={() => onSaveModel()}>
@@ -176,25 +175,17 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   );
 }
 
-export default function PreviewAudiencesPanel() {
+export default function PreviewAudiencesPanel(props) {
   const site = useActiveSiteId();
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
+  const { fields } = props;
   const panelState = useSelection<GlobalState['preview']['audiencesPanel']>((state) => state.preview.audiencesPanel);
 
   useEffect(() => {
     if (site && panelState.isFetching === null) {
-      dispatch(fetchAudiencesPanelFormDefinition());
+      dispatch(fetchAudiencesPanelModel({ fields }));
     }
-  }, [site, panelState, dispatch]);
-
-  const resource = useLogicResource(panelState, {
-    shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
-    shouldResolve: (source) => !source.isFetching && nnou(source.contentType) && nnou(source.model),
-    shouldReject: (source) => nnou(source.error),
-    errorSelector: (source) => source.error,
-    resultSelector: (source) => source.contentType
-  });
+  }, [site, panelState, dispatch, fields]);
 
   const onChange = (model: ContentInstance) => {
     dispatch(updateAudiencesPanelModel(model));
@@ -205,16 +196,18 @@ export default function PreviewAudiencesPanel() {
   };
 
   return (
-    <Suspencified loadingStateProps={{ title: formatMessage(translations.audiencesPanelLoading) }}>
+    <ConditionalLoadingState
+      isLoading={panelState.isApplying || panelState.isFetching === null || panelState.isFetching !== false}
+    >
       <AudiencesPanelUI
-        audiencesResource={resource}
         model={panelState.model}
+        fields={fields}
         modelApplying={panelState.isApplying}
         modelApplied={panelState.applied}
         onChange={onChange}
         onSaveModel={saveModel}
       />
-    </Suspencified>
+    </ConditionalLoadingState>
   );
 }
 

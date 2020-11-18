@@ -15,7 +15,7 @@
  */
 
 import { StandardAction } from '../../models/StandardAction';
-import ContentType from '../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { createAction } from '@reduxjs/toolkit';
@@ -24,6 +24,7 @@ import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, Search
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 import { OptionsObject } from 'notistack';
 import { WidgetDescriptor } from '../../components/Widget';
+import LookupTable from '../../models/LookupTable';
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
 
@@ -93,9 +94,6 @@ export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED'
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
@@ -199,21 +197,13 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
+export const fetchAudiencesPanelModel = createAction<{ fields: LookupTable<ContentTypeField> }>(
+  'FETCH_AUDIENCES_PANEL_MODEL'
+);
 
-export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
-  return {
-    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
-    payload: data
-  };
-}
+export const fetchAudiencesPanelModelComplete = createAction<ContentInstance>('FETCH_AUDIENCES_PANEL_MODEL_COMPLETE');
 
-export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
-  return {
-    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
-    payload: error
-  };
-}
+export const fetchAudiencesPanelModelFailed = createAction('FETCH_AUDIENCES_PANEL_MODEL_FAILED');
 
 export function updateAudiencesPanelModel(data): StandardAction {
   return {

@@ -77,7 +77,24 @@ const uiConfigDefaults = {
                 configuration: {
                   fields: {
                     segment: {
-                      id: ''
+                      id: 'segment',
+                      name: 'Segment',
+                      description: 'User segment.',
+                      type: 'dropdown',
+                      defaultValue: 'anonymous',
+                      values: [
+                        { label: 'Guy', value: 'guy' },
+                        { label: 'Gal', value: 'gal' },
+                        { label: 'Anonymous', value: 'anonymous' }
+                      ],
+                      helpText: 'Setting the segment will change content targeting to the audience selected.'
+                    },
+                    name: {
+                      id: 'name',
+                      name: 'Name',
+                      description: "User's first and last name.",
+                      type: 'input',
+                      helpText: "Enter user's first and last name."
                     }
                   }
                 }

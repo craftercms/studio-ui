@@ -16,13 +16,14 @@
 
 import { errorSelectorApi1, get } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
-import { forkJoin, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
+import LookupTable from '../models/LookupTable';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -146,23 +147,10 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
   );
 }
 
-export function getAudiencesPanelPayload(
-  site: string
-): Observable<{ contentType: ContentType; model: ContentInstance }> {
-  return forkJoin({
-    data: fetchActiveTargetingModel(site),
-    contentType: getAudiencesPanelConfig(site)
-  }).pipe(
-    map(({ contentType, data }) => ({
-      contentType,
-      model: deserializeActiveTargetingModelData(data, contentType)
-    }))
-  );
-}
-
-function deserializeActiveTargetingModelData<T extends Object>(data: T, contentType: ContentType): ContentInstance {
-  const contentTypeFields = contentType.fields;
-
+export function deserializeActiveTargetingModelData<T extends Object>(
+  data: T,
+  contentTypeFields: LookupTable<ContentTypeField>
+): ContentInstance {
   Object.keys(data).forEach((modelKey) => {
     if (contentTypeFields[modelKey]) {
       // if checkbox-group (Array)

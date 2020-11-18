@@ -130,7 +130,6 @@ export interface GlobalState {
       isFetching: boolean;
       isApplying: boolean;
       error: ApiResponse;
-      contentType: ContentType;
       model: ContentInstance;
       applied: boolean;
     };

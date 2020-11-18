@@ -28,13 +28,13 @@ import {
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
   FETCH_COMPONENTS_BY_CONTENT_TYPE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
+  fetchAudiencesPanelModel,
+  fetchAudiencesPanelModelComplete,
+  fetchAudiencesPanelModelFailed,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -70,7 +70,6 @@ const audiencesPanelInitialState = {
   isFetching: null,
   isApplying: false,
   error: null,
-  contentType: null,
   model: null,
   applied: false
 };
@@ -316,7 +315,7 @@ const reducer = createReducer<GlobalState['preview']>(
 
       return nextState;
     },
-    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
+    [fetchAudiencesPanelModel.type]: (state) => ({
       ...state,
       audiencesPanel: {
         ...state.audiencesPanel,
@@ -324,19 +323,18 @@ const reducer = createReducer<GlobalState['preview']>(
         error: null
       }
     }),
-    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
+    [fetchAudiencesPanelModelComplete.type]: (state, { payload }) => {
       return {
         ...state,
         audiencesPanel: {
           ...state.audiencesPanel,
           isFetching: false,
           error: null,
-          contentType: payload.contentType,
-          model: payload.model
+          model: payload
         }
       };
     },
-    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
+    [fetchAudiencesPanelModelFailed.type]: (state, { payload }) => ({
       ...state,
       audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
     }),
