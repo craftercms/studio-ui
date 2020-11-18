@@ -18,7 +18,7 @@ import * as React from 'react';
 import LookupTable from '../models/LookupTable';
 import { augmentTranslations } from '../utils/i18n';
 import { CrafterCMSGlobal } from '../utils/craftercms';
-import { ThemeOptions } from '@material-ui/core';
+import { ThemeOptions } from '@material-ui/core/styles';
 
 export interface PluginFileBuilder {
   site: string;
