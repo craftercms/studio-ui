@@ -219,7 +219,7 @@ export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOpt
   return `${options.prefix}${stringify(args, options)}`;
 }
 
-export function applyDeserializedXMLTransforms<T extends object>(
+export function applyDeserializedXMLTransforms<T extends object = {}>(
   target: object,
   options: { arrays?: string[]; lookupTables?: string[]; renameTable?: LookupTable<string> }
 ): T {
