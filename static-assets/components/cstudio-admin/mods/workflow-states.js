@@ -36,7 +36,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 
     var actions = [];
 
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+    CStudioAuthoring.ContextualNav.AdminConsoleNav &&
+      CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 
     this.renderJobsList();
   },
@@ -49,7 +50,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
         method: this.setStates
       }
     ];
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+
+    CStudioAuthoring.ContextualNav.AdminConsoleNav &&
+      CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 
     this.renderStatesTable();
   },
