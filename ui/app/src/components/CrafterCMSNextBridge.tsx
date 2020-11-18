@@ -30,8 +30,8 @@ import StoreProvider from './StoreProvider';
 import CrafterThemeProvider from './CrafterThemeProvider';
 import SnackbarCloseButton from './SnackbarCloseButton';
 
-const styles = makeStyles({
-  snackbar: {
+const useStyles = makeStyles({
+  topSnackbar: {
     top: '60px'
   }
 });
@@ -45,6 +45,7 @@ function Bridge(
   }>
 ) {
   useLayoutEffect(setRequestForgeryToken, []);
+  const classes = useStyles();
   const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
   const mountSnackbarProvider = props.mountSnackbarProvider ?? true;
   const body = (
@@ -53,9 +54,6 @@ function Bridge(
       {mountGlobalDialogManager && <GlobalDialogManager />}
     </>
   );
-
-  const classes = styles();
-
   return (
     <StoreProvider resource={props.resource}>
       <I18nProvider>
@@ -68,7 +66,8 @@ function Bridge(
               action={(id) => <SnackbarCloseButton id={id} />}
               children={body}
               classes={{
-                anchorOriginTopRight: classes.snackbar
+                anchorOriginTopRight: classes.topSnackbar,
+                anchorOriginTopLeft: classes.topSnackbar
               }}
             />
           ) : (
