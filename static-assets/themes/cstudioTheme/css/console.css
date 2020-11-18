@@ -68,7 +68,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   margin: 0 5px;
 }
 
-.work-area-empty {
+.work-area-empty, .work-area-error {
   height: 100vh;
   display: flex;
   margin-top: 50px;
@@ -77,7 +77,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   flex-direction: column;
 }
 
-.work-area-empty img {
+.work-area-empty img, .work-area-error img {
   width: 200px;
   margin-bottom: 20px;
   display: block;
@@ -111,9 +111,44 @@ input[type="checkbox"].content-type-selector--checkbox {
   left: 0;
 }
 
+#admin-console {
+  margin-top: 55px;
+}
+
+.embedded #admin-console {
+  margin-top: 0;
+}
+
 #admin-console #cstudio-admin-console-workarea {
   width: calc(100% - 239px);
   margin-left: 239px;
+}
+
+#cstudio-admin-console-workarea .iframe-container, #graphContainer{
+  margin-top: 50px;
+  height: calc(100vh - 50px);
+}
+
+.embedded #cstudio-admin-console-workarea .iframe-container, .embedded #graphContainer {
+  margin-top: 0;
+  height: 100vh;
+}
+
+.embedded #admin-console #categories-panel, .embedded #admin-console #categories-panel{
+  display: none;
+}
+
+.embedded #admin-console #cstudio-admin-console-workarea {
+  width: 100%;
+  margin-left: 0;
+}
+
+.embedded #controls-overlay {
+  display: none;
+}
+
+.embedded #config-area {
+  padding-top: 0;
 }
 
 .cstudio-admin-console-item {
@@ -495,7 +530,6 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 .site-config-landing-page {
-  margin-top: 50px;
   padding: 0 20px;
   overflow: auto;
 }

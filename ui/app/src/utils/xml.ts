@@ -20,7 +20,7 @@ import prettier from 'prettier/standalone';
 import { nnou } from './object';
 import parser, { X2jOptionsOptional } from 'fast-xml-parser';
 
-export function fromString(xml: string) {
+export function fromString(xml: string): Document {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
 }
 

@@ -233,7 +233,7 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge mountGlobalDialogManager={!isLegacy}>
+            <CrafterCMSNextBridge mountGlobalDialogManager={!isLegacy} mountSnackbarProvider={!isLegacy}>
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,
@@ -263,12 +263,13 @@ export function createCodebaseBridge() {
 
     renderBackgroundUI() {
       const element = document.createElement('div');
-      // document.body.appendChild(element);
+      element.setAttribute('class', 'craftercms-background-ui');
+      document.body.appendChild(element);
       return new Promise((resolve, reject) => {
         try {
           const unmount = () => {
             ReactDOM.unmountComponentAtNode(element);
-            // document.body.removeChild(element);
+            document.body.removeChild(element);
           };
           ReactDOM.render(<CrafterCMSNextBridge />, element, () =>
             resolve({

@@ -25,10 +25,14 @@
     render: function(containerEl) {
       this.containerEl = containerEl;
 
-      containerEl.innerHTML = `
+      if (!$('body').hasClass('embedded')) {
+        containerEl.innerHTML = `
 				<div id="categories-panel" class="categories-panel">
 				  <div id="categoriesPanelWrapper"></div>
-				</div>
+				</div>`;
+      }
+
+      containerEl.innerHTML += `
 				<div id="cstudio-admin-console-workarea">
           <div class="work-area-empty">
             <img src="/studio/static-assets/images/choose_option.svg" alt="">
@@ -58,6 +62,36 @@
       );
     },
 
+    initRouter(tools) {
+      const _self = this;
+      const toolsNames = tools.map((tool) => tool.name);
+
+      routie('tool/:name?', function(name) {
+        if (toolsNames.includes(name)) {
+          _self.currentRoute = name;
+          if (_self.toolsModules[name]) {
+            CStudioAdminConsole.renderWorkArea(null, {
+              tool: _self.toolsModules[name],
+              toolbar: _self.toolbar
+            });
+          }
+        } else {
+          $('#activeContentActions').empty();
+          CStudioAdminConsole.CommandBar.hide();
+          const elem = document.createElement('div');
+          elem.className = 'work-area-error';
+          $('#cstudio-admin-console-workarea').html(elem);
+          CrafterCMSNext.render(elem, 'ErrorState', {
+            imageUrl: '/studio/static-assets/images/warning_state.svg',
+            classes: {
+              root: 'craftercms-error-state'
+            },
+            message: formatMessage(contentTypesMessages.toolNotFound, { tool: name })
+          });
+        }
+      });
+    },
+
     buildModules: function(config, panelEl) {
       amplify.subscribe('/content-type/loaded', function() {
         var catEl = document.getElementById('admin-console');
@@ -70,11 +104,13 @@
       }
 
       if (config.tools.tool.length) {
+        this.toolsModules = {};
+        this.initRouter(config.tools.tool);
         for (var j = 0; j < config.tools.tool.length; j++) {
           try {
             var toolContainerEl = document.createElement('div');
             this.toolContainerEls[this.toolContainerEls.length] = toolContainerEl;
-            panelEl.appendChild(toolContainerEl);
+            panelEl && panelEl.appendChild(toolContainerEl);
 
             if (j == 0) {
               YDom.addClass(toolContainerEl, 'cstudio-admin-console-item-first');
@@ -84,8 +120,16 @@
               moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                 try {
                   var tool = new moduleClass(moduleConfig, this.toolContainerEl);
+                  this.context.toolsModules[tool.config.config.name] = tool;
                   tool.initialize(moduleConfig.config);
                   this.context.toolbar.addToolbarItem(tool, this.toolContainerEl);
+
+                  if (this.context.currentRoute === tool.config.name) {
+                    CStudioAdminConsole.renderWorkArea(null, {
+                      tool,
+                      toolbar: this.context.toolbar
+                    });
+                  }
                 } catch (e) {
                   // in preview, this function undefined raises error -- unlike dashboard.
                   // I agree, not a good solution!
@@ -95,11 +139,24 @@
               context: this,
               toolContainerEl: toolContainerEl
             };
-
+            const tool = config.tools.tool[j];
             CStudioAuthoring.Module.requireModule(
-              'cstudio-console-tools-' + config.tools.tool[j].name,
-              '/static-assets/components/cstudio-admin/mods/' + config.tools.tool[j].name + '.js',
-              { config: config.tools.tool[j] },
+              `cstudio-console-tools-${tool.name}`,
+              `/static-assets/components/cstudio-admin/mods/${tool.name}.js`,
+              {
+                config: tool,
+                onError: function() {
+                  CStudioAuthoring.Utils.showNotification(
+                    formatMessage(contentTypesMessages.loadModuleError, { tool: tool.name }),
+                    'top',
+                    'right',
+                    'error',
+                    60,
+                    0,
+                    'tool-not-loaded'
+                  );
+                }
+              },
               cb
             );
           } catch (err) {
@@ -108,20 +165,69 @@
         }
       }
 
-      var validatorContainer = document.createElement('div');
-      YDom.addClass(validatorContainer, 'craftercms-entitlement');
+      if (!$('body').hasClass('embedded')) {
+        var validatorContainer = document.createElement('div');
+        YDom.addClass(validatorContainer, 'craftercms-entitlement');
 
-      var logo = document.createElement('img');
-      logo.className = 'craftercms-entitlement-logo';
-      logo.src = '/studio/static-assets/images/logo.svg';
+        var logo = document.createElement('img');
+        logo.className = 'craftercms-entitlement-logo';
+        logo.src = '/studio/static-assets/images/logo.svg';
 
-      var entitlementValidatorP = document.createElement('p');
-      YDom.addClass(entitlementValidatorP, 'craftercms-entitlement-copy');
-      entitlementValidatorP.innerHTML = entitlementValidator;
+        var entitlementValidatorP = document.createElement('p');
+        YDom.addClass(entitlementValidatorP, 'craftercms-entitlement-copy');
+        entitlementValidatorP.innerHTML = entitlementValidator;
 
-      validatorContainer.appendChild(logo);
-      validatorContainer.appendChild(entitlementValidatorP);
-      document.getElementById('categories-panel').appendChild(validatorContainer);
+        validatorContainer.appendChild(logo);
+        validatorContainer.appendChild(entitlementValidatorP);
+        document.getElementById('categories-panel').appendChild(validatorContainer);
+      }
+    },
+
+    renderWorkArea(evt, params) {
+      if (CStudioAdminConsole.isDirty) {
+        CStudioAuthoring.Operations.showSimpleDialog(
+          'error-dialog',
+          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+          CMgs.format(langBundle, 'notification'),
+          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+          [
+            {
+              text: CMgs.format(formsLangBundle, 'yes'),
+              handler: function() {
+                CStudioAdminConsole.isDirty = false;
+                selectedItem();
+                this.destroy();
+              },
+              isDefault: false
+            },
+            {
+              text: CMgs.format(formsLangBundle, 'no'),
+              handler: function() {
+                this.destroy();
+              },
+              isDefault: false
+            }
+          ],
+          YAHOO.widget.SimpleDialog.ICON_WARN,
+          'studioDialog'
+        );
+      } else {
+        CStudioAdminConsole.isDirty = false;
+        selectedItem();
+      }
+
+      function selectedItem() {
+        if (params.toolbar.selectedEl) {
+          YDom.removeClass(params.toolbar.selectedEl, 'cstudio-admin-console-item-selected');
+          CStudioAdminConsole.CommandBar.hide();
+        }
+
+        amplify.publish('TOOL_SELECTED');
+
+        params.toolbar.selectedEl = params.tool.containerEl;
+        YDom.addClass(params.tool.containerEl, 'cstudio-admin-console-item-selected');
+        params.tool.renderWorkarea();
+      }
     }
   };
 
@@ -168,59 +274,8 @@
       var elId = label.replace(/\s+/g, '-').toLowerCase();
       toolContainerEl.id = elId;
 
-      var onRenderWorkAreaFn = function(evt, params) {
-        var self = this;
-
-        if (CStudioAdminConsole.isDirty) {
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'error-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(langBundle, 'notification'),
-            CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-            [
-              {
-                text: CMgs.format(formsLangBundle, 'yes'),
-                handler: function() {
-                  CStudioAdminConsole.isDirty = false;
-                  selectedItem();
-                  this.destroy();
-                },
-                isDefault: false
-              },
-              {
-                text: CMgs.format(formsLangBundle, 'no'),
-                handler: function() {
-                  this.destroy();
-                },
-                isDefault: false
-              }
-            ],
-            YAHOO.widget.SimpleDialog.ICON_WARN,
-            'studioDialog'
-          );
-        } else {
-          CStudioAdminConsole.isDirty = false;
-          selectedItem();
-        }
-
-        function selectedItem() {
-          if (params.toolbar.selectedEl) {
-            YDom.removeClass(params.toolbar.selectedEl, 'cstudio-admin-console-item-selected');
-            CStudioAdminConsole.CommandBar.hide();
-          }
-
-          amplify.publish('TOOL_SELECTED');
-
-          params.toolbar.selectedEl = self;
-          YDom.addClass(self, 'cstudio-admin-console-item-selected');
-          params.tool.renderWorkarea();
-        }
-      };
-
-      onRenderWorkAreaFn.containerEl = toolContainerEl;
-      YAHOO.util.Event.on(toolContainerEl, 'click', onRenderWorkAreaFn, {
-        tool: tool,
-        toolbar: this
+      $(toolContainerEl).on('click', (e) => {
+        window.location.hash = 'tool/' + tool.config.name;
       });
 
       this.tools[this.tools.length] = tool;
