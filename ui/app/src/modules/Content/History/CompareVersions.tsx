@@ -22,6 +22,7 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import React from 'react';
 import { Resource } from '../../../models/Resource';
+import { useSelection } from '../../../utils/hooks';
 
 // declare const monaco: any;
 
@@ -170,11 +171,12 @@ const getLegacyDialogStyles = makeStyles(() => ({
 export function CompareVersions(props: CompareVersionsProps) {
   const { a, b } = props.resource.read();
   const classes = getLegacyDialogStyles();
+  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   return (
     <iframe
       title="Comparing versions"
       className={classes.iframe}
-      src={`http://localhost:8080/studio/diff?site=${a.site}&path=${a.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
+      src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
     />
   );
 }
