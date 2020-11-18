@@ -39,7 +39,7 @@ export interface PluginDescriptor {
   widgets: LookupTable<ComponentRecord>;
   scripts: Array<string | object>;
   stylesheets: Array<string | object>;
-  themes: { id: string; name: string; themeOptions: ThemeOptions[] };
+  themes: Array<{ id: string; name: string; themeOptions: ThemeOptions[] }>;
 }
 
 export interface ExtendedPluginDescriptor extends PluginDescriptor {
