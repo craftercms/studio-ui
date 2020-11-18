@@ -10110,4 +10110,6 @@ function getTopLegacyWindow(nextWindow) {
   }
 }
 
-CrafterCMSNext.renderBackgroundUI();
+document.addEventListener('DOMContentLoaded', function() {
+  CrafterCMSNext.renderBackgroundUI();
+});

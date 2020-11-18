@@ -68,7 +68,9 @@ function Bridge(
   );
 }
 
-export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlobalDialogManager?: boolean }>) {
+export default function CrafterCMSNextBridge(
+  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean; mountSnackbarProvider?: boolean }>
+) {
   const [storeResource] = useState(() =>
     createResource(() => createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise())
   );
@@ -76,6 +78,7 @@ export default function CrafterCMSNextBridge(props: PropsWithChildren<{ mountGlo
     <Suspencified>
       <Bridge
         mountGlobalDialogManager={props.mountGlobalDialogManager}
+        mountSnackbarProvider={props.mountSnackbarProvider}
         resource={storeResource}
         children={props.children}
       />

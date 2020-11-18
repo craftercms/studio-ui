@@ -121,8 +121,8 @@
 
       sitesService.getLanguages($rootScope, true);
 
-      //More configuration on https://notifyjs.com/
-      ($rootScope.showNotification = function(message, positionx, positiony, type, originalx, originaly, classElt) {
+      // More configuration on https://notifyjs.com/
+      $rootScope.showNotification = function(message, positionx, positiony, type, originalx, originaly, classElt) {
         var globalPositionx = positionx ? positionx : 'top',
           globalPositiony = positiony ? positiony : 'right',
           globalPosition = globalPositionx + ' ' + globalPositiony,
@@ -177,8 +177,9 @@
               right: originaly + 'px'
             });
         }
-      }),
-        CrafterCMSNext.renderBackgroundUI();
+      };
+
+      CrafterCMSNext.renderBackgroundUI();
     }
   ]);
 

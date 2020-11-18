@@ -219,6 +219,51 @@ export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOpt
   return `${options.prefix}${stringify(args, options)}`;
 }
 
+export function applyDeserializedXMLTransforms<T extends object>(
+  target: object,
+  options: { arrays?: string[]; lookupTables?: string[]; renameTable?: LookupTable<string> }
+): T {
+  const { arrays, lookupTables, renameTable } = options;
+  const newObject = {} as T;
+  for (let prop in target) {
+    if (target.hasOwnProperty(prop)) {
+      let newName = renameTable?.[prop] ?? prop;
+      if (arrays?.includes(newName)) {
+        if (typeof target[prop] === 'string') {
+          newObject[newName] = [];
+        } else {
+          const keys = Object.keys(target[prop]);
+          const childName = keys[0];
+          newObject[newName] = Array.isArray(target[prop][childName])
+            ? target[prop][childName]
+            : [target[prop][childName]];
+          newObject[newName] = newObject[newName].map((item) =>
+            typeof item === 'object' ? applyDeserializedXMLTransforms(item, options) : item
+          );
+        }
+      } else if (lookupTables?.includes(newName)) {
+        if (typeof target[prop] === 'string') {
+          newObject[newName] = {};
+        } else {
+          const keys = Object.keys(target[prop]);
+          const childName = keys[0];
+          const tempArray = (Array.isArray(target[prop][childName])
+            ? target[prop][childName]
+            : [target[prop][childName]]
+          )
+            .filter(Boolean)
+            .map((item) => applyDeserializedXMLTransforms(item, options));
+          newObject[newName] = createLookupTable(tempArray);
+        }
+      } else {
+        newObject[newName] =
+          typeof target[prop] === 'object' ? applyDeserializedXMLTransforms(target[prop], options) : target[prop];
+      }
+    }
+  }
+  return newObject;
+}
+
 const object = {
   pluckProps,
   reversePluckProps,
@@ -237,7 +282,8 @@ const object = {
   findParentModelId,
   isPlainObject,
   extend,
-  toQueryString
+  toQueryString,
+  applyDeserializedXMLTransforms
 };
 
 export default object;
