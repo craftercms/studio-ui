@@ -18,6 +18,7 @@ import * as React from 'react';
 import LookupTable from '../models/LookupTable';
 import { augmentTranslations } from '../utils/i18n';
 import { CrafterCMSGlobal } from '../utils/craftercms';
+import { ThemeOptions } from '@material-ui/core/styles';
 
 export interface PluginFileBuilder {
   site: string;
@@ -28,8 +29,21 @@ export interface PluginFileBuilder {
 
 export interface PluginDescriptor {
   id: string;
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  logo: string;
   locales: LookupTable<object>;
+  apps: { route: string; widget: { id: string; configuration: any } }[];
   widgets: LookupTable<ComponentRecord>;
+  scripts: Array<string | object>;
+  stylesheets: Array<string | object>;
+  themes: Array<{ id: string; name: string; themeOptions: ThemeOptions[] }>;
+}
+
+export interface ExtendedPluginDescriptor extends PluginDescriptor {
+  source: PluginFileBuilder;
 }
 
 export type NonReactComponentRecord = {
@@ -39,9 +53,11 @@ export type NonReactComponentRecord = {
 export type ComponentRecord = NonReactComponentRecord | React.ComponentType<any>;
 // export type ComponentRecord = { type: 'react', component: TheComponent };
 
-export const plugins = new Map<string, PluginDescriptor>();
+export const plugins = new Map<string, ExtendedPluginDescriptor>();
 
 export const components = new Map<string, ComponentRecord>();
+
+const DEFAULT_FILE_NAME = 'index.js';
 
 function isPluginFileBuilder(target: any): target is PluginFileBuilder {
   return typeof target === 'object';
@@ -64,7 +80,23 @@ export function buildFileUrl(
     name = builder.name;
     file = builder.file;
   }
-  return `/studio/api/2/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? 'index.js'}`;
+  return `/studio/api/2/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? DEFAULT_FILE_NAME}`;
+}
+
+export function createFileBuilder(site: string, type: string, name: string): PluginFileBuilder;
+export function createFileBuilder(site: string, type: string, name: string, file: string): PluginFileBuilder;
+export function createFileBuilder(
+  site: string,
+  type: string,
+  name: string,
+  file: string = DEFAULT_FILE_NAME
+): PluginFileBuilder {
+  return {
+    site,
+    type,
+    name,
+    file
+  };
 }
 
 export function importFile(fileBuilder: PluginFileBuilder): Promise<any>;
@@ -91,14 +123,16 @@ export function importPlugin(
   file?: string
 ): Promise<any> {
   // @ts-ignore — methods share the same signature(s)
-  return importFile(...arguments).then((module) => {
-    const plugin = module.plugin || module.default;
+  const args: [string, string, string, string] = arguments;
+  return importFile(...args).then((module) => {
+    const plugin = module.plugin ?? module.default;
     if (plugin) {
       // The file may have been previously loaded and hence the plugin registered previously.
       // This may however cause silent skips of legitimate duplicate plugin id registrations.
       // Perhaps we should consider keeping an internal registry of the plugin file URLs that
       // have been loaded if this is an issue.
-      !isPluginRegistered(plugin) && registerPlugin(plugin);
+      !isPluginRegistered(plugin) &&
+        registerPlugin(plugin, isPluginFileBuilder(siteOrBuilder) ? siteOrBuilder : createFileBuilder(...args));
     }
     return plugin;
   });
@@ -108,12 +142,26 @@ export function isPluginRegistered(plugin: PluginDescriptor): boolean {
   return plugins.has(plugin?.id);
 }
 
-export function registerPlugin(plugin: PluginDescriptor): boolean {
+export function registerPlugin(plugin: PluginDescriptor, source?: PluginFileBuilder): boolean {
   // Skip registration if plugin with same id already exists
   if (!plugins.has(plugin.id)) {
-    plugins.set(plugin.id, plugin);
+    const extendedDescriptor = { ...plugin, source };
+    plugins.set(plugin.id, extendedDescriptor);
     registerComponents(plugin.widgets);
     augmentTranslations(plugin.locales);
+    // TODO: Allow externals?
+    if (source) {
+      plugin.stylesheets?.forEach((href) =>
+        appendStylesheet(
+          typeof href === 'string' ? (hasProtocol(href) ? href : buildFileUrl({ ...source, file: href })) : href
+        )
+      );
+      plugin.scripts?.forEach((src) =>
+        appendScript(typeof src === 'string' ? (hasProtocol(src) ? src : buildFileUrl({ ...source, file: src })) : src)
+      );
+    } else {
+      console.error('Scripts & stylesheets not allowed for umd bundles');
+    }
     return true;
   } else {
     console.error(`Attempt to register a duplicate plugin "${plugin.id}" skipped.`);
@@ -130,6 +178,38 @@ export function registerComponents(widgets: LookupTable<ComponentRecord>) {
       console.error(`Attempt to register a duplicate component id "${id}" skipped.`);
     }
   });
+}
+
+export function appendStylesheet(href: string): Promise<Event>;
+export function appendStylesheet(attributes: object): Promise<Event>;
+export function appendStylesheet(href: string | object): Promise<Event>;
+export function appendStylesheet(href: string | object): Promise<Event> {
+  return appendLoadable('link', { rel: 'stylesheet', ...(typeof href === 'string' ? { href } : href) });
+}
+
+export function appendScript(src: string): Promise<Event>;
+export function appendScript(attributes: object): Promise<Event>;
+export function appendScript(src: string | object): Promise<Event>;
+export function appendScript(src: string | object): Promise<Event> {
+  return appendLoadable('script', typeof src === 'string' ? { src } : src);
+}
+
+function appendLoadable(type: 'link' | 'script', attributes: object): Promise<Event> {
+  return new Promise((resolve, reject) => {
+    const element = document.createElement(type);
+    for (let attr in attributes) {
+      if (Object.prototype.hasOwnProperty.call(attributes, attr)) {
+        element.setAttribute(attr, attributes[attr]);
+      }
+    }
+    element.onload = resolve;
+    element.onerror = reject;
+    document.head.appendChild(element);
+  });
+}
+
+function hasProtocol(url: string): boolean {
+  return /^(http)(s?):\/\//.test(url);
 }
 
 const plugin = {

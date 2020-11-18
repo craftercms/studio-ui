@@ -75,6 +75,14 @@ const libs: CrafterCMSGlobal['libs'] = {
   '@material-ui/core': MaterialUI
 };
 
+// UMD builds wouldn't give the chance to track the file builder the plugin loads from
+// unless the plugin descriptor provided the site, type, name & file args.
+// An option would be including a query argument on the URL of the plugin with the expected ID e.g.
+// `.../plugin/file?site=mySite&type=myType&name=myName&fileName=myFile&expectedPluginId=org.craftercms.samplePlugin`
+// Upon receiving a call to `craftercms.define` and invoking the factory to get the plugin descriptor, get the id and
+// try to find a script which matches `expectedPluginId=${pluginDescriptor.id}`. This might mean having to drop the
+// use of dynamic import and use regular scripts as dynamic imports don't add a script to the DOM we could go find.
+// Perhaps UMD shouldn't be supported; only support es module-style plugin bundle builds.
 const define = function(id, deps, factory) {
   // Anonymous modules
   if (typeof id !== 'string') {

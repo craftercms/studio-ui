@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { ignoreElements, tap } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
@@ -30,8 +30,9 @@ import {
   showRevertItemSuccessNotification,
   showSystemNotification
 } from '../actions/system';
+import { CrafterCMSEpic } from '../store';
 
-export default [
+const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(emitSystemEvent.type),
@@ -157,5 +158,16 @@ export default [
         );
       }),
       ignoreElements()
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(showSystemNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(showSystemNotification(payload));
+      }),
+      ignoreElements()
     )
-] as Epic[];
+];
+
+export default systemEpics;
