@@ -18,7 +18,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useLogicResource, useUnmount } from '../../../utils/hooks';
+import { useLogicResource, useSelection, useUnmount } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import ContentType from '../../../models/ContentType';
 import { LookupTable } from '../../../models/LookupTable';
@@ -187,11 +187,12 @@ function ViewVersionDialogBody(props: ViewVersionDialogProps) {
 function LegacyVersionDialog(props: VersionViewProps) {
   const { version } = props.resource.read();
   const classes = getLegacyDialogStyles();
+  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   return (
     <iframe
       title="View version"
       className={classes.iframe}
-      src={`http://localhost:8080/studio/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
+      src={`${authoringUrl}/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
         version.versionNumber
       }&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
     />
