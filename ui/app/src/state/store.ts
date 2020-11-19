@@ -152,23 +152,30 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
     user: me(),
     sites: fetchSites()
   }).pipe(
+    tap((a) => console.log(a)),
     switchMap(({ user, sites }) =>
-      forkJoin<LookupTable<Observable<string[]>>, ''>(
-        sites.reduce((lookup, site) => {
-          lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
-          return lookup;
-        }, {})
-      ).pipe(
-        map((rolesBySite) => {
-          user.rolesBySite = rolesBySite;
-          user.sites = sites.map(({ id }) => id);
-          return {
+      sites.length
+        ? forkJoin<LookupTable<Observable<string[]>>, ''>(
+            sites.reduce((lookup, site) => {
+              lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
+              return lookup;
+            }, {})
+          ).pipe(
+            map((rolesBySite) => {
+              user.rolesBySite = rolesBySite;
+              user.sites = sites.map(({ id }) => id);
+              return {
+                user,
+                sites: { ...sitesInitialState, byId: createLookupTable(sites) },
+                auth: { ...authInitialState, active: true }
+              };
+            })
+          )
+        : of({
             user,
-            sites: { ...sitesInitialState, byId: createLookupTable(sites) },
+            sites: { ...sitesInitialState, byId: {} },
             auth: { ...authInitialState, active: true }
-          };
-        })
-      )
+          })
     )
   );
 }
