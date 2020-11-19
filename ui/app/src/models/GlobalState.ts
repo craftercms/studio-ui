@@ -185,7 +185,7 @@ export interface GlobalState {
     currentSite: string;
     preview: {
       toolsPanel: {
-        widgets: any[];
+        widgets: WidgetDescriptor[];
       };
     };
   };

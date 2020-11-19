@@ -22,12 +22,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
-  browseSharedInstance,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
-  inPageInstances,
-  pushToolsPanelPage
+  pushToolsPanelPage,
+  setContentTypeFilter
 } from '../../state/actions/preview';
 import { useSelectorResource } from '../../utils/hooks';
 import { nnou, reversePluckProps } from '../../utils/object';
@@ -36,6 +35,7 @@ import { useDispatch } from 'react-redux';
 import { PropsWithResource, SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { EntityState } from '../../models/EntityState';
 import { batchActions } from '../../state/actions/misc';
+import { createToolsPanelPage } from '../../utils/state';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -115,20 +115,14 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const onBrowseSharedInstancesClicked = () => {
     dispatch(
       batchActions([
-        browseSharedInstance({
-          contentType: menuContext.contentType.id
-        }),
-        pushToolsPanelPage({
-          id: 'craftercms.component.ToolsPanelPage',
-          configuration: {
-            title: 'previewBrowseComponentsPanel.title',
-            widgets: [
-              {
-                id: 'craftercms.component.PreviewBrowseComponentsPanel'
-              }
-            ]
-          }
-        })
+        setContentTypeFilter(menuContext.contentType.id),
+        pushToolsPanelPage(
+          createToolsPanelPage('previewBrowseComponentsPanel.title', [
+            {
+              id: 'craftercms.component.PreviewBrowseComponentsPanel'
+            }
+          ])
+        )
       ])
     );
   };
@@ -136,37 +130,27 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const onListInPageInstancesClick = () => {
     dispatch(
       batchActions([
-        inPageInstances({
-          contentType: menuContext.contentType.id
-        }),
-        pushToolsPanelPage({
-          id: 'craftercms.component.ToolsPanelPage',
-          configuration: {
-            title: 'previewInPageInstancesPanel.title',
-            widgets: [
-              {
-                id: 'craftercms.component.PreviewInPageInstancesPanel'
-              }
-            ]
-          }
-        })
+        setContentTypeFilter(menuContext.contentType.id),
+        pushToolsPanelPage(
+          createToolsPanelPage('previewInPageInstancesPanel.title', [
+            {
+              id: 'craftercms.component.PreviewInPageInstancesPanel'
+            }
+          ])
+        )
       ])
     );
   };
 
   const onListReceptaclesClick = () => {
     dispatch(
-      pushToolsPanelPage({
-        id: 'craftercms.component.ToolsPanelPage',
-        configuration: {
-          title: 'previewReceptaclesPanel.title',
-          widgets: [
-            {
-              id: 'craftercms.component.PreviewReceptaclesPanel'
-            }
-          ]
-        }
-      })
+      pushToolsPanelPage(
+        createToolsPanelPage('previewReceptaclesPanel.title', [
+          {
+            id: 'craftercms.component.PreviewReceptaclesPanel'
+          }
+        ])
+      )
     );
     hostToGuest$.next({
       type: CONTENT_TYPE_RECEPTACLES_REQUEST,

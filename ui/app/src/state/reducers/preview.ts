@@ -17,7 +17,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  browseSharedInstance,
   CHANGE_CURRENT_URL,
   CHILDREN_MAP_UPDATE,
   CLEAR_RECEPTACLES,
@@ -38,7 +37,6 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
-  inPageInstances,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
@@ -443,21 +441,6 @@ const reducer = createReducer<GlobalState['preview']>(
     [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
       ...state,
       components: { ...state.components, error: payload.response, isFetching: false }
-    }),
-    [inPageInstances.type]: (state, { payload }) => ({
-      ...state,
-      components: {
-        ...state.components,
-        contentTypeFilter: payload.contentType
-      }
-    }),
-    [browseSharedInstance.type]: (state, { payload }) => ({
-      ...state,
-      components: {
-        ...state.components,
-        contentTypeFilter: payload.contentType,
-        inThisPage: payload.inThisPage
-      }
     }),
     [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
       ...state,

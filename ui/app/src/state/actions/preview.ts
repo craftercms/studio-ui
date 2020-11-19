@@ -254,10 +254,6 @@ export const fetchComponentsByContentTypeComplete = createAction<ContentInstance
 
 export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const browseSharedInstance = createAction<{ contentType: string }>('BROWSE_COMPONENT_INSTANCES');
-
-export const inPageInstances = createAction<{ contentType: string }>('IN_PAGE_INSTANCES');
-
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
 export const setContentTypeReceptacles = createAction<{

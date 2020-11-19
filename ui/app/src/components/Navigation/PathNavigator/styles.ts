@@ -78,7 +78,7 @@ export const useStyles = makeStyles(
       },
       childrenRail: {
         marginLeft: 10,
-        borderLeft: `3px solid ${palette.gray.light2}`
+        borderLeft: `3px solid ${theme.palette.divider}`
       },
       pagesIcon: {
         fontSize: '1.1rem'

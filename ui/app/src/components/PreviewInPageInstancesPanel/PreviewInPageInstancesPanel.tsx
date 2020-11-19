@@ -176,7 +176,7 @@ export default function PreviewInPageInstancesPanel() {
           disabled={!Boolean(contentTypeFilter)}
         />
         <Select
-          value={contentTypeFilter}
+          value={contentTypes.length ? contentTypeFilter : ''}
           displayEmpty
           className={classes.Select}
           onChange={(event: any) => handleSelectChange(event.target.value)}
