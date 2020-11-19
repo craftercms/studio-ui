@@ -19,6 +19,7 @@ import NonReactWidget from '../NonReactWidget/NonReactWidget';
 import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
 import EmptyState from '../SystemStatus/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
+import ErrorState from '../ErrorState';
 
 // TODO: Temporary/remove after testing.
 export const TempTestContext = React.createContext<any>({});
@@ -53,15 +54,31 @@ const Widget = memo(function(props: WidgetProps) {
     }
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
-      importPlugin(plugin).then(() => ({
-        default: function(props) {
-          if (components.has(id)) {
-            return <Widget {...props} />;
-          } else {
-            return <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />;
+      importPlugin(plugin).then(
+        () => ({
+          default: function(props) {
+            if (components.has(id)) {
+              return <Widget {...props} />;
+            } else {
+              return (
+                <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />
+              );
+            }
           }
-        }
-      }))
+        }),
+        () => ({
+          default: function({ plugin }) {
+            return (
+              <ErrorState
+                title="Plugin failed to load"
+                message={`Failed plugin was: ${Object.entries(plugin)
+                  .map(([key, value]) => `${key}:${value}`)
+                  .join(', ')}`}
+              />
+            );
+          }
+        })
+      )
     );
     return <Component {...props} />;
   }
