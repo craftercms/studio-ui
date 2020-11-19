@@ -152,7 +152,7 @@ const uiConfigDefaults = {
           configuration: {
             title: 'previewSiteExplorerPanel.title',
             icon: {
-              id: '@material-ui/icons/SearchRounded'
+              id: 'craftercms.icons.siteExplorer'
             },
             widgets: [
               {
