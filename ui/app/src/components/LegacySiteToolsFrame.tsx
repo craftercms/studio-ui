@@ -17,25 +17,20 @@
 import React, { IframeHTMLAttributes } from 'react';
 import { useActiveSiteId, useSelection } from '../utils/hooks';
 
-interface EmbeddedLegacySiteToolsProps {
-  tool: string;
-  workarea?: boolean;
+interface LegacySiteToolsFrameProps {
+  tool?: string;
+  workareaOnly?: boolean;
   iframeProps?: IframeHTMLAttributes<any>;
 }
 
-function EmbeddedLegacySiteTools(props: EmbeddedLegacySiteToolsProps) {
-  const { tool, workarea = true, iframeProps } = props;
+function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
+  const { tool, workareaOnly = true, iframeProps } = props;
   const site = useActiveSiteId();
-  const embedded = workarea ? 'embedded' : '';
+  const embedded = workareaOnly ? 'embedded' : '';
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
+  const iframeSrc = `${authoringUrl}/site-config?site=${site}&mode=${embedded}${tool ? '#tool/' + tool : ''}`;
 
-  return (
-    <iframe
-      title="Site Config Panel"
-      src={`${authoringUrl}/site-config?site=${site}&mode=${embedded}#tool/${tool}`}
-      {...iframeProps}
-    />
-  );
+  return <iframe title="Site Config Panel" src={iframeSrc} {...iframeProps} />;
 }
 
-export default EmbeddedLegacySiteTools;
+export default LegacySiteToolsFrame;
