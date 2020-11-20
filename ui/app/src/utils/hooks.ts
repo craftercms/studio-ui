@@ -72,16 +72,17 @@ export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
 
 export function useQuickCreateListResource() {
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
   const quickCreate = useQuickCreateState();
   useEffect(() => {
-    !quickCreate.isFetching && quickCreate.items === null && dispatch(fetchQuickCreateList());
-  }, [dispatch, quickCreate]);
+    site && dispatch(fetchQuickCreateList());
+  }, [site, dispatch]);
   return useLogicResource(quickCreate, {
     errorSelector: (source) => source.error,
     resultSelector: (source) => source.items,
     shouldReject: (source) => Boolean(source.error),
-    shouldResolve: (source) => Boolean(source.items),
-    shouldRenew: (source) => source.isFetching && Boolean(source.items)
+    shouldResolve: (source) => Boolean(source.items) && !source.isFetching,
+    shouldRenew: (source) => Boolean(source.items) && source.isFetching
   });
 }
 
