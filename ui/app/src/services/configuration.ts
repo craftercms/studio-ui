@@ -24,6 +24,7 @@ import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
 import LookupTable from '../models/LookupTable';
+import GlobalState from '../models/GlobalState';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -196,7 +197,9 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // region SidebarConfig
 
-export function getSiteUiConfig(site: string): Observable<any> {
+export function getSiteUiConfig(
+  site: string
+): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
@@ -205,10 +208,8 @@ export function getSiteUiConfig(site: string): Observable<any> {
           const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
           const lookupTables = ['fields'];
           const renameTable = { permittedRoles: 'roles' };
-
           return {
             preview: {
-              // @ts-ignore
               toolsPanel: applyDeserializedXMLTransforms(deserialize(widgets), { arrays, lookupTables, renameTable })
             }
           };
