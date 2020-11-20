@@ -69,7 +69,7 @@ const content = [
       ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        if (state.content.items.permissionsByPath?.[payload.path]) {
+        if (state.content.items.permissionsByPath?.[payload.path] && payload.__CRAFTERCMS_GUEST_LANDING__) {
           return NEVER;
         } else {
           return getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(

@@ -14,20 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../utils/hooks';
-import SearchBar from '../Controls/SearchBar';
 import {
-  ComponentsContentTypeParams,
-  ContentInstancePage,
-  ElasticParams,
-  MediaItem,
-  SearchItem,
-  SearchResult
-} from '../../models/Search';
+  useActiveSiteId,
+  useContentTypeList,
+  useDebouncedInput,
+  useLogicResource,
+  useMount,
+  useSubject
+} from '../../utils/hooks';
+import SearchBar from '../Controls/SearchBar';
+import { ComponentsContentTypeParams, ElasticParams, SearchItem, SearchResult } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -38,10 +38,14 @@ import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED
 } from '../../state/actions/preview';
-// import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
+import { Resource } from '../../models/Resource';
+import { createLookupTable } from '../../utils/object';
+import { getContentInstance } from '../../services/content';
+import { forkJoin, Observable, of } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -97,31 +101,24 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-function SearchResults(props) {
-  const items = props.resource.read();
+interface SearchResultsProps {
+  resource: Resource<SearchItem[]>;
+  onDragStart(item: SearchItem): void;
+  onDragEnd(item: SearchItem): void;
+}
+
+function SearchResults(props: SearchResultsProps) {
+  const { resource, onDragStart, onDragEnd } = props;
+  const items = resource.read();
   const classes = useStyles({});
-  const hostToGuest$ = getHostToGuestBus();
-
-  const onDragStart = (item: ContentInstance | MediaItem) => {
-    hostToGuest$.next({
-      type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_STARTED : ASSET_DRAG_STARTED,
-      payload: item
-    });
-  };
-
-  const onDragEnd = (item: ContentInstance | MediaItem) => {
-    hostToGuest$.next({
-      type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
-    });
-  };
 
   return (
     <List className={classes.searchResultsList}>
-      {items.map((item: ContentInstance | MediaItem) => (
+      {items.map((item: SearchItem) => (
         <DraggablePanelListItem
-          key={item['craftercms']?.id || item.path}
-          primaryText={item['craftercms']?.label || item.name}
-          avatarSrc={item.path}
+          key={item.path}
+          primaryText={item.name}
+          avatarSrc={item.type === 'Image' ? item.path : null}
           onDragStart={() => onDragStart(item)}
           onDragEnd={() => onDragEnd(item)}
         />
@@ -133,7 +130,8 @@ function SearchResults(props) {
 const initialSearchParameters: Partial<ElasticParams> = {
   keywords: '',
   offset: 0,
-  limit: 10
+  limit: 10,
+  orOperator: true
   // sortBy: '_score',
   // sortOrder: 'desc',
   // filters: {}
@@ -144,68 +142,80 @@ const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/s
 export default function PreviewSearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
+  const [contentInstanceLookup, setContentInstanceLookup] = useState({});
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
-  const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
-  // TODO: Components
-  // const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
-  // const contentTypesIds = contentTypes?.map(item => item.id);
-  // const contentTypesLookup = createLookupTable(contentTypes, 'id');
+  const hostToGuest$ = getHostToGuestBus();
+  const [searchResults, setSearchResults] = useState<SearchResult>(null);
+  const contentTypes = useContentTypeList(
+    (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
+  );
+  const contentTypesLookup = useMemo(() => (contentTypes ? createLookupTable(contentTypes, 'id') : null), [
+    contentTypes
+  ]);
+
+  const unMount$ = useSubject();
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useLogicResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(
-    searchResults,
-    {
-      shouldResolve: (data) => Boolean(data),
-      shouldReject: () => Boolean(error),
-      shouldRenew: (data, resourceArg) => resourceArg.complete,
-      // TODO: Components
-      // resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
-      // @ts-ignore TODO: Remove ts-ignore
-      resultSelector: (data) => data.items,
-      errorSelector: () => error
-    }
-  );
-
-  useMount(() => {
-    onSearch();
+  const resource = useLogicResource<SearchItem[], SearchResult>(searchResults, {
+    shouldResolve: (data) => Boolean(data),
+    shouldReject: () => Boolean(error),
+    shouldRenew: (data, resourceArg) => resourceArg.complete,
+    resultSelector: (data) => data.items,
+    errorSelector: () => error
   });
 
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
-      // TODO: Components
-      // getContentByContentType(site, contentTypesIds, contentTypesLookup, {
-      //   ...initialSearchParameters,
-      //   keywords,
-      //   ...options,
-      //   type: 'Component'
-      // }).subscribe(
-      //   (result) => {
-      //     setSearchResults(result);
-      //   },
-      //   ({ response }) => {
-      //     setError(response);
-      //   }
-      // )
+      // pipe(takeUntil(unMount$),switchMap())
       search(site, {
         ...initialSearchParameters,
         keywords,
         ...options,
-        // TODO: Use this when api support OR operator
-        // filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
-        filters: { 'mime-type': mimeTypes }
-      }).subscribe(
-        (result) => {
-          setSearchResults(result);
-        },
-        ({ response }) => {
-          setError(response);
-        }
-      );
+        filters: { 'content-type': contentTypes?.map((item) => item.id), 'mime-type': mimeTypes }
+      })
+        .pipe(
+          takeUntil(unMount$),
+          switchMap((result) => {
+            const requests: Array<Observable<ContentInstance>> = [];
+            result.items.forEach((item) => {
+              if (item.type === 'Component') {
+                requests.push(getContentInstance(site, item.path, contentTypesLookup));
+              }
+            });
+            return requests.length
+              ? forkJoin(requests).pipe(map((contentInstances) => ({ contentInstances, result })))
+              : of({ result, contentInstances: null });
+          })
+        )
+        .subscribe(
+          (response) => {
+            setSearchResults(response.result);
+            if (response.contentInstances) {
+              setContentInstanceLookup(createLookupTable(response.contentInstances, 'craftercms.path'));
+            }
+          },
+          ({ response }) => {
+            setError(response);
+          }
+        );
     },
-    [site]
+    [site, contentTypes, unMount$, contentTypesLookup]
   );
+
+  useMount(() => {
+    return () => {
+      unMount$.next();
+      unMount$.complete();
+    };
+  });
+
+  useEffect(() => {
+    if (contentTypes && contentTypesLookup) {
+      onSearch();
+    }
+  }, [contentTypes, contentTypesLookup, onSearch]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
@@ -222,12 +232,33 @@ export default function PreviewSearchPanel() {
     });
   }
 
+  const onDragStart = (item: SearchItem) => {
+    if (item.type === 'Component') {
+      const instance: ContentInstance = contentInstanceLookup[item.path];
+      hostToGuest$.next({
+        type: COMPONENT_INSTANCE_DRAG_STARTED,
+        payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
+      });
+    } else {
+      hostToGuest$.next({
+        type: ASSET_DRAG_STARTED,
+        payload: item
+      });
+    }
+  };
+
+  const onDragEnd = (item: SearchItem) => {
+    hostToGuest$.next({
+      type: item.type === 'Component' ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
+    });
+  };
+
   return (
     <>
       <div className={classes.searchContainer}>
         <SearchBar
           keyword={keyword}
-          placeholder="Search everywhere..."
+          placeholder={formatMessage(translations.previewSearchPanelTitle)}
           onChange={(keyword) => handleSearchKeyword(keyword)}
           showDecoratorIcon={true}
           showActionButton={Boolean(keyword)}
@@ -255,13 +286,8 @@ export default function PreviewSearchPanel() {
           />
         </div>
       )}
-      <SuspenseWithEmptyState
-        resource={resource}
-        withEmptyStateProps={{
-          isEmpty: (items: Array<ContentInstance>) => !Boolean(items.length)
-        }}
-      >
-        <SearchResults resource={resource} />
+      <SuspenseWithEmptyState resource={resource}>
+        <SearchResults resource={resource} onDragStart={onDragStart} onDragEnd={onDragEnd} />
       </SuspenseWithEmptyState>
     </>
   );

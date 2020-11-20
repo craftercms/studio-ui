@@ -72,7 +72,9 @@ export default function ToolsPanel() {
   );
 
   useEffect(() => {
-    dispatch(fetchSiteUiConfig({ site }));
+    if (site) {
+      dispatch(fetchSiteUiConfig({ site }));
+    }
   }, [dispatch, site]);
 
   return (
