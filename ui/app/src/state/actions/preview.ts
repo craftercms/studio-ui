@@ -22,9 +22,9 @@ import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
-import { OptionsObject } from 'notistack';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
+
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
 
@@ -271,13 +271,10 @@ export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_
 
 // endregion
 
-// notification
-export const showSystemNotification = createAction<{
-  message: string;
-  options?: OptionsObject;
-}>('SHOW_SYSTEM_NOTIFICATION');
-
 // region toolsPanelPageStack
+
 export const pushToolsPanelPage = createAction<WidgetDescriptor>('PUSH_TOOLS_PANEL_PAGE');
+
 export const popToolsPanelPage = createAction('POP_TOOLS_PANEL_PAGE');
+
 // endregion
