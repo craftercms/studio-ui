@@ -59,7 +59,9 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
   allowedContentTypes() {},
   maxLength() {},
   readOnly() {},
-  required() {}
+  required() {},
+  width() {},
+  height() {}
 };
 
 let rid = 0;

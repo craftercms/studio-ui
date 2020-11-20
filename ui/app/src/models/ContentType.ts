@@ -36,7 +36,9 @@ export type ValidationKeys =
   | 'maxCount'
   | 'maxLength'
   | 'readOnly'
-  | 'required';
+  | 'required'
+  | 'width'
+  | 'height';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;

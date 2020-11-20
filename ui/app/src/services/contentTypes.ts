@@ -40,7 +40,7 @@ const typeMap = {
   'image-picker': 'image'
 };
 
-const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly'];
+const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly', 'width', 'height'];
 
 const systemValidationsKeysMap = {
   minSize: 'minCount',
@@ -48,7 +48,9 @@ const systemValidationsKeysMap = {
   maxlength: 'maxLength',
   contentTypes: 'allowedContentTypes',
   tags: 'allowedContentTypeTags',
-  readonly: 'readOnly'
+  readonly: 'readOnly',
+  width: 'width',
+  height: 'height'
 };
 
 function bestGuessParse(value: any) {
@@ -177,36 +179,41 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               }
             });
 
-          if (legacyField.type === 'repeat') {
-            field.fields = {};
-            asArray(legacyField.fields.field).forEach((_legacyField) => {
-              const _fieldId = camelize(_legacyField.id);
-              field.fields[_fieldId] = {
-                id: _fieldId,
-                name: _legacyField.title,
-                type: typeMap[_legacyField.type] || _legacyField.type,
-                sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                validations: null,
-                defaultValue: '',
-                required: false
+          switch (legacyField.type) {
+            case 'repeat':
+              field.fields = {};
+              asArray(legacyField.fields.field).forEach((_legacyField) => {
+                const _fieldId = camelize(_legacyField.id);
+                field.fields[_fieldId] = {
+                  id: _fieldId,
+                  name: _legacyField.title,
+                  type: typeMap[_legacyField.type] || _legacyField.type,
+                  sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+                  validations: null,
+                  defaultValue: '',
+                  required: false
+                };
+                if (field.fields[_fieldId].type === 'node-selector') {
+                  field.fields[_fieldId].validations = getFieldValidations(
+                    _legacyField.properties.property,
+                    receptaclesLookup
+                  );
+                }
+              });
+              break;
+            case 'node-selector':
+              field.validations = {
+                ...field.validations,
+                ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
               };
-              if (field.fields[_fieldId].type === 'node-selector') {
-                field.fields[_fieldId].validations = getFieldValidations(
-                  _legacyField.properties.property,
-                  receptaclesLookup
-                );
-              }
-            });
-          } else if (legacyField.type === 'node-selector') {
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
-            };
-          } else if (legacyField.type === 'input') {
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property)
-            };
+              break;
+            case 'input':
+            case 'image-picker':
+              field.validations = {
+                ...field.validations,
+                ...getFieldValidations(legacyField.properties.property)
+              };
+              break;
           }
 
           fields[fieldId] = field;
