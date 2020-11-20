@@ -35,16 +35,20 @@ const useStyles = makeStyles((theme) =>
           '[ToolsPanelEmbeddedAppViewButton] MUI may have changed their toolbar mixin. Please adjust my styles.',
           toolbarMixin
         );
+        return {
+          height: `calc(90vh - 57px)`
+        };
+      } else {
+        return {
+          [key1]: {
+            height: `calc(90vh - ${toolbarMixin[key1].minHeight}px - 1px)`
+          },
+          [key2]: {
+            height: `calc(90vh - ${toolbarMixin[key2].minHeight}px - 1px)`
+          },
+          height: `calc(90vh - ${toolbarMixin.minHeight}px - 1px)`
+        };
       }
-      return {
-        [key1]: {
-          height: `calc(90vh - ${toolbarMixin[key1].minHeight}px - 1px)`
-        },
-        [key2]: {
-          height: `calc(90vh - ${toolbarMixin[key2].minHeight}px - 1px)`
-        },
-        height: `calc(90vh - ${toolbarMixin.minHeight}px - 1px)`
-      };
     }
   })
 );
