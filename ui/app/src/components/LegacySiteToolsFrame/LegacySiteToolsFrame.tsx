@@ -14,35 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#state-list {
-  padding: 35px 40px;
+import React, { IframeHTMLAttributes } from 'react';
+import { useEnv } from '../../utils/hooks';
+
+interface LegacySiteToolsFrameProps {
+  tool?: string;
+  workAreaOnly?: boolean;
+  iframeProps?: IframeHTMLAttributes<any>;
 }
 
-.cs-statelist-heading {
-  background: none repeat scroll 0 0 black;
-  border: 1px solid black;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  border-color: black white black black;
-  padding: 5px;
+function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
+  const { tool, workAreaOnly = true, iframeProps } = props;
+  const authoringUrl = useEnv().authoringBase;
+  const iframeSrc = `${authoringUrl}/site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`]
+    .filter(Boolean)
+    .join('')}`;
+  return <iframe title="Site Tools" src={iframeSrc} {...iframeProps} />;
 }
 
-.cs-statelist-detail {
-  font-size: 12px;
-  border: 1px solid black;
-  padding: 5px;
-}
-
-.cs-statelist-detail-id {
-  font-size: 12px;
-  border: 1px solid black;
-  padding: 5px;
-  text-align: left;
-  word-break: break-word;
-  min-width: 150px;
-}
-
-#dlg {
-  width: 33em !important;
-}
+export default LegacySiteToolsFrame;
