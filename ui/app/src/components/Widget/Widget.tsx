@@ -34,6 +34,14 @@ const messages = defineMessages({
   componentNotFound: {
     id: 'widgetComponent.componentNotFound',
     defaultMessage: 'Component not found'
+  },
+  pluginLoadFailedMessageTitle: {
+    id: 'widgetComponent.pluginLoadFailedMessageTitle',
+    defaultMessage: 'Plugin load failed'
+  },
+  pluginLoadFailedMessageBody: {
+    id: 'widgetComponent.pluginLoadFailedMessageBody',
+    defaultMessage: 'With {info} & component id "{id}".'
   }
 });
 
@@ -67,13 +75,17 @@ const Widget = memo(function(props: WidgetProps) {
           }
         }),
         () => ({
-          default: function({ plugin }) {
+          default: function({ id, plugin }) {
             return (
               <ErrorState
-                title="Plugin failed to load"
-                message={`Failed plugin was: ${Object.entries(plugin)
-                  .map(([key, value]) => `${key}:${value}`)
-                  .join(', ')}`}
+                styles={{ image: { width: 100 } }}
+                title={formatMessage(messages.pluginLoadFailedMessageTitle)}
+                message={formatMessage(messages.pluginLoadFailedMessageBody, {
+                  id,
+                  info: Object.entries(plugin)
+                    .map(([key, value]) => `${key} "${value}"`)
+                    .join(', ')
+                })}
               />
             );
           }
