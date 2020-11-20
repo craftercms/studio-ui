@@ -200,7 +200,7 @@ export function getSiteUiConfig(site: string): Observable<any> {
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
-        const widgets = xml.querySelector('[id|="craftercms.component.ToolsPanel"] > configuration > widgets');
+        const widgets = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
         if (widgets) {
           const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
           const lookupTables = ['fields'];

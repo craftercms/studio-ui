@@ -19,7 +19,7 @@ const uiConfigDefaults = {
     toolsPanel: {
       widgets: [
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewSearchPanel.title',
@@ -28,13 +28,13 @@ const uiConfigDefaults = {
             },
             widgets: [
               {
-                id: 'craftercms.component.PreviewSearchPanel'
+                id: 'craftercms.components.PreviewSearchPanel'
               }
             ]
           }
         },
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewComponentsPanel.title',
@@ -43,13 +43,13 @@ const uiConfigDefaults = {
             },
             widgets: [
               {
-                id: 'craftercms.component.PreviewComponentsPanel'
+                id: 'craftercms.components.PreviewComponentsPanel'
               }
             ]
           }
         },
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewAssetsPanel.title',
@@ -58,13 +58,13 @@ const uiConfigDefaults = {
             },
             widgets: [
               {
-                id: 'craftercms.component.PreviewAssetsPanel'
+                id: 'craftercms.components.PreviewAssetsPanel'
               }
             ]
           }
         },
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewAudiencesPanel.title',
@@ -73,7 +73,7 @@ const uiConfigDefaults = {
             },
             widgets: [
               {
-                id: 'craftercms.component.PreviewAudiencesPanel',
+                id: 'craftercms.components.PreviewAudiencesPanel',
                 configuration: {
                   fields: {
                     segment: {
@@ -103,22 +103,22 @@ const uiConfigDefaults = {
           }
         },
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewPageExplorerPanel.title',
             icon: {
-              id: 'craftercms.icons.pageExplorer'
+              id: 'craftercms.icons.PageExplorer'
             },
             widgets: [
               {
-                id: 'craftercms.component.PreviewPageExplorerPanel'
+                id: 'craftercms.components.PreviewPageExplorerPanel'
               }
             ]
           }
         },
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewSimulatorPanel.title',
@@ -127,7 +127,7 @@ const uiConfigDefaults = {
             },
             widgets: [
               {
-                id: 'craftercms.component.PreviewSimulatorPanel',
+                id: 'craftercms.components.PreviewSimulatorPanel',
                 configuration: {
                   devices: [
                     {
@@ -147,28 +147,28 @@ const uiConfigDefaults = {
           }
         },
         {
-          id: 'craftercms.component.ToolsPanelPageButton',
+          id: 'craftercms.components.ToolsPanelPageButton',
           roles: ['admin'],
           configuration: {
             title: 'previewSiteExplorerPanel.title',
             icon: {
-              id: 'craftercms.icons.siteExplorer'
+              id: 'craftercms.icons.SiteExplorer'
             },
             widgets: [
               {
-                id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 configuration: {
                   title: 'words.dashboard',
                   icon: {
                     baseClass: 'fa fa-tasks'
                   },
                   widget: {
-                    id: 'craftercms.component.LegacyDashboardFrame'
+                    id: 'craftercms.components.LegacyDashboardFrame'
                   }
                 }
               },
               {
-                id: 'craftercms.component.ToolsPanelPageButton',
+                id: 'craftercms.components.ToolsPanelPageButton',
                 configuration: {
                   title: 'Site Tools',
                   icon: {
@@ -176,14 +176,14 @@ const uiConfigDefaults = {
                   },
                   widgets: [
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Content Types',
                         icon: {
                           baseClass: 'fa fa-th-large'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'content-types'
                           }
@@ -191,14 +191,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Encryption Tool',
                         icon: {
                           baseClass: 'fa fa-lock'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'encrypt-tool'
                           }
@@ -206,14 +206,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Configuration',
                         icon: {
                           baseClass: 'fa fa-cogs'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'admin-configurations'
                           }
@@ -221,14 +221,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Audit',
                         icon: {
                           baseClass: 'fa fa-align-justify'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'audit'
                           }
@@ -236,14 +236,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Workflow States',
                         icon: {
                           baseClass: 'fa fa-cog'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'workflow-states'
                           }
@@ -251,14 +251,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Log Console',
                         icon: {
                           baseClass: 'fa fa-align-left'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'log-view'
                           }
@@ -266,14 +266,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Publishing',
                         icon: {
                           baseClass: 'fa fa-cloud-upload'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'status-view'
                           }
@@ -281,14 +281,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'Remote Repositories',
                         icon: {
                           baseClass: 'fa fa-database'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'repository'
                           }
@@ -296,14 +296,14 @@ const uiConfigDefaults = {
                       }
                     },
                     {
-                      id: 'craftercms.component.ToolsPanelEmbeddedAppViewButton',
+                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                       configuration: {
                         title: 'GraphQL',
                         icon: {
                           baseClass: 'fa fa-line-chart'
                         },
                         widget: {
-                          id: 'craftercms.component.LegacySiteToolsFrame',
+                          id: 'craftercms.components.LegacySiteToolsFrame',
                           configuration: {
                             tool: 'graphiql'
                           }
@@ -314,7 +314,7 @@ const uiConfigDefaults = {
                 }
               },
               {
-                id: 'craftercms.component.PathNavigator',
+                id: 'craftercms.components.PathNavigator',
                 configuration: {
                   id: 'Pages',
                   label: 'Pages',
@@ -328,7 +328,7 @@ const uiConfigDefaults = {
                 }
               },
               {
-                id: 'craftercms.component.PathNavigator',
+                id: 'craftercms.components.PathNavigator',
                 configuration: {
                   id: 'Components',
                   label: 'Components',
@@ -340,7 +340,7 @@ const uiConfigDefaults = {
                 }
               },
               {
-                id: 'craftercms.component.PathNavigator',
+                id: 'craftercms.components.PathNavigator',
                 roles: [],
                 configuration: {
                   id: 'Taxonomy',
@@ -353,7 +353,7 @@ const uiConfigDefaults = {
                 }
               },
               {
-                id: 'craftercms.component.PathNavigator',
+                id: 'craftercms.components.PathNavigator',
                 roles: [],
                 configuration: {
                   id: 'StaticAssets',
@@ -366,7 +366,7 @@ const uiConfigDefaults = {
                 }
               },
               {
-                id: 'craftercms.component.PathNavigator',
+                id: 'craftercms.components.PathNavigator',
                 roles: [],
                 configuration: {
                   id: 'Templates',
@@ -379,7 +379,7 @@ const uiConfigDefaults = {
                 }
               },
               {
-                id: 'craftercms.component.PathNavigator',
+                id: 'craftercms.components.PathNavigator',
                 roles: [],
                 configuration: {
                   id: 'Scripts',

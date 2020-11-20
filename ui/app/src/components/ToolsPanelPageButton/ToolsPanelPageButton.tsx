@@ -24,7 +24,7 @@ export default function ToolsPanelPageButton(props) {
   const turnPage = () => {
     dispatch(
       pushToolsPanelPage({
-        id: 'craftercms.component.ToolsPanelPage',
+        id: 'craftercms.components.ToolsPanelPage',
         roles: [],
         configuration: props
       })
