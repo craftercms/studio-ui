@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
     message: (styles) => ({
       textAlign: 'center',
       marginBottom: theme.spacing(1),
+      wordBreak: 'break-all',
       ...styles.message
     }),
     button: (styles) => ({
