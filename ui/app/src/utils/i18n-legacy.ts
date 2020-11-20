@@ -1413,7 +1413,7 @@ export const itemSuccessMessages = defineMessages({
     defaultMessage: 'Item cut successfully'
   },
   itemReverted: {
-    id: 'item.edited',
+    id: 'item.reverted',
     defaultMessage: 'Item reverted successfully'
   },
   itemContentTypeChanged: {

@@ -17,7 +17,7 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, Suspense, useLayoutEffect, useState } from 'react';
-import { ThemeOptions, makeStyles } from '@material-ui/core/styles';
+import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, createStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';

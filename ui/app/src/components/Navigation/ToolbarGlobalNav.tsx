@@ -18,19 +18,11 @@ import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CrafterChevron from '../Icons/CrafterChevron';
 import GlobalNav from './GlobalNav';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import { getLogoutInfoURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
-import {
-  useActiveSiteId,
-  useEnv,
-  useMount,
-  useSelection,
-  useSiteList,
-  useSiteNavLinks,
-  useSystemVersion
-} from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList, useSystemVersion } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
@@ -99,7 +91,6 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
   const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
   const { authoringBase } = useEnv();
-  const siteNavLinks = useSiteNavLinks();
   const version = useSystemVersion();
   const sites = useSiteList();
   const dispatch = useDispatch();
@@ -135,8 +126,6 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         logoutUrl={logoutUrl}
         authoringUrl={authoringBase}
         onMenuClose={onMenuClose}
-        rolesBySite={user.rolesBySite}
-        siteNavLinks={siteNavLinks}
       />
     </>
   );

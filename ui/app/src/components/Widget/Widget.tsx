@@ -24,16 +24,23 @@ import ErrorState from '../ErrorState';
 // TODO: Temporary/remove after testing.
 export const TempTestContext = React.createContext<any>({});
 
-interface WidgetProps {
+export interface WidgetDescriptor {
   id: string;
-  plugin: PluginFileBuilder;
-  configuration: any;
+  roles?: string[];
+  plugin?: PluginFileBuilder;
+  configuration?: any;
 }
 
+interface WidgetProps extends WidgetDescriptor {}
+
 const messages = defineMessages({
-  componentNotFound: {
-    id: 'widgetComponent.componentNotFound',
-    defaultMessage: 'Component not found'
+  componentNotFoundTitle: {
+    id: 'widgetComponent.componentNotFoundTitle',
+    defaultMessage: 'Component {id} not found.'
+  },
+  componentNotFoundSubtitle: {
+    id: 'widgetComponent.componentNotFoundSubtitle',
+    defaultMessage: "Check ui config & make sure you've installed the plugins that contain the desired components."
   },
   pluginLoadFailedMessageTitle: {
     id: 'widgetComponent.pluginLoadFailedMessageTitle',
@@ -60,6 +67,14 @@ const Widget = memo(function(props: WidgetProps) {
     } else {
       return <NonReactWidget widget={record} configuration={configuration} />;
     }
+  } else if (!plugin) {
+    return (
+      <EmptyState
+        title={formatMessage(messages.componentNotFoundTitle, { id })}
+        subtitle={formatMessage(messages.componentNotFoundSubtitle)}
+        styles={{ image: { width: 100 } }}
+      />
+    );
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
       importPlugin(plugin).then(
@@ -69,7 +84,11 @@ const Widget = memo(function(props: WidgetProps) {
               return <Widget {...props} />;
             } else {
               return (
-                <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />
+                <EmptyState
+                  title={formatMessage(messages.componentNotFoundTitle, { id })}
+                  subtitle={formatMessage(messages.componentNotFoundSubtitle)}
+                  styles={{ image: { width: 100 } }}
+                />
               );
             }
           }

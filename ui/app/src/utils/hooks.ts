@@ -318,15 +318,6 @@ export function useRoles(): GlobalState['user']['rolesBySite'] {
   return useSelection((state) => state.user.rolesBySite);
 }
 
-export function useSidebarPanels(): GlobalState['uiConfig']['preview']['sidebar']['panels'] {
-  return useSelection((state) => state.uiConfig.preview.sidebar.panels);
-}
-
-export function useSiteNavLinks(): GlobalState['uiConfig']['preview']['siteNav']['links'] {
-  const uiConfig = useSiteUIConfig();
-  return uiConfig.preview?.siteNav.links;
-}
-
 export function useSiteUIConfig(): GlobalState['uiConfig'] {
   const site = useActiveSiteId();
   const dispatch = useDispatch();

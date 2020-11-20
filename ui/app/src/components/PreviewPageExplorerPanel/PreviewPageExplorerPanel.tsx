@@ -17,7 +17,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ToolPanel from './ToolPanel';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
@@ -26,49 +25,55 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import { useActiveSiteId, useLogicResource, usePreviewGuest, useSelection, useSpreadState } from '../../../utils/hooks';
-import { ContentType, ContentTypeField } from '../../../models/ContentType';
-import Page from '../../../components/Icons/Page';
-import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
-import Component from '../../../components/Icons/Component';
-import NodeSelector from '../../../components/Icons/NodeSelector';
-import RepeatGroupItem from '../../../components/Icons/RepeatGroupItem';
+import {
+  useActiveSiteId,
+  useLogicResource,
+  usePreviewGuest,
+  useSelection,
+  useSpreadState,
+  useUnmount
+} from '../../utils/hooks';
+import { ContentType, ContentTypeField } from '../../models/ContentType';
+import Page from '../Icons/Page';
+import ContentTypeFieldIcon from '../Icons/ContentTypeField';
+import Component from '../Icons/Component';
+import NodeSelector from '../Icons/NodeSelector';
+import RepeatGroupItem from '../Icons/RepeatGroupItem';
 import Root from '@material-ui/icons/HomeRounded';
 import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
-import { LookupTable } from '../../../models/LookupTable';
-import ContentInstance from '../../../models/ContentInstance';
-import RepeatGroup from '../../../components/Icons/RepeatGroup';
-import { hierarchicalToLookupTable } from '../../../utils/object';
+import { LookupTable } from '../../models/LookupTable';
+import ContentInstance from '../../models/ContentInstance';
+import RepeatGroup from '../Icons/RepeatGroup';
+import { hierarchicalToLookupTable } from '../../utils/object';
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
   DELETE_ITEM_OPERATION_COMPLETE,
-  selectTool,
   SORT_ITEM_OPERATION_COMPLETE
-} from '../../../state/actions/preview';
-import { getHostToGuestBus, getHostToHostBus } from '../previewContext';
-import Suspencified from '../../../components/SystemStatus/Suspencified';
-import { Resource } from '../../../models/Resource';
-import palette from '../../../styles/palette';
+} from '../../state/actions/preview';
+import { getHostToGuestBus, getHostToHostBus } from '../../modules/Preview/previewContext';
+import Suspencified from '../SystemStatus/Suspencified';
+import { Resource } from '../../models/Resource';
+import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import { ItemMenu } from '../../../components/ItemMenu/ItemMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
+import { ItemMenu } from '../ItemMenu/ItemMenu';
+import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 
 const rootPrefix = '{root}_';
 
 const translations = defineMessages({
   title: {
-    id: 'pageExplorerPanel.title',
+    id: 'previewPageExplorerPanel.title',
     defaultMessage: 'Page Explorer'
   },
   loading: {
-    id: 'pageExplorerPanel.loading',
+    id: 'previewPageExplorerPanel.loading',
     defaultMessage: 'Loading'
   },
   onThisPage: {
-    id: 'pageExplorerPanel.rootItemLabel',
+    id: 'previewPageExplorerPanel.rootItemLabel',
     defaultMessage: 'Current Content Items'
   }
 });
@@ -454,7 +459,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   );
 }
 
-export default function PageExplorer() {
+export default function PreviewPageExplorerPanel() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
   const currentModelId = guest?.modelId;
@@ -606,7 +611,6 @@ export default function PageExplorer() {
 
   const onBack = () => {
     hostToGuest$.next({ type: 'CLEAR_CONTENT_TREE_FIELD_SELECTED' });
-    dispatch(selectTool());
   };
 
   const handleClick = (node: RenderTree) => {
@@ -693,8 +697,10 @@ export default function PageExplorer() {
     }
   );
 
+  useUnmount(onBack);
+
   return (
-    <ToolPanel title={translations.title} onBack={onBack}>
+    <>
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon className={clsx('toggle', classes.chevron)} />}
@@ -720,7 +726,7 @@ export default function PageExplorer() {
           />
         </Suspencified>
       </TreeView>
-    </ToolPanel>
+    </>
   );
 }
 

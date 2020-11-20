@@ -171,7 +171,7 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
             </Typography>
             <Typography className={classes.quickCreateEmptyDescription}>
               <FormattedMessage
-                id="quickCreateMenu.learnMore"
+                id="quickCreateMenu.learnMoreError"
                 defaultMessage="Quick create has not been configured. Please contact your system administrator."
               />
             </Typography>

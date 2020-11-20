@@ -14,61 +14,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from 'react';
-import ToolPanel from './ToolPanel';
+import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useDebouncedInput, useSelection, useSelectorResource } from '../../../utils/hooks';
-import { PagedEntityState } from '../../../models/GlobalState';
-import { nnou, pluckProps } from '../../../utils/object';
-import { ErrorBoundary } from '../../../components/SystemStatus/ErrorBoundary';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
+import { useActiveSiteId, useDebouncedInput, useSelection, useSelectorResource } from '../../utils/hooks';
+import { PagedEntityState } from '../../models/GlobalState';
+import { nnou, pluckProps } from '../../utils/object';
+import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
+import LoadingState from '../SystemStatus/LoadingState';
 import { createStyles, makeStyles } from '@material-ui/core';
-import ContentInstance from '../../../models/ContentInstance';
-import { DraggablePanelListItem } from './DraggablePanelListItem';
+import ContentInstance from '../../models/ContentInstance';
+import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import List from '@material-ui/core/List';
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   fetchComponentsByContentType,
   setContentTypeFilter
-} from '../../../state/actions/preview';
+} from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import SearchBar from '../../../components/Controls/SearchBar';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
+import SearchBar from '../Controls/SearchBar';
+import EmptyState from '../SystemStatus/EmptyState';
 import TablePagination from '@material-ui/core/TablePagination';
-import { getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import ContentType from '../../../models/ContentType';
-import { Resource } from '../../../models/Resource';
+import ContentType from '../../models/ContentType';
+import { Resource } from '../../models/Resource';
 
 const translations = defineMessages({
   browse: {
-    id: 'craftercms.ice.browseComponents.title',
+    id: 'previewBrowseComponentsPanel.title',
     defaultMessage: 'Browse components'
   },
   noResults: {
-    id: 'craftercms.ice.browseComponents.noResults',
+    id: 'previewBrowseComponentsPanel.noResults',
     defaultMessage: ' No results found.'
   },
   previousPage: {
-    id: 'craftercms.ice.browseComponents.previousPage',
+    id: 'previewBrowseComponentsPanel.previousPage',
     defaultMessage: 'previous page'
   },
   nextPage: {
-    id: 'craftercms.ice.browseComponents.nextPage',
+    id: 'previewBrowseComponentsPanel.nextPage',
     defaultMessage: 'next page'
   },
   loading: {
-    id: 'craftercms.ice.browseComponents.loading',
+    id: 'wordws.loading',
     defaultMessage: 'Loading'
   },
   selectContentType: {
-    id: 'craftercms.ice.browseComponents.selectContentType',
+    id: 'previewBrowseComponentsPanel.selectContentType',
     defaultMessage: 'Select content type'
   },
   chooseContentType: {
-    id: 'craftercms.ice.browseComponents.chooseContentType',
+    id: 'previewBrowseComponentsPanel.chooseContentType',
     defaultMessage: 'Please choose a content type.'
   }
 });
@@ -143,9 +142,10 @@ interface ComponentResource {
   items: Array<ContentInstance>;
 }
 
-export default function BrowseComponentsPanel() {
+export default function PreviewBrowseComponentsPanel() {
   const classes = useStyles({});
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
   const initialKeyword = useSelection((state) => state.preview.components.query.keywords);
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
@@ -154,6 +154,13 @@ export default function BrowseComponentsPanel() {
     ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
     : null;
   const isFetching = useSelection((state) => state.preview.components.isFetching);
+
+  useEffect(() => {
+    if (site && isFetching === null) {
+      dispatch(fetchComponentsByContentType());
+    }
+  }, [dispatch, site, isFetching]);
+
   const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
     (state) => state.preview.components,
     {
@@ -211,7 +218,7 @@ export default function BrowseComponentsPanel() {
   }
 
   return (
-    <ToolPanel title={translations.browse}>
+    <>
       <ErrorBoundary>
         <div className={classes.search}>
           <SearchBar
@@ -252,7 +259,7 @@ export default function BrowseComponentsPanel() {
           />
         </React.Suspense>
       </ErrorBoundary>
-    </ToolPanel>
+    </>
   );
 }
 

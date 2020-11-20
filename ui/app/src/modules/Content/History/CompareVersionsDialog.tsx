@@ -175,14 +175,14 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         subtitle={
           selectMode ? (
             <FormattedMessage
-              id="compareVersionsDialog.headerSubtitle"
+              id="compareVersionsDialog.headerSubtitleCompareTo"
               defaultMessage="Select a revision to compare to “{selectedA}”"
               values={{ selectedA: <AsDayMonthDateTime date={selectedA.lastModifiedDate} /> }}
             />
           ) : (
             !compareMode && (
               <FormattedMessage
-                id="compareVersionsDialog.headerSubtitle"
+                id="compareVersionsDialog.headerSubtitleCompare"
                 defaultMessage="Select a revision to compare"
               />
             )
