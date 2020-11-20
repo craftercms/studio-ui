@@ -69,9 +69,8 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 .work-area-empty, .work-area-error {
-  height: 100vh;
+  height: calc(100vh - 55px);
   display: flex;
-  margin-top: 50px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
