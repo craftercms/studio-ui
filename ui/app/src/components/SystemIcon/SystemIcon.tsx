@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import CoreIcon from '@material-ui/core/Icon';
+import CoreIcon, { IconProps } from '@material-ui/core/Icon';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Asset from '@material-ui/icons/ImageOutlined';
 import Component from '@material-ui/icons/ExtensionRounded';
@@ -23,23 +23,50 @@ import Audiences from '@material-ui/icons/EmojiPeopleRounded';
 import PageExplorer from '../../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
 import Simulator from '@material-ui/icons/DevicesRounded';
+import ErrorRounded from '@material-ui/icons/ErrorRounded';
+import { components } from '../../services/plugin';
+import { SvgIconProps, Tooltip } from '@material-ui/core';
 
 export interface SystemIconProps {
-  icon: { id: string; baseClass: string; baseStyle: object };
+  icon: Partial<{ id: string; baseClass: string; baseStyle: object; content: string }>;
+  iconProps?: IconProps;
+  svgIconProps?: SvgIconProps;
 }
 
-const iconsMap = {
+// TODO: Move this to a better place.
+Object.entries({
   '@material-ui/icons/SearchRounded': SearchIcon,
   '@material-ui/icons/ExtensionRounded': Component,
   '@material-ui/icons/ImageOutlined': Asset,
   '@material-ui/icons/EmojiPeopleRounded': Audiences,
   '@material-ui/icons/DevicesRounded': Simulator,
-  'craftercms.icons.pageExplorer': PageExplorer,
-  'craftercms.icons.siteExplorer': SiteExplorer
-};
+  'craftercms.icons.PageExplorer': PageExplorer,
+  'craftercms.icons.SiteExplorer': SiteExplorer
+}).forEach(([key, component]) => {
+  components.set(key, component);
+});
 
 export default function SystemIcon(props: SystemIconProps) {
-  const icon = props.icon;
-  const Icon = icon.id ? iconsMap[icon.id] : CoreIcon;
-  return <Icon fontSize="small" className={icon.baseClass} style={icon.baseStyle} />;
+  let icon = props.icon;
+  if (icon.id) {
+    const IconComponent = components.get(icon.id) as typeof ErrorRounded;
+    if (!IconComponent) {
+      return (
+        <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
+          <ErrorRounded />
+        </Tooltip>
+      );
+    } else {
+      return <IconComponent {...props.svgIconProps} />;
+    }
+  } else {
+    return (
+      <CoreIcon
+        fontSize="small"
+        className={icon.baseClass}
+        style={{ ...icon.baseStyle, ...props.iconProps?.style }}
+        children={icon.content}
+      />
+    );
+  }
 }

@@ -103,21 +103,22 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
   return <>{renderWidgets(stack, ['admin'])}</>;
 }
 
+// TODO: Move this to a better place.
 Object.entries({
-  'craftercms.component.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
-  'craftercms.component.ToolsPanelPageButton': ToolsPanelPageButton,
-  'craftercms.component.PathNavigator': PathNavigator,
-  'craftercms.component.ToolsPanelPage': ToolsPanelPageComponent,
-  'craftercms.component.PreviewSearchPanel': PreviewSearchPanel,
-  'craftercms.component.PreviewComponentsPanel': PreviewComponentsPanel,
-  'craftercms.component.PreviewAssetsPanel': PreviewAssetsPanel,
-  'craftercms.component.PreviewAudiencesPanel': PreviewAudiencesPanel,
-  'craftercms.component.PreviewPageExplorerPanel': PreviewPageExplorerPanel,
-  'craftercms.component.PreviewSimulatorPanel': PreviewSimulatorPanel,
-  'craftercms.component.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
-  'craftercms.component.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
-  'craftercms.component.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
-  'craftercms.component.LegacySiteToolsFrame': LegacySiteToolsFrame
+  'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
+  'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
+  'craftercms.components.PathNavigator': PathNavigator,
+  'craftercms.components.ToolsPanelPage': ToolsPanelPageComponent,
+  'craftercms.components.PreviewSearchPanel': PreviewSearchPanel,
+  'craftercms.components.PreviewComponentsPanel': PreviewComponentsPanel,
+  'craftercms.components.PreviewAssetsPanel': PreviewAssetsPanel,
+  'craftercms.components.PreviewAudiencesPanel': PreviewAudiencesPanel,
+  'craftercms.components.PreviewPageExplorerPanel': PreviewPageExplorerPanel,
+  'craftercms.components.PreviewSimulatorPanel': PreviewSimulatorPanel,
+  'craftercms.components.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
+  'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
+  'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
+  'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

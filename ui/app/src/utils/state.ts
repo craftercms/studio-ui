@@ -43,7 +43,7 @@ export function setStoredEditModeChoice(site: string, value: string) {
 
 export function createToolsPanelPage(title: string, widgets: WidgetDescriptor[]): WidgetDescriptor {
   return {
-    id: 'craftercms.component.ToolsPanelPage',
+    id: 'craftercms.components.ToolsPanelPage',
     configuration: {
       title,
       widgets

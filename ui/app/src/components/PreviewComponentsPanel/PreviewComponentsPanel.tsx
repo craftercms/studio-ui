@@ -119,7 +119,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         pushToolsPanelPage(
           createToolsPanelPage('previewBrowseComponentsPanel.title', [
             {
-              id: 'craftercms.component.PreviewBrowseComponentsPanel'
+              id: 'craftercms.components.PreviewBrowseComponentsPanel'
             }
           ])
         )
@@ -134,7 +134,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         pushToolsPanelPage(
           createToolsPanelPage('previewInPageInstancesPanel.title', [
             {
-              id: 'craftercms.component.PreviewInPageInstancesPanel'
+              id: 'craftercms.components.PreviewInPageInstancesPanel'
             }
           ])
         )
@@ -147,7 +147,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       pushToolsPanelPage(
         createToolsPanelPage('previewReceptaclesPanel.title', [
           {
-            id: 'craftercms.component.PreviewReceptaclesPanel'
+            id: 'craftercms.components.PreviewReceptaclesPanel'
           }
         ])
       )
