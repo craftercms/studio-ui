@@ -32,7 +32,7 @@ import SnackbarCloseButton from './SnackbarCloseButton';
 
 const useStyles = makeStyles({
   topSnackbar: {
-    top: '60px'
+    top: '80px'
   }
 });
 
@@ -66,8 +66,8 @@ function Bridge(
               action={(id) => <SnackbarCloseButton id={id} />}
               children={body}
               classes={{
-                anchorOriginTopRight: classes.topSnackbar,
-                anchorOriginTopLeft: classes.topSnackbar
+                containerAnchorOriginTopRight: classes.topSnackbar,
+                containerAnchorOriginTopLeft: classes.topSnackbar
               }}
             />
           ) : (

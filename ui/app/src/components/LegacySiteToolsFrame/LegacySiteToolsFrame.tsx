@@ -16,6 +16,7 @@
 
 import React, { IframeHTMLAttributes } from 'react';
 import { useEnv } from '../../utils/hooks';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface LegacySiteToolsFrameProps {
   tool?: string;
@@ -23,13 +24,24 @@ interface LegacySiteToolsFrameProps {
   iframeProps?: IframeHTMLAttributes<any>;
 }
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    iframe: {
+      width: '100%',
+      height: '100%',
+      border: 'none'
+    }
+  })
+);
+
 function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
   const { tool, workAreaOnly = true, iframeProps } = props;
   const authoringUrl = useEnv().authoringBase;
+  const classes = useStyles();
   const iframeSrc = `${authoringUrl}/site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`]
     .filter(Boolean)
     .join('')}`;
-  return <iframe title="Site Tools" src={iframeSrc} {...iframeProps} />;
+  return <iframe frameBorder={0} title="Site Tools" src={iframeSrc} className={classes.iframe} {...iframeProps} />;
 }
 
 export default LegacySiteToolsFrame;

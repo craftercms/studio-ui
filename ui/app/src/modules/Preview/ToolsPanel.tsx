@@ -39,6 +39,7 @@ import PreviewBrowseComponentsPanel from '../../components/PreviewBrowseComponen
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import PreviewInPageInstancesPanel from '../../components/PreviewInPageInstancesPanel';
 import PreviewReceptaclesPanel from '../../components/PreviewReceptaclesPanel';
+import LegacySiteToolsFrame from '../../components/LegacySiteToolsFrame';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -115,7 +116,8 @@ Object.entries({
   'craftercms.component.PreviewSimulatorPanel': PreviewSimulatorPanel,
   'craftercms.component.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
   'craftercms.component.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
-  'craftercms.component.PreviewReceptaclesPanel': PreviewReceptaclesPanel
+  'craftercms.component.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
+  'craftercms.component.LegacySiteToolsFrame': LegacySiteToolsFrame
 }).forEach(([id, component]) => {
   components.set(id, component);
 });
