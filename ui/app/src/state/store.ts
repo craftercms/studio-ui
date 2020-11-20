@@ -152,7 +152,6 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
     user: me(),
     sites: fetchSites()
   }).pipe(
-    tap((a) => console.log(a)),
     switchMap(({ user, sites }) =>
       sites.length
         ? forkJoin<LookupTable<Observable<string[]>>, ''>(
