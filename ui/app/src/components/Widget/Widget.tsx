@@ -19,6 +19,7 @@ import NonReactWidget from '../NonReactWidget/NonReactWidget';
 import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
 import EmptyState from '../SystemStatus/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
+import ErrorState from '../ErrorState';
 
 // TODO: Temporary/remove after testing.
 export const TempTestContext = React.createContext<any>({});
@@ -40,6 +41,14 @@ const messages = defineMessages({
   componentNotFoundSubtitle: {
     id: 'widgetComponent.componentNotFoundSubtitle',
     defaultMessage: "Check ui config & make sure you've installed the plugins that contain the desired components."
+  },
+  pluginLoadFailedMessageTitle: {
+    id: 'widgetComponent.pluginLoadFailedMessageTitle',
+    defaultMessage: 'Plugin load failed'
+  },
+  pluginLoadFailedMessageBody: {
+    id: 'widgetComponent.pluginLoadFailedMessageBody',
+    defaultMessage: 'With {info} & component id "{id}".'
   }
 });
 
@@ -68,21 +77,39 @@ const Widget = memo(function(props: WidgetProps) {
     );
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
-      importPlugin(plugin).then(() => ({
-        default: function(props) {
-          if (components.has(id)) {
-            return <Widget {...props} />;
-          } else {
+      importPlugin(plugin).then(
+        () => ({
+          default: function(props) {
+            if (components.has(id)) {
+              return <Widget {...props} />;
+            } else {
+              return (
+                <EmptyState
+                  title={formatMessage(messages.componentNotFoundTitle, { id })}
+                  subtitle={formatMessage(messages.componentNotFoundSubtitle)}
+                  styles={{ image: { width: 100 } }}
+                />
+              );
+            }
+          }
+        }),
+        () => ({
+          default: function({ id, plugin }) {
             return (
-              <EmptyState
-                title={formatMessage(messages.componentNotFoundTitle, { id })}
-                subtitle={formatMessage(messages.componentNotFoundSubtitle)}
+              <ErrorState
                 styles={{ image: { width: 100 } }}
+                title={formatMessage(messages.pluginLoadFailedMessageTitle)}
+                message={formatMessage(messages.pluginLoadFailedMessageBody, {
+                  id,
+                  info: Object.entries(plugin)
+                    .map(([key, value]) => `${key} "${value}"`)
+                    .join(', ')
+                })}
               />
             );
           }
-        }
-      }))
+        })
+      )
     );
     return <Component {...props} />;
   }

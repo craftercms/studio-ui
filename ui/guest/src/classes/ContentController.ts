@@ -75,13 +75,13 @@ const modelsRequested = {};
 // to be able to continue using share
 
 const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
-  /*'modelId': { ...modelData }*/
+  /* 'modelId': { ...modelData } */
 });
 
 const modelsObs$ = _models$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
 
 const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
-  /*...*/
+  /* ... */
 });
 const contentTypesObs$ = _contentTypes$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
 

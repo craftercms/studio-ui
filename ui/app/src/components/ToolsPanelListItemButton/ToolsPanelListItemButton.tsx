@@ -50,7 +50,12 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
       <ListItemIcon>
         <SystemIcon icon={icon} />
       </ListItemIcon>
-      <ListItemText primary={formatMessage({ id: title, defaultMessage: title })} secondary={subtitle} />
+      <ListItemText
+        primary={formatMessage({ id: title, defaultMessage: title })}
+        secondary={subtitle}
+        primaryTypographyProps={{ noWrap: true }}
+        secondaryTypographyProps={{ noWrap: true }}
+      />
       {displaySecondaryAction && (
         <ListItemSecondaryAction style={{ right: '5px' }}>
           <IconButton size="small" onClick={onSecondaryActionClick ?? onClick}>
