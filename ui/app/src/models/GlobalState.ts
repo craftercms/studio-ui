@@ -19,7 +19,6 @@ import { User } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
-import PreviewTool from './PreviewTool';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
@@ -50,8 +49,8 @@ import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
-import { SidebarPanelConfigEntry, SiteNavConfigEntry } from './UiConfig';
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
+import { WidgetDescriptor } from '../components/Widget';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -122,8 +121,7 @@ export interface GlobalState {
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
-    selectedTool: PreviewTool;
-    previousTool: PreviewTool;
+    toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
     hostSize: WidthAndHeight;
     guest: GuestData;
@@ -132,7 +130,6 @@ export interface GlobalState {
       isFetching: boolean;
       isApplying: boolean;
       error: ApiResponse;
-      contentType: ContentType;
       model: ContentInstance;
       applied: boolean;
     };
@@ -187,11 +184,8 @@ export interface GlobalState {
     isFetching: boolean;
     currentSite: string;
     preview: {
-      sidebar: {
-        panels: SidebarPanelConfigEntry[];
-      };
-      siteNav: {
-        links: SiteNavConfigEntry[];
+      toolsPanel: {
+        widgets: WidgetDescriptor[];
       };
     };
   };

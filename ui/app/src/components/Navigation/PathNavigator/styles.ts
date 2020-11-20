@@ -76,6 +76,10 @@ export const useStyles = makeStyles(
         padding: 0,
         flexDirection: 'column'
       },
+      childrenRail: {
+        marginLeft: 10,
+        borderLeft: `3px solid ${theme.palette.divider}`
+      },
       pagesIcon: {
         fontSize: '1.1rem'
       },

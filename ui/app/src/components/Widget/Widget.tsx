@@ -19,20 +19,36 @@ import NonReactWidget from '../NonReactWidget/NonReactWidget';
 import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
 import EmptyState from '../SystemStatus/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
+import ErrorState from '../ErrorState';
 
 // TODO: Temporary/remove after testing.
 export const TempTestContext = React.createContext<any>({});
 
-interface WidgetProps {
+export interface WidgetDescriptor {
   id: string;
-  plugin: PluginFileBuilder;
-  configuration: any;
+  roles?: string[];
+  plugin?: PluginFileBuilder;
+  configuration?: any;
 }
 
+interface WidgetProps extends WidgetDescriptor {}
+
 const messages = defineMessages({
-  componentNotFound: {
-    id: 'widgetComponent.componentNotFound',
-    defaultMessage: 'Component not found'
+  componentNotFoundTitle: {
+    id: 'widgetComponent.componentNotFoundTitle',
+    defaultMessage: 'Component {id} not found.'
+  },
+  componentNotFoundSubtitle: {
+    id: 'widgetComponent.componentNotFoundSubtitle',
+    defaultMessage: "Check ui config & make sure you've installed the plugins that contain the desired components."
+  },
+  pluginLoadFailedMessageTitle: {
+    id: 'widgetComponent.pluginLoadFailedMessageTitle',
+    defaultMessage: 'Plugin load failed'
+  },
+  pluginLoadFailedMessageBody: {
+    id: 'widgetComponent.pluginLoadFailedMessageBody',
+    defaultMessage: 'With {info} & component id "{id}".'
   }
 });
 
@@ -51,17 +67,49 @@ const Widget = memo(function(props: WidgetProps) {
     } else {
       return <NonReactWidget widget={record} configuration={configuration} />;
     }
+  } else if (!plugin) {
+    return (
+      <EmptyState
+        title={formatMessage(messages.componentNotFoundTitle, { id })}
+        subtitle={formatMessage(messages.componentNotFoundSubtitle)}
+        styles={{ image: { width: 100 } }}
+      />
+    );
   } else {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
-      importPlugin(plugin).then(() => ({
-        default: function(props) {
-          if (components.has(id)) {
-            return <Widget {...props} />;
-          } else {
-            return <EmptyState title={formatMessage(messages.componentNotFound)} styles={{ image: { width: 100 } }} />;
+      importPlugin(plugin).then(
+        () => ({
+          default: function(props) {
+            if (components.has(id)) {
+              return <Widget {...props} />;
+            } else {
+              return (
+                <EmptyState
+                  title={formatMessage(messages.componentNotFoundTitle, { id })}
+                  subtitle={formatMessage(messages.componentNotFoundSubtitle)}
+                  styles={{ image: { width: 100 } }}
+                />
+              );
+            }
           }
-        }
-      }))
+        }),
+        () => ({
+          default: function({ id, plugin }) {
+            return (
+              <ErrorState
+                styles={{ image: { width: 100 } }}
+                title={formatMessage(messages.pluginLoadFailedMessageTitle)}
+                message={formatMessage(messages.pluginLoadFailedMessageBody, {
+                  id,
+                  info: Object.entries(plugin)
+                    .map(([key, value]) => `${key} "${value}"`)
+                    .join(', ')
+                })}
+              />
+            );
+          }
+        })
+      )
     );
     return <Component {...props} />;
   }

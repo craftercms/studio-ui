@@ -18,9 +18,9 @@ import { Epic, ofType } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
-  fetchAudiencesPanelFormDefinitionComplete,
-  fetchAudiencesPanelFormDefinitionFailed,
+  fetchAudiencesPanelModel,
+  fetchAudiencesPanelModelComplete,
+  fetchAudiencesPanelModelFailed,
   RELOAD_REQUEST,
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
@@ -28,7 +28,8 @@ import {
   setActiveTargetingModelFailed
 } from '../actions/preview';
 import {
-  getAudiencesPanelPayload,
+  deserializeActiveTargetingModelData,
+  fetchActiveTargetingModel,
   setActiveTargetingModel as setActiveTargetingModelService
 } from '../../services/configuration';
 import { Observable } from 'rxjs';
@@ -37,12 +38,12 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) =>
   action$.pipe(
-    ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
+    ofType(fetchAudiencesPanelModel.type),
     withLatestFrom(state$),
-    switchMap(([, state]) =>
-      getAudiencesPanelPayload(state.sites.active).pipe(
-        map(fetchAudiencesPanelFormDefinitionComplete),
-        catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
+    switchMap(([{ payload }, state]) =>
+      fetchActiveTargetingModel(state.sites.active).pipe(
+        map((data) => fetchAudiencesPanelModelComplete(deserializeActiveTargetingModelData(data, payload.fields))),
+        catchAjaxError(fetchAudiencesPanelModelFailed)
       )
     )
   );

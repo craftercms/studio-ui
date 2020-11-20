@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
     width: '1px',
     cursor: 'ew-resize',
     padding: '4px 0 0',
-    borderTop: '1px solid #ddd',
     position: 'absolute',
     top: 0,
     right: 0,

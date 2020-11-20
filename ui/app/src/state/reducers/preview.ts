@@ -17,7 +17,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  BROWSE_COMPONENT_INSTANCES,
   CHANGE_CURRENT_URL,
   CHILDREN_MAP_UPDATE,
   CLEAR_RECEPTACLES,
@@ -28,21 +27,20 @@ import {
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
-  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
   FETCH_COMPONENTS_BY_CONTENT_TYPE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
+  fetchAudiencesPanelModel,
+  fetchAudiencesPanelModelComplete,
+  fetchAudiencesPanelModelFailed,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
-  IN_PAGE_INSTANCES,
   OPEN_TOOLS,
+  popToolsPanelPage,
+  pushToolsPanelPage,
   SELECT_FOR_EDIT,
-  SELECT_PREVIOUS_TOOL,
-  SELECT_TOOL,
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   SET_ACTIVE_TARGETING_MODEL_FAILED,
@@ -63,18 +61,28 @@ import {
   SearchResult
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
-import PreviewTool from '../../models/PreviewTool';
 import { changeSite } from './sites';
 import { envInitialState } from './env';
 
 const audiencesPanelInitialState = {
-  isFetching: false,
+  isFetching: null,
   isApplying: false,
   error: null,
-  contentType: null,
   model: null,
   applied: false
 };
+
+const assetsPanelInitialState = createEntityState({
+  page: [],
+  query: {
+    keywords: '',
+    offset: 0,
+    limit: 10,
+    filters: {
+      'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+    }
+  }
+}) as PagedEntityState<MediaItem>;
 
 const componentsInitialState = createEntityState({
   page: [],
@@ -107,23 +115,11 @@ const reducer = createReducer<GlobalState['preview']>(
     // The src of the iframe
     currentUrl: previewLanding,
     hostSize: { width: null, height: null },
+    toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
-    previousTool: null,
-    // Don't change/commit the tool you're working with. Use your .env.development to set it
-    selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
     toolsPanelWidth: 240,
     guest: null,
-    assets: createEntityState({
-      page: [],
-      query: {
-        keywords: '',
-        offset: 0,
-        limit: 10,
-        filters: {
-          'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
-        }
-      }
-    }) as PagedEntityState<MediaItem>,
+    assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
     components: componentsInitialState,
     receptacles: {
@@ -132,18 +128,6 @@ const reducer = createReducer<GlobalState['preview']>(
     }
   },
   {
-    [SELECT_TOOL]: (state, { payload }) => ({
-      ...state,
-      previousTool: state.selectedTool,
-      selectedTool: payload
-    }),
-    [SELECT_PREVIOUS_TOOL]: (state, { payload }) => {
-      return {
-        ...state,
-        previousTool: state.selectedTool,
-        selectedTool: payload
-      };
-    },
     [OPEN_TOOLS]: (state) => {
       return {
         ...state,
@@ -310,7 +294,8 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         tools: null,
         audiencesPanel: audiencesPanelInitialState,
-        components: componentsInitialState
+        components: componentsInitialState,
+        assets: assetsPanelInitialState
       };
 
       // TODO: If there's a guest it would have checked out?
@@ -328,7 +313,7 @@ const reducer = createReducer<GlobalState['preview']>(
 
       return nextState;
     },
-    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
+    [fetchAudiencesPanelModel.type]: (state) => ({
       ...state,
       audiencesPanel: {
         ...state.audiencesPanel,
@@ -336,19 +321,18 @@ const reducer = createReducer<GlobalState['preview']>(
         error: null
       }
     }),
-    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
+    [fetchAudiencesPanelModelComplete.type]: (state, { payload }) => {
       return {
         ...state,
         audiencesPanel: {
           ...state.audiencesPanel,
           isFetching: false,
           error: null,
-          contentType: payload.contentType,
-          model: payload.model
+          model: payload
         }
       };
     },
-    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
+    [fetchAudiencesPanelModelFailed.type]: (state, { payload }) => ({
       ...state,
       audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
     }),
@@ -458,25 +442,6 @@ const reducer = createReducer<GlobalState['preview']>(
       ...state,
       components: { ...state.components, error: payload.response, isFetching: false }
     }),
-    [IN_PAGE_INSTANCES]: (state, { payload }) => ({
-      ...state,
-      previousTool: 'craftercms.componentsPanel',
-      selectedTool: 'craftercms.inPageInstancesPanel',
-      components: {
-        ...state.components,
-        contentTypeFilter: payload.contentType
-      }
-    }),
-    [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
-      ...state,
-      previousTool: 'craftercms.componentsPanel',
-      selectedTool: 'craftercms.browseComponentsPanel',
-      components: {
-        ...state.components,
-        contentTypeFilter: payload.contentType,
-        inThisPage: payload.inThisPage
-      }
-    }),
     [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
       ...state,
       receptacles: {
@@ -529,6 +494,20 @@ const reducer = createReducer<GlobalState['preview']>(
       return {
         ...state,
         toolsPanelWidth: payload.width
+      };
+    },
+    [pushToolsPanelPage.type]: (state, { payload }) => {
+      return {
+        ...state,
+        toolsPanelPageStack: [...state.toolsPanelPageStack, payload]
+      };
+    },
+    [popToolsPanelPage.type]: (state) => {
+      let stack = [...state.toolsPanelPageStack];
+      stack.pop();
+      return {
+        ...state,
+        toolsPanelPageStack: stack
       };
     }
   }

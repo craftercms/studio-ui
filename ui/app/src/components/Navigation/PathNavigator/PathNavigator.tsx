@@ -82,6 +82,7 @@ export interface WidgetProps {
   rootPath: string;
   excludes?: string[];
   locale?: string;
+  showChildrenRail?: boolean;
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
@@ -131,7 +132,16 @@ const menuOptions = {
 
 // PathNavigator
 export default function PathNavigator(props: WidgetProps) {
-  const { label, icon = {}, container = {}, rootPath: path, id = label?.replace(/\s/g, ''), locale, excludes } = props;
+  const {
+    label,
+    icon = {},
+    container = {},
+    rootPath: path,
+    id = label?.replace(/\s/g, ''),
+    locale,
+    excludes,
+    showChildrenRail = true
+  } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -407,6 +417,7 @@ export default function PathNavigator(props: WidgetProps) {
         state={state}
         classes={props.classes}
         itemsByPath={itemsByPath}
+        showChildrenRail={showChildrenRail}
         icon={icon}
         container={container}
         title={label}
@@ -443,6 +454,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
     title,
     itemMenu,
     simpleMenu,
+    showChildrenRail,
     onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
@@ -512,7 +524,9 @@ export function PathNavigatorUI(props: WidgetUIProps) {
           onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
           onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
         />
-        <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
+        <AccordionDetails
+          className={clsx(classes.accordionDetails, showChildrenRail && classes.childrenRail, props.classes?.body)}
+        >
           <Breadcrumbs
             keyword={state.keyword}
             breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}

@@ -14,14 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
-import { renderWidgets, TempTestContext } from '../Widget/Widget';
+import { renderWidgets, WidgetDescriptor } from '../Widget';
+import { useDispatch } from 'react-redux';
+import { popToolsPanelPage } from '../../state/actions/preview';
+import { useIntl } from 'react-intl';
 
-export default function ToolsPanelPage(props) {
-  const { pop } = useContext(TempTestContext);
+export interface ToolsPanelPageDescriptor {
+  widgets: WidgetDescriptor[];
+  title: string;
+}
+
+export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
+
+export default function ToolsPanelPage(props: ToolsPanelPageProps) {
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+
+  const pop = () => {
+    dispatch(popToolsPanelPage());
+  };
+
   return (
-    <ToolPanel title={props.title} onBack={pop}>
+    <ToolPanel title={formatMessage({ id: props.title, defaultMessage: props.title })} onBack={pop}>
       {renderWidgets(props.widgets, [])}
     </ToolPanel>
   );

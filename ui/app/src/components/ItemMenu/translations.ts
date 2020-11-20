@@ -123,7 +123,7 @@ export const translations = defineMessages({
       'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
   },
   duplicateDialogBody: {
-    id: 'itemMenu.copyDialogSubtitle',
+    id: 'itemMenu.duplicateDialogBody',
     defaultMessage:
       "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?"
   }

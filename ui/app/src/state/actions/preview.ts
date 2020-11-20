@@ -15,14 +15,15 @@
  */
 
 import { StandardAction } from '../../models/StandardAction';
-import ContentType from '../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
-import PreviewTool from '../../models/PreviewTool';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
+import { WidgetDescriptor } from '../../components/Widget';
+import LookupTable from '../../models/LookupTable';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -61,8 +62,6 @@ export const DESKTOP_ASSET_UPLOAD_PROGRESS = 'DESKTOP_ASSET_UPLOAD_PROGRESS';
 export const DESKTOP_ASSET_UPLOAD_STARTED = 'DESKTOP_ASSET_UPLOAD_STARTED';
 export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
 export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
-export const BROWSE_COMPONENT_INSTANCES = 'BROWSE_COMPONENT_INSTANCES';
-export const IN_PAGE_INSTANCES = 'IN_PAGE_INSTANCES';
 export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
 export const COMPONENT_INSTANCE_HTML_RESPONSE = 'COMPONENT_INSTANCE_HTML_RESPONSE';
 export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
@@ -76,10 +75,8 @@ export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
 
 // region Actions
 
-export const SELECT_TOOL = 'SELECT_TOOL';
 export const SELECT_FOR_EDIT = 'SELECT_FOR_EDIT';
 export const CLEAR_SELECT_FOR_EDIT = 'CLEAR_SELECT_FOR_EDIT';
-export const SELECT_PREVIOUS_TOOL = 'SELECT_PREVIOUS_TOOL';
 export const OPEN_TOOLS = 'OPEN_TOOLS';
 export const CLOSE_TOOLS = 'CLOSE_TOOLS';
 export const SET_HOST_SIZE = 'SET_HOST_SIZE';
@@ -97,9 +94,6 @@ export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED'
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
@@ -119,15 +113,6 @@ export const LEGACY_CODE_EDITOR_RENDERED = 'LEGACY_CODE_EDITOR_RENDERED';
 // endregion
 
 // region Action Creators
-
-export function selectTool(tool: PreviewTool = null): StandardAction {
-  return {
-    type: SELECT_TOOL,
-    payload: tool
-  };
-}
-
-export const selectPreviousTool = createAction(SELECT_TOOL);
 
 export function selectForEdit(data: { modelId: string; fields: string[] }): StandardAction {
   return {
@@ -212,21 +197,13 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
+export const fetchAudiencesPanelModel = createAction<{ fields: LookupTable<ContentTypeField> }>(
+  'FETCH_AUDIENCES_PANEL_MODEL'
+);
 
-export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
-  return {
-    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
-    payload: data
-  };
-}
+export const fetchAudiencesPanelModelComplete = createAction<ContentInstance>('FETCH_AUDIENCES_PANEL_MODEL_COMPLETE');
 
-export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
-  return {
-    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
-    payload: error
-  };
-}
+export const fetchAudiencesPanelModelFailed = createAction('FETCH_AUDIENCES_PANEL_MODEL_FAILED');
 
 export function updateAudiencesPanelModel(data): StandardAction {
   return {
@@ -277,10 +254,6 @@ export const fetchComponentsByContentTypeComplete = createAction<ContentInstance
 
 export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const browseSharedInstance = createAction<{ contentType: string }>(BROWSE_COMPONENT_INSTANCES);
-
-export const inPageInstances = createAction<{ contentType: string }>(IN_PAGE_INSTANCES);
-
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
 export const setContentTypeReceptacles = createAction<{
@@ -295,5 +268,13 @@ export const setChildrenMap = createAction<object>(CHILDREN_MAP_UPDATE);
 export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+
+// endregion
+
+// region toolsPanelPageStack
+
+export const pushToolsPanelPage = createAction<WidgetDescriptor>('PUSH_TOOLS_PANEL_PAGE');
+
+export const popToolsPanelPage = createAction('POP_TOOLS_PANEL_PAGE');
 
 // endregion

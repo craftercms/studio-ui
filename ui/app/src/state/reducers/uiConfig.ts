@@ -23,11 +23,8 @@ const initialState: GlobalState['uiConfig'] = {
   isFetching: null,
   currentSite: null,
   preview: {
-    sidebar: {
-      panels: null
-    },
-    siteNav: {
-      links: null
+    toolsPanel: {
+      widgets: null
     }
   }
 };

@@ -14,44 +14,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useContentTypes, useLogicResource, usePreviewGuest, useSelection } from '../../../utils/hooks';
+import { useContentTypes, useLogicResource, usePreviewGuest, useSelection } from '../../utils/hooks';
 import React, { useEffect, useMemo, useState } from 'react';
-import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter } from '../../../state/actions/preview';
+import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import Suspencified from '../../../components/SystemStatus/Suspencified';
-import ContentInstance from '../../../models/ContentInstance';
-import LookupTable from '../../../models/LookupTable';
-import SearchBar from '../../../components/Controls/SearchBar';
+import Suspencified from '../SystemStatus/Suspencified';
+import ContentInstance from '../../models/ContentInstance';
+import LookupTable from '../../models/LookupTable';
+import SearchBar from '../Controls/SearchBar';
 import Select from '@material-ui/core/Select';
 import ListItem from '@material-ui/core/ListItem';
 import Avatar from '@material-ui/core/Avatar';
-import { getInitials } from '../../../utils/string';
+import { getInitials } from '../../utils/string';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { getHostToGuestBus } from '../previewContext';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
-import { Resource } from '../../../models/Resource';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import EmptyState from '../SystemStatus/EmptyState';
+import { Resource } from '../../models/Resource';
 
 const translations = defineMessages({
-  title: {
-    id: 'inPageInstances.title',
+  previewInPageInstancesPanel: {
+    id: 'previewInPageInstancesPanel.title',
     defaultMessage: 'In this Page'
   },
   noResults: {
-    id: 'inPageInstances.noResults',
+    id: 'previewInPageInstancesPanel.noResults',
     defaultMessage: 'No results found.'
   },
   selectContentType: {
-    id: 'craftercms.ice.browseComponents.selectContentType',
+    id: 'previewInPageInstancesPanel.selectContentType',
     defaultMessage: 'Select content type'
   },
   chooseContentType: {
-    id: 'craftercms.ice.browseComponents.chooseContentType',
+    id: 'previewInPageInstancesPanel.chooseContentType',
     defaultMessage: 'Please choose a content type.'
   }
 });
@@ -82,7 +81,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function InPageInstancesPanel() {
+export default function PreviewInPageInstancesPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -168,7 +167,7 @@ export default function InPageInstancesPanel() {
   };
 
   return (
-    <ToolPanel title={translations.title}>
+    <>
       <div className={classes.search}>
         <SearchBar
           showActionButton={Boolean(keyword)}
@@ -177,7 +176,7 @@ export default function InPageInstancesPanel() {
           disabled={!Boolean(contentTypeFilter)}
         />
         <Select
-          value={contentTypeFilter}
+          value={contentTypes.length ? contentTypeFilter : ''}
           displayEmpty
           className={classes.Select}
           onChange={(event: any) => handleSelectChange(event.target.value)}
@@ -206,7 +205,7 @@ export default function InPageInstancesPanel() {
           contentTypeFilter={contentTypeFilter}
         />
       </Suspencified>
-    </ToolPanel>
+    </>
   );
 }
 

@@ -17,7 +17,7 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, Suspense, useLayoutEffect, useState } from 'react';
-import { ThemeOptions } from '@material-ui/core/styles';
+import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, createStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
@@ -30,6 +30,12 @@ import StoreProvider from './StoreProvider';
 import CrafterThemeProvider from './CrafterThemeProvider';
 import SnackbarCloseButton from './SnackbarCloseButton';
 
+const useStyles = makeStyles({
+  topSnackbar: {
+    top: '80px'
+  }
+});
+
 function Bridge(
   props: PropsWithChildren<{
     mountGlobalDialogManager?: boolean;
@@ -39,6 +45,7 @@ function Bridge(
   }>
 ) {
   useLayoutEffect(setRequestForgeryToken, []);
+  const classes = useStyles();
   const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
   const mountSnackbarProvider = props.mountSnackbarProvider ?? true;
   const body = (
@@ -58,6 +65,10 @@ function Bridge(
               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               action={(id) => <SnackbarCloseButton id={id} />}
               children={body}
+              classes={{
+                containerAnchorOriginTopRight: classes.topSnackbar,
+                containerAnchorOriginTopLeft: classes.topSnackbar
+              }}
             />
           ) : (
             body

@@ -14,11 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface StateStylingProps {
-  baseClass: string;
-  expandedClass: string;
-  collapsedClass: string;
-  baseStyle: object;
-  expandedStyle: object;
-  collapsedStyle: object;
-}
+export { default } from './PreviewComponentsPanel';
+
+export * from './PreviewComponentsPanel';

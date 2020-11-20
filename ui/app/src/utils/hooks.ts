@@ -72,16 +72,17 @@ export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
 
 export function useQuickCreateListResource() {
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
   const quickCreate = useQuickCreateState();
   useEffect(() => {
-    !quickCreate.isFetching && quickCreate.items === null && dispatch(fetchQuickCreateList());
-  }, [dispatch, quickCreate]);
+    site && dispatch(fetchQuickCreateList());
+  }, [site, dispatch]);
   return useLogicResource(quickCreate, {
     errorSelector: (source) => source.error,
     resultSelector: (source) => source.items,
     shouldReject: (source) => Boolean(source.error),
-    shouldResolve: (source) => Boolean(source.items),
-    shouldRenew: (source) => source.isFetching && Boolean(source.items)
+    shouldResolve: (source) => Boolean(source.items) && !source.isFetching,
+    shouldRenew: (source) => Boolean(source.items) && source.isFetching
   });
 }
 
@@ -316,15 +317,6 @@ export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
 
 export function useRoles(): GlobalState['user']['rolesBySite'] {
   return useSelection((state) => state.user.rolesBySite);
-}
-
-export function useSidebarPanels(): GlobalState['uiConfig']['preview']['sidebar']['panels'] {
-  return useSelection((state) => state.uiConfig.preview.sidebar.panels);
-}
-
-export function useSiteNavLinks(): GlobalState['uiConfig']['preview']['siteNav']['links'] {
-  const uiConfig = useSiteUIConfig();
-  return uiConfig.preview?.siteNav.links;
 }
 
 export function useSiteUIConfig(): GlobalState['uiConfig'] {

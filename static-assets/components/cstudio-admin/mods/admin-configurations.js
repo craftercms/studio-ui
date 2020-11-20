@@ -307,7 +307,8 @@
                 CStudioAuthoring.Operations.viewConfigurationHistory(content, true);
               };
 
-              document.getElementById('historyEl').append(historyLink);
+              const historyEl = document.getElementById('historyEl');
+              historyEl && historyEl.append(historyLink);
             },
             failure: function() {
               editor.setValue('');

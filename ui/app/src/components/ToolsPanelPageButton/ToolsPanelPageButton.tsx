@@ -14,20 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
-import { TempTestContext } from '../Widget';
+import { useDispatch } from 'react-redux';
+import { pushToolsPanelPage } from '../../state/actions/preview';
 
 export default function ToolsPanelPageButton(props) {
-  const { push } = useContext(TempTestContext);
+  const dispatch = useDispatch();
   const turnPage = () => {
-    push([
-      {
-        id: 'craftercms.component.ToolsPanelPage',
+    dispatch(
+      pushToolsPanelPage({
+        id: 'craftercms.components.ToolsPanelPage',
         roles: [],
         configuration: props
-      }
-    ]);
+      })
+    );
   };
   return <ToolsPanelListItemButton displaySecondaryAction {...props} onClick={turnPage} />;
 }

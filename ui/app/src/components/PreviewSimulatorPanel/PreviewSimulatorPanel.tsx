@@ -16,7 +16,7 @@
 
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
-import { getTranslation } from '../../../utils/i18n';
+import { getTranslation } from '../../utils/i18n';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
@@ -28,18 +28,17 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
-import ToolPanel from './ToolPanel';
-import { setHostSize } from '../../../state/actions/preview';
+import { setHostSize } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useSelection } from '../../../utils/hooks';
-import { WidthAndHeight } from '../../../models/WidthAndHeight';
+import { useSelection } from '../../utils/hooks';
+import { WidthAndHeight } from '../../models/WidthAndHeight';
 
-const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorTool.previewWindowSize';
-const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorTool.custom';
+const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorPanel.previewWindowSize';
+const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorPanel.custom';
 
 const translations = defineMessages({
   simulatorPanel: {
-    id: 'previewSimulatorTool.title',
+    id: 'previewSimulatorPanel.title',
     defaultMessage: 'Device Simulator'
   },
   smartPhone: {
@@ -55,7 +54,7 @@ const translations = defineMessages({
     defaultMessage: 'Desktop'
   },
   previewWindowSize: {
-    id: 'previewSimulatorTool.previewWindowSize',
+    id: 'previewSimulatorPanel.previewWindowSize',
     defaultMessage: 'Preview Window Size'
   },
   presets: {
@@ -94,7 +93,7 @@ const INITIAL_STATE = {
 
 const reducer = (a: any, b: any) => ({ ...a, ...b });
 
-export default function SimulatorPanel(props: any) {
+export default function PreviewSimulatorPanel(props: any) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
@@ -210,7 +209,7 @@ export default function SimulatorPanel(props: any) {
   const PRESETS = formatMessage(translations.presets);
 
   return (
-    <ToolPanel title={translations.simulatorPanel}>
+    <>
       <div className={classes.panelBodyInner}>
         <Grid container spacing={1}>
           <Grid item xs={4}>
@@ -271,6 +270,6 @@ export default function SimulatorPanel(props: any) {
           </RadioGroup>
         </FormControl>
       </div>
-    </ToolPanel>
+    </>
   );
 }

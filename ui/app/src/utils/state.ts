@@ -15,6 +15,7 @@
  */
 
 import { LegacyItem } from '../models/Item';
+import { WidgetDescriptor } from '../components/Widget';
 
 export function getStateMapFromLegacyItem(item: LegacyItem) {
   return {
@@ -40,10 +41,21 @@ export function setStoredEditModeChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.editModeChoice.${site}`, value);
 }
 
+export function createToolsPanelPage(title: string, widgets: WidgetDescriptor[]): WidgetDescriptor {
+  return {
+    id: 'craftercms.components.ToolsPanelPage',
+    configuration: {
+      title,
+      widgets
+    }
+  };
+}
+
 const state = {
   getStateMapFromLegacyItem,
   getStoredPreviewChoice,
-  setStoredPreviewChoice
+  setStoredPreviewChoice,
+  createToolsPanelPage
 };
 
 export default state;

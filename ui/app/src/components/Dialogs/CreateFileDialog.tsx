@@ -138,9 +138,9 @@ function CreateFileUI(props: CreateFileUIProps) {
           helperText={
             !name && submitted ? (
               type === 'controller' ? (
-                <FormattedMessage id="newFile.controller.required" defaultMessage="Controller name is required." />
+                <FormattedMessage id="newFile.controllerRequired" defaultMessage="Controller name is required." />
               ) : (
-                <FormattedMessage id="newFile.controller.required" defaultMessage="Template name is required." />
+                <FormattedMessage id="newFile.templateRequired" defaultMessage="Template name is required." />
               )
             ) : (
               <FormattedMessage

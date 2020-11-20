@@ -16,15 +16,14 @@
 
 import { errorSelectorApi1, get } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
-import { forkJoin, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
-import { createLookupTable, reversePluckProps } from '../utils/object';
+import { applyDeserializedXMLTransforms, createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
-import { SidebarPanelConfigEntry, SiteNavConfigEntry } from '../models/UiConfig';
-import { asArray } from '../utils/array';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
+import LookupTable from '../models/LookupTable';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -148,23 +147,10 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
   );
 }
 
-export function getAudiencesPanelPayload(
-  site: string
-): Observable<{ contentType: ContentType; model: ContentInstance }> {
-  return forkJoin({
-    data: fetchActiveTargetingModel(site),
-    contentType: getAudiencesPanelConfig(site)
-  }).pipe(
-    map(({ contentType, data }) => ({
-      contentType,
-      model: deserializeActiveTargetingModelData(data, contentType)
-    }))
-  );
-}
-
-function deserializeActiveTargetingModelData<T extends Object>(data: T, contentType: ContentType): ContentInstance {
-  const contentTypeFields = contentType.fields;
-
+export function deserializeActiveTargetingModelData<T extends Object>(
+  data: T,
+  contentTypeFields: LookupTable<ContentTypeField>
+): ContentInstance {
   Object.keys(data).forEach((modelKey) => {
     if (contentTypeFields[modelKey]) {
       // if checkbox-group (Array)
@@ -211,57 +197,24 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 // region SidebarConfig
 
 export function getSiteUiConfig(site: string): Observable<any> {
-  const widgetParser = (items): SidebarPanelConfigEntry[] => {
-    let array = asArray(items.widget);
-    return array.map((item) => ({
-      id: item.id,
-      ...(item.roles?.role && { roles: asArray(item.roles.role) }),
-      ...(item.parameters && {
-        parameters: {
-          ...item.parameters,
-          ...(item.parameters.excludes && { excludes: asArray(item.parameters.excludes.exclude) })
-        }
-      })
-    }));
-  };
-
-  const panelsParser = (items): SidebarPanelConfigEntry[] => {
-    let array = asArray(items.panel);
-    return array.map((item) => ({
-      id: item.id,
-      ...(item.roles?.role && { roles: asArray(item.roles.role) }),
-      ...(item.parameters && {
-        parameters: {
-          ...item.parameters,
-          ...(item.parameters.widgets && { widgets: widgetParser(item.parameters.widgets) }),
-          ...(item.parameters.devices && { devices: asArray(item.parameters.devices.device) })
-        }
-      })
-    }));
-  };
-
-  const linksParser = (items): SiteNavConfigEntry[] => {
-    let array = asArray(items.link);
-    return array.map((item) => ({
-      ...item,
-      ...(item.roles?.role && { roles: asArray(item.roles.role) })
-    }));
-  };
-
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       if (xml) {
-        const parsed = deserialize(xml).ui;
-        return {
-          preview: {
-            sidebar: {
-              panels: panelsParser(parsed.preview.sidebar.panels)
-            },
-            siteNav: {
-              links: linksParser(parsed.preview.siteNav.links)
+        const widgets = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
+        if (widgets) {
+          const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+          const lookupTables = ['fields'];
+          const renameTable = { permittedRoles: 'roles' };
+
+          return {
+            preview: {
+              // @ts-ignore
+              toolsPanel: applyDeserializedXMLTransforms(deserialize(widgets), { arrays, lookupTables, renameTable })
             }
-          }
-        };
+          };
+        } else {
+          return uiConfigDefaults;
+        }
       } else {
         return uiConfigDefaults;
       }

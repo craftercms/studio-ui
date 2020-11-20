@@ -21,20 +21,8 @@ import Typography from '@material-ui/core/Typography';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { selectTool } from '../../../state/actions/preview';
+import { popToolsPanelPage } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    panelHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0, 1),
-      ...theme.mixins.toolbar,
-      justifyContent: 'flex-start'
-    }
-  })
-);
 
 type ToolPanelProps = PropsWithChildren<{
   title: string | MessageDescriptor;
@@ -51,8 +39,20 @@ interface PanelHeaderProps {
   onBack: () => void;
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    panelHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0, 1),
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-start'
+    }
+  })
+);
+
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { title, BackIcon = ChevronLeftRounded, onBack } = props;
   return (
     <>
@@ -60,7 +60,9 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
         <IconButton onClick={onBack}>
           <BackIcon />
         </IconButton>
-        <Typography component="h2">{title}</Typography>
+        <Typography component="h2" noWrap>
+          {title}
+        </Typography>
       </header>
       <Divider />
     </>
@@ -70,7 +72,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { title, BackIcon, onBack = () => dispatch(selectTool()), classes } = props;
+  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes } = props;
   return (
     <>
       <PanelHeader
