@@ -26,9 +26,10 @@ import {
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   pushToolsPanelPage,
-  setContentTypeFilter
+  setContentTypeFilter,
+  setPreviewEditMode
 } from '../../state/actions/preview';
-import { useSelectorResource } from '../../utils/hooks';
+import { useSelection, useSelectorResource } from '../../utils/hooks';
 import { nnou, reversePluckProps } from '../../utils/object';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
@@ -99,6 +100,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const contentTypes = resource.read();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const editMode = useSelection((state) => state.preview.editMode);
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
@@ -106,7 +108,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     contentTypes
   ]);
 
-  const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  const onDragStart = (contentType) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
+    hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  };
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
 

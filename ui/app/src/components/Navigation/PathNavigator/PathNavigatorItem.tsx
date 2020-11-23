@@ -107,7 +107,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
           value="primary"
         />
       ) : isLevelDescriptor ? (
-        <LevelDescriptorIcon className={classes.typeIcon} />
+        <LevelDescriptorIcon className={classes.levelDescriptorIcon} />
       ) : (
         <RenderIcon classes={{ iconClass: classes.typeIcon }} item={item} />
       )}

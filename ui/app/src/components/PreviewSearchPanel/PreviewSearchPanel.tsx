@@ -135,9 +135,6 @@ const initialSearchParameters: Partial<ElasticParams> = {
   offset: 0,
   limit: 10,
   orOperator: true
-  // sortBy: '_score',
-  // sortOrder: 'desc',
-  // filters: {}
 };
 
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];

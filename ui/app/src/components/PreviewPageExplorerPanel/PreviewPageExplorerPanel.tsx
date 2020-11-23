@@ -60,6 +60,8 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { ItemMenu } from '../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import SearchBar from '../Controls/SearchBar';
+import Divider from '@material-ui/core/Divider';
 
 const rootPrefix = '{root}_';
 
@@ -84,6 +86,12 @@ const useStyles = makeStyles((theme) =>
       '& > li > ul': {
         marginLeft: '0px'
       }
+    },
+    searchWrapper: {
+      padding: '10px'
+    },
+    divider: {
+      marginTop: '10px'
     },
     rootIcon: {
       fontSize: '1.2em',
@@ -110,7 +118,7 @@ const useStyles = makeStyles((theme) =>
     currentContentItems: {
       fontWeight: 600,
       color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium7,
-      padding: '10px 12px 2px 12px'
+      padding: '0 12px 2px 12px'
     },
     chevron: {
       color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium3,
@@ -337,6 +345,7 @@ interface TreeItemCustomInterface {
   nodeLookup: LookupTable<RenderTree>;
   node: RenderTree;
   isRootChild?: boolean;
+  keyword?: string;
 
   handleScroll?(node: RenderTree): void;
 
@@ -346,7 +355,7 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { nodeLookup, node, handleScroll, handleClick, handleOptions, isRootChild } = props;
+  const { nodeLookup, node, handleScroll, handleClick, handleOptions, isRootChild, keyword } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
@@ -399,6 +408,12 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     return node.type === 'component' || node.type === 'page';
   }
 
+  const children = keyword
+    ? node.children?.filter((childNodeId) =>
+        nodeLookup[String(childNodeId)].name.toLowerCase().includes(keyword.toLowerCase())
+      )
+    : node.children;
+
   return (
     <TreeItem
       key={node.id}
@@ -447,7 +462,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         iconContainer: isRoot(node.id) ? classes.displayNone : classes.treeItemIconContainer
       }}
     >
-      {node.children?.map((childNodeId, i) => (
+      {children?.map((childNodeId, i) => (
         <TreeItemCustom
           {...props}
           key={String(childNodeId) + i}
@@ -469,7 +484,8 @@ export default function PreviewPageExplorerPanel() {
   const hostToGuest$ = getHostToGuestBus();
   const hostToHost$ = getHostToHostBus();
   const site = useActiveSiteId();
-  const [optionsMenu, setOptionsMenu] = React.useState({
+  const [keyword, setKeyword] = useState('');
+  const [optionsMenu, setOptionsMenu] = useState({
     modelId: null,
     anchorEl: null,
     path: null
@@ -625,7 +641,7 @@ export default function PreviewPageExplorerPanel() {
       };
 
       setNodeLookup({ ...hierarchicalToLookupTable(rootNode) });
-
+      setKeyword('');
       setState({
         selected: node.id,
         expanded: [`${rootPrefix}${node.id}`],
@@ -686,6 +702,10 @@ export default function PreviewPageExplorerPanel() {
 
   const handleClose = () => setOptionsMenu({ ...optionsMenu, anchorEl: null });
 
+  const handleSearchKeyword = (keyword) => {
+    setKeyword(keyword);
+  };
+
   const resource = useLogicResource<boolean, any>(
     { models, byId: ContentTypesById },
     {
@@ -709,6 +729,10 @@ export default function PreviewPageExplorerPanel() {
         expanded={state.expanded}
         onNodeToggle={handleChange}
       >
+        <div className={classes.searchWrapper}>
+          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
+          <Divider className={classes.divider} />
+        </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
           <PageExplorerUI
             handleBreadCrumbClick={handleBreadCrumbClick}
@@ -719,6 +743,7 @@ export default function PreviewPageExplorerPanel() {
             rootPrefix={rootPrefix}
             handleOptions={handleOptions}
             resource={resource}
+            keyword={keyword}
             nodeLookup={nodeLookup}
             selected={state.selected}
             breadcrumbs={state.breadcrumbs}
@@ -738,6 +763,7 @@ interface PageExplorerUIProps {
     path: null;
   };
   rootPrefix: string;
+  keyword: string;
   handleScroll(node: RenderTree): void;
   handleClick(node: RenderTree): void;
   handleClose(): void;
@@ -761,6 +787,7 @@ function PageExplorerUI(props: PageExplorerUIProps) {
     rootPrefix,
     nodeLookup,
     selected,
+    keyword,
     breadcrumbs,
     rootChildren
   } = props;
@@ -826,18 +853,23 @@ function PageExplorerUI(props: PageExplorerUIProps) {
           <Typography variant="subtitle1" className={classes.currentContentItems}>
             <FormattedMessage id="pageExplorerPanel.currentContentItems" defaultMessage="Current Content Items" />
           </Typography>
-          {node.children?.map((childNodeId, i) => (
-            <TreeItemCustom
-              {...props}
-              key={String(childNodeId) + i}
-              node={nodeLookup[String(childNodeId)]}
-              isRootChild={node.type === 'root'}
-            />
-          ))}
+          {node.children
+            ?.filter((childNodeId) =>
+              nodeLookup[String(childNodeId)].name.toLowerCase().includes(keyword.toLowerCase())
+            )
+            .map((childNodeId, i) => (
+              <TreeItemCustom
+                {...props}
+                key={String(childNodeId) + i}
+                node={nodeLookup[String(childNodeId)]}
+                isRootChild={node.type === 'root'}
+              />
+            ))}
         </>
       ) : (
         <TreeItemCustom
           node={node}
+          keyword={keyword}
           nodeLookup={nodeLookup}
           handleScroll={handleScroll}
           handleClick={handleClick}

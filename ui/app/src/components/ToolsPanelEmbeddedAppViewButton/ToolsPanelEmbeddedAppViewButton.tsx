@@ -20,6 +20,10 @@ import { Dialog } from '@material-ui/core';
 import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { Widget } from '../Widget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useMinimizeDialog } from '../../utils/hooks';
+import { useIntl } from 'react-intl';
+import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -56,12 +60,37 @@ const useStyles = makeStyles((theme) =>
 export default function ToolsPanelEmbeddedAppViewButton(props) {
   const [open, setOpen] = useState(false);
   const openEmbeddedApp = () => setOpen(true);
+  const { formatMessage } = useIntl();
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const minimized = useMinimizeDialog({
+    id: props.widget.id,
+    title: typeof props.title === 'object' ? formatMessage(props.title) : props.title,
+    minimized: false
+  });
+
+  const onMinimize = () => {
+    dispatch(minimizeDialog({ id: props.widget.id }));
+  };
+
   return (
     <>
       <ToolsPanelListItemButton {...props} onClick={openEmbeddedApp} />
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xl" classes={{ paper: classes.dialog }}>
-        <ToolPanel title={props.title} onBack={() => setOpen(false)} classes={{ body: classes.toolPanelBody }}>
+      <Dialog
+        open={open && !minimized}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="xl"
+        classes={{ paper: classes.dialog }}
+      >
+        <ToolPanel
+          title={props.title}
+          onBack={() => setOpen(false)}
+          onMinimize={onMinimize}
+          onClose={() => setOpen(false)}
+          classes={{ body: classes.toolPanelBody }}
+        >
           <Widget {...props.widget} />
         </ToolPanel>
       </Dialog>
