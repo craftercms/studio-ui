@@ -138,6 +138,11 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       var elt = document.querySelectorAll(
         '[data-studio-ice' + message.label + '="' + message.region + '"]'
       )[0];
+      if (!elt) {
+        elt = document.querySelectorAll(
+          '[data-studio-ice' + message.label + '="' + message.region.replace(/ /g, '__') + '"]'
+        )[0];
+      }
       if (elt) {
         elt.scrollIntoView();
         window.scrollBy(0, -150);
