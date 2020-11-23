@@ -76,6 +76,10 @@ input[type="checkbox"].content-type-selector--checkbox {
   flex-direction: column;
 }
 
+.embedded .work-area-empty, .embedded .work-area-error {
+  height: 100vh;
+}
+
 .work-area-empty img, .work-area-error img {
   width: 200px;
   margin-bottom: 20px;
