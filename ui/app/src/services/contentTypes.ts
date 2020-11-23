@@ -26,7 +26,7 @@ import {
   LegacyFormDefinitionSection
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { camelize, isBlank } from '../utils/string';
+import { camelize, capitalize, isBlank } from '../utils/string';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { errorSelectorApi1, get } from '../utils/ajax';
 import { catchError, map, pluck, switchMap } from 'rxjs/operators';
@@ -40,7 +40,19 @@ const typeMap = {
   'image-picker': 'image'
 };
 
-const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly', 'width', 'height'];
+const systemValidationsNames = [
+  'itemManager',
+  'minSize',
+  'maxSize',
+  'maxlength',
+  'readonly',
+  'width',
+  'height',
+  'minWidth',
+  'minHeight',
+  'maxWidth',
+  'maxHeight'
+];
 
 const systemValidationsKeysMap = {
   minSize: 'minCount',
@@ -50,7 +62,11 @@ const systemValidationsKeysMap = {
   tags: 'allowedContentTypeTags',
   readonly: 'readOnly',
   width: 'width',
-  height: 'height'
+  height: 'height',
+  minWidth: 'minWidth',
+  minHeight: 'minHeight',
+  maxWidth: 'maxWidth',
+  maxHeight: 'maxHeight'
 };
 
 function bestGuessParse(value: any) {
@@ -73,7 +89,29 @@ function getFieldValidations(
 ): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
     (table, prop) => {
-      table[prop.name] = prop;
+      if (prop.name === 'width' || prop.name === 'height') {
+        const parsedValidation = JSON.parse(prop.value);
+        if (parsedValidation.exact) {
+          table[prop.name] = {
+            name: prop.name,
+            type: prop.type,
+            value: parsedValidation.exact
+          };
+        } else {
+          table[`min${capitalize(prop.name)}`] = {
+            name: prop.name,
+            type: prop.type,
+            value: parsedValidation.min
+          };
+          table[`max${capitalize(prop.name)}`] = {
+            name: prop.name,
+            type: prop.type,
+            value: parsedValidation.max
+          };
+        }
+      } else {
+        table[prop.name] = prop;
+      }
       return table;
     },
     {}

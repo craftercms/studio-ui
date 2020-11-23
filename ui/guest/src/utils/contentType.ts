@@ -72,13 +72,8 @@ export function getDefaultValue(field: ContentTypeField): string {
   } else {
     switch (field.type) {
       case 'image':
-        // since it's a string, empty string needs to be validated
-        const width = JSON.parse(field.validations.width?.value).min
-          ? JSON.parse(field.validations.width?.value).min
-          : 150;
-        const height = JSON.parse(field.validations.height?.value).min
-          ? JSON.parse(field.validations.height?.value).min
-          : width;
+        const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
+        const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
         return `https://via.placeholder.com/${width}x${height}`;
       case 'text':
       case 'html':

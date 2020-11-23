@@ -38,7 +38,11 @@ export type ValidationKeys =
   | 'readOnly'
   | 'required'
   | 'width'
-  | 'height';
+  | 'height'
+  | 'minWidth'
+  | 'minHeight'
+  | 'maxWidth'
+  | 'maxHeight';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
