@@ -24,6 +24,7 @@ import {
   useDebouncedInput,
   useLogicResource,
   useMount,
+  useSelection,
   useSubject
 } from '../../utils/hooks';
 import SearchBar from '../Controls/SearchBar';
@@ -36,7 +37,8 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED
+  COMPONENT_INSTANCE_DRAG_STARTED,
+  setPreviewEditMode
 } from '../../state/actions/preview';
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
@@ -46,6 +48,7 @@ import { createLookupTable } from '../../utils/object';
 import { getContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -148,6 +151,8 @@ export default function PreviewSearchPanel() {
   const site = useActiveSiteId();
   const hostToGuest$ = getHostToGuestBus();
   const [searchResults, setSearchResults] = useState<SearchResult>(null);
+  const dispatch = useDispatch();
+  const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
@@ -168,7 +173,6 @@ export default function PreviewSearchPanel() {
 
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
-      // pipe(takeUntil(unMount$),switchMap())
       search(site, {
         ...initialSearchParameters,
         keywords,
@@ -233,6 +237,9 @@ export default function PreviewSearchPanel() {
   }
 
   const onDragStart = (item: SearchItem) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
     if (item.type === 'Component') {
       const instance: ContentInstance = contentInstanceLookup[item.path];
       hostToGuest$.next({
