@@ -17,13 +17,13 @@
 import React, { useState } from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { Dialog } from '@material-ui/core';
-import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { Widget } from '../Widget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useMinimizeDialog } from '../../utils/hooks';
 import { useIntl } from 'react-intl';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
+import DialogHeader from '../Dialogs/DialogHeader';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -84,15 +84,24 @@ export default function ToolsPanelEmbeddedAppViewButton(props) {
         maxWidth="xl"
         classes={{ paper: classes.dialog }}
       >
-        <ToolPanel
+        <DialogHeader
           title={props.title}
-          onBack={() => setOpen(false)}
-          onMinimize={onMinimize}
-          onClose={() => setOpen(false)}
-          classes={{ body: classes.toolPanelBody }}
-        >
-          <Widget {...props.widget} />
-        </ToolPanel>
+          rightActions={[
+            {
+              icon: 'MinimizeIcon',
+              onClick: () => {
+                onMinimize();
+              }
+            },
+            {
+              icon: 'CloseIcon',
+              onClick: () => {
+                setOpen(false);
+              }
+            }
+          ]}
+        />
+        <Widget {...props.widget} />
       </Dialog>
     </>
   );

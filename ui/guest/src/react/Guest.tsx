@@ -93,6 +93,7 @@ function Guest(props: GuestProps) {
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState, GuestState>((state) => state);
+  const editMode = state.editMode;
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
@@ -103,7 +104,7 @@ function Guest(props: GuestProps) {
       hasHost,
       draggable,
       onEvent(event: Event, dispatcherElementRecordId: number) {
-        if (hasHost && status !== EditingStatus.OFF && refs.current.contentReady) {
+        if (hasHost && editMode && refs.current.contentReady) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
           if (isNullOrUndefined(record)) {
@@ -120,7 +121,7 @@ function Guest(props: GuestProps) {
         return false;
       }
     }),
-    [dispatch, hasHost, draggable, status]
+    [dispatch, hasHost, draggable, editMode]
   );
 
   // Sets document domain
@@ -138,14 +139,14 @@ function Guest(props: GuestProps) {
 
   // Add/remove edit on class
   useEffect(() => {
-    if (status === EditingStatus.OFF) {
+    if (editMode === false) {
       $('html').removeClass(editModeClass);
       document.dispatchEvent(new CustomEvent(editModeClass, { detail: false }));
     } else {
       $('html').addClass(editModeClass);
       document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
     }
-  }, [status]);
+  }, [editMode]);
 
   // Appends the Guest stylesheet
   useEffect(() => {
@@ -369,7 +370,7 @@ function Guest(props: GuestProps) {
   return (
     <GuestContextProvider value={context}>
       {children}
-      {status !== EditingStatus.OFF && (
+      {editMode && (
         <CrafterCMSPortal>
           {draggableItemElemRecId && (
             <craftercms-dragged-element>

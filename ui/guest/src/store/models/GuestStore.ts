@@ -51,6 +51,7 @@ export interface GuestState {
   hostCheckedIn: boolean;
   ICE_GUEST_INIT: boolean;
   status: EditingStatus;
+  editMode: boolean;
   editable: T;
   draggable: T;
   highlighted: T;

@@ -66,6 +66,7 @@ const dialogTitleStyles = makeStyles((theme) =>
 
 export interface DialogHeaderAction extends IconButtonProps {
   icon: ActionIcon | ElementType;
+  tooltip?: string;
 }
 
 export interface DialogHeaderStateAction {
