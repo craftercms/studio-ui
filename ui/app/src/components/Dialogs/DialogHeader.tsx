@@ -31,12 +31,15 @@ const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
     root: {
       margin: 0,
+      display: 'flex',
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
       padding: theme.spacing(1),
-      background: theme.palette.background.paper
+      background: theme.palette.background.paper,
+      ...theme.mixins.toolbar
     },
     titleWrapper: {
       display: 'flex',
+      flexGrow: 1,
       alignItems: 'center'
     },
     title: {

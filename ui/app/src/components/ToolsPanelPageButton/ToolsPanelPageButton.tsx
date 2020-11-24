@@ -25,6 +25,7 @@ export default function ToolsPanelPageButton(props) {
     dispatch(
       pushToolsPanelPage({
         id: 'craftercms.components.ToolsPanelPage',
+        uiKey: `uiKey_${Date.now()}`,
         roles: [],
         configuration: props
       })

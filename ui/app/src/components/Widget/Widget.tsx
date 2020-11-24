@@ -26,6 +26,7 @@ export const TempTestContext = React.createContext<any>({});
 
 export interface WidgetDescriptor {
   id: string;
+  uiKey: string;
   roles?: string[];
   plugin?: PluginFileBuilder;
   configuration?: any;
@@ -120,7 +121,7 @@ export { Widget };
 export function renderWidgets(widgets, roles: string[]) {
   return widgets
     .filter((widget) => (widget.roles ?? []).length === 0 || roles.some((role) => widget.roles.includes(role)))
-    .map((widget, index) => <Widget key={`${widget.id}_${index}`} {...widget} />);
+    .map((widget) => <Widget key={widget.uiKey} {...widget} />);
 }
 
 export default Widget;

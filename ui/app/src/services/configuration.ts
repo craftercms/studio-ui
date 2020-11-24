@@ -205,6 +205,7 @@ export function getSiteUiConfig(
       if (xml) {
         const widgets = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
         if (widgets) {
+          widgets.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
           const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
           const lookupTables = ['fields'];
           const renameTable = { permittedRoles: 'roles' };

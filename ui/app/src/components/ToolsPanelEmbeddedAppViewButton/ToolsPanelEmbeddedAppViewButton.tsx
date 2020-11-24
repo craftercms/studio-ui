@@ -19,9 +19,8 @@ import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { Dialog } from '@material-ui/core';
 import { Widget } from '../Widget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useMinimizeDialog } from '../../utils/hooks';
-import { useIntl } from 'react-intl';
-import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+import { useMinimizeDialog, usePossibleTranslation } from '../../utils/hooks';
+import { maximizeDialog, minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
 import DialogHeader from '../Dialogs/DialogHeader';
 
@@ -59,19 +58,26 @@ const useStyles = makeStyles((theme) =>
 
 export default function ToolsPanelEmbeddedAppViewButton(props) {
   const [open, setOpen] = useState(false);
-  const openEmbeddedApp = () => setOpen(true);
-  const { formatMessage } = useIntl();
   const classes = useStyles();
   const dispatch = useDispatch();
 
+  const id = props.widget.uiKey;
+
   const minimized = useMinimizeDialog({
-    id: props.widget.id,
-    title: typeof props.title === 'object' ? formatMessage(props.title) : props.title,
+    id,
+    title: usePossibleTranslation(props.title),
     minimized: false
   });
 
   const onMinimize = () => {
-    dispatch(minimizeDialog({ id: props.widget.id }));
+    dispatch(minimizeDialog({ id }));
+  };
+
+  const openEmbeddedApp = () => {
+    if (minimized) {
+      dispatch(maximizeDialog({ id }));
+    }
+    setOpen(true);
   };
 
   return (
@@ -89,9 +95,7 @@ export default function ToolsPanelEmbeddedAppViewButton(props) {
           rightActions={[
             {
               icon: 'MinimizeIcon',
-              onClick: () => {
-                onMinimize();
-              }
+              onClick: onMinimize
             },
             {
               icon: 'CloseIcon',
@@ -101,7 +105,9 @@ export default function ToolsPanelEmbeddedAppViewButton(props) {
             }
           ]}
         />
-        <Widget {...props.widget} />
+        <section className={classes.toolPanelBody}>
+          <Widget {...props.widget} />
+        </section>
       </Dialog>
     </>
   );
