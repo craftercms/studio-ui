@@ -40,7 +40,6 @@ interface MinimizedBarProps {
 export function MinimizedBar(props: MinimizedBarProps) {
   const { title, onMaximized, subtitle, status } = props;
   const classes = useStyles({});
-
   return (
     <Paper className={classes.root}>
       <Typography variant="h6">{title}</Typography>
