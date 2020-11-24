@@ -21,3 +21,6 @@ yarn-error.log*
 *.ignore.*
 
 build_tsc
+tsconfig.build.tsbuildinfo
+.eslintcache
+.bic_cache
