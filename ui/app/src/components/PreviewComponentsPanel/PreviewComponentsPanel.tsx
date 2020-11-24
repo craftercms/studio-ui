@@ -36,7 +36,7 @@ import { useDispatch } from 'react-redux';
 import { PropsWithResource, SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { EntityState } from '../../models/EntityState';
 import { batchActions } from '../../state/actions/misc';
-import { createToolsPanelPage } from '../../utils/state';
+import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -125,10 +125,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         setContentTypeFilter(menuContext.contentType.id),
         pushToolsPanelPage(
           createToolsPanelPage('previewBrowseComponentsPanel.title', [
-            {
-              id: 'craftercms.components.PreviewBrowseComponentsPanel',
-              uiKey: `uiKey_${Date.now()}`
-            }
+            createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })
           ])
         )
       ])
@@ -141,10 +138,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         setContentTypeFilter(menuContext.contentType.id),
         pushToolsPanelPage(
           createToolsPanelPage('previewInPageInstancesPanel.title', [
-            {
-              id: 'craftercms.components.PreviewInPageInstancesPanel',
-              uiKey: `uiKey_${Date.now()}`
-            }
+            createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })
           ])
         )
       ])
@@ -155,10 +149,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       pushToolsPanelPage(
         createToolsPanelPage('previewReceptaclesPanel.title', [
-          {
-            id: 'craftercms.components.PreviewReceptaclesPanel',
-            uiKey: `uiKey_${Date.now()}`
-          }
+          createWidgetDescriptor({ id: 'craftercms.components.PreviewReceptaclesPanel' })
         ])
       )
     );

@@ -28,8 +28,6 @@ type ToolPanelProps = PropsWithChildren<{
   title: string | MessageDescriptor;
   BackIcon?: ElementType;
   onBack?: () => void;
-  onMinimize?: () => void;
-  onClose?: () => void;
   classes?: {
     body?: any;
   };
@@ -49,9 +47,6 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(0, 1),
       ...theme.mixins.toolbar,
       justifyContent: 'flex-start'
-    },
-    alignRight: {
-      marginLeft: 'auto'
     }
   })
 );
@@ -78,7 +73,6 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes } = props;
-
   return (
     <>
       <PanelHeader

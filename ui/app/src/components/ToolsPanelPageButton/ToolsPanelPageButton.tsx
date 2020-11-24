@@ -18,17 +18,19 @@ import React from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { useDispatch } from 'react-redux';
 import { pushToolsPanelPage } from '../../state/actions/preview';
+import { createWidgetDescriptor } from '../../utils/state';
 
 export default function ToolsPanelPageButton(props) {
   const dispatch = useDispatch();
   const turnPage = () => {
     dispatch(
-      pushToolsPanelPage({
-        id: 'craftercms.components.ToolsPanelPage',
-        uiKey: `uiKey_${Date.now()}`,
-        roles: [],
-        configuration: props
-      })
+      pushToolsPanelPage(
+        createWidgetDescriptor({
+          id: 'craftercms.components.ToolsPanelPage',
+          roles: [],
+          configuration: props
+        })
+      )
     );
   };
   return <ToolsPanelListItemButton displaySecondaryAction {...props} onClick={turnPage} />;
