@@ -133,9 +133,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
               CStudioAuthoring.Events.contentSelected.subscribe(function(evtName, contentTO) {
                 var selectedContent, callback;
-
                 if (contentTO[0] && contentTO[0].path) {
                   selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
+
+                  if (selectedContent.length) {
+                    $('#activeContentActions').addClass('selected-content');
+                  }
 
                   callback = {
                     success: function(isWrite, perms) {
@@ -301,6 +304,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
                 if (contentTO[0] && contentTO[0].path) {
                   selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
+
+                  if (!selectedContent.length) {
+                    $('#activeContentActions').removeClass('selected-content');
+                  }
 
                   var saveDraftFlag = false;
                   var noticeEls = YDom.getElementsByClassName(
@@ -619,7 +626,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   stateKey
                 );
               }
-              //add class to remove border from last item - would be more efficient using YUI Selector module, but it's currently not loaded
+              // add class to remove border from last item - would be more efficient using YUI Selector module, but it's currently not loaded
               var itemContainer = document.getElementById('acn-active-content');
               if (itemContainer.hasChildNodes()) {
                 var lastItem = itemContainer.lastChild;
@@ -632,6 +639,37 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   }
                 }
               }
+
+              this.renderSelectedItemsCount(selectedContent);
+            },
+
+            renderSelectedItemsCount: function(selectedContent) {
+              const $activeContentContainer = $('#activeContentActions');
+              $activeContentContainer.off('click', '.clear-selected', this.clearSelectedContent);
+
+              if ($('body').hasClass('embedded') && selectedContent.length) {
+                $activeContentContainer.append(
+                  '<li class="acn-link items-count">' +
+                    `<p>${selectedContent.length} item${selectedContent.length > 1 ? 's' : ''} selected` +
+                    '<a class="clear-selected" href="#">' +
+                    '<svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">' +
+                    '<path d="M14.59 8L12 10.59 9.41 8 8 9.41 10.59 12 8 14.59 9.41 16 12 13.41 14.59 16 16 14.59 13.41 12 16 9.41 14.59 8zM12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>' +
+                    '</svg>' +
+                    '</a>' +
+                    '</p>' +
+                    '</li>'
+                );
+
+                $activeContentContainer.on('click', '.clear-selected', this.clearSelectedContent);
+              } else {
+                $activeContentContainer.remove('.items-count');
+              }
+            },
+
+            clearSelectedContent: function() {
+              $('#activeContentActions').removeClass('selected-content');
+              WcmDashboardWidgetCommon.refreshAllDashboards();
+              CStudioAuthoring.SelectedContent.clear();
             },
 
             hasWritePermission: function hasWritePermission(permissions) {
