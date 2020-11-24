@@ -678,8 +678,8 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
         {...props}
         onMinimized={onMinimized}
         dropZoneStatus={dropZoneStatus}
-        onStatusChange={onStatusChange}
         onFileUploaded={onFileUploaded}
+        onStatusChange={onStatusChange}
       />
     </Dialog>
   );
@@ -703,8 +703,8 @@ function BulkUploadUI(props: BulkUploadUIProps) {
     maxSimultaneousUploads = 1,
     onMinimized,
     onStatusChange,
-    dropZoneStatus,
-    onFileUploaded
+    onFileUploaded,
+    dropZoneStatus
   } = props;
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
