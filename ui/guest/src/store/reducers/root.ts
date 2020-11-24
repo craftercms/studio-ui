@@ -722,8 +722,7 @@ const reducerFunctions: {
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
-    editMode: action.payload.editMode,
-    status: EditingStatus.LISTENING
+    editMode: action.payload.editMode
   })
 };
 
