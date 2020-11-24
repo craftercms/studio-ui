@@ -29,8 +29,6 @@ import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import Snackbar from '@material-ui/core/Snackbar';
-import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
@@ -106,20 +104,12 @@ export const useStyles = makeStyles(() =>
   })
 );
 
-const messages = defineMessages({
-  loadingDialogs: {
-    id: 'globalDialogManager.loadingDialogs',
-    defaultMessage: 'Loading dialogs...'
-  }
-});
-
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
   const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const { enqueueSnackbar } = useSnackbar();
-  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -135,19 +125,7 @@ function GlobalDialogManager() {
   }, [enqueueSnackbar]);
 
   return (
-    <Suspense
-      fallback={
-        <Snackbar
-          open
-          onClose={() => void 0}
-          message={formatMessage(messages.loadingDialogs)}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center'
-          }}
-        />
-      }
-    >
+    <Suspense fallback="">
       {/* region Confirm */}
       <ConfirmDialog
         open={state.confirm.open}
