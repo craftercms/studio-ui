@@ -703,7 +703,8 @@ function BulkUploadUI(props: BulkUploadUIProps) {
     maxSimultaneousUploads = 1,
     onMinimized,
     onStatusChange,
-    dropZoneStatus
+    dropZoneStatus,
+    onFileUploaded
   } = props;
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
