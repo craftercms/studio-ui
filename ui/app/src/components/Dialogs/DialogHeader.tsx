@@ -40,7 +40,7 @@ const dialogTitleStyles = makeStyles((theme) =>
     },
     titleWrapper: {
       display: 'flex',
-      width: '100%N',
+      width: '100%',
       alignItems: 'center'
     },
     title: {
