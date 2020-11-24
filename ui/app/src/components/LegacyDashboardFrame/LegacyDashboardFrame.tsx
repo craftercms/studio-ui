@@ -14,33 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { IframeHTMLAttributes } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useEnv } from '../../utils/hooks';
+import React from 'react';
+import LegacyIFrame, { LegacyIFrameBaseProps } from '../LegacyIFrame/LegacyIFrame';
 
-interface LegacyDashboardFrameProps {
+interface LegacyDashboardFrameProps extends LegacyIFrameBaseProps {
   dashboardOnly?: boolean;
-  iframeProps?: IframeHTMLAttributes<any>;
 }
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    iframe: {
-      width: '100%',
-      height: '100%',
-      border: 'none'
-    }
-  })
-);
 
 function LegacyDashboardFrame(props: LegacyDashboardFrameProps) {
   const { dashboardOnly = true, iframeProps } = props;
-  const authoringUrl = useEnv().authoringBase;
-  const classes = useStyles();
-
-  const iframeSrc = `${authoringUrl}/site-dashboard${[dashboardOnly && '?mode=embedded'].filter(Boolean).join('')}`;
-
-  return <iframe frameBorder={0} title="Site Dashboard" src={iframeSrc} className={classes.iframe} {...iframeProps} />;
+  const path = `/site-dashboard${[dashboardOnly && '?mode=embedded'].filter(Boolean).join('')}`;
+  return <LegacyIFrame path={path} title="Site Dashboard" iframeProps={iframeProps} />;
 }
 
 export default LegacyDashboardFrame;
