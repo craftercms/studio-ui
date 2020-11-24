@@ -32,6 +32,7 @@ const dialogTitleStyles = makeStyles((theme) =>
     root: {
       margin: 0,
       display: 'flex',
+      flexWrap: 'wrap',
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
       padding: theme.spacing(1),
       background: theme.palette.background.paper,
@@ -39,7 +40,7 @@ const dialogTitleStyles = makeStyles((theme) =>
     },
     titleWrapper: {
       display: 'flex',
-      flexGrow: 1,
+      width: '100%N',
       alignItems: 'center'
     },
     title: {

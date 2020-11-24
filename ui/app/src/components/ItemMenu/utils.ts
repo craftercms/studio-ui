@@ -143,6 +143,7 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
   const isController = item.path.includes('/scripts');
   const isImage = item.mimeType.startsWith('image/');
   const isRootFolder = isRootPath(item.path);
+  const translation = false;
   let type = item.systemType;
 
   switch (type) {
@@ -182,7 +183,9 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         }
         _optionsA.push(menuOptions.history);
         _optionsA.push(menuOptions.dependencies);
-        _optionsA.push(menuOptions.translation);
+        if (translation) {
+          _optionsA.push(menuOptions.translation);
+        }
         _optionsA.push(menuOptions.editTemplate);
         _optionsA.push(menuOptions.editController);
       } else if (read) {
