@@ -629,6 +629,13 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
     e.preventDefault();
   };
 
+  const onFileUploaded = useCallback(
+    (path: string) => {
+      dispatch(emitSystemEvent(itemCreated({ target: path })));
+    },
+    [dispatch]
+  );
+
   const onStatusChange = useCallback(
     (status: DropZoneStatus) => {
       setDropZoneStatus(status);
@@ -672,6 +679,7 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
         onMinimized={onMinimized}
         dropZoneStatus={dropZoneStatus}
         onStatusChange={onStatusChange}
+        onFileUploaded={onFileUploaded}
       />
     </Dialog>
   );
@@ -681,6 +689,7 @@ interface BulkUploadUIProps extends BulkUploadProps {
   dropZoneStatus: DropZoneStatus;
   onMinimized?(): void;
   onStatusChange(status: DropZoneStatus): void;
+  onFileUploaded(path: string): void;
 }
 
 function BulkUploadUI(props: BulkUploadUIProps) {
@@ -698,7 +707,6 @@ function BulkUploadUI(props: BulkUploadUIProps) {
   } = props;
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
-  const dispatch = useDispatch();
 
   const cancelRequestObservable$ = useSubject<void>();
 
@@ -709,13 +717,6 @@ function BulkUploadUI(props: BulkUploadUIProps) {
   const onCancel = () => {
     cancelRequestObservable$.next();
   };
-
-  const onFileUploaded = useCallback(
-    (path: string) => {
-      dispatch(emitSystemEvent(itemCreated({ target: path })));
-    },
-    [dispatch]
-  );
 
   useEffect(() => {
     const handleBeforeUpload = () => {
