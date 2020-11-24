@@ -42,7 +42,7 @@ export function MinimizedBar(props: MinimizedBarProps) {
   const classes = useStyles({});
 
   return (
-    <Paper className={classes.root} id="testeo">
+    <Paper className={classes.root}>
       <Typography variant="h6">{title}</Typography>
       {subtitle && (
         <Typography variant="subtitle1" className={classes.subtitle}>
