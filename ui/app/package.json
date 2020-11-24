@@ -64,10 +64,10 @@
     "compile": "tsc -p tsconfig.json",
     "build:tsc": "tsc -p tsconfig.build.json",
     "format:npm": "prettier --config ../../prettier.config.js ./build_tsc/**/*.{js,ts} --write",
-    "package:npm": "node scripts/package",
+    "package:npm": "node scripts/package.js",
     "build:npm": "yarn clean:npm && yarn build:tsc && yarn clean:models && yarn package:npm",
-    "clean:npm": "rm -rf ./build_tsc",
-    "clean:models": "rm -rf ./build_tsc/models/*.{js,map}",
+    "clean:npm": "rimraf ./build_tsc",
+    "clean:models": "rimraf ./build_tsc/models/*.{js,map}",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
     "i18n:manage": "node scripts/i18n.js",
@@ -139,10 +139,12 @@
     "@babel/core": "^7.8.3",
     "@babel/runtime": "^7.8.3",
     "babel-plugin-react-intl": "^5.1.16",
+    "build-if-changed": "^1.5.5",
     "ncp": "^2.0.0",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
     "react-intl-translations-manager": "^5.0.3",
     "rimraf": "^3.0.0"
-  }
+  },
+  "bic": { "skip": ["build", "build_tsc", "scripts", "README.md", "CHANGE_LOG.md", ".babelrc"] }
 }
