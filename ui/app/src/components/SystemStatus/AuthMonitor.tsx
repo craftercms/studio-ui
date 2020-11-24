@@ -34,7 +34,7 @@ import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
-import { LogInForm } from './LoginForm';
+import LogInForm from './LoginForm';
 import { ClassNameMap } from '@material-ui/styles/withStyles';
 import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';

@@ -17,7 +17,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
-export default function(props) {
+export default function CrafterCMSPortal(props) {
   const portalRef = useRef<HTMLElement>(null);
   if (portalRef.current === null) {
     portalRef.current = document.createElement('craftercms-portal');

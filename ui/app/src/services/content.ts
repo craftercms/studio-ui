@@ -17,7 +17,14 @@
 import { CONTENT_TYPE_JSON, del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import {
+  createElements,
+  deserialize,
+  fromString,
+  getInnerHtml,
+  serialize,
+  wrapElementInAuxDocument
+} from '../utils/xml';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
@@ -132,7 +139,10 @@ function parseElementByContentType(
   contentTypesLookup: LookupTable<ContentType>,
   instanceLookup: LookupTable<ContentInstance>
 ) {
-  const type = field ? field.type : null;
+  if (!field) {
+    return getInnerHtml(element) ?? '';
+  }
+  const type = field.type;
   switch (type) {
     case 'repeat': {
       const array = [];
@@ -168,12 +178,29 @@ function parseElementByContentType(
     }
     case 'html':
       return decodeHTML(getInnerHtml(element));
+    case 'checkbox-group': {
+      const deserialized = deserialize(element);
+      const extract = deserialized[element.tagName].item;
+      return Array.isArray(extract) ? extract : [extract];
+    }
+    case 'text':
+    case 'image':
+    case 'textarea':
+    case 'dropdown':
+      return getInnerHtml(element);
+    case 'boolean':
+    case 'page-nav-order':
+      return getInnerHtml(element) === 'true';
     default:
+      console.log(
+        `[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+        element
+      );
       return getInnerHtml(element);
   }
 }
 
-function parseContentXML(
+export function parseContentXML(
   doc: XMLDocument,
   path: string = null,
   contentTypesLookup: LookupTable<ContentType>,
@@ -185,14 +212,19 @@ function parseContentXML(
     craftercms: {
       id,
       path,
-      label: nnou(doc) ? getInnerHtml(doc.querySelector('internal-name')) : null,
+      label: null,
       locale: null,
-      dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector('createdDate_dt')) : null,
-      dateModified: nnou(doc) ? getInnerHtml(doc.querySelector('lastModifiedDate_dt')) : null,
+      dateCreated: null,
+      dateModified: null,
       contentTypeId: contentTypeId,
       sourceMap: {}
     }
   };
+  if (nnou(doc)) {
+    current.craftercms.label = getInnerHtml(doc.querySelector('internal-name'));
+    current.craftercms.dateCreated = getInnerHtml(doc.querySelector('createdDate_dt'));
+    current.craftercms.dateModified = getInnerHtml(doc.querySelector('lastModifiedDate_dt'));
+  }
   instanceLookup[id] = current;
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
@@ -202,16 +234,21 @@ function parseContentXML(
         const source = element.getAttribute('crafter-source');
         if (source) {
           current.craftercms.sourceMap[tagName] = source;
-          // TODO: https://github.com/craftercms/craftercms/issues/4093
-          // Temporarily falling back to a known content type while backend updates
-          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
+          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id');
+          if (!sourceContentTypeId) {
+            console.error(
+              `[parseContentXML] No "crafter-source-content-type-id" attribute found together with "crafter-source".`
+            );
+          }
         }
-        current[tagName] = parseElementByContentType(
-          element,
-          contentTypesLookup[sourceContentTypeId ?? contentTypeId].fields[tagName],
-          contentTypesLookup,
-          instanceLookup
-        );
+        const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId].fields[tagName];
+        if (!field) {
+          console.error(
+            `[parseContentXML] Field "${tagName}" was not found on "${sourceContentTypeId ??
+              contentTypeId}" content type. "${source ?? path}" may have stale/outdated content properties.`
+          );
+        }
+        current[tagName] = parseElementByContentType(element, field, contentTypesLookup, instanceLookup);
       }
     });
   }
@@ -314,6 +351,7 @@ function parseContentXMLWithoutContentTypes_processFields(
 } */
 
 const systemPropsList = [
+  'orderDefault_f',
   'content-type',
   'display-template',
   'no-template-required',

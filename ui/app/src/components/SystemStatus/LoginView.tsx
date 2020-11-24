@@ -32,7 +32,7 @@ import {
 import { insureSingleSlash, isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import { setRequestForgeryToken } from '../../utils/auth';
-import { LogInForm } from './LoginForm';
+import LogInForm from './LoginForm';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { getProductLanguages } from '../../services/configuration';
