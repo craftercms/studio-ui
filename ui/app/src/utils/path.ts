@@ -16,7 +16,7 @@
 
 import { parse, ParsedQuery } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
-import { DetailedItem } from '../models/Item';
+import { DetailedItem, PasteItem } from '../models/Item';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -129,6 +129,30 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   } else {
     return paths.reverse();
   }
+}
+
+export function getPasteItemFromPath(sourcePath: string, paths: string[]): PasteItem {
+  let lookup = {
+    [sourcePath]: {
+      path: sourcePath,
+      children: []
+    }
+  };
+  paths.forEach((path) => {
+    lookup[path] = {
+      path: path,
+      children: []
+    };
+    const parentPath = getParentPath(path);
+    if (!lookup[parentPath]) {
+      lookup[parentPath] = {
+        path: parentPath,
+        children: []
+      };
+    }
+    lookup[parentPath].children.push(lookup[path]);
+  });
+  return lookup[sourcePath];
 }
 
 const path = {

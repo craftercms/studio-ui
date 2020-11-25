@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
+import { del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import {
@@ -36,15 +36,16 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { CopyItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
-import { getParentPath, withoutIndex } from '../utils/path';
 import { fetchContentTypes } from './contentTypes';
+import { Clipboard } from '../models/GlobalState';
+import { getPasteItemFromPath } from '../utils/path';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -942,40 +943,27 @@ export function getChildrenByPath(
   );
 }
 
-export function copy(site: string, item: CopyItem): Observable<{ success: boolean }>;
-export function copy(site: string, path: string): Observable<{ success: boolean }>;
-export function copy(site: string, itemOrPath: string | CopyItem): Observable<{ success: boolean }> {
-  let item = typeof itemOrPath === 'string' ? { item: [{ uri: itemOrPath }] } : { item: [itemOrPath] };
-  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, item, CONTENT_TYPE_JSON).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
-}
-
-export function cut(site: string, path: string): Observable<any> {
-  return post(
-    `/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`,
-    { item: [{ uri: path }] },
-    CONTENT_TYPE_JSON
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
-}
-
-export function paste(site: string, path: string): Observable<string[]> {
-  return get(
-    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(path)}`
-  ).pipe(pluck('response', 'status'), catchError(errorSelectorApi1));
+export function paste(site: string, targetPath: string, clipboard: Clipboard): Observable<string[]> {
+  console.log(clipboard);
+  return postJSON('/studio/api/2/content/paste', {
+    siteId: site,
+    operation: clipboard.type,
+    targetPath,
+    item: getPasteItemFromPath(clipboard.sourcePath, clipboard.paths)
+  }).pipe(pluck('response'));
 }
 
 export function duplicate(site: string, path: string): Observable<string> {
-  let parentPath: any = path;
-  if (path.endsWith('index.xml')) {
-    parentPath = withoutIndex(path);
-  }
-  return copy(site, path).pipe(
-    switchMap(() => paste(site, getParentPath(parentPath))),
-    // Duplicate only does shallow copy, so return the copied path
-    pluck('0')
-  );
+  // let parentPath: any = path;
+  // if (path.endsWith('index.xml')) {
+  //   parentPath = withoutIndex(path);
+  // }
+  // return copy(site, path).pipe(
+  //   switchMap(() => paste(site, getParentPath(parentPath))),
+  //   // Duplicate only does shallow copy, so return the copied path
+  //   pluck('0')
+  // );
+  return null;
 }
 
 export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
@@ -1063,8 +1051,6 @@ const content = {
   getDetailedItem,
   getContentDOM,
   getChildrenByPath,
-  copy,
-  cut,
   paste,
   getContentInstanceLookup,
   updateField,

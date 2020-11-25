@@ -18,8 +18,14 @@ import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import { popToolsPanelPage, pushToolsPanelPage, setPreviewEditMode } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { setStoredEditModeChoice } from '../../utils/state';
+import {
+  removeStoredPreviewToolsPanelPage,
+  setStoredClipboard,
+  setStoredEditModeChoice,
+  setStoredPreviewToolsPanelPage
+} from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
+import { setClipBoard } from '../actions/content';
 
 export default [
   (action$, state$) =>
@@ -28,10 +34,7 @@ export default [
       withLatestFrom(state$),
       tap(([{ type, payload }, state]) => {
         if (payload) {
-          window.localStorage.setItem(
-            `craftercms.previewToolsPanelPage.${state.sites.active}`,
-            JSON.stringify(payload)
-          );
+          setStoredPreviewToolsPanelPage(state.sites.active, payload);
         }
       }),
       ignoreElements()
@@ -42,12 +45,12 @@ export default [
       withLatestFrom(state$),
       tap(([, state]) => {
         if (state.preview.toolsPanelPageStack.length) {
-          window.localStorage.setItem(
-            `craftercms.previewToolsPanelPage.${state.sites.active}`,
-            JSON.stringify(state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1])
+          setStoredPreviewToolsPanelPage(
+            state.sites.active,
+            state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1]
           );
         } else {
-          window.localStorage.removeItem(`craftercms.previewToolsPanelPage.${state.sites.active}`);
+          removeStoredPreviewToolsPanelPage(state.sites.active);
         }
       }),
       ignoreElements()
@@ -60,6 +63,16 @@ export default [
       tap(([action, state]) => {
         setStoredEditModeChoice(state.sites.active, action.payload.editMode);
         getHostToGuestBus().next(action);
+      }),
+      ignoreElements()
+    ),
+  // region Clipboard
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(setClipBoard.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        setStoredClipboard(state.sites.active, payload);
       }),
       ignoreElements()
     )

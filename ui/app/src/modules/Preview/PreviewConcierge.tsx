@@ -86,9 +86,17 @@ import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
-import { getStoredEditModeChoice, getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
-import { completeDetailedItem } from '../../state/actions/content';
+import {
+  getStoredClipboard,
+  getStoredEditModeChoice,
+  getStoredPreviewChoice,
+  getStoredPreviewToolsPanelPage,
+  removeStoredClipboard,
+  setStoredPreviewChoice
+} from '../../utils/state';
+import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
+import moment from 'moment-timezone';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -165,7 +173,7 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, write, editMode]);
   // endregion
 
-  // Guest detection, document domain restoring, editMode preference retrieval
+  // Guest detection, document domain restoring, editMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
     const localEditMode = getStoredEditModeChoice(site) === 'true';
@@ -173,10 +181,26 @@ export function PreviewConcierge(props: any) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
+    const localClipboard = getStoredClipboard(site);
+    if (localClipboard) {
+      let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
+      if (hours >= 24) {
+        removeStoredClipboard(site);
+      } else {
+        dispatch(
+          restoreClipBoard({
+            type: localClipboard.type,
+            paths: localClipboard.paths,
+            sourcePath: localClipboard.sourcePath
+          })
+        );
+      }
+    }
+
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
-    const storedPage = window.localStorage.getItem(`craftercms.previewToolsPanelPage.${site}`);
+    const storedPage = getStoredPreviewToolsPanelPage(site);
     if (storedPage) {
-      dispatch(pushToolsPanelPage(JSON.parse(storedPage)));
+      dispatch(pushToolsPanelPage(storedPage));
     }
     return () => {
       sub.unsubscribe();

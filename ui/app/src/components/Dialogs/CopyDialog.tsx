@@ -19,21 +19,18 @@ import React, { PropsWithChildren, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
-import { CopyItem, LegacyItem } from '../../models/Item';
+import { LegacyItem } from '../../models/Item';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
 import StandardAction from '../../models/StandardAction';
-import { useActiveSiteId, useUnmount } from '../../utils/hooks';
+import { useUnmount } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import { copy } from '../../services/content';
-import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const messages = defineMessages({
   copy: {
@@ -184,8 +181,6 @@ export default function CopyDialog(props: CopyDialogProps) {
 function CopyDialogUI(props: CopyDialogProps) {
   const { onOk, onClose, title, subtitle, item, onClosed } = props;
   const { formatMessage } = useIntl();
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
   let parents: LookupTable<string> = {};
   let children: LookupTable<Array<string>> = {};
   let expanded: string[] = [];
@@ -247,24 +242,6 @@ function CopyDialogUI(props: CopyDialogProps) {
     return ids;
   }
 
-  function getChildrenTree(id: string, children: LookupTable<Array<string>>, tree: any = {}) {
-    if (children[id]) {
-      tree.children = [];
-      tree.uri = id;
-      children[id].forEach((childId) => {
-        if (selected.includes(childId)) {
-          let item = getChildrenTree(childId, children);
-          if (item.children.length) {
-            tree.children.push(item);
-          } else {
-            tree.children.push({ uri: item.uri });
-          }
-        }
-      });
-    }
-    return tree;
-  }
-
   const toggleSelectAll = () => {
     if (expanded.length === selected.length) {
       setSelected([]);
@@ -274,22 +251,7 @@ function CopyDialogUI(props: CopyDialogProps) {
   };
 
   const onCopy = () => {
-    let copyItem: CopyItem = {};
-    copyItem = getChildrenTree(item.uri, children);
-    copy(site, copyItem).subscribe(
-      (response) => {
-        if (response.success) {
-          onOk?.({ paths: selected });
-        }
-      },
-      (response) => {
-        dispatch(
-          showErrorDialog({
-            error: response
-          })
-        );
-      }
-    );
+    onOk?.({ paths: selected });
   };
 
   useUnmount(onClosed);
