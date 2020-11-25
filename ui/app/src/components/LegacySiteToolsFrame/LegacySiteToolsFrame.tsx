@@ -15,11 +15,12 @@
  */
 
 import React from 'react';
-import LegacyIFrame, { LegacyIFrameBaseProps } from '../LegacyIFrame/LegacyIFrame';
+import LegacyIFrame, { LegacyIFrameProps } from '../LegacyIFrame/LegacyIFrame';
 
-interface LegacySiteToolsFrameProps extends LegacyIFrameBaseProps {
+interface LegacySiteToolsFrameProps {
   tool?: string;
   workAreaOnly?: boolean;
+  iframeProps?: LegacyIFrameProps['iframeProps'];
 }
 
 function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {

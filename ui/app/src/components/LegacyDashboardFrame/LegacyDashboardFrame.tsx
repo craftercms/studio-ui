@@ -15,10 +15,11 @@
  */
 
 import React from 'react';
-import LegacyIFrame, { LegacyIFrameBaseProps } from '../LegacyIFrame/LegacyIFrame';
+import LegacyIFrame, { LegacyIFrameProps } from '../LegacyIFrame/LegacyIFrame';
 
-interface LegacyDashboardFrameProps extends LegacyIFrameBaseProps {
+interface LegacyDashboardFrameProps {
   dashboardOnly?: boolean;
+  iframeProps?: LegacyIFrameProps['iframeProps'];
 }
 
 function LegacyDashboardFrame(props: LegacyDashboardFrameProps) {

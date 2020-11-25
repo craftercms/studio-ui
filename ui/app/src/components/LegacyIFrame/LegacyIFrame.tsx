@@ -18,13 +18,10 @@ import React, { IframeHTMLAttributes } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useEnv } from '../../utils/hooks';
 
-export interface LegacyIFrameBaseProps {
-  iframeProps?: IframeHTMLAttributes<any>;
-}
-
-interface LegacyIFrameProps extends LegacyIFrameBaseProps {
+export interface LegacyIFrameProps {
   path: string;
   title?: string;
+  iframeProps?: IframeHTMLAttributes<any>;
 }
 
 const useStyles = makeStyles(() =>
