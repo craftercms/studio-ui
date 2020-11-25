@@ -19,7 +19,7 @@ import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { useDispatch } from 'react-redux';
 import { popToolsPanelPage } from '../../state/actions/preview';
-import { useIntl } from 'react-intl';
+import { usePossibleTranslation } from '../../utils/hooks';
 
 export interface ToolsPanelPageDescriptor {
   widgets: WidgetDescriptor[];
@@ -30,14 +30,13 @@ export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
 
 export default function ToolsPanelPage(props: ToolsPanelPageProps) {
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
 
   const pop = () => {
     dispatch(popToolsPanelPage());
   };
 
   return (
-    <ToolPanel title={formatMessage({ id: props.title, defaultMessage: props.title })} onBack={pop}>
+    <ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>
       {renderWidgets(props.widgets, [])}
     </ToolPanel>
   );

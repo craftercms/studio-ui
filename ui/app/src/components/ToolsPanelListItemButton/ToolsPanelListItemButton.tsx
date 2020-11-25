@@ -22,7 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronRounded from '@material-ui/icons/ChevronRightRounded';
 import React from 'react';
 import SystemIcon from '../SystemIcon';
-import { useIntl } from 'react-intl';
+import { usePossibleTranslation } from '../../utils/hooks';
 
 export interface ToolsPanelListItemButtonProps {
   title: string;
@@ -44,14 +44,13 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
     secondaryActionIcon = <ChevronRounded />,
     onSecondaryActionClick
   } = props;
-  const { formatMessage } = useIntl();
   return (
     <ListItem button onClick={onClick} ContainerComponent="div">
       <ListItemIcon>
         <SystemIcon icon={icon} />
       </ListItemIcon>
       <ListItemText
-        primary={formatMessage({ id: title, defaultMessage: title })}
+        primary={usePossibleTranslation(title)}
         secondary={subtitle}
         primaryTypographyProps={{ noWrap: true }}
         secondaryTypographyProps={{ noWrap: true }}

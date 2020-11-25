@@ -31,12 +31,16 @@ const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
     root: {
       margin: 0,
+      display: 'flex',
+      flexWrap: 'wrap',
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
       padding: theme.spacing(1),
-      background: theme.palette.background.paper
+      background: theme.palette.background.paper,
+      ...theme.mixins.toolbar
     },
     titleWrapper: {
       display: 'flex',
+      width: '100%',
       alignItems: 'center'
     },
     title: {
@@ -66,6 +70,7 @@ const dialogTitleStyles = makeStyles((theme) =>
 
 export interface DialogHeaderAction extends IconButtonProps {
   icon: ActionIcon | ElementType;
+  tooltip?: string;
 }
 
 export interface DialogHeaderStateAction {

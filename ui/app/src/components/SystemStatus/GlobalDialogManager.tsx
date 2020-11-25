@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -406,11 +406,15 @@ function GlobalDialogManager() {
 // @formatter:off
 function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialogs']; dispatch: Dispatch }) {
   const classes = useStyles({});
-  const [el] = useState<HTMLElement>(() => {
-    const elem = document.createElement('div');
-    elem.className = classes.wrapper;
-    return elem;
-  });
+
+  const el = useMemo(() => {
+    return document.createElement('div');
+  }, []);
+
+  useEffect(() => {
+    el.className = classes.wrapper;
+  }, [el, classes.wrapper]);
+
   const inventory = useMemo(() => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized), [
     state.minimizedDialogs
   ]);
@@ -422,6 +426,7 @@ function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialo
       };
     }
   }, [el, inventory]);
+
   return inventory.length
     ? ReactDOM.createPortal(
         inventory.map(({ id, title, subtitle, status }) => (
