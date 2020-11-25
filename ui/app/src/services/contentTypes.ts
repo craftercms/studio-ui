@@ -26,7 +26,7 @@ import {
   LegacyFormDefinitionSection
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { camelize, isBlank } from '../utils/string';
+import { camelize, capitalize, isBlank } from '../utils/string';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { errorSelectorApi1, get } from '../utils/ajax';
 import { catchError, map, pluck, switchMap } from 'rxjs/operators';
@@ -40,7 +40,19 @@ const typeMap = {
   'image-picker': 'image'
 };
 
-const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly'];
+const systemValidationsNames = [
+  'itemManager',
+  'minSize',
+  'maxSize',
+  'maxlength',
+  'readonly',
+  'width',
+  'height',
+  'minWidth',
+  'minHeight',
+  'maxWidth',
+  'maxHeight'
+];
 
 const systemValidationsKeysMap = {
   minSize: 'minCount',
@@ -48,7 +60,13 @@ const systemValidationsKeysMap = {
   maxlength: 'maxLength',
   contentTypes: 'allowedContentTypes',
   tags: 'allowedContentTypeTags',
-  readonly: 'readOnly'
+  readonly: 'readOnly',
+  width: 'width',
+  height: 'height',
+  minWidth: 'minWidth',
+  minHeight: 'minHeight',
+  maxWidth: 'maxWidth',
+  maxHeight: 'maxHeight'
 };
 
 function bestGuessParse(value: any) {
@@ -71,7 +89,29 @@ function getFieldValidations(
 ): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
     (table, prop) => {
-      table[prop.name] = prop;
+      if (prop.name === 'width' || prop.name === 'height') {
+        const parsedValidation = JSON.parse(prop.value);
+        if (parsedValidation.exact) {
+          table[prop.name] = {
+            name: prop.name,
+            type: prop.type,
+            value: parsedValidation.exact
+          };
+        } else {
+          table[`min${capitalize(prop.name)}`] = {
+            name: prop.name,
+            type: prop.type,
+            value: parsedValidation.min
+          };
+          table[`max${capitalize(prop.name)}`] = {
+            name: prop.name,
+            type: prop.type,
+            value: parsedValidation.max
+          };
+        }
+      } else {
+        table[prop.name] = prop;
+      }
       return table;
     },
     {}
@@ -177,36 +217,41 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               }
             });
 
-          if (legacyField.type === 'repeat') {
-            field.fields = {};
-            asArray(legacyField.fields.field).forEach((_legacyField) => {
-              const _fieldId = camelize(_legacyField.id);
-              field.fields[_fieldId] = {
-                id: _fieldId,
-                name: _legacyField.title,
-                type: typeMap[_legacyField.type] || _legacyField.type,
-                sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                validations: null,
-                defaultValue: '',
-                required: false
+          switch (legacyField.type) {
+            case 'repeat':
+              field.fields = {};
+              asArray(legacyField.fields.field).forEach((_legacyField) => {
+                const _fieldId = camelize(_legacyField.id);
+                field.fields[_fieldId] = {
+                  id: _fieldId,
+                  name: _legacyField.title,
+                  type: typeMap[_legacyField.type] || _legacyField.type,
+                  sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+                  validations: null,
+                  defaultValue: '',
+                  required: false
+                };
+                if (field.fields[_fieldId].type === 'node-selector') {
+                  field.fields[_fieldId].validations = getFieldValidations(
+                    _legacyField.properties.property,
+                    receptaclesLookup
+                  );
+                }
+              });
+              break;
+            case 'node-selector':
+              field.validations = {
+                ...field.validations,
+                ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
               };
-              if (field.fields[_fieldId].type === 'node-selector') {
-                field.fields[_fieldId].validations = getFieldValidations(
-                  _legacyField.properties.property,
-                  receptaclesLookup
-                );
-              }
-            });
-          } else if (legacyField.type === 'node-selector') {
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
-            };
-          } else if (legacyField.type === 'input') {
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property)
-            };
+              break;
+            case 'input':
+            case 'image-picker':
+              field.validations = {
+                ...field.validations,
+                ...getFieldValidations(legacyField.properties.property)
+              };
+              break;
           }
 
           fields[fieldId] = field;

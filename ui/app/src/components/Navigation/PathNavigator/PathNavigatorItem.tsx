@@ -32,6 +32,7 @@ import Page from '../../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import LevelDescriptorIcon from '../../Icons/LevelDescriptor';
 
 interface NavItemProps {
   item: DetailedItem;
@@ -105,6 +106,8 @@ export default function PathNavigatorItem(props: NavItemProps) {
           }}
           value="primary"
         />
+      ) : isLevelDescriptor ? (
+        <LevelDescriptorIcon className={classes.levelDescriptorIcon} />
       ) : (
         <RenderIcon classes={{ iconClass: classes.typeIcon }} item={item} />
       )}

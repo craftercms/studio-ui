@@ -16,6 +16,7 @@
 
 import { LegacyItem } from '../models/Item';
 import { WidgetDescriptor } from '../components/Widget';
+import uuid from 'uuid/v4';
 
 export function getStateMapFromLegacyItem(item: LegacyItem) {
   return {
@@ -42,12 +43,22 @@ export function setStoredEditModeChoice(site: string, value: string) {
 }
 
 export function createToolsPanelPage(title: string, widgets: WidgetDescriptor[]): WidgetDescriptor {
-  return {
+  return createWidgetDescriptor({
     id: 'craftercms.components.ToolsPanelPage',
     configuration: {
       title,
       widgets
     }
+  });
+}
+
+export function createWidgetDescriptor(widget: WidgetDescriptor): WidgetDescriptor {
+  return {
+    ...widget,
+    // When rendering widgets dynamically and changing pages on the tools panel, if there are duplicate react key
+    // props across pages, react may no swap the components correctly, incurring in unexpected behaviours.
+    // We need a unique key for each widget.
+    uiKey: uuid()
   };
 }
 

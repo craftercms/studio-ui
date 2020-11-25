@@ -20,13 +20,15 @@ import Tooltip from '@material-ui/core/Tooltip';
 import HistoryIcon from '@material-ui/icons/HistoryRounded';
 import BackIcon from '@material-ui/icons/ArrowBackIosRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';
+import MinimizeIcon from '@material-ui/icons/RemoveRounded';
 
-export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon';
+export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon' | 'MinimizeIcon';
 
 const ActionsIconMap: { [key in ActionIcon]: ElementType } = {
   CloseIcon: CloseIcon,
   HistoryIcon: HistoryIcon,
-  BackIcon: BackIcon
+  BackIcon: BackIcon,
+  MinimizeIcon: MinimizeIcon
 };
 
 interface ActionProps extends IconButtonProps {

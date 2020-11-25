@@ -390,7 +390,7 @@ const content_tree_switch_field: GuestReducer = (state, action) => {
 const clear_content_tree_field_selected: GuestReducer = (state) => {
   return {
     ...state,
-    status: state.status === EditingStatus.OFF ? EditingStatus.OFF : EditingStatus.LISTENING,
+    status: EditingStatus.LISTENING,
     draggable: {},
     highlighted: {},
     fieldSwitcher: null
@@ -422,17 +422,6 @@ const computed_dragend: GuestReducer = (state) => {
     dragContext: null,
     highlighted: {}
   };
-  // Previously
-  // 1. EditingStatus.OFF
-  // 2. EditingStatus.LISTENING after a timeout
-  // Chrome didn't trigger the dragend event
-  // without the set timeout.
-  // setTimeout(() => {
-  //   return {
-  //     ...state
-  //       status: EditingStatus.LISTENING
-  //     };
-  // });
 };
 // endregion
 
@@ -664,7 +653,7 @@ const drop_zone_leave: GuestReducer = (state, action) => {
 // region set_edit_mode
 const set_edit_mode = (state, action) => ({
   ...state,
-  status: action.payload.editMode ? EditingStatus.LISTENING : EditingStatus.OFF
+  editMode: action.payload.editMode
 });
 // endregion
 
@@ -674,7 +663,8 @@ const initialState: GuestState = {
   editable: {},
   highlighted: {},
   ICE_GUEST_INIT: false,
-  status: EditingStatus.OFF,
+  status: EditingStatus.LISTENING,
+  editMode: false,
   uploading: {},
   models: {},
   contentTypes: {},
@@ -732,7 +722,7 @@ const reducerFunctions: {
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
-    status: action.payload.editMode ? EditingStatus.LISTENING : EditingStatus.OFF
+    editMode: action.payload.editMode
   })
 };
 

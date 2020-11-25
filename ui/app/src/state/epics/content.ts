@@ -15,7 +15,7 @@
  */
 
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   completeDetailedItem,
   cutItem,
@@ -67,22 +67,20 @@ const content = [
   (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
+      filter(({ payload }) => !payload.__CRAFTERCMS_GUEST_LANDING__),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        if (state.content.items.permissionsByPath?.[payload.path]) {
-          return NEVER;
-        } else {
-          return getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
-            map((permissions: string[]) =>
-              fetchUserPermissionsComplete({
-                path: payload.path,
-                permissions
-              })
-            ),
-            catchAjaxError(fetchUserPermissionsFailed)
-          );
-        }
-      })
+      filter(([{ payload }, state]) => !state.content.items.permissionsByPath?.[payload.path]),
+      switchMap(([{ payload }, state]) =>
+        getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
+          map((permissions: string[]) =>
+            fetchUserPermissionsComplete({
+              path: payload.path,
+              permissions
+            })
+          ),
+          catchAjaxError(fetchUserPermissionsFailed)
+        )
+      )
     ),
   // endregion
   // region Items fetchDetailedItem

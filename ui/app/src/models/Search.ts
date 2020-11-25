@@ -23,6 +23,7 @@ export interface ElasticParams extends PaginationOptions {
   keywords: string;
   sortBy?: string;
   sortOrder?: string;
+  orOperator?: boolean;
   filters: any;
 }
 

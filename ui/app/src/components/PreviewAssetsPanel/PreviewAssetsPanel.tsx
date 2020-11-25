@@ -27,7 +27,12 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../state/actions/preview';
+import {
+  ASSET_DRAG_ENDED,
+  ASSET_DRAG_STARTED,
+  fetchAssetsPanelItems,
+  setPreviewEditMode
+} from '../../state/actions/preview';
 import MediaCard from '../MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from '../SystemStatus/EmptyState';
@@ -149,6 +154,7 @@ export default function PreviewAssetsPanel() {
   const site = useActiveSiteId();
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
+  const editMode = useSelection((state) => state.preview.editMode);
   const assets = useSelection((state) => state.preview.assets);
 
   useEffect(() => {
@@ -174,11 +180,15 @@ export default function PreviewAssetsPanel() {
   const { formatMessage } = useIntl();
   const elementRef = useRef();
 
-  const onDragStart = (mediaItem: MediaItem) =>
+  const onDragStart = (mediaItem: MediaItem) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
     hostToGuest$.next({
       type: ASSET_DRAG_STARTED,
       payload: mediaItem
     });
+  };
 
   const onDragEnd = () =>
     hostToGuest$.next({
