@@ -349,6 +349,10 @@ CStudioAuthoring.Module.requireModule(
             contextmenu: !this.enableSpellCheck,
             valid_children: validChildren,
 
+            paste_data_images: true,
+            paste_postprocess: function(plugin, args) {
+              // args.preventDefault();
+            },
             menu: {
               tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
             },
@@ -358,6 +362,15 @@ CStudioAuthoring.Module.requireModule(
             file_picker_callback: function(cb, value, meta) {
               // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
               _thisControl.createControl(cb, meta);
+            },
+
+            images_upload_handler: function(blobInfo, success, failure) {
+              var datasourceMap = _thisControl.form.datasourceMap,
+                datasourceDef = _thisControl.form.definition.datasources;
+
+              const ds = datasourceMap['uploadImages']; // TODO: just for testing, need to create a dialog to choose from dss
+
+              _thisControl.addManagedImage(ds, function(url, data) {}, blobInfo.blob());
             },
 
             templates: templates,
@@ -573,25 +586,28 @@ CStudioAuthoring.Module.requireModule(
           }
         },
 
-        addManagedImage(datasource, cb) {
+        addManagedImage(datasource, cb, file) {
           if (datasource && datasource.insertImageAction) {
-            datasource.insertImageAction({
-              success: function(imageData) {
-                var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
-                cb(cleanUrl, { title: imageData.fileName });
+            datasource.insertImageAction(
+              {
+                success: function(imageData) {
+                  var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
+                  cb(cleanUrl, { title: imageData.fileName });
+                },
+                failure: function(message) {
+                  CStudioAuthoring.Operations.showSimpleDialog(
+                    'message-dialog',
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, 'notification'),
+                    message,
+                    null,
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    'studioDialog'
+                  );
+                }
               },
-              failure: function(message) {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'message-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(langBundle, 'notification'),
-                  message,
-                  null,
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-              }
-            });
+              file
+            );
           }
         },
 
