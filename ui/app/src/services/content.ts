@@ -943,27 +943,20 @@ export function getChildrenByPath(
   );
 }
 
-export function paste(site: string, targetPath: string, clipboard: Clipboard): Observable<string[]> {
-  console.log(clipboard);
+export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<string[]> {
   return postJSON('/studio/api/2/content/paste', {
-    siteId: site,
+    siteId,
     operation: clipboard.type,
     targetPath,
     item: getPasteItemFromPath(clipboard.sourcePath, clipboard.paths)
-  }).pipe(pluck('response'));
+  }).pipe(pluck('response', 'items'));
 }
 
-export function duplicate(site: string, path: string): Observable<string> {
-  // let parentPath: any = path;
-  // if (path.endsWith('index.xml')) {
-  //   parentPath = withoutIndex(path);
-  // }
-  // return copy(site, path).pipe(
-  //   switchMap(() => paste(site, getParentPath(parentPath))),
-  //   // Duplicate only does shallow copy, so return the copied path
-  //   pluck('0')
-  // );
-  return null;
+export function duplicate(siteId: string, path: string): Observable<string> {
+  return postJSON('/studio/api/2/content/duplicate', {
+    siteId,
+    path
+  }).pipe(pluck('response', 'item'));
 }
 
 export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
