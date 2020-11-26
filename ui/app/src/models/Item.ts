@@ -99,7 +99,7 @@ export interface LegacyItem {
   [prop: string]: any;
 }
 
-export interface CopyItem {
-  uri?: string;
-  children?: CopyItem[];
+export interface PasteItem {
+  path?: string;
+  children?: PasteItem[];
 }

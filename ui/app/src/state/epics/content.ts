@@ -18,7 +18,6 @@ import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   completeDetailedItem,
-  cutItem,
   duplicateAsset,
   duplicateItem,
   fetchDetailedItem,
@@ -35,7 +34,7 @@ import {
   unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { cut, duplicate, fetchQuickCreateList, getDetailedItem, paste } from '../../services/content';
+import { duplicate, fetchQuickCreateList, getDetailedItem, paste } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -43,13 +42,7 @@ import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
-import {
-  emitSystemEvent,
-  itemDuplicated,
-  itemsPasted,
-  showCutItemSuccessNotification,
-  showPasteItemSuccessNotification
-} from '../actions/system';
+import { emitSystemEvent, itemDuplicated, itemsPasted, showPasteItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
 
 const content = [
@@ -122,7 +115,7 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          map((path) =>
+          map(({ item: path }) =>
             batchActions([
               emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
               showEditDialog({
@@ -142,7 +135,7 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          map((path) => {
+          map(({ item: path }) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
               const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
@@ -161,34 +154,16 @@ const content = [
       })
     ),
   // endregion
-  // region Item Cut
-  (action$, state$: StateObservable<GlobalState>) =>
-    action$.pipe(
-      ofType(cutItem.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return cut(state.sites.active, payload.path).pipe(
-          map(({ success }) => {
-            if (success) {
-              return showCutItemSuccessNotification();
-            } else {
-              return NEVER;
-            }
-          })
-        );
-      })
-    ),
-  // endregion
   // region Item Pasted
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        return paste(state.sites.active, payload.path).pipe(
-          map((resultingPaths) => {
+        return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+          map(({ items }) => {
             return batchActions([
-              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths })),
+              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths: items })),
               unSetClipBoard(),
               showPasteItemSuccessNotification()
             ]);
