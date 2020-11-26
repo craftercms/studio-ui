@@ -37,6 +37,7 @@ export interface ValidationResult {
 }
 
 export interface ICEProps {
+  path?: string;
   modelId: string;
   fieldId: string;
   index: string | number;

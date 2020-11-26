@@ -145,3 +145,13 @@ export function createChildModelIdList(model: ContentInstance): string[] {
   });
   return children;
 }
+
+export function createPathIdMap(models: LookupTable<ContentInstance>): LookupTable<string> {
+  const map = {};
+  Object.entries(models).forEach(([id, model]) => {
+    if (model.craftercms.path) {
+      map[model.craftercms.path] = id;
+    }
+  });
+  return map;
+}

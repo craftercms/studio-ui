@@ -53,7 +53,7 @@ const translations = defineMessages({
   },
   listInPageInstances: {
     id: 'previewComponentsPanel.listInPageInstances',
-    defaultMessage: 'List in-page instances'
+    defaultMessage: 'Instances on this page'
   }
 });
 

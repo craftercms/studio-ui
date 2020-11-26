@@ -41,6 +41,14 @@ import PreviewInPageInstancesPanel from '../../components/PreviewInPageInstances
 import PreviewReceptaclesPanel from '../../components/PreviewReceptaclesPanel';
 import LegacySiteToolsFrame from '../../components/LegacySiteToolsFrame';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import LegacyDashboardFrame from '../../components/LegacyDashboardFrame';
+import SearchIcon from '@material-ui/icons/SearchRounded';
+import Asset from '@material-ui/icons/ImageOutlined';
+import Component from '@material-ui/icons/ExtensionRounded';
+import Audiences from '@material-ui/icons/EmojiPeopleRounded';
+import PageExplorer from '../../components/Icons/PageExplorerRounded';
+import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
+import Simulator from '@material-ui/icons/DevicesRounded';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -136,6 +144,13 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
 
 // TODO: Move this to a better place.
 Object.entries({
+  '@material-ui/icons/SearchRounded': SearchIcon,
+  '@material-ui/icons/ExtensionRounded': Component,
+  '@material-ui/icons/ImageOutlined': Asset,
+  '@material-ui/icons/EmojiPeopleRounded': Audiences,
+  '@material-ui/icons/DevicesRounded': Simulator,
+  'craftercms.icons.PageExplorer': PageExplorer,
+  'craftercms.icons.SiteExplorer': SiteExplorer,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,
@@ -149,7 +164,8 @@ Object.entries({
   'craftercms.components.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
   'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
   'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
-  'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame
+  'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
+  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame
 }).forEach(([id, component]) => {
   components.set(id, component);
 });
