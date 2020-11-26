@@ -99,6 +99,7 @@ function Guest(props: GuestProps) {
   const context = useMemo(
     () => ({
       hasHost,
+      editMode,
       draggable,
       onEvent(event: Event, dispatcherElementRecordId: number) {
         if (hasHost && editMode && refs.current.contentReady) {
@@ -287,8 +288,6 @@ function Guest(props: GuestProps) {
     const location = createLocationArgument();
     const site = Cookies.get('crafterSite');
 
-    post(GUEST_CHECK_IN, { location, path, site, documentDomain });
-
     fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       .pipe(
         filter(({ payload }) => payload.path === path),
@@ -299,6 +298,8 @@ function Guest(props: GuestProps) {
         iceId = iceRegistry.register({ modelId: model.craftercms.id });
         refs.current.contentReady = true;
       });
+
+    post(GUEST_CHECK_IN, { location, path, site, documentDomain });
 
     return () => {
       post(GUEST_CHECK_OUT);

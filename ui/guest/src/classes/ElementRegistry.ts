@@ -15,7 +15,7 @@
  */
 
 import iceRegistry, { getById } from './ICERegistry';
-import { fetchByPathWithDuplicateCheck, getCachedModels, hasCachedModel, model$ } from './ContentController';
+import { byPathFetchIfNotLoaded, getCachedModels, hasCachedModel, model$ } from './ContentController';
 import { take } from 'rxjs/operators';
 import ContentType from '../utils/contentType';
 import Model from '../utils/model';
@@ -116,7 +116,7 @@ export function register(payload: ElementRecordRegistration): number {
   if (hasCachedModel(modelId)) {
     completeDeferredRegistration(id);
   } else {
-    fetchByPathWithDuplicateCheck(path).subscribe();
+    byPathFetchIfNotLoaded(path).subscribe();
     model$(modelId)
       .pipe(take(1))
       .subscribe(() => {

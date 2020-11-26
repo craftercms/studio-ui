@@ -20,7 +20,7 @@ import { useGuestContext } from './GuestContext';
 import { deregister, register } from '../classes/ElementRegistry';
 import { nnou, nou, pluckProps } from '../utils/object';
 import { ICEProps } from '../models/InContextEditing';
-import { models$, createModelSubscription } from '../classes/ContentController';
+import { models$, byPathFetchIfNotLoaded, model$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { denormalizeModel } from '../utils/content';
 import Model from '../utils/model';
@@ -176,7 +176,9 @@ export function useHotReloadModel(props: UseModelProps): any {
   const [model, setModel] = useState(props.model);
   useEffect(() => {
     if (inAuthoring) {
-      const s = createModelSubscription(props.model.craftercms.id, props.model.craftercms.path)
+      // Insure the model gets loaded.
+      byPathFetchIfNotLoaded(props.model.craftercms.path).subscribe();
+      const s = model$(props.model.craftercms.id)
         .pipe(
           distinctUntilChanged((prev, next) => {
             if (nou(props.fieldId)) {

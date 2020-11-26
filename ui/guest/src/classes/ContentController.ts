@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, NEVER, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import Model from '../utils/model';
 import Cookies from 'js-cookie';
@@ -69,7 +69,9 @@ const modelsRequested = {};
 
 const pathsRequested = {};
 
-const modelIdByPath = {};
+const _paths$ = new BehaviorSubject<LookupTable<string>>({
+  /* 'path': 'modelId' */
+});
 
 const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
   /* 'modelId': { ...modelData } */
@@ -88,15 +90,6 @@ const contentTypesObs$ = _contentTypes$.asObservable().pipe(filter((objects) => 
 // endregion
 
 // region Models
-
-export function createModelSubscription(modelId: string, path: string): Observable<ContentInstance> {
-  if (!hasCachedModel(modelId) && path) {
-    fetchByPath(path)
-      .pipe(pluck('modelLookup'))
-      .subscribe(modelResponseReceived);
-  }
-  return modelsObs$.pipe(pluck(modelId), filter(Boolean)) as Observable<ContentInstance>;
-}
 
 export function model$(modelId: string): Observable<ContentInstance> {
   return modelsObs$.pipe(
@@ -180,39 +173,31 @@ export function fetchById(id: string): Observable<LookupTable<ContentInstance>> 
   );
 }
 
-const fetchingByPath$ = new BehaviorSubject<boolean>(false);
-
-export function fetchByPathWithDuplicateCheck(path: string): Observable<ContentInstance> {
+export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance> {
   if (pathsRequested[path]) {
-    return model$(modelIdByPath[path]).pipe(take(1));
+    return _paths$.pipe(
+      filter((paths) => Boolean(paths[path])),
+      pluck(path),
+      switchMap((modelId) => model$(modelId).pipe(take(1)))
+    );
   } else {
     pathsRequested[path] = true;
-    return fetchingByPath$.pipe(
-      filter(not),
-      switchMap(() =>
-        modelIdByPath[path] ? model$(modelIdByPath[path]).pipe(take(1)) : fetchByPath(path).pipe(pluck('model'))
-      )
-    );
+    return fetchByPath(path).pipe(pluck('model'));
   }
 }
 
 export function fetchByPath(
   path: string
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
-  setTimeout(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } }));
-  return fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
-    pluck('payload'),
-    tap(({ modelLookup, childrenMap }) => {
-      const normalizedModels = normalizeModelsLookup(modelLookup);
-      Object.values(normalizedModels).forEach((model) => {
-        pathsRequested[model.craftercms.path] = true;
-        modelIdByPath[model.craftercms.path] = model.craftercms.id;
-      });
-      Object.assign(children, childrenMap);
-      _models$.next({ ..._models$.value, ...normalizedModels });
-    }),
-    filter((payload) => payload.path === path),
-    take(1)
+  return of('nothing').pipe(
+    tap(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } })),
+    switchMap(() =>
+      fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
+        pluck('payload'),
+        filter((payload) => payload.path === path),
+        take(1)
+      )
+    )
   );
 }
 
@@ -653,6 +638,20 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 fromTopic(CONTENT_TYPES_RESPONSE)
   .pipe(pluck('payload'))
   .subscribe(contentTypesResponseReceived);
+
+fromTopic('FETCH_GUEST_MODEL_COMPLETE')
+  .pipe(pluck('payload'))
+  .subscribe(({ modelLookup, childrenMap }) => {
+    const normalizedModels = normalizeModelsLookup(modelLookup);
+    const modelIdByPath = {};
+    Object.values(normalizedModels).forEach((model) => {
+      pathsRequested[model.craftercms.path] = true;
+      modelIdByPath[model.craftercms.path] = model.craftercms.id;
+    });
+    Object.assign(children, childrenMap);
+    _models$.next({ ..._models$.value, ...normalizedModels });
+    _paths$.next({ ..._paths$.value, ...modelIdByPath });
+  });
 
 const ContentController = {
   children,
