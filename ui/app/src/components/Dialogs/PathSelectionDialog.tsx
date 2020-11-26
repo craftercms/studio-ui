@@ -23,7 +23,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
 import FolderBrowserTreeView, { legacyItemsToTreeNodes, TreeNode } from '../Navigation/FolderBrowserTreeView';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CreateFolderDialog from './CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
@@ -113,9 +113,9 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getIndividualPaths(currentPath)
-          .filter((path) => !nodesLookup[path] || !nodesLookup[path].fetched)
-          .reverse();
+        const allPaths = getIndividualPaths(currentPath).filter(
+          (path) => !nodesLookup[path] || !nodesLookup[path].fetched
+        );
         const requests: Observable<AjaxResponse>[] = [];
         allPaths.forEach((nextPath) => {
           requests.push(

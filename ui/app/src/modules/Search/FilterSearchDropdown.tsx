@@ -59,12 +59,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   header: {
     width: '100%',
     padding: '10px 10px 10px 22px',
-    borderTop: `1px solid ${palette.gray.light3}`,
+    borderTop: `1px solid ${theme.palette.divider}`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     '&.open': {
-      borderBottom: `1px solid ${palette.gray.light3}`
+      borderBottom: `1px solid ${theme.palette.divider}`
+    },
+    '&.first': {
+      borderTop: 0
     }
   },
   body: {
@@ -134,7 +137,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pathSelectorWrapper: {
     display: 'flex',
-    background: palette.white,
+    // background: palette.white,
     padding: '10px 0px 10px 12px',
     border: `1px solid  ${palette.gray.light1}`,
     borderRadius: '5px',
@@ -828,9 +831,9 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         }}
       >
         <List classes={{ padding: classes.listPadding }}>
-          <div>
+          <>
             <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
-              <header className={clsx(classes.header, !!(expanded && expanded['path']) && 'open')}>
+              <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.path)}</strong>
                 </Typography>
@@ -847,8 +850,8 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 />
               </div>
             </Collapse>
-          </div>
-          <div>
+          </>
+          <>
             <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
               <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
                 <Typography variant="body1">
@@ -866,7 +869,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
               </div>
             </Collapse>
-          </div>
+          </>
           {renderFilters()}
         </List>
       </Popover>
