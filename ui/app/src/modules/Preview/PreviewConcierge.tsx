@@ -516,7 +516,7 @@ export function PreviewConcierge(props: any) {
         }
         case 'FETCH_GUEST_MODEL': {
           const path = payload.path;
-          if (path.startsWith('/')) {
+          if (path?.startsWith('/')) {
             getContentInstanceDescriptor(
               site,
               path,
