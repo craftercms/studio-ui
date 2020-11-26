@@ -115,7 +115,7 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          map((path) =>
+          map(({ item: path }) =>
             batchActions([
               emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
               showEditDialog({
@@ -135,7 +135,7 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
-          map((path) => {
+          map(({ item: path }) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
               const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
