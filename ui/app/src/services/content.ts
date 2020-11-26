@@ -943,20 +943,20 @@ export function getChildrenByPath(
   );
 }
 
-export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<string[]> {
+export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<any> {
   return postJSON('/studio/api/2/content/paste', {
     siteId,
     operation: clipboard.type,
     targetPath,
     item: getPasteItemFromPath(clipboard.sourcePath, clipboard.paths)
-  }).pipe(pluck('response', 'items'));
+  }).pipe(pluck('response'));
 }
 
-export function duplicate(siteId: string, path: string): Observable<string> {
+export function duplicate(siteId: string, path: string): Observable<any> {
   return postJSON('/studio/api/2/content/duplicate', {
     siteId,
     path
-  }).pipe(pluck('response', 'item'));
+  }).pipe(pluck('response'));
 }
 
 export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {

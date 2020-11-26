@@ -161,9 +161,9 @@ const content = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-          map((resultingPaths) => {
+          map(({ items }) => {
             return batchActions([
-              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths })),
+              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths: items })),
               unSetClipBoard(),
               showPasteItemSuccessNotification()
             ]);
