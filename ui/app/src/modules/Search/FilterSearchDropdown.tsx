@@ -137,7 +137,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pathSelectorWrapper: {
     display: 'flex',
-    // background: palette.white,
     padding: '10px 0px 10px 12px',
     border: `1px solid  ${palette.gray.light1}`,
     borderRadius: '5px',
@@ -831,27 +830,23 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         }}
       >
         <List classes={{ padding: classes.listPadding }}>
-          <>
-            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
-              <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
-                <Typography variant="body1">
-                  <strong>{formatMessage(messages.path)}</strong>
-                </Typography>
-                {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
-                <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
-              </header>
-            </ListItem>
-            <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
-              <div className={classes.body}>
-                <PathSelector
-                  value={queryParams['path']?.replace('.+', '')}
-                  handleFilterChange={handleFilterChange}
-                  disabled={mode === 'select'}
-                />
-              </div>
-            </Collapse>
-          </>
-          <>
+          <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
+            <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
+              <Typography variant="body1">
+                <strong>{formatMessage(messages.path)}</strong>
+              </Typography>
+              {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
+              <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
+            </header>
+          </ListItem>
+          <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
+            <div className={classes.body}>
+              <PathSelector
+                value={queryParams['path']?.replace('.+', '')}
+                handleFilterChange={handleFilterChange}
+                disabled={mode === 'select'}
+              />
+            </div>
             <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
               <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
                 <Typography variant="body1">
@@ -869,7 +864,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
               </div>
             </Collapse>
-          </>
+          </Collapse>
           {renderFilters()}
         </List>
       </Popover>
