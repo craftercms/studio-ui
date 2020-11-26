@@ -132,6 +132,7 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
 }
 
 export function getPasteItemFromPath(sourcePath: string, paths: string[]): PasteItem {
+  sourcePath = withoutIndex(sourcePath);
   let lookup = {
     [sourcePath]: {
       path: sourcePath,
