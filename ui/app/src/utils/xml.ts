@@ -68,9 +68,9 @@ export function getInnerHtml(element: Element, options = { trim: true }) {
   return nnou(content) ? (options.trim ? content.trim() : content) : null;
 }
 
-export function getInnerHtmlNumber(element: Element): number {
+export function getInnerHtmlNumber(element: Element, parser = parseInt): number {
   const content = getInnerHtml(element);
-  const num = parseInt(content);
+  const num = parser(content);
   if (content === null || content === '') {
     return null;
   } else if (isNaN(num)) {

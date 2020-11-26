@@ -19,7 +19,6 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
-  CHILDREN_MAP_UPDATE,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
   COMPONENT_INSTANCE_HTML_REQUEST,
@@ -32,10 +31,10 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  fetchPrimaryGuestModelComplete,
+  fetchGuestModelComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
-  GUEST_MODELS_RECEIVED,
-  guestModelsReceived,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
@@ -47,7 +46,6 @@ import {
   MOVE_ITEM_OPERATION,
   pushToolsPanelPage,
   selectForEdit,
-  setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
   setPreviewEditMode,
@@ -59,6 +57,7 @@ import {
 import {
   deleteItem,
   getComponentInstanceHTML,
+  getContentInstanceDescriptor,
   insertComponent,
   insertInstance,
   moveItem,
@@ -75,7 +74,7 @@ import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previe
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
-  useContentTypeList,
+  useContentTypes,
   useMount,
   usePermissions,
   usePreviewState,
@@ -89,6 +88,7 @@ import { getQueryVariable } from '../../utils/path';
 import { getStoredEditModeChoice, getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
+import { createChildModelLookup } from '../../utils/content';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -127,7 +127,7 @@ export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, currentUrl, computedUrl } = usePreviewState();
-  const contentTypes = useContentTypeList();
+  const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -188,9 +188,10 @@ export function PreviewConcierge(props: any) {
 
   // Post content types
   useEffect(() => {
-    contentTypes && contentTypes$.next(contentTypes);
+    contentTypes && contentTypes$.next(Object.values(contentTypes));
   }, [contentTypes, contentTypes$]);
 
+  // guestToHost$ subscription
   useEffect(() => {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
@@ -198,8 +199,8 @@ export function PreviewConcierge(props: any) {
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
-        // Legacy sites.
         case 'GUEST_SITE_LOAD':
+          // Legacy sites (guest v1) send this message.
           let previewNextCheckInNotification = previewNextCheckInNotificationRef.current;
           let compatibilityQueryArg = getQueryVariable(window.location.search, 'compatibility');
           let compatibilityForceStay = compatibilityQueryArg === 'stay';
@@ -238,10 +239,26 @@ export function PreviewConcierge(props: any) {
           if (payload.__CRAFTERCMS_GUEST_LANDING__) {
             nnou(site) && dispatch(changeCurrentUrl('/'));
           } else {
+            const path = payload.path;
             // If the content types have already been loaded, contentTypes$ subject will emit
             // immediately. If not, it will emit when the content type fetch payload does arrive.
             contentTypes$.pipe(take(1)).subscribe((payload) => {
               hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+            });
+            getContentInstanceDescriptor(
+              site,
+              path,
+              {
+                flatten: true
+              },
+              contentTypes
+            ).subscribe(({ model, modelLookup }) => {
+              const childrenMap = createChildModelLookup(modelLookup, contentTypes);
+              dispatch(fetchPrimaryGuestModelComplete({ model, modelLookup, childrenMap }));
+              hostToGuest$.next({
+                type: 'FETCH_GUEST_MODEL_COMPLETE',
+                payload: { path, model, modelLookup, childrenMap }
+              });
             });
           }
 
@@ -281,7 +298,7 @@ export function PreviewConcierge(props: any) {
             parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             targetIndex,
-            contentTypes.find((o) => o.id === instance.craftercms.contentTypeId),
+            contentTypes[instance.craftercms.contentTypeId],
             instance,
             parentModelId ? models[parentModelId].craftercms.path : null,
             shared
@@ -405,10 +422,6 @@ export function PreviewConcierge(props: any) {
           dispatch(clearSelectForEdit());
           break;
         }
-        case GUEST_MODELS_RECEIVED: {
-          dispatch(guestModelsReceived(payload));
-          break;
-        }
         case INSTANCE_DRAG_BEGUN:
         case INSTANCE_DRAG_ENDED: {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN ? payload : null));
@@ -471,14 +484,33 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
-        case CHILDREN_MAP_UPDATE: {
-          dispatch(setChildrenMap(payload));
-          break;
-        }
         case 'VALIDATION_MESSAGE': {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
             variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
           });
+          break;
+        }
+        case 'FETCH_GUEST_MODEL': {
+          const path = payload.path;
+          if (path.startsWith('/')) {
+            getContentInstanceDescriptor(
+              site,
+              path,
+              {
+                flatten: true
+              },
+              contentTypes
+            ).subscribe(({ model, modelLookup }) => {
+              const childrenMap = createChildModelLookup(modelLookup, contentTypes);
+              dispatch(fetchGuestModelComplete({ modelLookup, childrenMap }));
+              hostToGuest$.next({
+                type: 'FETCH_GUEST_MODEL_COMPLETE',
+                payload: { path, model, modelLookup, childrenMap }
+              });
+            });
+          } else {
+            return console.warn(`Ignoring call since "${payload.path}" is not a path.`);
+          }
           break;
         }
       }

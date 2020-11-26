@@ -20,7 +20,7 @@ import { useGuestContext } from './GuestContext';
 import { deregister, register } from '../classes/ElementRegistry';
 import { nnou, nou, pluckProps } from '../utils/object';
 import { ICEProps } from '../models/InContextEditing';
-import { getModel$, models$ } from '../classes/ContentController';
+import { models$, createModelSubscription } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { denormalizeModel } from '../utils/content';
 import Model from '../utils/model';
@@ -176,14 +176,14 @@ export function useHotReloadModel(props: UseModelProps): any {
   const [model, setModel] = useState(props.model);
   useEffect(() => {
     if (inAuthoring) {
-      const s = getModel$(props.model.craftercms.id)
+      const s = createModelSubscription(props.model.craftercms.id, props.model.craftercms.path)
         .pipe(
           distinctUntilChanged((prev, next) => {
             if (nou(props.fieldId)) {
               return prev === next;
-            } /*if (nnou(props.index) && nnou(props.fieldId)) {
+            } /* if (nnou(props.index) && nnou(props.fieldId)) {
               return prev[props.fieldId] === next[props.fieldId];
-            } else*/ else {
+            } else */ else {
               // Accounting for multiple (comma separated) fields
               return !props.fieldId
                 .replace(/\s/g, '')
@@ -197,7 +197,7 @@ export function useHotReloadModel(props: UseModelProps): any {
         .subscribe(setModel);
       return () => s.unsubscribe();
     }
-  }, [inAuthoring, props.fieldId, props.model.craftercms.id]);
+  }, [inAuthoring, props.fieldId, props.model.craftercms.id, props.model.craftercms.path]);
   return model;
 }
 
@@ -206,7 +206,7 @@ export function useFieldValue(props: UseModelProps): any {
   return Model.value(model, fieldId);
 }
 
-// TODO: Future authoring-less version of the hooks for live
+// TODO: Future authoring-less version of the hooks for live?
 // if (process.env.NODE_ENV === 'craftercms_live') {
 //   export { bypassICE as useICE }
 // } else {

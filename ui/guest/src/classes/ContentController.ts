@@ -36,17 +36,13 @@ import {
 } from '../constants';
 import { createLookupTable, isNullOrUndefined } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
-import {
-  findComponentContainerFields,
-  getCollection,
-  getCollectionWithoutItemAtIndex,
-  getParentModelId
-} from '../utils/ice';
+import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { createChildModelIdList, modelsToLookup, normalizeModelsLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
+import { not } from '../utils/util';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -60,7 +56,10 @@ crafterConf.getConfig().baseUrl === '' &&
 // }
 
 const operations$ = new Subject<Operation>();
+
 const operations = operations$.asObservable();
+
+export { operations as operations$ };
 
 export const children = {
   /* [id]: [id, id, id] */
@@ -68,62 +67,48 @@ export const children = {
 
 const modelsRequested = {};
 
-// region Internal models$ and contentTypes
+const pathsRequested = {};
 
-// Share operator makes the behaviour subject's behaviour go away. New subscribers
-// don't receive the latest value as soon as they subscribe. Would need to multicast
-// to be able to continue using share
+const modelIdByPath = {};
 
 const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
   /* 'modelId': { ...modelData } */
 });
 
-const modelsObs$ = _models$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
-
 const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
-  /* ... */
+  /* 'contentTypeId': { ...contentTypeData } */
 });
+
+// Share operator makes the behaviour subject's behaviour go away. New subscribers
+// don't receive the latest value as soon as they subscribe. Would need to multicast
+// to be able to continue using share
+const modelsObs$ = _models$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
 const contentTypesObs$ = _contentTypes$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
 
 // endregion
 
-function computeChildren(model: ContentInstance): void {
-  let childIds = [];
-  const modelId = Model.prop(model, 'id');
-
-  const contentTypeId = Model.getContentTypeId(model);
-  const contentType = getCachedContentType(contentTypeId);
-
-  findComponentContainerFields(contentType.fields).forEach((field) => {
-    const value = Model.value(model, field.id);
-    if (value != null) {
-      if (field.type === 'node-selector') {
-        childIds = childIds.concat(value);
-      } else if (field.type === 'repeat') {
-        // TODO ...
-        throw new Error('Path not implemented.');
-      }
-    }
-  });
-
-  children[modelId] = childIds.length ? childIds : null;
-}
-
 // region Models
 
-export function getModel(modelId: string): Promise<ContentInstance> {
-  return getModel$(modelId).toPromise();
+export function createModelSubscription(modelId: string, path: string): Observable<ContentInstance> {
+  if (!hasCachedModel(modelId) && path) {
+    fetchByPath(path)
+      .pipe(pluck('modelLookup'))
+      .subscribe(modelResponseReceived);
+  }
+  return modelsObs$.pipe(pluck(modelId), filter(Boolean)) as Observable<ContentInstance>;
 }
 
-export function getModel$(modelId: string): Observable<ContentInstance> {
-  return models$(modelId).pipe(
-    filter((models) => modelId in models),
-    map((models) => models[modelId])
+export function model$(modelId: string): Observable<ContentInstance> {
+  return modelsObs$.pipe(
+    pluck(modelId),
+    filter((model) => Boolean(model))
   );
 }
 
-export function models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
-  modelId && !hasCachedModel(modelId) && fetchModel(modelId);
+export function models$(): Observable<LookupTable<ContentInstance>>;
+export function models$(modelId: string, path: string): Observable<LookupTable<ContentInstance>>;
+export function models$(modelId?: string, path?: string): Observable<LookupTable<ContentInstance>> {
+  modelId && !hasCachedModel(modelId) && path && fetchByPath(path).subscribe();
   return modelsObs$;
 }
 
@@ -139,14 +124,14 @@ export function getCachedModels(): LookupTable<ContentInstance> {
   return _models$.value;
 }
 
-const fetching$ = new BehaviorSubject<boolean>(false);
+const fetchingById$ = new BehaviorSubject<boolean>(false);
 
-function fetchModel(modelId: string): void {
+export function fetchByIdWithDuplicateCheck(modelId: string): void {
   if (!(modelId in modelsRequested)) {
     modelsRequested[modelId] = true;
-    fetching$
+    fetchingById$
       .pipe(
-        filter((isFetching) => !isFetching),
+        filter(not),
         switchMap(() => _models$.pipe(pluck(modelId), take(1))),
         switchMap((model) => {
           if (isNullOrUndefined(model)) {
@@ -162,27 +147,8 @@ function fetchModel(modelId: string): void {
   }
 }
 
-function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
-  const currentModels = _models$.value;
-  const normalizedModels = normalizeModelsLookup(responseModels);
-
-  Object.entries(responseModels).forEach(([id, model]) => {
-    children[id] = createChildModelIdList(model);
-    children[id].forEach((modelId) => {
-      modelsRequested[modelId] = true;
-    });
-    if (children[id].length === 0) {
-      children[id] = null;
-    }
-  });
-
-  _models$.next(Object.assign({}, currentModels, normalizedModels));
-
-  fetching$.next(false);
-}
-
-function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
-  fetching$.next(true);
+export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
+  fetchingById$.next(true);
   return search(
     createQuery('elasticsearch', {
       query: {
@@ -209,8 +175,65 @@ function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
     map<any, ContentInstance[]>(({ hits }) =>
       hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
     ),
+    tap(() => fetchingById$.next(false)),
     map(modelsToLookup)
   );
+}
+
+const fetchingByPath$ = new BehaviorSubject<boolean>(false);
+
+export function fetchByPathWithDuplicateCheck(path: string): Observable<ContentInstance> {
+  if (pathsRequested[path]) {
+    return model$(modelIdByPath[path]).pipe(take(1));
+  } else {
+    pathsRequested[path] = true;
+    return fetchingByPath$.pipe(
+      filter(not),
+      switchMap(() =>
+        modelIdByPath[path] ? model$(modelIdByPath[path]).pipe(take(1)) : fetchByPath(path).pipe(pluck('model'))
+      )
+    );
+  }
+}
+
+export function fetchByPath(
+  path: string
+): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
+  setTimeout(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } }));
+  return fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
+    pluck('payload'),
+    tap(({ modelLookup, childrenMap }) => {
+      const normalizedModels = normalizeModelsLookup(modelLookup);
+      Object.values(normalizedModels).forEach((model) => {
+        pathsRequested[model.craftercms.path] = true;
+        modelIdByPath[model.craftercms.path] = model.craftercms.id;
+      });
+      Object.assign(children, childrenMap);
+      _models$.next({ ..._models$.value, ...normalizedModels });
+    }),
+    filter((payload) => payload.path === path),
+    take(1)
+  );
+}
+
+function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
+  const currentModels = _models$.value;
+  const normalizedModels = normalizeModelsLookup(responseModels);
+  Object.entries(responseModels).forEach(([id, model]) => {
+    children[id] = createChildModelIdList(model);
+    // Associated models that may have come from a flattened response, need to be registered as fetch.
+    children[id].forEach((modelId) => {
+      modelsRequested[modelId] = true;
+      if (model.craftercms.path) {
+        pathsRequested[model.craftercms.path] = true;
+      }
+    });
+    if (children[id].length === 0) {
+      // Freeing some memory.
+      children[id] = null;
+    }
+  });
+  _models$.next(Object.assign({}, currentModels, normalizedModels));
 }
 
 // endregion
@@ -249,16 +272,10 @@ function fetchContentType(contentTypeId: string): boolean {
   return false;
 }
 
-function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
-function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
-function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
-  if (Array.isArray(responseContentTypes)) {
-    (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
-  }
-
-  const currentContentTypes = _contentTypes$.value;
-
-  _contentTypes$.next(Object.assign({}, currentContentTypes, responseContentTypes));
+function contentTypesResponseReceived(contentTypes: ContentType[]): void;
+function contentTypesResponseReceived(contentTypes: LookupTable<ContentType>): void;
+function contentTypesResponseReceived(contentTypes: LookupTable<ContentType> | ContentType[]): void {
+  _contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
 }
 
 // endregion
@@ -632,14 +649,14 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
 // endregion
 
-// Listen for host content type updates
-fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => contentTypesResponseReceived(data.payload));
+// Host sends over all content types upon Guest check in.
+fromTopic(CONTENT_TYPES_RESPONSE)
+  .pipe(pluck('payload'))
+  .subscribe(contentTypesResponseReceived);
 
 const ContentController = {
   children,
   operations,
-  getModel,
-  getModel$,
   getContentType,
   getContentType$,
   models$,

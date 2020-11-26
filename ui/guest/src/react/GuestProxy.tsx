@@ -19,7 +19,13 @@ import { useGuestContext } from './GuestContext';
 import ElementRegistry, { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
-import contentController from '../classes/ContentController';
+import {
+  operations$,
+  contentTypes$,
+  getCachedContentType,
+  getCachedModel,
+  models$
+} from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import ContentType from '../utils/contentType';
@@ -43,18 +49,21 @@ import { popPiece, removeLastPiece } from '../utils/string';
 import { addAnimation } from '../utils/dom';
 
 export default function GuestProxy() {
-  const state = useSelector<GuestState, GuestState>((state) => state);
+  const draggable = useSelector<GuestState, GuestState['draggable']>((state) => state.draggable);
   const { onEvent } = useGuestContext();
-  const { current: persistence } = useRef({ draggable: null, onEvent });
-  const persistenceOnEvent = useRef(onEvent);
+  const persistenceRef = useRef({ draggableElement: null, onEvent });
 
+  // onEvent ref updated (persistenceRef.current.onEvent).
   useEffect(() => {
-    persistenceOnEvent.current = onEvent;
+    persistenceRef.current.onEvent = onEvent;
   }, [onEvent]);
 
+  // Initial registration of elements.
   useEffect(() => {
     const registerElement = (element: Element): void => {
-      let modelId = element.getAttribute('data-craftercms-model-id'),
+      let //
+        path = element.getAttribute('data-craftercms-model-path'),
+        modelId = element.getAttribute('data-craftercms-model-id'),
         fieldId = element.getAttribute('data-craftercms-field-id'),
         index: string | number = element.getAttribute('data-craftercms-index'),
         label = element.getAttribute('data-craftercms-label');
@@ -67,7 +76,7 @@ export default function GuestProxy() {
         index = parseInt(index, 10);
       }
 
-      ElementRegistry.register({ element, modelId, fieldId, index, label });
+      ElementRegistry.register({ element, modelId, fieldId, index, label, path });
     };
 
     const appendIndex = (index: string | number, value: number): string | number => {
@@ -137,7 +146,7 @@ export default function GuestProxy() {
       }
     };
 
-    zip(contentController.models$(), contentController.contentTypes$())
+    zip(models$(), contentTypes$())
       .pipe(take(1))
       .subscribe(() => {
         document.querySelectorAll('[data-craftercms-model-id]').forEach(registerElement);
@@ -146,7 +155,7 @@ export default function GuestProxy() {
     const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
-        persistenceOnEvent.current(e, record.id);
+        persistenceRef.current.onEvent(e, record.id);
       }
     };
 
@@ -161,7 +170,7 @@ export default function GuestProxy() {
       .on('click', '[data-craftercms-model-id]', handler)
       .on('dblclick', '[data-craftercms-model-id]', handler);
 
-    const sub = contentController.operations.subscribe((op: Operation) => {
+    const sub = operations$.subscribe((op: Operation) => {
       switch (op.type) {
         case SORT_ITEM_OPERATION: {
           let [modelId, fieldId, index, newIndex] = op.args;
@@ -171,7 +180,7 @@ export default function GuestProxy() {
           let iceId = iceRegistry.exists({ modelId, fieldId, index });
           // This would work for both repeat groups and node-selectors. Just use this?
           if (iceId === -1) {
-            const model = contentController.getCachedModel(modelId);
+            const model = getCachedModel(modelId);
             // By this point - on the operations subscriber - the operation has already gone through.
             // Hence, need to use the "newIndex" to retrieve the model in question. The registration
             // hasn't been updated yet so still using the old index.
@@ -360,8 +369,8 @@ export default function GuestProxy() {
           const updatedField: JQuery<any> = $(
             `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`
           );
-          const model = contentController.getCachedModel(modelId);
-          const contentType = contentController.getCachedContentType(model.craftercms.contentTypeId);
+          const model = getCachedModel(modelId);
+          const contentType = getCachedContentType(model.craftercms.contentTypeId);
           const fieldType = ContentType.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
@@ -401,26 +410,27 @@ export default function GuestProxy() {
     };
   }, []);
 
+  // Updates in draggability of elements.
   useEffect(() => {
-    if (notNullOrUndefined(persistence.draggable)) {
-      $(persistence.draggable)
+    const persistence = persistenceRef.current;
+    if (notNullOrUndefined(persistence.draggableElement)) {
+      $(persistence.draggableElement)
         .attr('draggable', 'false')
         .removeAttr('draggable');
     }
-
-    forEach(Object.entries(state.draggable), ([phyId, iceId]) => {
+    forEach(Object.entries(draggable), ([elemId, iceId]) => {
       if (iceId !== false) {
         // @ts-ignore TODO: Fix type
-        const record = ElementRegistry.get(phyId);
+        const record = ElementRegistry.get(elemId);
         // Item deletion incurs in a brief moment where a record has been removed
         // but the context draggable table hasn't been cleaned up.
         if (record != null) {
-          persistence.draggable = record.element;
+          persistence.draggableElement = record.element;
           $(record.element).attr('draggable', 'true');
         }
       }
     });
-  });
+  }, [draggable]);
 
   return <></>;
 }

@@ -15,7 +15,7 @@
  */
 
 import iceRegistry, { getById } from './ICERegistry';
-import contentController from './ContentController';
+import { fetchByPathWithDuplicateCheck, getCachedModels, hasCachedModel, model$ } from './ContentController';
 import { take } from 'rxjs/operators';
 import ContentType from '../utils/contentType';
 import Model from '../utils/model';
@@ -50,7 +50,7 @@ export function get(id: number): ElementRecord {
 // developers about field names that aren't found in the content type
 export function setLabel(record: ElementRecord): void {
   const labels = [];
-  const models = contentController.getCachedModels();
+  const models = getCachedModels();
   record.iceIds.forEach((iceId) => {
     const iceRecord = iceRegistry.getById(iceId);
     const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(iceRecord);
@@ -96,7 +96,7 @@ export function register(payload: ElementRecordRegistration): number {
     throw new Error('Record already has id. Was it pre-registered? Please deregister first.');
   }
 
-  const { element, modelId, index, label, fieldId } = payload;
+  const { element, modelId, index, label, fieldId, path } = payload;
 
   const id = seq++;
   const iceIds = [];
@@ -113,11 +113,11 @@ export function register(payload: ElementRecordRegistration): number {
 
   // If the relevant model is loaded, complete it's registration, otherwise,
   // request it and complete registration when it does load.
-  if (contentController.hasCachedModel(modelId)) {
+  if (hasCachedModel(modelId)) {
     completeDeferredRegistration(id);
   } else {
-    contentController
-      .getModel$(modelId)
+    fetchByPathWithDuplicateCheck(path).subscribe();
+    model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
         completeDeferredRegistration(id);
