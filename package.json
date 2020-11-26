@@ -20,15 +20,28 @@
     "extends": [
       "prettier"
     ],
-    "plugins": ["prettier"],
+    "plugins": [
+      "prettier"
+    ],
     "rules": {
-      "prettier/prettier": ["error"],
-      "spaced-comment": ["error", "always", {
-        "line": { "markers": ["/", "#"] },
-        "block": {
-          "balanced": true
+      "prettier/prettier": [
+        "error"
+      ],
+      "spaced-comment": [
+        "error",
+        "always",
+        {
+          "line": {
+            "markers": [
+              "/",
+              "#"
+            ]
+          },
+          "block": {
+            "balanced": true
+          }
         }
-      }]
+      ]
     },
     "parserOptions": {
       "ecmaVersion": 2015
@@ -38,6 +51,7 @@
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
     "glob-gitignore": "^1.0.14",
+    "typescript": "^4.1.2",
     "yargs": "^15.3.1"
   }
 }
