@@ -17,6 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { OptionsObject } from 'notistack';
+import { Clipboard } from '../../models/GlobalState';
 
 // region Item Events
 
@@ -28,7 +29,7 @@ export const folderCreated = createAction<{ target: string; name: string }>('FOL
 
 export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
 
-export const itemsPasted = createAction<{ target: string; resultingPaths: string[] }>('ITEM_PASTED');
+export const itemsPasted = createAction<{ target: string; clipboard: Clipboard }>('ITEM_PASTED');
 
 export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED');
 

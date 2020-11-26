@@ -163,7 +163,7 @@ const content = [
         return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
           map(({ items }) => {
             return batchActions([
-              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths: items })),
+              emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
               unSetClipBoard(),
               showPasteItemSuccessNotification()
             ]);
