@@ -76,24 +76,20 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
       if (!file) {
         CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['image/*']);
       } else {
-        const serviceUri = `${CStudioAuthoring.Service.createServiceUri(
-          '/asset-upload'
-        )}&${CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken()}`;
+        CStudioAuthoring.Operations.directUploadAsset(file, site, path, {
+          success: function(response) {
+            const imageData = { fileName: response.message.internalName };
+            const relativeUrl = path.endsWith('/') ? path + imageData.fileName : path + '/' + imageData.fileName;
+            const url = `${CStudioAuthoringContext.previewAppBaseUri}${relativeUrl}`;
+            imageData.previewUrl = url + '?' + new Date().getTime();
+            imageData.relativeUrl = relativeUrl;
 
-        const formData = new FormData();
-        formData.append('name', file.name);
-        formData.append('site', site);
-        formData.append('path', path);
-        formData.append('type', file.type);
-        formData.append('file', file);
-
-        const xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
-
-        xhr.onload = function() {};
-
-        xhr.open('POST', serviceUri);
-        xhr.send(formData);
+            insertCb.success(imageData);
+          },
+          failure: function() {
+            insertCb.failure();
+          }
+        });
       }
     } else {
       var errorString = CMgs.format(langBundle, 'noPathSetError');

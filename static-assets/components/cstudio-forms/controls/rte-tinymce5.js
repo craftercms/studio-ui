@@ -320,6 +320,11 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
+          const allowedDatasources = ['img-CMIS-upload', 'img-desktop-upload', 'img-S3-upload', 'img-WebDAV-upload'];
+          this.editorDatasources = this.form.definition.datasources.filter(
+            (datasource) => datasource.interface === 'image' && allowedDatasources.includes(datasource.name)
+          );
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -349,10 +354,6 @@ CStudioAuthoring.Module.requireModule(
             contextmenu: !this.enableSpellCheck,
             valid_children: validChildren,
 
-            paste_data_images: true,
-            paste_postprocess: function(plugin, args) {
-              // args.preventDefault();
-            },
             menu: {
               tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
             },
@@ -364,13 +365,19 @@ CStudioAuthoring.Module.requireModule(
               _thisControl.createControl(cb, meta);
             },
 
-            images_upload_handler: function(blobInfo, success, failure) {
-              var datasourceMap = _thisControl.form.datasourceMap,
-                datasourceDef = _thisControl.form.definition.datasources;
-
-              const ds = datasourceMap['uploadImages']; // TODO: just for testing, need to create a dialog to choose from dss
-
-              _thisControl.addManagedImage(ds, function(url, data) {}, blobInfo.blob());
+            paste_data_images: true,
+            paste_postprocess: function(plugin, args) {
+              if (!_thisControl.editorDatasources.length) {
+                args.preventDefault();
+                _thisControl.editor.notificationManager.open({
+                  text: _thisControl.formatMessage(messages.noDatasourceConfigured),
+                  timeout: 3000,
+                  type: 'error'
+                });
+              }
+            },
+            images_upload_handler: function(blobInfo, success) {
+              _thisControl.addDndImage(blobInfo, success);
             },
 
             templates: templates,
@@ -455,6 +462,7 @@ CStudioAuthoring.Module.requireModule(
               });
             }
           });
+          _thisControl.editor = editor;
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
@@ -657,6 +665,61 @@ CStudioAuthoring.Module.requireModule(
               },
               false
             );
+          }
+        },
+
+        addDndImage(blobInfo, success) {
+          const _self = this;
+          const datasourceMap = this.form.datasourceMap;
+
+          if (this.editorDatasources.length > 0) {
+            this.editor.windowManager.open({
+              title: 'Source',
+              body: {
+                type: 'panel',
+                items: [
+                  {
+                    type: 'selectbox',
+                    name: 'datasource',
+                    label: this.formatMessage(this.messages.chooseSource),
+                    items: this.editorDatasources.map((source) => ({
+                      value: source.id,
+                      text: source.title
+                    }))
+                  }
+                ]
+              },
+              onSubmit: function(api) {
+                const ds = datasourceMap[api.getData().datasource];
+
+                _self.addManagedImage(
+                  ds,
+                  function(url, data) {
+                    _self.editor.notificationManager.open({
+                      text: _self.formatMessage(_self.messages.dropImageUploaded, { title: data.title }),
+                      timeout: 3000,
+                      type: 'success'
+                    });
+
+                    success(url);
+                  },
+                  blobInfo.blob()
+                );
+                api.close();
+              },
+              buttons: [
+                {
+                  type: 'cancel',
+                  text: _self.formatMessage(_self.words.cancel)
+                },
+                {
+                  text: _self.formatMessage(_self.words.select),
+                  type: 'submit',
+                  primary: true,
+                  enabled: false
+                }
+              ]
+            });
           }
         },
 

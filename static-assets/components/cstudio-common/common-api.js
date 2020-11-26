@@ -3087,6 +3087,38 @@ var nodeOpen = false,
         CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
       },
 
+      directUploadAsset: function(file, site, path, callback) {
+        let serviceUri = `${CStudioAuthoring.Service.createServiceUri(
+          '/api/1/services/api/1/content/write-content.json'
+        )}&${CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken()}`;
+
+        serviceUri += `&contentType=folder&createFolders=true&draft=false&duplicate=false&path=${encodeURIComponent(
+          path
+        )}&site=editorial&unlock=true`;
+
+        const formData = new FormData();
+        formData.append('name', file.name);
+        formData.append('site', site);
+        formData.append('path', path);
+        formData.append('type', file.type);
+        formData.append('file', file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+
+        xhr.onload = function() {
+          const response = JSON.parse(xhr.responseText);
+          if (xhr.status === 200) {
+            callback.success(response);
+          } else {
+            callback.failure(response);
+          }
+        };
+
+        xhr.open('POST', serviceUri);
+        xhr.send(formData);
+      },
+
       /**
        *  opens a dialog to upload an asset
        */
