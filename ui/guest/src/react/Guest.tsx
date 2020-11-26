@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import $ from 'jquery';
-import { fromEvent, interval, merge, zip } from 'rxjs';
+import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import { contentTypes$ } from '../classes/ContentController';
@@ -292,7 +292,7 @@ function Guest(props: GuestProps) {
       .pipe(
         filter(({ payload }) => payload.path === path),
         pluck('payload', 'model'),
-        withLatestFrom(contentTypes$())
+        withLatestFrom(contentTypes$)
       )
       .subscribe(([model]) => {
         iceId = iceRegistry.register({ modelId: model.craftercms.id });

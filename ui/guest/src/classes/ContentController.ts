@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, NEVER, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import Model from '../utils/model';
 import Cookies from 'js-cookie';
@@ -34,15 +34,14 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { createLookupTable, isNullOrUndefined } from '../utils/object';
+import { createLookupTable } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import { createChildModelIdList, modelsToLookup, normalizeModelsLookup } from '../utils/content';
+import { modelsToLookup, normalizeModelsLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
-import { not } from '../utils/util';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -57,37 +56,34 @@ crafterConf.getConfig().baseUrl === '' &&
 
 const operations$ = new Subject<Operation>();
 
-const operations = operations$.asObservable();
-
-export { operations as operations$ };
+const operationsObs$ = operations$.asObservable();
 
 export const children = {
   /* [id]: [id, id, id] */
 };
 
-const modelsRequested = {};
-
 const pathsRequested = {};
 
-const _paths$ = new BehaviorSubject<LookupTable<string>>({
+const paths$ = new BehaviorSubject<LookupTable<string>>({
   /* 'path': 'modelId' */
 });
 
-const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
+const models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
   /* 'modelId': { ...modelData } */
 });
 
-const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
+const contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
   /* 'contentTypeId': { ...contentTypeData } */
 });
 
 // Share operator makes the behaviour subject's behaviour go away. New subscribers
 // don't receive the latest value as soon as they subscribe. Would need to multicast
 // to be able to continue using share
-const modelsObs$ = _models$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
-const contentTypesObs$ = _contentTypes$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
+const notEmpty = (objects) => Object.keys(objects).length > 0;
+const modelsObs$ = models$.pipe(filter(notEmpty));
+const contentTypesObs$ = contentTypes$.pipe(filter(notEmpty));
 
-// endregion
+export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$ };
 
 // region Models
 
@@ -98,50 +94,19 @@ export function model$(modelId: string): Observable<ContentInstance> {
   );
 }
 
-export function models$(): Observable<LookupTable<ContentInstance>>;
-export function models$(modelId: string, path: string): Observable<LookupTable<ContentInstance>>;
-export function models$(modelId?: string, path?: string): Observable<LookupTable<ContentInstance>> {
-  modelId && !hasCachedModel(modelId) && path && fetchByPath(path).subscribe();
-  return modelsObs$;
-}
-
 export function hasCachedModel(modelId: string): boolean {
-  return getCachedModel(modelId) != null;
+  return Boolean(models$.value[modelId]);
 }
 
 export function getCachedModel(modelId: string): ContentInstance {
-  return getCachedModels()[modelId];
+  return models$.value[modelId];
 }
 
 export function getCachedModels(): LookupTable<ContentInstance> {
-  return _models$.value;
-}
-
-const fetchingById$ = new BehaviorSubject<boolean>(false);
-
-export function fetchByIdWithDuplicateCheck(modelId: string): void {
-  if (!(modelId in modelsRequested)) {
-    modelsRequested[modelId] = true;
-    fetchingById$
-      .pipe(
-        filter(not),
-        switchMap(() => _models$.pipe(pluck(modelId), take(1))),
-        switchMap((model) => {
-          if (isNullOrUndefined(model)) {
-            return fetchById(modelId);
-          } else {
-            // Model was already fetched, discard repeated request.
-            return NEVER;
-          }
-        }),
-        take(1)
-      )
-      .subscribe(modelResponseReceived, (e) => console.log('Model fetch has failed...', e));
-  }
+  return models$.value;
 }
 
 export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
-  fetchingById$.next(true);
   return search(
     createQuery('elasticsearch', {
       query: {
@@ -168,14 +133,13 @@ export function fetchById(id: string): Observable<LookupTable<ContentInstance>> 
     map<any, ContentInstance[]>(({ hits }) =>
       hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
     ),
-    tap(() => fetchingById$.next(false)),
     map(modelsToLookup)
   );
 }
 
 export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance> {
   if (pathsRequested[path]) {
-    return _paths$.pipe(
+    return paths$.pipe(
       filter((paths) => Boolean(paths[path])),
       pluck(path),
       switchMap((modelId) => model$(modelId).pipe(take(1)))
@@ -201,66 +165,20 @@ export function fetchByPath(
   );
 }
 
-function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
-  const currentModels = _models$.value;
-  const normalizedModels = normalizeModelsLookup(responseModels);
-  Object.entries(responseModels).forEach(([id, model]) => {
-    children[id] = createChildModelIdList(model);
-    // Associated models that may have come from a flattened response, need to be registered as fetch.
-    children[id].forEach((modelId) => {
-      modelsRequested[modelId] = true;
-      if (model.craftercms.path) {
-        pathsRequested[model.craftercms.path] = true;
-      }
-    });
-    if (children[id].length === 0) {
-      // Freeing some memory.
-      children[id] = null;
-    }
-  });
-  _models$.next(Object.assign({}, currentModels, normalizedModels));
-}
-
 // endregion
 
 // region Content Types
 
-export function getContentType(contentTypeId: string): Promise<ContentType> {
-  return getContentType$(contentTypeId).toPromise();
-}
-
-export function getContentType$(contentTypeId: string): Observable<ContentType> {
-  !hasCachedContentType(contentTypeId) && fetchContentType(contentTypeId);
-  return contentTypesObs$.pipe(
-    filter((contentTypes) => contentTypeId in contentTypes),
-    map((contentTypes) => contentTypes[contentTypeId])
-  );
-}
-
-export function contentTypes$(): Observable<LookupTable<ContentType>> {
-  return contentTypesObs$;
-}
-
 export function hasCachedContentType(contentTypeId: string): boolean {
-  return getCachedContentType(contentTypeId) != null;
+  return Boolean(contentTypes$.value[contentTypeId]);
 }
 
 export function getCachedContentType(contentTypeId: string): ContentType {
-  return getCachedContentTypes()[contentTypeId];
+  return contentTypes$.value[contentTypeId];
 }
 
 export function getCachedContentTypes(): LookupTable<ContentType> {
-  return _contentTypes$.value;
-}
-
-function fetchContentType(contentTypeId: string): boolean {
-  return false;
-}
-
-function contentTypesResponseReceived(contentTypes: ContentType[]): void;
-function contentTypesResponseReceived(contentTypes: LookupTable<ContentType>): void;
-function contentTypesResponseReceived(contentTypes: LookupTable<ContentType> | ContentType[]): void {
-  _contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
+  return contentTypes$.value;
 }
 
 // endregion
@@ -291,7 +209,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   Model.value(model, fieldId, value);
 
   // Update the model cache
-  _models$.next({
+  models$.next({
     ...models,
     ...modelsToUpdate,
     [modelId]: model
@@ -321,7 +239,7 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
   // Insert in desired position
   result.splice(index, 0, item);
 
-  _models$.next({
+  models$.next({
     ...models,
     [modelId]: {
       ...model,
@@ -393,7 +311,7 @@ export function insertComponent(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
-  _models$.next({
+  models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
@@ -436,7 +354,7 @@ export function insertInstance(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
-  _models$.next({
+  models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
@@ -477,7 +395,7 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
-  _models$.next({
+  models$.next({
     ...models,
     [modelId]: {
       ...model,
@@ -570,7 +488,7 @@ export function moveItem(
     newTargetModel[targetFieldId] = targetResult;
   }
 
-  _models$.next(
+  models$.next(
     originalModelId === targetModelId
       ? {
           ...models,
@@ -610,7 +528,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
-  _models$.next({
+  models$.next({
     ...models,
     [modelId]: {
       ...model,
@@ -637,7 +555,9 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 // Host sends over all content types upon Guest check in.
 fromTopic(CONTENT_TYPES_RESPONSE)
   .pipe(pluck('payload'))
-  .subscribe(contentTypesResponseReceived);
+  .subscribe((contentTypes) => {
+    contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
+  });
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
@@ -649,17 +569,15 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       modelIdByPath[model.craftercms.path] = model.craftercms.id;
     });
     Object.assign(children, childrenMap);
-    _models$.next({ ..._models$.value, ...normalizedModels });
-    _paths$.next({ ..._paths$.value, ...modelIdByPath });
+    models$.next({ ...models$.value, ...normalizedModels });
+    paths$.next({ ...paths$.value, ...modelIdByPath });
   });
 
 const ContentController = {
   children,
-  operations,
-  getContentType,
-  getContentType$,
-  models$,
-  contentTypes$,
+  models$: modelsObs$,
+  operations$: operationsObs$,
+  contentTypes$: contentTypesObs$,
   hasCachedModel,
   getCachedModel,
   getCachedModels,

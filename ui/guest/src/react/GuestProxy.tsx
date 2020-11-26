@@ -146,7 +146,7 @@ export default function GuestProxy() {
       }
     };
 
-    zip(models$(), contentTypes$())
+    zip(models$, contentTypes$)
       .pipe(take(1))
       .subscribe(() => {
         document.querySelectorAll('[data-craftercms-model-id]').forEach(registerElement);

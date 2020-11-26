@@ -193,7 +193,7 @@ export function useHotReloadModel(props: UseModelProps): any {
                 .some((field) => prev[field] !== next[field]);
             }
           }),
-          withLatestFrom(models$()),
+          withLatestFrom(models$),
           map(([model, models]) => denormalizeModel(model, models))
         )
         .subscribe(setModel);
