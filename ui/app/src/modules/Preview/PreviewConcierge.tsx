@@ -52,7 +52,10 @@ import {
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
-  UPDATE_FIELD_VALUE_OPERATION
+  UPDATE_FIELD_VALUE_OPERATION,
+  GUEST_SITE_LOAD,
+  FETCH_GUEST_MODEL,
+  VALIDATION_MESSAGE
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -223,7 +226,7 @@ export function PreviewConcierge(props: any) {
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
-        case 'GUEST_SITE_LOAD':
+        case GUEST_SITE_LOAD:
           // Legacy sites (guest v1) send this message.
           let previewNextCheckInNotification = previewNextCheckInNotificationRef.current;
           let compatibilityQueryArg = getQueryVariable(window.location.search, 'compatibility');
@@ -246,46 +249,58 @@ export function PreviewConcierge(props: any) {
             }
           }
           break;
-        case GUEST_CHECK_IN: {
-          getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
-          dispatch(checkInGuest(payload));
-
-          if (payload.documentDomain) {
-            try {
-              document.domain = payload.documentDomain;
-            } catch (e) {
-              console.error(e);
-            }
-          } else if (document.domain !== originalDocDomain) {
-            document.domain = originalDocDomain;
-          }
-
-          if (payload.__CRAFTERCMS_GUEST_LANDING__) {
-            nnou(site) && dispatch(changeCurrentUrl('/'));
-          } else {
-            const path = payload.path;
-            // If the content types have already been loaded, contentTypes$ subject will emit
-            // immediately. If not, it will emit when the content type fetch payload does arrive.
-            contentTypes$.pipe(take(1)).subscribe((payload) => {
-              hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
-            });
-            getContentInstanceDescriptor(
-              site,
-              path,
-              {
-                flatten: true
-              },
-              contentTypes
-            ).subscribe(({ model, modelLookup }) => {
-              const childrenMap = createChildModelLookup(modelLookup, contentTypes);
-              dispatch(fetchPrimaryGuestModelComplete({ model, modelLookup, childrenMap }));
-              hostToGuest$.next({
-                type: 'FETCH_GUEST_MODEL_COMPLETE',
-                payload: { path, model, modelLookup, childrenMap }
+        case GUEST_CHECK_IN:
+        case FETCH_GUEST_MODEL: {
+          // region const issueDescriptorRequest = () => {...}
+          // This request & response processing is common to both of these actions so grouping them together.
+          const issueDescriptorRequest = (path, completeAction) =>
+            getContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
+              .pipe(
+                // If another check in comes while loading, this request should be cancelled.
+                // This may happen if navigating rapidly from one page to another (guest-side).
+                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type))))
+              )
+              .subscribe(({ model, modelLookup }) => {
+                const childrenMap = createChildModelLookup(modelLookup, contentTypes);
+                dispatch(completeAction({ model, modelLookup, childrenMap }));
+                hostToGuest$.next({
+                  type: 'FETCH_GUEST_MODEL_COMPLETE',
+                  payload: { path, model, modelLookup, childrenMap }
+                });
               });
-            });
-          }
+          // endregion
+          if (type === GUEST_CHECK_IN) {
+            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+            dispatch(checkInGuest(payload));
 
+            if (payload.documentDomain) {
+              try {
+                document.domain = payload.documentDomain;
+              } catch (e) {
+                console.error(e);
+              }
+            } else if (document.domain !== originalDocDomain) {
+              document.domain = originalDocDomain;
+            }
+
+            if (payload.__CRAFTERCMS_GUEST_LANDING__) {
+              nnou(site) && dispatch(changeCurrentUrl('/'));
+            } else {
+              const path = payload.path;
+              // If the content types have already been loaded, contentTypes$ subject will emit
+              // immediately. If not, it will emit when the content type fetch payload does arrive.
+              contentTypes$.pipe(take(1)).subscribe((payload) => {
+                hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+              });
+              issueDescriptorRequest(path, fetchPrimaryGuestModelComplete);
+            }
+          } /* else if (type === FETCH_GUEST_MODEL) */ else {
+            if (payload.path?.startsWith('/')) {
+              issueDescriptorRequest(payload.path, fetchGuestModelComplete);
+            } else {
+              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
+            }
+          }
           break;
         }
         case GUEST_CHECK_OUT:
@@ -508,33 +523,10 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
-        case 'VALIDATION_MESSAGE': {
+        case VALIDATION_MESSAGE: {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
             variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
           });
-          break;
-        }
-        case 'FETCH_GUEST_MODEL': {
-          const path = payload.path;
-          if (path?.startsWith('/')) {
-            getContentInstanceDescriptor(
-              site,
-              path,
-              {
-                flatten: true
-              },
-              contentTypes
-            ).subscribe(({ model, modelLookup }) => {
-              const childrenMap = createChildModelLookup(modelLookup, contentTypes);
-              dispatch(fetchGuestModelComplete({ modelLookup, childrenMap }));
-              hostToGuest$.next({
-                type: 'FETCH_GUEST_MODEL_COMPLETE',
-                payload: { path, model, modelLookup, childrenMap }
-              });
-            });
-          } else {
-            return console.warn(`Ignoring call since "${payload.path}" is not a path.`);
-          }
           break;
         }
       }

@@ -105,8 +105,8 @@ export function register(payload: ElementRecordRegistration): number {
     fieldId == null
       ? []
       : Array.isArray(fieldId)
-      ? fieldId
-      : fieldId.split(',').map((str) => str.trim());
+        ? fieldId
+        : fieldId.split(',').map((str) => str.trim());
 
   // Create/register the physical record
   db[id] = { id, element, modelId, index, label, fieldId: fieldIds, iceIds, complete: false };
@@ -116,7 +116,7 @@ export function register(payload: ElementRecordRegistration): number {
   if (hasCachedModel(modelId)) {
     completeDeferredRegistration(id);
   } else {
-    byPathFetchIfNotLoaded(path).subscribe();
+    path && byPathFetchIfNotLoaded(path).subscribe();
     model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
