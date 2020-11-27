@@ -87,7 +87,15 @@ export const useStyles = makeStyles(
         padding: '6px'
       },
       itemIconButton: {
-        padding: '2px 3px'
+        padding: '2px 3px',
+        '&.Mui-disabled': {
+          // Want the hover to trigger so the tooltip shows up.
+          pointerEvents: 'all'
+        }
+      },
+      leafTooltip: {
+        backgroundColor: theme.palette.warning.light,
+        color: theme.palette.warning.contrastText
       },
       searchRoot: {
         margin: '7px 10px 7px 0',
