@@ -100,6 +100,6 @@ export interface LegacyItem {
 }
 
 export interface PasteItem {
-  path?: string;
+  path: string;
   children?: PasteItem[];
 }
