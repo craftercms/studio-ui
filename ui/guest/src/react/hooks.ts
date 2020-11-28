@@ -91,7 +91,7 @@ function bypassICE(props: UseICEProps): ICEMaterials {
 
 export function useICE(props: UseICEProps): ICEMaterials {
   const context = useGuestContext();
-  const inAuthoring = Boolean(context) && Boolean(context.hasHost);
+  const inAuthoring = context && context.editMode && context.hasHost;
   const { onEvent, draggable } = context ?? {};
   const elementRef = useRef<HTMLElement>();
   const elementRegistryId = useRef<number>();
