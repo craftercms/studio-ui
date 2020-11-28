@@ -177,7 +177,7 @@ export function useHotReloadModel(props: UseModelProps): any {
   useEffect(() => {
     if (inAuthoring) {
       // Insure the model gets loaded.
-      byPathFetchIfNotLoaded(props.model.craftercms.path).subscribe();
+      props.model.craftercms.path && byPathFetchIfNotLoaded(props.model.craftercms.path).subscribe();
       const s = model$(props.model.craftercms.id)
         .pipe(
           distinctUntilChanged((prev, next) => {
