@@ -88,7 +88,7 @@ export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ 
 // region Models
 
 export function model$(modelId: string): Observable<ContentInstance> {
-  return modelsObs$.pipe(
+  return models$.pipe(
     pluck(modelId),
     filter((model) => Boolean(model))
   );
