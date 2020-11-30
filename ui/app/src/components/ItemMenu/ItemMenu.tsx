@@ -47,7 +47,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
-import { copy, fetchWorkflowAffectedItems, getLegacyItemsTree } from '../../services/content';
+import { fetchWorkflowAffectedItems, getLegacyItemsTree } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -55,7 +55,6 @@ import { batchActions, changeContentType, editTemplate } from '../../state/actio
 import { fetchItemVersions } from '../../state/reducers/versions';
 import { getRootPath, withoutIndex } from '../../utils/path';
 import {
-  cutItem,
   duplicateAsset,
   duplicateItem,
   pasteItem,
@@ -68,6 +67,7 @@ import { translations } from './translations';
 import { rand } from '../Navigation/PathNavigator/utils';
 import {
   showCopyItemSuccessNotification,
+  showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
@@ -234,7 +234,16 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'cut': {
-        dispatch(cutItem({ path }));
+        dispatch(
+          batchActions([
+            setClipBoard({
+              type: 'CUT',
+              paths: [item.path],
+              sourcePath: item.path
+            }),
+            showCutItemSuccessNotification()
+          ])
+        );
         break;
       }
       case 'copy': {
@@ -249,7 +258,7 @@ export function ItemMenu(props: ItemMenuProps) {
                   onOk: batchActions([
                     closeCopyDialog(),
                     setClipBoard({
-                      type: 'copy',
+                      type: 'COPY',
                       sourcePath: item.path
                     }),
                     showCopyItemSuccessNotification()
@@ -257,28 +266,15 @@ export function ItemMenu(props: ItemMenuProps) {
                 })
               );
             } else {
-              copy(site, item.path).subscribe(
-                (response) => {
-                  if (response.success) {
-                    dispatch(
-                      batchActions([
-                        setClipBoard({
-                          type: 'copy',
-                          paths: [item.path],
-                          sourcePath: item.path
-                        }),
-                        showCopyItemSuccessNotification()
-                      ])
-                    );
-                  }
-                },
-                (response) => {
-                  dispatch(
-                    showErrorDialog({
-                      error: response
-                    })
-                  );
-                }
+              dispatch(
+                batchActions([
+                  setClipBoard({
+                    type: 'COPY',
+                    paths: [item.path],
+                    sourcePath: item.path
+                  }),
+                  showCopyItemSuccessNotification()
+                ])
               );
             }
           },
@@ -293,7 +289,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'paste': {
-        if (clipboard.type === 'cut') {
+        if (clipboard.type === 'CUT') {
           fetchWorkflowAffectedItems(site, clipboard.paths[0]).subscribe((items) => {
             if (items?.length > 0) {
               dispatch(

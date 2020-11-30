@@ -41,7 +41,7 @@ import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state'
 const translations = defineMessages({
   previewComponentsPanelTitle: {
     id: 'previewComponentsPanel.title',
-    defaultMessage: 'Components'
+    defaultMessage: 'Add Components'
   },
   browse: {
     id: 'previewComponentsPanel.browse',
@@ -53,7 +53,7 @@ const translations = defineMessages({
   },
   listInPageInstances: {
     id: 'previewComponentsPanel.listInPageInstances',
-    defaultMessage: 'List in-page instances'
+    defaultMessage: 'Instances on this page'
   }
 });
 

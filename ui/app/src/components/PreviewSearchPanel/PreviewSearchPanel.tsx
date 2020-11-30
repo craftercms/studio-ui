@@ -25,10 +25,11 @@ import {
   useLogicResource,
   useMount,
   useSelection,
+  useSpreadState,
   useSubject
 } from '../../utils/hooks';
 import SearchBar from '../Controls/SearchBar';
-import { ComponentsContentTypeParams, ElasticParams, SearchItem, SearchResult } from '../../models/Search';
+import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -142,12 +143,16 @@ const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/s
 export default function PreviewSearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const [contentInstanceLookup, setContentInstanceLookup] = useState({});
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
   const hostToGuest$ = getHostToGuestBus();
-  const [searchResults, setSearchResults] = useState<SearchResult>(null);
+  const [state, setState] = useSpreadState({
+    isFetching: null,
+    contentInstanceLookup: null,
+    items: null,
+    count: null
+  });
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = useContentTypeList(
@@ -160,16 +165,17 @@ export default function PreviewSearchPanel() {
   const unMount$ = useSubject();
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useLogicResource<SearchItem[], SearchResult>(searchResults, {
-    shouldResolve: (data) => Boolean(data),
+  const resource = useLogicResource<SearchItem[], { isFetching: Boolean; items: Array<SearchItem> }>(state, {
+    shouldResolve: (data) => Boolean(data) && data.isFetching === false,
     shouldReject: () => Boolean(error),
-    shouldRenew: (data, resourceArg) => resourceArg.complete,
+    shouldRenew: (data, resourceArg) => data.isFetching && resourceArg.complete,
     resultSelector: (data) => data.items,
     errorSelector: () => error
   });
 
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
+      setState({ isFetching: true });
       search(site, {
         ...initialSearchParameters,
         keywords,
@@ -192,9 +198,16 @@ export default function PreviewSearchPanel() {
         )
         .subscribe(
           (response) => {
-            setSearchResults(response.result);
+            setPageNumber(options ? options.offset / options.limit : 0);
             if (response.contentInstances) {
-              setContentInstanceLookup(createLookupTable(response.contentInstances, 'craftercms.path'));
+              setState({
+                isFetching: false,
+                items: response.result.items,
+                contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
+                count: response.result.total
+              });
+            } else {
+              setState({ isFetching: false, items: response.result.items });
             }
           },
           ({ response }) => {
@@ -202,7 +215,7 @@ export default function PreviewSearchPanel() {
           }
         );
     },
-    [site, contentTypes, unMount$, contentTypesLookup]
+    [setState, site, contentTypes, unMount$, contentTypesLookup]
   );
 
   useMount(() => {
@@ -226,7 +239,6 @@ export default function PreviewSearchPanel() {
   }
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, page: number) {
-    setPageNumber(page);
     onSearch(keyword, {
       offset: page * initialSearchParameters.limit,
       limit: initialSearchParameters.limit
@@ -238,7 +250,7 @@ export default function PreviewSearchPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     if (item.type === 'Component') {
-      const instance: ContentInstance = contentInstanceLookup[item.path];
+      const instance: ContentInstance = state.contentInstanceLookup[item.path];
       hostToGuest$.next({
         type: COMPONENT_INSTANCE_DRAG_STARTED,
         payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
@@ -268,14 +280,14 @@ export default function PreviewSearchPanel() {
           showActionButton={Boolean(keyword)}
         />
       </div>
-      {searchResults && (
+      {state.items && (
         <div className={classes.paginationContainer}>
           <TablePagination
             className={classes.pagination}
             classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
             component="div"
             labelRowsPerPage=""
-            count={searchResults['count'] || searchResults['total']}
+            count={state.count}
             rowsPerPage={initialSearchParameters.limit}
             page={pageNumber}
             backIconButtonProps={{

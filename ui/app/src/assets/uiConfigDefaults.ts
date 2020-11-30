@@ -14,164 +14,230 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses}.
  */
 
+let count = 0;
+
 const uiConfigDefaults = {
   preview: {
     toolsPanel: {
       widgets: [
         {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '0',
+          id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+          uiKey: count++,
           configuration: {
-            title: {
-              id: 'previewSearchPanel.title'
-            },
-            roles: ['admin'],
+            title: 'Dashboard',
             icon: {
-              id: '@material-ui/icons/SearchRounded'
+              baseClass: 'fa fa-tasks'
             },
-            widgets: [
-              {
-                id: 'craftercms.components.PreviewSearchPanel',
-                uiKey: '1'
-              }
-            ]
+            widget: {
+              id: 'craftercms.components.LegacyDashboardFrame',
+              uiKey: count++
+            }
           }
         },
         {
           id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '2',
+          uiKey: count++,
           configuration: {
-            title: {
-              id: 'previewComponentsPanel.title'
-            },
-            roles: ['admin'],
+            title: 'Page Builder',
             icon: {
-              id: '@material-ui/icons/ExtensionRounded'
+              baseClass: 'fa fa-paint-brush'
             },
             widgets: [
               {
-                id: 'craftercms.components.PreviewComponentsPanel',
-                uiKey: '3'
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '4',
-          configuration: {
-            title: {
-              id: 'previewAssetsPanel.title'
-            },
-            roles: ['admin'],
-            icon: {
-              id: '@material-ui/icons/ImageOutlined'
-            },
-            widgets: [
-              {
-                id: 'craftercms.components.PreviewAssetsPanel',
-                uiKey: '5'
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '6',
-          configuration: {
-            title: {
-              id: 'previewAudiencesPanel.title'
-            },
-            roles: ['admin'],
-            icon: {
-              id: '@material-ui/icons/EmojiPeopleRounded'
-            },
-            widgets: [
-              {
-                id: 'craftercms.components.PreviewAudiencesPanel',
-                uiKey: '7',
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
                 configuration: {
-                  fields: {
-                    segment: {
-                      id: 'segment',
-                      name: 'Segment',
-                      description: 'User segment.',
-                      type: 'dropdown',
-                      defaultValue: 'anonymous',
-                      values: [
-                        {
-                          label: 'Guy',
-                          value: 'guy'
-                        },
-                        {
-                          label: 'Gal',
-                          value: 'gal'
-                        },
-                        {
-                          label: 'Anonymous',
-                          value: 'anonymous'
-                        }
-                      ],
-                      helpText: 'Setting the segment will change content targeting to the audience selected.'
-                    },
-                    name: {
-                      id: 'name',
-                      name: 'Name',
-                      description: "User's first and last name.",
-                      type: 'input',
-                      helpText: "Enter user's first and last name."
+                  title: {
+                    id: 'previewSearchPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/SearchRounded'
+                  },
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewSearchPanel',
+                      uiKey: count++
                     }
-                  }
+                  ]
                 }
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '8',
-          configuration: {
-            title: {
-              id: 'previewPageExplorerPanel.title'
-            },
-            roles: ['admin'],
-            icon: {
-              id: 'craftercms.icons.PageExplorer'
-            },
-            widgets: [
+              },
               {
-                id: 'craftercms.components.PreviewPageExplorerPanel',
-                uiKey: '9'
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '10',
-          configuration: {
-            title: {
-              id: 'previewSimulatorPanel.title'
-            },
-            roles: ['admin'],
-            icon: {
-              id: '@material-ui/icons/DevicesRounded'
-            },
-            widgets: [
-              {
-                id: 'craftercms.components.PreviewSimulatorPanel',
-                uiKey: '11',
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
                 configuration: {
-                  devices: [
+                  title: {
+                    id: 'previewComponentsPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/ExtensionOutlined'
+                  },
+                  widgets: [
                     {
-                      title: 'smartPhone',
-                      width: 375,
-                      height: 667
-                    },
+                      id: 'craftercms.components.PreviewComponentsPanel',
+                      uiKey: count++
+                    }
+                  ]
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'previewBrowseComponentsPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/ExtensionOutlined'
+                  },
+                  widgets: [
                     {
-                      title: 'tablet',
-                      width: 768,
-                      height: 1024
+                      id: 'craftercms.components.PreviewBrowseComponentsPanel',
+                      uiKey: count++
+                    }
+                  ]
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'previewReceptaclesPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/ExtensionOutlined'
+                  },
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewReceptaclesPanel',
+                      uiKey: count++
+                    }
+                  ]
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'previewAssetsPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/ImageOutlined'
+                  },
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewAssetsPanel',
+                      uiKey: count++
+                    }
+                  ]
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'previewAudiencesPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/EmojiPeopleRounded'
+                  },
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewAudiencesPanel',
+                      uiKey: count++,
+                      configuration: {
+                        fields: {
+                          segment: {
+                            id: 'segment',
+                            name: 'Segment',
+                            description: 'User segment.',
+                            type: 'dropdown',
+                            defaultValue: 'anonymous',
+                            values: [
+                              {
+                                label: 'Guy',
+                                value: 'guy'
+                              },
+                              {
+                                label: 'Gal',
+                                value: 'gal'
+                              },
+                              {
+                                label: 'Anonymous',
+                                value: 'anonymous'
+                              }
+                            ],
+                            helpText: 'Setting the segment will change content targeting to the audience selected.'
+                          },
+                          name: {
+                            id: 'name',
+                            name: 'Name',
+                            description: "User's first and last name.",
+                            type: 'input',
+                            helpText: "Enter user's first and last name."
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'previewPageExplorerPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: 'craftercms.icons.PageExplorer'
+                  },
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewPageExplorerPanel',
+                      uiKey: count++
+                    }
+                  ]
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelPageButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'previewSimulatorPanel.title'
+                  },
+                  roles: ['admin'],
+                  icon: {
+                    id: '@material-ui/icons/DevicesRounded'
+                  },
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewSimulatorPanel',
+                      uiKey: count++,
+                      configuration: {
+                        devices: [
+                          {
+                            title: 'smartPhone',
+                            width: 375,
+                            height: 667
+                          },
+                          {
+                            title: 'tablet',
+                            width: 768,
+                            height: 1024
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -181,7 +247,7 @@ const uiConfigDefaults = {
         },
         {
           id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: '12',
+          uiKey: count++,
           roles: ['admin'],
           configuration: {
             title: {
@@ -192,187 +258,8 @@ const uiConfigDefaults = {
             },
             widgets: [
               {
-                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                uiKey: '13',
-                configuration: {
-                  title: 'Dashboard',
-                  icon: {
-                    baseClass: 'fa fa-tasks'
-                  },
-                  widget: {
-                    id: 'craftercms.components.LegacyDashboardFrame',
-                    uiKey: '14'
-                  }
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: '15',
-                configuration: {
-                  title: 'Site Tools',
-                  icon: {
-                    baseClass: 'fa fa-sliders'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '16',
-                      configuration: {
-                        title: 'Content Types',
-                        icon: {
-                          baseClass: 'fa fa-th-large'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '17',
-                          configuration: {
-                            tool: 'content-types'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '18',
-                      configuration: {
-                        title: 'Encryption Tool',
-                        icon: {
-                          baseClass: 'fa fa-lock'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '19',
-                          configuration: {
-                            tool: 'encrypt-tool'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '20',
-                      configuration: {
-                        title: 'Configuration',
-                        icon: {
-                          baseClass: 'fa fa-cogs'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '21',
-                          configuration: {
-                            tool: 'admin-configurations'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '22',
-                      configuration: {
-                        title: 'Audit',
-                        icon: {
-                          baseClass: 'fa fa-align-justify'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '23',
-                          configuration: {
-                            tool: 'audit'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '24',
-                      configuration: {
-                        title: 'Workflow States',
-                        icon: {
-                          baseClass: 'fa fa-cog'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '25',
-                          configuration: {
-                            tool: 'workflow-states'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '26',
-                      configuration: {
-                        title: 'Log Console',
-                        icon: {
-                          baseClass: 'fa fa-align-left'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '27',
-                          configuration: {
-                            tool: 'log-view'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '28',
-                      configuration: {
-                        title: 'Publishing',
-                        icon: {
-                          baseClass: 'fa fa-cloud-upload'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '29',
-                          configuration: {
-                            tool: 'status-view'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '30',
-                      configuration: {
-                        title: 'Remote Repositories',
-                        icon: {
-                          baseClass: 'fa fa-database'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '31',
-                          configuration: {
-                            tool: 'repository'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
-                      uiKey: '32',
-                      configuration: {
-                        title: 'GraphQL',
-                        icon: {
-                          baseClass: 'fa fa-line-chart'
-                        },
-                        widget: {
-                          id: 'craftercms.components.LegacySiteToolsFrame',
-                          uiKey: '33',
-                          configuration: {
-                            tool: 'graphiql'
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              },
-              {
                 id: 'craftercms.components.PathNavigator',
-                uiKey: '34',
+                uiKey: count++,
                 configuration: {
                   id: 'Pages',
                   label: 'Pages',
@@ -387,7 +274,7 @@ const uiConfigDefaults = {
               },
               {
                 id: 'craftercms.components.PathNavigator',
-                uiKey: '35',
+                uiKey: count++,
                 configuration: {
                   id: 'Components',
                   label: 'Components',
@@ -400,7 +287,7 @@ const uiConfigDefaults = {
               },
               {
                 id: 'craftercms.components.PathNavigator',
-                uiKey: '36',
+                uiKey: count++,
                 configuration: {
                   id: 'Taxonomy',
                   label: 'Taxonomy',
@@ -413,7 +300,7 @@ const uiConfigDefaults = {
               },
               {
                 id: 'craftercms.components.PathNavigator',
-                uiKey: '37',
+                uiKey: count++,
                 configuration: {
                   id: 'StaticAssets',
                   label: 'Static Assets',
@@ -426,7 +313,7 @@ const uiConfigDefaults = {
               },
               {
                 id: 'craftercms.components.PathNavigator',
-                uiKey: '38',
+                uiKey: count++,
                 configuration: {
                   label: 'Templates',
                   icon: {
@@ -438,7 +325,7 @@ const uiConfigDefaults = {
               },
               {
                 id: 'craftercms.components.PathNavigator',
-                uiKey: '39',
+                uiKey: count++,
                 configuration: {
                   label: 'Scripts',
                   icon: {
@@ -446,6 +333,171 @@ const uiConfigDefaults = {
                   },
                   rootPath: '/scripts',
                   locale: 'en'
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            title: 'Site Tools',
+            icon: {
+              baseClass: 'fa fa-sliders'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Content Types',
+                  icon: {
+                    baseClass: 'fa fa-th-large'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'content-types'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Encryption Tool',
+                  icon: {
+                    baseClass: 'fa fa-lock'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'encrypt-tool'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Configuration',
+                  icon: {
+                    baseClass: 'fa fa-cogs'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'admin-configurations'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Audit',
+                  icon: {
+                    baseClass: 'fa fa-align-justify'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'audit'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Workflow States',
+                  icon: {
+                    baseClass: 'fa fa-cog'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'workflow-states'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Log Console',
+                  icon: {
+                    baseClass: 'fa fa-align-left'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'log-view'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Publishing',
+                  icon: {
+                    baseClass: 'fa fa-cloud-upload'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'status-view'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'Remote Repositories',
+                  icon: {
+                    baseClass: 'fa fa-database'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'repository'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: 'GraphQL',
+                  icon: {
+                    baseClass: 'fa fa-line-chart'
+                  },
+                  widget: {
+                    id: 'craftercms.components.LegacySiteToolsFrame',
+                    uiKey: count++,
+                    configuration: {
+                      tool: 'graphiql'
+                    }
+                  }
                 }
               }
             ]

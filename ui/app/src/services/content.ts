@@ -14,37 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
+import { del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import {
-  createElements,
-  deserialize,
-  fromString,
-  getInnerHtml,
-  serialize,
-  wrapElementInAuxDocument
-} from '../utils/xml';
-import { ContentType, ContentTypeField } from '../models/ContentType';
+import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import { ContentType } from '../models/ContentType';
 import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { dataUriToBlob, decodeHTML, fileNameFromPath, isBlank, popPiece, removeLastPiece } from '../utils/string';
+import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { CopyItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
+import { parseContentXML, parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
-import { getParentPath, withoutIndex } from '../utils/path';
 import { fetchContentTypes } from './contentTypes';
+import { Clipboard } from '../models/GlobalState';
+import { getPasteItemFromPath } from '../utils/path';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -118,255 +112,24 @@ export function getContentInstance(
 export function getContentInstanceDescriptor(
   site: string,
   path: string,
-  options?: Partial<GetDescriptorOptions>
-): Observable<LookupTable<ContentInstance>> {
-  return fetchContentTypes(site).pipe(
-    switchMap((ctl) =>
+  options?: Partial<GetDescriptorOptions>,
+  contentTypeLookup?: LookupTable<ContentType>
+): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
+  return (contentTypeLookup
+    ? of(contentTypeLookup)
+    : fetchContentTypes(site).pipe(map((contentTypes) => createLookupTable(contentTypes)))
+  ).pipe(
+    switchMap((contentTypeLookup) =>
       getDescriptorDOM(site, path, options).pipe(
         map((doc) => {
-          const lookup = {};
-          parseContentXML(doc, path, createLookupTable(ctl), lookup);
-          return lookup;
+          const modelLookup = {};
+          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup);
+          return { model, modelLookup };
         })
       )
     )
   );
 }
-
-function parseElementByContentType(
-  element: Element,
-  field: ContentTypeField,
-  contentTypesLookup: LookupTable<ContentType>,
-  instanceLookup: LookupTable<ContentInstance>
-) {
-  if (!field) {
-    return getInnerHtml(element) ?? '';
-  }
-  const type = field.type;
-  switch (type) {
-    case 'repeat': {
-      const array = [];
-      element.querySelectorAll(':scope > item').forEach((item) => {
-        const repeatItem = {};
-        item.querySelectorAll(':scope > *').forEach((fieldTag) => {
-          let fieldTagName = fieldTag.tagName;
-          repeatItem[fieldTagName] = parseElementByContentType(
-            fieldTag,
-            field.fields[fieldTagName],
-            contentTypesLookup,
-            instanceLookup
-          );
-        });
-        array.push(repeatItem);
-      });
-      return array;
-    }
-    case 'node-selector': {
-      const array = [];
-      element.querySelectorAll(':scope > item').forEach((item) => {
-        const key = getInnerHtml(item.querySelector('key'));
-        const component = item.querySelector('component');
-        const instance = parseContentXML(
-          component ? wrapElementInAuxDocument(component) : null,
-          key,
-          contentTypesLookup,
-          instanceLookup
-        );
-        array.push(instance);
-      });
-      return array;
-    }
-    case 'html':
-      return decodeHTML(getInnerHtml(element));
-    case 'checkbox-group': {
-      const deserialized = deserialize(element);
-      const extract = deserialized[element.tagName].item;
-      return Array.isArray(extract) ? extract : [extract];
-    }
-    case 'text':
-    case 'image':
-    case 'textarea':
-    case 'dropdown':
-      return getInnerHtml(element);
-    case 'boolean':
-    case 'page-nav-order':
-      return getInnerHtml(element) === 'true';
-    default:
-      console.log(
-        `[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
-        element
-      );
-      return getInnerHtml(element);
-  }
-}
-
-export function parseContentXML(
-  doc: XMLDocument,
-  path: string = null,
-  contentTypesLookup: LookupTable<ContentType>,
-  instanceLookup: LookupTable<ContentInstance>
-): ContentInstance {
-  const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : fileNameFromPath(path);
-  const contentTypeId = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
-  const current = {
-    craftercms: {
-      id,
-      path,
-      label: null,
-      locale: null,
-      dateCreated: null,
-      dateModified: null,
-      contentTypeId: contentTypeId,
-      sourceMap: {}
-    }
-  };
-  if (nnou(doc)) {
-    current.craftercms.label = getInnerHtml(doc.querySelector('internal-name'));
-    current.craftercms.dateCreated = getInnerHtml(doc.querySelector('createdDate_dt'));
-    current.craftercms.dateModified = getInnerHtml(doc.querySelector('lastModifiedDate_dt'));
-  }
-  instanceLookup[id] = current;
-  if (nnou(doc)) {
-    Array.from(doc.documentElement.children).forEach((element: Element) => {
-      const tagName = element.tagName;
-      if (!systemPropsList.includes(tagName)) {
-        let sourceContentTypeId;
-        const source = element.getAttribute('crafter-source');
-        if (source) {
-          current.craftercms.sourceMap[tagName] = source;
-          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id');
-          if (!sourceContentTypeId) {
-            console.error(
-              `[parseContentXML] No "crafter-source-content-type-id" attribute found together with "crafter-source".`
-            );
-          }
-        }
-        const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId].fields[tagName];
-        if (!field) {
-          console.error(
-            `[parseContentXML] Field "${tagName}" was not found on "${sourceContentTypeId ??
-              contentTypeId}" content type. "${source ?? path}" may have stale/outdated content properties.`
-          );
-        }
-        current[tagName] = parseElementByContentType(element, field, contentTypesLookup, instanceLookup);
-      }
-    });
-  }
-  return current;
-}
-
-// Code disabled temporarily
-// noinspection DuplicatedCode
-/* function parseContentXMLWithoutContentTypes(
-  doc: XMLDocument,
-  path: string = null,
-  instanceLookup: LookupTable<ContentInstance> = {}
-): LookupTable<ContentInstance> {
-  const id = nnou(doc)
-    ? getInnerHtml(doc.querySelector(':scope > objectId'))
-    : fileNameFromPath(path);
-  const contentType = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
-  instanceLookup[id] = {
-    craftercms: {
-      id,
-      path,
-      label: nnou(doc) ? getInnerHtml(doc.querySelector(':scope > internal-name')) : null,
-      locale: null,
-      dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector(':scope > createdDate_dt')) : null,
-      dateModified: nnou(doc)
-        ? getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'))
-        : null,
-      contentTypeId: contentType
-    }
-  };
-  if (nnou(doc)) {
-    parseContentXMLWithoutContentTypes_processFields(
-      doc.documentElement,
-      instanceLookup[id],
-      instanceLookup
-    );
-  }
-  return instanceLookup;
-}
-
-function parseContentXMLWithoutContentTypes_processFields(
-  element: Element,
-  instance: LookupTable<any>,
-  instanceLookup: LookupTable<ContentInstance>
-): void {
-  Array.from(element.children).forEach((elem: Element) => {
-    const fieldId = elem.tagName;
-    if (!systemPropsList.includes(fieldId)) {
-      if (fieldId.endsWith('_o')) {
-        const parentId = getInnerHtml(element.querySelector('objectId'));
-        const isNodeSelector =
-          Boolean(elem.querySelector(':scope > item > component')) ||
-          Boolean(
-            elem.querySelector(':scope > item > key') &&
-              elem.querySelector(':scope > item > value') &&
-              elem.querySelector(':scope > item > include')
-          );
-        if (isNodeSelector) {
-          // component
-          instanceLookup[parentId][fieldId] = Array.from(
-            elem.querySelectorAll(':scope > item')
-          ).map((item) => {
-            const component = item.querySelector(':scope > component');
-            const isEmbedded = Boolean(component);
-            return {
-              craftercms: {
-                id: isEmbedded ? getInnerHtml(component.querySelector(':scope > objectId')) : null,
-                path: isEmbedded ? null : getInnerHtml(item.querySelector(':scope > include')),
-                dateCreated: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > createdDate_dt'))
-                  : null,
-                dateModified: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > lastModifiedDate_dt'))
-                  : null,
-                contentTypeId: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > content-type'))
-                  : null,
-                label: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > internal-name'))
-                  : getInnerHtml(item.querySelector(':scope > value')),
-                locale: null
-              }
-            };
-          });
-        } else {
-          // repeat group
-          instanceLookup[parentId][fieldId] = Array.from(
-            elem.querySelectorAll(':scope > item')
-          ).map((item) => {
-            const groupItem = {};
-            parseContentXMLWithoutContentTypes_processFields(item, groupItem, instanceLookup);
-            return groupItem;
-          });
-        }
-      } else {
-        instance[fieldId] = getInnerHtml(elem);
-      }
-    }
-  });
-} */
-
-const systemPropsList = [
-  'orderDefault_f',
-  'content-type',
-  'display-template',
-  'no-template-required',
-  'merge-strategy',
-  'objectGroupId',
-  'objectId',
-  'file-name',
-  'folder-name',
-  'internal-name',
-  'disabled',
-  'createdDate',
-  'createdDate_dt',
-  'lastModifiedDate',
-  'lastModifiedDate_dt'
-];
 
 function writeContentUrl(qs: object): string {
   qs = new URLSearchParams(qs as URLSearchParams);
@@ -942,40 +705,20 @@ export function getChildrenByPath(
   );
 }
 
-export function copy(site: string, item: CopyItem): Observable<{ success: boolean }>;
-export function copy(site: string, path: string): Observable<{ success: boolean }>;
-export function copy(site: string, itemOrPath: string | CopyItem): Observable<{ success: boolean }> {
-  let item = typeof itemOrPath === 'string' ? { item: [{ uri: itemOrPath }] } : { item: [itemOrPath] };
-  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, item, CONTENT_TYPE_JSON).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<any> {
+  return postJSON('/studio/api/2/content/paste', {
+    siteId,
+    operation: clipboard.type,
+    targetPath,
+    item: getPasteItemFromPath(clipboard.sourcePath, clipboard.paths)
+  }).pipe(pluck('response'));
 }
 
-export function cut(site: string, path: string): Observable<any> {
-  return post(
-    `/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`,
-    { item: [{ uri: path }] },
-    CONTENT_TYPE_JSON
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
-}
-
-export function paste(site: string, path: string): Observable<string[]> {
-  return get(
-    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${encodeURIComponent(path)}`
-  ).pipe(pluck('response', 'status'), catchError(errorSelectorApi1));
-}
-
-export function duplicate(site: string, path: string): Observable<string> {
-  let parentPath: any = path;
-  if (path.endsWith('index.xml')) {
-    parentPath = withoutIndex(path);
-  }
-  return copy(site, path).pipe(
-    switchMap(() => paste(site, getParentPath(parentPath))),
-    // Duplicate only does shallow copy, so return the copied path
-    pluck('0')
-  );
+export function duplicate(siteId: string, path: string): Observable<any> {
+  return postJSON('/studio/api/2/content/duplicate', {
+    siteId,
+    path
+  }).pipe(pluck('response'));
 }
 
 export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
@@ -1063,8 +806,6 @@ const content = {
   getDetailedItem,
   getContentDOM,
   getChildrenByPath,
-  copy,
-  cut,
   paste,
   getContentInstanceLookup,
   updateField,

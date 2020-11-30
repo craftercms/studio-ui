@@ -37,6 +37,7 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
+import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/state';
 
 export default [
   (action$, state$) =>
@@ -46,7 +47,7 @@ export default [
       switchMap(([{ payload }, state]) => {
         const { id } = payload;
         const site = state.sites.active;
-        const storedState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`));
+        const storedState = getStoredPathNavigator(site, id);
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
           pathNavigatorFetchParentItems({
@@ -152,13 +153,10 @@ export default [
           state
         ]) => {
           if (response?.length > 0 || type === pathNavigatorSetCollapsed.type) {
-            localStorage.setItem(
-              `craftercms.pathNavigator.${state.sites.active}.${id}`,
-              JSON.stringify({
-                currentPath: state.pathNavigator[id].currentPath,
-                collapsed: state.pathNavigator[id].collapsed
-              })
-            );
+            setStoredPathNavigator(state.sites.active, id, {
+              currentPath: state.pathNavigator[id].currentPath,
+              collapsed: state.pathNavigator[id].collapsed
+            });
           }
         }
       ),

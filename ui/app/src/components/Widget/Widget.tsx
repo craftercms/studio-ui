@@ -26,7 +26,7 @@ export const TempTestContext = React.createContext<any>({});
 
 export interface WidgetDescriptor {
   id: string;
-  uiKey?: string;
+  uiKey?: string | number;
   roles?: string[];
   plugin?: PluginFileBuilder;
   configuration?: any;
