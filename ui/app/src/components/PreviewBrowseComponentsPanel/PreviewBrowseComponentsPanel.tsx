@@ -45,7 +45,7 @@ import { Resource } from '../../models/Resource';
 const translations = defineMessages({
   browse: {
     id: 'previewBrowseComponentsPanel.title',
-    defaultMessage: 'Browse components'
+    defaultMessage: 'Browse Components'
   },
   noResults: {
     id: 'previewBrowseComponentsPanel.noResults',
@@ -60,7 +60,7 @@ const translations = defineMessages({
     defaultMessage: 'next page'
   },
   loading: {
-    id: 'wordws.loading',
+    id: 'words.loading',
     defaultMessage: 'Loading'
   },
   selectContentType: {

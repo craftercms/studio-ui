@@ -39,7 +39,7 @@ function NotDevelopedDefault() {
   return <section>The page you've selected needs to be created by the site developers.</section>;
 }
 
-export default function(props: ContentTypeProps) {
+export default function ContentType(props: ContentTypeProps) {
   if (!props.contentTypeMap) {
     console.error(
       `The content type map was not supplied to ContentType component. ${

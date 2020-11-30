@@ -42,6 +42,7 @@ type ModelProps<P = {}> = PropsWithChildren<
   }
 >;
 
+// Field component is a slightly lighter/simpler version of RenderField. It has less options to render (e.g. no target, format)
 export function Field<P = {}>(props: FieldProps<P>) {
   const { model: modelProp, fieldId, index, component = 'div', ...other } = props;
   const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
@@ -49,7 +50,7 @@ export function Field<P = {}>(props: FieldProps<P>) {
   const passDownProps = {
     ...other,
     ...ice,
-    // If the component is an html element, the model would end up write as an
+    // If the component is an html element, `model` would end up written as an
     // attribute model="[object Object]".
     ...(typeof component === 'string' ? {} : { model })
   } as P;
@@ -62,6 +63,8 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
     fieldId,
     index,
     component = 'div',
+    // The target property for the field value. Can be multiple (CSVs),
+    // just like fieldId. Should have a 1-to-1 correspondence with fieldId.
     target = 'children',
     format = (value) => value,
     ...other

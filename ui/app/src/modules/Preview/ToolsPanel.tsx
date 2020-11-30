@@ -44,7 +44,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import LegacyDashboardFrame from '../../components/LegacyDashboardFrame';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Asset from '@material-ui/icons/ImageOutlined';
-import Component from '@material-ui/icons/ExtensionRounded';
+import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
 import Audiences from '@material-ui/icons/EmojiPeopleRounded';
 import PageExplorer from '../../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
@@ -145,7 +145,7 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
 // TODO: Move this to a better place.
 Object.entries({
   '@material-ui/icons/SearchRounded': SearchIcon,
-  '@material-ui/icons/ExtensionRounded': Component,
+  '@material-ui/icons/ExtensionOutlined': ExtensionOutlinedIcon,
   '@material-ui/icons/ImageOutlined': Asset,
   '@material-ui/icons/EmojiPeopleRounded': Audiences,
   '@material-ui/icons/DevicesRounded': Simulator,
