@@ -3456,102 +3456,92 @@
        * paste content to selected location
        */
       pasteContent: function(sType, args, tree) {
-        //Check source and destination paths.
-        if (Self.cutItem && Self.cutItem.parent.contentElId === oCurrentTextNode.contentElId) {
-          // Cut/paste in the same directory, would have no consequence, so simply jump as if everything was done correctly.
-          return false;
-        }
-
         window.pasteFlag = true;
-        var pasteCb = {
-          success: function(result) {
-            try {
-              const cutItem = Self.cutItem;
 
-              Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
-              if (cutItem) {
-                Self.refreshNodes(cutItem.parent, true, false, null, null, true);
-              }
+        const clipboard = CrafterCMSNext.system.store.getState().content.clipboard;
+        const path = oCurrentTextNode.data.uri;
 
-              const isPreview = CStudioAuthoringContext.isPreview;
-
-              if (cutItem && isPreview) {
-                var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-
-                if (current.uri == cutItem.data.uri) {
-                  var browserUri = result.status[0].split('/site/website').pop();
-                  browserUri = browserUri.split('/index.xml')[0];
-
-                  cutItem.data.browserUri = browserUri;
-                  cutItem.data.uri = result.status[0];
-
-                  CStudioAuthoring.Operations.refreshPreview(cutItem.data);
+        if (clipboard.type === 'CUT') {
+          CrafterCMSNext.services.content
+            .fetchWorkflowAffectedItems(CStudioAuthoringContext, clipboard.sourcePath)
+            .subscribe((items) => {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: {
+                  items,
+                  onContinue: {
+                    type: 'ITEM_MENU_PASTE_ITEM',
+                    payload: {
+                      path
+                    }
+                  }
                 }
-              }
-              Self.cutItem = null;
-
-              WcmDashboardWidgetCommon.refreshDashboard('MyRecentActivity');
-            } catch (e) {}
-          },
-
-          failure: function() {
-            YDom.removeClass(oCurrentTextNode.html.parentElement.previousSibling, 'ygtvloading');
-          },
-
-          tree: oCurrentTextNode
-        };
-
-        try {
-          YDom.addClass(oCurrentTextNode.html.parentElement.previousSibling, 'ygtvloading');
-        } catch (e) {
-          console.error(e.message);
+              });
+            });
+        } else {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'ITEM_MENU_PASTE_ITEM',
+            payload: {
+              path
+            }
+          });
         }
 
-        CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
+        // TODO: How To Refresh??
+        // cut: Self.refreshNodes(cutItem.parent, true, false, null, null, true);
+        // copy: Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
       },
       duplicateContent: function(sType, args, tree) {
-        var duplicateContentCallback = {
-          success: function() {
-            if (YDom.get('duplicate-loading')) {
-              YDom.get('duplicate-loading').style.display = 'none';
-            }
-          },
-          failure: function() {
-            if (YDom.get('duplicate-loading')) {
-              YDom.get('duplicate-loading').style.display = 'none';
+        const path = oCurrentTextNode.data.uri;
+        const eventIdCancel = 'duplicateCancel';
+        const eventIdSuccess = 'duplicateSuccess';
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_CONFIRM_DIALOG',
+          payload: {
+            title: CrafterCMSNext.i18n.intl.formatMessage({
+              id: 'words.duplicate',
+              defaultMessage: 'Duplicate'
+            }),
+            body: CrafterCMSNext.i18n.intl.formatMessage({
+              id: 'itemMenu.duplicateDialogBody',
+              defaultMessage:
+                "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?"
+            }),
+            onCancel: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'CLOSE_CONFIRM_DIALOG'
+                },
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                }
+              ]
+            },
+            onOk: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'CLOSE_CONFIRM_DIALOG'
+                },
+                {
+                  type: 'ITEM_MENU_DUPlICATE_ITEM',
+                  payload: {
+                    path: path,
+                    onSuccess: {
+                      type: 'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
+                    }
+                  }
+                }
+              ]
             }
           }
-        };
+        });
 
-        CStudioAuthoring.Operations.showSimpleDialog(
-          'duplicate-dialog',
-          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          'Duplicate',
-          "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
-          [
-            {
-              text: 'Duplicate',
-              handler: function() {
-                this.destroy();
-                CStudioAuthoring.Operations.duplicateContent(
-                  CStudioAuthoringContext.site,
-                  oCurrentTextNode.data.uri,
-                  duplicateContentCallback
-                );
-              },
-              isDefault: false
-            },
-            {
-              text: CMgs.format(formsLangBundle, 'cancel'),
-              handler: function() {
-                this.destroy();
-              },
-              isDefault: true
-            }
-          ],
-          YAHOO.widget.SimpleDialog.ICON_WARN,
-          'studioDialog'
-        );
+        // TODO: how to refresh??
+        // Self.refreshNodes(oCurrentTextNode.parent, true, false, null, null, true);
       },
       copyTree: function(sType, args, tree) {
         const path = oCurrentTextNode.data.uri;

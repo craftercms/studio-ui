@@ -290,7 +290,7 @@ export function ItemMenu(props: ItemMenuProps) {
       }
       case 'paste': {
         if (clipboard.type === 'CUT') {
-          fetchWorkflowAffectedItems(site, clipboard.paths[0]).subscribe((items) => {
+          fetchWorkflowAffectedItems(site, clipboard.sourcePath).subscribe((items) => {
             if (items?.length > 0) {
               dispatch(
                 showWorkflowCancellationDialog({
