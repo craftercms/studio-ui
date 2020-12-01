@@ -131,11 +131,11 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   }
 }
 
-export function getPasteItemFromPath(sourcePath: string, paths: string[]): PasteItem {
-  sourcePath = withoutIndex(sourcePath);
+export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
+  const sourcePath = withoutIndex(path);
   let lookup = {
     [sourcePath]: {
-      path: sourcePath,
+      path,
       children: []
     }
   };
