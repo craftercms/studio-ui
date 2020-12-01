@@ -33,9 +33,3 @@ export function fetchBlueprints(options?: { type?: string; limit?: number; showI
 export function createSite(site: MarketplaceSite) {
   return postJSON('/studio/api/2/sites/create_site_from_marketplace', site);
 }
-
-const marketplace = {
-  fetchBlueprints
-};
-
-export default marketplace;

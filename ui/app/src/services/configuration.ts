@@ -255,13 +255,3 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
     `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
-
-const configuration = {
-  getProductLanguages,
-  getRawConfiguration,
-  getConfigurationDOM,
-  getGlobalMenuItems,
-  getConfigurationHistory: getHistory
-};
-
-export default configuration;

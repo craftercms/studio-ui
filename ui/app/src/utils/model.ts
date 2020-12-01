@@ -112,6 +112,4 @@ const _default = {
   isEmbedded
 };
 
-export default _default;
-
 export { _default as ModelHelper };

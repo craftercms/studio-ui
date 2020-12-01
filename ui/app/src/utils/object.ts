@@ -263,27 +263,3 @@ export function applyDeserializedXMLTransforms<T extends object = {}>(
   }
   return newObject;
 }
-
-const object = {
-  pluckProps,
-  reversePluckProps,
-  camelizeProps,
-  createLookupTable,
-  flattenHierarchical,
-  hierarchicalToLookupTable,
-  normalizeProp,
-  retrieveProperty,
-  deleteProperty,
-  setProperty,
-  nnou,
-  nou,
-  resolveEntityCollectionFetch,
-  ref,
-  findParentModelId,
-  isPlainObject,
-  extend,
-  toQueryString,
-  applyDeserializedXMLTransforms
-};
-
-export default object;

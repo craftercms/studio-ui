@@ -151,18 +151,3 @@ export function getSimplifiedVersion(version: string, options: { minor?: boolean
   !minor && pieces.pop();
   return pieces.join('.');
 }
-
-const string = {
-  camelize,
-  capitalize,
-  underscore,
-  dasherize,
-  formatBytes,
-  dataUriToBlob,
-  fileNameFromPath,
-  decodeHTML,
-  bytesToSize,
-  insureSingleSlash
-};
-
-export default string;

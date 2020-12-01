@@ -121,5 +121,4 @@ const craftercms: CrafterCMSGlobal = {
 };
 
 window.craftercms = craftercms;
-
 export default craftercms;

@@ -359,13 +359,3 @@ export function fetchLegacyFormDefinition(site: string, contentTypeId: string): 
     `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`
   ).pipe(pluck('response'));
 }
-
-const contentTypes = {
-  fetchContentType,
-  fetchContentTypes,
-  fetchLegacyContentType,
-  fetchLegacyContentTypes,
-  fetchLegacyFormDefinition
-};
-
-export default contentTypes;

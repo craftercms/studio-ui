@@ -77,6 +77,4 @@ const _default = {
   getFieldsByType
 };
 
-export default _default;
-
 export { _default as ContentTypeHelper };

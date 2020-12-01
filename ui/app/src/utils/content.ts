@@ -483,14 +483,3 @@ export function createChildModelLookup(
   });
   return lookup;
 }
-
-const content = {
-  isEditableAsset,
-  parseContentXML,
-  parseLegacyItemToSandBoxItem,
-  parseLegacyItemToDetailedItem,
-  createChildModelIdList,
-  createChildModelLookup
-};
-
-export default content;
