@@ -668,7 +668,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
             clearSelectedContent: function() {
               $('#activeContentActions').removeClass('selected-content');
-              WcmDashboardWidgetCommon.refreshAllDashboards();
+              WcmDashboardWidgetCommon.clearSelections();
               CStudioAuthoring.SelectedContent.clear();
             },
 
