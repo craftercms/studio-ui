@@ -84,24 +84,16 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
     if (!file) {
       CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback, ['image/*']);
     } else {
-      CrafterCMSNext.services.content
-        .uploadDataUrl(site, file, path, '_csrf', '/studio/api/2/webdav/upload', {
-          name: file.name,
-          type: file.type,
-          siteId: site,
-          path: path,
-          profileId: me.profileId
-        })
-        .subscribe(
-          (response) => {
-            if (response.type === 'upload-success') {
-              callback.success(response.payload.item);
-            }
-          },
-          (error) => {
-            insertCb.failure(error);
+      CrafterCMSNext.services.content.uploadDataWebDAV(site, file, path, me.profileId, '_csrf').subscribe(
+        (response) => {
+          if (response.type === 'upload-success') {
+            callback.success(response.payload.item);
           }
-        );
+        },
+        (error) => {
+          insertCb.failure(error);
+        }
+      );
     }
   },
 

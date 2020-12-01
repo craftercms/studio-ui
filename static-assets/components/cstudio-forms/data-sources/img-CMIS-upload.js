@@ -84,24 +84,16 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
     if (!file) {
       CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
     } else {
-      CrafterCMSNext.services.content
-        .uploadDataUrl(site, file, path, '_csrf', '/studio/api/2/cmis/upload', {
-          name: file.name,
-          type: file.type,
-          siteId: site,
-          cmisPath: path,
-          cmisRepoId: me.repositoryId
-        })
-        .subscribe(
-          (response) => {
-            if (response.type === 'upload-success') {
-              callback.success(response.payload.item);
-            }
-          },
-          (error) => {
-            insertCb.failure(error);
+      CrafterCMSNext.services.content.uploadDataCMIS(site, file, path, me.repositoryId, '_csrf').subscribe(
+        (response) => {
+          if (response.type === 'upload-success') {
+            callback.success(response.payload.item);
           }
-        );
+        },
+        (error) => {
+          insertCb.failure(error);
+        }
+      );
     }
   },
 

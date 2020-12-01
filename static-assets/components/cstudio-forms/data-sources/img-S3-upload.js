@@ -86,24 +86,16 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
         fileTypes: ['image/*']
       });
     } else {
-      CrafterCMSNext.services.content
-        .uploadDataUrl(site, file, path, '_csrf', '/studio/api/2/aws/s3/upload.json', {
-          name: file.name,
-          type: file.type,
-          siteId: site,
-          path: path,
-          profileId: me.profileId
-        })
-        .subscribe(
-          (response) => {
-            if (response.type === 'upload-success') {
-              callback.success(response.payload.item);
-            }
-          },
-          (error) => {
-            insertCb.failure(error);
+      CrafterCMSNext.services.content.uploadDataS3(site, file, path, me.profileId, '_csrf').subscribe(
+        (response) => {
+          if (response.type === 'upload-success') {
+            callback.success(response.payload.item);
           }
-        );
+        },
+        (error) => {
+          insertCb.failure(error);
+        }
+      );
     }
   },
 

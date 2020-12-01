@@ -564,20 +564,18 @@ function insertCollectionItem(
   }
 }
 
-export function uploadDataUrl(
-  site: string,
+function uploadData(
+  uploadUrl: string,
   file: any,
   path: string,
-  xsrfArgumentName: string,
-  uploadUrl?: string,
-  metaData?: object
+  metaData: object,
+  xsrfArgumentName: string
 ): Observable<any> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
-    const uploadAssetUrl = `${uploadUrl ?? '/studio/asset-upload'}${qs}`;
-    uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
-    uppy.setMeta(metaData ?? { site, path });
+    uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}` });
+    uppy.setMeta(metaData);
 
     const blob = dataUriToBlob(file.dataUrl);
 
@@ -617,6 +615,76 @@ export function uploadDataUrl(
       uppy.cancelAll();
     };
   });
+}
+
+export function uploadDataUrl(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
+  return uploadData('/studio/asset-upload', file, path, { site, path }, xsrfArgumentName);
+}
+
+export function uploadDataS3(
+  site: string,
+  file: any,
+  path: string,
+  profileId: string,
+  xsrfArgumentName: string
+): Observable<any> {
+  return uploadData(
+    '/studio/api/2/aws/s3/upload.json',
+    file,
+    path,
+    {
+      name: file.name,
+      type: file.type,
+      siteId: site,
+      path,
+      profileId: profileId
+    },
+    xsrfArgumentName
+  );
+}
+
+export function uploadDataWebDAV(
+  site: string,
+  file: any,
+  path: string,
+  profileId: string,
+  xsrfArgumentName: string
+): Observable<any> {
+  return uploadData(
+    '/studio/api/2/webdav/upload',
+    file,
+    path,
+    {
+      name: file.name,
+      type: file.type,
+      siteId: site,
+      path,
+      profileId: profileId
+    },
+    xsrfArgumentName
+  );
+}
+
+export function uploadDataCMIS(
+  site: string,
+  file: any,
+  path: string,
+  repositoryId: string,
+  xsrfArgumentName: string
+): Observable<any> {
+  return uploadData(
+    '/studio/api/2/cmis/upload',
+    file,
+    path,
+    {
+      name: file.name,
+      type: file.type,
+      siteId: site,
+      cmisPath: path,
+      cmisRepoId: repositoryId
+    },
+    xsrfArgumentName
+  );
 }
 
 export function getBulkUploadUrl(site: string, path: string): string {
@@ -828,6 +896,9 @@ const content = {
   deleteItem,
   getContentByContentType,
   uploadDataUrl,
+  uploadDataS3,
+  uploadDataWebDAV,
+  uploadDataCMIS,
   getBulkUploadUrl,
   fetchQuickCreateList,
   getContentHistory: getHistory,
