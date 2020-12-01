@@ -76,20 +76,24 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
       if (!file) {
         CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['image/*']);
       } else {
-        CStudioAuthoring.Operations.directUploadAsset(file, site, path, {
-          success: function(response) {
-            const imageData = { fileName: response.message.internalName };
-            const relativeUrl = path.endsWith('/') ? path + imageData.fileName : path + '/' + imageData.fileName;
-            const url = `${CStudioAuthoringContext.previewAppBaseUri}${relativeUrl}`;
-            imageData.previewUrl = url + '?' + new Date().getTime();
-            imageData.relativeUrl = relativeUrl;
+        CrafterCMSNext.services.content.uploadDataUrl(site, file, path, '_csrf').subscribe(
+          null,
+          (error) => {
+            insertCb.failure(error);
+          },
+          () => {
+            const relativeUrl = path.endsWith('/') ? path + file.name : path + '/' + file.name;
+            const previewUrl = `${CStudioAuthoringContext.previewAppBaseUri}${relativeUrl}`;
+
+            const imageData = {
+              fileName: file.name,
+              relativeUrl,
+              previewUrl
+            };
 
             insertCb.success(imageData);
-          },
-          failure: function(error) {
-            insertCb.failure(error);
           }
-        });
+        );
       }
     } else {
       var errorString = CMgs.format(langBundle, 'noPathSetError');

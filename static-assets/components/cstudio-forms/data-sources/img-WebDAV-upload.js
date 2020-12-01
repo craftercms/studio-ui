@@ -57,8 +57,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
 
     var callback = {
       success: function(fileData) {
-        var uri = fileData;
-        var fileExtension = fileData.split('.').pop();
+        var uri = fileData.url ? fileData.url : fileData;
+        var fileExtension = uri.split('.').pop();
 
         var imageData = {
           previewUrl: uri,
@@ -66,6 +66,10 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
           fileExtension: fileExtension,
           remote: true
         };
+
+        if (fileData.name) {
+          imageData.fileName = fileData.name;
+        }
 
         insertCb.success(imageData);
       },
@@ -80,21 +84,24 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
     if (!file) {
       CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback, ['image/*']);
     } else {
-      CStudioAuthoring.Operations.directWebDAVUploadAsset(file, site, path, me.profileId, {
-        success: function(response) {
-          console.log(response);
-          insertCb.success({
-            fileName: response.item.name,
-            previewUrl: response.item.url,
-            relativeUrl: response.item.url,
-            fileExtension: response.item.url.split('.').pop(),
-            remote: true
-          });
-        },
-        failure: function(error) {
-          insertCb.failure(error);
-        }
-      });
+      CrafterCMSNext.services.content
+        .uploadDataUrl(site, file, path, '_csrf', '/studio/api/2/webdav/upload', {
+          name: file.name,
+          type: file.type,
+          siteId: site,
+          path: path,
+          profileId: me.profileId
+        })
+        .subscribe(
+          (response) => {
+            if (response.type === 'upload-success') {
+              callback.success(response.payload.item);
+            }
+          },
+          (error) => {
+            insertCb.failure(error);
+          }
+        );
     }
   },
 

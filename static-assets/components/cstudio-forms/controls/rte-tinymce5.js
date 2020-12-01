@@ -690,6 +690,11 @@ CStudioAuthoring.Module.requireModule(
           const _self = this;
           const datasourceMap = this.form.datasourceMap;
 
+          const $imageToAdd = $(_self.editor.iframeElement)
+            .contents()
+            .find(`img[src="${blobInfo.blobUri()}"]`)
+            .css('opacity', 0.3);
+
           if (this.editorImageDatasources.length > 0) {
             this.editor.windowManager.open({
               title: 'Source',
@@ -709,6 +714,10 @@ CStudioAuthoring.Module.requireModule(
               },
               onSubmit: function(api) {
                 const ds = datasourceMap[api.getData().datasource];
+
+                const file = blobInfo.blob();
+                file.dataUrl = `data:${file.type};base64,${blobInfo.base64()}`;
+
                 _self.addManagedImage(
                   ds,
                   {
@@ -719,6 +728,7 @@ CStudioAuthoring.Module.requireModule(
                         type: 'success'
                       });
 
+                      $imageToAdd.css('opacity', '');
                       success(url);
                     },
                     failure: function(error) {
@@ -727,22 +737,15 @@ CStudioAuthoring.Module.requireModule(
                         timeout: 3000,
                         type: 'error'
                       });
-                      $(_self.editor.iframeElement)
-                        .contents()
-                        .find(`img[src="${blobInfo.blobUri()}"]`)
-                        .remove();
+                      $imageToAdd.remove();
                     }
                   },
-                  blobInfo.blob()
+                  file
                 );
                 api.close();
               },
-              onCancel: function(api) {
-                $(_self.editor.iframeElement)
-                  .contents()
-                  .find(`img[src="${blobInfo.blobUri()}"]`)
-                  .remove();
-
+              onCancel: function() {
+                $imageToAdd.remove();
                 failure(null, { remove: true });
               },
               buttons: [

@@ -763,17 +763,28 @@ function insertCollectionItem(
   }
 }
 
-export function uploadDataUrl(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
+export function uploadDataUrl(
+  site: string,
+  file: any,
+  path: string,
+  xsrfArgumentName: string,
+  uploadUrl?: string,
+  metaData?: object
+): Observable<any> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
-    const uploadAssetUrl = `/studio/asset-upload${qs}`;
+    const uploadAssetUrl = `${uploadUrl ?? '/studio/asset-upload'}${qs}`;
     uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
-    uppy.setMeta({ site, path });
+    uppy.setMeta(metaData ?? { site, path });
 
     const blob = dataUriToBlob(file.dataUrl);
 
-    uppy.on('upload-success', () => {
+    uppy.on('upload-success', (file, response) => {
+      subscriber.next({
+        type: 'upload-success',
+        payload: response.body
+      });
       subscriber.complete();
     });
 

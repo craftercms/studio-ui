@@ -57,8 +57,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
 
     var callback = {
       success: function(fileData) {
-        var uri = fileData.url;
-        var fileExtension = fileData.fileExtension;
+        var uri = fileData.url ? fileData.url : fileData;
+        var fileExtension = uri.split('.').pop();
 
         var imageData = {
           previewUrl: uri,
@@ -66,6 +66,10 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
           fileExtension: fileExtension,
           remote: true
         };
+
+        if (fileData.name) {
+          imageData.fileName = fileData.name;
+        }
 
         insertCb.success(imageData);
       },
@@ -80,19 +84,24 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
     if (!file) {
       CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
     } else {
-      CStudioAuthoring.Operations.directCMISUploadAsset(file, site, path, me.repositoryId, {
-        success: function(response) {
-          insertCb.success({
-            fileName: response.item.name,
-            previewUrl: response.item.url,
-            relativeUrl: response.item.url,
-            fileExtension: response.item.fileExtension
-          });
-        },
-        failure: function(error) {
-          insertCb.failure(error);
-        }
-      });
+      CrafterCMSNext.services.content
+        .uploadDataUrl(site, file, path, '_csrf', '/studio/api/2/cmis/upload', {
+          name: file.name,
+          type: file.type,
+          siteId: site,
+          cmisPath: path,
+          cmisRepoId: me.repositoryId
+        })
+        .subscribe(
+          (response) => {
+            if (response.type === 'upload-success') {
+              callback.success(response.payload.item);
+            }
+          },
+          (error) => {
+            insertCb.failure(error);
+          }
+        );
     }
   },
 
