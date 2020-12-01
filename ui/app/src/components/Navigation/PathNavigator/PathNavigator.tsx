@@ -220,11 +220,11 @@ export default function PathNavigator(props: WidgetProps) {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
-            if (state.leaves.some((path) => withoutIndex(path) === payload.target)) {
+            if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
               dispatch(
                 pathNavigatorUpdate({
                   id,
-                  leaves: state.leaves.filter((path) => withoutIndex(path) !== payload.target)
+                  leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
                 })
               );
             }
