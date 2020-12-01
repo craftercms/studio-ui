@@ -17,9 +17,12 @@
 import React, { useState } from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { Dialog } from '@material-ui/core';
-import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { Widget } from '../Widget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useMinimizeDialog, usePossibleTranslation } from '../../utils/hooks';
+import { maximizeDialog, minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+import { useDispatch } from 'react-redux';
+import DialogHeader from '../Dialogs/DialogHeader';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -55,15 +58,56 @@ const useStyles = makeStyles((theme) =>
 
 export default function ToolsPanelEmbeddedAppViewButton(props) {
   const [open, setOpen] = useState(false);
-  const openEmbeddedApp = () => setOpen(true);
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const id = props.widget.uiKey;
+
+  const minimized = useMinimizeDialog({
+    id,
+    title: usePossibleTranslation(props.title),
+    minimized: false
+  });
+
+  const onMinimize = () => {
+    dispatch(minimizeDialog({ id }));
+  };
+
+  const openEmbeddedApp = () => {
+    if (minimized) {
+      dispatch(maximizeDialog({ id }));
+    }
+    setOpen(true);
+  };
+
   return (
     <>
       <ToolsPanelListItemButton {...props} onClick={openEmbeddedApp} />
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xl" classes={{ paper: classes.dialog }}>
-        <ToolPanel title={props.title} onBack={() => setOpen(false)} classes={{ body: classes.toolPanelBody }}>
+      <Dialog
+        open={open && !minimized}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="xl"
+        classes={{ paper: classes.dialog }}
+      >
+        <DialogHeader
+          title={props.title}
+          rightActions={[
+            {
+              icon: 'MinimizeIcon',
+              onClick: onMinimize
+            },
+            {
+              icon: 'CloseIcon',
+              onClick: () => {
+                setOpen(false);
+              }
+            }
+          ]}
+        />
+        <section className={classes.toolPanelBody}>
           <Widget {...props.widget} />
-        </ToolPanel>
+        </section>
       </Dialog>
     </>
   );

@@ -182,7 +182,6 @@ const getPathSelectedStyles = makeStyles(() =>
   createStyles({
     wrapper: {
       display: 'flex',
-      background: palette.white,
       padding: '10px 12px',
       border: `1px solid  ${palette.gray.light1}`,
       borderRadius: '5px',
@@ -192,8 +191,7 @@ const getPathSelectedStyles = makeStyles(() =>
     },
     selected: {
       fontWeight: 600,
-      marginRight: '10px',
-      color: palette.gray.medium4
+      marginRight: '10px'
     },
     root: {
       flexGrow: 1
@@ -259,7 +257,7 @@ function PathSelected(props: PathSelectedProps) {
   return (
     <>
       <section className={clsx(classes.wrapper, invalidPath && 'invalid')}>
-        <Typography className={classes.selected} display="inline">
+        <Typography className={classes.selected} display="inline" color="textSecondary">
           <FormattedMessage id="words.selected" defaultMessage="Selected" />
         </Typography>
         <Typography color="textSecondary" display="inline">

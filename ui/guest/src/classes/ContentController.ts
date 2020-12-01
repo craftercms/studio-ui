@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import Model from '../utils/model';
 import Cookies from 'js-cookie';
@@ -34,17 +34,12 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { createLookupTable, isNullOrUndefined } from '../utils/object';
+import { createLookupTable, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
-import {
-  findComponentContainerFields,
-  getCollection,
-  getCollectionWithoutItemAtIndex,
-  getParentModelId
-} from '../utils/ice';
+import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import { createChildModelIdList, modelsToLookup, normalizeModelsLookup } from '../utils/content';
+import { modelsToLookup, normalizeModelsLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
 
@@ -60,129 +55,58 @@ crafterConf.getConfig().baseUrl === '' &&
 // }
 
 const operations$ = new Subject<Operation>();
-const operations = operations$.asObservable();
+
+const operationsObs$ = operations$.asObservable();
 
 export const children = {
   /* [id]: [id, id, id] */
 };
 
-const modelsRequested = {};
+const pathsRequested = {};
 
-// region Internal models$ and contentTypes
+const paths$ = new BehaviorSubject<LookupTable<string>>({
+  /* 'path': 'modelId' */
+});
+
+const models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
+  /* 'modelId': { ...modelData } */
+});
+
+const contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
+  /* 'contentTypeId': { ...contentTypeData } */
+});
 
 // Share operator makes the behaviour subject's behaviour go away. New subscribers
 // don't receive the latest value as soon as they subscribe. Would need to multicast
 // to be able to continue using share
+const notEmpty = (objects) => Object.keys(objects).length > 0;
+const modelsObs$ = models$.pipe(filter(notEmpty));
+const contentTypesObs$ = contentTypes$.pipe(filter(notEmpty));
 
-const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
-  /* 'modelId': { ...modelData } */
-});
-
-const modelsObs$ = _models$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
-
-const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
-  /* ... */
-});
-const contentTypesObs$ = _contentTypes$.asObservable().pipe(filter((objects) => Object.keys(objects).length > 0));
-
-// endregion
-
-function computeChildren(model: ContentInstance): void {
-  let childIds = [];
-  const modelId = Model.prop(model, 'id');
-
-  const contentTypeId = Model.getContentTypeId(model);
-  const contentType = getCachedContentType(contentTypeId);
-
-  findComponentContainerFields(contentType.fields).forEach((field) => {
-    const value = Model.value(model, field.id);
-    if (value != null) {
-      if (field.type === 'node-selector') {
-        childIds = childIds.concat(value);
-      } else if (field.type === 'repeat') {
-        // TODO ...
-        throw new Error('Path not implemented.');
-      }
-    }
-  });
-
-  children[modelId] = childIds.length ? childIds : null;
-}
+export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$ };
 
 // region Models
 
-export function getModel(modelId: string): Promise<ContentInstance> {
-  return getModel$(modelId).toPromise();
-}
-
-export function getModel$(modelId: string): Observable<ContentInstance> {
-  return models$(modelId).pipe(
-    filter((models) => modelId in models),
-    map((models) => models[modelId])
+export function model$(modelId: string): Observable<ContentInstance> {
+  return models$.pipe(
+    pluck(modelId),
+    filter((model) => Boolean(model))
   );
 }
 
-export function models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
-  modelId && !hasCachedModel(modelId) && fetchModel(modelId);
-  return modelsObs$;
-}
-
 export function hasCachedModel(modelId: string): boolean {
-  return getCachedModel(modelId) != null;
+  return Boolean(models$.value[modelId]);
 }
 
 export function getCachedModel(modelId: string): ContentInstance {
-  return getCachedModels()[modelId];
+  return models$.value[modelId];
 }
 
 export function getCachedModels(): LookupTable<ContentInstance> {
-  return _models$.value;
+  return models$.value;
 }
 
-const fetching$ = new BehaviorSubject<boolean>(false);
-
-function fetchModel(modelId: string): void {
-  if (!(modelId in modelsRequested)) {
-    modelsRequested[modelId] = true;
-    fetching$
-      .pipe(
-        filter((isFetching) => !isFetching),
-        switchMap(() => _models$.pipe(pluck(modelId), take(1))),
-        switchMap((model) => {
-          if (isNullOrUndefined(model)) {
-            return fetchById(modelId);
-          } else {
-            // Model was already fetched, discard repeated request.
-            return NEVER;
-          }
-        }),
-        take(1)
-      )
-      .subscribe(modelResponseReceived, (e) => console.log('Model fetch has failed...', e));
-  }
-}
-
-function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
-  const currentModels = _models$.value;
-  const normalizedModels = normalizeModelsLookup(responseModels);
-
-  Object.entries(responseModels).forEach(([id, model]) => {
-    children[id] = createChildModelIdList(model);
-    children[id].forEach((modelId) => {
-      modelsRequested[modelId] = true;
-    });
-    if (children[id].length === 0) {
-      children[id] = null;
-    }
-  });
-
-  _models$.next(Object.assign({}, currentModels, normalizedModels));
-
-  fetching$.next(false);
-}
-
-function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
-  fetching$.next(true);
+export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
   return search(
     createQuery('elasticsearch', {
       query: {
@@ -213,52 +137,50 @@ function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
   );
 }
 
+export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance> {
+  if (nou(path)) {
+    return of(null);
+  } else if (pathsRequested[path]) {
+    return paths$.pipe(
+      filter((paths) => Boolean(paths[path])),
+      pluck(path),
+      map((modelId) => models$.value[modelId])
+    );
+  } else {
+    pathsRequested[path] = true;
+    return fetchByPath(path).pipe(pluck('model'));
+  }
+}
+
+export function fetchByPath(
+  path: string
+): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
+  return of('nothing').pipe(
+    tap(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } })),
+    switchMap(() =>
+      fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
+        pluck('payload'),
+        filter((payload) => payload.path === path),
+        take(1)
+      )
+    )
+  );
+}
+
 // endregion
 
 // region Content Types
 
-export function getContentType(contentTypeId: string): Promise<ContentType> {
-  return getContentType$(contentTypeId).toPromise();
-}
-
-export function getContentType$(contentTypeId: string): Observable<ContentType> {
-  !hasCachedContentType(contentTypeId) && fetchContentType(contentTypeId);
-  return contentTypesObs$.pipe(
-    filter((contentTypes) => contentTypeId in contentTypes),
-    map((contentTypes) => contentTypes[contentTypeId])
-  );
-}
-
-export function contentTypes$(): Observable<LookupTable<ContentType>> {
-  return contentTypesObs$;
-}
-
 export function hasCachedContentType(contentTypeId: string): boolean {
-  return getCachedContentType(contentTypeId) != null;
+  return Boolean(contentTypes$.value[contentTypeId]);
 }
 
 export function getCachedContentType(contentTypeId: string): ContentType {
-  return getCachedContentTypes()[contentTypeId];
+  return contentTypes$.value[contentTypeId];
 }
 
 export function getCachedContentTypes(): LookupTable<ContentType> {
-  return _contentTypes$.value;
-}
-
-function fetchContentType(contentTypeId: string): boolean {
-  return false;
-}
-
-function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
-function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
-function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
-  if (Array.isArray(responseContentTypes)) {
-    (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
-  }
-
-  const currentContentTypes = _contentTypes$.value;
-
-  _contentTypes$.next(Object.assign({}, currentContentTypes, responseContentTypes));
+  return contentTypes$.value;
 }
 
 // endregion
@@ -289,7 +211,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   Model.value(model, fieldId, value);
 
   // Update the model cache
-  _models$.next({
+  models$.next({
     ...models,
     ...modelsToUpdate,
     [modelId]: model
@@ -319,7 +241,7 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
   // Insert in desired position
   result.splice(index, 0, item);
 
-  _models$.next({
+  models$.next({
     ...models,
     [modelId]: {
       ...model,
@@ -391,7 +313,7 @@ export function insertComponent(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
-  _models$.next({
+  models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
@@ -434,7 +356,7 @@ export function insertInstance(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
-  _models$.next({
+  models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
@@ -475,7 +397,7 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
-  _models$.next({
+  models$.next({
     ...models,
     [modelId]: {
       ...model,
@@ -568,7 +490,7 @@ export function moveItem(
     newTargetModel[targetFieldId] = targetResult;
   }
 
-  _models$.next(
+  models$.next(
     originalModelId === targetModelId
       ? {
           ...models,
@@ -608,7 +530,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
-  _models$.next({
+  models$.next({
     ...models,
     [modelId]: {
       ...model,
@@ -632,18 +554,35 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
 // endregion
 
-// Listen for host content type updates
-fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => contentTypesResponseReceived(data.payload));
+// Host sends over all content types upon Guest check in.
+fromTopic(CONTENT_TYPES_RESPONSE)
+  .pipe(pluck('payload'))
+  .subscribe((contentTypes) => {
+    contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
+  });
+
+fromTopic('FETCH_GUEST_MODEL_COMPLETE')
+  .pipe(pluck('payload'))
+  .subscribe(({ modelLookup, childrenMap }) => {
+    const normalizedModels = normalizeModelsLookup(modelLookup);
+    const modelIdByPath = {};
+    Object.values(normalizedModels).forEach((model) => {
+      // Embedded components don't have a path.
+      if (model.craftercms.path) {
+        pathsRequested[model.craftercms.path] = true;
+        modelIdByPath[model.craftercms.path] = model.craftercms.id;
+      }
+    });
+    Object.assign(children, childrenMap);
+    models$.next({ ...models$.value, ...normalizedModels });
+    paths$.next({ ...paths$.value, ...modelIdByPath });
+  });
 
 const ContentController = {
   children,
-  operations,
-  getModel,
-  getModel$,
-  getContentType,
-  getContentType$,
-  models$,
-  contentTypes$,
+  models$: modelsObs$,
+  operations$: operationsObs$,
+  contentTypes$: contentTypesObs$,
   hasCachedModel,
   getCachedModel,
   getCachedModels,

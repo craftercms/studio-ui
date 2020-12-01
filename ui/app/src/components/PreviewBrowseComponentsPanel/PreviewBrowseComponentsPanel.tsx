@@ -29,7 +29,8 @@ import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   fetchComponentsByContentType,
-  setContentTypeFilter
+  setContentTypeFilter,
+  setPreviewEditMode
 } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import SearchBar from '../Controls/SearchBar';
@@ -44,7 +45,7 @@ import { Resource } from '../../models/Resource';
 const translations = defineMessages({
   browse: {
     id: 'previewBrowseComponentsPanel.title',
-    defaultMessage: 'Browse components'
+    defaultMessage: 'Browse Components'
   },
   noResults: {
     id: 'previewBrowseComponentsPanel.noResults',
@@ -59,7 +60,7 @@ const translations = defineMessages({
     defaultMessage: 'next page'
   },
   loading: {
-    id: 'wordws.loading',
+    id: 'words.loading',
     defaultMessage: 'Loading'
   },
   selectContentType: {
@@ -150,6 +151,7 @@ export default function PreviewBrowseComponentsPanel() {
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = contentTypesBranch.byId
     ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
     : null;
@@ -186,7 +188,10 @@ export default function PreviewBrowseComponentsPanel() {
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const hostToGuest$ = getHostToGuestBus();
 
-  const onDragStart = (item: ContentInstance) =>
+  const onDragStart = (item: ContentInstance) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
     hostToGuest$.next({
       type: COMPONENT_INSTANCE_DRAG_STARTED,
       payload: {
@@ -194,6 +199,7 @@ export default function PreviewBrowseComponentsPanel() {
         contentType: contentTypesBranch.byId[item.craftercms.contentTypeId]
       }
     });
+  };
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 

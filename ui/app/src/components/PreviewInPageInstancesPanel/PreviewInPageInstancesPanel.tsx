@@ -19,7 +19,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter } from '../../state/actions/preview';
+import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../SystemStatus/Suspencified';
 import ContentInstance from '../../models/ContentInstance';
@@ -90,7 +90,7 @@ export default function PreviewInPageInstancesPanel() {
   const guest = usePreviewGuest();
   const [keyword, setKeyword] = useState('');
   const hostToGuest$ = getHostToGuestBus();
-
+  const editMode = useSelection((state) => state.preview.editMode);
   const models = useMemo(() => {
     return guest?.models;
   }, [guest]);
@@ -154,6 +154,9 @@ export default function PreviewInPageInstancesPanel() {
   };
 
   const onItemClick = (instance: ContentInstance) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
     hostToGuest$.next({
       type: CONTENT_TREE_FIELD_SELECTED,
       payload: {

@@ -24,7 +24,7 @@ export function fromString(xml: string): Document {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
 }
 
-export function serialize(doc: XMLDocument, options?: { format: boolean }): string {
+export function serialize(doc: Node, options?: { format: boolean }): string {
   options = Object.assign({ format: true }, options || {});
   const content = new XMLSerializer().serializeToString(doc);
   return options.format ? beautify(content, { printWidth: +Infinity }) : content;
@@ -68,9 +68,9 @@ export function getInnerHtml(element: Element, options = { trim: true }) {
   return nnou(content) ? (options.trim ? content.trim() : content) : null;
 }
 
-export function getInnerHtmlNumber(element: Element): number {
+export function getInnerHtmlNumber(element: Element, parser = parseInt): number {
   const content = getInnerHtml(element);
-  const num = parseInt(content);
+  const num = parser(content);
   if (content === null || content === '') {
     return null;
   } else if (isNaN(num)) {
@@ -139,10 +139,10 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
 }
 
 export function deserialize(xml: string): any;
-export function deserialize(xml: XMLDocument): any;
+export function deserialize(xml: Node): any;
 export function deserialize(xml: string, options: X2jOptionsOptional): any;
-export function deserialize(xml: XMLDocument, options: X2jOptionsOptional): any;
-export function deserialize(xml: string | XMLDocument, options?: X2jOptionsOptional): any {
+export function deserialize(xml: Node, options: X2jOptionsOptional): any;
+export function deserialize(xml: string | Node, options?: X2jOptionsOptional): any {
   if (typeof xml !== 'string') {
     xml = serialize(xml);
   }

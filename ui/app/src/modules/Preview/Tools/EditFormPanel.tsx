@@ -32,6 +32,7 @@ import { ModelHelper } from '../../../utils/model';
 import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -199,21 +200,20 @@ function EditFormPanelBody() {
 
   return (
     <>
-      <ToolPanel title={title} onBack={onBack} BackIcon={CloseRounded}>
-        <div className={classes.formWrapper}>
-          <Button variant="outlined" color="primary" onClick={(e) => openDialog('form')}>
-            {formatMessage(translations.openComponentForm)}
+      <DialogHeader title={title} onDismiss={onBack} />
+      <div className={classes.formWrapper}>
+        <Button variant="outlined" color="primary" onClick={(e) => openDialog('form')}>
+          {formatMessage(translations.openComponentForm)}
+        </Button>
+        <Button variant="outlined" color="primary" onClick={(e) => openDialog('template')}>
+          {formatMessage(translations.editTemplate)}
+        </Button>
+        {selectedContentType.includes('/page') && (
+          <Button variant="outlined" color="primary" onClick={(e) => openDialog('controller')}>
+            {formatMessage(translations.editController)}
           </Button>
-          <Button variant="outlined" color="primary" onClick={(e) => openDialog('template')}>
-            {formatMessage(translations.editTemplate)}
-          </Button>
-          {selectedContentType.includes('/page') && (
-            <Button variant="outlined" color="primary" onClick={(e) => openDialog('controller')}>
-              {formatMessage(translations.editController)}
-            </Button>
-          )}
-        </div>
-      </ToolPanel>
+        )}
+      </div>
     </>
   );
 }

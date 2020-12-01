@@ -20,7 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
 
-type LogInFormProps = PropsWithChildren<{
+export type LogInFormProps = PropsWithChildren<{
   username: string;
   password: string;
   isFetching: boolean;
@@ -34,7 +34,7 @@ type LogInFormProps = PropsWithChildren<{
   };
 }>;
 
-export function LogInForm(props: LogInFormProps) {
+export default function LogInForm(props: LogInFormProps) {
   const {
     username,
     onSubmit,

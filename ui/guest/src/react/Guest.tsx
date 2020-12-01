@@ -16,10 +16,10 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import $ from 'jquery';
-import { fromEvent, interval, merge, zip } from 'rxjs';
-import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { fromEvent, interval, merge } from 'rxjs';
+import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
-import contentController from '../classes/ContentController';
+import { contentTypes$ } from '../classes/ContentController';
 import elementRegistry from '../classes/ElementRegistry';
 import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -33,7 +33,6 @@ import AssetUploaderMask from './AssetUploaderMask';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
-  CHILDREN_MAP_UPDATE,
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   CLEAR_SELECTED_ZONES,
@@ -52,7 +51,6 @@ import {
   EditingStatus,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
-  GUEST_MODELS_RECEIVED,
   HOST_CHECK_IN,
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
@@ -77,7 +75,6 @@ const initialDocumentDomain = document.domain;
 const editModeClass = 'craftercms-ice-on';
 
 type GuestProps = PropsWithChildren<{
-  modelId: string;
   documentDomain?: string;
   path?: string;
   styleConfig?: GuestStyleConfig;
@@ -88,11 +85,12 @@ type GuestProps = PropsWithChildren<{
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const { path, styleConfig, modelId, children, documentDomain, scrollElement = 'html, body' } = props;
+  const { path, styleConfig, children, documentDomain, scrollElement = 'html, body' } = props;
 
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState, GuestState>((state) => state);
+  const editMode = state.editMode;
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
@@ -101,9 +99,10 @@ function Guest(props: GuestProps) {
   const context = useMemo(
     () => ({
       hasHost,
+      editMode,
       draggable,
       onEvent(event: Event, dispatcherElementRecordId: number) {
-        if (hasHost && status !== EditingStatus.OFF && refs.current.contentReady) {
+        if (hasHost && editMode && refs.current.contentReady) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
           if (isNullOrUndefined(record)) {
@@ -120,7 +119,7 @@ function Guest(props: GuestProps) {
         return false;
       }
     }),
-    [dispatch, hasHost, draggable, status]
+    [dispatch, hasHost, draggable, editMode]
   );
 
   // Sets document domain
@@ -138,14 +137,14 @@ function Guest(props: GuestProps) {
 
   // Add/remove edit on class
   useEffect(() => {
-    if (status === EditingStatus.OFF) {
+    if (editMode === false) {
       $('html').removeClass(editModeClass);
       document.dispatchEvent(new CustomEvent(editModeClass, { detail: false }));
     } else {
       $('html').addClass(editModeClass);
       document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
     }
-  }, [status]);
+  }, [editMode]);
 
   // Appends the Guest stylesheet
   useEffect(() => {
@@ -283,31 +282,30 @@ function Guest(props: GuestProps) {
     };
   }, []);
 
-  // Registers parent zone, checkin, checkout (when model is changed)
+  // Registers parent zone, check in, checkout (when model is changed)
   useEffect(() => {
+    let iceId;
     const location = createLocationArgument();
     const site = Cookies.get('crafterSite');
-    post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
 
-    const iceId = iceRegistry.register({ modelId });
+    fromTopic('FETCH_GUEST_MODEL_COMPLETE')
+      .pipe(
+        filter(({ payload }) => payload.path === path),
+        pluck('payload', 'model'),
+        withLatestFrom(contentTypes$)
+      )
+      .subscribe(([model]) => {
+        iceId = iceRegistry.register({ modelId: model.craftercms.id });
+        refs.current.contentReady = true;
+      });
 
-    // prettier-ignore
-    zip(
-      contentController.models$(modelId),
-      contentController.contentTypes$()
-    ).pipe(take(1)).subscribe(() => (refs.current.contentReady = true));
-
-    const sub = contentController.models$().subscribe((models) => {
-      post(GUEST_MODELS_RECEIVED, models);
-      post(CHILDREN_MAP_UPDATE, contentController.children);
-    });
+    post(GUEST_CHECK_IN, { location, path, site, documentDomain });
 
     return () => {
-      sub.unsubscribe();
       post(GUEST_CHECK_OUT);
-      iceRegistry.deregister(iceId);
+      nnou(iceId) && iceRegistry.deregister(iceId);
     };
-  }, [documentDomain, modelId, path]);
+  }, [documentDomain, path]);
 
   // Listen for desktop asset drag & drop
   useEffect(() => {
@@ -369,7 +367,7 @@ function Guest(props: GuestProps) {
   return (
     <GuestContextProvider value={context}>
       {children}
-      {status !== EditingStatus.OFF && (
+      {editMode && (
         <CrafterCMSPortal>
           {draggableItemElemRecId && (
             <craftercms-dragged-element>

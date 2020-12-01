@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -29,8 +29,6 @@ import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import Snackbar from '@material-ui/core/Snackbar';
-import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
@@ -106,20 +104,12 @@ export const useStyles = makeStyles(() =>
   })
 );
 
-const messages = defineMessages({
-  loadingDialogs: {
-    id: 'globalDialogManager.loadingDialogs',
-    defaultMessage: 'Loading dialogs...'
-  }
-});
-
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
   const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const { enqueueSnackbar } = useSnackbar();
-  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -135,19 +125,7 @@ function GlobalDialogManager() {
   }, [enqueueSnackbar]);
 
   return (
-    <Suspense
-      fallback={
-        <Snackbar
-          open
-          onClose={() => void 0}
-          message={formatMessage(messages.loadingDialogs)}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center'
-          }}
-        />
-      }
-    >
+    <Suspense fallback="">
       {/* region Confirm */}
       <ConfirmDialog
         open={state.confirm.open}
@@ -428,11 +406,15 @@ function GlobalDialogManager() {
 // @formatter:off
 function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialogs']; dispatch: Dispatch }) {
   const classes = useStyles({});
-  const [el] = useState<HTMLElement>(() => {
-    const elem = document.createElement('div');
-    elem.className = classes.wrapper;
-    return elem;
-  });
+
+  const el = useMemo(() => {
+    return document.createElement('div');
+  }, []);
+
+  useEffect(() => {
+    el.className = classes.wrapper;
+  }, [el, classes.wrapper]);
+
   const inventory = useMemo(() => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized), [
     state.minimizedDialogs
   ]);
@@ -444,6 +426,7 @@ function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialo
       };
     }
   }, [el, inventory]);
+
   return inventory.length
     ? ReactDOM.createPortal(
         inventory.map(({ id, title, subtitle, status }) => (

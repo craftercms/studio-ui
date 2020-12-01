@@ -26,11 +26,12 @@ import {
   validateSessionComplete,
   validateSessionFailed
 } from '../actions/auth';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { StandardAction } from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
+import { setRequestForgeryToken } from '../../utils/auth';
 
 const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) =>
   action$.pipe(
@@ -47,7 +48,13 @@ const logout: Epic = (action$) =>
 const validateSession: Epic = (action$) =>
   action$.pipe(
     ofType(VALIDATE_SESSION),
-    switchMap(() => auth.validateSession().pipe(map(validateSessionComplete), catchAjaxError(validateSessionFailed)))
+    switchMap(() =>
+      auth.validateSession().pipe(
+        tap((isValid) => !isValid && setRequestForgeryToken()),
+        map(validateSessionComplete),
+        catchAjaxError(validateSessionFailed)
+      )
+    )
   );
 
 export default [login, logout, validateSession] as Epic[];

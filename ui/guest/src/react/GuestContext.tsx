@@ -19,6 +19,7 @@ import { GuestState } from '../store/models/GuestStore';
 
 export type GuestContextProps = {
   hasHost: boolean;
+  editMode: boolean;
   draggable: GuestState['draggable'];
   // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
   onEvent: (event, elementRegistryId?: number) => any;

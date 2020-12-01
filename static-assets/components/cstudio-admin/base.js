@@ -32,13 +32,7 @@
 				</div>`;
       }
 
-      containerEl.innerHTML += `
-				<div id="cstudio-admin-console-workarea">
-          <div class="work-area-empty">
-            <img src="/studio/static-assets/images/choose_option.svg" alt="">
-            <div>${formatMessage(contentTypesMessages.siteConfigLandingMessage)}</div>
-          </div>
-        </div>`;
+      $('#admin-console').append('<div id="cstudio-admin-console-workarea"></div>');
 
       CStudioAuthoring.Service.lookupConfigurtion(
         CStudioAuthoringContext.site,
@@ -66,28 +60,39 @@
       const _self = this;
       const toolsNames = tools.map((tool) => tool.name);
 
-      routie('tool/:name?', function(name) {
-        if (toolsNames.includes(name)) {
-          _self.currentRoute = name;
-          if (_self.toolsModules[name]) {
-            CStudioAdminConsole.renderWorkArea(null, {
-              tool: _self.toolsModules[name],
-              toolbar: _self.toolbar
-            });
+      routie({
+        'tool/:name?': function(name) {
+          if (toolsNames.includes(name)) {
+            _self.currentRoute = name;
+            if (_self.toolsModules[name]) {
+              CStudioAdminConsole.renderWorkArea(null, {
+                tool: _self.toolsModules[name],
+                toolbar: _self.toolbar
+              });
+            }
+          } else {
+            if (name) {
+              $('#activeContentActions').empty();
+              CStudioAdminConsole.CommandBar.hide();
+              const elem = document.createElement('div');
+              elem.className = 'work-area-error';
+              $('#cstudio-admin-console-workarea').html(elem);
+              CrafterCMSNext.render(elem, 'ErrorState', {
+                imageUrl: '/studio/static-assets/images/warning_state.svg',
+                classes: {
+                  root: 'craftercms-error-state'
+                },
+                message: formatMessage(contentTypesMessages.toolNotFound, { tool: name })
+              });
+            } else {
+              $('#activeContentActions').empty();
+              CStudioAdminConsole.CommandBar.hide();
+              _self.renderNothingSelected();
+            }
           }
-        } else {
-          $('#activeContentActions').empty();
-          CStudioAdminConsole.CommandBar.hide();
-          const elem = document.createElement('div');
-          elem.className = 'work-area-error';
-          $('#cstudio-admin-console-workarea').html(elem);
-          CrafterCMSNext.render(elem, 'ErrorState', {
-            imageUrl: '/studio/static-assets/images/warning_state.svg',
-            classes: {
-              root: 'craftercms-error-state'
-            },
-            message: formatMessage(contentTypesMessages.toolNotFound, { tool: name })
-          });
+        },
+        '*': function() {
+          _self.renderNothingSelected();
         }
       });
     },
@@ -228,6 +233,14 @@
         YDom.addClass(params.tool.containerEl, 'cstudio-admin-console-item-selected');
         params.tool.renderWorkarea();
       }
+    },
+
+    renderNothingSelected: function() {
+      $('#cstudio-admin-console-workarea').append(`
+        <div class="work-area-empty">
+          <img src="/studio/static-assets/images/choose_option.svg" alt="">
+          <div>${formatMessage(contentTypesMessages.siteConfigLandingMessage)}</div>
+        </div>`);
     }
   };
 

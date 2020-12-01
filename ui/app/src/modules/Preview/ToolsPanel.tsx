@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
-import { defineMessages } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useLogicResource, usePreviewState, useSelection } from '../../utils/hooks';
@@ -36,10 +36,19 @@ import PreviewPageExplorerPanel from '../../components/PreviewPageExplorerPanel'
 import PreviewSimulatorPanel from '../../components/PreviewSimulatorPanel';
 import { Resource } from '../../models/Resource';
 import PreviewBrowseComponentsPanel from '../../components/PreviewBrowseComponentsPanel/PreviewBrowseComponentsPanel';
-import Suspencified from '../../components/SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
 import PreviewInPageInstancesPanel from '../../components/PreviewInPageInstancesPanel';
 import PreviewReceptaclesPanel from '../../components/PreviewReceptaclesPanel';
 import LegacySiteToolsFrame from '../../components/LegacySiteToolsFrame';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import LegacyDashboardFrame from '../../components/LegacyDashboardFrame';
+import SearchIcon from '@material-ui/icons/SearchRounded';
+import Asset from '@material-ui/icons/ImageOutlined';
+import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
+import Audiences from '@material-ui/icons/EmojiPeopleRounded';
+import PageExplorer from '../../components/Icons/PageExplorerRounded';
+import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
+import Simulator from '@material-ui/icons/DevicesRounded';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -48,13 +57,27 @@ defineMessages({
   }
 });
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    emptyState: {
+      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+    },
+    emptyStateImage: {
+      width: '50%',
+      marginBottom: theme.spacing(1)
+    }
+  })
+);
+
 export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
+  const classes = useStyles();
   const { showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
+  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   const resource = useLogicResource<
     WidgetDescriptor[],
@@ -66,13 +89,15 @@ export default function ToolsPanel() {
       resultSelector: (source) =>
         source.pages.length ? pages.slice(pages.length - 1) : source.uiConfig.preview.toolsPanel.widgets,
       shouldReject: (source) => Boolean(source.uiConfig.error),
-      shouldResolve: (source) => Boolean(source.uiConfig.preview.toolsPanel.widgets),
+      shouldResolve: (source) => !site || Boolean(source.uiConfig.preview.toolsPanel.widgets),
       shouldRenew: (source, resource) => source.uiConfig.isFetching || resource.complete
     }
   );
 
   useEffect(() => {
-    dispatch(fetchSiteUiConfig({ site }));
+    if (site) {
+      dispatch(fetchSiteUiConfig({ site }));
+    }
   }, [dispatch, site]);
 
   return (
@@ -87,9 +112,23 @@ export default function ToolsPanel() {
         );
       }}
     >
-      <Suspencified>
+      <SuspenseWithEmptyState
+        resource={resource}
+        withEmptyStateProps={{
+          isEmpty: (widgets) => !site || widgets?.length === 0,
+          emptyStateProps: {
+            title: site ? (
+              <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
+            ) : (
+              <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose site" />
+            ),
+            ...(!site && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
+            classes: { root: classes.emptyState, image: classes.emptyStateImage }
+          }
+        }}
+      >
         <ToolsPaneBody resource={resource} />
-      </Suspencified>
+      </SuspenseWithEmptyState>
     </ResizeableDrawer>
   );
 }
@@ -105,6 +144,13 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
 
 // TODO: Move this to a better place.
 Object.entries({
+  '@material-ui/icons/SearchRounded': SearchIcon,
+  '@material-ui/icons/ExtensionOutlined': ExtensionOutlinedIcon,
+  '@material-ui/icons/ImageOutlined': Asset,
+  '@material-ui/icons/EmojiPeopleRounded': Audiences,
+  '@material-ui/icons/DevicesRounded': Simulator,
+  'craftercms.icons.PageExplorer': PageExplorer,
+  'craftercms.icons.SiteExplorer': SiteExplorer,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,
@@ -118,7 +164,8 @@ Object.entries({
   'craftercms.components.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
   'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
   'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
-  'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame
+  'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
+  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

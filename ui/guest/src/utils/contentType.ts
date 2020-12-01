@@ -16,6 +16,7 @@
 
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { createLookupTable, retrieveProperty } from './object';
+import { loremIpsum } from 'lorem-ipsum';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
   return Object.values(contentType.fields).reduce((accumulator, field) => {
@@ -71,13 +72,25 @@ export function getDefaultValue(field: ContentTypeField): string {
   } else {
     switch (field.type) {
       case 'image':
-        // TODO use validation width, height
-        return 'https://via.placeholder.com/150';
+        const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
+        const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
+        return `https://via.placeholder.com/${width}x${height}`;
       case 'text':
       case 'html':
-        // TODO use lorem generator
-        // TODO use maxLenght validation
-        return 'Donec id elit non mi porta gravida at eget metus. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis consectetur purus sit amet fermentum. Vestibulum id ligula porta felis euismod semper.';
+      case 'textarea':
+        const maxLength = field.validations.maxLength?.value;
+        let text = loremIpsum({
+          count: 1,
+          format: 'plain',
+          sentenceLowerBound: 4,
+          sentenceUpperBound: 4,
+          units: 'sentences'
+        });
+        maxLength && text.substring(0, maxLength);
+
+        return text;
+      case 'boolean':
+        return 'false';
     }
   }
 }

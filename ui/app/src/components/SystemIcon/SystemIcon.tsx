@@ -16,13 +16,6 @@
 
 import React from 'react';
 import CoreIcon, { IconProps } from '@material-ui/core/Icon';
-import SearchIcon from '@material-ui/icons/SearchRounded';
-import Asset from '@material-ui/icons/ImageOutlined';
-import Component from '@material-ui/icons/ExtensionRounded';
-import Audiences from '@material-ui/icons/EmojiPeopleRounded';
-import PageExplorer from '../../components/Icons/PageExplorerRounded';
-import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
-import Simulator from '@material-ui/icons/DevicesRounded';
 import ErrorRounded from '@material-ui/icons/ErrorRounded';
 import { components } from '../../services/plugin';
 import { SvgIconProps, Tooltip } from '@material-ui/core';
@@ -32,19 +25,6 @@ export interface SystemIconProps {
   iconProps?: IconProps;
   svgIconProps?: SvgIconProps;
 }
-
-// TODO: Move this to a better place.
-Object.entries({
-  '@material-ui/icons/SearchRounded': SearchIcon,
-  '@material-ui/icons/ExtensionRounded': Component,
-  '@material-ui/icons/ImageOutlined': Asset,
-  '@material-ui/icons/EmojiPeopleRounded': Audiences,
-  '@material-ui/icons/DevicesRounded': Simulator,
-  'craftercms.icons.PageExplorer': PageExplorer,
-  'craftercms.icons.SiteExplorer': SiteExplorer
-}).forEach(([key, component]) => {
-  components.set(key, component);
-});
 
 export default function SystemIcon(props: SystemIconProps) {
   let icon = props.icon;

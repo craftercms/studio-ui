@@ -147,6 +147,12 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
         currentPath: payload.path
       };
     }
+    case setKeyword.type: {
+      return {
+        ...state,
+        keywords: payload
+      };
+    }
     case fetchParentsItems.type:
     case fetchChildrenByPath.type: {
       return {
@@ -224,6 +230,8 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
 
 export const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
+export const setKeyword = createAction<string>('SET_KEYWORD');
+
 export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
 
 export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
@@ -261,6 +269,13 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       _dispatch(action);
       const { type, payload } = action;
       switch (type) {
+        case setKeyword.type: {
+          getChildrenByPath(site, state.currentPath, { keyword: payload }).subscribe(
+            (response) => exec(fetchChildrenByPathComplete(response)),
+            (response) => exec(fetchChildrenByPathFailed(response))
+          );
+          break;
+        }
         case fetchChildrenByPath.type:
           getChildrenByPath(site, payload).subscribe(
             (response) => exec(fetchChildrenByPathComplete(response)),
@@ -310,6 +325,10 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const onPathSelected = (item: DetailedItem) => {
     exec(fetchChildrenByPath(item.path));
+  };
+
+  const onSearch = (keyword) => {
+    exec(setKeyword(keyword));
   };
 
   const onCrumbSelected = (item: DetailedItem) => {
@@ -383,7 +402,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         <Breadcrumbs
           keyword={state?.keywords}
           breadcrumb={state?.breadcrumb ?? []}
-          onSearch={() => {}}
+          onSearch={onSearch}
           onCrumbSelected={onCrumbSelected}
         />
         <SuspenseWithEmptyState resource={itemsResource}>

@@ -34,7 +34,8 @@ import {
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   clearReceptacles,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
-  SCROLL_TO_RECEPTACLE
+  SCROLL_TO_RECEPTACLE,
+  setPreviewEditMode
 } from '../../state/actions/preview';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -43,7 +44,7 @@ import { LookupTable } from '../../models/LookupTable';
 const translations = defineMessages({
   receptaclesPanel: {
     id: 'previewReceptaclesPanel.title',
-    defaultMessage: 'Receptacles'
+    defaultMessage: 'Component Receptacles'
   },
   selectContentType: {
     id: 'previewReceptaclesPanel.selectContentType',
@@ -76,6 +77,7 @@ export default function PreviewReceptaclesPanel() {
   const hostToGuest$ = getHostToGuestBus();
   const receptaclesBranch = useSelection((state) => state.preview.receptacles);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = contentTypesBranch.byId
     ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
     : null;
@@ -92,6 +94,9 @@ export default function PreviewReceptaclesPanel() {
   });
 
   const onSelectedDropZone = (receptacle: ContentTypeReceptacle) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
     hostToGuest$.next({
       type: SCROLL_TO_RECEPTACLE,
       payload: receptacle

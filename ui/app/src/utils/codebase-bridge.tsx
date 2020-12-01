@@ -202,10 +202,12 @@ export function createCodebaseBridge() {
       props: object = {},
       isLegacy = true
     ): Promise<any> {
-      if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
+      if (typeof component === 'string') {
+        if (!Boolean(Bridge.components[component])) {
+          console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        }
+      } else if (!Object.values(Bridge.components).includes(component)) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
-      } else if (!(component in Bridge.components)) {
-        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       const element = typeof container === 'string' ? document.querySelector(container) : container;

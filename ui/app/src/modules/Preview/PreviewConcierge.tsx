@@ -19,7 +19,6 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
-  CHILDREN_MAP_UPDATE,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
   COMPONENT_INSTANCE_HTML_REQUEST,
@@ -32,10 +31,10 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  fetchPrimaryGuestModelComplete,
+  fetchGuestModelComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
-  GUEST_MODELS_RECEIVED,
-  guestModelsReceived,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
@@ -47,18 +46,21 @@ import {
   MOVE_ITEM_OPERATION,
   pushToolsPanelPage,
   selectForEdit,
-  setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
-  UPDATE_FIELD_VALUE_OPERATION
+  UPDATE_FIELD_VALUE_OPERATION,
+  GUEST_SITE_LOAD,
+  FETCH_GUEST_MODEL,
+  VALIDATION_MESSAGE
 } from '../../state/actions/preview';
 import {
   deleteItem,
   getComponentInstanceHTML,
+  getContentInstanceDescriptor,
   insertComponent,
   insertInstance,
   moveItem,
@@ -75,7 +77,7 @@ import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previe
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
-  useContentTypeList,
+  useContentTypes,
   useMount,
   usePermissions,
   usePreviewState,
@@ -86,9 +88,18 @@ import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
-import { getStoredEditModeChoice, getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
-import { completeDetailedItem } from '../../state/actions/content';
+import {
+  getStoredClipboard,
+  getStoredEditModeChoice,
+  getStoredPreviewChoice,
+  getStoredPreviewToolsPanelPage,
+  removeStoredClipboard,
+  setStoredPreviewChoice
+} from '../../utils/state';
+import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
+import { createChildModelLookup } from '../../utils/content';
+import moment from 'moment-timezone';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -127,7 +138,7 @@ export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, currentUrl, computedUrl } = usePreviewState();
-  const contentTypes = useContentTypeList();
+  const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -165,7 +176,7 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, write, editMode]);
   // endregion
 
-  // Guest detection, document domain restoring, editMode preference retrieval
+  // Guest detection, document domain restoring, editMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
     const localEditMode = getStoredEditModeChoice(site) === 'true';
@@ -173,10 +184,26 @@ export function PreviewConcierge(props: any) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
+    const localClipboard = getStoredClipboard(site);
+    if (localClipboard) {
+      let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
+      if (hours >= 24) {
+        removeStoredClipboard(site);
+      } else {
+        dispatch(
+          restoreClipBoard({
+            type: localClipboard.type,
+            paths: localClipboard.paths,
+            sourcePath: localClipboard.sourcePath
+          })
+        );
+      }
+    }
+
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
-    const storedPage = window.localStorage.getItem(`craftercms.previewToolsPanelPage.${site}`);
+    const storedPage = getStoredPreviewToolsPanelPage(site);
     if (storedPage) {
-      dispatch(pushToolsPanelPage(JSON.parse(storedPage)));
+      dispatch(pushToolsPanelPage(storedPage));
     }
     return () => {
       sub.unsubscribe();
@@ -188,9 +215,10 @@ export function PreviewConcierge(props: any) {
 
   // Post content types
   useEffect(() => {
-    contentTypes && contentTypes$.next(contentTypes);
+    contentTypes && contentTypes$.next(Object.values(contentTypes));
   }, [contentTypes, contentTypes$]);
 
+  // guestToHost$ subscription
   useEffect(() => {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
@@ -198,8 +226,8 @@ export function PreviewConcierge(props: any) {
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
-        // Legacy sites.
-        case 'GUEST_SITE_LOAD':
+        case GUEST_SITE_LOAD:
+          // Legacy sites (guest v1) send this message.
           let previewNextCheckInNotification = previewNextCheckInNotificationRef.current;
           let compatibilityQueryArg = getQueryVariable(window.location.search, 'compatibility');
           let compatibilityForceStay = compatibilityQueryArg === 'stay';
@@ -221,30 +249,58 @@ export function PreviewConcierge(props: any) {
             }
           }
           break;
-        case GUEST_CHECK_IN: {
-          getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
-          dispatch(checkInGuest(payload));
+        case GUEST_CHECK_IN:
+        case FETCH_GUEST_MODEL: {
+          // region const issueDescriptorRequest = () => {...}
+          // This request & response processing is common to both of these actions so grouping them together.
+          const issueDescriptorRequest = (path, completeAction) =>
+            getContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
+              .pipe(
+                // If another check in comes while loading, this request should be cancelled.
+                // This may happen if navigating rapidly from one page to another (guest-side).
+                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type))))
+              )
+              .subscribe(({ model, modelLookup }) => {
+                const childrenMap = createChildModelLookup(modelLookup, contentTypes);
+                dispatch(completeAction({ model, modelLookup, childrenMap }));
+                hostToGuest$.next({
+                  type: 'FETCH_GUEST_MODEL_COMPLETE',
+                  payload: { path, model, modelLookup, childrenMap }
+                });
+              });
+          // endregion
+          if (type === GUEST_CHECK_IN) {
+            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+            dispatch(checkInGuest(payload));
 
-          if (payload.documentDomain) {
-            try {
-              document.domain = payload.documentDomain;
-            } catch (e) {
-              console.error(e);
+            if (payload.documentDomain) {
+              try {
+                document.domain = payload.documentDomain;
+              } catch (e) {
+                console.error(e);
+              }
+            } else if (document.domain !== originalDocDomain) {
+              document.domain = originalDocDomain;
             }
-          } else if (document.domain !== originalDocDomain) {
-            document.domain = originalDocDomain;
-          }
 
-          if (payload.__CRAFTERCMS_GUEST_LANDING__) {
-            nnou(site) && dispatch(changeCurrentUrl('/'));
-          } else {
-            // If the content types have already been loaded, contentTypes$ subject will emit
-            // immediately. If not, it will emit when the content type fetch payload does arrive.
-            contentTypes$.pipe(take(1)).subscribe((payload) => {
-              hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
-            });
+            if (payload.__CRAFTERCMS_GUEST_LANDING__) {
+              nnou(site) && dispatch(changeCurrentUrl('/'));
+            } else {
+              const path = payload.path;
+              // If the content types have already been loaded, contentTypes$ subject will emit
+              // immediately. If not, it will emit when the content type fetch payload does arrive.
+              contentTypes$.pipe(take(1)).subscribe((payload) => {
+                hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+              });
+              issueDescriptorRequest(path, fetchPrimaryGuestModelComplete);
+            }
+          } /* else if (type === FETCH_GUEST_MODEL) */ else {
+            if (payload.path?.startsWith('/')) {
+              issueDescriptorRequest(payload.path, fetchGuestModelComplete);
+            } else {
+              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
+            }
           }
-
           break;
         }
         case GUEST_CHECK_OUT:
@@ -281,7 +337,7 @@ export function PreviewConcierge(props: any) {
             parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             targetIndex,
-            contentTypes.find((o) => o.id === instance.craftercms.contentTypeId),
+            contentTypes[instance.craftercms.contentTypeId],
             instance,
             parentModelId ? models[parentModelId].craftercms.path : null,
             shared
@@ -405,10 +461,6 @@ export function PreviewConcierge(props: any) {
           dispatch(clearSelectForEdit());
           break;
         }
-        case GUEST_MODELS_RECEIVED: {
-          dispatch(guestModelsReceived(payload));
-          break;
-        }
         case INSTANCE_DRAG_BEGUN:
         case INSTANCE_DRAG_ENDED: {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN ? payload : null));
@@ -471,11 +523,7 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
-        case CHILDREN_MAP_UPDATE: {
-          dispatch(setChildrenMap(payload));
-          break;
-        }
-        case 'VALIDATION_MESSAGE': {
+        case VALIDATION_MESSAGE: {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
             variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
           });

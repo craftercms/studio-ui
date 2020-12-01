@@ -14,19 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import LegacyIFrame, { LegacyIFrameProps } from '../LegacyIFrame/LegacyIFrame';
+export { default } from './LegacyDashboardFrame';
 
-interface LegacySiteToolsFrameProps {
-  tool?: string;
-  workAreaOnly?: boolean;
-  iframeProps?: LegacyIFrameProps['iframeProps'];
-}
-
-function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
-  const { tool, workAreaOnly = true, iframeProps } = props;
-  const path = `/site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`].filter(Boolean).join('')}`;
-  return <LegacyIFrame path={path} title="Site Tools" iframeProps={iframeProps} />;
-}
-
-export default LegacySiteToolsFrame;
+export * from './LegacyDashboardFrame';

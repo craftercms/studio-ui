@@ -22,6 +22,7 @@ import {
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
   fetchUserPermissionsComplete,
+  restoreClipBoard,
   setClipBoard,
   unSetClipBoard
 } from '../actions/content';
@@ -114,6 +115,10 @@ const reducer = createReducer<ContentState>(initialState, {
       }
     };
   },
+  [restoreClipBoard.type]: (state, { payload }) => ({
+    ...state,
+    clipboard: payload
+  }),
   [setClipBoard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload

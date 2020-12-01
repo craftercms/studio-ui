@@ -31,6 +31,7 @@ import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
 import { fetchSiteLocales } from '../state/actions/translation';
 import { fetchSiteUiConfig } from '../state/actions/configuration';
+import { MessageDescriptor, useIntl } from 'react-intl';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -285,7 +286,7 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
     },
     // `initialTab` omitted purposely to facilitate use without memo from consumer side
     // eslint-disable-next-line
-    [dispatch]
+    [dispatch, initialTab.id]
   );
 
   return state?.minimized ?? initialTab.minimized;
@@ -337,4 +338,12 @@ export function usePreviousValue<T = any>(value: T) {
     ref.current = value;
   });
   return ref.current;
+}
+
+export function usePossibleTranslation(title: string): string;
+export function usePossibleTranslation(descriptor: MessageDescriptor): string;
+export function usePossibleTranslation(titleOrDescriptor: string | MessageDescriptor): string;
+export function usePossibleTranslation(titleOrDescriptor: string | MessageDescriptor): string {
+  const { formatMessage } = useIntl();
+  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
 }

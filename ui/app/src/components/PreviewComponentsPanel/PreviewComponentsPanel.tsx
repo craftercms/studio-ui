@@ -26,21 +26,22 @@ import {
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   pushToolsPanelPage,
-  setContentTypeFilter
+  setContentTypeFilter,
+  setPreviewEditMode
 } from '../../state/actions/preview';
-import { useSelectorResource } from '../../utils/hooks';
+import { useSelection, useSelectorResource } from '../../utils/hooks';
 import { nnou, reversePluckProps } from '../../utils/object';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
 import { PropsWithResource, SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { EntityState } from '../../models/EntityState';
 import { batchActions } from '../../state/actions/misc';
-import { createToolsPanelPage } from '../../utils/state';
+import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
     id: 'previewComponentsPanel.title',
-    defaultMessage: 'Components'
+    defaultMessage: 'Add Components'
   },
   browse: {
     id: 'previewComponentsPanel.browse',
@@ -52,7 +53,7 @@ const translations = defineMessages({
   },
   listInPageInstances: {
     id: 'previewComponentsPanel.listInPageInstances',
-    defaultMessage: 'List in-page instances'
+    defaultMessage: 'Instances on this page'
   }
 });
 
@@ -99,6 +100,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const contentTypes = resource.read();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const editMode = useSelection((state) => state.preview.editMode);
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
@@ -106,7 +108,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     contentTypes
   ]);
 
-  const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  const onDragStart = (contentType) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
+    hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  };
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
 
@@ -118,9 +125,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         setContentTypeFilter(menuContext.contentType.id),
         pushToolsPanelPage(
           createToolsPanelPage('previewBrowseComponentsPanel.title', [
-            {
-              id: 'craftercms.components.PreviewBrowseComponentsPanel'
-            }
+            createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })
           ])
         )
       ])
@@ -133,9 +138,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         setContentTypeFilter(menuContext.contentType.id),
         pushToolsPanelPage(
           createToolsPanelPage('previewInPageInstancesPanel.title', [
-            {
-              id: 'craftercms.components.PreviewInPageInstancesPanel'
-            }
+            createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })
           ])
         )
       ])
@@ -146,9 +149,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       pushToolsPanelPage(
         createToolsPanelPage('previewReceptaclesPanel.title', [
-          {
-            id: 'craftercms.components.PreviewReceptaclesPanel'
-          }
+          createWidgetDescriptor({ id: 'craftercms.components.PreviewReceptaclesPanel' })
         ])
       )
     );

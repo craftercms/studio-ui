@@ -18,7 +18,6 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CHANGE_CURRENT_URL,
-  CHILDREN_MAP_UPDATE,
   CLEAR_RECEPTACLES,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -34,9 +33,10 @@ import {
   fetchAudiencesPanelModel,
   fetchAudiencesPanelModelComplete,
   fetchAudiencesPanelModelFailed,
+  fetchPrimaryGuestModelComplete,
+  fetchGuestModelComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
-  GUEST_MODELS_RECEIVED,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
@@ -106,6 +106,30 @@ function cleanseUrl(url: string) {
   }
   return clean;
 }
+
+const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
+  if (nnou(state.guest)) {
+    return {
+      ...state,
+      guest: {
+        ...state.guest,
+        modelId: type === fetchPrimaryGuestModelComplete.type ? payload.model.craftercms.id : state.guest.modelId,
+        models: {
+          ...state.guest.models,
+          ...payload.modelLookup
+        },
+        childrenMap: {
+          ...state.guest?.childrenMap,
+          ...payload.childrenMap
+        }
+      }
+    };
+  } else {
+    // TODO: Currently getting models before check in some cases when coming from a different site.
+    console.error('[reducer/preview] Guest models received before guest check in.');
+    return state;
+  }
+};
 
 const reducer = createReducer<GlobalState['preview']>(
   {
@@ -227,24 +251,8 @@ const reducer = createReducer<GlobalState['preview']>(
       // }
       return nextState;
     },
-    [GUEST_MODELS_RECEIVED]: (state, { payload }) => {
-      if (nnou(state.guest)) {
-        return {
-          ...state,
-          guest: {
-            ...state.guest,
-            models: {
-              ...state.guest.models,
-              ...payload
-            }
-          }
-        };
-      } else {
-        // TODO: Currently getting models before check in some cases when coming from a different site.
-        console.error('[reducer/preview] Guest models received before guest check in.');
-        return state;
-      }
-    },
+    [fetchPrimaryGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
+    [fetchGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
     [SELECT_FOR_EDIT]: (state, { payload }) => {
       if (state.guest === null) {
         return state;
@@ -468,16 +476,6 @@ const reducer = createReducer<GlobalState['preview']>(
           ...state.components.query,
           offset: 0,
           keywords: ''
-        }
-      }
-    }),
-    [CHILDREN_MAP_UPDATE]: (state, { payload }) => ({
-      ...state,
-      guest: {
-        ...state.guest,
-        childrenMap: {
-          ...state.guest?.childrenMap,
-          ...payload
         }
       }
     }),

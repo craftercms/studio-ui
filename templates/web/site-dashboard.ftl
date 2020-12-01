@@ -60,7 +60,13 @@
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 </head>
-<body>
+
+<#if RequestParameters.mode?? && RequestParameters.mode == "embedded">
+  <#assign embedded = true />
+<#else>
+  <#assign embedded = false />
+</#if>
+<body class="<#if embedded>embedded</#if>">
 
 <section class="site-dashboard" style="visibility: hidden">
   <div class="container">

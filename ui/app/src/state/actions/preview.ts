@@ -31,6 +31,8 @@ import LookupTable from '../../models/LookupTable';
 export const HOST_CHECK_IN = 'HOST_CHECK_IN';
 export const GUEST_CHECK_IN = 'GUEST_CHECK_IN';
 export const GUEST_CHECK_OUT = 'GUEST_CHECK_OUT';
+export const FETCH_GUEST_MODEL = 'FETCH_GUEST_MODEL';
+export const GUEST_SITE_LOAD = 'GUEST_SITE_LOAD'; // Legacy guest check in
 export const SORT_ITEM_OPERATION = 'SORT_ITEM_OPERATION';
 export const SORT_ITEM_OPERATION_COMPLETE = 'SORT_ITEM_OPERATION_COMPLETE';
 export const INSERT_COMPONENT_OPERATION = 'INSERT_COMPONENT_OPERATION';
@@ -49,11 +51,9 @@ export const ASSET_DRAG_ENDED = 'ASSET_DRAG_ENDED';
 export const COMPONENT_DRAG_STARTED = 'COMPONENT_DRAG_STARTED';
 export const COMPONENT_DRAG_ENDED = 'COMPONENT_DRAG_ENDED';
 export const TRASHED = 'TRASHED';
-export const CONTENT_TYPES_REQUEST = 'CONTENT_TYPES_REQUEST';
 export const CONTENT_TYPES_RESPONSE = 'CONTENT_TYPES_RESPONSE';
 export const INSTANCE_DRAG_BEGUN = 'INSTANCE_DRAG_BEGUN';
 export const INSTANCE_DRAG_ENDED = 'INSTANCE_DRAG_ENDED';
-export const GUEST_MODELS_RECEIVED = 'GUEST_MODELS_RECEIVED';
 export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
@@ -70,7 +70,7 @@ export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
 export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
 export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CLEAR_CONTENT_TREE_FIELD_SELECTED = 'CLEAR_CONTENT_TREE_FIELD_SELECTED';
-export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
+export const VALIDATION_MESSAGE = 'VALIDATION_MESSAGE';
 // endregion
 
 // region Actions
@@ -176,12 +176,20 @@ export function checkOutGuest(): StandardAction {
   };
 }
 
-export function guestModelsReceived(data): StandardAction {
-  return {
-    type: GUEST_MODELS_RECEIVED,
-    payload: data
-  };
-}
+// This action is meant for the primary Guest model. The reducer
+// should set the guest.modelId of the model that comes in payload.
+export const fetchPrimaryGuestModelComplete = createAction<{
+  model: ContentInstance;
+  modelLookup: LookupTable<ContentInstance>;
+  childrenMap: LookupTable<string[]>;
+}>('FETCH_PRIMARY_GUEST_MODEL_COMPLETE');
+
+// This action is meant for the other Guest models that aren't the main.
+// The reducer will shouldn't set the guest.modelId.
+export const fetchGuestModelComplete = createAction<{
+  modelLookup: LookupTable<ContentInstance>;
+  childrenMap: LookupTable<string[]>;
+}>('FETCH_GUEST_MODELS_COMPLETE');
 
 export function changeCurrentUrl(nextValue: string): StandardAction {
   return {
@@ -262,8 +270,6 @@ export const setContentTypeReceptacles = createAction<{
 }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
-
-export const setChildrenMap = createAction<object>(CHILDREN_MAP_UPDATE);
 
 export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 

@@ -16,7 +16,6 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
 import AppsIcon from '@material-ui/icons/Apps';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
@@ -41,7 +40,6 @@ import clsx from 'clsx';
 import { History, Location } from 'history';
 import { fetchWorkflowAffectedItems, getContentXML } from '../../services/content';
 import SearchBar from '../../components/Controls/SearchBar';
-import palette from '../../styles/palette';
 import {
   closeDeleteDialog,
   deleteDialogClosed,
@@ -82,10 +80,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchHeader: {
     padding: '15px 20px',
     display: 'flex',
-    borderBottom: `1px solid ${palette.gray.light3}`,
     justifyContent: 'center',
     alignItems: 'center',
-    background: palette.gray.light0
+    background: theme.palette.background.default,
+    borderBotton: `1px solid ${theme.palette.divider}`
   },
   searchDropdown: {
     marginRight: '7px'
@@ -96,7 +94,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchHelperBar: {
     display: 'flex',
     padding: '0 6px 0 20px',
-    alignItems: 'center'
+    alignItems: 'center',
+    background: theme.palette.background.paper
   },
   resultsSelected: {
     marginRight: '10px',
@@ -112,18 +111,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: 'auto',
     alignItems: 'center'
   },
-  avatarContent: {
-    margin: 5,
-    padding: 0
-  },
-  avatar: {
-    background: palette.gray.light3,
-    color: palette.gray.medium3
-  },
   content: {
     flexGrow: 1,
     padding: '25px 30px',
-    background: palette.gray.light0
+    background: theme.palette.background.default
   },
   empty: {
     height: '100%',
@@ -673,9 +664,7 @@ export default function Search(props: SearchProps) {
               queryParams={queryParams}
             />
           )}
-          <IconButton className={classes.avatarContent} onClick={handleChangeView}>
-            <Avatar className={classes.avatar}>{currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}</Avatar>
-          </IconButton>
+          <IconButton onClick={handleChangeView}>{currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}</IconButton>
         </div>
       </header>
       {searchResults && !!searchResults.total && (
@@ -689,7 +678,7 @@ export default function Search(props: SearchProps) {
                   onClick={(e: any) => handleSelectAll(e.target.checked)}
                 />
               }
-              label={formatMessage(messages.selectAll)}
+              label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
             />
           </FormGroup>
           {selected.length > 0 && (

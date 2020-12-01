@@ -14,20 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useMount } from '../../utils/hooks';
-import SearchBar from '../Controls/SearchBar';
 import {
-  ComponentsContentTypeParams,
-  ContentInstancePage,
-  ElasticParams,
-  MediaItem,
-  SearchItem,
-  SearchResult
-} from '../../models/Search';
+  useActiveSiteId,
+  useContentTypeList,
+  useDebouncedInput,
+  useLogicResource,
+  useMount,
+  useSelection,
+  useSpreadState,
+  useSubject
+} from '../../utils/hooks';
+import SearchBar from '../Controls/SearchBar';
+import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -36,12 +38,18 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED
+  COMPONENT_INSTANCE_DRAG_STARTED,
+  setPreviewEditMode
 } from '../../state/actions/preview';
-// import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
+import { Resource } from '../../models/Resource';
+import { createLookupTable } from '../../utils/object';
+import { getContentInstance } from '../../services/content';
+import { forkJoin, Observable, of } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -97,31 +105,24 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-function SearchResults(props) {
-  const items = props.resource.read();
+interface SearchResultsProps {
+  resource: Resource<SearchItem[]>;
+  onDragStart(item: SearchItem): void;
+  onDragEnd(item: SearchItem): void;
+}
+
+function SearchResults(props: SearchResultsProps) {
+  const { resource, onDragStart, onDragEnd } = props;
+  const items = resource.read();
   const classes = useStyles({});
-  const hostToGuest$ = getHostToGuestBus();
-
-  const onDragStart = (item: ContentInstance | MediaItem) => {
-    hostToGuest$.next({
-      type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_STARTED : ASSET_DRAG_STARTED,
-      payload: item
-    });
-  };
-
-  const onDragEnd = (item: ContentInstance | MediaItem) => {
-    hostToGuest$.next({
-      type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
-    });
-  };
 
   return (
     <List className={classes.searchResultsList}>
-      {items.map((item: ContentInstance | MediaItem) => (
+      {items.map((item: SearchItem) => (
         <DraggablePanelListItem
-          key={item['craftercms']?.id || item.path}
-          primaryText={item['craftercms']?.label || item.name}
-          avatarSrc={item.path}
+          key={item.path}
+          primaryText={item.name}
+          avatarSrc={item.type === 'Image' ? item.path : null}
           onDragStart={() => onDragStart(item)}
           onDragEnd={() => onDragEnd(item)}
         />
@@ -133,10 +134,8 @@ function SearchResults(props) {
 const initialSearchParameters: Partial<ElasticParams> = {
   keywords: '',
   offset: 0,
-  limit: 10
-  // sortBy: '_score',
-  // sortOrder: 'desc',
-  // filters: {}
+  limit: 10,
+  orOperator: true
 };
 
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
@@ -147,65 +146,90 @@ export default function PreviewSearchPanel() {
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
-  const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
-  // TODO: Components
-  // const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
-  // const contentTypesIds = contentTypes?.map(item => item.id);
-  // const contentTypesLookup = createLookupTable(contentTypes, 'id');
+  const hostToGuest$ = getHostToGuestBus();
+  const [state, setState] = useSpreadState({
+    isFetching: null,
+    contentInstanceLookup: null,
+    items: null,
+    count: null
+  });
+  const dispatch = useDispatch();
+  const editMode = useSelection((state) => state.preview.editMode);
+  const contentTypes = useContentTypeList(
+    (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
+  );
+  const contentTypesLookup = useMemo(() => (contentTypes ? createLookupTable(contentTypes, 'id') : null), [
+    contentTypes
+  ]);
+
+  const unMount$ = useSubject();
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useLogicResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(
-    searchResults,
-    {
-      shouldResolve: (data) => Boolean(data),
-      shouldReject: () => Boolean(error),
-      shouldRenew: (data, resourceArg) => resourceArg.complete,
-      // TODO: Components
-      // resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
-      // @ts-ignore TODO: Remove ts-ignore
-      resultSelector: (data) => data.items,
-      errorSelector: () => error
-    }
-  );
-
-  useMount(() => {
-    onSearch();
+  const resource = useLogicResource<SearchItem[], { isFetching: Boolean; items: Array<SearchItem> }>(state, {
+    shouldResolve: (data) => Boolean(data) && data.isFetching === false,
+    shouldReject: () => Boolean(error),
+    shouldRenew: (data, resourceArg) => data.isFetching && resourceArg.complete,
+    resultSelector: (data) => data.items,
+    errorSelector: () => error
   });
 
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
-      // TODO: Components
-      // getContentByContentType(site, contentTypesIds, contentTypesLookup, {
-      //   ...initialSearchParameters,
-      //   keywords,
-      //   ...options,
-      //   type: 'Component'
-      // }).subscribe(
-      //   (result) => {
-      //     setSearchResults(result);
-      //   },
-      //   ({ response }) => {
-      //     setError(response);
-      //   }
-      // )
+      setState({ isFetching: true });
       search(site, {
         ...initialSearchParameters,
         keywords,
         ...options,
-        // TODO: Use this when api support OR operator
-        // filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
-        filters: { 'mime-type': mimeTypes }
-      }).subscribe(
-        (result) => {
-          setSearchResults(result);
-        },
-        ({ response }) => {
-          setError(response);
-        }
-      );
+        filters: { 'content-type': contentTypes?.map((item) => item.id), 'mime-type': mimeTypes }
+      })
+        .pipe(
+          takeUntil(unMount$),
+          switchMap((result) => {
+            const requests: Array<Observable<ContentInstance>> = [];
+            result.items.forEach((item) => {
+              if (item.type === 'Component') {
+                requests.push(getContentInstance(site, item.path, contentTypesLookup));
+              }
+            });
+            return requests.length
+              ? forkJoin(requests).pipe(map((contentInstances) => ({ contentInstances, result })))
+              : of({ result, contentInstances: null });
+          })
+        )
+        .subscribe(
+          (response) => {
+            setPageNumber(options ? options.offset / options.limit : 0);
+            if (response.contentInstances) {
+              setState({
+                isFetching: false,
+                items: response.result.items,
+                contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
+                count: response.result.total
+              });
+            } else {
+              setState({ isFetching: false, items: response.result.items });
+            }
+          },
+          ({ response }) => {
+            setError(response);
+          }
+        );
     },
-    [site]
+    [setState, site, contentTypes, unMount$, contentTypesLookup]
   );
+
+  useMount(() => {
+    return () => {
+      unMount$.next();
+      unMount$.complete();
+    };
+  });
+
+  useEffect(() => {
+    if (contentTypes && contentTypesLookup) {
+      onSearch();
+    }
+  }, [contentTypes, contentTypesLookup, onSearch]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
@@ -215,32 +239,55 @@ export default function PreviewSearchPanel() {
   }
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, page: number) {
-    setPageNumber(page);
     onSearch(keyword, {
       offset: page * initialSearchParameters.limit,
       limit: initialSearchParameters.limit
     });
   }
 
+  const onDragStart = (item: SearchItem) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
+    if (item.type === 'Component') {
+      const instance: ContentInstance = state.contentInstanceLookup[item.path];
+      hostToGuest$.next({
+        type: COMPONENT_INSTANCE_DRAG_STARTED,
+        payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
+      });
+    } else {
+      hostToGuest$.next({
+        type: ASSET_DRAG_STARTED,
+        payload: item
+      });
+    }
+  };
+
+  const onDragEnd = (item: SearchItem) => {
+    hostToGuest$.next({
+      type: item.type === 'Component' ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
+    });
+  };
+
   return (
     <>
       <div className={classes.searchContainer}>
         <SearchBar
           keyword={keyword}
-          placeholder="Search everywhere..."
+          placeholder={formatMessage(translations.previewSearchPanelTitle)}
           onChange={(keyword) => handleSearchKeyword(keyword)}
           showDecoratorIcon={true}
           showActionButton={Boolean(keyword)}
         />
       </div>
-      {searchResults && (
+      {state.items && (
         <div className={classes.paginationContainer}>
           <TablePagination
             className={classes.pagination}
             classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
             component="div"
             labelRowsPerPage=""
-            count={searchResults['count'] || searchResults['total']}
+            count={state.count}
             rowsPerPage={initialSearchParameters.limit}
             page={pageNumber}
             backIconButtonProps={{
@@ -255,13 +302,8 @@ export default function PreviewSearchPanel() {
           />
         </div>
       )}
-      <SuspenseWithEmptyState
-        resource={resource}
-        withEmptyStateProps={{
-          isEmpty: (items: Array<ContentInstance>) => !Boolean(items.length)
-        }}
-      >
-        <SearchResults resource={resource} />
+      <SuspenseWithEmptyState resource={resource}>
+        <SearchResults resource={resource} onDragStart={onDragStart} onDragEnd={onDragEnd} />
       </SuspenseWithEmptyState>
     </>
   );
