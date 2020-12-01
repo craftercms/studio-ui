@@ -825,7 +825,8 @@ const content = {
   unlock,
   fetchWorkflowAffectedItems,
   changeContentType,
-  checkPathExistence
+  checkPathExistence,
+  getLegacyItemsTree
 };
 
 export default content;
