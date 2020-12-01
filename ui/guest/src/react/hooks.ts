@@ -91,7 +91,7 @@ function bypassICE(props: UseICEProps): ICEMaterials {
 
 export function useICE(props: UseICEProps): ICEMaterials {
   const context = useGuestContext();
-  const inAuthoring = Boolean(context) && Boolean(context.hasHost);
+  const inAuthoring = context && context.editMode && context.hasHost;
   const { onEvent, draggable } = context ?? {};
   const elementRef = useRef<HTMLElement>();
   const elementRegistryId = useRef<number>();
@@ -177,7 +177,7 @@ export function useHotReloadModel(props: UseModelProps): any {
   useEffect(() => {
     if (inAuthoring) {
       // Insure the model gets loaded.
-      byPathFetchIfNotLoaded(props.model.craftercms.path).subscribe();
+      props.model.craftercms.path && byPathFetchIfNotLoaded(props.model.craftercms.path).subscribe();
       const s = model$(props.model.craftercms.id)
         .pipe(
           distinctUntilChanged((prev, next) => {

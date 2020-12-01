@@ -60,7 +60,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
         <IconButton onClick={onBack}>
           <BackIcon />
         </IconButton>
-        <Typography component="h2" noWrap>
+        <Typography component="h2" noWrap title={title}>
           {title}
         </Typography>
       </header>

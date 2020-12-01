@@ -31,7 +31,7 @@ import ComponentIcon from '../../Icons/Component';
 import Page from '../../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 import Tooltip from '@material-ui/core/Tooltip';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import LevelDescriptorIcon from '../../Icons/LevelDescriptor';
 
 interface NavItemProps {
@@ -56,6 +56,10 @@ const translations = defineMessages({
   noChildren: {
     id: 'navigator.noChildren',
     defaultMessage: 'Item has no children'
+  },
+  itemMenu: {
+    id: 'navigator.itemMenu',
+    defaultMessage: 'Item menu'
   }
 });
 
@@ -126,31 +130,30 @@ export default function PathNavigatorItem(props: NavItemProps) {
       </Typography>
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
         {onOpenItemMenu && (
-          <IconButton
-            aria-label={isLeaf ? formatMessage(translations.view) : formatMessage(translations.noChildren)}
-            className={classes.itemIconButton}
-            onClick={(event) => {
-              event.stopPropagation();
-              onOpenItemMenu(event.currentTarget, item);
-            }}
-          >
-            <MoreVertIcon className={classes.icon} />
-          </IconButton>
+          <Tooltip title={formatMessage(translations.itemMenu)}>
+            <IconButton
+              aria-label={formatMessage(translations.itemMenu)}
+              className={classes.itemIconButton}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenItemMenu(event.currentTarget, item);
+              }}
+            >
+              <MoreVertIcon className={classes.icon} />
+            </IconButton>
+          </Tooltip>
         )}
         {showItemNavigateToButton && (
           <Tooltip
-            title={
-              isLeaf ? (
-                <FormattedMessage id="navigator.isLeaf" defaultMessage="Item has no children" />
-              ) : (
-                <FormattedMessage id="words.view" defaultMessage="View" />
-              )
-            }
+            title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.view)}
+            classes={{ tooltip: clsx(isLeaf && classes.leafTooltip) }}
           >
             <IconButton
-              aria-label="Options"
-              className={classes.itemIconButton}
+              disableRipple={isLeaf}
+              aria-label={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.view)}
+              className={clsx(classes.itemIconButton, isLeaf && 'Mui-disabled')}
               onClick={(event) => {
+                event.preventDefault();
                 event.stopPropagation();
                 if (isLeaf) {
                   return;

@@ -44,7 +44,7 @@ import { LookupTable } from '../../models/LookupTable';
 const translations = defineMessages({
   receptaclesPanel: {
     id: 'previewReceptaclesPanel.title',
-    defaultMessage: 'Receptacles'
+    defaultMessage: 'Component Receptacles'
   },
   selectContentType: {
     id: 'previewReceptaclesPanel.selectContentType',

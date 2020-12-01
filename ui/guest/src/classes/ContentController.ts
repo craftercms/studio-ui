@@ -34,7 +34,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { createLookupTable } from '../utils/object';
+import { createLookupTable, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
@@ -88,7 +88,7 @@ export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ 
 // region Models
 
 export function model$(modelId: string): Observable<ContentInstance> {
-  return modelsObs$.pipe(
+  return models$.pipe(
     pluck(modelId),
     filter((model) => Boolean(model))
   );
@@ -138,11 +138,13 @@ export function fetchById(id: string): Observable<LookupTable<ContentInstance>> 
 }
 
 export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance> {
-  if (pathsRequested[path]) {
+  if (nou(path)) {
+    return of(null);
+  } else if (pathsRequested[path]) {
     return paths$.pipe(
       filter((paths) => Boolean(paths[path])),
       pluck(path),
-      switchMap((modelId) => model$(modelId).pipe(take(1)))
+      map((modelId) => models$.value[modelId])
     );
   } else {
     pathsRequested[path] = true;
@@ -565,8 +567,11 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
     const normalizedModels = normalizeModelsLookup(modelLookup);
     const modelIdByPath = {};
     Object.values(normalizedModels).forEach((model) => {
-      pathsRequested[model.craftercms.path] = true;
-      modelIdByPath[model.craftercms.path] = model.craftercms.id;
+      // Embedded components don't have a path.
+      if (model.craftercms.path) {
+        pathsRequested[model.craftercms.path] = true;
+        modelIdByPath[model.craftercms.path] = model.craftercms.id;
+      }
     });
     Object.assign(children, childrenMap);
     models$.next({ ...models$.value, ...normalizedModels });
