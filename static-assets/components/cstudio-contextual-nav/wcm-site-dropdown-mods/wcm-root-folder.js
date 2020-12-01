@@ -3324,132 +3324,43 @@
        * cut content
        */
       cutContent: function(sType, args, tree) {
-        var params = { site: CStudioAuthoringContext.site, path: oCurrentTextNode.data.uri };
-        var doCut = function() {
-          var parentTreeNode = oCurrentTextNode.getEl();
-          var getChildNodeClass = YDom.getElementsByClassName('ygtvlp', null, parentTreeNode);
-          var isExpandableNode = YDom.getElementsByClassName('ygtvtp', null, parentTreeNode);
+        const path = oCurrentTextNode.data.uri;
 
-          if (oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0) {
-            // alert("The page and its child pages have been cut to the clipboard");
+        try {
+          var treeInner = YDom.get('acn-dropdown-menu-inner');
+          var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
+          for (var i = 0; i < previousCutEl.length; i++) {
+            if (previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE) {
+              previousCutEl[i].style.color = '';
+            }
           }
 
-          var uri = oCurrentTextNode.data.uri;
-          Self.copiedItem = null;
-          Self.cutItem = oCurrentTextNode;
+          document.getElementById(oCurrentTextNode.labelElId).style.cssText +=
+            'color: ' + Self.CUT_STYLE + ' !important';
 
-          if (uri.lastIndexOf('index.xml') == -1) {
-            var serviceUri =
-              CStudioAuthoring.Service.getPagesServiceUrl +
-              '?site=' +
-              CStudioAuthoringContext.site +
-              '&path=' +
-              uri +
-              '&depth=-1&order=default';
-          } else {
-            var folderPath = uri.substring(0, uri.lastIndexOf('index.xml'));
-
-            var serviceUri =
-              CStudioAuthoring.Service.getPagesServiceUrl +
-              '?site=' +
-              CStudioAuthoringContext.site +
-              '&path=' +
-              folderPath +
-              '&depth=-1&order=default';
+          if (oCurrentTextNode.hasChildren()) {
+            var getTextNodes = YDom.getElementsByClassName('status-icon', null, parentTreeNode);
+            for (var i = 0; i < getTextNodes.length; i++) {
+              getTextNodes[i].style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
+            }
           }
+        } catch (ex) {}
 
-          var getTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
-
-          try {
-            var treeInner = YDom.get('acn-dropdown-menu-inner');
-            var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
-            for (var i = 0; i < previousCutEl.length; i++) {
-              if (
-                previousCutEl[i].style.color == Self.CUT_STYLE_RGB ||
-                previousCutEl[i].style.color == Self.CUT_STYLE
-              ) {
-                previousCutEl[i].style.color = '';
-              }
-            }
-
-            document.getElementById(oCurrentTextNode.labelElId).style.cssText +=
-              'color: ' + Self.CUT_STYLE + ' !important';
-
-            if (oCurrentTextNode.hasChildren()) {
-              var getTextNodes = YDom.getElementsByClassName('status-icon', null, parentTreeNode);
-              for (var i = 0; i < getTextNodes.length; i++) {
-                getTextNodes[i].style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
-              }
-            }
-          } catch (ex) {}
-
-          //CStudioAuthoring.Operations.openCopyDialog(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, assignTemplateCb, args);
-          var cutCb = {
-            success: function(response) {
-              var content = YAHOO.lang.JSON.parse(response.responseText);
-
-              var item = content.item;
-              var jsonString = YAHOO.lang.JSON.stringify(item);
-              var jsonArray = '{"item":[' + jsonString + ']}';
-              var cutRequest =
-                CStudioAuthoringContext.baseUri +
-                '/api/1/services/api/1/clipboard/cut-item.json?site=' +
-                CStudioAuthoringContext.site;
-
-              var onComplete = {
-                success: function(response) {},
-                failure: function() {}
-              };
-
-              YAHOO.util.Connect.setDefaultPostHeader(false);
-              YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
-              YAHOO.util.Connect.initHeader(
-                CStudioAuthoringContext.xsrfHeaderName,
-                CrafterCMSNext.util.auth.getRequestForgeryToken()
-              );
-              YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
-            },
-            failure: function(response) {}
-          };
-
-          YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
-        };
-
-        const eventIdSuccess = 'workflowCancellationDialogContinue';
         CrafterCMSNext.system.store.dispatch({
-          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-          payload: {
-            open: true,
-            items: null,
-            onContinue: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdSuccess }
-                },
-                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
-              ]
+          type: 'BATCH_ACTIONS',
+          payload: [
+            {
+              type: 'SET_CLIPBOARD',
+              payload: {
+                type: 'CUT',
+                paths: [path],
+                sourcePath: path
+              }
+            },
+            {
+              type: 'SHOW_CUT_ITEM_SUCCESS_NOTIFICATION'
             }
-          }
-        });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
-          doCut();
-        });
-
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe((items) => {
-          if (items && items.length) {
-            const eventIdSuccess = 'workflowCancellationDialogContinue';
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-              payload: { items }
-            });
-          } else {
-            CrafterCMSNext.system.store.dispatch({
-              type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
-            });
-            doCut();
-          }
+          ]
         });
       },
       /**
