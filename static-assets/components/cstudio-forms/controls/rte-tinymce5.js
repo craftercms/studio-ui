@@ -320,9 +320,18 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          const allowedDatasources = ['img-CMIS-upload', 'img-desktop-upload', 'img-S3-upload', 'img-WebDAV-upload'];
-          this.editorDatasources = this.form.definition.datasources.filter(
-            (datasource) => datasource.interface === 'image' && allowedDatasources.includes(datasource.name)
+          const imageDatasources = this.imageManagerName ? this.imageManagerName.split(',') : [];
+          const imageUploadDatasources = [
+            'img-CMIS-upload',
+            'img-desktop-upload',
+            'img-S3-upload',
+            'img-WebDAV-upload'
+          ];
+          this.editorImageDatasources = this.form.definition.datasources.filter(
+            (datasource) =>
+              datasource.interface === 'image' &&
+              imageUploadDatasources.includes(datasource.name) &&
+              imageDatasources.includes(datasource.id)
           );
 
           editor = tinymce.init({
@@ -367,17 +376,17 @@ CStudioAuthoring.Module.requireModule(
 
             paste_data_images: true,
             paste_postprocess: function(plugin, args) {
-              if (!_thisControl.editorDatasources.length) {
+              if (!_thisControl.editorImageDatasources.length) {
                 args.preventDefault();
                 _thisControl.editor.notificationManager.open({
-                  text: _thisControl.formatMessage(messages.noDatasourceConfigured),
+                  text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
                   timeout: 3000,
                   type: 'error'
                 });
               }
             },
-            images_upload_handler: function(blobInfo, success) {
-              _thisControl.addDndImage(blobInfo, success);
+            images_upload_handler: function(blobInfo, success, failure) {
+              _thisControl.addDndImage(blobInfo, success, failure);
             },
 
             templates: templates,
@@ -600,18 +609,27 @@ CStudioAuthoring.Module.requireModule(
               {
                 success: function(imageData) {
                   var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
-                  cb(cleanUrl, { title: imageData.fileName });
+
+                  if (cb.success) {
+                    cb.success(cleanUrl, { title: imageData.fileName });
+                  } else {
+                    cb(cleanUrl, { title: imageData.fileName });
+                  }
                 },
                 failure: function(message) {
-                  CStudioAuthoring.Operations.showSimpleDialog(
-                    'message-dialog',
-                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                    CMgs.format(langBundle, 'notification'),
-                    message,
-                    null,
-                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    'studioDialog'
-                  );
+                  if (cb.failure) {
+                    cb.failure(message);
+                  } else {
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      'message-dialog',
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      CMgs.format(langBundle, 'notification'),
+                      message,
+                      null,
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      'studioDialog'
+                    );
+                  }
                 }
               },
               file
@@ -668,11 +686,11 @@ CStudioAuthoring.Module.requireModule(
           }
         },
 
-        addDndImage(blobInfo, success) {
+        addDndImage(blobInfo, success, failure) {
           const _self = this;
           const datasourceMap = this.form.datasourceMap;
 
-          if (this.editorDatasources.length > 0) {
+          if (this.editorImageDatasources.length > 0) {
             this.editor.windowManager.open({
               title: 'Source',
               body: {
@@ -682,7 +700,7 @@ CStudioAuthoring.Module.requireModule(
                     type: 'selectbox',
                     name: 'datasource',
                     label: this.formatMessage(this.messages.chooseSource),
-                    items: this.editorDatasources.map((source) => ({
+                    items: this.editorImageDatasources.map((source) => ({
                       value: source.id,
                       text: source.title
                     }))
@@ -691,21 +709,41 @@ CStudioAuthoring.Module.requireModule(
               },
               onSubmit: function(api) {
                 const ds = datasourceMap[api.getData().datasource];
-
                 _self.addManagedImage(
                   ds,
-                  function(url, data) {
-                    _self.editor.notificationManager.open({
-                      text: _self.formatMessage(_self.messages.dropImageUploaded, { title: data.title }),
-                      timeout: 3000,
-                      type: 'success'
-                    });
+                  {
+                    success: function(url, data) {
+                      _self.editor.notificationManager.open({
+                        text: _self.formatMessage(_self.messages.dropImageUploaded, { title: data.title }),
+                        timeout: 3000,
+                        type: 'success'
+                      });
 
-                    success(url);
+                      success(url);
+                    },
+                    failure: function(error) {
+                      _self.editor.notificationManager.open({
+                        text: error.message,
+                        timeout: 3000,
+                        type: 'error'
+                      });
+                      $(_self.editor.iframeElement)
+                        .contents()
+                        .find(`img[src="${blobInfo.blobUri()}"]`)
+                        .remove();
+                    }
                   },
                   blobInfo.blob()
                 );
                 api.close();
+              },
+              onCancel: function(api) {
+                $(_self.editor.iframeElement)
+                  .contents()
+                  .find(`img[src="${blobInfo.blobUri()}"]`)
+                  .remove();
+
+                failure(null, { remove: true });
               },
               buttons: [
                 {

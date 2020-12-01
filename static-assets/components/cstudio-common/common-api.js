@@ -3087,15 +3087,31 @@ var nodeOpen = false,
         CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
       },
 
+      formDataRequest: function(apiUrl, formData, callback) {
+        const serviceUri = CStudioAuthoring.Service.createServiceUri(apiUrl);
+        const url = `${serviceUri}&${
+          CStudioAuthoringContext.xsrfParameterName
+        }=${CrafterCMSNext.util.auth.getRequestForgeryToken()}`;
+
+        $.ajax({
+          enctype: 'multipart/form-data',
+          processData: false,
+          contentType: false,
+          cache: false,
+          type: 'POST',
+          url: url,
+          data: formData,
+          success: function(response) {
+            callback.success(response);
+          },
+          error: function(err) {
+            callback.failure && callback.failure(err);
+          }
+        });
+      },
+
       directUploadAsset: function(file, site, path, callback) {
-        let serviceUri = `${CStudioAuthoring.Service.createServiceUri(
-          '/api/1/services/api/1/content/write-content.json'
-        )}&${CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken()}`;
-
-        serviceUri += `&contentType=folder&createFolders=true&draft=false&duplicate=false&path=${encodeURIComponent(
-          path
-        )}&site=editorial&unlock=true`;
-
+        const apiUrl = '/api/1/services/api/1/content/write-content.json';
         const formData = new FormData();
         formData.append('name', file.name);
         formData.append('site', site);
@@ -3103,20 +3119,49 @@ var nodeOpen = false,
         formData.append('type', file.type);
         formData.append('file', file);
 
-        const xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
+        this.formDataRequest(apiUrl, formData, callback);
+      },
 
-        xhr.onload = function() {
-          const response = JSON.parse(xhr.responseText);
-          if (xhr.status === 200) {
-            callback.success(response);
-          } else {
-            callback.failure(response);
-          }
-        };
+      directS3UploadAsset: function(file, site, path, profileId, callback) {
+        let apiUri = '/api/2/aws/s3/upload.json';
 
-        xhr.open('POST', serviceUri);
-        xhr.send(formData);
+        const formData = new FormData();
+        formData.append('name', file.name);
+        formData.append('type', file.type);
+        formData.append('siteId', site);
+        formData.append('path', path);
+        formData.append('profileId', profileId);
+        formData.append('file', file);
+
+        this.formDataRequest(apiUri, formData, callback);
+      },
+
+      directWebDAVUploadAsset: function(file, site, path, profileId, callback) {
+        let apiUri = '/api/2/webdav/upload';
+
+        const formData = new FormData();
+        formData.append('name', file.name);
+        formData.append('type', file.type);
+        formData.append('siteId', site);
+        formData.append('path', path);
+        formData.append('profileId', profileId);
+        formData.append('file', file);
+
+        this.formDataRequest(apiUri, formData, callback);
+      },
+
+      directCMISUploadAsset: function(file, site, path, repoId, callback) {
+        let apiUri = '/api/2/cmis/upload';
+
+        const formData = new FormData();
+        formData.append('name', file.name);
+        formData.append('type', file.type);
+        formData.append('siteId', site);
+        formData.append('cmisPath', path);
+        formData.append('cmisRepoId', repoId);
+        formData.append('file', file);
+
+        this.formDataRequest(apiUri, formData, callback);
       },
 
       /**

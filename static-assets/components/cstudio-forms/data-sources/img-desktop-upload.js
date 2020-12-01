@@ -86,8 +86,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 
             insertCb.success(imageData);
           },
-          failure: function() {
-            insertCb.failure();
+          failure: function(error) {
+            insertCb.failure(error);
           }
         });
       }

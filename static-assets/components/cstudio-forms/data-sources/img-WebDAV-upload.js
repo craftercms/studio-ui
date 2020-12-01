@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
   /**
    * action called when user clicks insert file
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function(insertCb, file) {
     (this._self = this), (me = this);
 
     var site = CStudioAuthoringContext.site;
@@ -77,7 +77,25 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
       context: this
     };
 
-    CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback, ['image/*']);
+    if (!file) {
+      CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback, ['image/*']);
+    } else {
+      CStudioAuthoring.Operations.directWebDAVUploadAsset(file, site, path, me.profileId, {
+        success: function(response) {
+          console.log(response);
+          insertCb.success({
+            fileName: response.item.name,
+            previewUrl: response.item.url,
+            relativeUrl: response.item.url,
+            fileExtension: response.item.url.split('.').pop(),
+            remote: true
+          });
+        },
+        failure: function(error) {
+          insertCb.failure(error);
+        }
+      });
+    }
   },
 
   getLabel: function() {

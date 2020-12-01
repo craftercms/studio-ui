@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
   /**
    * action called when user clicks insert file
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function(insertCb, file) {
     (this._self = this), (me = this);
 
     var site = CStudioAuthoringContext.site;
@@ -77,7 +77,23 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
       context: this
     };
 
-    CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
+    if (!file) {
+      CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
+    } else {
+      CStudioAuthoring.Operations.directCMISUploadAsset(file, site, path, me.repositoryId, {
+        success: function(response) {
+          insertCb.success({
+            fileName: response.item.name,
+            previewUrl: response.item.url,
+            relativeUrl: response.item.url,
+            fileExtension: response.item.fileExtension
+          });
+        },
+        failure: function(error) {
+          insertCb.failure(error);
+        }
+      });
+    }
   },
 
   getLabel: function() {
