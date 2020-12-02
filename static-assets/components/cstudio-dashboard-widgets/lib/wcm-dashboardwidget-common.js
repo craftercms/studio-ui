@@ -1712,7 +1712,7 @@ WcmDashboardWidgetCommon.clearSelections = function() {
       $(`#${dashboardId}-table`)
         .find('input[type="checkbox"]')
         .prop('checked', false);
-      CStudioAuthoring.SelectedContent.clear();
     });
+    CStudioAuthoring.SelectedContent.clear();
   }
 };

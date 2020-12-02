@@ -149,6 +149,7 @@
     background-color: transparent;
     border: none;
     box-shadow: none;
+    top: -100px;
 
     .navbar-nav:not(#activeContentActions), .navbar-right {
       display: none;
