@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -24,17 +23,63 @@ import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
+import confirmGraphicUrl from '../../assets/confirm.svg';
 
 const messages = defineMessages({
-  ok: {
-    id: 'words.ok',
-    defaultMessage: 'Ok'
+  accept: {
+    id: 'words.accept',
+    defaultMessage: 'Accept'
   },
   cancel: {
     id: 'words.cancel',
     defaultMessage: 'Cancel'
   }
 });
+
+const confirmDialogStyles = makeStyles(() =>
+  createStyles({
+    dialog: {
+      '& .MuiPaper-root': {
+        maxWidth: '350px',
+        borderRadius: '20px'
+      }
+    },
+    dialogBody: {
+      backgroundColor: '#fff',
+      textAlign: 'center',
+      padding: '40px 20px 0 !important'
+    },
+    dialogTitle: {
+      fontSize: '16px',
+      fontWeight: 400,
+      lineHeight: '24px',
+      paddingTop: '35px',
+      paddingBottom: '5px',
+      letterSpacing: '0.15px'
+    },
+    bodyText: {
+      fontSize: '14px',
+      letterSpacing: '0.15px'
+    },
+    dialogFooter: {
+      borderTop: 'none',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '25px 40px 35px',
+
+      '& button': {
+        fontWeight: 600,
+        letterSpacing: '0.46px'
+      },
+      '& > :not(:first-child)': {
+        marginTop: '10px',
+        marginLeft: 0
+      }
+    }
+  })
+);
 
 interface ConfirmDialogBaseProps {
   open: boolean;
@@ -65,6 +110,7 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
+  const classes = confirmDialogStyles();
   return (
     <Dialog
       open={props.open}
@@ -75,6 +121,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableBackdropClick={props.disableBackdropClick}
       disableEnforceFocus={props.disableEnforceFocus}
       hideBackdrop={props.hideBackdrop}
+      className={classes.dialog}
     >
       <ConfirmDialogWrapper {...props} />
     </Dialog>
@@ -82,25 +129,35 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
 }
 
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
-  const { onOk, onCancel, onDismiss, body, title, children } = props;
+  const { onOk, onCancel, body, title, children } = props;
   const { formatMessage } = useIntl();
+  const classes = confirmDialogStyles();
   useUnmount(props.onClosed);
   return (
     <>
-      {title && <DialogHeader id="confirmDialogTitle" title={title} onDismiss={onDismiss} />}
-      <DialogBody id="confirmDialogBody">
-        {body && <DialogContentText color="textPrimary">{body}</DialogContentText>}
+      <DialogBody id="confirmDialogBody" className={classes.dialogBody}>
+        <img src={confirmGraphicUrl} alt="" />
+        {title && (
+          <Typography variant="h2" component="h2" className={classes.dialogTitle}>
+            {title}
+          </Typography>
+        )}
+        {body && (
+          <DialogContentText color="textPrimary" className={classes.bodyText}>
+            {body}
+          </DialogContentText>
+        )}
         {children}
       </DialogBody>
-      <DialogFooter>
-        {onCancel && (
-          <Button onClick={onCancel} variant="contained">
-            {formatMessage(messages.cancel)}
+      <DialogFooter className={classes.dialogFooter}>
+        {onOk && (
+          <Button onClick={onOk} variant="contained" color="primary" autoFocus fullWidth={true} size="large">
+            {formatMessage(messages.accept)}
           </Button>
         )}
-        {onOk && (
-          <Button onClick={onOk} variant="contained" color="primary" autoFocus>
-            {formatMessage(messages.ok)}
+        {onCancel && (
+          <Button onClick={onCancel} variant="outlined" fullWidth={true} size="large">
+            {formatMessage(messages.cancel)}
           </Button>
         )}
       </DialogFooter>
