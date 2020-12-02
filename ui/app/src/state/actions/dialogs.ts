@@ -37,6 +37,7 @@ import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog'
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
+import { ItemMenuStateProps } from '../../components/ItemMenu/ItemMenu';
 
 // region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -178,6 +179,9 @@ export const closePathSelectionDialog = createAction<StandardAction>('CLOSE_PATH
 export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
 // endregion
 
-// region items notification
+// region Item Menu
+export const showItemMenu = createAction<Partial<ItemMenuStateProps>>('SHOW_ITEM_MENU');
+export const closeItemMenu = createAction<StandardAction>('CLOSE_ITEM_MENU');
+export const itemMenuClosed = createAction('ITEM_MENU_CLOSED');
 
 // endregion

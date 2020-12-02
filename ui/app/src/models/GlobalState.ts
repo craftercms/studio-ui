@@ -51,6 +51,7 @@ import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteD
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
+import { ItemMenuStateProps } from '../components/ItemMenu/ItemMenu';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -163,6 +164,7 @@ export interface GlobalState {
     editSite: EditSiteDialogStateProps;
     pathSelection: PathSelectionDialogStateProps;
     changeContentType: ChangeContentTypeDialogStateProps;
+    itemMenu: ItemMenuStateProps;
   };
   translation: {
     siteLocales: {

@@ -45,6 +45,8 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
 import { getCurrentIntl, intl$ } from './i18n';
+import { getHostToHostBus } from '../modules/Preview/previewContext';
+import { StandardAction } from '../models/StandardAction';
 
 const ErrorState = lazy(() => import('../components/ErrorState/ErrorState'));
 
@@ -89,6 +91,7 @@ interface CodebaseBridge {
     defaultThemeOptions: ThemeOptions;
     palette: any;
     store: CrafterCMSStore;
+    getHostToHostBus(): Subject<StandardAction>;
   };
 }
 
@@ -152,7 +155,13 @@ export function createCodebaseBridge() {
       )
     },
 
-    system: { generateClassName, defaultThemeOptions, palette, store: null },
+    system: {
+      generateClassName,
+      defaultThemeOptions,
+      palette,
+      store: null,
+      getHostToHostBus
+    },
 
     mui: {
       core: {

@@ -25,6 +25,8 @@ export const itemUpdated = createAction<{ target: string }>('ITEM_UPDATED');
 
 export const itemCreated = createAction<{ target: string }>('ITEM_CREATED');
 
+export const itemCut = createAction<{ target: string }>('ITEM_CUT');
+
 export const folderCreated = createAction<{ target: string; name: string }>('FOLDER_CREATED');
 
 export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');

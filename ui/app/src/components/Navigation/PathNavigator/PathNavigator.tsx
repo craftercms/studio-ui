@@ -52,7 +52,7 @@ import {
   pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
-import { ItemMenu } from '../../ItemMenu/ItemMenu';
+import ItemMenu from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';

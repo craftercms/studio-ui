@@ -322,8 +322,6 @@
 
         var tree = (instance.tree = new YAHOO.widget.TreeView(treeEl));
 
-        tree = this.initializeContextMenu(tree, instance);
-
         tree.setDynamicLoad(this.onLoadNodeDataOnClick);
         /*tree.subscribe("collapse", function(node) {this.collapseTree});
                 tree.subscribe("expand", function(node) {this.expandTree});*/
@@ -746,6 +744,59 @@
 
         var treeId = tree.id.toString().replace(/-/g, '');
         Self.myTreePages[treeId] = tree;
+
+        CrafterCMSNext.system
+          .getHostToHostBus()
+          .pipe(CrafterCMSNext.rxjs.operators.filter((e) => ['ITEM_CUT', 'ITEM_PASTED'].includes(e.type)))
+          .subscribe(({ type, payload }) => {
+            switch (type) {
+              case 'ITEM_CUT': {
+                const node = tree.getNodeByProperty('path', CrafterCMSNext.util.path.withoutIndex(payload.target));
+                if (node) {
+                  const parentTreeNode = node.getEl();
+                  const treeInner = YDom.get('acn-dropdown-menu-inner');
+                  const previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
+                  for (let i = 0; i < previousCutEl.length; i++) {
+                    if (
+                      previousCutEl[i].style.color == Self.CUT_STYLE_RGB ||
+                      previousCutEl[i].style.color == Self.CUT_STYLE
+                    ) {
+                      previousCutEl[i].style.color = '';
+                    }
+                  }
+
+                  document.getElementById(node.labelElId).style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
+
+                  if (node.hasChildren()) {
+                    const getTextNodes = YDom.getElementsByClassName('status-icon', null, parentTreeNode);
+                    for (let i = 0; i < getTextNodes.length; i++) {
+                      getTextNodes[i].style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
+                    }
+                  }
+                }
+                break;
+              }
+              case 'ITEM_PASTED': {
+                const targetNode = tree.getNodeByProperty(
+                  'path',
+                  CrafterCMSNext.util.path.withoutIndex(payload.target)
+                );
+                if (targetNode) {
+                  if (payload.clipboard.type === 'COPY') {
+                    Self.refreshNodes(targetNode, true, false, tree, null, true);
+                  } else {
+                    const sourceNode = tree.getNodeByProperty(
+                      'path',
+                      CrafterCMSNext.util.path.withoutIndex(payload.clipboard.sourcePath)
+                    );
+                    Self.refreshNodes(targetNode, true, false, tree, null, true);
+                    Self.refreshNodes(sourceNode.parent, true, false, tree, null, true);
+                  }
+                }
+                break;
+              }
+            }
+          });
       },
       /**
        * render method called on sub root level elements
@@ -949,7 +1000,7 @@
         }
 
         if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
-          var nodeSpan = document.createElement('span');
+          var nodeSpan = document.createElement('div');
 
           if (!treeNodeTO.style.match(/\bfolder\b/)) {
             treeNodeTO.linkToPreview = true;
@@ -984,6 +1035,41 @@
             nodeSpan.dataset.uri = treeNodeTO.uri;
           }
 
+          // Adding ItemMenu Icon and Trigger
+          const menuIcon = document.createElement('i');
+          menuIcon.className = 'fa fa-ellipsis-v item-menu';
+          menuIcon.onclick = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const path = treeNodeTO.uri;
+            CrafterCMSNext.system.store.dispatch({
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'COMPLETE_DETAILED_ITEM',
+                  payload: {
+                    path
+                  }
+                },
+                {
+                  type: 'FETCH_USER_PERMISSIONS',
+                  payload: {
+                    path
+                  }
+                },
+                {
+                  type: 'SHOW_ITEM_MENU',
+                  payload: {
+                    path,
+                    anchorReference: 'anchorPosition',
+                    anchorPosition: { top: event.clientY - 10, left: event.clientX - 10 }
+                  }
+                }
+              ]
+            });
+          };
+          nodeSpan.appendChild(menuIcon);
+
           treeNodeTO.html = nodeSpan;
 
           var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);
@@ -1015,130 +1101,9 @@
 
         return treeNode;
       },
-
-      initializeContextMenu(tree, instance) {
-        var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
-          container: 'acn-context-menu',
-          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-          shadow: true,
-          lazyload: true,
-          hidedelay: 700,
-          showdelay: 0,
-          classname: 'wcm-root-folder-context-menu',
-          zIndex: 100
-        });
-
-        oContextMenu.subscribe(
-          'beforeShow',
-          function(e) {
-            if (this.manualTrigger) {
-              let $contextMenu = $('#' + tree.oContextMenu.id);
-              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
-              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
-            }
-
-            tree.oContextMenu.clearContent('');
-            if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
-              Self.onTriggerContextMenu(tree, this);
-            }
-          },
-          tree,
-          false
-        );
-
-        oContextMenu.subscribe(
-          'beforeHide',
-          function(e) {
-            this.manualTrigger = false;
-          },
-          tree,
-          false
-        );
-
-        tree.oContextMenu = oContextMenu;
-
-        this.manualContextMenu(tree, (tree, target, offsetLeft, offsetTop) => {
-          self.onTriggerContextMenu(tree, tree.oContextMenu, target, { offsetLeft, offsetTop });
-          tree.oContextMenu.show();
-        });
-
-        return tree;
-      },
-
       /**
        *
        */
-      manualContextMenu: function(tree, callback) {
-        const $treeParent = $('#' + tree.id).parent(),
-          $dropdownMenu = $('#acn-dropdown-menu').parent();
-
-        let $contextMenuEllipsis;
-
-        if ($dropdownMenu.find('.context-menu--ellipsis').length === 0) {
-          $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>').appendTo(
-            $dropdownMenu
-          );
-          $sidebarHighlight = $('<span class="sidebar-highlight"></span>').appendTo($dropdownMenu);
-        } else {
-          $contextMenuEllipsis = $dropdownMenu.find('.context-menu--ellipsis');
-          $sidebarHighlight = $dropdownMenu.find('.sidebar-highlight');
-        }
-
-        $treeParent.on('mouseenter', '.ygtvcell', function() {
-          const target = $(this).find('.treenode-label')[0], // it's always one item (label)
-            top =
-              $(this)
-                .closest('.ygtvitem')[0]
-                .getBoundingClientRect().top - 48;
-
-          if (!$(target).hasClass('deleted-lock')) {
-            $contextMenuEllipsis.show();
-            $contextMenuEllipsis.attr('data-tree', tree.id);
-            $contextMenuEllipsis.data('target', target);
-            $contextMenuEllipsis.css('top', top);
-          }
-
-          $sidebarHighlight.show();
-          $sidebarHighlight.css('top', top - 2);
-        });
-
-        $treeParent.on('mouseleave', '.ygtvcell', function() {
-          $contextMenuEllipsis.hide();
-          $sidebarHighlight.hide();
-        });
-
-        // Since context-menu ellipsis element is not under highlighted element, when hovering it, the target
-        // element needs to be highlighted (show highlight element).
-        $dropdownMenu.on('mouseenter', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          $sidebarHighlight.show();
-        });
-
-        $dropdownMenu.on('mouseleave', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          $sidebarHighlight.hide();
-        });
-
-        $('#acn-dropdown-menu').on('scroll', function() {
-          $sidebarHighlight.hide();
-          $contextMenuEllipsis.hide();
-        });
-
-        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          e.stopPropagation();
-
-          const target = $(this).data().target;
-          const offsetLeft = e.clientX;
-          const offsetTop = e.clientY - 50;
-
-          let $contextMenu = $('#' + tree.oContextMenu.id);
-          if ($contextMenu.length === 0) {
-            let $contextMenuContainer = $('#acn-context-menu');
-            $contextMenuContainer.append(tree.oContextMenu.element);
-          }
-
-          callback(tree, target, offsetLeft, offsetTop);
-        });
-      },
-
       scrollToHighlighted: function() {
         var $highlightedEl = $('#acn-dropdown-menu .highlighted'),
           highlightedElTop = $highlightedEl.length > 0 ? $highlightedEl.offset().top : 0,
@@ -1251,8 +1216,6 @@
               var cont = j == 0 ? 0 : counter[key][j] + 1;
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
-
-          tree = this.initializeContextMenu(tree, instance);
 
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
@@ -3374,24 +3337,33 @@
 
         if (clipboard.type === 'CUT') {
           CrafterCMSNext.services.content
-            .fetchWorkflowAffectedItems(CStudioAuthoringContext, clipboard.sourcePath)
+            .fetchWorkflowAffectedItems(CStudioAuthoringContext.site, clipboard.sourcePath)
             .subscribe((items) => {
-              CrafterCMSNext.system.store.dispatch({
-                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-                payload: {
-                  items,
-                  onContinue: {
-                    type: 'ITEM_MENU_PASTE_ITEM',
-                    payload: {
-                      path
+              if (items.length) {
+                CrafterCMSNext.system.store.dispatch({
+                  type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                  payload: {
+                    items,
+                    onContinue: {
+                      type: 'PASTE_ITEM',
+                      payload: {
+                        path
+                      }
                     }
                   }
-                }
-              });
+                });
+              } else {
+                CrafterCMSNext.system.store.dispatch({
+                  type: 'PASTE_ITEM',
+                  payload: {
+                    path
+                  }
+                });
+              }
             });
         } else {
           CrafterCMSNext.system.store.dispatch({
-            type: 'ITEM_MENU_PASTE_ITEM',
+            type: 'PASTE_ITEM',
             payload: {
               path
             }
@@ -3438,7 +3410,7 @@
                   type: 'CLOSE_CONFIRM_DIALOG'
                 },
                 {
-                  type: 'ITEM_MENU_DUPlICATE_ITEM',
+                  type: 'DUPLICATE_ITEM',
                   payload: {
                     path: path,
                     onSuccess: {
