@@ -476,16 +476,18 @@ export function PreviewConcierge(props: any) {
             xsrfArgument
           ).subscribe(
             ({ payload: { progress } }) => {
-              const percentage = Math.floor(
-                parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
-              );
-              hostToGuest$.next({
-                type: DESKTOP_ASSET_UPLOAD_PROGRESS,
-                payload: {
-                  record: payload.record,
-                  percentage
-                }
-              });
+              if (progress) {
+                const percentage = Math.floor(
+                  parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
+                );
+                hostToGuest$.next({
+                  type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                  payload: {
+                    record: payload.record,
+                    percentage
+                  }
+                });
+              }
             },
             (error) => {
               console.log(error);
