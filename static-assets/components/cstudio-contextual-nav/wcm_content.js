@@ -666,7 +666,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               }
             },
 
-            clearSelectedContent: function() {
+            clearSelectedContent: function(e) {
+              e.preventDefault();
               $('#activeContentActions').removeClass('selected-content');
               WcmDashboardWidgetCommon.clearSelections();
               CStudioAuthoring.SelectedContent.clear();
