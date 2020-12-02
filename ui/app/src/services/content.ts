@@ -39,6 +39,7 @@ import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
 import { getPasteItemFromPath } from '../utils/path';
+import { StandardAction } from '../models/StandardAction';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -570,7 +571,7 @@ function uploadData(
   path: string,
   metaData: object,
   xsrfArgumentName: string
-): Observable<any> {
+): Observable<StandardAction> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
@@ -617,7 +618,12 @@ function uploadData(
   });
 }
 
-export function createFileUpload(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
+export function createFileUpload(
+  site: string,
+  file: any,
+  path: string,
+  xsrfArgumentName: string
+): Observable<StandardAction> {
   return uploadData('/studio/asset-upload', file, path, { site, path }, xsrfArgumentName);
 }
 
@@ -627,7 +633,7 @@ export function uploadToS3(
   path: string,
   profileId: string,
   xsrfArgumentName: string
-): Observable<any> {
+): Observable<StandardAction> {
   return uploadData(
     '/studio/api/2/aws/s3/upload.json',
     file,
@@ -649,7 +655,7 @@ export function uploadToWebDAV(
   path: string,
   profileId: string,
   xsrfArgumentName: string
-): Observable<any> {
+): Observable<StandardAction> {
   return uploadData(
     '/studio/api/2/webdav/upload',
     file,
@@ -671,7 +677,7 @@ export function uploadToCMIS(
   path: string,
   repositoryId: string,
   xsrfArgumentName: string
-): Observable<any> {
+): Observable<StandardAction> {
   return uploadData(
     '/studio/api/2/cmis/upload',
     file,
