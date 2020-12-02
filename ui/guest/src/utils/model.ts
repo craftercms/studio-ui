@@ -104,12 +104,3 @@ function extractCollectionPiece(model: ContentInstance, fieldId: string, index: 
     return aux[field];
   }
 }
-
-export default {
-  prop,
-  value,
-  extractCollection,
-  extractCollectionItem,
-  getContentTypeId,
-  isEmbedded
-};

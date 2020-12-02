@@ -14,13 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ElementRegistry, {
-  getDragContextFromReceptacles,
-  getHighlighted,
-  getRecordsFromIceId
-} from '../../classes/ElementRegistry';
+import * as ElementRegistry from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
-import iceRegistry from '../../classes/ICERegistry';
+import * as iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
 import GuestReducer from '../models/GuestReducer';
 import { GuestStandardAction } from '../models/GuestStandardAction';
@@ -93,8 +89,11 @@ const host_component_drag_started: GuestReducer = (state, action) => {
   if (notNullOrUndefined(contentType)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
-    const highlighted = getHighlighted(dropZones);
+    const { players, siblings, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(
+      receptacles,
+      validationsLookup
+    );
+    const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
       ...state,
@@ -126,8 +125,11 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
   if (notNullOrUndefined(instance)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
-    const highlighted = getHighlighted(dropZones);
+    const { players, siblings, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(
+      receptacles,
+      validationsLookup
+    );
+    const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
       ...state,
@@ -164,8 +166,8 @@ const asset_drag_started: GuestReducer = (state, action) => {
       type = 'video-picker';
     }
     const receptacles = iceRegistry.getMediaReceptacles(type);
-    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
-    const highlighted = getHighlighted(dropZones);
+    const { players, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(receptacles);
+    const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
       ...state,
@@ -200,8 +202,8 @@ const desktop_asset_drag_started: GuestReducer = (state, action) => {
       type = 'video-picker';
     }
     const receptacles = iceRegistry.getMediaReceptacles(type);
-    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
-    const highlighted = getHighlighted(dropZones);
+    const { players, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(receptacles);
+    const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
       ...state,
@@ -234,12 +236,12 @@ const dragstart: GuestReducer = (state, action) => {
   if (notNullOrUndefined(iceId)) {
     const receptacles = iceRegistry.getRecordReceptacles(iceId);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(
+    const { players, siblings, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(
       receptacles,
       validationsLookup,
       record
     );
-    const highlighted = getHighlighted(dropZones);
+    const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
       ...state,
@@ -347,7 +349,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
   const { iceProps } = action.payload;
   const iceId = iceRegistry.exists(iceProps);
   if (iceId === -1) return;
-  const registryEntries = getRecordsFromIceId(iceId);
+  const registryEntries = ElementRegistry.getRecordsFromIceId(iceId);
   if (!registryEntries) {
     return;
   }
@@ -597,7 +599,7 @@ const drop_zone_enter: GuestReducer = (state, action) => {
   }
 
   const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
-  const highlighted = getHighlighted(dropZones);
+  const highlighted = ElementRegistry.getHighlighted(dropZones);
 
   return {
     ...state,
@@ -636,7 +638,7 @@ const drop_zone_leave: GuestReducer = (state, action) => {
   }
 
   const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
-  const highlighted = getHighlighted(dropZones);
+  const highlighted = ElementRegistry.getHighlighted(dropZones);
 
   return {
     ...state,

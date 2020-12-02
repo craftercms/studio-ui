@@ -65,16 +65,3 @@ export function getFields(type: ContentType, ...ids: string[]): ContentTypeField
 export function getFieldsByType(contentType: ContentType, fieldType): ContentTypeField[] {
   return Object.values(contentType.fields).filter((field) => field.type === fieldType);
 }
-
-const _default = {
-  getRelatedContentTypeIds,
-  isGroupItem,
-  isComponentHolder,
-  isGroup,
-  doesFieldAccept,
-  getField,
-  getFields,
-  getFieldsByType
-};
-
-export { _default as ContentTypeHelper };

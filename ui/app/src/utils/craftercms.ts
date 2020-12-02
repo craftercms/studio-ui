@@ -61,7 +61,7 @@ export interface CrafterCMSGlobal {
 
 let UND;
 
-const libs: CrafterCMSGlobal['libs'] = {
+export const libs: CrafterCMSGlobal['libs'] = {
   jss,
   React,
   ReactDOM,
@@ -83,7 +83,7 @@ const libs: CrafterCMSGlobal['libs'] = {
 // try to find a script which matches `expectedPluginId=${pluginDescriptor.id}`. This might mean having to drop the
 // use of dynamic import and use regular scripts as dynamic imports don't add a script to the DOM we could go find.
 // Perhaps UMD shouldn't be supported; only support es module-style plugin bundle builds.
-const define = function(id, deps, factory) {
+export const define = function(id, deps, factory) {
   // Anonymous modules
   if (typeof id !== 'string') {
     // Adjust args appropriately
@@ -111,6 +111,8 @@ const define = function(id, deps, factory) {
 
 define.amd = true;
 
+export { getCurrentIntl as getIntl, plugins, components, getStore };
+
 const craftercms: CrafterCMSGlobal = {
   libs,
   plugins,
@@ -121,4 +123,3 @@ const craftercms: CrafterCMSGlobal = {
 };
 
 window.craftercms = craftercms;
-export default craftercms;

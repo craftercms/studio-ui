@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import iceRegistry, { getById } from './ICERegistry';
+import * as iceRegistry from './ICERegistry';
 import { byPathFetchIfNotLoaded, getCachedModels, hasCachedModel, model$ } from './ContentController';
 import { take } from 'rxjs/operators';
-import ContentType from '../utils/contentType';
-import Model from '../utils/model';
+import * as ContentType from '../utils/contentType';
+import * as Model from '../utils/model';
 import {
   DropZone,
   ElementRecord,
@@ -201,7 +201,7 @@ export function createIntermediateElementRecord(record: ElementRecord, iceId: nu
     return null;
   }
   const { id, element, label, modelId, index } = record;
-  return { id, element, modelId, index, label, fieldId: getById(iceId).fieldId, iceId };
+  return { id, element, modelId, index, label, fieldId: iceRegistry.getById(iceId).fieldId, iceId };
 }
 
 export function fromICEId(iceId: number): RegistryEntry {
@@ -358,24 +358,3 @@ export function getParentElementFromICEProps(
 
   return recordId === -1 ? null : $(fromICEId(recordId).element);
 }
-
-const ElementRegistry = {
-  get,
-  setLabel,
-  register,
-  deregister,
-  getDraggable,
-  getHoverData,
-  getRect,
-  fromICEId,
-  compileDropZone,
-  getSiblingRects,
-  fromElement,
-  hasElement,
-  getHighlighted,
-  getDragContextFromReceptacles,
-  getElementFromICEProps,
-  getParentElementFromICEProps
-};
-
-export default ElementRegistry;

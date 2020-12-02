@@ -35,7 +35,7 @@ import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
 import { nou } from './object';
-import babel from './babelHelpers-legacy';
+import * as babel from './babelHelpers-legacy';
 import * as security from '../services/security';
 import * as authService from '../services/auth';
 import * as translation from '../services/translation';

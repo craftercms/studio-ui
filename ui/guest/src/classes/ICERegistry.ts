@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import contentController from './ContentController';
+import * as contentController from './ContentController';
 import { DEFAULT_RECORD_DATA } from '../utils/util';
-import contentTypeUtils from '../utils/contentType';
-import Model from '../utils/model';
+import * as contentTypeUtils from '../utils/contentType';
+import * as Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
@@ -500,26 +500,3 @@ export function findContainerField(
     }
   });
 }
-
-const InContextEditingRegistry = {
-  register,
-  deregister,
-  exists,
-  getById,
-  isRepeatGroup,
-  isRepeatGroupItem,
-  getMediaReceptacles,
-  getRecordReceptacles,
-  getRepeatGroupItemReceptacles,
-  getComponentItemReceptacles,
-  getContentTypeReceptacles,
-  runReceptaclesValidations,
-  runValidation,
-  getReferentialEntries,
-  getRecordField,
-  isMovable,
-  checkComponentMovability,
-  checkRepeatGroupMovability
-};
-
-export default InContextEditingRegistry;
