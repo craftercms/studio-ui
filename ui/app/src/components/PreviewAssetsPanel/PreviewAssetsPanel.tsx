@@ -38,7 +38,7 @@ import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from '../SystemStatus/EmptyState';
 import UploadIcon from '@material-ui/icons/Publish';
 import { nnou, pluckProps } from '../../utils/object';
-import { uploadDataUrl } from '../../services/content';
+import { createFileUpload } from '../../services/content';
 import Suspencified from '../SystemStatus/Suspencified';
 import palette from '../../styles/palette';
 import { Resource } from '../../models/Resource';
@@ -204,7 +204,7 @@ export default function PreviewAssetsPanel() {
 
       const reader = new FileReader();
       reader.onloadend = function() {
-        uploadDataUrl(
+        createFileUpload(
           site,
           {
             ...pluckProps(file, 'name', 'type'),

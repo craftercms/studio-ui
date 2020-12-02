@@ -738,6 +738,7 @@ CStudioAuthoring.Module.requireModule(
                         type: 'error'
                       });
                       $imageToAdd.remove();
+                      failure();
                     }
                   },
                   file

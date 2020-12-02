@@ -617,11 +617,11 @@ function uploadData(
   });
 }
 
-export function uploadDataUrl(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
+export function createFileUpload(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
   return uploadData('/studio/asset-upload', file, path, { site, path }, xsrfArgumentName);
 }
 
-export function uploadDataS3(
+export function uploadToS3(
   site: string,
   file: any,
   path: string,
@@ -643,7 +643,7 @@ export function uploadDataS3(
   );
 }
 
-export function uploadDataWebDAV(
+export function uploadToWebDAV(
   site: string,
   file: any,
   path: string,
@@ -665,7 +665,7 @@ export function uploadDataWebDAV(
   );
 }
 
-export function uploadDataCMIS(
+export function uploadToCMIS(
   site: string,
   file: any,
   path: string,
@@ -895,10 +895,10 @@ const content = {
   moveItem,
   deleteItem,
   getContentByContentType,
-  uploadDataUrl,
-  uploadDataS3,
-  uploadDataWebDAV,
-  uploadDataCMIS,
+  createFileUpload,
+  uploadToS3,
+  uploadToWebDAV,
+  uploadToCMIS,
   getBulkUploadUrl,
   fetchQuickCreateList,
   getContentHistory: getHistory,

@@ -66,7 +66,7 @@ import {
   moveItem,
   sortItem,
   updateField,
-  uploadDataUrl
+  createFileUpload
 } from '../../services/content';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
@@ -469,7 +469,7 @@ export function PreviewConcierge(props: any) {
         case DESKTOP_ASSET_DROP: {
           enqueueSnackbar('Asset upload started.');
           hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
-          const uppySubscription = uploadDataUrl(
+          const uppySubscription = createFileUpload(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.record.modelId}`,

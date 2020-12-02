@@ -84,7 +84,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
     if (!file) {
       CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
     } else {
-      CrafterCMSNext.services.content.uploadDataCMIS(site, file, path, me.repositoryId, '_csrf').subscribe(
+      CrafterCMSNext.services.content.uploadToCMIS(site, file, path, me.repositoryId, '_csrf').subscribe(
         (response) => {
           if (response.type === 'upload-success') {
             callback.success(response.payload.item);
