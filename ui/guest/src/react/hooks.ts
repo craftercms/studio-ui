@@ -97,19 +97,34 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const elementRegistryId = useRef<number>();
   const model = useHotReloadModel(props);
 
+  const firstRenderRef = useRef<boolean>(true);
   useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+    } else {
+      console.error(
+        '[useICE] An ICE registration changed fieldId and/or model id in a render cycle. ' +
+          'This seems odd. Make sure is intended.'
+      );
+    }
+  }, [props.fieldId, props.model.craftercms.id]);
+
+  useEffect(() => {
+    // Register
+    elementRegistryId.current = register({
+      element: elementRef.current,
+      modelId: props.model.craftercms.id,
+      fieldId: props.fieldId,
+      index: props.index
+    });
     return () => {
-      nnou(elementRegistryId.current) && deregister(elementRegistryId.current);
-      elementRegistryId.current = null;
+      // Deregister
+      deregister(elementRegistryId.current);
     };
-  }, []);
+  }, [props.index, props.fieldId, props.model.craftercms.id]);
 
   if (inAuthoring) {
-    // prettier-ignore
-    const isDraggable = (
-      nnou(draggable[elementRegistryId.current]) &&
-      draggable[elementRegistryId.current] !== false
-    );
+    const isDraggable = nnou(draggable[elementRegistryId.current]) && draggable[elementRegistryId.current] !== false;
     const handler = (event: SyntheticEvent) => {
       // Registering here would be elegant (lazy registration) however
       // it would take a toll on the ContentTree panel
@@ -119,24 +134,13 @@ export function useICE(props: UseICEProps): ICEMaterials {
         props[handlerMap[event.type]]?.();
       }
     };
-    // During React update cycles, it may momentarily set the ref to
-    // null and then back to the previous element. We're only paying attention
-    // to the times that there is an element. Final de-registration occurs
-    // at the unmount time.
     const ref: ICEMaterials['props']['ref'] = (node) => {
+      // During React update cycles, it may momentarily set the ref to
+      // null and then back to the previous element. We're only paying attention
+      // to the times that there is an element. Final de-registration occurs
+      // at the unmount time.
       if (node) {
-        if (elementRef.current !== node) {
-          // Deregister
-          deregister(elementRegistryId.current);
-          // Register
-          elementRef.current = node;
-          elementRegistryId.current = register({
-            element: elementRef.current,
-            modelId: props.model.craftercms.id,
-            fieldId: props.fieldId,
-            index: props.index
-          });
-        }
+        elementRef.current = node;
       }
       if (props.ref) {
         if (typeof props.ref === 'function') {

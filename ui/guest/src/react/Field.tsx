@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, Fragment, PropsWithChildren, ElementType } from 'react';
+import React, { ComponentType, ElementType, Fragment, PropsWithChildren } from 'react';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
-import { value as getModelValue } from '../utils/model';
-import { setProperty } from '../utils/object';
+import { extractCollectionItem, value as getModelValue } from '../utils/model';
+import { nnou, setProperty } from '../utils/object';
 
 type FieldProps<P = {}> = PropsWithChildren<
   P & {
@@ -31,7 +31,7 @@ type FieldProps<P = {}> = PropsWithChildren<
 >;
 
 type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
-  target?: string;
+  renderTarget?: string;
   format?: (value: V, fieldId: string) => F;
 };
 
@@ -42,7 +42,8 @@ type ModelProps<P = {}> = PropsWithChildren<
   }
 >;
 
-// Field component is a slightly lighter/simpler version of RenderField. It has less options to render (e.g. no target, format)
+// Field component is a slightly lighter/simpler version of RenderField. It has less options to render (e.g. no renderTarget, format)
+// Registers the zone but doesn't render the field value, so values don't get repainted when changed.
 export function Field<P = {}>(props: FieldProps<P>) {
   const { model: modelProp, fieldId, index, component = 'div', ...other } = props;
   const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
@@ -63,9 +64,9 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
     fieldId,
     index,
     component = 'div',
-    // The target property for the field value. Can be multiple (CSVs),
+    // The renderTarget property for the field value. Can be multiple (CSVs),
     // just like fieldId. Should have a 1-to-1 correspondence with fieldId.
-    target = 'children',
+    renderTarget = 'children',
     format = (value) => value,
     ...other
   } = props;
@@ -73,10 +74,14 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   const Component = component as ComponentType<P>;
   const passDownProps = Object.assign({}, other, ice) as P;
   const fields = fieldId.replace(/\s/g, '').split(',');
-  const targets = target.replace(/\s/g, '').split(',');
-  targets.forEach((target, index) => {
-    const fieldId = fields[index];
-    setProperty(passDownProps as {}, target, format(getModelValue(model, fieldId), fieldId));
+  const targets = renderTarget.replace(/\s/g, '').split(',');
+  targets.forEach((target, targetIndex) => {
+    const fieldId = fields[targetIndex];
+    setProperty(
+      passDownProps as {},
+      target,
+      format(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId)
+    );
   });
   return <Component {...passDownProps} />;
 }

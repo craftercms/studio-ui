@@ -50,7 +50,8 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   UPDATE_AUDIENCES_PANEL_MODEL,
-  updateToolsPanelWidth
+  updateToolsPanelWidth,
+  guestModelUpdated
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import {
@@ -253,6 +254,16 @@ const reducer = createReducer<GlobalState['preview']>(
     },
     [fetchPrimaryGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
     [fetchGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
+    [guestModelUpdated.type]: (state, { payload: { model } }) => ({
+      ...state,
+      guest: {
+        ...state.guest,
+        models: {
+          ...state.guest.models,
+          [model.craftercms.id]: model
+        }
+      }
+    }),
     [SELECT_FOR_EDIT]: (state, { payload }) => {
       if (state.guest === null) {
         return state;
