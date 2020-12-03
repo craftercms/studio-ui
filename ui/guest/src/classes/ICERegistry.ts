@@ -73,7 +73,7 @@ let rid = 0;
 /* private */
 const registry: Map<number, ICERecord> = new Map();
 
-const refCount: LookupTable<number> = {};
+let refCount: LookupTable<number> = {};
 
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
@@ -501,6 +501,7 @@ export function findContainerField(
 
 export function flush(): void {
   registry.clear();
+  refCount = {};
 }
 
 const InContextEditingRegistry = {
