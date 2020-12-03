@@ -565,7 +565,7 @@ function insertCollectionItem(
   }
 }
 
-function uploadData(
+function createFileUpload(
   uploadUrl: string,
   file: any,
   path: string,
@@ -618,13 +618,13 @@ function uploadData(
   });
 }
 
-export function createFileUpload(
+export function uploadDataUrl(
   site: string,
   file: any,
   path: string,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  return uploadData('/studio/asset-upload', file, path, { site, path }, xsrfArgumentName);
+  return createFileUpload('/studio/asset-upload', file, path, { site, path }, xsrfArgumentName);
 }
 
 export function uploadToS3(
@@ -634,7 +634,7 @@ export function uploadToS3(
   profileId: string,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  return uploadData(
+  return createFileUpload(
     '/studio/api/2/aws/s3/upload.json',
     file,
     path,
@@ -656,7 +656,7 @@ export function uploadToWebDAV(
   profileId: string,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  return uploadData(
+  return createFileUpload(
     '/studio/api/2/webdav/upload',
     file,
     path,
@@ -678,7 +678,7 @@ export function uploadToCMIS(
   repositoryId: string,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  return uploadData(
+  return createFileUpload(
     '/studio/api/2/cmis/upload',
     file,
     path,
@@ -901,7 +901,7 @@ const content = {
   moveItem,
   deleteItem,
   getContentByContentType,
-  createFileUpload,
+  uploadDataUrl,
   uploadToS3,
   uploadToWebDAV,
   uploadToCMIS,

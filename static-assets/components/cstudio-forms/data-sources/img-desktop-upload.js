@@ -76,7 +76,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
       if (!file) {
         CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['image/*']);
       } else {
-        CrafterCMSNext.services.content.createFileUpload(site, file, path, '_csrf').subscribe(
+        CrafterCMSNext.services.content.uploadDataUrl(site, file, path, '_csrf').subscribe(
           null,
           (error) => {
             insertCb.failure(error);
