@@ -25,7 +25,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import confirmGraphicUrl from '../../assets/confirm.svg';
+import questionGraphicUrl from '../../assets/question.svg';
 
 const messages = defineMessages({
   accept: {
@@ -136,7 +136,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
   return (
     <>
       <DialogBody id="confirmDialogBody" className={classes.dialogBody}>
-        <img src={confirmGraphicUrl} alt="" />
+        <img src={questionGraphicUrl} alt="" />
         {title && (
           <Typography variant="h2" component="h2" className={classes.dialogTitle}>
             {title}
