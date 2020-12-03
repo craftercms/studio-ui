@@ -28,7 +28,7 @@ import {
   ReferentialEntries,
   ValidationResult
 } from '../models/InContextEditing';
-import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps, reversePluckProps } from '../utils/object';
+import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
 
@@ -73,6 +73,8 @@ let rid = 0;
 /* private */
 const registry: Map<number, ICERecord> = new Map();
 
+const refCount: LookupTable<number> = {};
+
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
   // to null for records that don't include those values
@@ -102,8 +104,7 @@ export function register(registration: ICERecordRegistration): number {
     // having slave records.
 
     const record = getById(id);
-
-    record.refCount++;
+    refCount[id]++;
 
     return record.id;
   } else {
@@ -120,6 +121,7 @@ export function register(registration: ICERecordRegistration): number {
     }
 
     registry.set(record.id, record);
+    refCount[record.id] = 1;
 
     return record.id;
   }
@@ -128,14 +130,10 @@ export function register(registration: ICERecordRegistration): number {
 export function deregister(id: number): ICERecord {
   const record = registry.get(id);
   if (record) {
-    try {
-      if (record.refCount === 1) {
-        registry.delete(id);
-      } else {
-        registry.get(id).refCount--;
-      }
-    } catch (e) {
-      console.error(`Error de-registering ${record.fieldId}`, record, e);
+    if (refCount[id] === 1) {
+      registry.delete(id);
+    } else {
+      refCount[id]--;
     }
   }
   return null;
@@ -335,7 +333,7 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
     field,
     contentType,
     contentTypeId,
-    ...reversePluckProps(record, 'refCount')
+    ...record
   };
 }
 
@@ -499,6 +497,10 @@ export function findContainerField(
       // TODO ...
     }
   });
+}
+
+export function flush(): void {
+  registry.clear();
 }
 
 const InContextEditingRegistry = {

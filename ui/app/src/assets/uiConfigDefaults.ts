@@ -50,7 +50,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewSearchPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/SearchRounded'
                   },
@@ -69,7 +68,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewComponentsPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
                   },
@@ -88,7 +86,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewBrowseComponentsPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
                   },
@@ -107,7 +104,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewReceptaclesPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
                   },
@@ -126,7 +122,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewAssetsPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/ImageOutlined'
                   },
@@ -145,7 +140,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewAudiencesPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/EmojiPeopleRounded'
                   },
@@ -197,7 +191,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewPageExplorerPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: 'craftercms.icons.PageExplorer'
                   },
@@ -216,7 +209,6 @@ const uiConfigDefaults = {
                   title: {
                     id: 'previewSimulatorPanel.title'
                   },
-                  roles: ['admin'],
                   icon: {
                     id: '@material-ui/icons/DevicesRounded'
                   },
@@ -248,7 +240,6 @@ const uiConfigDefaults = {
         {
           id: 'craftercms.components.ToolsPanelPageButton',
           uiKey: count++,
-          roles: ['admin'],
           configuration: {
             title: {
               id: 'previewSiteExplorerPanel.title'
@@ -341,6 +332,7 @@ const uiConfigDefaults = {
         {
           id: 'craftercms.components.ToolsPanelPageButton',
           uiKey: count++,
+          roles: ['admin', 'developer'],
           configuration: {
             title: 'Site Tools',
             icon: {

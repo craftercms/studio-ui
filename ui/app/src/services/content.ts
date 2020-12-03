@@ -193,7 +193,7 @@ function performMutation(
 
       updateModifiedDateElement(doc);
 
-      return post(writeContentUrl(qs), serialize(doc));
+      return post(writeContentUrl(qs), serialize(doc)).pipe(mapTo({ updatedDocument: doc }));
     })
   );
 }

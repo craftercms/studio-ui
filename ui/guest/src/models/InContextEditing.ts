@@ -47,9 +47,7 @@ export interface BaseICERecord extends ICEProps {
   id: number;
 }
 
-export interface ICERecord extends BaseICERecord {
-  refCount: number;
-}
+export interface ICERecord extends BaseICERecord {}
 
 export interface ICERecordRegistration {
   modelId: string;

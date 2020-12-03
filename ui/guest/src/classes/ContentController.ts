@@ -561,12 +561,18 @@ fromTopic(CONTENT_TYPES_RESPONSE)
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
   });
 
+interface FetchGuestModelCompletePayload {
+  path: string;
+  model: ContentInstance;
+  modelLookup: LookupTable<ContentInstance>;
+  childrenMap: LookupTable<string[]>;
+}
+
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, childrenMap }) => {
-    const normalizedModels = normalizeModelsLookup(modelLookup);
+  .subscribe(({ modelLookup, childrenMap }: FetchGuestModelCompletePayload) => {
     const modelIdByPath = {};
-    Object.values(normalizedModels).forEach((model) => {
+    Object.values(modelLookup).forEach((model) => {
       // Embedded components don't have a path.
       if (model.craftercms.path) {
         pathsRequested[model.craftercms.path] = true;
@@ -574,7 +580,7 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       }
     });
     Object.assign(children, childrenMap);
-    models$.next({ ...models$.value, ...normalizedModels });
+    models$.next({ ...models$.value, ...modelLookup });
     paths$.next({ ...paths$.value, ...modelIdByPath });
   });
 

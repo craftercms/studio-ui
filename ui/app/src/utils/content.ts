@@ -484,6 +484,53 @@ export function createChildModelLookup(
   return lookup;
 }
 
+export function normalizeModelsLookup(models: LookupTable<ContentInstance>) {
+  const lookup = {};
+  Object.entries(models).forEach(([id, model]) => {
+    lookup[id] = normalizeModel(model);
+  });
+  return lookup;
+}
+
+export function normalizeModel(model: ContentInstance): ContentInstance {
+  const normalized = { ...model };
+  Object.entries(model).forEach(([prop, value]) => {
+    if (prop.endsWith('_o')) {
+      const collection: ContentInstance[] = value;
+      if (collection.length) {
+        const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
+        if (isNodeSelector) {
+          normalized[prop] = collection.map((item) => item.craftercms.id);
+        } else {
+          normalized[prop] = collection.map((item) => normalizeModel(item));
+        }
+      }
+    }
+  });
+  return normalized;
+}
+
+export function denormalizeModel(
+  normalized: ContentInstance,
+  modelLookup: LookupTable<ContentInstance>
+): ContentInstance {
+  const model = { ...normalized };
+  Object.entries(model).forEach(([prop, value]) => {
+    if (prop.endsWith('_o')) {
+      const collection: any[] = value;
+      if (collection.length) {
+        const isNodeSelector = typeof collection[0] === 'string';
+        if (isNodeSelector) {
+          model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));
+        } else {
+          model[prop] = collection.map((item) => denormalizeModel(item, modelLookup));
+        }
+      }
+    }
+  });
+  return model;
+}
+
 const content = {
   isEditableAsset,
   parseContentXML,

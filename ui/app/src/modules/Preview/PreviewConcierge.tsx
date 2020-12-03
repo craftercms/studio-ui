@@ -55,7 +55,8 @@ import {
   UPDATE_FIELD_VALUE_OPERATION,
   GUEST_SITE_LOAD,
   FETCH_GUEST_MODEL,
-  VALIDATION_MESSAGE
+  VALIDATION_MESSAGE,
+  guestModelUpdated
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -98,7 +99,7 @@ import {
 } from '../../utils/state';
 import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
-import { createChildModelLookup } from '../../utils/content';
+import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
 import moment from 'moment-timezone';
 
 const guestMessages = defineMessages({
@@ -262,10 +263,18 @@ export function PreviewConcierge(props: any) {
               )
               .subscribe(({ model, modelLookup }) => {
                 const childrenMap = createChildModelLookup(modelLookup, contentTypes);
-                dispatch(completeAction({ model, modelLookup, childrenMap }));
+                const normalizedModels = normalizeModelsLookup(modelLookup);
+                const normalizedModel = normalizedModels[model.craftercms.id];
+                dispatch(
+                  completeAction({
+                    model: normalizedModel,
+                    modelLookup: normalizedModels,
+                    childrenMap
+                  })
+                );
                 hostToGuest$.next({
                   type: 'FETCH_GUEST_MODEL_COMPLETE',
-                  payload: { path, model, modelLookup, childrenMap }
+                  payload: { path, model: normalizedModel, modelLookup: normalizedModels, childrenMap }
                 });
               });
           // endregion
@@ -316,7 +325,15 @@ export function PreviewConcierge(props: any) {
             targetIndex,
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
-            () => {
+            ({ updatedDocument }) => {
+              const updatedModels = {};
+              parseContentXML(
+                updatedDocument,
+                parentModelId ? models[parentModelId].craftercms.path : models[modelId].craftercms.path,
+                contentTypes,
+                updatedModels
+              );
+              dispatch(guestModelUpdated({ model: normalizeModel(updatedModels[modelId]) }));
               hostToHost$.next({
                 type: SORT_ITEM_OPERATION_COMPLETE,
                 payload
