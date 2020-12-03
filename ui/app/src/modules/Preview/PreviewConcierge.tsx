@@ -475,8 +475,8 @@ export function PreviewConcierge(props: any) {
             `/static-assets/images/${payload.record.modelId}`,
             xsrfArgument
           ).subscribe(
-            ({ payload: { progress } }) => {
-              if (progress) {
+            ({ type, payload: { progress } }) => {
+              if (type !== 'upload-success') {
                 const percentage = Math.floor(
                   parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
                 );
