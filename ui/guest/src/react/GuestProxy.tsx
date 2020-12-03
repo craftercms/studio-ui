@@ -17,6 +17,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext } from './GuestContext';
 import * as ElementRegistry from '../classes/ElementRegistry';
+import { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import * as iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import {
@@ -294,7 +295,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = ElementRegistry.getParentElementFromICEProps(modelId, fieldId, targetIndex);
+          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 
@@ -338,7 +339,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = ElementRegistry.getParentElementFromICEProps(modelId, fieldId, targetIndex);
+          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 

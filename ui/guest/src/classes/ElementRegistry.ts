@@ -15,6 +15,7 @@
  */
 
 import * as iceRegistry from './ICERegistry';
+import { getById } from './ICERegistry';
 import { byPathFetchIfNotLoaded, getCachedModels, hasCachedModel, model$ } from './ContentController';
 import { take } from 'rxjs/operators';
 import * as ContentType from '../utils/contentType';
@@ -201,7 +202,7 @@ export function createIntermediateElementRecord(record: ElementRecord, iceId: nu
     return null;
   }
   const { id, element, label, modelId, index } = record;
-  return { id, element, modelId, index, label, fieldId: iceRegistry.getById(iceId).fieldId, iceId };
+  return { id, element, modelId, index, label, fieldId: getById(iceId).fieldId, iceId };
 }
 
 export function fromICEId(iceId: number): RegistryEntry {

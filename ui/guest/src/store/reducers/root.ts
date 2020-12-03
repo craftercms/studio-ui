@@ -15,6 +15,7 @@
  */
 
 import * as ElementRegistry from '../../classes/ElementRegistry';
+import { getDragContextFromReceptacles, getHighlighted, getRecordsFromIceId } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
@@ -89,10 +90,7 @@ const host_component_drag_started: GuestReducer = (state, action) => {
   if (notNullOrUndefined(contentType)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(
-      receptacles,
-      validationsLookup
-    );
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
     const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
@@ -125,10 +123,7 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
   if (notNullOrUndefined(instance)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(
-      receptacles,
-      validationsLookup
-    );
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
     const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
@@ -166,7 +161,7 @@ const asset_drag_started: GuestReducer = (state, action) => {
       type = 'video-picker';
     }
     const receptacles = iceRegistry.getMediaReceptacles(type);
-    const { players, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(receptacles);
+    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
     const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
@@ -202,7 +197,7 @@ const desktop_asset_drag_started: GuestReducer = (state, action) => {
       type = 'video-picker';
     }
     const receptacles = iceRegistry.getMediaReceptacles(type);
-    const { players, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(receptacles);
+    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
     const highlighted = ElementRegistry.getHighlighted(dropZones);
 
     return {
@@ -236,12 +231,12 @@ const dragstart: GuestReducer = (state, action) => {
   if (notNullOrUndefined(iceId)) {
     const receptacles = iceRegistry.getRecordReceptacles(iceId);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = ElementRegistry.getDragContextFromReceptacles(
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(
       receptacles,
       validationsLookup,
       record
     );
-    const highlighted = ElementRegistry.getHighlighted(dropZones);
+    const highlighted = getHighlighted(dropZones);
 
     return {
       ...state,
@@ -349,7 +344,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
   const { iceProps } = action.payload;
   const iceId = iceRegistry.exists(iceProps);
   if (iceId === -1) return;
-  const registryEntries = ElementRegistry.getRecordsFromIceId(iceId);
+  const registryEntries = getRecordsFromIceId(iceId);
   if (!registryEntries) {
     return;
   }
@@ -599,7 +594,7 @@ const drop_zone_enter: GuestReducer = (state, action) => {
   }
 
   const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
-  const highlighted = ElementRegistry.getHighlighted(dropZones);
+  const highlighted = getHighlighted(dropZones);
 
   return {
     ...state,
@@ -638,7 +633,7 @@ const drop_zone_leave: GuestReducer = (state, action) => {
   }
 
   const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
-  const highlighted = ElementRegistry.getHighlighted(dropZones);
+  const highlighted = getHighlighted(dropZones);
 
   return {
     ...state,

@@ -54,6 +54,7 @@ import { GuestState, GuestStateObservable } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, pluckProps, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
+import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
@@ -560,7 +561,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       tap(([action, state]) => {
         const { scrollElement } = action.payload;
         let registryEntryId = state.fieldSwitcher.registryEntryIds[state.fieldSwitcher.currentElement];
-        scrollToElement(ElementRegistry.get(registryEntryId).element, scrollElement);
+        scrollToElement(get(registryEntryId).element, scrollElement);
       }),
       ignoreElements()
     );
