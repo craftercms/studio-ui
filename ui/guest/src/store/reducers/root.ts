@@ -91,7 +91,7 @@ const host_component_drag_started: GuestReducer = (state, action) => {
     const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
     const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
-    const highlighted = ElementRegistry.getHighlighted(dropZones);
+    const highlighted = getHighlighted(dropZones);
 
     return {
       ...state,
@@ -124,7 +124,7 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
     const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
-    const highlighted = ElementRegistry.getHighlighted(dropZones);
+    const highlighted = getHighlighted(dropZones);
 
     return {
       ...state,
@@ -162,7 +162,7 @@ const asset_drag_started: GuestReducer = (state, action) => {
     }
     const receptacles = iceRegistry.getMediaReceptacles(type);
     const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
-    const highlighted = ElementRegistry.getHighlighted(dropZones);
+    const highlighted = getHighlighted(dropZones);
 
     return {
       ...state,
@@ -198,7 +198,7 @@ const desktop_asset_drag_started: GuestReducer = (state, action) => {
     }
     const receptacles = iceRegistry.getMediaReceptacles(type);
     const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
-    const highlighted = ElementRegistry.getHighlighted(dropZones);
+    const highlighted = getHighlighted(dropZones);
 
     return {
       ...state,
