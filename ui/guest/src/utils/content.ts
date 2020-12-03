@@ -62,9 +62,9 @@ function modelsToLookupModelParser(model: ContentInstance, lookup: LookupTable<C
   });
 }
 
-export function normalizeModelsLookup(originalLookup: LookupTable<ContentInstance>) {
-  const lookup = { ...originalLookup };
-  Object.entries(lookup).forEach(([id, model]) => {
+export function normalizeModelsLookup(models: LookupTable<ContentInstance>) {
+  const lookup = {};
+  Object.entries(models).forEach(([id, model]) => {
     lookup[id] = normalizeModel(model);
   });
   return lookup;

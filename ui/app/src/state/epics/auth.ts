@@ -29,7 +29,7 @@ import {
 import { map, switchMap, tap } from 'rxjs/operators';
 import { StandardAction } from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
-import auth from '../../services/auth';
+import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { setRequestForgeryToken } from '../../utils/auth';
 

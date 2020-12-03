@@ -83,13 +83,3 @@ export function reject(
     )
   );
 }
-
-const publishing = {
-  fetchPackages,
-  fetchPackage,
-  cancelPackage,
-  submitToGoLive,
-  goLive
-};
-
-export default publishing;

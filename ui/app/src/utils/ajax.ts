@@ -142,20 +142,3 @@ export const errorSelectorApi1: <T, O extends ObservableInput<any>>(err: any, ca
     };
   }
 };
-
-const ajaxUtil = {
-  OMIT_GLOBAL_HEADERS,
-  getGlobalHeaders,
-  setGlobalHeaders,
-  removeGlobalHeaders,
-  get,
-  getText,
-  post,
-  postJSON,
-  patch,
-  put,
-  del,
-  ajax
-};
-
-export default ajaxUtil;

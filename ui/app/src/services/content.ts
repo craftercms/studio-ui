@@ -193,7 +193,7 @@ function performMutation(
 
       updateModifiedDateElement(doc);
 
-      return post(writeContentUrl(qs), serialize(doc));
+      return post(writeContentUrl(qs), serialize(doc)).pipe(mapTo({ updatedDocument: doc }));
     })
   );
 }
@@ -797,36 +797,3 @@ export function getLegacyItemsTree(
     })}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
-
-const content = {
-  getComponentInstanceHTML,
-  getContentXML,
-  getLegacyItem,
-  getSandboxItem,
-  getDetailedItem,
-  getContentDOM,
-  getChildrenByPath,
-  paste,
-  getContentInstanceLookup,
-  updateField,
-  insertComponent,
-  insertInstance,
-  insertItem,
-  sortItem,
-  moveItem,
-  deleteItem,
-  getContentByContentType,
-  uploadDataUrl,
-  getBulkUploadUrl,
-  fetchQuickCreateList,
-  getContentHistory: getHistory,
-  revertTo,
-  lock,
-  unlock,
-  fetchWorkflowAffectedItems,
-  changeContentType,
-  checkPathExistence,
-  getLegacyItemsTree
-};
-
-export default content;

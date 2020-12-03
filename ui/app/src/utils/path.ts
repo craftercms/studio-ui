@@ -155,19 +155,3 @@ export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
   });
   return lookup[sourcePath];
 }
-
-const path = {
-  getPathFromPreviewURL,
-  getPreviewURLFromPath,
-  getQueryVariable,
-  parseQueryString,
-  itemsFromPath,
-  withoutIndex,
-  withIndex,
-  getParentPath,
-  getParentsFromPath,
-  getIndividualPaths,
-  getRootPath
-};
-
-export default path;
