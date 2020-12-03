@@ -207,7 +207,7 @@ export default function PreviewSearchPanel() {
                 count: response.result.total
               });
             } else {
-              setState({ isFetching: false, items: response.result.items });
+              setState({ isFetching: false, items: response.result.items, count: response.result.total });
             }
           },
           ({ response }) => {
