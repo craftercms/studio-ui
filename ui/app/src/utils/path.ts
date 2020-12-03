@@ -155,3 +155,7 @@ export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
   });
   return lookup[sourcePath];
 }
+
+export function isValidCutPastePath(targetPath, sourcePath): boolean {
+  return !getIndividualPaths(targetPath).includes(sourcePath);
+}

@@ -1421,3 +1421,10 @@ export const itemSuccessMessages = defineMessages({
     defaultMessage: 'Item type changed successfully'
   }
 });
+
+export const itemFailureMessages = defineMessages({
+  itemPasteToChildNotAllowed: {
+    id: 'item.itemPasteToChildNotAllowed',
+    defaultMessage: 'Pasting to a child item is not allowed for cut'
+  }
+});

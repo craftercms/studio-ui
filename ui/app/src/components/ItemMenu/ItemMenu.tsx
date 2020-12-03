@@ -53,7 +53,7 @@ import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
-import { getRootPath, withoutIndex } from '../../utils/path';
+import { getRootPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
 import {
   duplicateAsset,
   duplicateItem,
@@ -516,7 +516,10 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
-  const hasClipboard = clipboard?.paths.length && getRootPath(clipboard.sourcePath) === getRootPath(item.path);
+  const hasClipboard =
+    clipboard?.paths.length &&
+    getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
+    isValidCutPastePath(item.path, clipboard.sourcePath);
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
   return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;

@@ -42,8 +42,17 @@ import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
-import { emitSystemEvent, itemDuplicated, itemsPasted, showPasteItemSuccessNotification } from '../actions/system';
+import {
+  emitSystemEvent,
+  itemDuplicated,
+  itemsPasted,
+  showPasteItemSuccessNotification,
+  showSystemNotification
+} from '../actions/system';
 import { batchActions } from '../actions/misc';
+import { isValidCutPastePath } from '../../utils/path';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { itemFailureMessages } from '../../utils/i18n-legacy';
 
 const content = [
   // region Quick Create
@@ -155,20 +164,33 @@ const content = [
     ),
   // endregion
   // region Item Pasted
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-          map(({ items }) => {
-            return batchActions([
-              emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
-              unSetClipBoard(),
-              showPasteItemSuccessNotification()
-            ]);
-          })
-        );
+        if (isValidCutPastePath) {
+          return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+            map(({ items }) => {
+              return batchActions([
+                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
+                unSetClipBoard(),
+                showPasteItemSuccessNotification()
+              ]);
+            })
+          );
+        } else {
+          const hostToHost$ = getHostToHostBus();
+          hostToHost$.next(
+            showSystemNotification({
+              message: getIntl().formatMessage(itemFailureMessages.itemPasteToChildNotAllowed),
+              options: {
+                variant: 'error'
+              }
+            })
+          );
+          return NEVER;
+        }
       })
     )
   // endregion
