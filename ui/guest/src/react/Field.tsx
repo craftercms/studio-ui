@@ -77,7 +77,6 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   const targets = renderTarget.replace(/\s/g, '').split(',');
   targets.forEach((target, targetIndex) => {
     const fieldId = fields[targetIndex];
-    // TODO: when index is present, the format will receive the collection, not the item.
     setProperty(
       passDownProps as {},
       target,
