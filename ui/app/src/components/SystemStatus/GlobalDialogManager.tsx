@@ -402,15 +402,13 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Item Menu */}
-      {state.itemMenu.open && (
-        <ItemMenu
-          open={state.itemMenu.open}
-          path={state.itemMenu.path}
-          onClose={createCallback(state.itemMenu.onClose, dispatch)}
-          anchorReference={state.itemMenu.anchorReference}
-          anchorPosition={state.itemMenu.anchorPosition}
-        />
-      )}
+      <ItemMenu
+        open={state.itemMenu.open}
+        path={state.itemMenu.path}
+        onClose={createCallback(state.itemMenu.onClose, dispatch)}
+        anchorReference={state.itemMenu.anchorReference}
+        anchorPosition={state.itemMenu.anchorPosition}
+      />
       {/* endregion */}
     </Suspense>
   );
