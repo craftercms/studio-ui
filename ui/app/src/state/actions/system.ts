@@ -37,6 +37,8 @@ export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED')
 
 export const itemDuplicated = createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
 
+export const itemUnlocked = createAction<{ target: string }>('ITEM_UNLOCKED');
+
 // endregion
 
 // region Notifications
@@ -52,6 +54,8 @@ export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCC
 export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 
 export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
+
+export const showUnlockItemSuccessNotification = createAction('SHOW_UNLOCK_ITEM_SUCCESS_NOTIFICATION');
 
 export const showDuplicatedItemSuccessNotification = createAction('SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION');
 

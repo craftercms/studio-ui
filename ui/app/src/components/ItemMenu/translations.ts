@@ -126,5 +126,9 @@ export const translations = defineMessages({
     id: 'itemMenu.duplicateDialogBody',
     defaultMessage:
       "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?"
+  },
+  unlock: {
+    id: 'words.unlock',
+    defaultMessage: 'Unlock'
   }
 });

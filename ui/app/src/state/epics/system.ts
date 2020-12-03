@@ -28,7 +28,8 @@ import {
   showPasteItemSuccessNotification,
   showPublishItemSuccessNotification,
   showRevertItemSuccessNotification,
-  showSystemNotification
+  showSystemNotification,
+  showUnlockItemSuccessNotification
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 
@@ -128,6 +129,19 @@ const systemEpics: CrafterCMSEpic[] = [
         hostToHost$.next(
           showSystemNotification({
             message: getIntl().formatMessage(itemSuccessMessages.itemPasted)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showUnlockItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: getIntl().formatMessage(itemSuccessMessages.itemUnlocked)
           })
         );
       }),

@@ -31,10 +31,11 @@ import {
   fetchUserPermissionsFailed,
   pasteItem,
   reloadDetailedItem,
+  unlockItem,
   unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem, paste } from '../../services/content';
+import { duplicate, fetchQuickCreateList, getDetailedItem, paste, unlock } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -46,8 +47,10 @@ import {
   emitSystemEvent,
   itemDuplicated,
   itemsPasted,
+  itemUnlocked,
   showPasteItemSuccessNotification,
-  showSystemNotification
+  showSystemNotification,
+  showUnlockItemSuccessNotification
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import { isValidCutPastePath } from '../../utils/path';
@@ -132,6 +135,18 @@ const content = [
                 onSaveSuccess: payload.onSuccess
               })
             ])
+          )
+        );
+      })
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(unlockItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return unlock(state.sites.active, payload.path).pipe(
+          map(() =>
+            batchActions([emitSystemEvent(itemUnlocked({ target: payload.path })), showUnlockItemSuccessNotification()])
           )
         );
       })

@@ -59,7 +59,8 @@ import {
   duplicateItem,
   pasteItem,
   reloadDetailedItem,
-  setClipBoard
+  setClipBoard,
+  unlockItem
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -481,6 +482,14 @@ export default function ItemMenu(props: ItemMenuProps) {
             path: item.path,
             site,
             onClose: closeUploadDialog()
+          })
+        );
+        break;
+      }
+      case 'unlock': {
+        dispatch(
+          unlockItem({
+            path: item.path
           })
         );
         break;

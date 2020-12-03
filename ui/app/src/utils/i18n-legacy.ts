@@ -1404,6 +1404,10 @@ export const itemSuccessMessages = defineMessages({
     id: 'item.pasted',
     defaultMessage: 'Item pasted successfully'
   },
+  itemUnlocked: {
+    id: 'item.unlocked',
+    defaultMessage: 'Item unlocked successfully'
+  },
   itemDuplicated: {
     id: 'item.duplicated',
     defaultMessage: 'Item duplicated successfully'
