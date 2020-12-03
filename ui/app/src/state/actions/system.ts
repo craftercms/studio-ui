@@ -31,7 +31,7 @@ export const folderCreated = createAction<{ target: string; name: string }>('FOL
 
 export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
 
-export const itemsPasted = createAction<{ target: string; clipboard: Clipboard }>('ITEM_PASTED');
+export const itemsPasted = createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
 
 export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED');
 
