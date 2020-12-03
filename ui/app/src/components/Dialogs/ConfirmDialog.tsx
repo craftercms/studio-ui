@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogBody from './DialogBody';
+import DialogContent from '@material-ui/core/DialogContent';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
@@ -43,12 +43,10 @@ const confirmDialogStyles = makeStyles((theme) =>
   createStyles({
     dialog: {
       '& .MuiPaper-root': {
-        maxWidth: '350px',
         borderRadius: '20px'
       }
     },
     dialogBody: {
-      backgroundColor: theme.palette.background.paper,
       textAlign: 'center',
       padding: '40px 20px 0 !important'
     },
@@ -116,6 +114,8 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableEnforceFocus={props.disableEnforceFocus}
       hideBackdrop={props.hideBackdrop}
       className={classes.dialog}
+      maxWidth="xs"
+      fullWidth
     >
       <ConfirmDialogWrapper {...props} classes={classes} />
     </Dialog>
@@ -128,7 +128,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
   useUnmount(props.onClosed);
   return (
     <>
-      <DialogBody id="confirmDialogBody" className={classes.dialogBody}>
+      <DialogContent id="confirmDialogBody" className={classes.dialogBody}>
         <img src={questionGraphicUrl} alt="" />
         {title && (
           <Typography variant="body1" component="h2" className={classes.dialogTitle}>
@@ -141,7 +141,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
           </DialogContentText>
         )}
         {children}
-      </DialogBody>
+      </DialogContent>
       <DialogFooter className={classes.dialogFooter}>
         {onOk && (
           <Button onClick={onOk} variant="contained" color="primary" autoFocus fullWidth={true} size="large">
