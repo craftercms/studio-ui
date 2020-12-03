@@ -19,9 +19,9 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
-import iceRegistry from '../../classes/ICERegistry';
+import * as iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
-import contentController from '../../classes/ContentController';
+import * as contentController from '../../classes/ContentController';
 import { merge, NEVER, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -53,7 +53,8 @@ import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, pluckProps, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
-import ElementRegistry, { get } from '../../classes/ElementRegistry';
+import * as ElementRegistry from '../../classes/ElementRegistry';
+import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [

@@ -24,9 +24,3 @@ export function search(site: string, parameters: any = {}): Observable<SearchRes
     'Content-Type': 'application/json'
   }).pipe(pluck('response', 'result'));
 }
-
-const searchService = {
-  search
-};
-
-export default searchService;

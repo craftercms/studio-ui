@@ -18,9 +18,9 @@ import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from '
 import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-import iceRegistry from '../classes/ICERegistry';
+import * as iceRegistry from '../classes/ICERegistry';
 import { contentTypes$ } from '../classes/ContentController';
-import elementRegistry from '../classes/ElementRegistry';
+import * as elementRegistry from '../classes/ElementRegistry';
 import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';

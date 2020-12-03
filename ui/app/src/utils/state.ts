@@ -96,12 +96,3 @@ export function createWidgetDescriptor(widget: WidgetDescriptor): WidgetDescript
     uiKey: uuid()
   };
 }
-
-const state = {
-  getStateMapFromLegacyItem,
-  getStoredPreviewChoice,
-  setStoredPreviewChoice,
-  createToolsPanelPage
-};
-
-export default state;

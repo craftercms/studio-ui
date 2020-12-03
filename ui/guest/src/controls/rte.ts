@@ -15,9 +15,9 @@
  */
 
 import { ElementRecord } from '../models/InContextEditing';
-import iceRegistry from '../classes/ICERegistry';
+import * as iceRegistry from '../classes/ICERegistry';
 import { Editor } from 'tinymce';
-import contentController from '../classes/ContentController';
+import * as contentController from '../classes/ContentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';

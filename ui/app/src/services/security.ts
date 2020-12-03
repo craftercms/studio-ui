@@ -31,10 +31,3 @@ export function getUserPermissions(site: string, path: string, user: string): Ob
     pluck('response', 'permissions')
   );
 }
-
-const security = {
-  encrypt,
-  getUserPermissions
-};
-
-export default security;

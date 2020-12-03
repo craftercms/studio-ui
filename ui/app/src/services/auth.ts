@@ -81,15 +81,3 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
     })
   );
 }
-
-const auth = {
-  getLogoutInfoURL,
-  logout,
-  login,
-  validateSession,
-  sendPasswordRecovery,
-  setPassword,
-  validatePasswordResetToken
-};
-
-export default auth;

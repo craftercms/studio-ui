@@ -152,19 +152,3 @@ export function deserialize(xml: string | Node, options?: X2jOptionsOptional): a
     ...options
   });
 }
-
-const xml = {
-  fromString,
-  deserialize,
-  minify,
-  beautify,
-  getInnerHtml,
-  getInnerHtmlNumber,
-  extractLocalizedElements,
-  commentless,
-  findDocumentElement,
-  createElements,
-  wrapElementInAuxDocument
-};
-
-export default xml;

@@ -48,12 +48,3 @@ export function fetchDeleteDependencies(
     `/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths.map((path) => encodeURIComponent(path))}`
   ).pipe(pluck('response', 'items'));
 }
-
-const dependencies = {
-  fetchDependencies,
-  getSimpleDependencies,
-  getDependant,
-  fetchDeleteDependencies
-};
-
-export default dependencies;
