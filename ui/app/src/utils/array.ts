@@ -45,10 +45,3 @@ export function createPresenceTable(list: string[]): LookupTable<boolean> {
   list.forEach((value) => (table[value] = true));
   return table;
 }
-
-const array = {
-  forEach,
-  asArray
-};
-
-export default array;

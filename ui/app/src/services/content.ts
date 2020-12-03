@@ -797,35 +797,3 @@ export function getLegacyItemsTree(
     })}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
-
-const content = {
-  getComponentInstanceHTML,
-  getContentXML,
-  getLegacyItem,
-  getSandboxItem,
-  getDetailedItem,
-  getContentDOM,
-  getChildrenByPath,
-  paste,
-  getContentInstanceLookup,
-  updateField,
-  insertComponent,
-  insertInstance,
-  insertItem,
-  sortItem,
-  moveItem,
-  deleteItem,
-  getContentByContentType,
-  uploadDataUrl,
-  getBulkUploadUrl,
-  fetchQuickCreateList,
-  getContentHistory: getHistory,
-  revertTo,
-  lock,
-  unlock,
-  fetchWorkflowAffectedItems,
-  changeContentType,
-  checkPathExistence
-};
-
-export default content;

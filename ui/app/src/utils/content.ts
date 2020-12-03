@@ -530,14 +530,3 @@ export function denormalizeModel(
   });
   return model;
 }
-
-const content = {
-  isEditableAsset,
-  parseContentXML,
-  parseLegacyItemToSandBoxItem,
-  parseLegacyItemToDetailedItem,
-  createChildModelIdList,
-  createChildModelLookup
-};
-
-export default content;

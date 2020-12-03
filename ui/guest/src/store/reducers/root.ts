@@ -14,13 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ElementRegistry, {
-  getDragContextFromReceptacles,
-  getHighlighted,
-  getRecordsFromIceId
-} from '../../classes/ElementRegistry';
+import * as ElementRegistry from '../../classes/ElementRegistry';
+import { getDragContextFromReceptacles, getHighlighted, getRecordsFromIceId } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
-import iceRegistry from '../../classes/ICERegistry';
+import * as iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
 import GuestReducer from '../models/GuestReducer';
 import { GuestStandardAction } from '../models/GuestStandardAction';

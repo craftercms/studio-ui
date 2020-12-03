@@ -16,7 +16,7 @@
 
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
-import Model from '../utils/model';
+import * as Model from '../utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../utils/communicator';
 import uuid from 'uuid/v4';
@@ -583,26 +583,3 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
     models$.next({ ...models$.value, ...modelLookup });
     paths$.next({ ...paths$.value, ...modelIdByPath });
   });
-
-const ContentController = {
-  children,
-  models$: modelsObs$,
-  operations$: operationsObs$,
-  contentTypes$: contentTypesObs$,
-  hasCachedModel,
-  getCachedModel,
-  getCachedModels,
-  hasCachedContentType,
-  getCachedContentType,
-  getCachedContentTypes,
-  updateField,
-  insertItem,
-  insertComponent,
-  insertInstance,
-  insertGroup,
-  sortItem,
-  moveItem,
-  deleteItem
-};
-
-export default ContentController;

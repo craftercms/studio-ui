@@ -94,14 +94,3 @@ export function getDefaultValue(field: ContentTypeField): string {
     }
   }
 }
-
-export default {
-  getRelatedContentTypeIds,
-  isGroupItem,
-  isComponentHolder,
-  isGroup,
-  doesFieldAccept,
-  getField,
-  getFields,
-  getFieldsByType
-};

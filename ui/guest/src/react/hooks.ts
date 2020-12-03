@@ -23,7 +23,7 @@ import { ICEProps } from '../models/InContextEditing';
 import { models$, byPathFetchIfNotLoaded, model$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { denormalizeModel } from '../utils/content';
-import Model from '../utils/model';
+import * as Model from '../utils/model';
 
 // region Typings
 

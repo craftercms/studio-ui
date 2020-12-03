@@ -50,9 +50,3 @@ export function asDayMonthDateTime(date: string): string {
     day: parts[4].value
   })} ${parts[6].value} @ ${getCurrentIntl().formatTime(date)}`;
 }
-
-const datetime = {
-  getTimezones
-};
-
-export default datetime;

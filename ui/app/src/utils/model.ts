@@ -102,16 +102,3 @@ function extractCollectionPiece(model, fieldId, index) {
     return aux[field];
   }
 }
-
-const _default = {
-  prop,
-  value,
-  extractCollection,
-  extractCollectionItem,
-  getContentTypeId,
-  isEmbedded
-};
-
-export default _default;
-
-export { _default as ModelHelper };

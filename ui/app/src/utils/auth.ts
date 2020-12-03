@@ -50,13 +50,3 @@ export function setSiteCookie(value: string, cookieName: string = 'crafterSite')
 export function getSiteCookie(cookieName: string = siteCookie): string {
   return Cookies.get(cookieName) || null;
 }
-
-const auth = {
-  getCookieDomain,
-  getRequestForgeryToken,
-  setRequestForgeryToken,
-  setSiteCookie,
-  getSiteCookie
-};
-
-export default auth;
