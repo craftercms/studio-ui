@@ -24,8 +24,9 @@ import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import questionGraphicUrl from '../../assets/question.svg';
+import { ClassNameMap } from '@material-ui/styles/withStyles';
 
 const messages = defineMessages({
   accept: {
@@ -38,7 +39,7 @@ const messages = defineMessages({
   }
 });
 
-const confirmDialogStyles = makeStyles(() =>
+const confirmDialogStyles = makeStyles((theme) =>
   createStyles({
     dialog: {
       '& .MuiPaper-root': {
@@ -47,21 +48,13 @@ const confirmDialogStyles = makeStyles(() =>
       }
     },
     dialogBody: {
-      backgroundColor: '#fff',
+      backgroundColor: theme.palette.background.paper,
       textAlign: 'center',
       padding: '40px 20px 0 !important'
     },
     dialogTitle: {
-      fontSize: '16px',
-      fontWeight: 400,
-      lineHeight: '24px',
       paddingTop: '35px',
-      paddingBottom: '5px',
-      letterSpacing: '0.15px'
-    },
-    bodyText: {
-      fontSize: '14px',
-      letterSpacing: '0.15px'
+      paddingBottom: '5px'
     },
     dialogFooter: {
       borderTop: 'none',
@@ -93,6 +86,7 @@ interface ConfirmDialogBaseProps {
 
 export type ConfirmDialogProps = PropsWithChildren<
   ConfirmDialogBaseProps & {
+    classes?: ClassNameMap;
     onOk?(): void;
     onCancel?(): void;
     onClose?(): void;
@@ -123,27 +117,26 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       hideBackdrop={props.hideBackdrop}
       className={classes.dialog}
     >
-      <ConfirmDialogWrapper {...props} />
+      <ConfirmDialogWrapper {...props} classes={classes} />
     </Dialog>
   );
 }
 
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
-  const { onOk, onCancel, body, title, children } = props;
+  const { onOk, onCancel, body, title, children, classes } = props;
   const { formatMessage } = useIntl();
-  const classes = confirmDialogStyles();
   useUnmount(props.onClosed);
   return (
     <>
       <DialogBody id="confirmDialogBody" className={classes.dialogBody}>
         <img src={questionGraphicUrl} alt="" />
         {title && (
-          <Typography variant="h2" component="h2" className={classes.dialogTitle}>
+          <Typography variant="body1" component="h2" className={classes.dialogTitle}>
             {title}
           </Typography>
         )}
         {body && (
-          <DialogContentText color="textPrimary" className={classes.bodyText}>
+          <DialogContentText color="textPrimary" variant="body2">
             {body}
           </DialogContentText>
         )}
