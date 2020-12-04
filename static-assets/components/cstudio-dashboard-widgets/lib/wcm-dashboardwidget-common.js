@@ -1692,15 +1692,27 @@ WcmDashboardWidgetCommon.refreshDashboard = function(inst) {
   );
 };
 
+const dashboardsIds = ['MyRecentActivity', 'recentlyMadeLive', 'approvedScheduledItems', 'GoLiveQueue'];
+
 /**
  * refresh all dashboards
  */
 WcmDashboardWidgetCommon.refreshAllDashboards = function() {
   if (typeof WcmDashboardWidgetCommon != 'undefined') {
-    WcmDashboardWidgetCommon.refreshDashboard('MyRecentActivity');
-    WcmDashboardWidgetCommon.refreshDashboard('recentlyMadeLive');
-    WcmDashboardWidgetCommon.refreshDashboard('approvedScheduledItems');
-    WcmDashboardWidgetCommon.refreshDashboard('GoLiveQueue');
+    dashboardsIds.forEach((dashboardId) => {
+      WcmDashboardWidgetCommon.refreshDashboard(dashboardId);
+    });
+    CStudioAuthoring.SelectedContent.clear();
+  }
+};
+
+WcmDashboardWidgetCommon.clearSelections = function() {
+  if (typeof WcmDashboardWidgetCommon != 'undefined') {
+    dashboardsIds.forEach((dashboardId) => {
+      $(`#${dashboardId}-table`)
+        .find('input[type="checkbox"]')
+        .prop('checked', false);
+    });
     CStudioAuthoring.SelectedContent.clear();
   }
 };

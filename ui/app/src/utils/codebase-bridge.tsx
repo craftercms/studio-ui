@@ -18,26 +18,27 @@ import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
-import string from './string';
-import ajax from './ajax';
-import path from './path';
-import auth from './auth';
-import state from './state';
-import contentUtil from './content';
-import configuration from '../services/configuration';
-import sites from '../services/sites';
-import marketplace from '../services/marketplace';
-import publishing from '../services/publishing';
-import content from '../services/content';
+import * as string from './string';
+import * as ajax from './ajax';
+import * as path from './path';
+import * as auth from './auth';
+import * as state from './state';
+import * as contentUtil from './content';
+import * as configuration from '../services/configuration';
+import * as sites from '../services/sites';
+import * as marketplace from '../services/marketplace';
+import * as publishing from '../services/publishing';
+import * as content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
 import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
-import messages, { translateElements } from './i18n-legacy';
+import * as messages from './i18n-legacy';
+import { translateElements } from './i18n-legacy';
 import { nou } from './object';
-import babel from './babelHelpers-legacy';
-import security from '../services/security';
-import authService from '../services/auth';
-import translation from '../services/translation';
+import * as babel from './babelHelpers-legacy';
+import * as security from '../services/security';
+import * as authService from '../services/auth';
+import * as translation from '../services/translation';
 import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import createStore, { CrafterCMSStore } from '../state/store';
@@ -45,6 +46,8 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
 import { getCurrentIntl, intl$ } from './i18n';
+import { getHostToHostBus } from '../modules/Preview/previewContext';
+import { StandardAction } from '../models/StandardAction';
 
 const ErrorState = lazy(() => import('../components/ErrorState/ErrorState'));
 
@@ -89,6 +92,7 @@ interface CodebaseBridge {
     defaultThemeOptions: ThemeOptions;
     palette: any;
     store: CrafterCMSStore;
+    getHostToHostBus(): Subject<StandardAction>;
   };
 }
 
@@ -152,7 +156,13 @@ export function createCodebaseBridge() {
       )
     },
 
-    system: { generateClassName, defaultThemeOptions, palette, store: null },
+    system: {
+      generateClassName,
+      defaultThemeOptions,
+      palette,
+      store: null,
+      getHostToHostBus
+    },
 
     mui: {
       core: {

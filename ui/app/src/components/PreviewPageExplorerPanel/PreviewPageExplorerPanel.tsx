@@ -58,7 +58,7 @@ import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import { ItemMenu } from '../ItemMenu/ItemMenu';
+import ItemMenu from '../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import SearchBar from '../Controls/SearchBar';
 import Divider from '@material-ui/core/Divider';

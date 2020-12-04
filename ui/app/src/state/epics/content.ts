@@ -31,10 +31,11 @@ import {
   fetchUserPermissionsFailed,
   pasteItem,
   reloadDetailedItem,
+  unlockItem,
   unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem, paste } from '../../services/content';
+import { duplicate, fetchQuickCreateList, getDetailedItem, paste, unlock } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -42,8 +43,19 @@ import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
-import { emitSystemEvent, itemDuplicated, itemsPasted, showPasteItemSuccessNotification } from '../actions/system';
+import {
+  emitSystemEvent,
+  itemDuplicated,
+  itemsPasted,
+  itemUnlocked,
+  showPasteItemSuccessNotification,
+  showSystemNotification,
+  showUnlockItemSuccessNotification
+} from '../actions/system';
 import { batchActions } from '../actions/misc';
+import { isValidCutPastePath } from '../../utils/path';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { itemFailureMessages } from '../../utils/i18n-legacy';
 
 const content = [
   // region Quick Create
@@ -127,6 +139,18 @@ const content = [
         );
       })
     ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(unlockItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return unlock(state.sites.active, payload.path).pipe(
+          map(() =>
+            batchActions([emitSystemEvent(itemUnlocked({ target: payload.path })), showUnlockItemSuccessNotification()])
+          )
+        );
+      })
+    ),
   // endregion
   // region Asset Duplicate
   (action$, state$: StateObservable<GlobalState>) =>
@@ -155,20 +179,33 @@ const content = [
     ),
   // endregion
   // region Item Pasted
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-          map(({ items }) => {
-            return batchActions([
-              emitSystemEvent(itemsPasted({ target: payload.path, resultingPaths: items })),
-              unSetClipBoard(),
-              showPasteItemSuccessNotification()
-            ]);
-          })
-        );
+        if (isValidCutPastePath) {
+          return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+            map(({ items }) => {
+              return batchActions([
+                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
+                unSetClipBoard(),
+                showPasteItemSuccessNotification()
+              ]);
+            })
+          );
+        } else {
+          const hostToHost$ = getHostToHostBus();
+          hostToHost$.next(
+            showSystemNotification({
+              message: getIntl().formatMessage(itemFailureMessages.itemPasteToChildNotAllowed),
+              options: {
+                variant: 'error'
+              }
+            })
+          );
+          return NEVER;
+        }
       })
     )
   // endregion

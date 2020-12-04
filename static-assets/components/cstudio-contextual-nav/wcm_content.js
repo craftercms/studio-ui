@@ -666,9 +666,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               }
             },
 
-            clearSelectedContent: function() {
+            clearSelectedContent: function(e) {
+              e.preventDefault();
               $('#activeContentActions').removeClass('selected-content');
-              WcmDashboardWidgetCommon.refreshAllDashboards();
+              WcmDashboardWidgetCommon.clearSelections();
               CStudioAuthoring.SelectedContent.clear();
             },
 
@@ -959,35 +960,40 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     }
                   };
                   option.onclick = function() {
-                    CStudioAuthoring.Operations.showSimpleDialog(
-                      'duplicate-dialog',
-                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                      'Duplicate',
-                      "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
-                      [
-                        {
-                          text: 'Duplicate',
-                          handler: function() {
-                            this.hide();
-                            CStudioAuthoring.Operations.duplicateContent(
-                              CStudioAuthoringContext.site,
-                              content.uri,
-                              duplicateContentCallback
-                            );
-                          },
-                          isDefault: false
+                    CrafterCMSNext.system.store.dispatch({
+                      type: 'SHOW_CONFIRM_DIALOG',
+                      payload: {
+                        title: CrafterCMSNext.i18n.intl.formatMessage({
+                          id: 'words.duplicate',
+                          defaultMessage: 'Duplicate'
+                        }),
+                        body: CrafterCMSNext.i18n.intl.formatMessage({
+                          id: 'itemMenu.duplicateDialogBody',
+                          defaultMessage:
+                            "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?"
+                        }),
+                        onCancel: {
+                          type: 'CLOSE_CONFIRM_DIALOG'
                         },
-                        {
-                          text: CMgs.format(formsLangBundle, 'cancel'),
-                          handler: function() {
-                            this.hide();
-                          },
-                          isDefault: true
+                        onOk: {
+                          type: 'BATCH_ACTIONS',
+                          payload: [
+                            {
+                              type: 'CLOSE_CONFIRM_DIALOG'
+                            },
+                            {
+                              type: 'DUPLICATE_ITEM',
+                              payload: {
+                                path: uri,
+                                onSuccess: {
+                                  type: 'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
+                                }
+                              }
+                            }
+                          ]
                         }
-                      ],
-                      YAHOO.widget.SimpleDialog.ICON_WARN,
-                      'studioDialog'
-                    );
+                      }
+                    });
                   };
 
                   if (content.document || content.component) {

@@ -191,6 +191,8 @@ export const fetchGuestModelComplete = createAction<{
   childrenMap: LookupTable<string[]>;
 }>('FETCH_GUEST_MODELS_COMPLETE');
 
+export const guestModelUpdated = createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
+
 export function changeCurrentUrl(nextValue: string): StandardAction {
   return {
     type: CHANGE_CURRENT_URL,

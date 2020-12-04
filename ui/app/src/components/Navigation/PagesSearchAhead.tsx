@@ -32,6 +32,7 @@ import { getPreviewURLFromPath } from '../../utils/path';
 import { FormattedMessage } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,7 +77,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     highlighted: {
       display: 'inline-block',
-      background: 'yellow'
+      background: 'yellow',
+      color: theme.palette.type === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
     }
   })
 );

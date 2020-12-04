@@ -320,11 +320,15 @@ function parseElementByContentType(
     case 'node-selector': {
       const array = [];
       element.querySelectorAll(':scope > item').forEach((item) => {
-        const key = getInnerHtml(item.querySelector('key'));
+        let path = getInnerHtml(item.querySelector('include'));
         const component = item.querySelector('component');
+        if (!path && !component) {
+          // TODO: Groovy Controller Issue;
+          path = getInnerHtml(item.querySelector('key'));
+        }
         const instance = parseContentXML(
           component ? wrapElementInAuxDocument(component) : null,
-          key,
+          path,
           contentTypesLookup,
           instanceLookup
         );
@@ -484,13 +488,49 @@ export function createChildModelLookup(
   return lookup;
 }
 
-const content = {
-  isEditableAsset,
-  parseContentXML,
-  parseLegacyItemToSandBoxItem,
-  parseLegacyItemToDetailedItem,
-  createChildModelIdList,
-  createChildModelLookup
-};
+export function normalizeModelsLookup(models: LookupTable<ContentInstance>) {
+  const lookup = {};
+  Object.entries(models).forEach(([id, model]) => {
+    lookup[id] = normalizeModel(model);
+  });
+  return lookup;
+}
 
-export default content;
+export function normalizeModel(model: ContentInstance): ContentInstance {
+  const normalized = { ...model };
+  Object.entries(model).forEach(([prop, value]) => {
+    if (prop.endsWith('_o')) {
+      const collection: ContentInstance[] = value;
+      if (collection.length) {
+        const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
+        if (isNodeSelector) {
+          normalized[prop] = collection.map((item) => item.craftercms.id);
+        } else {
+          normalized[prop] = collection.map((item) => normalizeModel(item));
+        }
+      }
+    }
+  });
+  return normalized;
+}
+
+export function denormalizeModel(
+  normalized: ContentInstance,
+  modelLookup: LookupTable<ContentInstance>
+): ContentInstance {
+  const model = { ...normalized };
+  Object.entries(model).forEach(([prop, value]) => {
+    if (prop.endsWith('_o')) {
+      const collection: any[] = value;
+      if (collection.length) {
+        const isNodeSelector = typeof collection[0] === 'string';
+        if (isNodeSelector) {
+          model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));
+        } else {
+          model[prop] = collection.map((item) => denormalizeModel(item, modelLookup));
+        }
+      }
+    }
+  });
+  return model;
+}

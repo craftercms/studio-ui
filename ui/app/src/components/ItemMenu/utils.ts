@@ -124,6 +124,10 @@ const menuOptions = {
   createTemplate: {
     id: 'createTemplate',
     label: translations.createTemplate
+  },
+  unlock: {
+    id: 'unlock',
+    label: translations.unlock
   }
 };
 
@@ -144,6 +148,7 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
   const isImage = item.mimeType.startsWith('image/');
   const isRootFolder = isRootPath(item.path);
   const translation = false;
+  const isLocked = item.lockOwner;
   let type = item.systemType;
 
   switch (type) {
@@ -174,7 +179,10 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         if (hasClipboard) {
           _optionsA.push(menuOptions.paste);
         }
-        if (publish && !item.lockOwner && !item.stateMap.live) {
+        if (isLocked) {
+          _optionsA.push(menuOptions.unlock);
+        }
+        if (publish && !isLocked && !item.stateMap.live) {
           _optionsA.push(menuOptions.schedule);
           _optionsA.push(menuOptions.publish);
         }

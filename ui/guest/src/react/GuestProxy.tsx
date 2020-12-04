@@ -16,8 +16,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext } from './GuestContext';
-import ElementRegistry, { getParentElementFromICEProps } from '../classes/ElementRegistry';
-import iceRegistry from '../classes/ICERegistry';
+import * as ElementRegistry from '../classes/ElementRegistry';
+import { getParentElementFromICEProps } from '../classes/ElementRegistry';
+import * as iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import {
   operations$,
@@ -28,7 +29,7 @@ import {
 } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import ContentType from '../utils/contentType';
+import * as ContentType from '../utils/contentType';
 import { message$, post } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {

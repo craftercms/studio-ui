@@ -211,11 +211,3 @@ function appendLoadable(type: 'link' | 'script', attributes: object): Promise<Ev
 function hasProtocol(url: string): boolean {
   return /^(http)(s?):\/\//.test(url);
 }
-
-const plugin = {
-  buildFileUrl,
-  importFile,
-  importPlugin
-};
-
-export default plugin;

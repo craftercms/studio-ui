@@ -37,12 +37,3 @@ export function memory(): Observable<Memory> {
 export function log(since: number): Observable<LogEvent[]> {
   return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(pluck('response', 'events'));
 }
-
-const monitoring = {
-  version,
-  status,
-  memory,
-  log
-};
-
-export default monitoring;

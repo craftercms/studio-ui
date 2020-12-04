@@ -53,7 +53,7 @@ export default [
               payload.environment ?? state.versions.environment,
               payload.module ?? state.versions.module
             )
-          : getContentHistory(state.sites.active, payload.path ?? state.versions.item.path);
+          : getContentHistory(state.sites.active, payload?.path ?? state.versions.item.path);
         return service.pipe(map(fetchItemVersionsComplete), catchAjaxError(fetchItemVersionsFailed));
       })
     ),

@@ -18,7 +18,8 @@ import { ICERecord } from '../models/InContextEditing';
 import { pluckProps } from './object';
 
 export const foo = (...args: any[]) => void null;
-export const X_AXIS = 'X',
+export const //
+  X_AXIS = 'X',
   Y_AXIS = 'Y',
   HORIZONTAL = 'horizontal',
   VERTICAL = 'vertical',
@@ -27,8 +28,7 @@ export const X_AXIS = 'X',
     id: null,
     modelId: null,
     fieldId: null,
-    index: null,
-    refCount: 1
+    index: null
   };
 
 export function not(condition: boolean): boolean {

@@ -18,7 +18,7 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { isNullOrUndefined, notNullOrUndefined } from './object';
-import Model from './model';
+import * as Model from './model';
 import { forEach } from './array';
 import { popPiece } from './string';
 
