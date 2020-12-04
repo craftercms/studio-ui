@@ -582,17 +582,14 @@ function createFileUpload(
 
     uppy.on('upload-success', (file, response) => {
       subscriber.next({
-        type: 'upload-success',
-        payload: response.body
+        type: 'complete',
+        payload: response
       });
       subscriber.complete();
     });
 
     uppy.on('upload-progress', (file, progress) => {
       let type = 'progress';
-      if (progress.bytesUploaded === progress.bytesTotal) {
-        type = 'complete';
-      }
       subscriber.next({
         type,
         payload: {
@@ -624,7 +621,18 @@ export function uploadDataUrl(
   path: string,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  return createFileUpload('/studio/asset-upload', file, path, { site, path }, xsrfArgumentName);
+  return createFileUpload(
+    '/studio/api/1/services/api/1/content/write-content.json',
+    file,
+    path,
+    {
+      site,
+      name: file.name,
+      type: file.type,
+      path
+    },
+    xsrfArgumentName
+  );
 }
 
 export function uploadToS3(

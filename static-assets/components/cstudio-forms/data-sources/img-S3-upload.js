@@ -88,8 +88,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
     } else {
       CrafterCMSNext.services.content.uploadToS3(site, file, path, me.profileId, '_csrf').subscribe(
         (response) => {
-          if (response.type === 'upload-success') {
-            callback.success(response.payload.item);
+          if (response.type === 'complete') {
+            callback.success(response.payload.body.item);
           }
         },
         (error) => {

@@ -77,21 +77,23 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
         CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['image/*']);
       } else {
         CrafterCMSNext.services.content.uploadDataUrl(site, file, path, '_csrf').subscribe(
-          null,
+          (response) => {
+            if (response.type === 'complete') {
+              const item = response.payload.body.message;
+              const relativeUrl = item.uri;
+              const previewUrl = `${CStudioAuthoringContext.previewAppBaseUri}${relativeUrl}`;
+
+              const imageData = {
+                fileName: item.name,
+                relativeUrl,
+                previewUrl
+              };
+
+              insertCb.success(imageData);
+            }
+          },
           (error) => {
             insertCb.failure(error);
-          },
-          () => {
-            const relativeUrl = path.endsWith('/') ? path + file.name : path + '/' + file.name;
-            const previewUrl = `${CStudioAuthoringContext.previewAppBaseUri}${relativeUrl}`;
-
-            const imageData = {
-              fileName: file.name,
-              relativeUrl,
-              previewUrl
-            };
-
-            insertCb.success(imageData);
           }
         );
       }

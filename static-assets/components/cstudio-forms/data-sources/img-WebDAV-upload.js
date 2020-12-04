@@ -86,8 +86,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
     } else {
       CrafterCMSNext.services.content.uploadToWebDAV(site, file, path, me.profileId, '_csrf').subscribe(
         (response) => {
-          if (response.type === 'upload-success') {
-            callback.success(response.payload.item);
+          if (response.type === 'complete') {
+            callback.success(response.payload.body.item);
           }
         },
         (error) => {

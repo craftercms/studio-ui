@@ -68,7 +68,7 @@ import {
   updateField,
   uploadDataUrl
 } from '../../services/content';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { filter, pluck, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { interval, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
@@ -474,9 +474,13 @@ export function PreviewConcierge(props: any) {
             pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.record.modelId}`,
             xsrfArgument
-          ).subscribe(
-            ({ type, payload: { progress } }) => {
-              if (type !== 'upload-success') {
+          )
+            .pipe(
+              filter(({ type }) => type === 'progress'),
+              pluck('payload')
+            )
+            .subscribe(
+              ({ progress }) => {
                 const percentage = Math.floor(
                   parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
                 );
@@ -487,22 +491,21 @@ export function PreviewConcierge(props: any) {
                     percentage
                   }
                 });
+              },
+              (error) => {
+                console.log(error);
+                enqueueSnackbar('Asset Upload failed.');
+              },
+              () => {
+                hostToGuest$.next({
+                  type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                  payload: {
+                    record: payload.record,
+                    path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
+                  }
+                });
               }
-            },
-            (error) => {
-              console.log(error);
-              enqueueSnackbar('Asset Upload failed.');
-            },
-            () => {
-              hostToGuest$.next({
-                type: DESKTOP_ASSET_UPLOAD_COMPLETE,
-                payload: {
-                  record: payload.record,
-                  path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
-                }
-              });
-            }
-          );
+            );
           const sub = hostToHost$.subscribe((action) => {
             const { type, payload: uploadFile } = action;
             if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.record.id === payload.record.id) {
