@@ -26,7 +26,7 @@ import { useUnmount } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import questionGraphicUrl from '../../assets/question.svg';
-import { ClassNameMap } from '@material-ui/styles/withStyles';
+import { CSSProperties } from '@material-ui/styles';
 
 const messages = defineMessages({
   accept: {
@@ -39,8 +39,12 @@ const messages = defineMessages({
   }
 });
 
+type ConfirmDialogStateClassKey = 'dialog' | 'dialogBody' | 'dialogTitle' | 'dialogFooter';
+
+type ConfirmDialogStateStyles = Partial<Record<ConfirmDialogStateClassKey, CSSProperties>>;
+
 const confirmDialogStyles = makeStyles((theme) =>
-  createStyles({
+  createStyles<ConfirmDialogStateClassKey, ConfirmDialogStateStyles>({
     dialog: {
       '& .MuiPaper-root': {
         borderRadius: '20px'
@@ -84,7 +88,7 @@ interface ConfirmDialogBaseProps {
 
 export type ConfirmDialogProps = PropsWithChildren<
   ConfirmDialogBaseProps & {
-    classes?: ClassNameMap;
+    classes?: Partial<Record<ConfirmDialogStateClassKey, string>>;
     onOk?(): void;
     onCancel?(): void;
     onClose?(): void;
@@ -102,7 +106,7 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const classes = confirmDialogStyles();
+  const classes = confirmDialogStyles({});
   return (
     <Dialog
       open={props.open}
@@ -144,7 +148,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
       </DialogContent>
       <DialogFooter className={classes.dialogFooter}>
         {onOk && (
-          <Button onClick={onOk} variant="contained" color="primary" autoFocus fullWidth={true} size="large">
+          <Button onClick={onOk} variant="contained" color="primary" autoFocus fullWidth size="large">
             {formatMessage(messages.accept)}
           </Button>
         )}
