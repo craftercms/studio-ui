@@ -51,6 +51,7 @@ const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/BulkUploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
+const ItemMenu = lazy(() => import('../ItemMenu/ItemMenu'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -397,6 +398,16 @@ function GlobalDialogManager() {
         onClose={createCallback(state.pathSelection.onClose, dispatch)}
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
         onOk={createCallback(state.pathSelection.onOk, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Item Menu */}
+      <ItemMenu
+        open={state.itemMenu.open}
+        path={state.itemMenu.path}
+        onClose={createCallback(state.itemMenu.onClose, dispatch)}
+        anchorReference={state.itemMenu.anchorReference}
+        anchorPosition={state.itemMenu.anchorPosition}
       />
       {/* endregion */}
     </Suspense>

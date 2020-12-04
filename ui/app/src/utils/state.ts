@@ -17,6 +17,7 @@
 import { LegacyItem } from '../models/Item';
 import { WidgetDescriptor } from '../components/Widget';
 import uuid from 'uuid/v4';
+import { MessageDescriptor } from 'react-intl';
 
 export function getStateMapFromLegacyItem(item: LegacyItem) {
   return {
@@ -77,7 +78,7 @@ export function getStoredPathNavigator(site: string, id: string) {
   return JSON.parse(window.localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`));
 }
 
-export function createToolsPanelPage(title: string, widgets: WidgetDescriptor[]): WidgetDescriptor {
+export function createToolsPanelPage(title: string | MessageDescriptor, widgets: WidgetDescriptor[]): WidgetDescriptor {
   return createWidgetDescriptor({
     id: 'craftercms.components.ToolsPanelPage',
     configuration: {

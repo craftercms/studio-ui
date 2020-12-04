@@ -5644,7 +5644,8 @@ h2.yui-editor-skipheader, h3.yui-editor-skipheader {
   border-bottom-color: #243356;
 }
 
-.ygtvitem {
+.ygtv-highlight0:hover {
+  background-color: rgba(226, 226, 226, 1);
 }
 
 .ygtvitem table {

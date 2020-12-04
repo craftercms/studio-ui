@@ -131,10 +131,11 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   }
 }
 
-export function getPasteItemFromPath(sourcePath: string, paths: string[]): PasteItem {
+export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
+  const sourcePath = withoutIndex(path);
   let lookup = {
     [sourcePath]: {
-      path: sourcePath,
+      path,
       children: []
     }
   };
@@ -153,4 +154,8 @@ export function getPasteItemFromPath(sourcePath: string, paths: string[]): Paste
     lookup[parentPath].children.push(lookup[path]);
   });
   return lookup[sourcePath];
+}
+
+export function isValidCutPastePath(targetPath, sourcePath): boolean {
+  return !getIndividualPaths(targetPath).includes(sourcePath);
 }

@@ -113,7 +113,8 @@ export default function PreviewInPageInstancesPanel() {
     if (models) {
       const contentTypes = [];
       Object.values(models ?? []).forEach((model) => {
-        if (contentTypes.indexOf(model.craftercms.contentTypeId) <= 0) {
+        // TODO: Groovy Controller Issue;
+        if (model.craftercms.contentTypeId && contentTypes.indexOf(model.craftercms.contentTypeId) <= 0) {
           contentTypes.push(model.craftercms.contentTypeId);
         }
       });

@@ -1404,6 +1404,10 @@ export const itemSuccessMessages = defineMessages({
     id: 'item.pasted',
     defaultMessage: 'Item pasted successfully'
   },
+  itemUnlocked: {
+    id: 'item.unlocked',
+    defaultMessage: 'Item unlocked successfully'
+  },
   itemDuplicated: {
     id: 'item.duplicated',
     defaultMessage: 'Item duplicated successfully'
@@ -1419,5 +1423,12 @@ export const itemSuccessMessages = defineMessages({
   itemContentTypeChanged: {
     id: 'item.contentTypeChanged',
     defaultMessage: 'Item type changed successfully'
+  }
+});
+
+export const itemFailureMessages = defineMessages({
+  itemPasteToChildNotAllowed: {
+    id: 'item.itemPasteToChildNotAllowed',
+    defaultMessage: 'Pasting to a child item is not allowed for cut'
   }
 });

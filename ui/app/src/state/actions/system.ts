@@ -17,6 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { OptionsObject } from 'notistack';
+import { Clipboard } from '../../models/GlobalState';
 
 // region Item Events
 
@@ -24,15 +25,19 @@ export const itemUpdated = createAction<{ target: string }>('ITEM_UPDATED');
 
 export const itemCreated = createAction<{ target: string }>('ITEM_CREATED');
 
+export const itemCut = createAction<{ target: string }>('ITEM_CUT');
+
 export const folderCreated = createAction<{ target: string; name: string }>('FOLDER_CREATED');
 
 export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
 
-export const itemsPasted = createAction<{ target: string; resultingPaths: string[] }>('ITEM_PASTED');
+export const itemsPasted = createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
 
 export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED');
 
 export const itemDuplicated = createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
+
+export const itemUnlocked = createAction<{ target: string }>('ITEM_UNLOCKED');
 
 // endregion
 
@@ -49,6 +54,8 @@ export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCC
 export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 
 export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
+
+export const showUnlockItemSuccessNotification = createAction('SHOW_UNLOCK_ITEM_SUCCESS_NOTIFICATION');
 
 export const showDuplicatedItemSuccessNotification = createAction('SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION');
 

@@ -52,7 +52,7 @@
       copiedItem: null,
       cutItem: null,
       instanceCount: 0,
-      lastSelectedTextNode: null, //used for holding last selected node; to use it to hold hover effect on a text node when cotex menu is open.
+      lastSelectedTextNode: null, // used for holding last selected node; to use it to hold hover effect on a text node when cotex menu is open.
       treePaths: [],
       menuOn: false,
       treePathOpenedEvt: new YAHOO.util.CustomEvent('wcmRootFolderTreePathLoaded', Self),
@@ -78,13 +78,13 @@
         // When initializing, check if it's in preview and set the current previewed item into tree cookie
         if (CStudioAuthoringContext.isPreview && config.params.path === '/site/website') {
           var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-          //check if selected content is type page
+          // check if selected content is type page
           if (selectedContent != null && selectedContent.isPage) {
             CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', selectedContent.uri);
           }
         }
 
-        if (config.name == 'wcm-root-folder') {
+        if (config.name === 'wcm-root-folder') {
           var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
           instance.cannedSearchCache = [];
           instance.excludeCache = [];
@@ -92,7 +92,11 @@
           instance.openArray = {};
           var latestStored = storage.read(Self.getStoredPathKey(instance));
           if (latestStored) {
-            if (latestStored.indexOf(',') != -1 || latestStored.indexOf('[') != -1 || latestStored.indexOf('{') != -1) {
+            if (
+              latestStored.indexOf(',') !== -1 ||
+              latestStored.indexOf('[') !== -1 ||
+              latestStored.indexOf('{') !== -1
+            ) {
               instance.openArray = JSON.parse(latestStored);
             } else {
               instance.openArray = [];
@@ -114,11 +118,11 @@
             }
           };
 
-          //Setup child folders icon configuration
+          // Setup child folders icon configuration
           if (config.params['child-icon-open'] && config.params['child-icon-open'].class) {
             Self.customIcons[key].childIcons.open.icon.class = config.params['child-icon-open'].class;
           } else {
-            //default open folder icon
+            // default open folder icon
             Self.customIcons[key].childIcons.open.icon.class = Self.defaultIcons.childOpen;
           }
           if (config.params['child-icon-open'] && config.params['child-icon-open'].styles) {
@@ -127,7 +131,7 @@
           if (config.params['child-icon-closed'] && config.params['child-icon-closed'].class) {
             Self.customIcons[key].childIcons.closed.icon.class = config.params['child-icon-closed'].class;
           } else {
-            //default closed folder icon
+            // default closed folder icon
             Self.customIcons[key].childIcons.closed.icon.class = Self.defaultIcons.childClosed;
           }
           if (config.params['child-icon-closed'] && config.params['child-icon-closed'].styles) {
@@ -136,7 +140,7 @@
 
           var module;
 
-          //setup root folder icon configuration
+          // setup root folder icon configuration
           if (config.params['module-icon-open'] && config.params['module-icon-open'].class) {
             Self.customIcons[key].moduleIcons.open.icon.class = config.params['module-icon-open'].class;
           } else {
@@ -278,7 +282,7 @@
         var labelLangBundle = CMgs.format(siteDropdownLangBundle, label);
         label = labelLangBundle == label ? instance.label : labelLangBundle;
 
-        //add custom icon class
+        // add custom icon class
         var key = instance.label;
         key = key.replace(/\s/g, '');
 
@@ -322,11 +326,9 @@
 
         var tree = (instance.tree = new YAHOO.widget.TreeView(treeEl));
 
-        tree = this.initializeContextMenu(tree, instance);
-
         tree.setDynamicLoad(this.onLoadNodeDataOnClick);
-        /*tree.subscribe("collapse", function(node) {this.collapseTree});
-                tree.subscribe("expand", function(node) {this.expandTree});*/
+        /* tree.subscribe("collapse", function(node) {this.collapseTree});
+                tree.subscribe("expand", function(node) {this.expandTree}); */
 
         tree.FOCUS_CLASS_NAME = null;
 
@@ -363,7 +365,7 @@
                 openToPath: pathToOpen,
                 success: function(treeData) {
                   YDom.removeClass(label, 'loading');
-                  //if(servPath == "/site/website")
+                  // if(servPath == "/site/website")
                   window.treeData = treeData;
 
                   var items = treeData.item.children;
@@ -626,97 +628,6 @@
         if (uniquePath) {
           nodeOpen = true;
           self.treePaths.push(tree.id);
-          (function(t, inst) {
-            document.addEventListener(
-              'crafter.refresh',
-              function(e) {
-                /*eventCM.typeAction = e.typeAction;
-                            document.dispatchEvent(eventCM);*/
-
-                try {
-                  if (e.data && e.data.length) {
-                    for (var i = 0; i < e.data.length; i++) {
-                      var changeStructure =
-                        (e.data &&
-                          e.data.children &&
-                          e.data.children.length > 0 &&
-                          e.data.data.path != '/site/website') ||
-                        e.changeStructure
-                          ? true
-                          : false;
-                      Self.refreshNodes(
-                        e.data[i]
-                          ? e.data[i]
-                          : oCurrentTextNode != null
-                          ? oCurrentTextNode
-                          : CStudioAuthoring.SelectedContent.getSelectedContent()[0],
-                        true,
-                        e.parent == false ? false : true,
-                        t,
-                        inst,
-                        changeStructure,
-                        e.typeAction,
-                        e.oldPath,
-                        e.dependencies
-                      );
-                    }
-                  } else {
-                    var changeStructure =
-                      (e.data &&
-                        e.data.children &&
-                        e.data.children.length > 0 &&
-                        e.data.data.path != '/site/website') ||
-                      e.changeStructure
-                        ? true
-                        : false;
-                    Self.refreshNodes(
-                      e.data
-                        ? e.data
-                        : oCurrentTextNode != null
-                        ? oCurrentTextNode
-                        : CStudioAuthoring.SelectedContent.getSelectedContent()[0],
-                      true,
-                      e.parent == false ? false : true,
-                      t,
-                      inst,
-                      changeStructure,
-                      e.typeAction,
-                      e.oldPath,
-                      e.dependencies
-                    );
-                  }
-                } catch (er) {
-                  var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-                  if (contentSelected) {
-                    var changeStructure =
-                      (e.data &&
-                        e.data.children &&
-                        e.data.children.length > 0 &&
-                        e.data.data.path != '/site/website') ||
-                      e.changeStructure
-                        ? true
-                        : false;
-                    Self.refreshNodes(
-                      CStudioAuthoring.SelectedContent.getSelectedContent()[0],
-                      true,
-                      e.parent == false ? false : true,
-                      t,
-                      inst,
-                      e.changeStructure,
-                      e.typeAction,
-                      e.oldPath,
-                      e.dependencies
-                    );
-                  }
-                }
-
-                if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                  WcmDashboardWidgetCommon.refreshAllDashboards();
-                }
-              },
-              false
-            );
-          })(tree, instance);
         }
 
         tree.draw();
@@ -746,6 +657,104 @@
 
         var treeId = tree.id.toString().replace(/-/g, '');
         Self.myTreePages[treeId] = tree;
+
+        CrafterCMSNext.system
+          .getHostToHostBus()
+          .pipe(
+            CrafterCMSNext.rxjs.operators.filter((e) =>
+              [
+                'ITEM_CUT',
+                'ITEMS_PASTED',
+                'ITEM_DUPLICATED',
+                'ITEM_CREATED',
+                'ITEM_UPDATED',
+                'ITEMS_DELETED',
+                'FOLDER_RENAMED',
+                'FOLDER_CREATED'
+              ].includes(e.type)
+            )
+          )
+          .subscribe(({ type, payload }) => {
+            switch (type) {
+              case 'ITEM_CUT': {
+                const node = tree.getNodeByProperty('path', CrafterCMSNext.util.path.withoutIndex(payload.target));
+                if (node) {
+                  const parentTreeNode = node.getEl();
+                  const treeInner = YDom.get('acn-dropdown-menu-inner');
+                  const previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
+                  for (let i = 0; i < previousCutEl.length; i++) {
+                    if (
+                      previousCutEl[i].style.color == Self.CUT_STYLE_RGB ||
+                      previousCutEl[i].style.color == Self.CUT_STYLE
+                    ) {
+                      previousCutEl[i].style.color = '';
+                    }
+                  }
+
+                  document.getElementById(node.labelElId).style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
+
+                  if (node.hasChildren()) {
+                    const getTextNodes = YDom.getElementsByClassName('status-icon', null, parentTreeNode);
+                    for (let i = 0; i < getTextNodes.length; i++) {
+                      getTextNodes[i].style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
+                    }
+                  }
+                }
+                break;
+              }
+              case 'ITEMS_PASTED': {
+                const targetNode = tree.getNodeByProperty(
+                  'path',
+                  CrafterCMSNext.util.path.withoutIndex(payload.target)
+                );
+                if (targetNode) {
+                  if (payload.clipboard.type === 'COPY') {
+                    Self.refreshNodes(targetNode, true, false, tree, null, true);
+                  } else {
+                    const sourceNode = tree.getNodeByProperty(
+                      'path',
+                      CrafterCMSNext.util.path.withoutIndex(payload.clipboard.sourcePath)
+                    );
+                    Self.refreshNodes(targetNode, true, false, tree, null, true);
+                    Self.refreshNodes(sourceNode.parent, true, false, tree, null, true);
+                  }
+                }
+                break;
+              }
+              case 'ITEM_UPDATED':
+              case 'FOLDER_RENAMED':
+              case 'ITEM_DUPLICATED':
+              case 'ITEM_CREATED': {
+                const targetNode = tree.getNodeByProperty(
+                  'path',
+                  CrafterCMSNext.util.path.getParentPath(payload.target)
+                );
+                if (targetNode) {
+                  Self.refreshNodes(targetNode, true, false, tree, null, true);
+                }
+                break;
+              }
+              case 'FOLDER_CREATED': {
+                const targetNode = tree.getNodeByProperty(
+                  'path',
+                  CrafterCMSNext.util.path.withoutIndex(payload.target)
+                );
+                if (targetNode) {
+                  Self.refreshNodes(targetNode, true, false, tree, null, true);
+                }
+                break;
+              }
+              case 'ITEMS_DELETED': {
+                payload.targets.forEach((path) => {
+                  let targetNode = tree.getNodeByProperty('path', CrafterCMSNext.util.path.getParentPath(path));
+                  if (targetNode) {
+                    Self.refreshNodes(targetNode, true, false, tree, null, true);
+                  }
+                });
+                break;
+              }
+            }
+          });
       },
       /**
        * render method called on sub root level elements
@@ -826,7 +835,7 @@
                 replaceChildren.push(treeNodeTO.path);
               } else {
                 var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
-                //nodes will not have collapse/expand icon if they do not have any children
+                // nodes will not have collapse/expand icon if they do not have any children
                 if (treeItems[i].numOfChildren == 0) {
                   treeNode.isLeaf = true;
                 }
@@ -880,7 +889,7 @@
 
         if (nodeToOpen) {
           nodeToOpen.expand();
-          //nodeToOpen.openToPath = remainingPath;
+          // nodeToOpen.openToPath = remainingPath;
         }
       },
 
@@ -949,7 +958,7 @@
         }
 
         if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
-          var nodeSpan = document.createElement('span');
+          var nodeSpan = document.createElement('div');
 
           if (!treeNodeTO.style.match(/\bfolder\b/)) {
             treeNodeTO.linkToPreview = true;
@@ -960,7 +969,7 @@
             var key = instance.label;
             key = key.replace(/\s/g, '');
 
-            //create spans for icons
+            // create spans for icons
             var childIcons = Self.customIcons[key].childIcons,
               childClosed = CStudioAuthoring.Utils.createIcon(childIcons.closed, '', 'on-closed'),
               childOpen = CStudioAuthoring.Utils.createIcon(childIcons.open, '', 'on-open');
@@ -983,6 +992,41 @@
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
           }
+
+          // Adding ItemMenu Icon and Trigger
+          const menuIcon = document.createElement('i');
+          menuIcon.className = 'fa fa-ellipsis-v item-menu-trigger';
+          menuIcon.onclick = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const path = treeNodeTO.uri;
+            CrafterCMSNext.system.store.dispatch({
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'COMPLETE_DETAILED_ITEM',
+                  payload: {
+                    path
+                  }
+                },
+                {
+                  type: 'FETCH_USER_PERMISSIONS',
+                  payload: {
+                    path
+                  }
+                },
+                {
+                  type: 'SHOW_ITEM_MENU',
+                  payload: {
+                    path,
+                    anchorReference: 'anchorPosition',
+                    anchorPosition: { top: event.clientY - 10, left: event.clientX - 10 }
+                  }
+                }
+              ]
+            });
+          };
+          nodeSpan.appendChild(menuIcon);
 
           treeNodeTO.html = nodeSpan;
 
@@ -1015,130 +1059,9 @@
 
         return treeNode;
       },
-
-      initializeContextMenu(tree, instance) {
-        var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
-          container: 'acn-context-menu',
-          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-          shadow: true,
-          lazyload: true,
-          hidedelay: 700,
-          showdelay: 0,
-          classname: 'wcm-root-folder-context-menu',
-          zIndex: 100
-        });
-
-        oContextMenu.subscribe(
-          'beforeShow',
-          function(e) {
-            if (this.manualTrigger) {
-              let $contextMenu = $('#' + tree.oContextMenu.id);
-              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
-              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
-            }
-
-            tree.oContextMenu.clearContent('');
-            if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
-              Self.onTriggerContextMenu(tree, this);
-            }
-          },
-          tree,
-          false
-        );
-
-        oContextMenu.subscribe(
-          'beforeHide',
-          function(e) {
-            this.manualTrigger = false;
-          },
-          tree,
-          false
-        );
-
-        tree.oContextMenu = oContextMenu;
-
-        this.manualContextMenu(tree, (tree, target, offsetLeft, offsetTop) => {
-          self.onTriggerContextMenu(tree, tree.oContextMenu, target, { offsetLeft, offsetTop });
-          tree.oContextMenu.show();
-        });
-
-        return tree;
-      },
-
       /**
        *
        */
-      manualContextMenu: function(tree, callback) {
-        const $treeParent = $('#' + tree.id).parent(),
-          $dropdownMenu = $('#acn-dropdown-menu').parent();
-
-        let $contextMenuEllipsis;
-
-        if ($dropdownMenu.find('.context-menu--ellipsis').length === 0) {
-          $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>').appendTo(
-            $dropdownMenu
-          );
-          $sidebarHighlight = $('<span class="sidebar-highlight"></span>').appendTo($dropdownMenu);
-        } else {
-          $contextMenuEllipsis = $dropdownMenu.find('.context-menu--ellipsis');
-          $sidebarHighlight = $dropdownMenu.find('.sidebar-highlight');
-        }
-
-        $treeParent.on('mouseenter', '.ygtvcell', function() {
-          const target = $(this).find('.treenode-label')[0], // it's always one item (label)
-            top =
-              $(this)
-                .closest('.ygtvitem')[0]
-                .getBoundingClientRect().top - 48;
-
-          if (!$(target).hasClass('deleted-lock')) {
-            $contextMenuEllipsis.show();
-            $contextMenuEllipsis.attr('data-tree', tree.id);
-            $contextMenuEllipsis.data('target', target);
-            $contextMenuEllipsis.css('top', top);
-          }
-
-          $sidebarHighlight.show();
-          $sidebarHighlight.css('top', top - 2);
-        });
-
-        $treeParent.on('mouseleave', '.ygtvcell', function() {
-          $contextMenuEllipsis.hide();
-          $sidebarHighlight.hide();
-        });
-
-        // Since context-menu ellipsis element is not under highlighted element, when hovering it, the target
-        // element needs to be highlighted (show highlight element).
-        $dropdownMenu.on('mouseenter', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          $sidebarHighlight.show();
-        });
-
-        $dropdownMenu.on('mouseleave', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          $sidebarHighlight.hide();
-        });
-
-        $('#acn-dropdown-menu').on('scroll', function() {
-          $sidebarHighlight.hide();
-          $contextMenuEllipsis.hide();
-        });
-
-        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          e.stopPropagation();
-
-          const target = $(this).data().target;
-          const offsetLeft = e.clientX;
-          const offsetTop = e.clientY - 50;
-
-          let $contextMenu = $('#' + tree.oContextMenu.id);
-          if ($contextMenu.length === 0) {
-            let $contextMenuContainer = $('#acn-context-menu');
-            $contextMenuContainer.append(tree.oContextMenu.element);
-          }
-
-          callback(tree, target, offsetLeft, offsetTop);
-        });
-      },
-
       scrollToHighlighted: function() {
         var $highlightedEl = $('#acn-dropdown-menu .highlighted'),
           highlightedElTop = $highlightedEl.length > 0 ? $highlightedEl.offset().top : 0,
@@ -1252,8 +1175,6 @@
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
 
-          tree = this.initializeContextMenu(tree, instance);
-
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
@@ -1317,8 +1238,8 @@
                     });
                   }
                 } else {
-                  //YDom.removeClass(label, "loading");
-                  //Self.firePathLoaded(instance);
+                  // YDom.removeClass(label, "loading");
+                  // Self.firePathLoaded(instance);
                 }
 
                 YDom.removeClass(label, 'loading');
@@ -1353,14 +1274,14 @@
                     (paths[key] = []), (counter[key] = []), (recursiveCalls[key] = []), (tmp[key] = {});
                     (k[key] = 0), (pathTrace[key] = []), (rooth[key] = treeData.item.path);
 
-                    //if(servPath == "/site/website")
+                    // if(servPath == "/site/website")
                     window.treeData = treeData;
 
                     var items = treeData.item.children;
                     if (instance.showRootItem) {
                       items = new Array(treeData.item);
 
-                      //add custom icon class
+                      // add custom icon class
                       var keyId = instance.label;
                       keyId = keyId.replace(/\s/g, '');
 
@@ -1406,7 +1327,7 @@
                         Self.firePathLoaded(instance);
                       } else {
                         YDom.addClass(loadEl, 'ygtvloading');
-                        //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
+                        // YDom.setAttribute ( node , "index" ,instance.pathNumber  );
                         doCall(node, k[key], key);
                       }
                     } else {
@@ -1514,7 +1435,7 @@
           site = node.treeNodeTO.site,
           pathToOpenTo = node.openToPath;
 
-        //Self.save(node.instance, plainpath);
+        // Self.save(node.instance, plainpath);
 
         var serviceCb = {
           success: function(treeData, args) {
@@ -1533,7 +1454,7 @@
             /* wire up new to search items */
             Self.wireUpCannedSearches();
 
-            //add blur effect for cut items
+            // add blur effect for cut items
             Self.setChildrenStyles(args.node);
           },
 
@@ -1613,7 +1534,7 @@
         if (!num) {
           while ((el = el.parentElement) && !el.hasAttribute('num'));
         }
-        //Self.remove(node.instance, plainpath);
+        // Self.remove(node.instance, plainpath);
         Self.save(
           node.instance,
           plainpath,
@@ -1828,7 +1749,7 @@
 
             if (!changeStructure) {
               if (instance) {
-                //Self.initializeContentTree(instance.rootFolderEl, null, instance);
+                // Self.initializeContentTree(instance.rootFolderEl, null, instance);
                 var nodeToChange;
                 if (parent) {
                   nodeToChange = tree.getNodesByProperty('path', currentPath);
@@ -2078,8 +1999,8 @@
                   parentNode.style.display = 'none';
                   if (Self.cutItem != null) {
                     var parNode = tree.getNodeByProperty('path', Self.cutItem.parent.data.path);
-                    //if parent have single child and we did cut and paste the child,
-                    //we should refresh the parent node to remove expand collapse icon
+                    // if parent have single child and we did cut and paste the child,
+                    // we should refresh the parent node to remove expand collapse icon
                     if (parNode && parNode.children && parNode.children.length == 1) {
                       tree.removeChildren(parNode);
                       var parLoadEl = YSelector('.ygtvtp', parNode.getEl(), true);
@@ -2088,7 +2009,7 @@
                       parNode.renderChildren();
                       parNode.refresh();
                     } else if (parNode) {
-                      //remove the only item from parent node.
+                      // remove the only item from parent node.
                       tree.removeNode(Self.cutItem);
                     }
                     Self.cutItem = null;
@@ -2111,7 +2032,7 @@
           if (node.data.previewable == true && node.instance.onClickAction == 'preview') {
             if (node.data.isContainer == true && node.data.pathSegment != 'index.xml') {
               // this is a false state coming from the back-end
-            } /*if (node.data.isLevelDescriptor == false)*/ else {
+            } /* if (node.data.isLevelDescriptor == false) */ else {
               CStudioAuthoring.Operations.openPreview(node.data, '', false, false);
             }
           }
@@ -2165,9 +2086,9 @@
         };
 
         retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem).string;
-        retTransferObj.style = CStudioAuthoring.Utils.getIconFWClasses(treeItem); //, treeItem.container
+        retTransferObj.style = CStudioAuthoring.Utils.getIconFWClasses(treeItem); // , treeItem.container
 
-        //spilt status and made it as comma seperated items.
+        // spilt status and made it as comma seperated items.
         var statusStr = retTransferObj.status;
         if (retTransferObj.status.indexOf(' and ') != -1) {
           var statusArray = retTransferObj.status.split(' and ');
@@ -2342,731 +2263,6 @@
         }
         return toolTip;
       },
-
-      /**
-       * render the context menu
-       */
-      _renderContextMenu: function(target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
-        var aMenuItems;
-        var menuWidth = 'auto';
-
-        component.lastSelectedTextNode = target.parentNode.parentNode.parentNode.parentNode;
-        var menuId = YDom.get(p_aArgs.id);
-        p_aArgs.clearContent();
-        var d = document.createElement('div');
-        d.className = 'bd context-menu-load-msg';
-        d.innerHTML = CMgs.format(siteDropdownLangBundle, 'loading');
-        menuId.appendChild(d);
-
-        var formPath = oCurrentTextNode.data.formPagePath,
-          isContainer = oCurrentTextNode.data.isContainer,
-          isComponent = oCurrentTextNode.data.isComponent,
-          isTaxonomy = oCurrentTextNode.data.contentType.toLowerCase().indexOf('taxonomy') !== -1 ? true : false,
-          isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
-          isLocked =
-            oCurrentTextNode.data.lockOwner != '' && oCurrentTextNode.data.lockOwner != CStudioAuthoringContext.user,
-          isInProgress = oCurrentTextNode.data.inProgress,
-          isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
-          isFolder = isContainer && oCurrentTextNode.data.fileName != 'index.xml' ? true : false,
-          isOpen = null;
-
-        //Get user permissions to get read write operations
-        var checkPermissionsCb = {
-          success: function(results) {
-            var isCreateFolder = CStudioAuthoring.Service.isCreateFolder(results.permissions);
-            var renameFolder = !(oCurrentTextNode.data.path === '/site/components');
-            var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(results.permissions);
-            var isChangeContentTypeAllowed = CStudioAuthoring.Service.isChangeContentTypeAllowed(results.permissions);
-            // check if the user is allowed to edit the content
-            var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
-            var isDeleteAllowed = CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
-            var dependenciesAllowed = function() {
-              //dependencies dialog
-              p_aArgs.addItems([
-                {
-                  text: CMgs.format(siteDropdownLangBundle, 'wcmContentDependencies'),
-                  onclick: {
-                    fn: function() {
-                      var callback = {
-                        success: function(contentTO) {
-                          var selectedContent = [];
-                          selectedContent.push(contentTO.item);
-
-                          CStudioAuthoring.Operations.viewDependencies(
-                            CStudioAuthoringContext.site,
-                            selectedContent,
-                            false
-                          );
-                        },
-                        failure: function() {}
-                      };
-
-                      CStudioAuthoring.Service.lookupContentItem(
-                        CStudioAuthoringContext.site,
-                        oCurrentTextNode.data.uri,
-                        callback,
-                        false,
-                        false
-                      );
-                    }
-                  }
-                }
-              ]);
-            };
-            var publishAllowed = function() {
-              //add publish/request
-              var isRelevant = !(oCurrentTextNode.data.lockOwner != '') && !oCurrentTextNode.data.statusObj.live;
-
-              if (isRelevant) {
-                if (CStudioAuthoring.Service.isPublishAllowed(results.permissions)) {
-                  p_aArgs.addItems([
-                    {
-                      text: CMgs.format(siteDropdownLangBundle, 'wcmContentApprove'),
-                      onclick: {
-                        fn: function() {
-                          var callback = {
-                            success: function(contentTO) {
-                              var selectedContent = [];
-                              selectedContent.push(contentTO.item);
-
-                              CStudioAuthoring.Operations.approveCommon(
-                                CStudioAuthoringContext.site,
-                                selectedContent,
-                                false
-                              );
-                            },
-                            failure: function() {}
-                          };
-
-                          CStudioAuthoring.Service.lookupContentItem(
-                            CStudioAuthoringContext.site,
-                            oCurrentTextNode.data.uri,
-                            callback,
-                            false,
-                            false
-                          );
-                        }
-                      }
-                    }
-                  ]);
-                } else {
-                  if (
-                    oCurrentTextNode.data.status
-                      .toLowerCase()
-                      .indexOf(CStudioAuthoring.Constants.STATUS.submittedStatus) === -1 &&
-                    oCurrentTextNode.data.status
-                      .toLowerCase()
-                      .indexOf(CStudioAuthoring.Constants.STATUS.scheduledStatus) === -1 &&
-                    oCurrentTextNode.data.status
-                      .toLowerCase()
-                      .indexOf(CStudioAuthoring.Constants.STATUS.inWorkflowStatus) === -1
-                  ) {
-                    p_aArgs.addItems([
-                      {
-                        text: CMgs.format(siteDropdownLangBundle, 'wcmContentSubmit'),
-                        onclick: {
-                          fn: function() {
-                            var callback = {
-                              success: function(contentTO) {
-                                var selectedContent = [];
-                                selectedContent.push(contentTO.item);
-
-                                CStudioAuthoring.Operations.submitContent(
-                                  CStudioAuthoringContext.site,
-                                  selectedContent
-                                );
-                              },
-                              failure: function() {}
-                            };
-
-                            CStudioAuthoring.Service.lookupContentItem(
-                              CStudioAuthoringContext.site,
-                              oCurrentTextNode.data.uri,
-                              callback,
-                              false,
-                              false
-                            );
-                          }
-                        }
-                      }
-                    ]);
-                  }
-                }
-              }
-            };
-
-            if (isLocked == true && isWrite == true) {
-              p_aArgs.addItems([menuItems.viewOption]);
-
-              if (isContainer == true) {
-                if (isCreateContentAllowed) {
-                  p_aArgs.addItems([menuItems.newContentOption]);
-                }
-                p_aArgs.addItems([menuItems.newFolderOption]);
-              }
-              p_aArgs.addItems([menuItems.separator]);
-              //The item is locked
-              //p_aArgs.addItems([ menuItems.cutOption ]);
-              p_aArgs.addItems([menuItems.copyOption]);
-
-              if (
-                (oCurrentTextNode.data.lockOwner != '' &&
-                  (CStudioAuthoringContext.role === 'admin' || CStudioAuthoringContext.role === 'site_admin')) ||
-                oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user
-              ) {
-                p_aArgs.addItems([menuItems.separator]);
-                p_aArgs.addItems([menuItems.unlockOption]);
-              }
-
-              var checkClipboardCb = {
-                success: function(collection) {
-                  var contextMenuItems = [];
-                  contextMenuItems = this.menuItems;
-                  this.args.addItems(contextMenuItems);
-
-                  var idTree = oCurrentTextNode.tree.id.toString().replace(/-/g, '');
-                  Self.myTree = Self.myTreePages[idTree];
-
-                  if (
-                    collection.count > 0 &&
-                    isContainer &&
-                    collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
-                  ) {
-                    if (Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/'))) {
-                      if (
-                        Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
-                          .contentElId != oCurrentTextNode.contentElId
-                      ) {
-                        this.args.addItems([menuItems.pasteOption]);
-                      }
-                    }
-                    Self.copiedItem = Self.myTree.getNodeByProperty(
-                      'uri',
-                      collection.item[0].uri.replace(/\/\//g, '/')
-                    );
-                  }
-
-                  this.args.render();
-                  menuId.removeChild(d);
-                },
-                failure: function() {},
-                args: p_aArgs,
-                menuItems: aMenuItems,
-                menuEl: menuId,
-                menuWidth: menuWidth,
-                itemInProgress: isInProgress,
-                item: oCurrentTextNode.data
-              };
-
-              CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
-
-              p_aArgs.render();
-
-              menuId.removeChild(d);
-            } else if (!isWrite) {
-              p_aArgs.addItems([menuItems.viewOption]);
-
-              if (isComponent == true || isLevelDescriptor == true) {
-                if (formPath == '' || formPath == undefined) {
-                } else {
-                  if (!isUserAllowed) {
-                    if (isCreateContentAllowed) {
-                      p_aArgs.addItems([menuItems.newContentOption]);
-                    }
-                  } else {
-                    if (!isFolder && isChangeContentTypeAllowed) {
-                      p_aArgs.addItems([menuItems.separator]);
-                      p_aArgs.addItems([menuItems.changeTemplateOption]);
-                    }
-                  }
-                }
-              } else {
-                if (formPath == '' || formPath == undefined) {
-                  if (isUserAllowed) {
-                    if (isContainer == true) {
-                      if (isCreateContentAllowed) {
-                        p_aArgs.addItems([menuItems.newContentOption]);
-                      }
-                    }
-                    if (!isFolder && isChangeContentTypeAllowed) {
-                      p_aArgs.addItems([menuItems.separator]);
-                      p_aArgs.addItems([menuItems.changeTemplateOption]);
-                    }
-                  }
-                } else {
-                  if (isContainer == true) {
-                    if (isCreateContentAllowed) {
-                      p_aArgs.addItems([menuItems.newContentOption]);
-                    }
-                    if (isUserAllowed) {
-                      if (!isFolder && isChangeContentTypeAllowed) {
-                        p_aArgs.addItems([menuItems.separator]);
-                        p_aArgs.addItems([menuItems.changeTemplateOption]);
-                      }
-                    }
-                  }
-                }
-              }
-              p_aArgs.addItems([menuItems.separator]);
-              p_aArgs.addItems([menuItems.copyOption]);
-
-              if (
-                (oCurrentTextNode.data.lockOwner != '' &&
-                  (CStudioAuthoringContext.role === 'admin' || CStudioAuthoringContext.role === 'site_admin')) ||
-                oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user
-              ) {
-                p_aArgs.addItems([menuItems.separator]);
-                p_aArgs.addItems([menuItems.unlockOption]);
-              }
-
-              if (oCurrentTextNode.data.contentType != 'folder') {
-                p_aArgs.addItems([menuItems.separator]);
-                publishAllowed();
-                dependenciesAllowed();
-              }
-
-              if (isUserAllowed) {
-                p_aArgs.addItems([menuItems.separator]);
-                p_aArgs.addItems([menuItems.revertOption]);
-              }
-
-              p_aArgs.render();
-              menuId.removeChild(d);
-            } else {
-              if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
-                if (formPath == '' || formPath == undefined) {
-                  p_aArgs.addItems([menuItems.viewOption]);
-                  p_aArgs.addItems([menuItems.separator]);
-                  if (isUserAllowed) {
-                    if (isDeleteAllowed) {
-                      p_aArgs.addItems([menuItems.deleteOption]);
-                    }
-                  }
-                  p_aArgs.addItems([menuItems.copyOption]);
-                } else {
-                  if (isUserAllowed) {
-                    p_aArgs.addItems([menuItems.editOption]);
-                    p_aArgs.addItems([menuItems.viewOption]);
-
-                    if (isDeleteAllowed || (!isFolder && isChangeContentTypeAllowed)) {
-                      p_aArgs.addItems([menuItems.separator]);
-                    }
-                    if (isDeleteAllowed) {
-                      p_aArgs.addItems([menuItems.deleteOption]);
-                    }
-                    if (!isFolder && isChangeContentTypeAllowed) {
-                      p_aArgs.addItems([menuItems.changeTemplateOption]);
-                    }
-
-                    p_aArgs.addItems([menuItems.separator]);
-                    p_aArgs.addItems([menuItems.cutOption]);
-                    p_aArgs.addItems([menuItems.copyOption]);
-                  } else {
-                    p_aArgs.addItems([menuItems.viewOption]);
-                    if (isCreateContentAllowed) {
-                      p_aArgs.addItems([menuItems.newContentOption]);
-                    }
-                    p_aArgs.addItems([menuItems.separator]);
-                    p_aArgs.addItems([menuItems.copyOption]);
-                  }
-                }
-              } else {
-                if (formPath == '' || formPath == undefined) {
-                  if (isCreateFolder == true) {
-                    if (isContainer == true) {
-                      if (isCreateContentAllowed) {
-                        p_aArgs.addItems([menuItems.newContentOption]);
-                      }
-                      p_aArgs.addItems([menuItems.newFolderOption]);
-                      if (renameFolder) {
-                        p_aArgs.addItems([menuItems.renameFolderOption]);
-                      }
-                    }
-                    if (isUserAllowed) {
-                      if (isDeleteAllowed || (!isFolder && isChangeContentTypeAllowed)) {
-                        p_aArgs.addItems([menuItems.separator]);
-                      }
-                      if (isDeleteAllowed) {
-                        p_aArgs.addItems([menuItems.deleteOption]);
-                      }
-                      if (!isFolder && isChangeContentTypeAllowed) {
-                        p_aArgs.addItems([menuItems.changeTemplateOption]);
-                      }
-
-                      p_aArgs.addItems([menuItems.separator]);
-                      p_aArgs.addItems([menuItems.cutOption]);
-                      p_aArgs.addItems([menuItems.copyOption]);
-                    }
-                  } else {
-                    if (isContainer == true) {
-                      if (isCreateContentAllowed) {
-                        p_aArgs.addItems([menuItems.newContentOption]);
-                      }
-                    } else if (isUserAllowed) {
-                      p_aArgs.addItems([menuItems.separator]);
-                      p_aArgs.addItems([menuItems.deleteOption]);
-                    }
-                  }
-                } else {
-                  if (isContainer == true) {
-                    if (isCreateFolder == true) {
-                      if (isUserAllowed) {
-                        p_aArgs.addItems([menuItems.editOption]);
-                        p_aArgs.addItems([menuItems.viewOption]);
-                        if (isCreateContentAllowed) {
-                          p_aArgs.addItems([menuItems.newContentOption]);
-                        }
-                        p_aArgs.addItems([menuItems.newFolderOption]);
-
-                        if (isDeleteAllowed || (!isFolder && isChangeContentTypeAllowed)) {
-                          p_aArgs.addItems([menuItems.separator]);
-                        }
-
-                        if (isDeleteAllowed) {
-                          p_aArgs.addItems([menuItems.deleteOption]);
-                        }
-                        if (!isFolder && isChangeContentTypeAllowed) {
-                          p_aArgs.addItems([menuItems.changeTemplateOption]);
-                        }
-
-                        p_aArgs.addItems([menuItems.separator]);
-                        p_aArgs.addItems([menuItems.cutOption]);
-                        p_aArgs.addItems([menuItems.copyOption]);
-                      } else {
-                        p_aArgs.addItems([menuItems.viewOption]);
-                        if (isCreateContentAllowed) {
-                          p_aArgs.addItems([menuItems.newContentOption]);
-                        }
-                        p_aArgs.addItems([menuItems.newFolderOption]);
-                        p_aArgs.addItems([menuItems.separator]);
-                        p_aArgs.addItems([menuItems.copyOption]);
-                      }
-                    } else {
-                      if (isUserAllowed) {
-                        p_aArgs.addItems([menuItems.editOption]);
-                        p_aArgs.addItems([menuItems.viewOption]);
-                        if (isCreateContentAllowed) {
-                          p_aArgs.addItems([menuItems.newContentOption]);
-                        }
-
-                        if (!isFolder && isChangeContentTypeAllowed) {
-                          p_aArgs.addItems([menuItems.separator]);
-                          p_aArgs.addItems([menuItems.changeTemplateOption]);
-                        }
-                        p_aArgs.addItems([menuItems.separator]);
-                        if (isCreateContentAllowed) {
-                          p_aArgs.addItems([menuItems.copyOption]);
-                        }
-                      } else {
-                        p_aArgs.addItems([menuItems.viewOption]);
-                        if (isCreateContentAllowed) {
-                          p_aArgs.addItems([menuItems.newContentOption]);
-                        }
-                        p_aArgs.addItems([menuItems.separator]);
-                        p_aArgs.addItems([menuItems.copyOption]);
-                      }
-                    }
-                  } else {
-                    if (isUserAllowed) {
-                      p_aArgs.addItems([menuItems.editOption]);
-                      p_aArgs.addItems([menuItems.viewOption]);
-
-                      p_aArgs.addItems([menuItems.separator]);
-                      if (isDeleteAllowed) {
-                        p_aArgs.addItems([menuItems.deleteOption]);
-                      }
-                      if (!isFolder && isChangeContentTypeAllowed) {
-                        p_aArgs.addItems([menuItems.changeTemplateOption]);
-                      }
-
-                      p_aArgs.addItems([menuItems.separator]);
-                      p_aArgs.addItems([menuItems.cutOption]);
-                      p_aArgs.addItems([menuItems.copyOption]);
-                    } else {
-                      p_aArgs.addItems([menuItems.viewOption]);
-                      p_aArgs.addItems([menuItems.separator]);
-                      p_aArgs.addItems([menuItems.copyOption]);
-                    }
-                  }
-                }
-              }
-
-              var checkClipboardCb = {
-                success: function(collection) {
-                  var contextMenuItems = [];
-                  contextMenuItems = this.menuItems;
-                  this.args.addItems(contextMenuItems);
-
-                  var idTree = oCurrentTextNode.tree.id.toString().replace(/-/g, '');
-                  Self.myTree = Self.myTreePages[idTree];
-
-                  if (
-                    collection.count > 0 &&
-                    (isContainer || oCurrentTextNode.data.isPage) &&
-                    collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
-                  ) {
-                    if (Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/'))) {
-                      if (Self.cutItem) {
-                        if (
-                          Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
-                            .contentElId != oCurrentTextNode.contentElId
-                        ) {
-                          var elementItem = Self.myTree.getNodeByProperty(
-                              'uri',
-                              collection.item[0].uri.replace(/\/\//g, '/')
-                            ).index,
-                            currentItem = oCurrentTextNode.parent,
-                            isChild = false;
-
-                          while (!isChild && currentItem) {
-                            if (currentItem.index == elementItem) {
-                              isChild = true;
-                            } else {
-                              currentItem = currentItem.parent;
-                            }
-                          }
-
-                          !isChild && this.args.addItems([menuItems.pasteOption]);
-                        }
-                      } else if (Self.copiedItem) {
-                        if (
-                          Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
-                            .contentElId != oCurrentTextNode.contentElId
-                        ) {
-                          this.args.addItems([menuItems.pasteOption]);
-                        } else {
-                          this.args.addItems([menuItems.pasteOption]);
-                        }
-                      }
-                    }
-                    Self.copiedItem = Self.myTree.getNodeByProperty(
-                      'uri',
-                      collection.item[0].uri.replace(/\/\//g, '/')
-                    );
-                  }
-
-                  if (
-                    isWrite &&
-                    isCreateContentAllowed &&
-                    '/site/website/index.xml' != oCurrentTextNode.data.uri &&
-                    'folder' != oCurrentTextNode.data.contentType
-                  ) {
-                    p_aArgs.addItems([menuItems.duplicateOption]);
-                  }
-
-                  if (
-                    (oCurrentTextNode.data.lockOwner != '' &&
-                      (CStudioAuthoringContext.role === 'admin' || CStudioAuthoringContext.role === 'site_admin')) ||
-                    oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user
-                  ) {
-                    p_aArgs.addItems([menuItems.separator]);
-                    p_aArgs.addItems([menuItems.unlockOption]);
-                  }
-
-                  if (oCurrentTextNode.data.contentType != 'folder') {
-                    if (isCreateContentAllowed) {
-                      p_aArgs.addItems([menuItems.separator]);
-                    }
-
-                    publishAllowed();
-                    dependenciesAllowed();
-                  }
-
-                  if (isUserAllowed && !isFolder) {
-                    this.args.addItems([menuItems.separator]);
-                    this.args.addItems([menuItems.revertOption]);
-                  }
-
-                  menuId.removeChild(d); // Remove the "Loading ..." message
-
-                  if (Self.mods) {
-                    for (var m = 0; m < Self.mods.length; m++) {
-                      var mod = Self.mods[m];
-                      treeNode = mod._renderContextMenu(
-                        Self.myTree,
-                        target,
-                        p_aArgs,
-                        component,
-                        menuItems,
-                        oCurrentTextNode,
-                        isWrite
-                      );
-                    }
-                  }
-
-                  this.args.render(); // Render the site dropdown's context menu
-                },
-                failure: function() {},
-                args: p_aArgs,
-                menuItems: aMenuItems,
-                menuEl: menuId,
-                menuWidth: menuWidth,
-                itemInProgress: isInProgress,
-                item: oCurrentTextNode.data
-              };
-
-              CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
-            } // end of else
-          },
-          failure: function() {}
-        };
-
-        checkPermissionsCb.isComponent = isComponent;
-        checkPermissionsCb.isLevelDescriptor = isLevelDescriptor;
-        checkPermissionsCb.aMenuItems = aMenuItems;
-        checkPermissionsCb.menuItems = menuItems;
-        checkPermissionsCb.menuWidth = menuWidth;
-        checkPermissionsCb.menuId = menuId;
-        checkPermissionsCb.p_aArgs = p_aArgs;
-        checkPermissionsCb.formPath = formPath;
-        checkPermissionsCb.d = d;
-        checkPermissionsCb.oCurrentTextNode = oCurrentTextNode;
-
-        CStudioAuthoring.Service.lookupContentItem(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.uri,
-          {
-            success: function(itemTO) {
-              isOpen = itemTO.item.lockOwner !== '';
-              CStudioAuthoring.Clipboard.getPermissions.call({}, oCurrentTextNode.data.uri, checkPermissionsCb);
-            },
-            failure: function() {
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'lookUpItemError-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(siteDropdownLangBundle, 'notification'),
-                CMgs.format(siteDropdownLangBundle, 'lookUpItemError'),
-                null, // use default button
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
-            }
-          },
-          false,
-          false
-        );
-      },
-
-      /**
-       * load context menu
-       */
-      onTriggerContextMenu: function(tree, p_aArgs, target, position) {
-        var isManualTrigger = target ? position : false,
-          target = target ? target : p_aArgs.contextEventTarget;
-
-        p_aArgs.manualTrigger = isManualTrigger;
-
-        /* Get the TextNode instance that that triggered the display of the ContextMenu instance. */
-        oCurrentTextNode = tree.getNodeByElement(target);
-        Self.menuOn = true;
-
-        /* If item is being processed (inFlight) dont display right context menu */
-        if (oCurrentTextNode != null && oCurrentTextNode.data && oCurrentTextNode.data.inFlight) {
-          oCurrentTextNode = null;
-        }
-
-        var menuItems = {
-          separator: { text: '<div>&nbsp;</div>', disabled: true, classname: 'menu-separator' },
-
-          newContentOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'newContent'),
-            onclick: { fn: Self.createContent }
-          },
-
-          newFolderOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'newFolder'),
-            onclick: { fn: Self.createContainer }
-          },
-
-          renameFolderOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'renameFolder'),
-            onclick: { fn: Self.renameContainer }
-          },
-
-          editOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'edit'),
-            onclick: { fn: Self.editContent }
-          },
-
-          viewOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'view'),
-            onclick: { fn: Self.viewContent }
-          },
-
-          changeTemplateOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'changeTemplate'),
-            onclick: { fn: Self.changeTemplate, obj: tree }
-          },
-
-          deleteOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'delete'),
-            onclick: { fn: Self.deleteContent, obj: tree }
-          },
-
-          cutOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'cut'),
-            onclick: { fn: Self.cutContent, obj: tree }
-          },
-
-          copyOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'copy'),
-            onclick: { fn: Self.copyTree, obj: tree }
-          },
-
-          pasteOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'paste'),
-            onclick: { fn: Self.pasteContent }
-          },
-
-          duplicateOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'duplicate'),
-            onclick: { fn: Self.duplicateContent }
-          },
-
-          revertOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'history'),
-            onclick: { fn: Self.revertContent, obj: tree }
-          },
-
-          unlockOption: {
-            text: CMgs.format(siteDropdownLangBundle, 'Unlock'),
-            onclick: { fn: Self.unlockContent }
-          }
-        };
-        p_aArgs.clearContent();
-
-        var permsCallback = {
-          success: function(response) {
-            var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
-
-            if (isWrite) {
-              Self.IS_WRITE = true;
-              this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, true);
-            } else {
-              this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
-            }
-          },
-
-          failure: function() {
-            this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
-          },
-
-          _self: this,
-          component: Self
-        };
-
-        if (oCurrentTextNode != null) {
-          CStudioAuthoring.Service.getUserPermissions(
-            CStudioAuthoringContext.site,
-            oCurrentTextNode.data.uri,
-            permsCallback
-          );
-        } else {
-          p_aArgs.clearContent();
-          p_aArgs.cancel();
-        }
-      },
-
       /**
        * unlock a content item
        */
@@ -3084,828 +2280,6 @@
         CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, unlockCb);
       },
       /**
-       * Creates new content. Opens the form to create content
-       */
-      createContent: function() {
-        const contentDialogTypeSelectedId = 'contentDialogTypeSelected';
-        const contentDialogCancel = 'contentDialogCancel';
-        const { site, internalName, uri } = oCurrentTextNode.data;
-
-        CrafterCMSNext.system.store.dispatch({
-          type: 'SHOW_NEW_CONTENT_DIALOG',
-          payload: {
-            open: true,
-            site,
-            item: {
-              label: internalName,
-              path: uri
-            },
-            onContentTypeSelected: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: contentDialogTypeSelectedId }
-            },
-            onClosed: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: contentDialogCancel }
-                },
-                { type: 'NEW_CONTENT_DIALOG_CLOSED' }
-              ]
-            }
-          }
-        });
-
-        let newContentUnsubscribe, newContentCancelUnsubscribe;
-
-        newContentUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
-          if (response) {
-            const eventIdSuccess = 'editDialogSuccess';
-            const eventIdCancel = 'editDialogCancel';
-
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_EDIT_DIALOG',
-              payload: {
-                inProgress: response.inProgress,
-                src: response.src,
-                onSaveSuccess: {
-                  type: 'BATCH_ACTIONS',
-                  payload: [
-                    {
-                      type: 'DISPATCH_DOM_EVENT',
-                      payload: { id: eventIdSuccess }
-                    },
-                    { type: 'CLOSE_NEW_CONTENT_DIALOG' }
-                  ]
-                },
-                onClosed: {
-                  type: 'BATCH_ACTIONS',
-                  payload: [
-                    {
-                      type: 'DISPATCH_DOM_EVENT',
-                      payload: { id: eventIdCancel }
-                    },
-                    { type: 'EDIT_DIALOG_CLOSED' }
-                  ]
-                }
-              }
-            });
-
-            let unsubscribe, cancelUnsubscribe;
-
-            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
-              if (response) {
-                const acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
-                eventYS.data = oCurrentTextNode;
-                eventYS.typeAction = 'createContent';
-                eventYS.oldPath = null;
-                eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
-                document.dispatchEvent(eventYS);
-
-                if (response.item.isPage) {
-                  CStudioAuthoring.Operations.refreshPreview(response.item);
-                  if (CStudioAuthoring.Utils.getQueryParameterURL('page') == response.redirectUrl && acnDraftContent) {
-                    CStudioAuthoring.SelectedContent.setContent(response.item);
-                  }
-                } else {
-                  CStudioAuthoring.Operations.refreshPreview();
-                }
-              }
-              cancelUnsubscribe();
-            });
-
-            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
-              unsubscribe();
-            });
-          }
-          newContentCancelUnsubscribe();
-        });
-
-        newContentCancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogCancel, (response) => {
-          newContentUnsubscribe();
-        });
-      },
-      /**
-       * Edits the label of the TextNode that was the target of the
-       * "contextmenu" event that triggered the display of the
-       * ContextMenu instance.
-       */
-
-      editContent: function() {
-        var path = oCurrentTextNode.data.uri;
-
-        this.element.firstChild.style.pointerEvents = 'none';
-        if (typeof CStudioAuthoring.editDisabled === 'undefined') {
-          CStudioAuthoring.editDisabled = [];
-        }
-        CStudioAuthoring.editDisabled.push(this.element.firstChild);
-
-        var editCb = {
-          success: function(contentTO, editorId, name, value, draft) {
-            eventNS.oldPath = oCurrentTextNode.data.uri;
-            var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL('page');
-            if (oCurrentTextNode.data.browserUri != contentTO.item.browserUri) {
-              var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
-              oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
-              oCurrentTextNode.data.path = contentTO.item.path;
-              oCurrentTextNode.data.uri = contentTO.item.uri;
-              oCurrentTextNode.label = contentTO.item.internalName;
-              oCurrentTextNode.treeNodeTO.path = contentTO.item.path;
-              oCurrentTextNode.treeNodeTO.uri = contentTO.item.uri;
-              if (oCurrentTextNodeOldPath.split('.')[0] == pageParameter.split('.')[0]) {
-                var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(
-                  window.location.href,
-                  'page',
-                  contentTO.item.browserUri.indexOf('.xml') > 0
-                    ? contentTO.item.browserUri.split('.')[0] + '.html'
-                    : contentTO.item.browserUri
-                );
-                window.location.href = currentURL;
-              }
-            }
-            if (CStudioAuthoringContext.isPreview) {
-              try {
-                var currentContentTO,
-                  URLBrowseUri = pageParameter,
-                  contentTOBrowseUri = contentTO.item.browserUri == '' ? '/' : contentTO.item.browserUri;
-
-                if (URLBrowseUri == contentTOBrowseUri) {
-                  currentContentTO = null;
-                } else {
-                  currentContentTO = contentTO.item;
-                }
-
-                if (contentTO.item.isPage) {
-                  CStudioAuthoring.Operations.refreshPreview(currentContentTO);
-                } else {
-                  CStudioAuthoring.Operations.refreshPreview();
-                }
-              } catch (err) {
-                if (!draft) {
-                  this.callingWindow.location.reload(true);
-                }
-              }
-            } else {
-              if (!draft) {
-                //this.callingWindow.location.reload(true);
-              }
-            }
-
-            //if placeInNav has changed
-
-            if (
-              contentTO.updatedModel &&
-              contentTO.initialModel &&
-              contentTO.updatedModel.orderDefault_f != contentTO.initialModel.orderDefault_f
-            ) {
-              if (CStudioAuthoring.ContextualNav.WcmRootFolder) {
-                var tree = CStudioAuthoring.ContextualNav.WcmRootFolder.myTree;
-
-                var tmpNode = tree.getNodesByProperty('uri', contentTO.item.uri);
-                var parentNode = tmpNode[0].parent.data;
-
-                eventYS.data = contentTO.item;
-                eventYS.typeAction = 'edit';
-                eventYS.draft = draft;
-                document.dispatchEvent(eventYS);
-              } else {
-                eventNS.data = contentTO.item;
-                eventNS.typeAction = 'edit';
-                eventNS.draft = draft;
-                document.dispatchEvent(eventNS);
-              }
-            } else {
-              eventNS.data = contentTO.item;
-              eventNS.typeAction = 'edit';
-              eventNS.draft = draft;
-              document.dispatchEvent(eventNS);
-            }
-
-            if (!CStudioAuthoringContext.isPreview) {
-              if (draft) {
-                CStudioAuthoring.Utils.Cookies.createCookie(
-                  'dashboard-checked',
-                  JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent())
-                );
-              } else {
-                CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
-              }
-            }
-          },
-
-          failure: function() {},
-
-          callingWindow: window
-        };
-        CStudioAuthoring.Operations.editContent(
-          oCurrentTextNode.data.formId,
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.mimeType,
-          oCurrentTextNode.data.nodeRef,
-          path,
-          false,
-          editCb
-        );
-      },
-
-      /**
-       * View the label of the TextNode that was the target of the
-       * "contextmenu" event that triggered the display of the
-       * ContextMenu instance.
-       */
-
-      viewContent: function() {
-        var path = oCurrentTextNode.data.uri;
-
-        var viewCb = {
-          success: function() {
-            this.callingWindow.location.reload(true);
-          },
-
-          failure: function() {},
-
-          callingWindow: window
-        };
-
-        CStudioAuthoring.Operations.viewContent(
-          oCurrentTextNode.data.formId,
-          CStudioAuthoringContext.site,
-          path,
-          oCurrentTextNode.data.nodeRef,
-          path,
-          false,
-          viewCb
-        );
-      },
-
-      /**
-       * Creates new container, Opens a dialog box to enter folder name
-       */
-      createContainer: function() {
-        var createCb = {
-          success: function() {
-            Self.refreshNodes(this.currentNode, false, false, null, null, true);
-          },
-          failure: function() {},
-          callingWindow: window,
-          currentNode: oCurrentTextNode
-        };
-
-        CStudioAuthoring.Operations.createFolder(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.uri,
-          window,
-          createCb
-        );
-      },
-
-      /**
-       * Rename a container, Opens a dialog box to enter new folder name
-       */
-      renameContainer: function() {
-        var createCb = {
-          success: function() {
-            Self.refreshNodes(this.currentNode.parent, false, false, null, null, true);
-          },
-          failure: function() {},
-          callingWindow: window,
-          currentNode: oCurrentTextNode
-        };
-
-        CStudioAuthoring.Operations.renameFolder(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.uri,
-          window,
-          createCb
-        );
-      },
-
-      /**
-       * Revert the content item
-       */
-      revertContent: function(p_sType, p_aArgs, tree) {
-        CStudioAuthoring.Operations.viewContentHistory(
-          oCurrentTextNode.data,
-          Self.IS_WRITE,
-          oCurrentTextNode.instance.config.params.path
-        );
-      },
-
-      /**
-       * Deletes the TextNode that was the target of the "contextmenu"
-       * event that triggered the display of the ContextMenu instance.
-       */
-      deleteContent: function(p_sType, p_aArgs, tree) {
-        CStudioAuthoring.Operations.deleteContent([oCurrentTextNode.data], false);
-      },
-      /**
-       * copy content
-       */
-      copyContent: function(sType, args, tree) {
-        var copyCb = {
-          success: function() {},
-
-          failure: function() {}
-        };
-
-        CStudioAuthoring.Clipboard.copyContent(oCurrentTextNode.data, copyCb);
-      },
-      /**
-       * cut content
-       */
-      cutContent: function(sType, args, tree) {
-        var params = { site: CStudioAuthoringContext.site, path: oCurrentTextNode.data.uri };
-        var doCut = function() {
-          var parentTreeNode = oCurrentTextNode.getEl();
-          var getChildNodeClass = YDom.getElementsByClassName('ygtvlp', null, parentTreeNode);
-          var isExpandableNode = YDom.getElementsByClassName('ygtvtp', null, parentTreeNode);
-
-          if (oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0) {
-            // alert("The page and its child pages have been cut to the clipboard");
-          }
-
-          var uri = oCurrentTextNode.data.uri;
-          Self.copiedItem = null;
-          Self.cutItem = oCurrentTextNode;
-
-          if (uri.lastIndexOf('index.xml') == -1) {
-            var serviceUri =
-              CStudioAuthoring.Service.getPagesServiceUrl +
-              '?site=' +
-              CStudioAuthoringContext.site +
-              '&path=' +
-              uri +
-              '&depth=-1&order=default';
-          } else {
-            var folderPath = uri.substring(0, uri.lastIndexOf('index.xml'));
-
-            var serviceUri =
-              CStudioAuthoring.Service.getPagesServiceUrl +
-              '?site=' +
-              CStudioAuthoringContext.site +
-              '&path=' +
-              folderPath +
-              '&depth=-1&order=default';
-          }
-
-          var getTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
-
-          try {
-            var treeInner = YDom.get('acn-dropdown-menu-inner');
-            var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
-            for (var i = 0; i < previousCutEl.length; i++) {
-              if (
-                previousCutEl[i].style.color == Self.CUT_STYLE_RGB ||
-                previousCutEl[i].style.color == Self.CUT_STYLE
-              ) {
-                previousCutEl[i].style.color = '';
-              }
-            }
-
-            document.getElementById(oCurrentTextNode.labelElId).style.cssText +=
-              'color: ' + Self.CUT_STYLE + ' !important';
-
-            if (oCurrentTextNode.hasChildren()) {
-              var getTextNodes = YDom.getElementsByClassName('status-icon', null, parentTreeNode);
-              for (var i = 0; i < getTextNodes.length; i++) {
-                getTextNodes[i].style.cssText += 'color: ' + Self.CUT_STYLE + ' !important';
-              }
-            }
-          } catch (ex) {}
-
-          //CStudioAuthoring.Operations.openCopyDialog(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, assignTemplateCb, args);
-          var cutCb = {
-            success: function(response) {
-              var content = YAHOO.lang.JSON.parse(response.responseText);
-
-              var item = content.item;
-              var jsonString = YAHOO.lang.JSON.stringify(item);
-              var jsonArray = '{"item":[' + jsonString + ']}';
-              var cutRequest =
-                CStudioAuthoringContext.baseUri +
-                '/api/1/services/api/1/clipboard/cut-item.json?site=' +
-                CStudioAuthoringContext.site;
-
-              var onComplete = {
-                success: function(response) {},
-                failure: function() {}
-              };
-
-              YAHOO.util.Connect.setDefaultPostHeader(false);
-              YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
-              YAHOO.util.Connect.initHeader(
-                CStudioAuthoringContext.xsrfHeaderName,
-                CrafterCMSNext.util.auth.getRequestForgeryToken()
-              );
-              YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
-            },
-            failure: function(response) {}
-          };
-
-          YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
-        };
-
-        const eventIdSuccess = 'workflowCancellationDialogContinue';
-        CrafterCMSNext.system.store.dispatch({
-          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-          payload: {
-            open: true,
-            items: null,
-            onContinue: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdSuccess }
-                },
-                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
-              ]
-            }
-          }
-        });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
-          doCut();
-        });
-
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe((items) => {
-          if (items && items.length) {
-            const eventIdSuccess = 'workflowCancellationDialogContinue';
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-              payload: { items }
-            });
-          } else {
-            CrafterCMSNext.system.store.dispatch({
-              type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
-            });
-            doCut();
-          }
-        });
-      },
-      /**
-       * paste content to selected location
-       */
-      pasteContent: function(sType, args, tree) {
-        //Check source and destination paths.
-        if (Self.cutItem && Self.cutItem.parent.contentElId === oCurrentTextNode.contentElId) {
-          // Cut/paste in the same directory, would have no consequence, so simply jump as if everything was done correctly.
-          return false;
-        }
-
-        window.pasteFlag = true;
-        var pasteCb = {
-          success: function(result) {
-            try {
-              const cutItem = Self.cutItem;
-
-              Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
-              if (cutItem) {
-                Self.refreshNodes(cutItem.parent, true, false, null, null, true);
-              }
-
-              const isPreview = CStudioAuthoringContext.isPreview;
-
-              if (cutItem && isPreview) {
-                var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-
-                if (current.uri == cutItem.data.uri) {
-                  var browserUri = result.status[0].split('/site/website').pop();
-                  browserUri = browserUri.split('/index.xml')[0];
-
-                  cutItem.data.browserUri = browserUri;
-                  cutItem.data.uri = result.status[0];
-
-                  CStudioAuthoring.Operations.refreshPreview(cutItem.data);
-                }
-              }
-              Self.cutItem = null;
-
-              WcmDashboardWidgetCommon.refreshDashboard('MyRecentActivity');
-            } catch (e) {}
-          },
-
-          failure: function() {
-            YDom.removeClass(oCurrentTextNode.html.parentElement.previousSibling, 'ygtvloading');
-          },
-
-          tree: oCurrentTextNode
-        };
-
-        try {
-          YDom.addClass(oCurrentTextNode.html.parentElement.previousSibling, 'ygtvloading');
-        } catch (e) {
-          console.error(e.message);
-        }
-
-        CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
-      },
-      duplicateContent: function(sType, args, tree) {
-        var duplicateContentCallback = {
-          success: function() {
-            if (YDom.get('duplicate-loading')) {
-              YDom.get('duplicate-loading').style.display = 'none';
-            }
-          },
-          failure: function() {
-            if (YDom.get('duplicate-loading')) {
-              YDom.get('duplicate-loading').style.display = 'none';
-            }
-          }
-        };
-
-        CStudioAuthoring.Operations.showSimpleDialog(
-          'duplicate-dialog',
-          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          'Duplicate',
-          "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
-          [
-            {
-              text: 'Duplicate',
-              handler: function() {
-                this.destroy();
-                CStudioAuthoring.Operations.duplicateContent(
-                  CStudioAuthoringContext.site,
-                  oCurrentTextNode.data.uri,
-                  duplicateContentCallback
-                );
-              },
-              isDefault: false
-            },
-            {
-              text: CMgs.format(formsLangBundle, 'cancel'),
-              handler: function() {
-                this.destroy();
-              },
-              isDefault: true
-            }
-          ],
-          YAHOO.widget.SimpleDialog.ICON_WARN,
-          'studioDialog'
-        );
-      },
-      copyTree: function(sType, args, tree) {
-        var assignTemplateCb = {
-          success: function(selectedType) {},
-
-          failure: function() {},
-
-          activeNode: oCurrentTextNode
-        };
-
-        var idTree = oCurrentTextNode.tree.id.toString().replace(/-/g, '');
-        Self.myTree = Self.myTreePages[idTree];
-
-        Self.cutItem = null;
-        Self.copiedItem = Self.myTree.getNodeByProperty('path', oCurrentTextNode.data.path);
-        Self.copiedItem ? null : (Self.copiedItem = oCurrentTextNode);
-
-        // if the tree does not have child do not open the copy dialoge
-        // only call the copy content function
-        if (oCurrentTextNode.isLeaf) {
-          var copyContext = {
-            heading: 'Copy',
-            description:
-              'Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained',
-            actionButton: 'Copy'
-          };
-
-          var site = CStudioAuthoringContext.site;
-
-          var context = copyContext;
-          context.request = CStudioAuthoringContext.baseUri + CStudioAuthoring.Service.copyServiceUrl + '?site=' + site;
-
-          var uri = oCurrentTextNode.data.uri;
-
-          var folderPath = uri;
-          if (uri.indexOf('index.xml') != -1) {
-            folderPath = uri.substring(0, uri.lastIndexOf('index.xml'));
-          }
-
-          var openCopyDialog = {
-            success: function(response) {
-              var copyTree = eval('(' + response.responseText + ')');
-              this.copyTree = copyTree;
-              var newItem = {};
-              newItem.uri = this.copyTree.item.uri; //Fixed for EMO-8742
-              var rootItem = newItem;
-              var pasteFormatItem = {};
-              pasteFormatItem.item = [];
-              pasteFormatItem.item.push(rootItem);
-
-              var myJSON = YAHOO.lang.JSON.stringify(pasteFormatItem);
-              var oncomplete = {
-                success: function() {
-                  const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
-                  const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-                  CStudioAuthoring.Utils.showNotification(
-                    formatMessage(messages.itemCopied, { count: 1 }),
-                    null,
-                    null,
-                    'default'
-                  );
-                  CStudioAuthoring.ContextualNav.WcmRootFolder.resetNodeStyles();
-                },
-                failure: function() {}
-              };
-              var request = this.args['request'];
-              YAHOO.util.Connect.setDefaultPostHeader(false);
-              YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
-              YAHOO.util.Connect.initHeader(
-                CStudioAuthoringContext.xsrfHeaderName,
-                CrafterCMSNext.util.auth.getRequestForgeryToken()
-              );
-              YAHOO.util.Connect.asyncRequest('POST', request, oncomplete, myJSON);
-            },
-            failure: function() {},
-            args: context
-          };
-          var serviceUri =
-            CStudioAuthoring.Service.getPagesServiceUrl +
-            '?site=' +
-            site +
-            '&path=' +
-            folderPath +
-            '&depth=-1&order=default';
-          var getCopyTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
-          YConnect.asyncRequest('GET', getCopyTreeItemReuest, openCopyDialog);
-        } else {
-          CStudioAuthoring.Operations.openCopyDialog(
-            CStudioAuthoringContext.site,
-            oCurrentTextNode.data.uri,
-            assignTemplateCb,
-            args
-          );
-        }
-      },
-      cutTree: function(sType, args, tree) {
-        args.cut = true;
-        var serviceUri =
-          CStudioAuthoring.Service.getPagesServiceUrl +
-          '?site=' +
-          site +
-          '&path=' +
-          folderPath +
-          '&depth=-1&order=default';
-        var getCopyTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
-        YConnect.asyncRequest('GET', getCopyTreeItemReuest, openCopyDialog);
-        CStudioAuthoring.Operations.openCopyDialog(sType, args, tree);
-      },
-      /**
-       * change template for given item
-       */
-      changeTemplate: function(sType, args, tree) {
-        var modalBody = YDom.get('cstudio-wcm-popup-div');
-        if (modalBody === null) {
-          modalBody = document.createElement('div');
-          modalBody.setAttribute('id', 'cstudio-wcm-popup-div');
-          document.body.appendChild(modalBody);
-        }
-
-        var continueFn = function continueFn(e) {
-          e.preventDefault();
-
-          var assignTemplateCb = {
-            success: function(selectedType) {
-              var path = this.activeNode.data.uri;
-
-              var editCb = {
-                success: function(contentTO, editorId, name, value, draft) {
-                  eventNS.oldPath = oCurrentTextNode.data.uri;
-                  var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL('page');
-                  if (oCurrentTextNode.data.browserUri != contentTO.item.browserUri) {
-                    var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
-                    oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
-                    oCurrentTextNode.data.path = contentTO.item.path;
-                    oCurrentTextNode.data.uri = contentTO.item.uri;
-                    if (oCurrentTextNodeOldPath == pageParameter) {
-                      var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(
-                        window.location.href,
-                        'page',
-                        oCurrentTextNode.data.browserUri
-                      );
-                      window.location.href = currentURL;
-                    }
-                  }
-                  if (CStudioAuthoringContext.isPreview) {
-                    try {
-                      CStudioAuthoring.Operations.refreshPreview();
-                    } catch (err) {
-                      if (!draft) {
-                        this.callingWindow.location.reload(true);
-                      }
-                    }
-                  } else {
-                    if (!draft) {
-                      //this.callingWindow.location.reload(true);
-                    }
-                  }
-                  eventNS.data = oCurrentTextNode;
-                  eventNS.typeAction = 'edit';
-                  eventNS.draft = draft;
-                  document.dispatchEvent(eventNS);
-                },
-
-                failure: function() {},
-
-                callingWindow: window
-              };
-              /* reload dashboard is heavy, to reflect changed content-type */
-              //window.location.reload(true);
-              //this.activeNode.data.formId = selectedType;
-              var auxParams = new Array();
-              var param1 = {};
-              param1['name'] = 'draft';
-              param1['value'] = 'true';
-              var param2 = {};
-              param2['name'] = 'changeTemplate';
-              param2['value'] = selectedType;
-              auxParams.push(param1);
-              auxParams.push(param2);
-              CStudioAuthoring.Operations.editContent(
-                selectedType,
-                CStudioAuthoringContext.site,
-                this.activeNode.data.mimeType,
-                this.activeNode.data.nodeRef,
-                path,
-                false,
-                editCb,
-                auxParams
-              );
-            },
-            failure: function() {},
-            activeNode: oCurrentTextNode
-          };
-          dialog.destroy();
-          CStudioAuthoring.Operations.assignContentTemplate(
-            CStudioAuthoringContext.site,
-            CStudioAuthoringContext.user,
-            oCurrentTextNode.data.uri,
-            assignTemplateCb,
-            oCurrentTextNode.data.formId
-          );
-        };
-
-        var cancelFn = function cancelFn(e) {
-          e.preventDefault();
-          dialog.destroy();
-          $('body').off('keyup', '#cstudio-wcm-popup-div');
-        };
-
-        modalBody.innerHTML =
-          '<div class="contentTypePopupInner changeContent-type-dialog" style="width:460px;height:140px;">' +
-          '<div class="contentTypePopupContent">' +
-          '<form name="contentFromWCM">' +
-          '<div class="contentTypePopupHeader">' +
-          CMgs.format(formsLangBundle, 'changeTemplateDialogTitle') +
-          '</div> ' +
-          '<div class="contentTypeOuter">' +
-          '<div>' +
-          CMgs.format(formsLangBundle, 'changeTemplateDialogBody') +
-          '</div>' +
-          '</div>' +
-          '<div class="contentTypePopupBtn">' +
-          '<input type="submit" class="btn btn-primary ok" id="acceptCTChange" value="' +
-          CMgs.format(formsLangBundle, 'yes') +
-          '" />' +
-          '<input type="submit" class="btn btn-default cancel" id="cancelCTChange" value="' +
-          CMgs.format(formsLangBundle, 'no') +
-          '" />' +
-          '</div>' +
-          '</form> ' +
-          '</div>' +
-          '</div>';
-
-        var dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
-          fixedcenter: true,
-          effect: {
-            effect: YAHOO.widget.ContainerEffect.FADE,
-            duration: 0.25
-          },
-          visible: false,
-          modal: true,
-          close: false,
-          constraintoviewport: true,
-          underlay: 'none',
-          zIndex: 100000
-        });
-
-        dialog.render();
-
-        YAHOO.util.Event.addListener('acceptCTChange', 'click', continueFn);
-        YAHOO.util.Event.addListener('cancelCTChange', 'click', cancelFn);
-
-        $('body').on('keyup', '#cstudio-wcm-popup-div', function(e) {
-          if (e.keyCode === 27) {
-            // esc
-            dialog.destroy();
-            $('body').off('keyup', '#cstudio-wcm-popup-div');
-          }
-        });
-
-        dialog.show();
-      },
-      /**
        * given a path, attempt to open the folder to that path
        */
       openTreeToPath: function(instance, path) {
@@ -3915,7 +2289,6 @@
       /**
        * add hover effect to context nav items.
        */
-
       setChildrenStyles: function(treeNode) {
         var parentNode = treeNode.getContentEl();
         if (

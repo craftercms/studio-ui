@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from 'react';
+import React, { PropsWithChildren, Suspense } from 'react';
 import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
@@ -22,7 +22,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { useActiveSiteId, useEnv, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
 import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
-import { PopoverOrigin } from '@material-ui/core';
+import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import {
   CloseChangeContentTypeDialog,
   closeConfirmDialog,
@@ -53,19 +53,22 @@ import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
-import { getRootPath, withoutIndex } from '../../utils/path';
+import { getRootPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
 import {
   duplicateAsset,
   duplicateItem,
   pasteItem,
   reloadDetailedItem,
-  setClipBoard
+  setClipBoard,
+  unlockItem
 } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { translations } from './translations';
 import { rand } from '../Navigation/PathNavigator/utils';
 import {
+  emitSystemEvent,
+  itemCut,
   showCopyItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -76,22 +79,34 @@ import {
 import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Clipboard } from '../../models/GlobalState';
+import StandardAction from '../../models/StandardAction';
 
-interface ItemMenuProps {
+interface ItemMenuBaseProps {
   path: string;
   open: boolean;
-  anchorEl: Element;
   classes?: Partial<Record<'paper' | 'itemRoot' | 'menuList' | 'helperText', string>>;
   anchorOrigin?: PopoverOrigin;
+  anchorReference?: PopoverReference;
+  anchorPosition?: PopoverPosition;
   loaderItems?: number;
-  onClose(): void;
 }
+
+export type ItemMenuProps = PropsWithChildren<
+  ItemMenuBaseProps & {
+    anchorEl?: Element;
+    onClose?(): void;
+  }
+>;
 
 interface ItemMenuUIProps {
   resource: { item: Resource<DetailedItem>; permissions: Resource<LookupTable<boolean>> };
   classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
   clipboard: Clipboard;
   onMenuItemClicked(section: SectionItem): void;
+}
+
+export interface ItemMenuStateProps extends ItemMenuBaseProps {
+  onClose?: StandardAction;
 }
 
 const useStyles = makeStyles((theme) =>
@@ -106,8 +121,18 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export function ItemMenu(props: ItemMenuProps) {
-  const { path, onClose, loaderItems = 8 } = props;
+export default function ItemMenu(props: ItemMenuProps) {
+  const {
+    open,
+    path,
+    onClose,
+    loaderItems = 8,
+    classes,
+    anchorEl,
+    anchorOrigin,
+    anchorReference = 'anchorEl',
+    anchorPosition
+  } = props;
   const site = useActiveSiteId();
   const permissions = usePermissions();
   const items = useSelection((state) => state.content.items);
@@ -241,6 +266,7 @@ export function ItemMenu(props: ItemMenuProps) {
               paths: [item.path],
               sourcePath: item.path
             }),
+            emitSystemEvent(itemCut({ target: item.path })),
             showCutItemSuccessNotification()
           ])
         );
@@ -290,7 +316,7 @@ export function ItemMenu(props: ItemMenuProps) {
       }
       case 'paste': {
         if (clipboard.type === 'CUT') {
-          fetchWorkflowAffectedItems(site, clipboard.paths[0]).subscribe((items) => {
+          fetchWorkflowAffectedItems(site, clipboard.sourcePath).subscribe((items) => {
             if (items?.length > 0) {
               dispatch(
                 showWorkflowCancellationDialog({
@@ -460,6 +486,14 @@ export function ItemMenu(props: ItemMenuProps) {
         );
         break;
       }
+      case 'unlock': {
+        dispatch(
+          unlockItem({
+            path: item.path
+          })
+        );
+        break;
+      }
       default:
         break;
     }
@@ -467,16 +501,18 @@ export function ItemMenu(props: ItemMenuProps) {
   };
   return (
     <Menu
-      anchorEl={props.anchorEl}
-      open={props.open}
-      classes={{ paper: props.classes?.paper, list: props.classes?.menuList }}
-      onClose={props.onClose}
-      anchorOrigin={props.anchorOrigin}
+      open={open}
+      classes={{ paper: classes?.paper, list: classes?.menuList }}
+      onClose={onClose}
+      anchorEl={anchorEl}
+      anchorOrigin={anchorOrigin}
+      anchorPosition={anchorPosition}
+      anchorReference={anchorReference}
     >
       <Suspense fallback={<Loader numOfItems={loaderItems} />}>
         <ItemMenuUI
           resource={{ item: resourceItem, permissions: resourcePermissions }}
-          classes={props.classes}
+          classes={classes}
           onMenuItemClicked={onMenuItemClicked}
           clipboard={clipboard}
         />
@@ -489,7 +525,10 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
-  const hasClipboard = clipboard?.paths.length && getRootPath(clipboard.sourcePath) === getRootPath(item.path);
+  const hasClipboard =
+    clipboard?.paths.length &&
+    getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
+    isValidCutPastePath(item.path, clipboard.sourcePath);
   const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
   return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;
