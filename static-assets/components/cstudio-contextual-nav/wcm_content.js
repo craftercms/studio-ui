@@ -666,9 +666,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               }
             },
 
-            clearSelectedContent: function() {
+            clearSelectedContent: function(e) {
+              e.preventDefault();
               $('#activeContentActions').removeClass('selected-content');
-              WcmDashboardWidgetCommon.refreshAllDashboards();
+              WcmDashboardWidgetCommon.clearSelections();
               CStudioAuthoring.SelectedContent.clear();
             },
 
