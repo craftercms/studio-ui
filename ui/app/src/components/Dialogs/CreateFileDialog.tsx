@@ -100,7 +100,7 @@ function CreateFileUI(props: CreateFileUIProps) {
       createFile(site, path, fileName).subscribe(
         () => {
           onCreated?.({ path, fileName, type });
-          dispatch(emitSystemEvent(itemCreated({ target: path })));
+          dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
         },
         (response) => {
           setState({ inProgress: false, submitted: true });

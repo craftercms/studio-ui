@@ -124,7 +124,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       batchActions([
         setContentTypeFilter(menuContext.contentType.id),
         pushToolsPanelPage(
-          createToolsPanelPage('previewBrowseComponentsPanel.title', [
+          createToolsPanelPage({ id: 'previewBrowseComponentsPanel.title' }, [
             createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })
           ])
         )
@@ -137,7 +137,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       batchActions([
         setContentTypeFilter(menuContext.contentType.id),
         pushToolsPanelPage(
-          createToolsPanelPage('previewInPageInstancesPanel.title', [
+          createToolsPanelPage({ id: 'previewInPageInstancesPanel.title' }, [
             createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })
           ])
         )
@@ -148,7 +148,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const onListReceptaclesClick = () => {
     dispatch(
       pushToolsPanelPage(
-        createToolsPanelPage('previewReceptaclesPanel.title', [
+        createToolsPanelPage({ id: 'previewReceptaclesPanel.title' }, [
           createWidgetDescriptor({ id: 'craftercms.components.PreviewReceptaclesPanel' })
         ])
       )

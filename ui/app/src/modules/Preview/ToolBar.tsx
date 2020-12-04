@@ -54,7 +54,7 @@ import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
+import ItemMenu from '../../components/ItemMenu/ItemMenu';
 import PagesSearchAhead from '../../components/Navigation/PagesSearchAhead';
 
 const translations = defineMessages({

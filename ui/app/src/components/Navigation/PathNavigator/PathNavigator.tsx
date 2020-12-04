@@ -52,7 +52,7 @@ import {
   pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
-import { ItemMenu } from '../../ItemMenu/ItemMenu';
+import ItemMenu from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
@@ -216,16 +216,24 @@ export default function PathNavigator(props: WidgetProps) {
         }
         case folderCreated.type:
         case itemsPasted.type: {
-          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          if (state.leaves.some((path) => withoutIndex(path) === payload.target)) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== payload.target)
-              })
-            );
+          if (payload.clipboard.type === 'COPY') {
+            if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+            if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
+              dispatch(
+                pathNavigatorUpdate({
+                  id,
+                  leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
+                })
+              );
+            }
+          } else {
+            // payload.clipboard.type === 'CUT
+            const parentPath = getParentPath(payload.target);
+            if (parentPath === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
           }
           break;
         }

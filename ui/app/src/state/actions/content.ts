@@ -59,7 +59,8 @@ export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
 // region item
-export const duplicateItem = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_DUPlICATE_ITEM');
-export const duplicateAsset = createAction<{ path: string; onSuccess: StandardAction }>('ITEM_MENU_DUPlICATE_ASSET');
-export const pasteItem = createAction<{ path: string }>('ITEM_MENU_PASTE_ITEM');
+export const duplicateItem = createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ITEM');
+export const duplicateAsset = createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ASSET');
+export const pasteItem = createAction<{ path: string }>('PASTE_ITEM');
+export const unlockItem = createAction<{ path: string }>('UNLOCK_ITEM');
 // endregion
