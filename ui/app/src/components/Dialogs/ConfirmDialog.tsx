@@ -106,7 +106,7 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const classes = confirmDialogStyles({});
+  const classes = confirmDialogStyles();
   return (
     <Dialog
       open={props.open}
