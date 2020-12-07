@@ -19,20 +19,20 @@ import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
-import * as ContentTypeHelper from '../../../utils/contentType';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { findParentModelId } from '../../../utils/object';
+import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
 import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import { getField } from '../../../utils/contentType';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -113,18 +113,26 @@ function EditFormPanelBody() {
 
   const item = selected[0];
   const model = models[item.modelId];
-  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentTypeId);
-  const title =
-    item.fieldId.length > 1 || item.fieldId.length === 0
-      ? model.craftercms.label
-      : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
+  const contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
   const fieldId = item.fieldId[0];
+  const field = getField(contentType, fieldId);
+  let title;
   let selectedId;
-  if (fieldId) {
-    selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
-    selectedId = typeof selectedId === 'string' && item.index !== undefined ? selectedId : item.modelId;
+
+  if (field.type === 'node-selector' && nnou(item.index)) {
+    let component;
+    if (nnou(fieldId) && fieldId.includes('.')) {
+      const aux = ModelHelper.extractCollectionItem(model, fieldId, item.index);
+      component = models[aux];
+    } else {
+      const id = ModelHelper.value(model, fieldId)[item.index];
+      component = models[id];
+    }
+    selectedId = component.craftercms.id;
+    title = `${component.craftercms.label} (${contentTypesBranch.byId[component.craftercms.contentTypeId].name})`;
   } else {
     selectedId = item.modelId;
+    title = field.name;
   }
 
   const path = ModelHelper.prop(models[selectedId], 'path');

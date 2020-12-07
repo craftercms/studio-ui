@@ -16,7 +16,13 @@
 
 import * as iceRegistry from './ICERegistry';
 import { getById } from './ICERegistry';
-import { byPathFetchIfNotLoaded, getCachedModels, hasCachedModel, model$ } from './ContentController';
+import {
+  byPathFetchIfNotLoaded,
+  getCachedContentType,
+  getCachedModels,
+  hasCachedModel,
+  model$
+} from './ContentController';
 import { take } from 'rxjs/operators';
 import * as ContentType from '../utils/contentType';
 import * as Model from '../utils/model';
@@ -74,7 +80,9 @@ export function setLabel(record: ElementRecord): void {
           }
 
           if (component) {
-            labels.push(`${field.name}: ${component.craftercms.label}`);
+            labels.push(
+              `${component.craftercms.label} (${getCachedContentType(component.craftercms.contentTypeId).name})`
+            );
           } else {
             labels.push(`${field.name}`);
           }
@@ -85,7 +93,7 @@ export function setLabel(record: ElementRecord): void {
         labels.push(field.name);
       }
     } else {
-      labels.push(`${contentType.name}: ${model.craftercms.label}`);
+      labels.push(`${model.craftercms.label} (${contentType.name})`);
     }
   });
   record.label = labels.join(', ');

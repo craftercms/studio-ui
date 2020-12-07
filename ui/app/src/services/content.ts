@@ -179,7 +179,7 @@ function performMutation(
         site,
         path: isEmbeddedTarget ? parentModelId : modelId,
         unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
+        fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
       };
 
       if (isEmbeddedTarget) {
@@ -438,7 +438,7 @@ export function formatXML(site: string, path: string) {
           site,
           path: path,
           unlock: 'true',
-          fileName: getInnerHtml(doc.querySelector('file-name'))
+          fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
         }),
         serialize(doc)
       )

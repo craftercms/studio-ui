@@ -28,7 +28,7 @@ export function prop(model, propName) {
   return retrieveProperty(model, propName);
 }
 
-export function value(model, fieldId, newValue) {
+export function value(model, fieldId, newValue?) {
   // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
   // This transform is potentially unreliable. We should discuss approach.
   const cleanFieldId = fieldId.replace(/-/g, '__');
