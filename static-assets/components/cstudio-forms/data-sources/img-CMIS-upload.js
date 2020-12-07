@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
   /**
    * action called when user clicks insert file
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function(insertCb, file) {
     (this._self = this), (me = this);
 
     var site = CStudioAuthoringContext.site;
@@ -57,8 +57,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
 
     var callback = {
       success: function(fileData) {
-        var uri = fileData.url;
-        var fileExtension = fileData.fileExtension;
+        var uri = fileData.url ? fileData.url : fileData;
+        var fileExtension = uri.split('.').pop();
 
         var imageData = {
           previewUrl: uri,
@@ -66,6 +66,10 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
           fileExtension: fileExtension,
           remote: true
         };
+
+        if (fileData.name) {
+          imageData.fileName = fileData.name;
+        }
 
         insertCb.success(imageData);
       },
@@ -77,7 +81,20 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
       context: this
     };
 
-    CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
+    if (!file) {
+      CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['image/*']);
+    } else {
+      CrafterCMSNext.services.content.uploadToCMIS(site, file, path, me.repositoryId, '_csrf').subscribe(
+        (response) => {
+          if (response.type === 'complete') {
+            callback.success(response.payload.body.item);
+          }
+        },
+        (error) => {
+          insertCb.failure(error);
+        }
+      );
+    }
   },
 
   getLabel: function() {

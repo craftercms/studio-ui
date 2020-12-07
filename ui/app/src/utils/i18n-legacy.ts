@@ -479,6 +479,10 @@ export const words = defineMessages({
   reason: {
     id: 'words.reason',
     defaultMessage: 'Reason'
+  },
+  select: {
+    id: 'words.select',
+    defaultMessage: 'Select'
   }
 });
 
@@ -980,6 +984,18 @@ export const rteControlMessages = defineMessages({
     id: 'rteControlMessages.incompatibleDatasource',
     defaultMessage:
       'The data source configured for browse is not compatible with the Rich Text Editor. Please contact your administrator.'
+  },
+  noDatasourcesConfigured: {
+    id: 'rteControlMessages.noDatasourcesConfigured',
+    defaultMessage: 'No sources configured for this editor.'
+  },
+  chooseSource: {
+    id: 'rteControlMessages.chooseSource',
+    defaultMessage: 'Choose a Source'
+  },
+  dropImageUploaded: {
+    id: 'rteControlMessages.dropImageUploaded',
+    defaultMessage: '{title} was successfully uploaded.'
   }
 });
 

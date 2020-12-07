@@ -33,7 +33,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
   /**
    * action called when user clicks insert image
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function(insertCb, file) {
     this._self = this;
     var site = CStudioAuthoringContext.site;
     var path = '/static-assets/images'; // default
@@ -73,7 +73,30 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
     };
 
     if ('' != path) {
-      CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['image/*']);
+      if (!file) {
+        CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['image/*']);
+      } else {
+        CrafterCMSNext.services.content.uploadDataUrl(site, file, path, '_csrf').subscribe(
+          (response) => {
+            if (response.type === 'complete') {
+              const item = response.payload.body.message;
+              const relativeUrl = item.uri;
+              const previewUrl = `${CStudioAuthoringContext.previewAppBaseUri}${relativeUrl}`;
+
+              const imageData = {
+                fileName: item.name,
+                relativeUrl,
+                previewUrl
+              };
+
+              insertCb.success(imageData);
+            }
+          },
+          (error) => {
+            insertCb.failure(error);
+          }
+        );
+      }
     } else {
       var errorString = CMgs.format(langBundle, 'noPathSetError');
       errorString = errorString.replace('{DATASOURCENAME}', '<b>' + this.getName() + '</b>');

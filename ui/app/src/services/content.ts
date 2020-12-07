@@ -39,6 +39,7 @@ import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
 import { getPasteItemFromPath } from '../utils/path';
+import { StandardAction } from '../models/StandardAction';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -564,25 +565,31 @@ function insertCollectionItem(
   }
 }
 
-export function uploadDataUrl(site: string, file: any, path: string, xsrfArgumentName: string): Observable<any> {
+function createFileUpload(
+  uploadUrl: string,
+  file: any,
+  path: string,
+  metaData: object,
+  xsrfArgumentName: string
+): Observable<StandardAction> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
-    const uploadAssetUrl = `/studio/asset-upload${qs}`;
-    uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
-    uppy.setMeta({ site, path });
+    uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}` });
+    uppy.setMeta(metaData);
 
     const blob = dataUriToBlob(file.dataUrl);
 
-    uppy.on('upload-success', () => {
+    uppy.on('upload-success', (file, response) => {
+      subscriber.next({
+        type: 'complete',
+        payload: response
+      });
       subscriber.complete();
     });
 
     uppy.on('upload-progress', (file, progress) => {
       let type = 'progress';
-      if (progress.bytesUploaded === progress.bytesTotal) {
-        type = 'complete';
-      }
       subscriber.next({
         type,
         payload: {
@@ -606,6 +613,92 @@ export function uploadDataUrl(site: string, file: any, path: string, xsrfArgumen
       uppy.cancelAll();
     };
   });
+}
+
+export function uploadDataUrl(
+  site: string,
+  file: any,
+  path: string,
+  xsrfArgumentName: string
+): Observable<StandardAction> {
+  return createFileUpload(
+    '/studio/api/1/services/api/1/content/write-content.json',
+    file,
+    path,
+    {
+      site,
+      name: file.name,
+      type: file.type,
+      path
+    },
+    xsrfArgumentName
+  );
+}
+
+export function uploadToS3(
+  site: string,
+  file: any,
+  path: string,
+  profileId: string,
+  xsrfArgumentName: string
+): Observable<StandardAction> {
+  return createFileUpload(
+    '/studio/api/2/aws/s3/upload.json',
+    file,
+    path,
+    {
+      name: file.name,
+      type: file.type,
+      siteId: site,
+      path,
+      profileId: profileId
+    },
+    xsrfArgumentName
+  );
+}
+
+export function uploadToWebDAV(
+  site: string,
+  file: any,
+  path: string,
+  profileId: string,
+  xsrfArgumentName: string
+): Observable<StandardAction> {
+  return createFileUpload(
+    '/studio/api/2/webdav/upload',
+    file,
+    path,
+    {
+      name: file.name,
+      type: file.type,
+      siteId: site,
+      path,
+      profileId: profileId
+    },
+    xsrfArgumentName
+  );
+}
+
+export function uploadToCMIS(
+  site: string,
+  file: any,
+  path: string,
+  repositoryId: string,
+  xsrfArgumentName: string
+): Observable<StandardAction> {
+  return createFileUpload(
+    '/studio/api/2/cmis/upload',
+    file,
+    path,
+    {
+      name: file.name,
+      type: file.type,
+      siteId: site,
+      cmisPath: path,
+      cmisRepoId: repositoryId
+    },
+    xsrfArgumentName
+  );
 }
 
 export function getBulkUploadUrl(site: string, path: string): string {

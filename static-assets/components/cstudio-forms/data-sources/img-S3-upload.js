@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
   /**
    * action called when user clicks insert file
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function(insertCb, file) {
     (this._self = this), (me = this);
 
     var path = this._self.repoPath;
@@ -57,8 +57,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
 
     var callback = {
       success: function(fileData) {
-        var uri = fileData;
-        var fileExtension = fileData.split('.').pop();
+        var uri = fileData.url ? fileData.url : fileData;
+        var fileExtension = uri.split('.').pop();
 
         var imageData = {
           previewUrl: uri,
@@ -66,6 +66,10 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
           fileExtension: fileExtension,
           remote: true
         };
+
+        if (fileData.name) {
+          imageData.fileName = fileData.name;
+        }
 
         insertCb.success(imageData);
       },
@@ -77,9 +81,22 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
       context: this
     };
 
-    CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, {
-      fileTypes: ['image/*']
-    });
+    if (!file) {
+      CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, {
+        fileTypes: ['image/*']
+      });
+    } else {
+      CrafterCMSNext.services.content.uploadToS3(site, file, path, me.profileId, '_csrf').subscribe(
+        (response) => {
+          if (response.type === 'complete') {
+            callback.success(response.payload.body.item);
+          }
+        },
+        (error) => {
+          insertCb.failure(error);
+        }
+      );
+    }
   },
 
   getLabel: function() {

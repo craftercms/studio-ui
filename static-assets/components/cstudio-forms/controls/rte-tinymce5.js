@@ -320,6 +320,20 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
+          const imageDatasources = this.imageManagerName ? this.imageManagerName.split(',') : [];
+          const imageUploadDatasources = [
+            'img-CMIS-upload',
+            'img-desktop-upload',
+            'img-S3-upload',
+            'img-WebDAV-upload'
+          ];
+          this.editorImageDatasources = this.form.definition.datasources.filter(
+            (datasource) =>
+              datasource.interface === 'image' &&
+              imageUploadDatasources.includes(datasource.name) &&
+              imageDatasources.includes(datasource.id)
+          );
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -358,6 +372,21 @@ CStudioAuthoring.Module.requireModule(
             file_picker_callback: function(cb, value, meta) {
               // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
               _thisControl.createControl(cb, meta);
+            },
+
+            paste_data_images: true,
+            paste_postprocess: function(plugin, args) {
+              if (!_thisControl.editorImageDatasources.length) {
+                args.preventDefault();
+                _thisControl.editor.notificationManager.open({
+                  text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
+                  timeout: 3000,
+                  type: 'error'
+                });
+              }
+            },
+            images_upload_handler: function(blobInfo, success, failure) {
+              _thisControl.addDndImage(blobInfo, success, failure);
             },
 
             templates: templates,
@@ -442,6 +471,7 @@ CStudioAuthoring.Module.requireModule(
               });
             }
           });
+          _thisControl.editor = editor;
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
@@ -573,25 +603,37 @@ CStudioAuthoring.Module.requireModule(
           }
         },
 
-        addManagedImage(datasource, cb) {
+        addManagedImage(datasource, cb, file) {
           if (datasource && datasource.insertImageAction) {
-            datasource.insertImageAction({
-              success: function(imageData) {
-                var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
-                cb(cleanUrl, { title: imageData.fileName });
+            datasource.insertImageAction(
+              {
+                success: function(imageData) {
+                  var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
+
+                  if (cb.success) {
+                    cb.success(cleanUrl, { title: imageData.fileName });
+                  } else {
+                    cb(cleanUrl, { title: imageData.fileName });
+                  }
+                },
+                failure: function(message) {
+                  if (cb.failure) {
+                    cb.failure(message);
+                  } else {
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      'message-dialog',
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      CMgs.format(langBundle, 'notification'),
+                      message,
+                      null,
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      'studioDialog'
+                    );
+                  }
+                }
               },
-              failure: function(message) {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'message-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(langBundle, 'notification'),
-                  message,
-                  null,
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-              }
-            });
+              file
+            );
           }
         },
 
@@ -641,6 +683,85 @@ CStudioAuthoring.Module.requireModule(
               },
               false
             );
+          }
+        },
+
+        addDndImage(blobInfo, success, failure) {
+          const _self = this;
+          const datasourceMap = this.form.datasourceMap;
+
+          const $imageToAdd = $(_self.editor.iframeElement)
+            .contents()
+            .find(`img[src="${blobInfo.blobUri()}"]`)
+            .css('opacity', 0.3);
+
+          if (this.editorImageDatasources.length > 0) {
+            this.editor.windowManager.open({
+              title: 'Source',
+              body: {
+                type: 'panel',
+                items: [
+                  {
+                    type: 'selectbox',
+                    name: 'datasource',
+                    label: this.formatMessage(this.messages.chooseSource),
+                    items: this.editorImageDatasources.map((source) => ({
+                      value: source.id,
+                      text: source.title
+                    }))
+                  }
+                ]
+              },
+              onSubmit: function(api) {
+                const ds = datasourceMap[api.getData().datasource];
+
+                const file = blobInfo.blob();
+                file.dataUrl = `data:${file.type};base64,${blobInfo.base64()}`;
+
+                _self.addManagedImage(
+                  ds,
+                  {
+                    success: function(url, data) {
+                      _self.editor.notificationManager.open({
+                        text: _self.formatMessage(_self.messages.dropImageUploaded, { title: data.title }),
+                        timeout: 3000,
+                        type: 'success'
+                      });
+
+                      $imageToAdd.css('opacity', '');
+                      success(url);
+                    },
+                    failure: function(error) {
+                      _self.editor.notificationManager.open({
+                        text: error.message,
+                        timeout: 3000,
+                        type: 'error'
+                      });
+                      $imageToAdd.remove();
+                      failure();
+                    }
+                  },
+                  file
+                );
+                api.close();
+              },
+              onCancel: function() {
+                $imageToAdd.remove();
+                failure(null, { remove: true });
+              },
+              buttons: [
+                {
+                  type: 'cancel',
+                  text: _self.formatMessage(_self.words.cancel)
+                },
+                {
+                  text: _self.formatMessage(_self.words.select),
+                  type: 'submit',
+                  primary: true,
+                  enabled: false
+                }
+              ]
+            });
           }
         },
 
