@@ -1,0 +1,67 @@
+
+$dark-mode-background-default: #212121;
+$dark-mode-background-paper: #424242;
+$dark-mode-font-color: #fff;
+
+.dark-mode {
+  #studioBar {
+    &> .navbar-fixed-top {
+      color: $dark-mode-font-color;
+      background-color: $dark-mode-background-default;
+
+      #navbar-site-name {
+        color: $dark-mode-font-color;
+      }
+
+      #activeContentActions {
+        .acn-link a, .context-nav-title-element{
+          color: $dark-mode-font-color;
+        }
+      }
+
+      #activeContentActions, #toolbarGlobalNav {
+        border-color: transparent;
+      }
+    }
+  }
+  .cstudio-navbar {
+    color: $dark-mode-font-color;
+    background-color: $dark-mode-background-default;
+  }
+
+  #categories-panel {
+    background-color: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color;
+
+    .cstudio-admin-console-item-selected {
+      background-color: rgba(0, 0, 0, 0.08);
+      color: $dark-mode-font-color;
+    }
+  }
+
+  .craftercms-entitlement {
+    .craftercms-entitlement-copy {
+      &, a {
+        color: $dark-mode-font-color;
+      }
+    }
+  }
+
+  #acn-dropdown-menu-wrapper {
+    background-color: $dark-mode-background-paper;
+
+    & *, #acn-sites-link {
+      color: $dark-mode-font-color;
+    }
+
+    #acn-dropdown-menu-inner {
+      .no-preview, .folder {
+        color: $dark-mode-font-color !important;
+      }
+    }
+
+    .ygtv-highlight0:hover {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+  }
+}
