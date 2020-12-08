@@ -2,6 +2,7 @@
 $dark-mode-background-default: #212121;
 $dark-mode-background-paper: #424242;
 $dark-mode-font-color: #fff;
+$dark-mode-font-highlight: #70D7FF;
 
 .dark-mode {
   #studioBar {
@@ -50,8 +51,12 @@ $dark-mode-font-color: #fff;
   #acn-dropdown-menu-wrapper {
     background-color: $dark-mode-background-paper;
 
-    & *, #acn-sites-link {
+    #acn-sites-link, .acn-parent-folder, .acn-admin-console, .ygtvcell {
       color: $dark-mode-font-color;
+    }
+
+    .preview {
+      color: $dark-mode-font-highlight;
     }
 
     #acn-dropdown-menu-inner {
@@ -63,5 +68,9 @@ $dark-mode-font-color: #fff;
     .ygtv-highlight0:hover {
       background-color: rgba(0, 0, 0, 0.08);
     }
+  }
+
+  .cs-item-icon.icon-container .studio-fa-stack-2x {
+    color: $dark-mode-font-color !important;
   }
 }
