@@ -66,12 +66,6 @@ export const showSystemNotification = createAction<{
   options?: OptionsObject;
 }>('SHOW_SYSTEM_NOTIFICATION');
 
-export const showConfirmNotification = createAction<{
-  message: string;
-  onAccept: StandardAction;
-  options?: OptionsObject;
-}>('SHOW_CONFIRM_NOTIFICATION');
-
 // endregion
 
 export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
