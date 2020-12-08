@@ -123,9 +123,7 @@
     });
 
     $resultsContainer.on('click', '.add-close-btn', function () {
-      var input = $(this)
-        .closest('.cstudio-search-result')
-        .find('.cstudio-search-select-container input');
+      var input = $(this).closest('.cstudio-search-result').find('.cstudio-search-select-container input');
       input.prop('checked', true).trigger('change');
       me.saveContent();
     });
@@ -391,10 +389,7 @@
                   handler: function () {
                     this.hide();
                     window.close();
-                    $(window.frameElement.parentElement)
-                      .closest('.studio-ice-dialog')
-                      .parent()
-                      .remove(); //TODO: find a better way
+                    $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
                   },
                   isDefault: false
                 }
@@ -415,10 +410,7 @@
                 handler: function () {
                   this.hide();
                   window.close();
-                  $(window.frameElement.parentElement)
-                    .closest('.studio-ice-dialog')
-                    .parent()
-                    .remove(); //TODO: find a better way
+                  $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
                 },
                 isDefault: false
               }
@@ -474,8 +466,7 @@
       core: {
         check_callback: true,
         data: function (node, cb) {
-          var notRoot =
-            typeof node.a_attr !== 'undefined' && typeof node.a_attr['data-path'] !== 'undefined';
+          var notRoot = typeof node.a_attr !== 'undefined' && typeof node.a_attr['data-path'] !== 'undefined';
           var currentPath = notRoot ? node.a_attr['data-path'] : path; // use node path or root path
           var foldersPromise = me._lookupSiteFolders(site, currentPath);
           foldersPromise.then(function (treeData) {
@@ -525,9 +516,7 @@
     $resultsContainer.empty();
     $resultsActions.empty();
 
-    $resultsContainer.html(
-      '<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...'
-    );
+    $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
     contentPromise.then(function (results) {
       if (activePromise != contentPromise) {

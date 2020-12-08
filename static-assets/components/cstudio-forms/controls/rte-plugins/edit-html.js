@@ -22,9 +22,7 @@ CStudioAuthoring.Module.requireModule(
   {},
   {
     moduleLoaded: function () {
-      CStudioAuthoring.Utils.addJavascript(
-        '/static-assets/components/cstudio-common/ace/ext-language_tools.js'
-      );
+      CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/ace/ext-language_tools.js');
       CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
 
       var YDom = YAHOO.util.Dom,
@@ -87,9 +85,7 @@ CStudioAuthoring.Module.requireModule(
           editor['data-components'] = {};
 
           componentsArr.forEach(function (component) {
-            editor['data-components'][component.id] = Array.prototype.slice.call(
-              component.childNodes
-            ); // Copy children and store them in an attribute
+            editor['data-components'][component.id] = Array.prototype.slice.call(component.childNodes); // Copy children and store them in an attribute
             component.innerHTML = 'DYNAMIC COMPONENT';
           });
         },
@@ -268,10 +264,7 @@ CStudioAuthoring.Module.requireModule(
       tinymce2.create('tinymce2.plugins.CStudioEditHTMLPlugin', CStudioForms.Controls.RTE.EditHTML);
       tinymce2.PluginManager.add('edithtml', tinymce2.plugins.CStudioEditHTMLPlugin);
 
-      CStudioAuthoring.Module.moduleLoaded(
-        'cstudio-forms-controls-rte-edit-html',
-        CStudioForms.Controls.RTE.EditHTML
-      );
+      CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-edit-html', CStudioForms.Controls.RTE.EditHTML);
     }
   }
 );

@@ -101,7 +101,4 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVRepo, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-img-WebDAV-repo',
-  CStudioForms.Datasources.ImgWebDAVRepo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-img-WebDAV-repo', CStudioForms.Datasources.ImgWebDAVRepo);

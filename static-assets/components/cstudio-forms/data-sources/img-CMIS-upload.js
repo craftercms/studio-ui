@@ -104,7 +104,4 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-img-CMIS-upload',
-  CStudioForms.Datasources.ImgCMISUpload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-img-CMIS-upload', CStudioForms.Datasources.ImgCMISUpload);

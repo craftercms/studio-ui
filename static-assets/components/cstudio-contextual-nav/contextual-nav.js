@@ -23,10 +23,7 @@ var YEvent = YAHOO.util.Event;
 CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   initialized: false,
   CMgs: CStudioAuthoring.Messages,
-  contextNavLangBundle: CStudioAuthoring.Messages.getBundle(
-    'previewTools',
-    CStudioAuthoringContext.lang
-  ),
+  contextNavLangBundle: CStudioAuthoring.Messages.getBundle('previewTools', CStudioAuthoringContext.lang),
 
   /**
    * call out to the authoring environment for the nav content and overlay it
@@ -117,10 +114,11 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   getNavBarContent: function () {
     var callback = {
       success: function (results) {
-        document.getElementById('nav-user-name').innerHTML =
-          results.firstName + ' ' + results.lastName;
+        document.getElementById('nav-user-name').innerHTML = results.firstName + ' ' + results.lastName;
         document.getElementById('nav-user-email').innerHTML = results.email;
-        $('#account-dropdown .username').replaceWith(`<span class="username trim inline-block">${results.username}</span>`);
+        $('#account-dropdown .username').replaceWith(
+          `<span class="username trim inline-block">${results.username}</span>`
+        );
       },
       failure: function (response) {}
     };

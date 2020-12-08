@@ -167,9 +167,7 @@
         if (isValidateCommentOn && $(this).get(0).value === '') {
           submissionCommentVal.classList.remove('hide');
         } else {
-          submissionCommentVal.classList.contains('hide') === false
-            ? submissionCommentVal.classList.add('hide')
-            : null;
+          submissionCommentVal.classList.contains('hide') === false ? submissionCommentVal.classList.add('hide') : null;
         }
         self.deleteValidation();
       });

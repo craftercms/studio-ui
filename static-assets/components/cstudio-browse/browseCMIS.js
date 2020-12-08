@@ -412,9 +412,7 @@
     var me = this,
       type = type ? type : 'browse',
       $resultsContainer =
-        'browse' === type
-          ? $('#cstudio-wcm-browse-result .results')
-          : $('#cstudio-wcm-search-result .results'),
+        'browse' === type ? $('#cstudio-wcm-browse-result .results') : $('#cstudio-wcm-search-result .results'),
       $resultsActions =
         'browse' === type
           ? $('#cstudio-wcm-browse-result .cstudio-results-actions')
@@ -423,9 +421,7 @@
     $resultsContainer.empty();
     $resultsActions.empty();
 
-    $resultsContainer.html(
-      '<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...'
-    );
+    $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
     if ('cmis-root' === path && this.rootItems) {
       //root - we already have the items
@@ -501,18 +497,12 @@
       msj = CMgs.format(browseLangBundle, 'noBrowseResults');
     }
 
-    $resultsContainer.append(
-      '<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>'
-    );
+    $resultsContainer.append('<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>');
   };
 
   CStudioBrowseCMIS.getContent = function (type, cb, cPath, searchTerm) {
     var pathURL = CStudioAuthoring.Utils.getQueryParameterByName('path'),
-      path = cPath
-        ? cPath
-        : pathURL.slice(-1) == '/'
-        ? pathURL.substring(0, pathURL.length - 1)
-        : pathURL,
+      path = cPath ? cPath : pathURL.slice(-1) == '/' ? pathURL.substring(0, pathURL.length - 1) : pathURL,
       repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId'),
       site = CStudioAuthoring.Utils.getQueryParameterByName('site');
 
@@ -574,26 +564,16 @@
         searchTerm = '*';
       }
 
-      CStudioAuthoring.Service.getCMISContentBySearch(
-        site,
-        repoId,
-        path,
-        searchTerm,
-        callbackContent
-      );
+      CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, searchTerm, callbackContent);
     }
   };
 
   (CStudioBrowseCMIS.getConfig = function (callback) {
-    CStudioAuthoring.Service.getConfiguration(
-      CStudioAuthoringContext.site,
-      '/data-sources/cmis-config.xml',
-      {
-        success: function (config) {
-          callback(config.repositories.repository);
-        }
+    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
+      success: function (config) {
+        callback(config.repositories.repository);
       }
-    );
+    });
   }),
     (window.CStudioBrowseCMIS = CStudioBrowseCMIS);
 })(window, jQuery, Handlebars);

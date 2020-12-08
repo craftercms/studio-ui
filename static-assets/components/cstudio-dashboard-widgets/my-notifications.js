@@ -38,13 +38,7 @@ CStudioAuthoringWidgets.MyNotificationsDashboard =
     /**
      * get table data
      */
-    this.retrieveTableData = function (
-      sortBy,
-      sortAscDesc,
-      callback,
-      retrieveTableData,
-      filterByNumber
-    ) {
+    this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber) {
       sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
 
       CStudioAuthoring.Service.getGoLiveQueueItems(

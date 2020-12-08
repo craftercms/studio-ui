@@ -124,9 +124,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
       'zoomFullButton',
       'click',
       function () {
-        this.fullImageTab(
-          !this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value
-        );
+        this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
       },
       this,
       true
@@ -299,13 +297,9 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
             } else {
               this.videoPicker.previewEl.src = videoData.previewUrl;
               this.videoPicker.previewEl.setAttribute('controls', 'true');
-              this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace(
-                '?crafterCMIS=true',
-                ''
-              );
+              this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace('?crafterCMIS=true', '');
               this.videoPicker.downloadEl.href = videoData.previewUrl;
-              this.videoPicker.remote =
-                videoData.remote && videoData.remote === true ? true : false;
+              this.videoPicker.remote = videoData.remote && videoData.remote === true ? true : false;
 
               this.videoPicker.noPreviewEl.style.display = 'none';
               this.videoPicker.previewEl.style.display = 'inline';
@@ -375,10 +369,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     titleEl.innerHTML = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(
-      controlWidgetContainerEl,
-      'cstudio-form-control-video-picker-container'
-    );
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-video-picker-container');
 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
@@ -654,7 +645,4 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-video-picker',
-  CStudioForms.Controls.VideoPicker
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-video-picker', CStudioForms.Controls.VideoPicker);

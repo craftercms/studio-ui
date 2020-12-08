@@ -91,7 +91,4 @@ YAHOO.extend(CStudioForms.Datasources.HubspotForms, CStudioForms.CStudioFormData
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-hubspot-forms',
-  CStudioForms.Datasources.HubspotForms
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-hubspot-forms', CStudioForms.Datasources.HubspotForms);

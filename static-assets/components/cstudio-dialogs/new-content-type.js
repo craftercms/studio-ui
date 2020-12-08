@@ -483,30 +483,18 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
               context: this.context.context
             };
 
-            this.context.writeConfig(
-              baseServicePath + 'form-definition.xml',
-              formDefContent,
-              writeFormDefCb
-            );
+            this.context.writeConfig(baseServicePath + 'form-definition.xml', formDefContent, writeFormDefCb);
           },
           failure: function () {},
           context: this.context
         };
-        this.context.writeConfig(
-          baseServicePath + 'controller.groovy',
-          controllerContent,
-          writeControllerCb
-        );
+        this.context.writeConfig(baseServicePath + 'controller.groovy', controllerContent, writeControllerCb);
       },
       failure: function () {},
       context: CStudioAuthoring.Dialogs.NewContentType
     };
 
-    CStudioAuthoring.Dialogs.NewContentType.writeConfig(
-      baseServicePath + 'config.xml',
-      typeConfig,
-      contentTypeCb
-    );
+    CStudioAuthoring.Dialogs.NewContentType.writeConfig(baseServicePath + 'config.xml', typeConfig, contentTypeCb);
   },
 
   writeConfig: function (url, content, cb) {
@@ -516,12 +504,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       CStudioAuthoringContext.xsrfHeaderName,
       CrafterCMSNext.util.auth.getRequestForgeryToken()
     );
-    YAHOO.util.Connect.asyncRequest(
-      'POST',
-      CStudioAuthoring.Service.createServiceUri(url),
-      cb,
-      content
-    );
+    YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);
   },
 
   /**
@@ -587,7 +570,4 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'new-content-type-dialog',
-  CStudioAuthoring.Dialogs.NewContentType
-);
+CStudioAuthoring.Module.moduleLoaded('new-content-type-dialog', CStudioAuthoring.Dialogs.NewContentType);

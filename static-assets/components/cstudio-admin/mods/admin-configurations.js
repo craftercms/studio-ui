@@ -46,13 +46,9 @@
 
   function moduleLoaded() {
     CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
-    CStudioAuthoring.Utils.addJavascript(
-      '/static-assets/components/cstudio-common/ace/ext-language_tools.js'
-    );
+    CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/ace/ext-language_tools.js');
 
-    CStudioAuthoring.Utils.addCss(
-      '/static-assets/components/cstudio-admin/mods/admin-configurations.css'
-    );
+    CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/admin-configurations.css');
     CStudioAdminConsole.Tool.AdminConfig =
       CStudioAdminConsole.Tool.AdminConfig ||
       function (config, el) {
@@ -154,7 +150,7 @@
 
         const cb = () => {
           self.loadSelectedConfig();
-        }
+        };
 
         const handler = () => {
           amplify.unsubscribe('HISTORY_REVERT', cb);
@@ -176,9 +172,7 @@
         return (
           '<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           '<div class="hint">' +
-          /**/ `<h2 class="hint--title">${formatMessage(
-            adminConfigurationMessages.encryptMarked
-          )}</h2>` +
+          /**/ `<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /**/ `<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
           /**/ `<p>` +
           /**/ formatMessage(adminConfigurationMessages.encryptHintPt2, bold).join('') +
@@ -216,56 +210,39 @@
         var self = this,
           itemSelectEl = this.configInfo.itemSelectEl;
         // load configuration to get the configuration files list
-        CStudioAuthoring.Service.lookupConfigurtion(
-          CStudioAuthoringContext.site,
-          '/administration/config-list.xml',
-          {
-            success: function (config) {
-              if (config.files.file && config.files.file.length) {
-                var index = 1;
-                for (var fileIndex in config.files.file) {
-                  var fileConfig = config.files.file[fileIndex];
-                  var option = new Option(
-                    CMgs.format(langBundle, fileConfig.title),
-                    fileConfig.path,
-                    false,
-                    false
-                  );
-                  option.setAttribute(
-                    'description',
-                    CMgs.format(langBundle, fileConfig.description)
-                  );
-                  option.setAttribute('sample', fileConfig.samplePath);
-                  option.setAttribute('module', fileConfig.module);
-                  itemSelectEl.options[index++] = option;
-                }
-              } else if (config.files.file) {
-                var fileConfig = config.files.file;
-                var option = new Option(
-                  CMgs.format(langBundle, fileConfig.title),
-                  fileConfig.path,
-                  false,
-                  false
-                );
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/administration/config-list.xml', {
+          success: function (config) {
+            if (config.files.file && config.files.file.length) {
+              var index = 1;
+              for (var fileIndex in config.files.file) {
+                var fileConfig = config.files.file[fileIndex];
+                var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
                 option.setAttribute('description', CMgs.format(langBundle, fileConfig.description));
                 option.setAttribute('sample', fileConfig.samplePath);
                 option.setAttribute('module', fileConfig.module);
-                itemSelectEl.options[1] = option;
+                itemSelectEl.options[index++] = option;
               }
-            },
-            failure: function () {
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'errorDialog-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(langBundle, 'notification'),
-                CMgs.format(langBundle, 'failConfig'),
-                null, // use default button
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
+            } else if (config.files.file) {
+              var fileConfig = config.files.file;
+              var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
+              option.setAttribute('description', CMgs.format(langBundle, fileConfig.description));
+              option.setAttribute('sample', fileConfig.samplePath);
+              option.setAttribute('module', fileConfig.module);
+              itemSelectEl.options[1] = option;
             }
+          },
+          failure: function () {
+            CStudioAuthoring.Operations.showSimpleDialog(
+              'errorDialog-dialog',
+              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+              CMgs.format(langBundle, 'notification'),
+              CMgs.format(langBundle, 'failConfig'),
+              null, // use default button
+              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              'studioDialog'
+            );
           }
-        );
+        });
 
         // add onchange behavior to display selected
         this.configInfo.itemSelectEl.onchange = function () {
@@ -314,16 +291,11 @@
 
               //add history
 
-              var siteDropdownLangBundle = CMgs.getBundle(
-                'siteDropdown',
-                CStudioAuthoringContext.lang
-              );
+              var siteDropdownLangBundle = CMgs.getBundle('siteDropdown', CStudioAuthoringContext.lang);
 
               var historyLink = document.createElement('a');
               historyLink.className = 'cursor';
-              var textnode = document.createTextNode(
-                CMgs.format(siteDropdownLangBundle, 'history')
-              ); // Create a text node
+              var textnode = document.createTextNode(CMgs.format(siteDropdownLangBundle, 'history')); // Create a text node
               historyLink.appendChild(textnode);
 
               historyLink.onclick = function () {
@@ -537,13 +509,10 @@
                   tags =
                     unencryptedItems
                       .map((item) => {
-                        return `</br>&emsp;• ${formatMessage(
-                          adminConfigurationMessages.encryptionDetail,
-                          {
-                            name: item.tag.tagName,
-                            value: item.text
-                          }
-                        )}`;
+                        return `</br>&emsp;• ${formatMessage(adminConfigurationMessages.encryptionDetail, {
+                          name: item.tag.tagName,
+                          value: item.text
+                        })}`;
                       })
                       .join('') + '</br>';
                 } else {
@@ -717,8 +686,7 @@
 
       clearCache: function () {
         var serviceUri =
-          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' +
-          CStudioAuthoringContext.site;
+          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' + CStudioAuthoringContext.site;
 
         YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), {
           success: function () {},

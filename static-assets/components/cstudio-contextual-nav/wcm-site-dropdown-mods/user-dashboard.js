@@ -45,7 +45,4 @@ CStudioAuthoring.ContextualNav.UserDashboard = CStudioAuthoring.ContextualNav.Us
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'user-dashboard',
-  CStudioAuthoring.ContextualNav.UserDashboard
-);
+CStudioAuthoring.Module.moduleLoaded('user-dashboard', CStudioAuthoring.ContextualNav.UserDashboard);

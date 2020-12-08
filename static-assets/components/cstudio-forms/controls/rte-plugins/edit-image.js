@@ -164,12 +164,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageAlignNoneEl, 'rte-image-prop-align-none');
         YAHOO.util.Event.on(imageAlignNoneEl, 'click', function () {
           imageElement.align = 'none';
-          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
-            editor,
-            imageElement,
-            'display',
-            'inline'
-          );
+          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'inline');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '');
           updateMarginInputFields(imageElement);
           selectAlignFn();
@@ -179,12 +174,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageAlignLeftEl, 'rte-image-prop-align-left');
         YAHOO.util.Event.on(imageAlignLeftEl, 'click', function () {
           imageElement.align = 'left';
-          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
-            editor,
-            imageElement,
-            'display',
-            'inline'
-          );
+          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'inline');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '');
           updateMarginInputFields(imageElement);
           selectAlignFn();
@@ -194,12 +184,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageAlignRightEl, 'rte-image-prop-align-right');
         YAHOO.util.Event.on(imageAlignRightEl, 'click', function () {
           imageElement.align = 'right';
-          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
-            editor,
-            imageElement,
-            'display',
-            'inline'
-          );
+          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'inline');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '');
           updateMarginInputFields(imageElement);
           selectAlignFn();
@@ -209,18 +194,8 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageAlignCenterEl, 'rte-image-prop-align-center');
         YAHOO.util.Event.on(imageAlignCenterEl, 'click', function () {
           imageElement.align = 'middle';
-          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
-            editor,
-            imageElement,
-            'display',
-            'block'
-          );
-          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
-            editor,
-            imageElement,
-            'margin',
-            '0 auto'
-          );
+          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'block');
+          CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '0 auto');
           updateMarginInputFields(imageElement);
           selectAlignFn();
         });
@@ -308,9 +283,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         imagePropertiesEl.appendChild(imageAltLinkEl);
 
         var imageAltLinkHtml =
-          '<table>' +
-          "<tr><td>Description</td> <td><input id='rteImageAltText'/></td></tr>" +
-          '</table>';
+          '<table>' + "<tr><td>Description</td> <td><input id='rteImageAltText'/></td></tr>" + '</table>';
 
         imageAltLinkEl.innerHTML = imageAltLinkHtml;
 
@@ -364,9 +337,7 @@ CStudioForms.Controls.RTE.ImageEditor =
       setStyleStr: function (editor, element, style, value) {
         tinymce2.DOM.setStyle(element, style, value);
         var styleStr =
-          typeof element.getAttribute('style') !== 'string'
-            ? element.style.cssText
-            : element.getAttribute('style');
+          typeof element.getAttribute('style') !== 'string' ? element.style.cssText : element.getAttribute('style');
 
         element.getAttribute('style').value = styleStr;
         element.setAttribute('data-mce-style', styleStr);
@@ -381,7 +352,4 @@ CStudioForms.Controls.RTE.ImageEditor =
     return imageEditor;
   })();
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-rte-edit-image',
-  CStudioForms.Controls.RTE.ImageEditor
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-edit-image', CStudioForms.Controls.RTE.ImageEditor);

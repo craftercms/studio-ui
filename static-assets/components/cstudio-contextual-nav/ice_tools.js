@@ -85,11 +85,9 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                         0,
                         {
                           moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-                            CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(
-                              function () {
-                                CStudioAuthoring.IceTools.turnEditOff();
-                              }
-                            );
+                            CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(function () {
+                              CStudioAuthoring.IceTools.turnEditOff();
+                            });
                           }
                         }
                       );

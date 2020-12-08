@@ -34,8 +34,7 @@
             <img src="/studio/static-assets/images/choose_option.svg" alt="">
             <div>${formatMessage(contentTypesMessages.siteConfigLandingMessage)}</div>
           </div>
-        </div>
-    `;
+        </div>`;
 
       CStudioAuthoring.Service.lookupConfigurtion(
         CStudioAuthoringContext.site,

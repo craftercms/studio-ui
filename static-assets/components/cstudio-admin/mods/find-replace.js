@@ -106,12 +106,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.FindReplace, CStudioAdminConsole.Tool, {
                   success: function () {
                     // update the status
                     this.statusEl.innerHTML =
-                      'Replacing ' +
-                      this.term +
-                      ' with ' +
-                      this.replaceVal +
-                      ' in file ' +
-                      this.item.uri;
+                      'Replacing ' + this.term + ' with ' + this.replaceVal + ' in file ' + this.item.uri;
                   },
                   failure: function () {},
 
@@ -157,7 +152,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.FindReplace, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-find-replace',
-  CStudioAdminConsole.Tool.FindReplace
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-find-replace', CStudioAdminConsole.Tool.FindReplace);

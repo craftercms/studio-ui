@@ -343,8 +343,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
   repeatMoveDown: 'Move Down',
   repeatDelete: 'Delete',
   errMissingRequirements: 'You cannot save until all form requirements are satisfied',
-  errSaveFailed:
-    'Unable to save form content. Please try again or contact or your system administrator.',
+  errSaveFailed: 'Unable to save form content. Please try again or contact or your system administrator.',
   errOnRepeat: 'Error on repeater operation: {0}',
   errFailedToLoadContent: 'Error loading content: {0}',
   errExpectedIndexXml: 'Not expecting file-name other than index.xml',
@@ -377,8 +376,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
   newFolderUpdating: 'Creating a folder...',
 
   chooseContentType: 'Choose Content Type',
-  chooseContentTypeBody:
-    'The following starter templates are available for use within this section.',
+  chooseContentTypeBody: 'The following starter templates are available for use within this section.',
   chooseContentTypeLabel: 'Template Name:',
   chooseContentTypePreview: 'Preview:',
 
@@ -391,8 +389,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   changeTemplateDialogTitle: 'Warning: Change Content Type',
   changeTemplateDialogSubTitle: 'Crafter Studio',
-  changeTemplateDialogBody:
-    'The following operation may result in data loss. Would you like to proceed?',
+  changeTemplateDialogBody: 'The following operation may result in data loss. Would you like to proceed?',
 
   bulkPublishDialogTitle: 'Warning: Bulk Publish',
   bulkPublishDialogBody:
@@ -554,11 +551,9 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
   numberPerPage: 'Enter a number in show item per page.',
   revertError: 'Revert failed.',
   legacyError: 'legacy form server is no longer supported',
-  contentTypesEmpty:
-    'There are no content types available that can be created at the configured path.',
+  contentTypesEmpty: 'There are no content types available that can be created at the configured path.',
   componentCategoriesError: 'There are no categories available that can be created.',
-  pluginError:
-    'Issues were found with your plugin configuration. The following properties are missing:',
+  pluginError: 'Issues were found with your plugin configuration. The following properties are missing:',
   pluginErrorSolution:
     "Go to <a id='siteConfigURL'>[site config page]</a> and select the 'Site Config Tools' on the dropdown to edit the file.",
   control: 'Control: ',
@@ -604,8 +599,7 @@ CStudioAuthoring.Messages.registerBundle('search', 'en', {
   seeLess: 'See Less',
   under: 'Under',
   above: 'and Above',
-  errorMessage:
-    'There was an issue completing your search, please contact the Administrator if this issue persists.',
+  errorMessage: 'There was an issue completing your search, please contact the Administrator if this issue persists.',
   clear: 'Clear',
   apply: 'Apply'
 });
@@ -925,8 +919,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabPreviewAssetConf: 'Preview Asset Configuration',
   confTabPreviewAssetConfDesc: 'Defines a list of editable assets associated with XML contents',
   confTabPreviewComponentsConf: 'Preview Components Configuration',
-  confTabPreviewComponentsConfDesc:
-    'Defines a list of components that can be created dynamically in preview',
+  confTabPreviewComponentsConfDesc: 'Defines a list of components that can be created dynamically in preview',
   confTabPreviewPanelConf: 'Preview Panel Configuration',
   confTabconfTabPreviewPanelConfDesc: 'Defines a list of tools available in preview',
   confTabPersonasConf: 'Personas Configuration',
@@ -948,8 +941,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabTargetingConfigurationDesc:
     'This file configures the targeting system of Crafter Studio to help provide Crafter Engine with fake user properties that help drive the targeting system',
   confTabEnvironmentConfiguration: 'Environment Configuration',
-  confTabEnvironmentConfigurationDesc:
-    'This file configures the environments Crafter Studio can publish to',
+  confTabEnvironmentConfigurationDesc: 'This file configures the environments Crafter Studio can publish to',
   confTabCMISConfiguration: 'CMIS Configuration',
   confTabCMISConfigurationDesc:
     'This files configures 0 or more CMIS-capable repositories as data-sources for content authors to pick from',
@@ -995,8 +987,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   jobsError: 'Failed to load jobs.',
   cancelDeploymentError: 'Failed to cancel deployment.',
   saveDateError: 'Unable to save Date/Time field. Please contact your system administrator.',
-  contentTypeModifiedWarn:
-    'Content Type has been modified, are you sure you want to abandon your changes?',
+  contentTypeModifiedWarn: 'Content Type has been modified, are you sure you want to abandon your changes?',
   noPathSetError:
     'The path field of the data source {DATASOURCENAME} is not configured properly. Please contact your administrator.',
 

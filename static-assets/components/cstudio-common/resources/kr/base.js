@@ -332,8 +332,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   repeatMoveDown: '아래로 이동',
   repeatDelete: '삭제',
   errMissingRequirements: '모든 형태의 요구 사항을 만족할 때까지 당신은 저장할 수 없습니다',
-  errSaveFailed:
-    '. 형태의 컨텐츠를 저장할 수 없습니다 다시 연락처 또는 시스템 관리자 나 시도하십시오.',
+  errSaveFailed: '. 형태의 컨텐츠를 저장할 수 없습니다 다시 연락처 또는 시스템 관리자 나 시도하십시오.',
   errOnRepeat: '중계기 작동에 오류 : {0}',
   errFailedToLoadContent: '오류 내용을로드 : {0}',
   errExpectedIndexXml: '이 Index.xml 이외의 파일 이름을 기대되지 않음',
@@ -358,8 +357,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
 
   changeTemplateDialogTitle: '경고 : 콘텐츠 형식 변경',
   changeTemplateDialogSubTitle: '크래프터 스튜디오',
-  changeTemplateDialogBody:
-    '아래의 조작은 데이터 손실이 발생할 수 있습니다. 당신은 계속 진행 하시겠습니까?',
+  changeTemplateDialogBody: '아래의 조작은 데이터 손실이 발생할 수 있습니다. 당신은 계속 진행 하시겠습니까?',
 
   bulkPublishDialogTitle: '경고 : 대량 게시',
   bulkPublishDialogBody:
@@ -406,8 +404,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   approveDialogTitle: '게시에 대한 승인',
   approveDialogSubTitle:
     '선택한 파일이 게시됩니다. 엄격한 종속성이 자동으로 포함됩니다. 소프트 종속성은 선택 사항이며 포함 할 항목을 선택할 수 있습니다.',
-  approveDialogWarning:
-    '경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.',
+  approveDialogWarning: '경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.',
   dependenciesDialogTitle: 'Dependencies',
   dependenciesDialogSubTitle: 'Dependencies shown for:',
   dependsOn: 'Depends On',
@@ -555,8 +552,7 @@ CStudioAuthoring.Messages.registerBundle('search', 'kr', {
   seeLess: '덜보기',
   under: '아래에',
   above: '위',
-  errorMessage:
-    '검색을 완료하는 중에 문제가 발생했습니다. 문제가 지속되면 관리자에게 문의하십시오.',
+  errorMessage: '검색을 완료하는 중에 문제가 발생했습니다. 문제가 지속되면 관리자에게 문의하십시오.',
   clear: '명확한',
   apply: '대다'
 });
@@ -869,8 +865,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   confTabTargetingConfigurationDesc:
     '이 파일은 Crafter Studio의 타겟팅 시스템을 구성하여 Crafter Engine에 타겟팅 시스템을 구동하는 데 도움이되는 가짜 사용자 속성을 제공합니다',
   confTabEnvironmentConfiguration: '환경 구성',
-  confTabEnvironmentConfigurationDesc:
-    '이 파일은 Crafter Studio가 게시 할 수있는 환경을 구성합니다',
+  confTabEnvironmentConfigurationDesc: '이 파일은 Crafter Studio가 게시 할 수있는 환경을 구성합니다',
   confTabCMISConfiguration: 'CMIS 구성',
   confTabCMISConfigurationDesc:
     '이 파일은 컨텐트 작성자가 선택할 수있는 0 이상의 CMIS 가능 리포지토리를 데이터 소스로 구성합니다',
@@ -907,8 +902,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   cancelDeploymentError: '배포를 취소하지 못했습니다.',
   saveDateError: '날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오.',
   contentTypeModifiedWarn: '콘텐츠 유형이 수정되었습니다. 변경 사항을 취소 하시겠습니까',
-  noPathSetError:
-    '{DATASOURCENAME} 데이터 소스의 경로 필드가 올바르게 구성되지 않았습니다. 관리자에게 문의하십시오.',
+  noPathSetError: '{DATASOURCENAME} 데이터 소스의 경로 필드가 올바르게 구성되지 않았습니다. 관리자에게 문의하십시오.',
 
   add: '더하다',
   replace: '바꾸다',

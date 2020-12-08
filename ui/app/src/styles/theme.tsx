@@ -148,8 +148,8 @@ export const themeOptions: ThemeOptions = {
         }
       },
       outlinedPrimary: {
-        color: darken('#7E9DBB', 0.10),
-        border: `1px solid ${darken('#7E9DBB', 0.10)}`
+        color: darken('#7E9DBB', 0.1),
+        border: `1px solid ${darken('#7E9DBB', 0.1)}`
       }
     }
   }

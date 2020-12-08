@@ -175,11 +175,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+    url += '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
       formTarget: '#asset_upload_form',
@@ -271,10 +267,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     var data = new FormData(form);
 
     serviceUri +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
     $.ajax({
       enctype: 'multipart/form-data',
       processData: false, // Important!
@@ -289,9 +282,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 
         CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
         if (r.fileExtension) {
-          r.fileExtension = r.fileExtension
-            ? r.fileExtension.substring(r.fileExtension.lastIndexOf('.') + 1)
-            : null;
+          r.fileExtension = r.fileExtension ? r.fileExtension.substring(r.fileExtension.lastIndexOf('.') + 1) : null;
         }
         args.self.callback.success(response);
       },
@@ -320,10 +311,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         var data = new FormData(form);
 
         serviceUri +=
-          '&' +
-          CStudioAuthoringContext.xsrfParameterName +
-          '=' +
-          CrafterCMSNext.util.auth.getRequestForgeryToken();
+          '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
         $.ajax({
           enctype: 'multipart/form-data',

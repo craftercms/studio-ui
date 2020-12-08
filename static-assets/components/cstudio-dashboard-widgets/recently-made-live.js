@@ -44,14 +44,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard =
     /**
      * get table data
      */
-    this.retrieveTableData = function (
-      sortBy,
-      sortAscDesc,
-      callback,
-      retrieveTableData,
-      filterByNumber,
-      filterBy
-    ) {
+    this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
       sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
 
       CStudioAuthoring.Service.getDeploymentHistory(
@@ -146,30 +139,15 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard =
       filterByEl.onchange = function () {
         var _self = this._self;
         var selectedItems = filterByEl.selectedIndex;
-        filterByEl.options[0] = new Option(
-          CMgs.format(langBundle, 'dashletFilterPages'),
-          'page',
-          true,
-          false
-        );
+        filterByEl.options[0] = new Option(CMgs.format(langBundle, 'dashletFilterPages'), 'page', true, false);
         filterByEl.options[1] = new Option(
           CMgs.format(langBundle, 'dashletFilterComponents'),
           'component',
           true,
           false
         );
-        filterByEl.options[2] = new Option(
-          CMgs.format(langBundle, 'dashletFilterDocuments'),
-          'document',
-          true,
-          false
-        );
-        filterByEl.options[3] = new Option(
-          CMgs.format(langBundle, 'dashletFilterAll'),
-          'all',
-          true,
-          false
-        );
+        filterByEl.options[2] = new Option(CMgs.format(langBundle, 'dashletFilterDocuments'), 'document', true, false);
+        filterByEl.options[3] = new Option(CMgs.format(langBundle, 'dashletFilterAll'), 'all', true, false);
         filterByEl.options[selectedItems].selected = true;
         var newState = filterByEl.value;
 
@@ -233,19 +211,14 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard =
             displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80),
             uri = item.uri;
 
-          editLinkId =
-            'editLink_' +
-            this.widgetId +
-            '_' +
-            WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
+          editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
 
           if (item.component && item.internalName == 'crafter-level-descriptor.level.xml') {
             browserUri = '';
             displayBrowserUri = '';
           }
 
-          var ttSpanId =
-            'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
+          var ttSpanId = 'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
           var itemTitle = CStudioAuthoring.Utils.getTooltipContent(item);
           this.tooltipLabels.push(ttSpanId);
 
@@ -273,8 +246,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard =
             this.widgetId == currentDashboard &&
             currentCheckItem &&
             CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-            item.internalName.trim() ==
-              CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
               ? ' checked'
               : '',
             item.deleted || item.inFlight ? ' disabled' : '',
@@ -291,11 +263,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard =
             item.previewable == true ? ' previewLink' : ' non-previewable-link',
             '" ',
             item.previewable == true
-              ? 'href="/studio/preview/#/?page=' +
-                currentBrowserUri +
-                '&site=' +
-                CStudioAuthoringContext.site +
-                '"'
+              ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
               : '',
             '">',
             displayName,

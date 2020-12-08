@@ -79,10 +79,7 @@
       if (cfg) {
         var hasBody = !!this.body;
         this.setBody(
-          CStudioAuthoring.StringUtils.format(
-            Dialogue.BODY_LOADING_TEMPLATE,
-            'Loading, please wait&hellip;'
-          )
+          CStudioAuthoring.StringUtils.format(Dialogue.BODY_LOADING_TEMPLATE, 'Loading, please wait&hellip;')
         );
         !hasBody && this.render();
         /* - - */
@@ -95,9 +92,7 @@
             self.cfg.setProperty('close', true);
             var elId = CStudioAuthoring.Utils.getScopedId('retry');
             self.setBody(
-              'Unable to load the requested resource. <a id="' +
-                elId +
-                '" href="javascript:">Try again</a>'
+              'Unable to load the requested resource. <a id="' + elId + '" href="javascript:">Try again</a>'
             );
             Event.addListener(elId, 'click', function () {
               self.configLoadBodyFragment(type, args, obj);
@@ -113,8 +108,7 @@
         windowResizeEvent = YAHOO.widget.Overlay.windowResizeEvent;
       if (val) {
         this.centreX();
-        if (!alreadySubscribed(this.beforeShowEvent, this.centreX, this))
-          this.beforeShowEvent.subscribe(this.centreX);
+        if (!alreadySubscribed(this.beforeShowEvent, this.centreX, this)) this.beforeShowEvent.subscribe(this.centreX);
         if (!alreadySubscribed(windowResizeEvent, this.doCentreXOnDomEvent, this))
           windowResizeEvent.subscribe(this.doCentreXOnDomEvent, this, true);
       } else {
@@ -147,8 +141,7 @@
         windowResizeEvent = YAHOO.widget.Overlay.windowResizeEvent;
       if (val) {
         this.centreY();
-        if (!alreadySubscribed(this.beforeShowEvent, this.centreY, this))
-          this.beforeShowEvent.subscribe(this.centreY);
+        if (!alreadySubscribed(this.beforeShowEvent, this.centreY, this)) this.beforeShowEvent.subscribe(this.centreY);
         if (!alreadySubscribed(windowResizeEvent, this.doCentreYOnDomEvent, this))
           windowResizeEvent.subscribe(this.doCentreYOnDomEvent, this, true);
       } else {

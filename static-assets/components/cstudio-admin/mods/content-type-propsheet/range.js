@@ -142,7 +142,7 @@ YAHOO.extend(
 
         const currentValue = el.value;
         const isNumber = /^[+-]?\d+(\.\d+)?$/;
-        const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
+        const isValid = currentValue.match(isNumber) !== null || currentValue === '';
         const $element = $(el);
         if (isValid) {
           _self.fieldValue[label] = el.value;

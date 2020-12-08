@@ -157,13 +157,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
     var contentType = 'folder';
     var newFolderName = document.getElementById('folderNameId').value;
     var serviceUri = CStudioAuthoring.Service.createServiceUri(
-      args.self.serviceUri +
-        '?site=' +
-        args.self.site +
-        '&path=' +
-        args.self.path +
-        '&name=' +
-        newFolderName
+      args.self.serviceUri + '?site=' + args.self.site + '&path=' + args.self.path + '&name=' + newFolderName
     );
 
     var serviceCallback = {
@@ -183,10 +177,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
       callback: args.self.callback
     };
     YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
-    YConnect.initHeader(
-      CStudioAuthoringContext.xsrfHeaderName,
-      CrafterCMSNext.util.auth.getRequestForgeryToken()
-    );
+    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
     YConnect.asyncRequest('POST', serviceUri, serviceCallback);
   },
 
@@ -230,7 +221,4 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'new-folder-name-dialog',
-  CStudioAuthoring.Dialogs.NewFolderNameDialog
-);
+CStudioAuthoring.Module.moduleLoaded('new-folder-name-dialog', CStudioAuthoring.Dialogs.NewFolderNameDialog);

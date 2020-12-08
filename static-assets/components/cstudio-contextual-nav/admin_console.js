@@ -91,7 +91,4 @@ CStudioAuthoring.ContextualNav.AdminConsoleMod = CStudioAuthoring.ContextualNav.
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'admin_console',
-  CStudioAuthoring.ContextualNav.AdminConsoleMod
-);
+CStudioAuthoring.Module.moduleLoaded('admin_console', CStudioAuthoring.ContextualNav.AdminConsoleMod);

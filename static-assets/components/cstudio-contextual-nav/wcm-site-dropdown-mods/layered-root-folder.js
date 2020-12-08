@@ -165,21 +165,17 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
       },
 
       removeOverlayContent: function () {
-        CStudioAuthoring.Service.deleteContentForPathService(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.uri,
-          {
-            success: function () {
-              this.callingWindow.location.reload(true);
-            },
+        CStudioAuthoring.Service.deleteContentForPathService(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, {
+          success: function () {
+            this.callingWindow.location.reload(true);
+          },
 
-            failure: function () {
-              this.callingWindow.location.reload(true);
-            },
+          failure: function () {
+            this.callingWindow.location.reload(true);
+          },
 
-            callingWindow: window
-          }
-        );
+          callingWindow: window
+        });
       },
 
       lookupLayeredSiteContent: function (site, path, level, action, callback) {
@@ -242,60 +238,42 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         var newPath = path.replace('/ja', '/en');
         CStudioAuthoringContext.baseSite = CStudioAuthoringContext.site;
 
-        CStudioAuthoring.Service.lookupSiteContent(
-          CStudioAuthoringContext.baseSite,
-          newPath,
-          level,
-          action,
-          {
-            success: function (treeData, args) {
-              CStudioAuthoring.Service.lookupSiteContent(
-                CStudioAuthoringContext.site,
-                path,
-                level,
-                action,
-                {
-                  success: function (treeData, args) {
-                    var combinedTree = combineResultsFn(this.baseTreeData, treeData);
-                    this.cb.success(combinedTree, args);
-                  },
-                  failure: function () {
-                    // var combinedTree = combineResultsFn(this.baseTreeData, {});
-                    // this.cb.success(combinedTree, args);
-                    this.cb.failure(); // if fails it fails, instead of retrying the same service call
-                  },
-                  baseTreeData: treeData,
-                  cb: this.cb,
-                  argument: this.argument
-                }
-              );
-            },
-            failure: function () {
-              CStudioAuthoring.Service.lookupSiteContent(
-                CStudioAuthoringContext.site,
-                path,
-                level,
-                action,
-                {
-                  success: function (treeData, args) {
-                    var combinedTree = combineResultsFn({}, treeData);
-                    this.cb.success(combinedTree, args);
-                  },
-                  failure: function () {
-                    // var combinedTree = combineResultsFn(this.baseTreeData, {});
-                    // this.cb.success(combinedTree, args);
-                    this.cb.failure(); // if fails it fails, instead of retrying the same service call
-                  },
-                  baseTreeData: treeData,
-                  cb: this.cb,
-                  argument: this.argument
-                }
-              );
-            },
-            cb: callback,
-            argument: callback.argument
-          }
-        );
+        CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.baseSite, newPath, level, action, {
+          success: function (treeData, args) {
+            CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, path, level, action, {
+              success: function (treeData, args) {
+                var combinedTree = combineResultsFn(this.baseTreeData, treeData);
+                this.cb.success(combinedTree, args);
+              },
+              failure: function () {
+                // var combinedTree = combineResultsFn(this.baseTreeData, {});
+                // this.cb.success(combinedTree, args);
+                this.cb.failure(); // if fails it fails, instead of retrying the same service call
+              },
+              baseTreeData: treeData,
+              cb: this.cb,
+              argument: this.argument
+            });
+          },
+          failure: function () {
+            CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, path, level, action, {
+              success: function (treeData, args) {
+                var combinedTree = combineResultsFn({}, treeData);
+                this.cb.success(combinedTree, args);
+              },
+              failure: function () {
+                // var combinedTree = combineResultsFn(this.baseTreeData, {});
+                // this.cb.success(combinedTree, args);
+                this.cb.failure(); // if fails it fails, instead of retrying the same service call
+              },
+              baseTreeData: treeData,
+              cb: this.cb,
+              argument: this.argument
+            });
+          },
+          cb: callback,
+          argument: callback.argument
+        });
       },
 
       /* ============================================= */
@@ -310,10 +288,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           instance.excludeCache = [];
 
           if (config.params.excludes) {
-            if (
-              typeof config.params.excludes == 'object' &&
-              typeof config.params.excludes.exclude != 'array'
-            ) {
+            if (typeof config.params.excludes == 'object' && typeof config.params.excludes.exclude != 'array') {
               if (config.params.excludes.exclude != undefined) {
                 var path = config.params.excludes.exclude;
                 if (!instance.excludeCache[path]) {
@@ -344,9 +319,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
                 if (!instance.cannedSearchCache[searchPath]) {
                   instance.cannedSearchCache[searchPath] = [];
                 }
-                instance.cannedSearchCache[searchPath].push(
-                  config.params.cannedSearches.cannedSearch
-                );
+                instance.cannedSearchCache[searchPath].push(config.params.cannedSearches.cannedSearch);
               }
             } else {
               for (var i = 0; i < config.params.cannedSearches.cannedSearch.length; i++) {
@@ -354,9 +327,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
                 if (!instance.cannedSearchCache[searchPath]) {
                   instance.cannedSearchCache[searchPath] = [];
                 }
-                instance.cannedSearchCache[searchPath].push(
-                  config.params.cannedSearches.cannedSearch[i]
-                );
+                instance.cannedSearchCache[searchPath].push(config.params.cannedSearches.cannedSearch[i]);
               }
             }
           }
@@ -370,10 +341,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
             thisComponent.openLatest(instance);
           }
           YEvent.on('acn-dropdown-toggler', 'click', function () {
-            if (
-              !window.firstClick &&
-              YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none'
-            ) {
+            if (!window.firstClick && YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
               window.firstClick = true;
               thisComponent.openLatest(instance);
             }
@@ -682,11 +650,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           if (renderChild && exclude == false) {
             var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-            if (
-              itemCannedSearch &&
-              itemCannedSearch.length != 0 &&
-              itemCannedSearch[0].insertAs != 'append'
-            ) {
+            if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != 'append') {
               replaceChildren.push(treeNodeTO.path);
             } else {
               var treeNode = LSelf.drawTreeItem(treeNodeTO, root);
@@ -764,11 +728,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           LSelf.searchesToWire.push(treeNode);
         } else {
           searchConfig.label =
-            "<a style='display: inline;' id='" +
-            searchId +
-            "' href='#'>" +
-            searchConfig.label +
-            '</a>';
+            "<a style='display: inline;' id='" + searchId + "' href='#'>" + searchConfig.label + '</a>';
 
           treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
 
@@ -1017,19 +977,12 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
 
           searchEl.onclick = function () {
             var url =
-              CStudioAuthoringContext.authoringAppBaseUri +
-              '/search?site=' +
-              CStudioAuthoringContext.site +
-              '&s=';
+              CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '&s=';
 
             var queryParams = this.searchTO.queryParams.queryParam;
 
             for (var i = 0; i < queryParams.length; i++) {
-              url +=
-                '&' +
-                encodeURIComponent(queryParams[i].name) +
-                '=' +
-                encodeURIComponent(queryParams[i].value);
+              url += '&' + encodeURIComponent(queryParams[i].name) + '=' + encodeURIComponent(queryParams[i].value);
             }
 
             window.location = url;
@@ -1129,10 +1082,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
 
         for (var i = 0; i < previousCutEl.length; i++) {
-          if (
-            previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB ||
-            previousCutEl[i].style.color == LSelf.CUT_STYLE
-          ) {
+          if (previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB || previousCutEl[i].style.color == LSelf.CUT_STYLE) {
             if (status) {
               var tempSplit = previousCutEl[i].id.split('labelel');
               var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
@@ -1273,10 +1223,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         if (treeItem.eventDate != '' && treeItem.eventDate != undefined) {
           var formattedEditDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.eventDate);
           retTransferObj.editedDate = formattedEditDate;
-          ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromString(
-            treeItem.eventDate,
-            'tooltipformat'
-          );
+          ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.eventDate, 'tooltipformat');
         }
 
         if (treeItem.scheduled == true) {
@@ -1381,14 +1328,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
       /**
        * render the context menu
        */
-      _renderContextMenu: function (
-        target,
-        p_aArgs,
-        component,
-        menuItems,
-        oCurrentTextNode,
-        isWrite
-      ) {
+      _renderContextMenu: function (target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
         var aMenuItems;
         var menuWidth = 'auto';
 
@@ -1405,8 +1345,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           isComponent = oCurrentTextNode.data.isComponent,
           isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
           isLocked =
-            oCurrentTextNode.data.lockOwner != '' &&
-            oCurrentTextNode.data.lockOwner != CStudioAuthoringContext.user,
+            oCurrentTextNode.data.lockOwner != '' && oCurrentTextNode.data.lockOwner != CStudioAuthoringContext.user,
           isInProgress = oCurrentTextNode.data.inProgress,
           isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
           isFolder = isContainer && oCurrentTextNode.data.fileName != 'index.xml' ? true : false,
@@ -1417,16 +1356,11 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         var checkPermissionsCb = {
           success: function (results) {
             var isCreateFolder = CStudioAuthoring.Service.isCreateFolder(results.permissions);
-            var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(
-              results.permissions
-            );
-            var isChangeContentTypeAllowed = CStudioAuthoring.Service.isChangeContentTypeAllowed(
-              results.permissions
-            );
+            var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(results.permissions);
+            var isChangeContentTypeAllowed = CStudioAuthoring.Service.isChangeContentTypeAllowed(results.permissions);
             // check if the user is allowed to edit the content
             var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
-            var isDeleteAllowed =
-              CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
+            var isDeleteAllowed = CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
 
             if (isLocked == true && isWrite == true) {
               if (isOverlay === false) {
@@ -1462,17 +1396,10 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
                       isContainer &&
                       collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
                     ) {
-                      if (
-                        LSelf.myTree.getNodeByProperty(
-                          'uri',
-                          collection.item[0].uri.replace(/\/\//g, '/')
-                        )
-                      ) {
+                      if (LSelf.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/'))) {
                         if (
-                          LSelf.myTree.getNodeByProperty(
-                            'uri',
-                            collection.item[0].uri.replace(/\/\//g, '/')
-                          ).parent.contentElId != oCurrentTextNode.contentElId
+                          LSelf.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
+                            .contentElId != oCurrentTextNode.contentElId
                         ) {
                           this.args.addItems([menuItems.pasteOption]);
                         }
@@ -1736,17 +1663,10 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
                     isContainer &&
                     collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
                   ) {
-                    if (
-                      LSelf.myTree.getNodeByProperty(
-                        'uri',
-                        collection.item[0].uri.replace(/\/\//g, '/')
-                      )
-                    ) {
+                    if (LSelf.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/'))) {
                       if (
-                        LSelf.myTree.getNodeByProperty(
-                          'uri',
-                          collection.item[0].uri.replace(/\/\//g, '/')
-                        ).parent.contentElId != oCurrentTextNode.contentElId
+                        LSelf.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
+                          .contentElId != oCurrentTextNode.contentElId
                       ) {
                         this.args.addItems([menuItems.pasteOption]);
                       }
@@ -1810,11 +1730,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           {
             success: function (itemTO) {
               isOpen = itemTO.item.lockOwner !== '';
-              CStudioAuthoring.Clipboard.getPermissions.call(
-                {},
-                oCurrentTextNode.data.uri,
-                checkPermissionsCb
-              );
+              CStudioAuthoring.Clipboard.getPermissions.call({}, oCurrentTextNode.data.uri, checkPermissionsCb);
             },
             failure: function () {
               CStudioAuthoring.Operations.showSimpleDialog(
@@ -1919,35 +1835,14 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
             var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
             Self.IS_WRITE = true;
             if (isWrite) {
-              LSelf._renderContextMenu(
-                target,
-                p_aArgs,
-                this.component,
-                menuItems,
-                oCurrentTextNode,
-                true
-              );
+              LSelf._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, true);
             } else {
-              LSelf._renderContextMenu(
-                target,
-                p_aArgs,
-                this.component,
-                menuItems,
-                oCurrentTextNode,
-                false
-              );
+              LSelf._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
             }
           },
 
           failure: function () {
-            LSelf_renderContextMenu(
-              target,
-              p_aArgs,
-              this.component,
-              menuItems,
-              oCurrentTextNode,
-              false
-            );
+            LSelf_renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
           },
 
           _self: this,
@@ -1977,11 +1872,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           failure: function () {},
           callingWindow: window
         };
-        CStudioAuthoring.Service.unlockContentItem(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.uri,
-          unlockCb
-        );
+        CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, unlockCb);
       },
       /**
        * Creates new content. Opens the form to create content
@@ -2133,11 +2024,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         var getChildNodeClass = YDom.getElementsByClassName('ygtvlp', null, parentTreeNode);
         var isExpandableNode = YDom.getElementsByClassName('ygtvtp', null, parentTreeNode);
 
-        if (
-          oCurrentTextNode.hasChildren() ||
-          getChildNodeClass.length > 0 ||
-          isExpandableNode.length > 0
-        ) {
+        if (oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0) {
           // alert("The page and its child pages have been cut to the clipboard");
         }
 
@@ -2225,11 +2112,9 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         //Check source and destination paths.
         if (
           (LSelf.cutItem != null && LSelf.cutItem.contentElId == oCurrentTextNode.contentElId) ||
-          (LSelf.copiedItem != null &&
-            LSelf.copiedItem.contentElId == oCurrentTextNode.contentElId) ||
+          (LSelf.copiedItem != null && LSelf.copiedItem.contentElId == oCurrentTextNode.contentElId) ||
           Self.copiedItem == oCurrentTextNode.data.uri ||
-          (LSelf.copiedItem != null &&
-            LSelf.copiedItem.parent.contentElId == oCurrentTextNode.contentElId)
+          (LSelf.copiedItem != null && LSelf.copiedItem.parent.contentElId == oCurrentTextNode.contentElId)
         ) {
           CStudioAuthoring.Operations.showSimpleDialog(
             'pathSameError-dialog',
@@ -2258,10 +2143,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
               var errorMsgExist = false;
               var errorMsg = '';
               if (!result.success) {
-                if (
-                  typeof result.message != 'undefined' &&
-                  typeof result.message.paths != 'undefined'
-                ) {
+                if (typeof result.message != 'undefined' && typeof result.message.paths != 'undefined') {
                   errorMsg = result.message.paths[0];
                   if (errorMsg != '') {
                     errorMsgExist = true;
@@ -2272,19 +2154,14 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
               LSelf.refreshNodes(this.tree, !errorMsgExist);
 
               if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                var myRecentActivitiesInstace =
-                  WcmDashboardWidgetCommon.dashboards['MyRecentActivity'];
-                var filterByTypeEl = YDom.get(
-                  'widget-filterBy-' + myRecentActivitiesInstace.widgetId
-                );
+                var myRecentActivitiesInstace = WcmDashboardWidgetCommon.dashboards['MyRecentActivity'];
+                var filterByTypeEl = YDom.get('widget-filterBy-' + myRecentActivitiesInstace.widgetId);
                 var filterByTypeValue = 'all';
                 if (filterByTypeEl && filterByTypeEl.value != '') {
                   filterByTypeValue = filterByTypeEl.value;
                 }
 
-                var searchNumberEl = YDom.get(
-                  'widget-showitems-' + myRecentActivitiesInstace.widgetId
-                );
+                var searchNumberEl = YDom.get('widget-showitems-' + myRecentActivitiesInstace.widgetId);
                 var searchNumberValue = myRecentActivitiesInstace.defaultSearchNumber;
                 if (searchNumberEl && searchNumberEl.value != '') {
                   searchNumberValue = searchNumberEl.value;
@@ -2357,11 +2234,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           var site = CStudioAuthoringContext.site;
 
           var context = copyContext;
-          context.request =
-            CStudioAuthoringContext.baseUri +
-            CStudioAuthoring.Service.copyServiceUrl +
-            '?site=' +
-            site;
+          context.request = CStudioAuthoringContext.baseUri + CStudioAuthoring.Service.copyServiceUrl + '?site=' + site;
 
           var uri = oCurrentTextNode.data.uri;
 
@@ -2609,11 +2482,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
               : el.parentNode
             ).style.backgroundColor = '';
           };
-        for (
-          var i = 0, l = spanNodes.length, span = spanNodes[0], barItem;
-          i < l;
-          i++, span = spanNodes[i]
-        ) {
+        for (var i = 0, l = spanNodes.length, span = spanNodes[0], barItem; i < l; i++, span = spanNodes[i]) {
           // span -> td -> tr -> tbody -> table
           barItem = span.parentNode.parentNode.parentNode.parentNode;
           if (barItem) {
@@ -2644,10 +2513,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         var treeInner = YDom.get('acn-dropdown-menu-inner');
         var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
         for (var i = 0; i < previousCutEl.length; i++) {
-          if (
-            previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB ||
-            previousCutEl[i].style.color == LSelf.CUT_STYLE
-          ) {
+          if (previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB || previousCutEl[i].style.color == LSelf.CUT_STYLE) {
             previousCutEl[i].removeAttribute('style');
           }
         }
@@ -2674,8 +2540,5 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
     CStudioAuthoringContext.baseSite = config.params['baseSite'] ? config.params['baseSite'] : '';
   };
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'layered-root-folder',
-    CStudioAuthoring.ContextualNav.LayeredRootFolder
-  );
+  CStudioAuthoring.Module.moduleLoaded('layered-root-folder', CStudioAuthoring.ContextualNav.LayeredRootFolder);
 })();

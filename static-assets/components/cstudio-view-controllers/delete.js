@@ -44,18 +44,14 @@
 
     renderItems: function (items) {
       this.result = [];
-      CrafterCMSNext.render(
-        this.getComponent('.dependencies-display'),
-        'DependencySelectionDelete',
-        {
-          onChange: (result) => {
-            this.result = result;
-            this.deleteValidation();
-          },
-          siteId: CStudioAuthoringContext.site,
-          items: items
-        }
-      ).then(() => {
+      CrafterCMSNext.render(this.getComponent('.dependencies-display'), 'DependencySelectionDelete', {
+        onChange: (result) => {
+          this.result = result;
+          this.deleteValidation();
+        },
+        siteId: CStudioAuthoringContext.site,
+        items: items
+      }).then(() => {
         this.getComponent('.delete-display').style.height = 'auto';
       });
     },
@@ -101,7 +97,7 @@
     doDeleteActionClicked: function () {
       this.showProcessingOverlay(true);
       this.fire('submitStart');
-      var data = `${this.result.map(i => `${i}`).join('&paths=')}`,
+      var data = `${this.result.map((i) => `${i}`).join('&paths=')}`,
         _this = this;
       (function (dataInf) {
         CStudioAuthoring.Service.request({
@@ -109,9 +105,12 @@
           resetFormState: true,
           url: CStudioAuthoring.Service.createServiceUri(
             '/api/2/content/delete.json' +
-            '?&siteId=' + CStudioAuthoringContext.site +
-            '&paths=' + data +
-            '&submissionComment=' + _this.getComponent('.delete-submission-comment').value
+              '?&siteId=' +
+              CStudioAuthoringContext.site +
+              '&paths=' +
+              data +
+              '&submissionComment=' +
+              _this.getComponent('.delete-submission-comment').value
           ),
           callback: {
             success: function (oResponse) {

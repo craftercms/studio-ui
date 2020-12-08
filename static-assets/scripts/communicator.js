@@ -186,8 +186,7 @@
         hasWindow = false,
         targetWindows = this.getTargetWindows();
 
-      for (i = 0; !hasWindow && i < targetWindows.length; ++i)
-        hasWindow = targetWindow === targetWindows[i];
+      for (i = 0; !hasWindow && i < targetWindows.length; ++i) hasWindow = targetWindow === targetWindows[i];
 
       if (!hasWindow) targetWindows.push(targetWindow);
 

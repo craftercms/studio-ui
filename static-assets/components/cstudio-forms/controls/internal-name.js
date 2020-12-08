@@ -274,8 +274,5 @@
     }
   });
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-forms-controls-internal-name',
-    CStudioForms.Controls.InternalName
-  );
+  CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-internal-name', CStudioForms.Controls.InternalName);
 })();

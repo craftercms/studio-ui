@@ -48,7 +48,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-graphiql',
-  CStudioAdminConsole.Tool.GraphiQL
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-graphiql', CStudioAdminConsole.Tool.GraphiQL);

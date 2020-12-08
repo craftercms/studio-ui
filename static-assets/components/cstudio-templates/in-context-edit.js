@@ -28,8 +28,5 @@
     SUCCESS: [''].join('')
   });
 
-  CStudioAuthoring.Env.ModuleMap.map(
-    'templateholder-incontextedit',
-    CStudioAuthoring.TemplateHolder.InContextEdit
-  );
+  CStudioAuthoring.Env.ModuleMap.map('templateholder-incontextedit', CStudioAuthoring.TemplateHolder.InContextEdit);
 })();

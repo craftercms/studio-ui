@@ -41,14 +41,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
     /**
      * get table data
      */
-    this.retrieveTableData = function (
-      sortBy,
-      sortAscDesc,
-      callback,
-      retrieveTableData,
-      filterByNumber,
-      filterBy
-    ) {
+    this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
       sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
 
       CStudioAuthoring.Service.getUserActivitiesServices(
@@ -169,12 +162,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
           CMgs.format(langBundle, 'dashletMyRecentActivityColPageName'),
           'minimize'
         ),
-        Common.getSimpleRow(
-          'edit',
-          widgetId,
-          CMgs.format(langBundle, 'dashletMyRecentActivityColEdit'),
-          'minimize'
-        ),
+        Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletMyRecentActivityColEdit'), 'minimize'),
         Common.getSortableRow(
           'browserUri',
           widgetId,
@@ -218,19 +206,12 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
       }
       var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
         fullUri = item.uri,
-        editLinkId =
-          'editLink_' +
-          this.widgetId +
-          '_' +
-          WcmDashboardWidgetCommon.encodePathToNumbers(item.uri),
+        editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri),
         fmt = CStudioAuthoring.Utils.formatDateFromString;
 
       //reducing max character length to support 1024 screen resolution
       var removeCharCount = window.innerWidth <= 1024 ? 5 : 0;
-      var displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(
-        browserUri,
-        80 - removeCharCount
-      );
+      var displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80 - removeCharCount);
       var itemNameForDisplay = WcmDashboardWidgetCommon.getFormattedString(
         itemName,
         40 - removeCharCount,
@@ -271,8 +252,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
         this.widgetId == currentDashboard &&
         currentCheckItem &&
         CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-        item.internalName.trim() ==
-          CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+        item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
           ? ' checked'
           : '',
         item.deleted || item.inFlight ? ' disabled' : '',
@@ -289,11 +269,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
         item.previewable == true ? ' previewLink' : ' non-previewable-link',
         '" ',
         item.previewable == true
-          ? 'href="/studio/preview/#/?page=' +
-            currentBrowserUri +
-            '&site=' +
-            CStudioAuthoringContext.site +
-            '"'
+          ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
           : '',
         '">',
         itemNameForDisplay,
@@ -310,9 +286,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
         fullUri,
         '</td>',
         '<td class="">',
-        item.published
-          ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone)
-          : '',
+        item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '',
         '</td>',
         '<td class="alignRight username trim">',
         WcmDashboardWidgetCommon.getDisplayName(item),
@@ -336,11 +310,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
         item.previewable == true ? ' previewLink' : ' non-previewable-link',
         '" ',
         item.previewable == true
-          ? 'href="/studio/preview/#/?page=' +
-            currentBrowserUri +
-            '&site=' +
-            CStudioAuthoringContext.site +
-            '"'
+          ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
           : '',
         '">',
         itemNameForDisplay,
@@ -357,9 +327,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
         fullUri,
         '</td>',
         '<td class="">',
-        item.published
-          ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone)
-          : '',
+        item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '',
         '</td>',
         '<td class="alignRight">',
         WcmDashboardWidgetCommon.getDisplayName(item),

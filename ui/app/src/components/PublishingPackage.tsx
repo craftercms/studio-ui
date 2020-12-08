@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   packageLoading: {
     '-webkit-animation': 'pulse 3s infinite ease-in-out',
-    'animation': 'pulse 3s infinite ease-in-out',
+    animation: 'pulse 3s infinite ease-in-out',
     pointerEvents: 'none'
   },
   username: {
@@ -146,10 +146,10 @@ interface PublishingPackageProps {
   approver: string;
   state: string;
   environment: string;
-  comment: string
+  comment: string;
   selected: any;
 
-  setSelected(selected: any): any
+  setSelected(selected: any): any;
 
   pending: any;
   apiState: any;
@@ -171,10 +171,22 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const {
-    id, approver, schedule, state, comment, environment,
-    siteId, selected, setSelected, pending, setPending,
-    getPackages, apiState, setApiState,
-    filesPerPackage, setFilesPerPackage
+    id,
+    approver,
+    schedule,
+    state,
+    comment,
+    environment,
+    siteId,
+    selected,
+    setSelected,
+    pending,
+    setPending,
+    getPackages,
+    apiState,
+    setApiState,
+    filesPerPackage,
+    setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
 
@@ -196,80 +208,66 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   function handleCancel(packageId: string) {
     setPending({ ...pending, [packageId]: true });
 
-    cancelPackage(siteId, [packageId])
-      .subscribe(
-        () => {
-          ref.cancelComplete(packageId);
-        },
-        ({ response }) => {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
-      );
+    cancelPackage(siteId, [packageId]).subscribe(
+      () => {
+        ref.cancelComplete(packageId);
+      },
+      ({ response }) => {
+        setApiState({ ...apiState, error: true, errorResponse: response });
+      }
+    );
   }
 
   function onFetchPackages(packageId: string) {
     setLoading(true);
-    fetchPackage(siteId, packageId)
-      .subscribe(
-        ({ response }) => {
-          setLoading(false);
-          setFilesPerPackage({ ...filesPerPackage, [packageId]: response.package.items });
-        },
-        ({ response }) => {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
-      );
+    fetchPackage(siteId, packageId).subscribe(
+      ({ response }) => {
+        setLoading(false);
+        setFilesPerPackage({ ...filesPerPackage, [packageId]: response.package.items });
+      },
+      ({ response }) => {
+        setApiState({ ...apiState, error: true, errorResponse: response });
+      }
+    );
   }
 
   function renderFiles(files: [File]) {
     return files.map((file: any, index: number) => {
       return (
         <ListItem key={index}>
-          <Typography variant="body2">
-            {file.path}
-          </Typography>
-          <Typography variant="body2">
-            {file.contentTypeClass}
-          </Typography>
+          <Typography variant="body2">{file.path}</Typography>
+          <Typography variant="body2">{file.contentTypeClass}</Typography>
         </ListItem>
-      )
-    })
+      );
+    });
   }
 
   const checked = selected[id] ? selected[id] : false;
   return (
     <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
       <section className="name">
-        {
-          pending[id] ? (
-            <header className={'loading-header'}>
-              <CircularProgress size={15} className={classes.spinner} color={'inherit'} />
-              <Typography variant="body1">
-                <strong>{id}</strong>
-              </Typography>
-            </header>
-          ) : (
-            (state === READY_FOR_LIVE) ? (
-              <FormGroup className={classes.checkbox}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      color="primary"
-                      checked={checked}
-                      onChange={(event) => onSelect(event, id, checked)} />
-                  }
-                  label={<strong>{id}</strong>}
-                />
-              </FormGroup>
-            ) : (
-              <Typography variant="body1">
-                <strong>{id}</strong>
-              </Typography>
-            )
-          )
-        }
-        {
-          (state === READY_FOR_LIVE) &&
+        {pending[id] ? (
+          <header className={'loading-header'}>
+            <CircularProgress size={15} className={classes.spinner} color={'inherit'} />
+            <Typography variant="body1">
+              <strong>{id}</strong>
+            </Typography>
+          </header>
+        ) : state === READY_FOR_LIVE ? (
+          <FormGroup className={classes.checkbox}>
+            <FormControlLabel
+              control={
+                <Checkbox color="primary" checked={checked} onChange={(event) => onSelect(event, id, checked)} />
+              }
+              label={<strong>{id}</strong>}
+            />
+          </FormGroup>
+        ) : (
+          <Typography variant="body1">
+            <strong>{id}</strong>
+          </Typography>
+        )}
+        {state === READY_FOR_LIVE && (
           <SelectButton
             text={formatMessage(translations.cancelText)}
             cancelText={formatMessage(translations.cancel)}
@@ -277,59 +275,46 @@ export default function PublishingPackage(props: PublishingPackageProps) {
             confirmHelperText={formatMessage(translations.confirmHelperText)}
             onConfirm={() => handleCancel(id)}
           />
-        }
+        )}
       </section>
       <div className="status">
         <Typography variant="body2">
-          {
-            formatMessage(
-              translations.scheduled,
-              {
-                schedule: new Date(schedule),
-                approver: approver,
-                b: (content) => <strong key={content} className={classes.username}>{content}</strong>
-              }
+          {formatMessage(translations.scheduled, {
+            schedule: new Date(schedule),
+            approver: approver,
+            b: (content) => (
+              <strong key={content} className={classes.username}>
+                {content}
+              </strong>
             )
-          }
+          })}
         </Typography>
         <Typography variant="body2">
-          {
-            formatMessage(
-              translations.status,
-              {
-                state: <strong key={state}>{state}</strong>,
-                environment: <strong key={environment}>{environment}</strong>
-              }
-            )
-          }
+          {formatMessage(translations.status, {
+            state: <strong key={state}>{state}</strong>,
+            environment: <strong key={environment}>{environment}</strong>
+          })}
         </Typography>
       </div>
       <div className="comment">
-        <Typography variant="body2">
-          {formatMessage(translations.comment)}
-        </Typography>
+        <Typography variant="body2">{formatMessage(translations.comment)}</Typography>
         <Typography variant="body2">
           {comment ? comment : <span>{formatMessage(translations.commentNotProvided)}</span>}
         </Typography>
       </div>
       <div className="files">
-        {
-          (filesPerPackage && filesPerPackage[id]) &&
+        {filesPerPackage && filesPerPackage[id] && (
           <List aria-label={formatMessage(translations.filesList)} className={classes.list}>
             {renderFiles(filesPerPackage[id])}
           </List>
-        }
-        {
-          (filesPerPackage === null || !filesPerPackage[id]) &&
+        )}
+        {(filesPerPackage === null || !filesPerPackage[id]) && (
           <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
-            {
-              loading &&
-              <CircularProgress size={14} className={classes.spinner} color={'inherit'} />
-            }
+            {loading && <CircularProgress size={14} className={classes.spinner} color={'inherit'} />}
             {formatMessage(translations.fetchPackagesFiles)}
           </Button>
-        }
+        )}
       </div>
     </div>
-  )
+  );
 }

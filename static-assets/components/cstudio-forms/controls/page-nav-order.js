@@ -136,12 +136,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     };
     callback.parentControl = this;
 
-    CStudioAuthoring.Service.getOrderServiceRequest(
-      CStudioAuthoringContext.site,
-      thisPage,
-      order,
-      callback
-    );
+    CStudioAuthoring.Service.getOrderServiceRequest(CStudioAuthoringContext.site, thisPage, order, callback);
     this.editPositionEl.disabled = false;
   },
 
@@ -164,10 +159,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     titleEl.innerHTML = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(
-      controlWidgetContainerEl,
-      'cstudio-form-control-page-nav-order-container'
-    );
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-page-nav-order-container');
 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
@@ -262,11 +254,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     var query = location.search.substring(1);
     var thisPage = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
     var parentPath = CStudioAuthoring.Utils.getParentPath(thisPage);
-    CStudioAuthoring.Service.getNextOrderSequenceRequest(
-      CStudioAuthoringContext.site,
-      parentPath,
-      submitCallback
-    );
+    CStudioAuthoring.Service.getNextOrderSequenceRequest(CStudioAuthoringContext.site, parentPath, submitCallback);
   },
 
   setValue: function (value) {
@@ -303,7 +291,4 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-page-nav-order',
-  CStudioForms.Controls.PageNavOrder
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-page-nav-order', CStudioForms.Controls.PageNavOrder);

@@ -93,9 +93,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
 
     var reorderSubtextDiv = document.createElement('div');
     reorderSubtextDiv.className = 'reorderSubtext';
-    txt = document.createTextNode(
-      'Drag and Drop "This Page" to the desired location in the navigation structure.'
-    );
+    txt = document.createTextNode('Drag and Drop "This Page" to the desired location in the navigation structure.');
     reorderSubtextDiv.appendChild(txt);
     YAHOO.util.Dom.get('reorderContainer').appendChild(reorderSubtextDiv);
 
@@ -281,11 +279,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
         pathString = '&before=' + orderJson.order[prevPath - 1].id;
       } else {
         // both are not null
-        pathString =
-          '&before=' +
-          orderJson.order[prevPath - 1].id +
-          '&after=' +
-          orderJson.order[nextPath - 1].id;
+        pathString = '&before=' + orderJson.order[prevPath - 1].id + '&after=' + orderJson.order[nextPath - 1].id;
       }
 
       pathStringFinal = thisPageObject.id + pathString;
@@ -341,11 +335,7 @@ YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
     dragEl.innerHTML = clickEl.innerHTML;
 
     YAHOO.util.Dom.setStyle(dragEl, 'color', YAHOO.util.Dom.getStyle(clickEl, 'color'));
-    YAHOO.util.Dom.setStyle(
-      dragEl,
-      'backgroundColor',
-      YAHOO.util.Dom.getStyle(clickEl, 'backgroundColor')
-    );
+    YAHOO.util.Dom.setStyle(dragEl, 'backgroundColor', YAHOO.util.Dom.getStyle(clickEl, 'backgroundColor'));
     YAHOO.util.Dom.setStyle(dragEl, 'border', '2px solid #7EA6B2');
   },
 
@@ -450,7 +440,4 @@ YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'dialog-nav-order',
-  CStudioAuthoring.Dialogs.panelPageNavOrder
-);
+CStudioAuthoring.Module.moduleLoaded('dialog-nav-order', CStudioAuthoring.Dialogs.panelPageNavOrder);

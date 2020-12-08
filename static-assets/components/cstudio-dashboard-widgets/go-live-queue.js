@@ -128,37 +128,12 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             'CheckAll" name="check-all" type="checkbox"/>',
           'minimize'
         ),
-        Common.getSimpleRow(
-          'internalName',
-          widgetId,
-          CMgs.format(langBundle, 'dashletGoLiveColPageName'),
-          'minimize'
-        ),
-        Common.getSimpleRow(
-          'view',
-          widgetId,
-          CMgs.format(langBundle, 'dashletGoLiveColView'),
-          'minimize'
-        ),
-        Common.getSimpleRow(
-          'edit',
-          widgetId,
-          CMgs.format(langBundle, 'dashletGoLiveColEdit'),
-          'minimize'
-        ),
-        Common.getSortableRow(
-          'browserUri',
-          widgetId,
-          CMgs.format(langBundle, 'dashletGoLiveColURL'),
-          'maximize'
-        ),
+        Common.getSimpleRow('internalName', widgetId, CMgs.format(langBundle, 'dashletGoLiveColPageName'), 'minimize'),
+        Common.getSimpleRow('view', widgetId, CMgs.format(langBundle, 'dashletGoLiveColView'), 'minimize'),
+        Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize'),
+        Common.getSortableRow('browserUri', widgetId, CMgs.format(langBundle, 'dashletGoLiveColURL'), 'maximize'),
         '<th id="fullUri" class="width0"></th>',
-        Common.getSimpleRow(
-          'server',
-          widgetId,
-          this.formatMessage(this.messages.publishingTarget),
-          'maximize'
-        ),
+        Common.getSimpleRow('server', widgetId, this.formatMessage(this.messages.publishingTarget), 'maximize'),
         Common.getSortableRow(
           'scheduledDate',
           widgetId,
@@ -200,11 +175,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
 
         //reducing max character length to support 1024 screen resolution
         var removeCharCount = window.innerWidth <= 1024 ? 5 : 0;
-        var displayName = WcmDashboardWidgetCommon.getFormattedString(
-          name,
-          80 - removeCharCount,
-          item.newFile
-        );
+        var displayName = WcmDashboardWidgetCommon.getFormattedString(name, 80 - removeCharCount, item.newFile);
 
         if (isFirst) {
           html.push('<td colspan="4">');
@@ -237,27 +208,15 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
           ]);
         } else {
           var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
-            displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(
-              browserUri,
-              50 - removeCharCount
-            ),
+            displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 50 - removeCharCount),
             uri = item.uri,
             fmt = CStudioAuthoring.Utils.formatDateFromString,
             environment = item.submittedToEnvironment ? item.submittedToEnvironment : '';
 
-          editLinkId =
-            'editLink_' +
-            this.widgetId +
-            '_' +
-            WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
-          viewLinkId =
-            'previewLink_' +
-            this.widgetId +
-            '_' +
-            WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
+          editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
+          viewLinkId = 'previewLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
 
-          var ttSpanId =
-            'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
+          var ttSpanId = 'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
           var itemTitle = CStudioAuthoring.Utils.getTooltipContent(item);
           this.tooltipLabels.push(ttSpanId);
 
@@ -291,8 +250,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             this.widgetId == currentDashboard &&
             currentCheckItem &&
             CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-            item.internalName.trim() ==
-              CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
               ? ' checked'
               : '',
             item.deleted || item.inFlight ? ' disabled' : '',
@@ -301,11 +259,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
             '<a class="anchorRow" ',
             item.previewable == true
-              ? 'href="/studio/preview/#/?page=' +
-                currentBrowserUri +
-                '&site=' +
-                CStudioAuthoringContext.site +
-                '"'
+              ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
               : '',
             ' class="itemNameCol "',
             item.previewable == true ? 'previewLink' : 'non-previewable-link',
@@ -333,11 +287,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             '</td>',
             '<td class="">',
             item.scheduled
-              ? CStudioAuthoring.Utils.formatDateFromUTC(
-                  item.scheduledDate,
-                  studioTimeZone,
-                  'tooltipformat'
-                )
+              ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat')
               : '',
             '</td>',
             "<td class='alignRight username trim'>",
@@ -353,8 +303,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
           this.widgetId == currentDashboard &&
           currentCheckItem &&
           CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-          item.internalName.trim() ==
-            CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+          item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
         ) {
           CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
         }

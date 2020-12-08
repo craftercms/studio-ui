@@ -167,9 +167,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       'zoomFullButton',
       'click',
       function () {
-        this.fullImageTab(
-          !this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value
-        );
+        this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
       },
       this,
       true
@@ -229,8 +227,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
   setImageData: function (imagePicker, imageData) {
     imagePicker.inputEl.value = imageData.relativeUrl;
 
-    imagePicker.previewEl.src =
-      imageData.previewUrl.replace(/ /g, '%20') + '?' + new Date().getTime();
+    imagePicker.previewEl.src = imageData.previewUrl.replace(/ /g, '%20') + '?' + new Date().getTime();
     imagePicker.urlEl.innerHTML = imageData.relativeUrl.replace('?crafterCMIS=true', '');
     imagePicker.downloadEl.href = imageData.previewUrl;
     imagePicker.remote = imageData.remote && imageData.remote === true ? true : false;
@@ -239,10 +236,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     imagePicker.noPreviewEl.style.display = 'none';
     imagePicker.previewEl.style.display = 'inline';
-    YAHOO.util.Dom.addClass(
-      imagePicker.previewEl,
-      'cstudio-form-control-asset-picker-preview-content'
-    );
+    YAHOO.util.Dom.addClass(imagePicker.previewEl, 'cstudio-form-control-asset-picker-preview-content');
 
     imagePicker.adjustImage();
 
@@ -356,15 +350,13 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                 if (!valid) {
                   var widthConstrains = JSON.parse(self.width);
                   var heightConstrains = JSON.parse(self.height);
-                  message =
-                    'The uploaded file does not meet the specified width & height constraints';
+                  message = 'The uploaded file does not meet the specified width & height constraints';
                   //imagePicker.deleteImage();
                   if (
                     (widthConstrains.min && imagePicker.originalWidth < widthConstrains.min) ||
                     (heightConstrains.min && imagePicker.originalHeight < heightConstrains.min) ||
                     (widthConstrains.exact && imagePicker.originalWidth < widthConstrains.exact) ||
-                    (heightConstrains.exact &&
-                      imagePicker.originalHeight < heightConstrains.exact) ||
+                    (heightConstrains.exact && imagePicker.originalHeight < heightConstrains.exact) ||
                     (widthConstrains && imagePicker.originalWidth < widthConstrains) ||
                     (heightConstrains && imagePicker.originalHeight < heightConstrains)
                   ) {
@@ -423,8 +415,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
               }
               image.addEventListener('load', imageLoaded, false);
               image.addEventListener('error', function () {
-                message =
-                  'Unable to load the selected image. Please try again or select another image';
+                message = 'Unable to load the selected image. Please try again or select another image';
                 imagePicker.showAlert(message);
               });
               CStudioAuthoring.Operations.getImageRequest({
@@ -495,10 +486,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     titleEl.innerHTML = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(
-      controlWidgetContainerEl,
-      'cstudio-form-control-image-picker-container'
-    );
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-image-picker-container');
 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
@@ -698,10 +686,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
   showButtons: function (evt) {
     if (this.value !== '') {
-      if (
-        this.originalWidth > this.previewBoxWidth ||
-        this.originalHeight > this.previewBoxHeight
-      ) {
+      if (this.originalWidth > this.previewBoxWidth || this.originalHeight > this.previewBoxHeight) {
         this.zoomEl.style.display = 'inline-block';
         this.downloadEl.style.marginLeft = '0px';
       } else {
@@ -812,10 +797,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.setStyle(this.previewEl, 'width', '100%');
 
     if (wImg < wThb && hImg < hThb) {
-      YAHOO.util.Dom.removeClass(
-        this.previewEl,
-        'cstudio-form-control-asset-picker-preview-content'
-      );
+      YAHOO.util.Dom.removeClass(this.previewEl, 'cstudio-form-control-asset-picker-preview-content');
       YAHOO.util.Dom.setStyle(this.imageEl, 'height', hImg + 'px');
       YAHOO.util.Dom.setStyle(this.imageEl, 'width', wImg + 'px');
     } else {
@@ -869,11 +851,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         _self.adjustImage();
       }
       image.addEventListener('load', imageLoaded, false);
-      image.src =
-        CStudioAuthoringContext.previewAppBaseUri +
-        value.replace(/ /g, '%20') +
-        '?' +
-        new Date().getTime();
+      image.src = CStudioAuthoringContext.previewAppBaseUri + value.replace(/ /g, '%20') + '?' + new Date().getTime();
     }
     this._onChange(null, this);
     this.edited = false;
@@ -910,11 +888,5 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 CStudioAuthoring.Utils.addCss('/static-assets/libs/cropper/dist/cropper.css');
 CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-image-picker',
-  CStudioForms.Controls.ImagePicker
-);
-CStudioAuthoring.Module.requireModule(
-  'jquery-cropper',
-  '/static-assets/libs/cropper/dist/cropper.js'
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-image-picker', CStudioForms.Controls.ImagePicker);
+CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');

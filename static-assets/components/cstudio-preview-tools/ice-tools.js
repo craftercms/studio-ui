@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addJavascript(
-  '/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js'
-);
+CStudioAuthoring.Utils.addJavascript('/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js');
 CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-forms/forms-engine.js');
 /**
  * In-Context Editing (ICE)

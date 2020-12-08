@@ -141,8 +141,7 @@ CStudioAuthoring.Dialogs.UploadFlickrDialog = CStudioAuthoring.Dialogs.UploadFli
       };
       oAutoComp.formatResult = function (oResultItem, sQuery) {
         // This was defined by the schema array of the data source
-        var sMarkup =
-          '<img src="' + oResultItem[1].url + '" title="Click to add this image to the editor">';
+        var sMarkup = '<img src="' + oResultItem[1].url + '" title="Click to add this image to the editor">';
         return sMarkup;
       };
     });
@@ -180,8 +179,7 @@ CStudioAuthoring.Dialogs.UploadFlickrDialog = CStudioAuthoring.Dialogs.UploadFli
               //							CStudioAuthoring.Dialogs.UploadDialog.overwritePopupSubmit(event, args);
               CStudioAuthoring.Dialogs.UploadDialog.uploadFile(args);
             } else {
-              document.getElementById('indicator').innerHTML =
-                'File already exists: User has no overwrite permission';
+              document.getElementById('indicator').innerHTML = 'File already exists: User has no overwrite permission';
               YAHOO.util.Dom.setStyle('indicator', 'color', 'red');
             }
           },

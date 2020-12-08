@@ -43,22 +43,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard =
     /**
      * get table data
      */
-    this.retrieveTableData = function (
-      sortBy,
-      sortAscDesc,
-      callback,
-      retrieveTableData,
-      filterByNumber,
-      filterBy
-    ) {
+    this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
       sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
-      CStudioAuthoring.Service.getScheduledItems(
-        CStudioAuthoringContext.site,
-        sortBy,
-        sortAscDesc,
-        filterBy,
-        callback
-      );
+      CStudioAuthoring.Service.getScheduledItems(CStudioAuthoringContext.site, sortBy, sortAscDesc, filterBy, callback);
     };
 
     /**
@@ -228,14 +215,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard =
             environment = item.environment,
             packageId = item.packageId;
 
-          editLinkId =
-            'editLink_' +
-            this.widgetId +
-            '_' +
-            WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
+          editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
 
-          var ttSpanId =
-            'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
+          var ttSpanId = 'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
           var itemTitle = CStudioAuthoring.Utils.getTooltipContent(item);
           this.tooltipLabels.push(ttSpanId);
 
@@ -251,15 +233,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard =
           // to resolve page display issue
           displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-          var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(
-            item.eventDate,
-            studioTimeZone
-          );
+          var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone);
           if (item.lastEditDateAsString != undefined && item.lastEditDateAsString != '') {
-            lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(
-              item.lastEditDateAsString,
-              studioTimeZone
-            );
+            lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDateAsString, studioTimeZone);
           }
 
           WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
@@ -278,8 +254,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard =
             this.widgetId == currentDashboard &&
             currentCheckItem &&
             CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-            item.internalName.trim() ==
-              CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
               ? ' checked'
               : '',
             '"',
@@ -297,11 +272,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard =
             item.previewable == true ? ' previewLink' : ' non-previewable-link',
             '" ',
             item.previewable == true
-              ? 'href="/studio/preview/#/?page=' +
-                currentBrowserUri +
-                '&site=' +
-                CStudioAuthoringContext.site +
-                '"'
+              ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
               : '',
             '">',
             displayName,

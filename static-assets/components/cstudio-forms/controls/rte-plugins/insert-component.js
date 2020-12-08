@@ -40,11 +40,7 @@ CStudioForms.Controls.RTE.InsertComponent =
             var docBodyEl = this.editor.dom.doc.body;
 
             if (docBodyEl) {
-              var componentEls = YAHOO.util.Dom.getElementsByClassName(
-                  'crComponent',
-                  null,
-                  docBodyEl
-                ),
+              var componentEls = YAHOO.util.Dom.getElementsByClassName('crComponent', null, docBodyEl),
                 componentElsLen = componentEls.length;
 
               if (componentElsLen > 0) {
@@ -136,11 +132,7 @@ CStudioForms.Controls.RTE.InsertComponent =
                       editor.execCommand(
                         'mceInsertContent',
                         false,
-                        '<span id="' +
-                          id +
-                          "\" class='crComponent' >" +
-                          WAITING_IMG +
-                          '</span> &nbsp;'
+                        '<span id="' + id + "\" class='crComponent' >" + WAITING_IMG + '</span> &nbsp;'
                       );
 
                       _self.renderComponent(editor, componentItem);
@@ -174,39 +166,35 @@ CStudioForms.Controls.RTE.InsertComponent =
                   );
                   var networkErrorMsg = CMgs.format(formsLangBundle, 'contentTypeNotFound');
 
-                  CStudioAuthoring.Service.lookupContentType(
-                    CStudioAuthoringContext.site,
-                    contentType,
-                    {
-                      success: function (result) {
-                        if (result == null) {
-                          var CMgs = CStudioAuthoring.Messages;
-                          var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
-                          CStudioAuthoring.Operations.showSimpleDialog(
-                            'networkErrorMsg-dialog',
-                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                            CMgs.format(langBundle, 'notification'),
-                            networkErrorMsg,
-                            null,
-                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                            'studioDialog'
-                          );
-                        } else {
-                          CStudioAuthoring.Operations.openContentWebForm(
-                            contentType,
-                            null,
-                            null,
-                            path,
-                            false,
-                            false,
-                            formSaveCb,
-                            [{ name: 'childForm', value: 'true' }]
-                          );
-                        }
-                      },
-                      failure: function () {}
-                    }
-                  );
+                  CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
+                    success: function (result) {
+                      if (result == null) {
+                        var CMgs = CStudioAuthoring.Messages;
+                        var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                          'networkErrorMsg-dialog',
+                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                          CMgs.format(langBundle, 'notification'),
+                          networkErrorMsg,
+                          null,
+                          YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                          'studioDialog'
+                        );
+                      } else {
+                        CStudioAuthoring.Operations.openContentWebForm(
+                          contentType,
+                          null,
+                          null,
+                          path,
+                          false,
+                          false,
+                          formSaveCb,
+                          [{ name: 'childForm', value: 'true' }]
+                        );
+                      }
+                    },
+                    failure: function () {}
+                  });
                 };
 
                 onclickFn.widget = widget;
@@ -248,11 +236,7 @@ CStudioForms.Controls.RTE.InsertComponent =
                       editor.execCommand(
                         'mceInsertContent',
                         false,
-                        '<span id="' +
-                          id +
-                          "\" class='crComponent' >" +
-                          WAITING_IMG +
-                          '</span> &nbsp;'
+                        '<span id="' + id + "\" class='crComponent' >" + WAITING_IMG + '</span> &nbsp;'
                       );
 
                       _self.renderComponent(editor, componentItem);
@@ -322,14 +306,7 @@ CStudioForms.Controls.RTE.InsertComponent =
 
                     var onclickFn = function () {
                       var path = this.onclick.library.contentPath;
-                      CStudioAuthoring.Operations.openBrowse(
-                        '',
-                        path,
-                        1,
-                        'select',
-                        true,
-                        formSaveCb
-                      );
+                      CStudioAuthoring.Operations.openBrowse('', path, 1, 'select', true, formSaveCb);
                     };
 
                     onclickFn.library = library;
@@ -467,10 +444,7 @@ CStudioForms.Controls.RTE.InsertComponent =
           }
         };
 
-        deleteEl = tinymce2.DOM.select(
-          '#cstudio-component-controls .delete > a',
-          editor.getDoc()
-        )[0];
+        deleteEl = tinymce2.DOM.select('#cstudio-component-controls .delete > a', editor.getDoc())[0];
         deleteEl.onclick = function () {
           var id = el.id;
           var components = model['rteComponents'];
@@ -496,11 +470,7 @@ CStudioForms.Controls.RTE.InsertComponent =
           tinymce2.activeEditor.execCommand(
             'mceInsertContent',
             false,
-            '<span id="' +
-              _self.componentOnTheMove.id +
-              "\" class='crComponent' >" +
-              WAITING_IMG +
-              '</span>'
+            '<span id="' + _self.componentOnTheMove.id + "\" class='crComponent' >" + WAITING_IMG + '</span>'
           );
 
           _self.renderComponent(tinymce2.activeEditor, _self.componentOnTheMove);
@@ -546,10 +516,7 @@ CStudioForms.Controls.RTE.InsertComponent =
     };
   })();
 
-tinymce2.create(
-  'tinymce2.plugins.CStudioInsertComponentPlugin',
-  CStudioForms.Controls.RTE.InsertComponent
-);
+tinymce2.create('tinymce2.plugins.CStudioInsertComponentPlugin', CStudioForms.Controls.RTE.InsertComponent);
 
 // Register plugin with a short name
 tinymce2.PluginManager.add('insertcomponent', tinymce2.plugins.CStudioInsertComponentPlugin);

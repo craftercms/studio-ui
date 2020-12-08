@@ -205,9 +205,7 @@ CStudioAuthoring.Module.requireModule(
          * get the supported constraints
          */
         getSupportedConstraints: function () {
-          return [
-            { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }
-          ];
+          return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
         },
 
         getSupportedPostFixes: function () {
@@ -260,8 +258,7 @@ CStudioAuthoring.Module.requireModule(
                 this.fileManagerName = prop.value && prop.Value != '' ? prop.value : null;
                 break;
               case 'height':
-                this.rteHeight =
-                  prop.value === undefined || prop.value === '' ? 300 : parseInt(prop.value, 10);
+                this.rteHeight = prop.value === undefined || prop.value === '' ? 300 : parseInt(prop.value, 10);
                 break;
               case 'autoGrow':
                 this.autoGrow = prop.value == 'false' ? false : true;
@@ -284,10 +281,7 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          templates =
-            rteConfig.templates && rteConfig.templates.template
-              ? rteConfig.templates.template
-              : null;
+          templates = rteConfig.templates && rteConfig.templates.template ? rteConfig.templates.template : null;
 
           // https://www.tiny.cloud/docs/plugins/
           pluginList = rteConfig.plugins;
@@ -300,17 +294,11 @@ CStudioAuthoring.Module.requireModule(
               ? rteConfig.toolbarItems1
               : 'bold italic | bullist numlist';
           toolbarConfig2 =
-            rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0
-              ? rteConfig.toolbarItems2
-              : '';
+            rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0 ? rteConfig.toolbarItems2 : '';
           toolbarConfig3 =
-            rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0
-              ? rteConfig.toolbarItems3
-              : '';
+            rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0 ? rteConfig.toolbarItems3 : '';
           toolbarConfig4 =
-            rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0
-              ? rteConfig.toolbarItems4
-              : '';
+            rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0 ? rteConfig.toolbarItems4 : '';
 
           rteStylesheets =
             rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object'
@@ -409,9 +397,7 @@ CStudioAuthoring.Module.requireModule(
                   $editorIframe = $('#' + id + '_ifr'),
                   editorScrollTop = $editorIframe.offset().top, // Top position in document
                   editorPos =
-                    $editorIframe[0].getBoundingClientRect().top > 0
-                      ? $editorIframe[0].getBoundingClientRect().top
-                      : 0, // Top position in current view
+                    $editorIframe[0].getBoundingClientRect().top > 0 ? $editorIframe[0].getBoundingClientRect().top : 0, // Top position in current view
                   currentSelectionPos = $(tinymce.activeEditor.selection.getNode()).offset().top, // Top position of current node selected in editor
                   editorHeight = $editorIframe.height();
 
@@ -459,8 +445,7 @@ CStudioAuthoring.Module.requireModule(
             addContainerEl,
             tinyMCEContainer = $('.tox-dialog'),
             _self = this,
-            type =
-              meta.filetype == 'media' ? 'video' : meta.filetype == 'file' ? 'item' : meta.filetype;
+            type = meta.filetype == 'media' ? 'video' : meta.filetype == 'file' ? 'item' : meta.filetype;
 
           imageManagerNames = !imageManagerNames
             ? ''
@@ -501,10 +486,7 @@ CStudioAuthoring.Module.requireModule(
           } else {
             addContainerEl = document.createElement('div');
             tinyMCEContainer.append(addContainerEl);
-            YAHOO.util.Dom.addClass(
-              addContainerEl,
-              'cstudio-form-control-image-picker-add-container'
-            );
+            YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-image-picker-add-container');
             YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-tinymce');
             this.addContainerEl = addContainerEl;
 
@@ -536,10 +518,7 @@ CStudioAuthoring.Module.requireModule(
                 mapDatasource = datasourceMap[el.id];
 
                 var itemEl = document.createElement('div');
-                YAHOO.util.Dom.addClass(
-                  itemEl,
-                  'cstudio-form-control-image-picker-add-container-item'
-                );
+                YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
                 itemEl.innerHTML = el.title;
                 addContainerEl.appendChild(itemEl);
 
@@ -573,10 +552,7 @@ CStudioAuthoring.Module.requireModule(
             // If no datasources for type
             if ($(addContainerEl).children().length === 0) {
               var itemEl = document.createElement('div');
-              YAHOO.util.Dom.addClass(
-                itemEl,
-                'cstudio-form-control-image-picker-add-container-item'
-              );
+              YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
               itemEl.innerHTML = 'No datasources available';
               addContainerEl.appendChild(itemEl);
             }
@@ -632,7 +608,7 @@ CStudioAuthoring.Module.requireModule(
           if (datasource && datasource.add) {
             datasource.add(
               {
-                returnProp: 'browserUri',   // to return proper item link (browserUri)
+                returnProp: 'browserUri', // to return proper item link (browserUri)
                 insertItem: function (fileData) {
                   var cleanUrl = fileData;
                   cb(cleanUrl);
@@ -669,10 +645,7 @@ CStudioAuthoring.Module.requireModule(
 
           // Control container under form
           controlWidgetContainerEl = document.createElement('div');
-          YDom.addClass(
-            controlWidgetContainerEl,
-            'cstudio-form-control-rte-container rte2-container'
-          );
+          YDom.addClass(controlWidgetContainerEl, 'cstudio-form-control-rte-container rte2-container');
 
           //TODO: move to stylesheet
           controlWidgetContainerEl.style.paddingLeft = '28%';
@@ -758,10 +731,7 @@ CStudioAuthoring.Module.requireModule(
         }
       });
 
-      CStudioAuthoring.Module.moduleLoaded(
-        'cstudio-forms-controls-rte-tinymce5',
-        CStudioForms.Controls.RTETINYMCE5
-      );
+      CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-tinymce5', CStudioForms.Controls.RTETINYMCE5);
     }
   }
 );

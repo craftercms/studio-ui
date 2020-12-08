@@ -184,8 +184,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       {
         success(searchId, selectedTOs) {
           selectedTOs.forEach(function (item) {
-            var value =
-              item.internalName && item.internalName !== '' ? item.internalName : item.uri;
+            var value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
             control.insertItem(item.uri, value, null, null, _self.id);
             control._renderItems();
           });
@@ -330,11 +329,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         failure: function () {}
       };
 
-      CStudioAuthoring.Service.lookupContentItem(
-        CStudioAuthoringContext.site,
-        item.key,
-        getContentItemCb
-      );
+      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, item.key, getContentItemCb);
     }
   },
 
@@ -381,7 +376,4 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-shared-content',
-  CStudioForms.Datasources.SharedContent
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-shared-content', CStudioForms.Datasources.SharedContent);

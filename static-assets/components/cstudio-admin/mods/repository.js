@@ -44,7 +44,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.Repository, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-repository',
-  CStudioAdminConsole.Tool.Repository
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-repository', CStudioAdminConsole.Tool.Repository);

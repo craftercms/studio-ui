@@ -1,8 +1,7 @@
 /**
  * WCM Search Plugin
  */
-CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
-  .InContextEditMod || {
+CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav.InContextEditMod || {
   initialized: false,
 
   /**
@@ -115,7 +114,4 @@ CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'in_context_edit',
-  CStudioAuthoring.ContextualNav.InContextEditMod
-);
+CStudioAuthoring.Module.moduleLoaded('in_context_edit', CStudioAuthoring.ContextualNav.InContextEditMod);

@@ -20,8 +20,7 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.form = form;
-    this['interface'] =
-      type.indexOf('datasource:') !== -1 ? type.split('datasource:')[1] : '' + type;
+    this['interface'] = type.indexOf('datasource:') !== -1 ? type.split('datasource:')[1] : '' + type;
     this.fieldValue = [];
     return this;
   };

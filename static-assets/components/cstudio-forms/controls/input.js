@@ -48,7 +48,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     obj.value = obj.inputEl.value;
 
     // Empty error state before new validation (for a clean state)
-    YAHOO.util.Dom.removeClass(obj.patternErrEl, 'on')
+    YAHOO.util.Dom.removeClass(obj.patternErrEl, 'on');
     obj.clearError('pattern');
 
     var validationExist = false;
@@ -177,7 +177,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
 
     const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
-    inputEl.value = (this.value === '_not-set') ? config.defaultValue : valueToSet;
+    inputEl.value = this.value === '_not-set' ? config.defaultValue : valueToSet;
     controlWidgetContainerEl.appendChild(inputEl);
 
     YAHOO.util.Event.on(
@@ -211,7 +211,6 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
         this.escapeContent = true;
       }
     }
-
 
     if (this.readonly == true) {
       inputEl.disabled = true;

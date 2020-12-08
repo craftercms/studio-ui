@@ -22,35 +22,35 @@ REJECT_DIALOG_TEMPLATE = [
     '<h3 id="title">Reject</h3>' +
     '<p id="subtitle">The following checked item(s) will be rejected.</p>' +
     '<div class="row">' +
-      '<div class="col-sm-8">' +
-        '<div class="table-wrapper">' +
-          '<table class="acnLiveTable liveTable">' +
-          '<thead class="ttThead">' +
-          '<tr>' +
-          '<th class="checkboxTh"></th>' +
-          '<th class="itemTh">Item</th>' +
-          '<th class="submittedTh">Submitted By</th>' +
-          '</tr>' +
-          '</thead>' +
-          '<tbody id="tbodyDepend">' +
-          '</tbody>' +
-          '</table>' +
-        '</div>' +
-      '</div>' +
-      '<div class="col-sm-4">' +
-        '<h4>Rejection Reason:</h4>' +
-        '<div class="field">' +
-          '<select id="rejectReasonDropDown" class="rejectReasonDropDown">' +
-          '<option>Select a Reason</option>' +
-          '<option value="NotApproved">Not Approved</option>' +
-          '<option value="IncorrectBranding">Incorrect Branding</option>' +
-          '<option value="Typos">Typos</option>' +
-          '<option value="BrokenLinks">Broken Links</option>' +
-          '<option value="NSOA">Needs Section Owner\'s Approval</option>' +
-          '</select>' +
-        '</div>' +
-        '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>' +
-      '</div>' +
+    '<div class="col-sm-8">' +
+    '<div class="table-wrapper">' +
+    '<table class="acnLiveTable liveTable">' +
+    '<thead class="ttThead">' +
+    '<tr>' +
+    '<th class="checkboxTh"></th>' +
+    '<th class="itemTh">Item</th>' +
+    '<th class="submittedTh">Submitted By</th>' +
+    '</tr>' +
+    '</thead>' +
+    '<tbody id="tbodyDepend">' +
+    '</tbody>' +
+    '</table>' +
+    '</div>' +
+    '</div>' +
+    '<div class="col-sm-4">' +
+    '<h4>Rejection Reason:</h4>' +
+    '<div class="field">' +
+    '<select id="rejectReasonDropDown" class="rejectReasonDropDown">' +
+    '<option>Select a Reason</option>' +
+    '<option value="NotApproved">Not Approved</option>' +
+    '<option value="IncorrectBranding">Incorrect Branding</option>' +
+    '<option value="Typos">Typos</option>' +
+    '<option value="BrokenLinks">Broken Links</option>' +
+    '<option value="NSOA">Needs Section Owner\'s Approval</option>' +
+    '</select>' +
+    '</div>' +
+    '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>' +
+    '</div>' +
     '</div>' +
     '<div id="rejectReasonJson" style="display:none;">' +
     '</div>' +
@@ -84,11 +84,7 @@ CStudioAuthoring.Module.requireModule(
       YAHOO.lang.extend(CStudioAuthoring.Dialogs.DialogReject, dialogClass);
 
       // Extend GoLive's prototype with its own class functions
-      CStudioAuthoring.Dialogs.DialogReject.prototype.createPanel = function (
-        panelName,
-        modalState,
-        zIdx
-      ) {
+      CStudioAuthoring.Dialogs.DialogReject.prototype.createPanel = function (panelName, modalState, zIdx) {
         return new YAHOO.widget.Panel(panelName, {
           fixedcenter: true,
           visible: false,
@@ -235,10 +231,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogReject.prototype.handleDependencies = function (
-        matchedInputElement,
-        isChecked
-      ) {
+      CStudioAuthoring.Dialogs.DialogReject.prototype.handleDependencies = function (matchedInputElement, isChecked) {
         //this.updateUncheckedItemList(matchedInputElement, isChecked);
 
         var selectedElementURI = matchedInputElement.id,
@@ -269,9 +262,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogReject.prototype.displayItemListWithDependencies = function (
-        dependencyList
-      ) {
+      CStudioAuthoring.Dialogs.DialogReject.prototype.displayItemListWithDependencies = function (dependencyList) {
         // Instantiate the Panel
         this.dialog = this.createPanel('submitPanel', true, 10);
         this.dialog.setBody(REJECT_DIALOG_TEMPLATE);
@@ -299,11 +290,7 @@ CStudioAuthoring.Module.requireModule(
             '<td class="text-center"><input type="checkbox" class="item-checkbox" data-item-id="' +
               item.uri +
               '" checked/></td>',
-            '<td class="name"><div class="in">' +
-              item.internalName +
-              ' ' +
-              item.uri +
-              '</div></div></td>'
+            '<td class="name"><div class="in">' + item.internalName + ' ' + item.uri + '</div></div></td>'
           );
 
           if (item.userFirstName) {
@@ -419,9 +406,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogReject.prototype.getDependenciesForGoLiveItemList = function (
-        contentItems
-      ) {
+      CStudioAuthoring.Dialogs.DialogReject.prototype.getDependenciesForGoLiveItemList = function (contentItems) {
         var self = this;
 
         if (this.itemArray.length) {
@@ -448,13 +433,7 @@ CStudioAuthoring.Module.requireModule(
               for (var i = 0; i < reasonJsonArray.length; i++) {
                 self.reasonHash[reasonJsonArray[i].title] = reasonJsonArray[i].body;
               }
-              YEvent.addListener(
-                'rejectReasonDropDown',
-                'change',
-                self.onRejectSelectBoxChange,
-                self,
-                true
-              );
+              YEvent.addListener('rejectReasonDropDown', 'change', self.onRejectSelectBoxChange, self, true);
             },
             failure: function (o) {
               self.pageRedirect(o);
@@ -517,9 +496,7 @@ CStudioAuthoring.Module.requireModule(
         this.getDependenciesForGoLiveItemList(contentItems);
       };
 
-      CStudioAuthoring.Dialogs.DialogReject.prototype.ifExistsInUncheckedItemsArrayNew = function (
-        url
-      ) {
+      CStudioAuthoring.Dialogs.DialogReject.prototype.ifExistsInUncheckedItemsArrayNew = function (url) {
         var self = this;
         self.uncheckedItemsArrayNew;
         var found = -1;
@@ -559,10 +536,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogReject.prototype.removeItemNew = function (
-        jsonArray,
-        browserUri
-      ) {
+      CStudioAuthoring.Dialogs.DialogReject.prototype.removeItemNew = function (jsonArray, browserUri) {
         for (var i = 0; i < jsonArray.length; i++) {
           var obj = jsonArray[i];
           if ('browserUri' in obj) {
@@ -612,11 +586,7 @@ CStudioAuthoring.Module.requireModule(
             '<td class="text-center"><input type="checkbox" class="item-checkbox" data-item-id="' +
               item.uri +
               '" checked/></td>',
-            '<td class="name"><div class="in">' +
-              item.internalName +
-              ' ' +
-              item.uri +
-              '</div></div></td>'
+            '<td class="name"><div class="in">' + item.internalName + ' ' + item.uri + '</div></div></td>'
           );
 
           if (item.userFirstName) {

@@ -34,16 +34,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
   /**
    * show dialog
    */
-  showDialog: function (
-    site,
-    Message,
-    imageData,
-    imageWidth,
-    imageHeight,
-    aspectRatio,
-    repoImage,
-    callback
-  ) {
+  showDialog: function (site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
     this._self = this;
     this.site = site;
     this.message = Message;
@@ -198,12 +189,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
     var $dataHeight = $('#dataHeight');
     var $dataWidth = $('#dataWidth');
 
-    var widthCropBox,
-      minWidthCropBox,
-      maxWidthCropBox,
-      heightCropBox,
-      minHeightCropBox,
-      maxHeightCropBox;
+    var widthCropBox, minWidthCropBox, maxWidthCropBox, heightCropBox, minHeightCropBox, maxHeightCropBox;
 
     function getPercentage(min, max) {
       var result;
@@ -277,18 +263,8 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             //$('#cropButton').prop('disabled',false);
           }
         } else {
-          inputValidation(
-            parseInt(minHeightCropBox),
-            parseInt(maxHeightCropBox),
-            $dataHeight,
-            $dataWidth
-          );
-          inputValidation(
-            parseInt(minWidthCropBox),
-            parseInt(maxWidthCropBox),
-            $dataWidth,
-            $dataHeight
-          );
+          inputValidation(parseInt(minHeightCropBox), parseInt(maxHeightCropBox), $dataHeight, $dataWidth);
+          inputValidation(parseInt(minWidthCropBox), parseInt(maxWidthCropBox), $dataWidth, $dataHeight);
         }
       },
       built: function () {
@@ -481,13 +457,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
           "<div class='' style='float: left; margin-right:10px; margin-top: 7px;'>File already exists, do you want to overwrite it?</div>" +
           buttons;
 
-        YAHOO.util.Event.addListener(
-          'uploadCancelButton',
-          'click',
-          this.cropPopupCancel,
-          this,
-          true
-        );
+        YAHOO.util.Event.addListener('uploadCancelButton', 'click', this.cropPopupCancel, this, true);
         YAHOO.util.Event.addListener('renameButton', 'click', function () {
           _renameFile(self, imageData);
         });

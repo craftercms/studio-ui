@@ -22,9 +22,9 @@ import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 
 export interface GraphiQLProps {
-  url?: string,
-  storageKey?: string,
-  method?: string
+  url?: string;
+  storageKey?: string;
+  method?: string;
 }
 
 const storages: any = {};
@@ -59,12 +59,12 @@ function Graphi(props: GraphiQLProps) {
   }
 
   function graphQLFetcher(graphQLParams: any) {
-    var url: string = props.url ? props.url : (window.location.origin + '/api/1/site/graphql'),
-        method: string = (props.method || 'post').toLowerCase();
+    var url: string = props.url ? props.url : window.location.origin + '/api/1/site/graphql',
+      method: string = (props.method || 'post').toLowerCase();
 
-    if('get' === method){
-      if (typeof graphQLParams['variables'] === 'undefined'){
-        graphQLParams['variables'] = "{}";
+    if ('get' === method) {
+      if (typeof graphQLParams['variables'] === 'undefined') {
+        graphQLParams['variables'] = '{}';
       }
 
       const query = encodeURIComponent(graphQLParams['query']);
@@ -76,7 +76,7 @@ function Graphi(props: GraphiQLProps) {
     return fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      ...method === 'post' ? { body: JSON.stringify(graphQLParams) } : {}
+      ...(method === 'post' ? { body: JSON.stringify(graphQLParams) } : {})
     }).then(function (responseBody: any) {
       try {
         return responseBody.json();
@@ -88,13 +88,13 @@ function Graphi(props: GraphiQLProps) {
 
   function handleToggleExplorer() {
     setExplorerIsOpen(!explorerIsOpen);
-  };
+  }
 
   useEffect(
     () => {
       graphQLFetcher({
         query: getIntrospectionQuery()
-      }).then(result => {
+      }).then((result) => {
         setSchema(buildClientSchema(result.data));
       });
     },
@@ -109,18 +109,18 @@ function Graphi(props: GraphiQLProps) {
         schema={schema}
         query={query}
         onEdit={onEditQuery}
-        onRunOperation={(operationName: any) =>
-          graphiql.current.handleRunQuery(operationName)
-        }
+        onRunOperation={(operationName: any) => graphiql.current.handleRunQuery(operationName)}
         explorerIsOpen={explorerIsOpen}
         onToggleExplorer={handleToggleExplorer}
       />
-      <GraphiQL ref={graphiql}
-                fetcher={graphQLFetcher}
-                schema={schema}
-                query={query}
-                storage={getStorage(`${props.storageKey}`)}
-                onEditQuery={onEditQuery}>
+      <GraphiQL
+        ref={graphiql}
+        fetcher={graphQLFetcher}
+        schema={schema}
+        query={query}
+        storage={getStorage(`${props.storageKey}`)}
+        onEditQuery={onEditQuery}
+      >
         <GraphiQL.Toolbar>
           <GraphiQL.Button
             onClick={() => graphiql.current.handlePrettifyQuery()}
@@ -132,15 +132,11 @@ function Graphi(props: GraphiQLProps) {
             label="History"
             title="Show History"
           />
-          <GraphiQL.Button
-            onClick={handleToggleExplorer}
-            label="Explorer"
-            title="Toggle Explorer"
-          />
+          <GraphiQL.Button onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
         </GraphiQL.Toolbar>
       </GraphiQL>
     </div>
-  )
+  );
 }
 
 export default Graphi;

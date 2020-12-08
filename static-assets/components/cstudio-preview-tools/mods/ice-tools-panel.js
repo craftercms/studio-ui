@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addJavascript(
-  '/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js'
-);
+CStudioAuthoring.Utils.addJavascript('/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js');
 CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-forms/forms-engine.js');
 
 var initRegCookie;
@@ -98,16 +96,9 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             }
 
             if (regions.length > 0) {
-              regionSelectEl.options[0] = new Option(
-                CMgs.format(previewLangBundle, 'jumpToRegion'),
-                '0',
-                true,
-                false
-              );
+              regionSelectEl.options[0] = new Option(CMgs.format(previewLangBundle, 'jumpToRegion'), '0', true, false);
               for (var i = 0; i < regions.length; i++) {
-                var label = regions[i].label
-                  ? regions[i].label.replace(/__/g, ' ')
-                  : regions[i].id.replace(/__/g, ' ');
+                var label = regions[i].label ? regions[i].label.replace(/__/g, ' ') : regions[i].id.replace(/__/g, ' ');
                 regionSelectEl.options[i + 1] = new Option(label, '' + (i + 1), false, false);
               }
 
@@ -187,11 +178,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
       container.appendChild(wrapper);
 
       templateButtonEl.onclick = function () {
-        if (
-          !checkRenderingTemplates(
-            CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates
-          )
-        ) {
+        if (!checkRenderingTemplates(CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates)) {
           var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0],
             renderingTemplate = selectedContent.renderingTemplates[0].uri,
             contentType = selectedContent.contentType;
@@ -251,9 +238,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
       controllerButtonEl.onclick = function () {
         if (CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType) {
-          var contentType = CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType.split(
-            '/'
-          );
+          var contentType = CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType.split('/');
           var path = '/scripts/pages/' + contentType[contentType.length - 1] + '.groovy';
 
           (function (controllerName) {

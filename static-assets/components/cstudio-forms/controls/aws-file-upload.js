@@ -77,9 +77,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
   },
 
   getSupportedProperties: function () {
-    return [
-      { label: 'Profile ID', name: 'profile_id', type: 'string', defaultValue: 's3-default' }
-    ];
+    return [{ label: 'Profile ID', name: 'profile_id', type: 'string', defaultValue: 's3-default' }];
   },
 
   getSupportedConstraints: function () {
@@ -87,9 +85,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
   },
 
   _onChange: function (evt, obj) {
-    var serviceUri = CStudioAuthoring.Service.createServiceUri(
-      '/api/1/services/api/1/aws/s3/upload.json'
-    );
+    var serviceUri = CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/aws/s3/upload.json');
 
     var callback = {
       cache: false,
@@ -147,10 +143,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
 
     YAHOO.util.Connect.setForm('upload_form_' + obj.id, true);
     serviceUri +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
     YAHOO.util.Connect.asyncRequest('POST', serviceUri, callback);
     document.getElementById('cstudioSaveAndClose').disabled = 'disabled';
     document.getElementById('cstudioSaveAndCloseDraft').disabled = 'disabled';
@@ -209,7 +202,4 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-aws-file-upload',
-  CStudioForms.Controls.AWSFileUpload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-aws-file-upload', CStudioForms.Controls.AWSFileUpload);
