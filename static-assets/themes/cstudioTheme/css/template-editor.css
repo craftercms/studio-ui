@@ -229,11 +229,7 @@
 
 
 .notifyjs-material-snackbar-confirm-base .no {
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  padding: 4px;
-  margin: 0 0 0 6px;
+  margin-left: 10px;
 }
 
 

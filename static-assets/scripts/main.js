@@ -1713,6 +1713,12 @@
         sitesService
           .removeSite(site)
           .success(function(data) {
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_SYSTEM_NOTIFICATION',
+              payload: {
+                message: formatMessage(i18n.messages.siteSuccessMessages.siteDeleted)
+              }
+            });
             $modalInstance.close();
             sitesService.showLoaderProperty().setProperty(false);
           })

@@ -281,7 +281,11 @@
           YAHOO.util.Connect.asyncRequest('GET', url, {
             success: function(response) {
               var responseObj = eval('(' + response.responseText + ')');
-              editor.setValue(responseObj.content);
+              if (responseObj.content) {
+                editor.setValue(responseObj.content);
+              } else {
+                editor.setValue('');
+              }
               editor.clearSelection(); // This will remove the highlight over the text
               CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
