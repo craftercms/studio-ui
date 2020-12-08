@@ -31,10 +31,13 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
-  fetchPrimaryGuestModelComplete,
+  FETCH_GUEST_MODEL,
   fetchGuestModelComplete,
+  fetchPrimaryGuestModelComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
+  GUEST_SITE_LOAD,
+  guestModelUpdated,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
@@ -53,10 +56,7 @@ import {
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
   UPDATE_FIELD_VALUE_OPERATION,
-  GUEST_SITE_LOAD,
-  FETCH_GUEST_MODEL,
-  VALIDATION_MESSAGE,
-  guestModelUpdated
+  VALIDATION_MESSAGE
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -171,8 +171,8 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, currentItemPath, site]);
 
   useEffect(() => {
-    if (write && editMode) {
-      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+    if (write === false && editMode) {
+      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
     }
   }, [dispatch, write, editMode]);
   // endregion
@@ -180,8 +180,8 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice(site) === 'true';
-    if (editMode !== localEditMode) {
+    const localEditMode = getStoredEditModeChoice() ? getStoredEditModeChoice() === 'true' : null;
+    if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
