@@ -988,6 +988,11 @@
         no: formatMessage(words.no)
       };
 
+      var logoContainer = document.querySelector('#navbarLogo');
+      CrafterCMSNext.render(logoContainer, 'CrafterCMSFullLogo', {
+        className: 'crafter-studio-logo'
+      });
+
       $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
