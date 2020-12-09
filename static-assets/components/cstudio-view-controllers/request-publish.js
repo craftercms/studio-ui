@@ -30,7 +30,7 @@
 
     actions: ['.close-button', '.submit-button'],
 
-    startup: ['fetchPublishingSettings', 'loadPublishingChannels', 'initDatePicker', 'initValidation', 'translateUI'],
+    startup: ['fetchPublishingSettings', 'loadPublishingChannels', 'initDatePicker', 'translateUI'],
 
     loadItems: publishUtil.loadItems,
 
