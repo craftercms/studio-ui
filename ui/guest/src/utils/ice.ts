@@ -17,9 +17,9 @@
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { isNullOrUndefined, notNullOrUndefined } from './object';
+import { isNullOrUndefined, notNullOrUndefined, setProperty } from './object';
 import * as Model from './model';
-import { forEach } from './array';
+import { forEach, mergeArraysAlternatively } from './array';
 import { popPiece } from './string';
 
 export function findComponentContainerFields(
@@ -80,4 +80,14 @@ export function getCollectionWithoutItemAtIndex(collection: string[], index: str
 export function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
   const isStringIndex = typeof index === 'string';
   return isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
+}
+
+export function setCollection(model: ContentInstance, fieldId: string, index: number | string, collection: string[]) {
+  if (fieldId.includes('.')) {
+    const concatFieldId = mergeArraysAlternatively(fieldId.split('.'), index.toString().split('.')).join('.');
+    setProperty(model, concatFieldId, collection);
+  } else {
+    Model.value(model, fieldId, collection);
+  }
+  return model;
 }

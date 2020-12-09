@@ -36,3 +36,10 @@ export function forEach<T = unknown, R = undefined>(
   }
   return emptyReturnValue;
 }
+
+export function mergeArraysAlternatively(a: string[], b: string[]): string[] {
+  return (a.length > b.length ? a : b).reduce(
+    (acc, cur, i) => (a[i] && b[i] ? [...acc, a[i], b[i]] : [...acc, cur]),
+    []
+  );
+}
