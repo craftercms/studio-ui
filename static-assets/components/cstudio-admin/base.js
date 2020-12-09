@@ -175,14 +175,19 @@
         YDom.addClass(validatorContainer, 'craftercms-entitlement');
 
         var logo = document.createElement('img');
-        logo.className = 'craftercms-entitlement-logo';
+        logo.className = 'craftercms-entitlement-logo craftercms-logo';
         logo.src = '/studio/static-assets/images/logo.svg';
+
+        var logoDark = document.createElement('img');
+        logoDark.className = 'craftercms-entitlement-logo craftercms-logo-dark';
+        logoDark.src = '/studio/static-assets/images/logo-dark.svg';
 
         var entitlementValidatorP = document.createElement('p');
         YDom.addClass(entitlementValidatorP, 'craftercms-entitlement-copy');
         entitlementValidatorP.innerHTML = entitlementValidator;
 
         validatorContainer.appendChild(logo);
+        validatorContainer.appendChild(logoDark);
         validatorContainer.appendChild(entitlementValidatorP);
         document.getElementById('categories-panel').appendChild(validatorContainer);
       }
