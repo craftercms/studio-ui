@@ -1448,3 +1448,10 @@ export const itemFailureMessages = defineMessages({
     defaultMessage: 'Pasting to a child item is not allowed for cut'
   }
 });
+
+export const siteSuccessMessages = defineMessages({
+  siteDeleted: {
+    id: 'site.deleted',
+    defaultMessage: 'Site deleted successfully'
+  }
+});
