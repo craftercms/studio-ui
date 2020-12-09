@@ -115,24 +115,29 @@ function EditFormPanelBody() {
   const model = models[item.modelId];
   const contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
   const fieldId = item.fieldId[0];
-  const field = getField(contentType, fieldId);
+  const field = fieldId ? getField(contentType, fieldId) : null;
   let title;
   let selectedId;
 
-  if (field.type === 'node-selector' && nnou(item.index)) {
-    let component;
-    if (nnou(fieldId) && fieldId.includes('.')) {
-      const aux = ModelHelper.extractCollectionItem(model, fieldId, item.index);
-      component = models[aux];
+  if (nnou(field)) {
+    if (field.type === 'node-selector' && nnou(item.index)) {
+      let component;
+      if (nnou(fieldId) && fieldId.includes('.')) {
+        const aux = ModelHelper.extractCollectionItem(model, fieldId, item.index);
+        component = models[aux];
+      } else {
+        const id = ModelHelper.value(model, fieldId)[item.index];
+        component = models[id];
+      }
+      selectedId = component.craftercms.id;
+      title = `${component.craftercms.label} (${contentTypesBranch.byId[component.craftercms.contentTypeId].name})`;
     } else {
-      const id = ModelHelper.value(model, fieldId)[item.index];
-      component = models[id];
+      selectedId = item.modelId;
+      title = field.name;
     }
-    selectedId = component.craftercms.id;
-    title = `${component.craftercms.label} (${contentTypesBranch.byId[component.craftercms.contentTypeId].name})`;
   } else {
     selectedId = item.modelId;
-    title = field.name;
+    title = `${model.craftercms.label} (${contentType.name})`;
   }
 
   const path = ModelHelper.prop(models[selectedId], 'path');
