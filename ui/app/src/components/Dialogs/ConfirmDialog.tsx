@@ -87,12 +87,12 @@ interface ConfirmDialogBaseProps {
   disableEnforceFocus?: boolean;
   disableEscapeKeyDown?: boolean;
   disableBackdropClick?: boolean;
+  styles?: ConfirmDialogStateStyles;
 }
 
 export type ConfirmDialogProps = PropsWithChildren<
   ConfirmDialogBaseProps & {
     classes?: Partial<Record<ConfirmDialogStateClassKey, string>>;
-    styles?: ConfirmDialogStateStyles;
     onOk?(): void;
     onCancel?(): void;
     onClose?(): void;
