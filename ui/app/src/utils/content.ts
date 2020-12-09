@@ -320,11 +320,11 @@ function parseElementByContentType(
     case 'node-selector': {
       const array = [];
       element.querySelectorAll(':scope > item').forEach((item) => {
-        let path = getInnerHtml(item.querySelector('include'));
-        const component = item.querySelector('component');
+        let path = getInnerHtml(item.querySelector(':scope > include'));
+        const component = item.querySelector(':scope > component');
         if (!path && !component) {
           // TODO: Groovy Controller Issue;
-          path = getInnerHtml(item.querySelector('key'));
+          path = getInnerHtml(item.querySelector(':scope > key'));
         }
         const instance = parseContentXML(
           component ? wrapElementInAuxDocument(component) : null,

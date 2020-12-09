@@ -36,10 +36,10 @@ import {
 } from '../constants';
 import { createLookupTable, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
-import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId } from '../utils/ice';
+import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import { modelsToLookup, normalizeModelsLookup } from '../utils/content';
+import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
 
@@ -241,12 +241,11 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
   // Insert in desired position
   result.splice(index, 0, item);
 
+  setCollection(model, fieldId, typeof index === 'string' ? removeLastPiece(index) : index, result);
+
   models$.next({
     ...models,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
@@ -313,13 +312,12 @@ export function insertComponent(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
+  setCollection(model, fieldId, typeof targetIndex === 'string' ? removeLastPiece(targetIndex) : targetIndex, result);
+
   models$.next({
     ...models,
     [instance.craftercms.id]: instance,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   children[modelId]?.push(instance.craftercms.id);
@@ -356,13 +354,12 @@ export function insertInstance(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
+  setCollection(model, fieldId, typeof targetIndex === 'string' ? removeLastPiece(targetIndex) : targetIndex, result);
+
   models$.next({
     ...models,
     [instance.craftercms.id]: instance,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(INSERT_INSTANCE_OPERATION, {
@@ -397,12 +394,16 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
+  setCollection(
+    model,
+    fieldId,
+    typeof currentIndex === 'string' ? removeLastPiece(currentIndex) : currentIndex,
+    result
+  );
+
   models$.next({
     ...models,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(SORT_ITEM_OPERATION, {
@@ -530,12 +531,11 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
+  setCollection(model, fieldId, typeof index === 'string' ? removeLastPiece(index) : index, result);
+
   models$.next({
     ...models,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(DELETE_ITEM_OPERATION, {
