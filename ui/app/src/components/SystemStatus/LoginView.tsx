@@ -24,12 +24,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
-  login,
   sendPasswordRecovery,
   setPassword as setPasswordService,
   validatePasswordResetToken
 } from '../../services/auth';
-import { insureSingleSlash, isBlank } from '../../utils/string';
+import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import { setRequestForgeryToken } from '../../utils/auth';
 import LogInForm from './LoginForm';
@@ -50,6 +49,7 @@ import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import { getCurrentLocale } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import { FormControl } from '@material-ui/core';
 
 setRequestForgeryToken();
 
@@ -86,6 +86,7 @@ type SubViewProps = React.PropsWithChildren<{
   formatMessage: Function;
   onSnack: React.Dispatch<React.SetStateAction<{ open: boolean; message: string }>>;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
+  onRecover: Function;
 }>;
 
 interface PasswordRequirementsDisplayProps {
@@ -142,7 +143,9 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme) =>
   createStyles({
     dialogRoot: {
-      transition: 'all 600ms ease'
+      transition: 'all 600ms ease',
+      '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
+      '& .MuiInput-root, & .MuiButton-root': { marginBottom: theme.spacing(1) }
     },
     dialogRootFetching: {
       opacity: 0.2
@@ -156,24 +159,10 @@ const useStyles = makeStyles((theme) =>
       display: 'block',
       margin: `${theme.spacing(2)}px auto ${theme.spacing(1)}px`
     },
-    username: {
-      marginBottom: theme.spacing(2),
-      '& .MuiInput-input': { backgroundColor: theme.palette.background.paper }
-    },
-    password: {
-      '& .MuiInput-input': { backgroundColor: theme.palette.background.paper }
-    },
     languageSelect: {
-      margin: 0,
-      backgroundColor: theme.palette.background.paper
+      margin: 0
     },
-    languageSelectLabel: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-      '& + .language-select-dropdown': {
-        marginTop: '0 !important'
-      }
-    },
+    languageSelectLabel: {},
     recoverInfoMessage: {
       maxWidth: 300,
       textAlign: 'center',
@@ -230,7 +219,7 @@ const retrieveStoredLangPreferences = () =>
 const buildKey = (username: string) => `${username}_crafterStudioLanguage`;
 
 function LoginView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, classes, formatMessage, language, setLanguage } = props;
+  const { children, isFetching, onSubmit, classes, setLanguage, onRecover, formatMessage } = props;
   const [username, setUsername] = useState(() => localStorage.getItem('userName') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -250,34 +239,19 @@ function LoginView(props: SubViewProps) {
   useMount(() => {
     username$.next(username);
   });
-  const submit = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!(isBlank(password) || isBlank(username))) {
+  const qsError = parse(window.location.search).error;
+  useEffect(() => {
+    if (qsError) {
+      setError(formatMessage(translations.incorrectCredentialsMessage));
+    }
+  }, [formatMessage, qsError]);
+  const handleSubmit = (e: any) => {
+    if (isBlank(password) || isBlank(username)) {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      setError('');
       onSubmit(true);
-      login({ username, password }).subscribe(
-        () => {
-          setError('');
-          localStorage.setItem('crafterStudioLanguage', language);
-          localStorage.setItem('userName', username);
-          localStorage.setItem(buildKey(username), language);
-          setTimeout(() => {
-            let redirectUrl = parse(window.location.search).redirect as string;
-            redirectUrl = decodeURIComponent(redirectUrl ?? '/studio');
-            if (!redirectUrl.includes('/studio')) {
-              redirectUrl = '/studio';
-            } else if (!redirectUrl.startsWith('/studio')) {
-              redirectUrl = redirectUrl.substring(redirectUrl.indexOf('/studio'));
-            }
-            redirectUrl = insureSingleSlash(redirectUrl.replace(/\.\./g, ''));
-            window.location.href = redirectUrl + window.location.hash;
-          });
-        },
-        () => {
-          onSubmit(false);
-          setError(formatMessage(translations.incorrectCredentialsMessage));
-        }
-      );
     }
   };
   return (
@@ -285,25 +259,21 @@ function LoginView(props: SubViewProps) {
       <DialogContent>
         <HeaderView error={error} introMessage="" classes={classes} />
         <LogInForm
+          children={children}
           classes={classes}
-          onSubmit={submit}
+          onSubmit={handleSubmit}
           username={username}
           password={password}
           isFetching={isFetching}
           enableUsernameInput={true}
           onSetPassword={setPassword}
+          onRecover={onRecover}
           onSetUsername={(user) => {
             setUsername(user);
             username$.next(user);
           }}
         />
-        {children}
       </DialogContent>
-      <DialogActions>
-        <Button type="button" color="primary" onClick={submit} disabled={isFetching} variant="contained" fullWidth>
-          <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
-        </Button>
-      </DialogActions>
     </>
   );
 }
@@ -342,6 +312,7 @@ function RecoverView(props: SubViewProps) {
           introMessage={formatMessage(translations.recoverYourPasswordViewTitle)}
         />
         <form onSubmit={onSubmitRecover}>
+          {children}
           <TextField
             id="recoverFormUsernameField"
             fullWidth
@@ -362,7 +333,6 @@ function RecoverView(props: SubViewProps) {
             style={{ display: 'none' }}
           />
         </form>
-        {children}
       </DialogContent>
       <DialogActions>
         <Button
@@ -442,7 +412,7 @@ function ResetView(props: SubViewProps) {
     }
   };
   return (
-    <>
+    <form onSubmit={submit}>
       <DialogContent>
         <HeaderView
           error={error}
@@ -461,39 +431,35 @@ function ResetView(props: SubViewProps) {
           formatMessage={formatMessage}
           passwordRequirementsRegex={passwordRequirementsRegex}
         />
-        <form onSubmit={submit}>
-          <PasswordTextField
-            id="resetFormPasswordField"
-            fullWidth
-            error={isValid !== null && !isValid}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className={classes.resetPassword}
-            placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
-          />
-          <PasswordTextField
-            id="resetFormPasswordConfirmField"
-            fullWidth
-            helperText={
-              passwordsMismatch ? formatMessage(passwordRequirementMessages.passwordConfirmationMismatch) : null
-            }
-            error={passwordsMismatch}
-            value={newPasswordConfirm}
-            onChange={(e) => setNewPasswordConfirm(e.target.value)}
-            className={classes.resetPassword}
-            placeholder={formatMessage(translations.resetPasswordConfirmFieldPlaceholderLabel)}
-          />
-          {/* This button is just to have the form submit when pressing enter. */}
-          <Button children="" type="submit" onClick={submit} disabled={isFetching} style={{ display: 'none' }} />
-        </form>
+        <PasswordTextField
+          id="resetFormPasswordField"
+          fullWidth
+          error={isValid !== null && !isValid}
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          className={classes.resetPassword}
+          placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
+        />
+        <PasswordTextField
+          id="resetFormPasswordConfirmField"
+          fullWidth
+          helperText={
+            passwordsMismatch ? formatMessage(passwordRequirementMessages.passwordConfirmationMismatch) : null
+          }
+          error={passwordsMismatch}
+          value={newPasswordConfirm}
+          onChange={(e) => setNewPasswordConfirm(e.target.value)}
+          className={classes.resetPassword}
+          placeholder={formatMessage(translations.resetPasswordConfirmFieldPlaceholderLabel)}
+        />
         {children}
       </DialogContent>
       <DialogActions>
-        <Button type="button" color="primary" onClick={submit} disabled={isFetching} variant="contained" fullWidth>
+        <Button type="submit" color="primary" disabled={isFetching} variant="contained" fullWidth>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </Button>
       </DialogActions>
-    </>
+    </form>
   );
 }
 
@@ -524,9 +490,8 @@ function UnrecognizedView({ classes }: any) {
 function LanguageDropDown(props: LanguageDropDownProps) {
   const { formatMessage } = useIntl();
   const { classes, language, languages, onChange } = props;
-
   return (
-    <>
+    <FormControl fullWidth>
       <InputLabel id="languageSelectDropDown-label" className={classes?.label}>
         {formatMessage(translations.languageDropDownLabel)}
       </InputLabel>
@@ -534,8 +499,9 @@ function LanguageDropDown(props: LanguageDropDownProps) {
         fullWidth
         value={language}
         id="languageSelectDropDown"
+        labelId="languageSelectDropDown-label"
         onChange={(e: any) => onChange(e.target.value)}
-        className={`${classes?.dropDown} language-select-dropdown`}
+        className={classes?.dropDown}
       >
         {languages?.map(({ id, label }) => (
           <MenuItem value={id} key={id}>
@@ -543,7 +509,7 @@ function LanguageDropDown(props: LanguageDropDownProps) {
           </MenuItem>
         ))}
       </Select>
-    </>
+    </FormControl>
   );
 }
 
@@ -704,6 +670,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
     onSnack,
     passwordRequirementsRegex,
     setLanguage,
+    onRecover: () => setMode('recover'),
     children: (
       <LanguageDropDown
         language={language}
@@ -758,7 +725,8 @@ export default function LoginViewContainer(props: LoginViewProps) {
     <>
       <Dialog
         open={true}
-        className={`${classes.dialogRoot} ${isFetching ? classes.dialogRootFetching : ''}`}
+        maxWidth="xs"
+        className={clsx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
         PaperProps={{ className: classes.dialogPaper }}
         aria-labelledby="loginDialog"
       >
@@ -767,20 +735,6 @@ export default function LoginViewContainer(props: LoginViewProps) {
           <CrafterCMSLogo className={classes.logo} width="auto" />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
-        {mode === 'login' && (
-          <DialogActions>
-            <Button
-              type="button"
-              color="primary"
-              disabled={isFetching}
-              variant="text"
-              fullWidth
-              onClick={() => setMode('recover')}
-            >
-              <FormattedMessage id="loginView.forgotPasswordButtonLabel" defaultMessage="Forgot your password?" />
-            </Button>
-          </DialogActions>
-        )}
       </Dialog>
       <Snackbar
         open={snack.open}

@@ -19,6 +19,8 @@ import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -28,14 +30,22 @@ export type LogInFormProps = PropsWithChildren<{
   onSetPassword: Function;
   enableUsernameInput?: boolean;
   onSetUsername?: Function;
-  classes?: {
-    username?: string;
-    password?: string;
-  };
+  classes?: Partial<Record<'username' | 'password' | 'submit', string>>;
+  action?: string;
+  method?: 'get' | 'post';
+  onRecover?: Function;
 }>;
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    inputs: {},
+    submit: {}
+  })
+);
 
 export default function LogInForm(props: LogInFormProps) {
   const {
+    children,
     username,
     onSubmit,
     onSetUsername,
@@ -43,32 +53,59 @@ export default function LogInForm(props: LogInFormProps) {
     onSetPassword,
     password,
     enableUsernameInput = false,
-    classes
+    classes,
+    action = '/studio/login',
+    method = 'post',
+    onRecover
   } = props;
+  const cls = useStyles({});
   return (
-    <form onSubmit={onSubmit}>
+    <form action={action} method={method} onSubmit={onSubmit}>
+      {children}
       <TextField
         id="loginFormUsernameField"
+        name="username"
         fullWidth
         autoFocus={enableUsernameInput && !Boolean(username)}
         disabled={!enableUsernameInput}
         type="text"
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
-        className={classes?.username}
+        className={clsx(cls.inputs, classes?.username)}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
       />
       <PasswordTextField
         id="loginFormPasswordField"
+        name="password"
         fullWidth
         autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
-        className={classes?.password}
+        className={clsx(cls.inputs, classes?.password)}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
-      {/* This button is just to have the form submit when pressing enter. */}
-      <Button children="" type="submit" onClick={onSubmit} disabled={isFetching} style={{ display: 'none' }} />
+      <Button
+        color="primary"
+        variant="contained"
+        fullWidth
+        type="submit"
+        disabled={isFetching}
+        className={clsx(cls.inputs, classes?.submit)}
+      >
+        <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
+      </Button>
+      {onRecover && (
+        <Button
+          type="button"
+          color="primary"
+          disabled={isFetching}
+          variant="text"
+          fullWidth
+          onClick={() => onRecover()}
+        >
+          <FormattedMessage id="loginView.forgotPasswordButtonLabel" defaultMessage="Forgot your password?" />
+        </Button>
+      )}
     </form>
   );
 }
