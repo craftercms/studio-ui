@@ -304,39 +304,29 @@ function RecoverView(props: SubViewProps) {
       );
   };
   return (
-    <>
+    <form onSubmit={onSubmitRecover}>
       <DialogContent>
         <HeaderView
           error={error}
           classes={classes}
           introMessage={formatMessage(translations.recoverYourPasswordViewTitle)}
         />
-        <form onSubmit={onSubmitRecover}>
-          {children}
-          <TextField
-            id="recoverFormUsernameField"
-            fullWidth
-            autoFocus
-            disabled={isFetching}
-            type="text"
-            value={username}
-            onChange={(e: any) => setUsername(e.target.value)}
-            className={classes?.username}
-            label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
-          />
-          {/* This button is just to have the form submit when pressing enter. */}
-          <Button
-            children=""
-            type="submit"
-            onClick={onSubmitRecover}
-            disabled={isFetching}
-            style={{ display: 'none' }}
-          />
-        </form>
+        {children}
+        <TextField
+          id="recoverFormUsernameField"
+          fullWidth
+          autoFocus
+          disabled={isFetching}
+          type="text"
+          value={username}
+          onChange={(e: any) => setUsername(e.target.value)}
+          className={classes?.username}
+          label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
+        />
       </DialogContent>
       <DialogActions>
         <Button
-          type="button"
+          type="submit"
           color="primary"
           onClick={onSubmitRecover}
           disabled={isFetching}
@@ -358,7 +348,7 @@ function RecoverView(props: SubViewProps) {
           &laquo; <FormattedMessage id="loginView.recoverYourPasswordBackButtonLabel" defaultMessage="Back" />
         </Button>
       </DialogActions>
-    </>
+    </form>
   );
 }
 

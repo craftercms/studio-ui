@@ -19,8 +19,6 @@ import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -35,13 +33,6 @@ export type LogInFormProps = PropsWithChildren<{
   method?: 'get' | 'post';
   onRecover?: Function;
 }>;
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    inputs: {},
-    submit: {}
-  })
-);
 
 export default function LogInForm(props: LogInFormProps) {
   const {
@@ -58,7 +49,6 @@ export default function LogInForm(props: LogInFormProps) {
     method = 'post',
     onRecover
   } = props;
-  const cls = useStyles({});
   return (
     <form action={action} method={method} onSubmit={onSubmit}>
       {children}
@@ -71,7 +61,7 @@ export default function LogInForm(props: LogInFormProps) {
         type="text"
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
-        className={clsx(cls.inputs, classes?.username)}
+        className={classes?.username}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
       />
       <PasswordTextField
@@ -81,7 +71,7 @@ export default function LogInForm(props: LogInFormProps) {
         autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
-        className={clsx(cls.inputs, classes?.password)}
+        className={classes?.password}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
       <Button
@@ -90,7 +80,7 @@ export default function LogInForm(props: LogInFormProps) {
         fullWidth
         type="submit"
         disabled={isFetching}
-        className={clsx(cls.inputs, classes?.submit)}
+        className={classes?.submit}
       >
         <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
       </Button>
