@@ -49,7 +49,7 @@ import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import { getCurrentLocale } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import { FormControl } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
 
 setRequestForgeryToken();
 
