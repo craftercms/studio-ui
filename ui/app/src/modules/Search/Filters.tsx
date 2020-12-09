@@ -50,8 +50,6 @@ import {
 } from '../../state/actions/dialogs';
 import { dispatchDOMEvent } from '../../state/actions/misc';
 
-// TODO: this will be removed, created Filters component to render filters
-
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     borderRadius: '0',
@@ -252,9 +250,7 @@ const messages: any = defineMessages({
   }
 });
 
-interface FilterSearchDropdownProps {
-  text: string;
-  className: any;
+interface FiltersProps {
   facets: [Facet];
   queryParams: Partial<ElasticParams>;
   mode: string;
@@ -711,16 +707,17 @@ function PathSelector(props: PathSelectorProps) {
   );
 }
 
-export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
+export default function Filters(props: FiltersProps) {
   const classes = useStyles({});
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const { text, className, facets, handleFilterChange, queryParams, mode } = props;
+  const { facets, handleFilterChange, queryParams, mode } = props;
   const { formatMessage } = useIntl();
   const [expanded, setExpanded] = useState({
     sortBy: false,
     path: false
   });
   const [checkedFilters, setCheckedFilters] = React.useState({});
+  const popoverAction = useRef(null);
+  const popover = useRef(null);
 
   useEffect(
     function() {
@@ -749,9 +746,6 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     }
   };
 
-  const popoverAction = useRef(null);
-  const popover = useRef(null);
-
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
 
@@ -760,16 +754,14 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     facetsLookupTable[facet.name] = facet;
   });
 
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleExpandClick = (item: string) => {
     setExpanded({ ...expanded, [item]: !expanded[item] });
+  };
+
+  const refreshPopover = () => {
+    if (popover.current.offsetHeight < popover.current.scrollHeight) {
+      popoverAction.current.updatePosition();
+    }
   };
 
   const renderFilters = () => {
@@ -802,74 +794,42 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     });
   };
 
-  const refreshPopover = () => {
-    if (popover.current.offsetHeight < popover.current.scrollHeight) {
-      popoverAction.current.updatePosition();
-    }
-  };
-
   return (
-    <div>
-      <Button variant="outlined" onClick={handleClick} className={className}>
-        {text} <ArrowDropDownIcon />
-      </Button>
-      <Popover
-        action={popoverAction}
-        ref={popover}
-        anchorEl={anchorEl}
-        getContentAnchorEl={null}
-        classes={{ paper: classes.paper }}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-      >
-        <List classes={{ padding: classes.listPadding }}>
-          <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
-            <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
-              <Typography variant="body1">
-                <strong>{formatMessage(messages.path)}</strong>
-              </Typography>
-              {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
-              <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
-            </header>
-          </ListItem>
-          <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
-            <div className={classes.body}>
-              <PathSelector
-                value={queryParams['path']?.replace('.+', '')}
-                handleFilterChange={handleFilterChange}
-                disabled={mode === 'select'}
-              />
-            </div>
-            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
-              <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
-                <Typography variant="body1">
-                  <strong>{formatMessage(messages.sortBy)}</strong>
-                </Typography>
-                {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
-                <ExpandMoreIcon
-                  className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)}
-                />
-              </header>
-            </ListItem>
-            <Collapse in={expanded && expanded['sortBy']} timeout={300} onEntered={refreshPopover}>
-              <div className={classes.body}>
-                <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
-                <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
-              </div>
-            </Collapse>
-          </Collapse>
-          {renderFilters()}
-        </List>
-      </Popover>
-    </div>
+    <List classes={{ padding: classes.listPadding }}>
+      <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
+        <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
+          <Typography variant="body1">
+            <strong>{formatMessage(messages.path)}</strong>
+          </Typography>
+          {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
+          <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
+        </header>
+      </ListItem>
+      <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
+        <div className={classes.body}>
+          <PathSelector
+            value={queryParams['path']?.replace('.+', '')}
+            handleFilterChange={handleFilterChange}
+            disabled={mode === 'select'}
+          />
+        </div>
+        <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
+          <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
+            <Typography variant="body1">
+              <strong>{formatMessage(messages.sortBy)}</strong>
+            </Typography>
+            {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
+            <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)} />
+          </header>
+        </ListItem>
+        <Collapse in={expanded && expanded['sortBy']} timeout={300} onEntered={refreshPopover}>
+          <div className={classes.body}>
+            <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
+            <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
+          </div>
+        </Collapse>
+      </Collapse>
+      {renderFilters()}
+    </List>
   );
 }

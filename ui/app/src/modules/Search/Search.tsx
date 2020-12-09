@@ -63,6 +63,7 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
+import ToolBar from './ToolBar';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -638,108 +639,113 @@ export default function Search(props: SearchProps) {
   };
 
   return (
-    <section
-      className={clsx(classes.wrapper, {
-        hasContent: searchResults && searchResults.total,
-        select: mode === 'select'
-      })}
-    >
-      <header className={classes.searchHeader}>
-        <div className={classes.search}>
-          <SearchBar
-            onChange={handleSearchKeyword}
-            keyword={keyword}
-            showActionButton={Boolean(keyword)}
-            showDecoratorIcon
-          />
-        </div>
-        <div className={classes.helperContainer}>
-          {searchResults && searchResults.facets && (
-            <FilterSearchDropdown
-              mode={mode}
-              text={'Filters'}
-              className={classes.searchDropdown}
-              facets={searchResults.facets}
-              handleFilterChange={handleFilterChange}
-              queryParams={queryParams}
+    <>
+      <ToolBar />
+      <section
+        className={clsx(classes.wrapper, {
+          hasContent: searchResults && searchResults.total,
+          select: mode === 'select'
+        })}
+      >
+        <header className={classes.searchHeader}>
+          <div className={classes.search}>
+            <SearchBar
+              onChange={handleSearchKeyword}
+              keyword={keyword}
+              showActionButton={Boolean(keyword)}
+              showDecoratorIcon
             />
-          )}
-          <IconButton onClick={handleChangeView}>{currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}</IconButton>
-        </div>
-      </header>
-      {searchResults && !!searchResults.total && (
-        <div className={classes.searchHelperBar}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={areAllSelected()}
-                  onClick={(e: any) => handleSelectAll(e.target.checked)}
-                />
-              }
-              label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
-            />
-          </FormGroup>
-          {selected.length > 0 && (
-            <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
-              {formatMessage(messages.resultsSelected, {
-                count: selected.length,
-                total: searchResults.total
-              })}
-              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
-            </Typography>
-          )}
-          <TablePagination
-            rowsPerPageOptions={[9, 15, 21]}
-            className={classes.pagination}
-            component="div"
-            labelRowsPerPage={formatMessage(messages.itemsPerPage)}
-            count={searchResults.total}
-            rowsPerPage={searchParameters.limit}
-            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-            backIconButtonProps={{
-              'aria-label': 'previous page'
-            }}
-            nextIconButtonProps={{
-              'aria-label': 'next page'
-            }}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
-        </div>
-      )}
-      <section className={classes.content}>
-        {apiState.error ? (
-          <ApiResponseErrorState error={apiState.errorResponse} />
-        ) : (
-          <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
-            {searchResults === null ? (
-              <Spinner background="inherit" />
-            ) : (
-              renderMediaCards(searchResults.items, currentView)
+          </div>
+          <div className={classes.helperContainer}>
+            {searchResults && searchResults.facets && (
+              <FilterSearchDropdown
+                mode={mode}
+                text={'Filters'}
+                className={classes.searchDropdown}
+                facets={searchResults.facets}
+                handleFilterChange={handleFilterChange}
+                queryParams={queryParams}
+              />
             )}
-          </Grid>
+            <IconButton onClick={handleChangeView}>
+              {currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}
+            </IconButton>
+          </div>
+        </header>
+        {searchResults && !!searchResults.total && (
+          <div className={classes.searchHelperBar}>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                    checked={areAllSelected()}
+                    onClick={(e: any) => handleSelectAll(e.target.checked)}
+                  />
+                }
+                label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
+              />
+            </FormGroup>
+            {selected.length > 0 && (
+              <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
+                {formatMessage(messages.resultsSelected, {
+                  count: selected.length,
+                  total: searchResults.total
+                })}
+                <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
+              </Typography>
+            )}
+            <TablePagination
+              rowsPerPageOptions={[9, 15, 21]}
+              className={classes.pagination}
+              component="div"
+              labelRowsPerPage={formatMessage(messages.itemsPerPage)}
+              count={searchResults.total}
+              rowsPerPage={searchParameters.limit}
+              page={Math.ceil(searchParameters.offset / searchParameters.limit)}
+              backIconButtonProps={{
+                'aria-label': 'previous page'
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'next page'
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </div>
+        )}
+        <section className={classes.content}>
+          {apiState.error ? (
+            <ApiResponseErrorState error={apiState.errorResponse} />
+          ) : (
+            <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
+              {searchResults === null ? (
+                <Spinner background="inherit" />
+              ) : (
+                renderMediaCards(searchResults.items, currentView)
+              )}
+            </Grid>
+          )}
+        </section>
+        {simpleMenu.item?.path && (
+          <SimpleMenu
+            permissions={permissions?.[simpleMenu.item.path]}
+            item={simpleMenu.item}
+            anchorEl={simpleMenu.anchorEl}
+            onClose={onMenuClose}
+            onNavigate={onNavigate}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            messages={{
+              edit: formatMessage(messages.edit),
+              delete: formatMessage(messages.delete),
+              preview: formatMessage(messages.preview),
+              noPermissions: formatMessage(messages.noPermissions)
+            }}
+          />
         )}
       </section>
-      {simpleMenu.item?.path && (
-        <SimpleMenu
-          permissions={permissions?.[simpleMenu.item.path]}
-          item={simpleMenu.item}
-          anchorEl={simpleMenu.anchorEl}
-          onClose={onMenuClose}
-          onNavigate={onNavigate}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          messages={{
-            edit: formatMessage(messages.edit),
-            delete: formatMessage(messages.delete),
-            preview: formatMessage(messages.preview),
-            noPermissions: formatMessage(messages.noPermissions)
-          }}
-        />
-      )}
-    </section>
+    </>
   );
 }
 
