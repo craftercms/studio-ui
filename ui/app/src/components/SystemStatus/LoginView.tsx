@@ -136,7 +136,7 @@ const translations = defineMessages({
   },
   resetPasswordInvalidToken: {
     id: 'resetView.resetPasswordInvalidToken',
-    defaultMessage: 'Invalid or expired token.'
+    defaultMessage: 'Token validation failed.'
   }
 });
 
@@ -379,9 +379,14 @@ function ResetView(props: SubViewProps) {
   useEffect(() => {
     validatePasswordResetToken(token)
       .pipe(filter((isValid) => !isValid))
-      .subscribe(() => {
-        setError(formatMessage(translations.resetPasswordInvalidToken));
-      });
+      .subscribe(
+        () => {
+          setError(formatMessage(translations.resetPasswordInvalidToken));
+        },
+        () => {
+          setError(formatMessage(translations.resetPasswordInvalidToken));
+        }
+      );
   }, [formatMessage, token]);
   const submit = (e: any) => {
     e.preventDefault();
@@ -714,6 +719,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
   return (
     <>
       <Dialog
+        fullWidth
         open={true}
         maxWidth="xs"
         className={clsx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
