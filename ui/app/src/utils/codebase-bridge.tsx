@@ -153,8 +153,7 @@ export function createCodebaseBridge() {
         import('../components/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
         }))
-      ),
-      CrafterCMSFullLogo: lazy(() => import('../components/Icons/CrafterCMSFullLogo'))
+      )
     },
 
     system: {

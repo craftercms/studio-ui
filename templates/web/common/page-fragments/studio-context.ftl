@@ -80,20 +80,6 @@
       </div>`
       );
     }
-
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    if (darkModeQuery.matches) {
-      $('body').addClass('dark-mode');
-    }
-
-    darkModeQuery.onchange = (e) => {
-      if (e.matches) {
-        $('body').addClass('dark-mode');
-      } else {
-        $('body').removeClass('dark-mode');
-      }
-    };
-
   });
 
 })(window.location.origin);

@@ -28,7 +28,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" id="navbarLogo" ng-click='loadHomeState()'></a>
+                <a class="navbar-brand" ng-click='loadHomeState()'>
+                  <img class="craftercms-logo" ng-src="{{crafterLogo}}" alt="Crafter Studio"/>
+                  <img class="craftercms-logo-dark" ng-src="{{crafterLogoDark}}" alt="Crafter Studio"/>
+                </a>
             </div>
 
             <div ng-show="authenticated" class="collapse navbar-collapse">

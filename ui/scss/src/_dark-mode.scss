@@ -4,7 +4,13 @@ $dark-mode-background-paper: #424242;
 $dark-mode-font-color: #fff;
 $dark-mode-font-highlight: #70D7FF;
 
-.dark-mode {
+@media (prefers-color-scheme: light) {
+  .craftercms-logo-dark {
+    display: none !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
   #studioBar {
     &> .navbar-fixed-top {
       color: $dark-mode-font-color;
@@ -72,5 +78,9 @@ $dark-mode-font-highlight: #70D7FF;
 
   .cs-item-icon.icon-container .studio-fa-stack-2x {
     color: $dark-mode-font-color !important;
+  }
+
+  .craftercms-logo {
+    display: none !important;
   }
 }

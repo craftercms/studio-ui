@@ -180,19 +180,6 @@
       };
 
       CrafterCMSNext.renderBackgroundUI();
-
-      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      if (darkModeQuery.matches) {
-        $('body').addClass('dark-mode');
-      }
-
-      darkModeQuery.onchange = (e) => {
-        if (e.matches) {
-          $('body').addClass('dark-mode');
-        } else {
-          $('body').removeClass('dark-mode');
-        }
-      };
     }
   ]);
 
@@ -429,7 +416,8 @@
     SAML: 'SAML',
     AUDIT_TIMEZONE_COOKIE: 'crafterStudioAuditTimezone',
     AUDIT_SYSTEM: 'Studio Root',
-    CRAFTER_LOGO: '/studio/static-assets/images/logo.svg'
+    CRAFTER_LOGO: '/studio/static-assets/images/logo.svg',
+    CRAFTER_LOGO_DARK: '/studio/static-assets/images/logo-dark.svg'
   });
 
   app.service('authService', [
@@ -976,6 +964,7 @@
       $scope.showLogoutLink = false;
       $scope.logoutInfo = {};
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.crafterLogoDark = Constants.CRAFTER_LOGO_DARK;
       $scope.messages = {
         fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
         password: formatMessage(profileSettingsMessages.password),
@@ -987,11 +976,6 @@
         yes: formatMessage(words.yes),
         no: formatMessage(words.no)
       };
-
-      var logoContainer = document.querySelector('#navbarLogo');
-      CrafterCMSNext.render(logoContainer, 'CrafterCMSFullLogo', {
-        className: 'crafter-studio-logo'
-      });
 
       $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
