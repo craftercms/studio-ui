@@ -239,8 +239,7 @@ export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
   }
 }
 
-export function compileDropZone(iceId: number): DropZone {
-  const physicalRecord = fromICEId(iceId);
+function getDropZoneFromRegistryEntry(physicalRecord: RegistryEntry, iceId: number): DropZone {
   const physicalRecordId = physicalRecord.id;
   const element = physicalRecord.element;
   const children: Element[] = Array.from(element.children);
@@ -257,6 +256,16 @@ export function compileDropZone(iceId: number): DropZone {
     childrenRects,
     validations: {}
   };
+}
+
+export function compileDropZone(iceId: number): DropZone {
+  const physicalRecord = fromICEId(iceId);
+  return getDropZoneFromRegistryEntry(physicalRecord, iceId);
+}
+
+export function compileAllDropZones(iceId: number): DropZone[] {
+  const physicalRecords = getRecordsFromIceId(iceId);
+  return physicalRecords.map((physicalRecord) => getDropZoneFromRegistryEntry(physicalRecord, iceId));
 }
 
 export function getSiblingRects(id: number): LookupTable<DOMRect> {
@@ -323,15 +332,21 @@ export function getDragContextFromReceptacles(
     players: [],
     containers: []
   };
+
   receptacles.forEach(({ id }) => {
-    const dropZone = compileDropZone(id);
-    dropZone.origin = null;
-    dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
-    dropZone.validations = validationsLookup?.[id] ?? {};
-    response.dropZones.push(dropZone);
-    response.siblings = [...response.siblings, ...dropZone.children];
-    response.players = [...response.players, ...dropZone.children, dropZone.element];
-    response.containers.push(dropZone.element);
+    const dropZones = compileAllDropZones(id);
+    const dropZonesFiltered = currentRecord
+      ? dropZones.filter((dropZone) => dropZone.children.includes(currentRecord.element))
+      : null;
+    (dropZonesFiltered && dropZonesFiltered.length ? dropZonesFiltered : dropZones).forEach((dropZone) => {
+      dropZone.origin = null;
+      dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
+      dropZone.validations = validationsLookup?.[id] ?? {};
+      response.dropZones.push(dropZone);
+      response.siblings = [...response.siblings, ...dropZone.children];
+      response.players = [...response.players, ...dropZone.children, dropZone.element];
+      response.containers.push(dropZone.element);
+    });
   });
   return response;
 }
