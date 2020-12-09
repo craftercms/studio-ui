@@ -186,6 +186,7 @@ function fetchPublishingSettings() {
       if (me.isValidateCommentOn) {
         me.getComponent('.approveDialogSubmissionComment').append(' (*)');
       }
+      me.initValidation();
       var timeZoneText = me.$('.zone-text');
       timeZoneText.html(
         "<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>" +

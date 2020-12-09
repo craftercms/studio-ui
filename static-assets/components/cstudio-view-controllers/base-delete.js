@@ -35,7 +35,7 @@
   YAHOO.extend(BaseDelete, CStudioAuthoring.ViewController.Base, {
     actions: ['.cancel'],
     events: ['submitComplete', 'submitStart', 'submitEnd', 'itemRender'],
-    startup: ['fetchPublishingSettings', 'initValidation', 'translateUI', 'extend'],
+    startup: ['fetchPublishingSettings', 'translateUI', 'extend'],
     extend: function () {
       this.events = this.events.concat(this.constructor.superclass.events);
       this.actions = this.actions.concat(this.constructor.superclass.actions);
@@ -138,6 +138,7 @@
           if (isValidateCommentOn) {
             me.getComponent('.delete-submission-label').append(' (*)');
           }
+          me.initValidation();
         }
       });
     },
