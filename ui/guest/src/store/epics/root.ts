@@ -393,15 +393,17 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region drop_zone_enter
-  (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>, state$: GuestStateObservable) => {
+  (action$: ActionsObservable<GuestStandardAction<{ physicalRecordId: number }>>, state$: GuestStateObservable) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
       ofType('drop_zone_enter'),
       withLatestFrom(state$),
       tap(([action, state]) => {
-        const { iceId } = action.payload;
-        const { validations } = state.dragContext.dropZones.find((dropZone) => dropZone.iceId === iceId);
+        const { physicalRecordId } = action.payload;
+        const { validations } = state.dragContext.dropZones.find(
+          (dropZone) => dropZone.physicalRecordId === physicalRecordId
+        );
         Object.values(validations).forEach((validation) => {
           post({ type: 'VALIDATION_MESSAGE', payload: validation });
         });
@@ -412,7 +414,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region drop_zone_leave
-  (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>, state$: GuestStateObservable) => {
+  (action$: ActionsObservable<GuestStandardAction<{ physicalRecordId: number }>>, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('drop_zone_leave'),
       withLatestFrom(state$),
@@ -420,8 +422,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         if (!state.dragContext) {
           return;
         }
-        const { iceId } = action.payload;
-        const { validations } = state.dragContext.dropZones.find((dropZone) => dropZone.iceId === iceId);
+        const { physicalRecordId } = action.payload;
+        const { validations } = state.dragContext.dropZones.find(
+          (dropZone) => dropZone.physicalRecordId === physicalRecordId
+        );
         if (validations.minCount) {
           post({ type: INSTANCE_DRAG_ENDED });
         }

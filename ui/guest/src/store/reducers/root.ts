@@ -573,9 +573,9 @@ const scrolling_stopped: GuestReducer = (state) => {
 // region drop_zone_enter
 // TODO: Not pure
 const drop_zone_enter: GuestReducer = (state, action) => {
-  const { iceId } = action.payload;
+  const { physicalRecordId } = action.payload;
   const { dropZones: currentDropZones } = state.dragContext;
-  const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
+  const currentDropZone = currentDropZones.find((dropZone) => dropZone.physicalRecordId === physicalRecordId);
   let length = currentDropZone.children.length;
   let invalidDrop = currentDropZone.origin ? false : state.dragContext.invalidDrop;
   let rest = reversePluckProps(currentDropZone.validations, 'maxCount', 'minCount');
@@ -594,6 +594,7 @@ const drop_zone_enter: GuestReducer = (state, action) => {
   }
 
   const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
+
   const highlighted = getHighlighted(dropZones);
 
   return {
@@ -611,12 +612,12 @@ const drop_zone_enter: GuestReducer = (state, action) => {
 // region drop_zone_leave
 // TODO: Not pure
 const drop_zone_leave: GuestReducer = (state, action) => {
-  const { iceId } = action.payload;
+  const { physicalRecordId } = action.payload;
   if (!state.dragContext) {
     return;
   }
   const { dropZones: currentDropZones } = state.dragContext;
-  const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
+  const currentDropZone = currentDropZones.find((dropZone) => dropZone.physicalRecordId === physicalRecordId);
   let length = currentDropZone.children.length;
   let invalidDrop = state.status === EditingStatus.SORTING_COMPONENT ? state.dragContext.invalidDrop : false;
   let rest = reversePluckProps(currentDropZone.validations, 'minCount');
