@@ -24,14 +24,16 @@ import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import SearchBar from '../../components/Controls/SearchBar';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import AppsIcon from '@material-ui/icons/Apps';
 
 const translations = defineMessages({
-  label: {
-    id: 'searchToolBar.label',
-    defaultMessage: 'Open filters panel'
+  showHideFilters: {
+    id: 'searchToolBar.showHideFilters',
+    defaultMessage: 'Show/hide filters'
   },
   search: {
-    id: 'searchToolBar.search',
+    id: 'words.search',
     defaultMessage: 'Search'
   }
 });
@@ -56,8 +58,18 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+interface SiteSearchToolBarProps {
+  keyword: string[] | string;
+  showActionButton?: boolean;
+  currentView: string;
+  handleChangeView(): void;
+  onChange(value: string): void;
+  onMenuIconClick(): void;
+}
+
 // TODO: create global Toolbar Component to reuse in preview and search
-export default function ToolBar() {
+export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
+  const { onChange, keyword, showActionButton, handleChangeView, currentView, onMenuIconClick } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
 
@@ -65,7 +77,7 @@ export default function ToolBar() {
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
         <section className={classes.actionButtonSection}>
-          <IconButton aria-label={formatMessage(translations.label)} onClick={() => {}}>
+          <IconButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick}>
             <CustomMenu />
           </IconButton>
           <section>
@@ -75,9 +87,12 @@ export default function ToolBar() {
           </section>
         </section>
         <section>
-          <SearchBar onChange={() => {}} keyword="awesome" showActionButton={Boolean('awesome')} showDecoratorIcon />
+          <SearchBar onChange={onChange} keyword={keyword} showActionButton={showActionButton} showDecoratorIcon />
         </section>
         <div>
+          <IconButton onClick={handleChangeView}>
+            {currentView === 'grid' ? <FormatListBulletedIcon /> : <AppsIcon />}
+          </IconButton>
           <ToolbarGlobalNav />
         </div>
       </Toolbar>

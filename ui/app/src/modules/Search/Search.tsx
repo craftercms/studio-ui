@@ -16,8 +16,6 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import AppsIcon from '@material-ui/icons/Apps';
-import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
@@ -27,8 +25,6 @@ import Spinner from '../../components/SystemStatus/Spinner';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import EmptyState from '../../components/SystemStatus/EmptyState';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import FilterSearchDropdown from './FilterSearchDropdown';
 import queryString from 'query-string';
 import TablePagination from '@material-ui/core/TablePagination';
 import Typography from '@material-ui/core/Typography';
@@ -39,7 +35,6 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from 'clsx';
 import { History, Location } from 'history';
 import { fetchWorkflowAffectedItems, getContentXML } from '../../services/content';
-import SearchBar from '../../components/Controls/SearchBar';
 import {
   closeDeleteDialog,
   deleteDialogClosed,
@@ -63,7 +58,9 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
-import ToolBar from './ToolBar';
+import SiteSearchToolBar from '../../components/SiteSearchToolbar';
+import { Drawer } from '@material-ui/core';
+import SiteSearchFilters from '../../components/SiteSearchFilters';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -71,12 +68,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
     '&.hasContent': {
       height: 'inherit'
     },
     '&.select': {
       paddingBottom: '60px'
     }
+  },
+  shift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   searchHeader: {
     padding: '15px 20px',
@@ -174,6 +181,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '80px',
     paddingTop: '0',
     order: -1
+  },
+  drawer: {
+    flexShrink: 0
+  },
+  drawerPaper: {
+    top: 64,
+    bottom: 0,
+    width: '240px'
   }
 }));
 
@@ -272,6 +287,7 @@ export default function Search(props: SearchProps) {
     item: null,
     anchorEl: null
   });
+  const [drawerOpen, setDrawerOpen] = useState(true);
 
   refs.createQueryString = createQueryString;
 
@@ -638,40 +654,46 @@ export default function Search(props: SearchProps) {
     });
   };
 
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <>
-      <ToolBar />
+      <SiteSearchToolBar
+        onChange={handleSearchKeyword}
+        onMenuIconClick={toggleDrawer}
+        handleChangeView={handleChangeView}
+        currentView={currentView}
+        keyword={keyword}
+        showActionButton={Boolean(keyword)}
+      />
+      <Drawer
+        variant="persistent"
+        anchor="left"
+        open={drawerOpen}
+        className={classes.drawer}
+        classes={{ paper: classes.drawerPaper }}
+      >
+        {searchResults && searchResults.facets && (
+          <SiteSearchFilters
+            mode={mode}
+            text={'Filters'}
+            className={classes.searchDropdown}
+            facets={searchResults.facets}
+            handleFilterChange={handleFilterChange}
+            queryParams={queryParams}
+          />
+        )}
+      </Drawer>
       <section
         className={clsx(classes.wrapper, {
           hasContent: searchResults && searchResults.total,
-          select: mode === 'select'
+          select: mode === 'select',
+          [classes.shift]: drawerOpen
         })}
+        style={drawerOpen ? { width: 'calc(100% - 240px', marginLeft: '240px' } : {}}
       >
-        <header className={classes.searchHeader}>
-          <div className={classes.search}>
-            <SearchBar
-              onChange={handleSearchKeyword}
-              keyword={keyword}
-              showActionButton={Boolean(keyword)}
-              showDecoratorIcon
-            />
-          </div>
-          <div className={classes.helperContainer}>
-            {searchResults && searchResults.facets && (
-              <FilterSearchDropdown
-                mode={mode}
-                text={'Filters'}
-                className={classes.searchDropdown}
-                facets={searchResults.facets}
-                handleFilterChange={handleFilterChange}
-                queryParams={queryParams}
-              />
-            )}
-            <IconButton onClick={handleChangeView}>
-              {currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}
-            </IconButton>
-          </div>
-        </header>
         {searchResults && !!searchResults.total && (
           <div className={classes.searchHelperBar}>
             <FormGroup>
