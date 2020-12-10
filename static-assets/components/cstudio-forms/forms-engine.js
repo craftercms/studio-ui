@@ -718,9 +718,10 @@ var CStudioForms =
     const { fromEvent, operators } = CrafterCMSNext.rxjs;
     const { map, filter, take } = operators;
     const FlattenerState = {};
-    const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    const formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
-    const words = CrafterCMSNext.i18n.messages.words;
+    const i18n = CrafterCMSNext.i18n;
+    const formatMessage = i18n.intl.formatMessage;
+    const formEngineMessages = i18n.messages.formEngineMessages;
+    const words = i18n.messages.words;
 
     const messages$ = fromEvent(window, 'message').pipe(
       filter((event) => event.data && event.data.type),
@@ -771,7 +772,7 @@ var CStudioForms =
     }
 
     function saveDraftDialog() {
-      $.notify(formatMessage(formEngineMessages.saveDraftCompleted), 'success');
+      // deprecated
     }
 
     function setButtonsEnabled(enabled) {

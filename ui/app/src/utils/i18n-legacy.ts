@@ -1439,6 +1439,10 @@ export const itemSuccessMessages = defineMessages({
   itemContentTypeChanged: {
     id: 'item.contentTypeChanged',
     defaultMessage: 'Item type changed successfully'
+  },
+  itemSavedAsDraft: {
+    id: 'item.savedAsDraft',
+    defaultMessage: 'Item saved as draft'
   }
 });
 

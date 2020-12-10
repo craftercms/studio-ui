@@ -40,6 +40,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import { getQueryVariable } from '../../utils/path';
+import DialogHeader from './DialogHeader';
 
 const translations = defineMessages({
   title: {
@@ -58,11 +59,15 @@ const styles = makeStyles(() =>
       height: '0',
       border: 0,
       '&.complete': {
-        height: '100%'
+        height: '100%',
+        flexGrow: 1
       }
     },
+    dialog: {
+      minHeight: '90vh'
+    },
     loadingRoot: {
-      height: 'calc(100% - 104px)',
+      flexGrow: 1,
       justifyContent: 'center'
     },
     edited: {
@@ -215,10 +220,13 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const id = 'legacy-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const classes = styles();
+
+  const title = formatMessage(translations.title);
 
   const minimized = useMinimizeDialog({
     id,
-    title: formatMessage(translations.title),
+    title,
     minimized: false
   });
 
@@ -227,7 +235,23 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   };
 
   return (
-    <Dialog open={props.open && !minimized} keepMounted={minimized} fullScreen onClose={props.onClose}>
+    <Dialog
+      open={props.open && !minimized}
+      keepMounted={minimized}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="xl"
+      classes={{ paper: classes.dialog }}
+    >
+      <DialogHeader
+        title={title}
+        rightActions={[
+          {
+            icon: 'MinimizeIcon',
+            onClick: onMinimized
+          }
+        ]}
+      />
       <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );

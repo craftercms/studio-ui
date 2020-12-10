@@ -83,11 +83,17 @@ const systemEpics: CrafterCMSEpic[] = [
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditItemSuccessNotification.type),
-      tap(({ payload }) => {
+      tap(({ payload: { action } }) => {
+        let message;
+        if (['save', 'saveAndMinimize'].includes(action)) {
+          message = getIntl().formatMessage(itemSuccessMessages.itemSavedAsDraft);
+        } else {
+          message = getIntl().formatMessage(itemSuccessMessages.itemEdited);
+        }
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemEdited)
+            message
           })
         );
       }),

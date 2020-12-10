@@ -836,7 +836,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                       }
                     } else {
                       if (!draft) {
-                        //this.callingWindow.location.reload(true);
                       }
                     }
 
@@ -872,6 +871,21 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
                       }
+                    }
+
+                    // send notification
+                    if (draft) {
+                      CStudioAuthoring.Utils.showNotification(
+                        CrafterCMSNext.i18n.intl.formatMessage(
+                          CrafterCMSNext.i18n.messages.itemSuccessMessages.itemSavedAsDraft
+                        )
+                      );
+                    } else {
+                      CStudioAuthoring.Utils.showNotification(
+                        CrafterCMSNext.i18n.intl.formatMessage(
+                          CrafterCMSNext.i18n.messages.itemSuccessMessages.itemEdited
+                        )
+                      );
                     }
                   },
                   failure: function() {},
