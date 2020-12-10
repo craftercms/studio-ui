@@ -86,8 +86,9 @@ export interface Clipboard {
 export interface GlobalState {
   auth: {
     error: ApiResponse;
-    isFetching: boolean;
     active: boolean;
+    expiresAt: number;
+    isFetching: boolean;
   };
   user: User;
   sites: {

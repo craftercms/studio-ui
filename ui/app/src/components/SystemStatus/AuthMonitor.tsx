@@ -120,10 +120,11 @@ export default function AuthMonitor() {
     }
   }, [isSSO]);
 
+  // TODO: Pending decision on what will happen with validate session.
   useEffect(() => {
     if (active) {
       setPassword('');
-      const sub = interval(60000).subscribe(() => dispatch(validateSession()));
+      // const sub = interval(60000).subscribe(() => dispatch(validateSession()));
       if (firstRender.current) {
         firstRender.current = false;
       } else {
@@ -134,7 +135,7 @@ export default function AuthMonitor() {
           }
         });
       }
-      return () => sub.unsubscribe();
+      // return () => sub.unsubscribe();
     }
   }, [active, dispatch, formatMessage, username]);
 

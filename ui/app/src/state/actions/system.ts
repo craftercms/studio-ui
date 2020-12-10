@@ -69,3 +69,5 @@ export const showSystemNotification = createAction<{
 // endregion
 
 export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
+
+export const storeInitialize = createAction('CRAFTER_INIT');

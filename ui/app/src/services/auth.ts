@@ -81,3 +81,9 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
     })
   );
 }
+
+export type RefreshSessionResponse = { expiresAt: string; token: string };
+
+export function refreshSession(): Observable<RefreshSessionResponse> {
+  return get('/studio/refresh.json').pipe(pluck('response'));
+}

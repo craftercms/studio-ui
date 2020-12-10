@@ -22,24 +22,31 @@ import {
   LOG_IN_COMPLETE,
   LOG_IN_FAILED,
   LOG_OUT_COMPLETE,
+  refreshAuthTokenComplete,
   VALIDATE_SESSION,
   VALIDATE_SESSION_COMPLETE,
   VALIDATE_SESSION_FAILED
 } from '../actions/auth';
 
-export const initialState = {
+export const initialState: GlobalState['auth'] = {
   error: null,
   active: false,
+  expiresAt: null,
   isFetching: false
 };
 
+// TODO: Update actions for JWT
 const reducer = createReducer<GlobalState['auth']>(initialState, {
+  [refreshAuthTokenComplete.type]: (state, { payload }) => ({
+    ...state,
+    expiresAt: new Date(payload.expiresAt).getTime()
+  }),
   [VALIDATE_SESSION]: (state) => ({ ...state, isFetching: true }),
   [VALIDATE_SESSION_COMPLETE]: (state, { payload: active }) => ({ ...state, isFetching: false, active }),
   [VALIDATE_SESSION_FAILED]: (state) => ({ ...state, isFetching: false }),
   [SESSION_TIMEOUT]: () => initialState,
   [LOG_IN]: (state) => ({ ...state, isFetching: true }),
-  [LOG_IN_COMPLETE]: () => ({ active: true, error: null, isFetching: true }),
+  [LOG_IN_COMPLETE]: () => ({ active: true, error: null, isFetching: true, expiresAt: null }),
   [LOG_IN_FAILED]: (state, action) => ({
     ...state,
     isFetching: false,

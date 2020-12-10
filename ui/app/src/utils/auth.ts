@@ -30,6 +30,10 @@ export function setRequestForgeryToken(headerName = xsrfTokenHeader): void {
   setGlobalHeaders({ [headerName]: token });
 }
 
+export function setJwt(token: string): void {
+  setGlobalHeaders({ Authorization: `Bearer ${token}` });
+}
+
 export function getCookieDomain(): string {
   let hostname = window.location.hostname;
   let domain = '';

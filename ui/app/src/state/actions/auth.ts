@@ -17,6 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { User } from '../../models/User';
 import { Credentials } from '../../models/Credentials';
+import { RefreshSessionResponse } from '../../services/auth';
 
 // region Login
 
@@ -51,5 +52,9 @@ export const VALIDATE_SESSION_FAILED = 'VALIDATE_SESSION_FAILED';
 export const validateSession = createAction(VALIDATE_SESSION);
 export const validateSessionComplete = createAction<boolean>(VALIDATE_SESSION_COMPLETE);
 export const validateSessionFailed = createAction(VALIDATE_SESSION_FAILED);
+
+export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
+export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
+export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
 
 // endregion

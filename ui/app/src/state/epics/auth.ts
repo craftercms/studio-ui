@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import {
   LOG_IN,
   LOG_OUT,
@@ -22,39 +22,53 @@ import {
   loginFailed,
   logoutComplete,
   logoutFailed,
+  refreshAuthToken,
+  refreshAuthTokenComplete,
+  refreshAuthTokenFailed,
   VALIDATE_SESSION,
   validateSessionComplete,
   validateSessionFailed
 } from '../actions/auth';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { StandardAction } from '../../models/StandardAction';
-import GlobalState from '../../models/GlobalState';
 import * as auth from '../../services/auth';
+import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
-import { setRequestForgeryToken } from '../../utils/auth';
+import { setJwt, setRequestForgeryToken } from '../../utils/auth';
+import { CrafterCMSEpic } from '../store';
 
-const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) =>
-  action$.pipe(
-    ofType(LOG_IN),
-    switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
-  );
-
-const logout: Epic = (action$) =>
-  action$.pipe(
-    ofType(LOG_OUT),
-    switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
-  );
-
-const validateSession: Epic = (action$) =>
-  action$.pipe(
-    ofType(VALIDATE_SESSION),
-    switchMap(() =>
-      auth.validateSession().pipe(
-        tap((isValid) => !isValid && setRequestForgeryToken()),
-        map(validateSessionComplete),
-        catchAjaxError(validateSessionFailed)
+const epics: CrafterCMSEpic[] = [
+  (action$) =>
+    action$.pipe(
+      ofType(LOG_IN),
+      switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(LOG_OUT),
+      switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(VALIDATE_SESSION),
+      switchMap(() =>
+        auth.validateSession().pipe(
+          tap((isValid) => !isValid && setRequestForgeryToken()),
+          map(validateSessionComplete),
+          catchAjaxError(validateSessionFailed)
+        )
+      )
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(refreshAuthToken.type),
+      switchMap(() =>
+        refreshSession().pipe(
+          tap(({ token }) => setJwt(token)),
+          map(refreshAuthTokenComplete),
+          catchAjaxError(refreshAuthTokenFailed)
+        )
       )
     )
-  );
+];
 
-export default [login, logout, validateSession] as Epic[];
+export default epics;

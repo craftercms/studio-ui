@@ -16,14 +16,19 @@
 
 import React, { useEffect, useState } from 'react';
 import Login from '../../pages/Login';
-import { validateSession } from '../../services/auth';
+import { refreshSession } from '../../services/auth';
 import I18nProvider from '../I18nProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 
 export function AuthBoundary(props) {
-  const [loggedIn, setLoggedIn] = useState<boolean>(null);
+  const [loggedIn, setLoggedIn] = useState<boolean>(true);
   useEffect(() => {
-    validateSession().subscribe(setLoggedIn);
+    refreshSession()
+      .pipe()
+      .subscribe(
+        () => setLoggedIn(true),
+        () => setLoggedIn(false)
+      );
   }, []);
   if (loggedIn === null) {
     return null;

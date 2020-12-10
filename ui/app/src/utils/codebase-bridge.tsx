@@ -205,7 +205,6 @@ export function createCodebaseBridge() {
       translation
     },
 
-    // Mechanics
     render(
       container: string | Element,
       component: string | JSXElementConstructor<any>,

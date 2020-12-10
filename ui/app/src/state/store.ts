@@ -32,6 +32,10 @@ import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
+import { refreshSession } from '../services/auth';
+import { setJwt } from '../utils/auth';
+import { storeInitialize } from './actions/system';
+import { refreshAuthTokenComplete } from './actions/auth';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
 
@@ -45,15 +49,29 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
   if (store) {
     return of(store);
   }
-  const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
-  if (preloadState) {
-    return of(createStoreSync(preloadState)).pipe(tap((s) => (store = s)));
-  } else {
-    return fetchInitialState().pipe(
-      map((initialState) => createStoreSync(initialState)),
-      tap((s) => (store = s))
-    );
-  }
+  return refreshSession().pipe(
+    tap(({ token }) => setJwt(token)),
+    switchMap((auth) => {
+      const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
+      if (preloadState) {
+        return of(createStoreSync(preloadState)).pipe(
+          tap((s) => {
+            store = s;
+            store.dispatch(refreshAuthTokenComplete(auth));
+          })
+        );
+      } else {
+        return fetchInitialState().pipe(
+          map((initialState) => createStoreSync(initialState)),
+          tap((s) => {
+            store = s;
+            store.dispatch(refreshAuthTokenComplete(auth));
+          })
+        );
+      }
+    }),
+    tap((store) => store.dispatch(storeInitialize()))
+  );
 }
 
 export function getStore(): CrafterCMSStore {
