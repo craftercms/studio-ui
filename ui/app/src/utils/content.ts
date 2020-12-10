@@ -467,7 +467,9 @@ export function createChildModelIdList(model: ContentInstance, contentTypes: Loo
         if (field.type === 'node-selector') {
           model[field.id].forEach((mdl: ContentInstance) => children.push(mdl.craftercms.id));
         } else if (field.type === 'repeat') {
-          processFields(model[field.id], Object.values(field.fields), children);
+          model[field.id].forEach((mdl: ContentInstance) => {
+            processFields(mdl, Object.values(field.fields), children);
+          });
         }
       }
     });
