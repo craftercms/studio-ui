@@ -85,16 +85,16 @@ export function getCollection(model: ContentInstance, fieldId: string, index: st
 export function setCollection(model: ContentInstance, fieldId: string, index: number | string, collection: string[]) {
   if (fieldId.includes('.')) {
     const concatFieldId = mergeArraysAlternatively(fieldId.split('.'), index.toString().split('.')).join('.');
-    const array = concatFieldId.split('.');
+    const fieldNames = concatFieldId.split('.');
+    const { length } = fieldNames;
 
     const _model = { ...model };
 
-    array.reduce((acc, value, i) => {
-      if (i === array.length - 1) {
-        acc[value] = collection;
-      } else {
-        return (acc[value] = { ...acc[value] });
+    fieldNames.reduce((acc, _fieldId, i) => {
+      if (i === length) {
+        acc[_fieldId] = collection;
       }
+      return (acc[_fieldId] = Array.isArray(acc[_fieldId]) ? [...acc[_fieldId]] : { ...acc[_fieldId] });
     }, _model);
     return _model;
   } else {
