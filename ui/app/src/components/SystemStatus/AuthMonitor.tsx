@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux';
 import { login, validateSession } from '../../state/actions/auth';
 import LoadingState from './LoadingState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
-import { interval } from 'rxjs';
+// import { interval } from 'rxjs';
 import { getLogoutInfoURL } from '../../services/auth';
 import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';

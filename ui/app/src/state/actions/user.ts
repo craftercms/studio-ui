@@ -16,8 +16,4 @@
 
 import { createAction } from '@reduxjs/toolkit';
 
-export const SESSION_TIMEOUT = 'SESSION_TIMEOUT';
-
-export function fetchActiveUser() {}
-
-export const sessionTimeout = createAction(SESSION_TIMEOUT);
+export const sessionTimeout = createAction('SESSION_TIMEOUT');

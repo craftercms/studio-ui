@@ -16,8 +16,8 @@
 
 import { ofType } from 'redux-observable';
 import {
-  LOG_IN,
-  LOG_OUT,
+  login,
+  logout,
   loginComplete,
   loginFailed,
   logoutComplete,
@@ -25,7 +25,7 @@ import {
   refreshAuthToken,
   refreshAuthTokenComplete,
   refreshAuthTokenFailed,
-  VALIDATE_SESSION,
+  validateSession,
   validateSessionComplete,
   validateSessionFailed
 } from '../actions/auth';
@@ -39,17 +39,17 @@ import { CrafterCMSEpic } from '../store';
 const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
-      ofType(LOG_IN),
+      ofType(login.type),
       switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
     ),
   (action$) =>
     action$.pipe(
-      ofType(LOG_OUT),
+      ofType(logout.type),
       switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
     ),
   (action$) =>
     action$.pipe(
-      ofType(VALIDATE_SESSION),
+      ofType(validateSession.type),
       switchMap(() =>
         auth.validateSession().pipe(
           tap((isValid) => !isValid && setRequestForgeryToken()),

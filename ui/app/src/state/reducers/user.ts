@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { User } from '../../models/User';
-import { LOG_OUT_COMPLETE } from '../actions/auth';
+import { logoutComplete } from '../actions/auth';
 
 const reducer = createReducer<User>(null, {
   // Service doesn't return the "right" user. For now just keeping the one that
@@ -26,7 +26,7 @@ const reducer = createReducer<User>(null, {
   //     ...action.payload
   //   };
   // },
-  [LOG_OUT_COMPLETE]: () => null
+  [logoutComplete.type]: () => null
 });
 
 export default reducer;

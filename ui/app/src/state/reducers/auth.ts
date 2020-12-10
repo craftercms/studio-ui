@@ -16,16 +16,16 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { SESSION_TIMEOUT } from '../actions/user';
+import { sessionTimeout } from '../actions/user';
 import {
-  LOG_IN,
-  LOG_IN_COMPLETE,
-  LOG_IN_FAILED,
-  LOG_OUT_COMPLETE,
+  login,
+  loginComplete,
+  loginFailed,
+  logoutComplete,
   refreshAuthTokenComplete,
-  VALIDATE_SESSION,
-  VALIDATE_SESSION_COMPLETE,
-  VALIDATE_SESSION_FAILED
+  validateSession,
+  validateSessionComplete,
+  validateSessionFailed
 } from '../actions/auth';
 
 export const initialState: GlobalState['auth'] = {
@@ -41,13 +41,13 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
     ...state,
     expiresAt: new Date(payload.expiresAt).getTime()
   }),
-  [VALIDATE_SESSION]: (state) => ({ ...state, isFetching: true }),
-  [VALIDATE_SESSION_COMPLETE]: (state, { payload: active }) => ({ ...state, isFetching: false, active }),
-  [VALIDATE_SESSION_FAILED]: (state) => ({ ...state, isFetching: false }),
-  [SESSION_TIMEOUT]: () => initialState,
-  [LOG_IN]: (state) => ({ ...state, isFetching: true }),
-  [LOG_IN_COMPLETE]: () => ({ active: true, error: null, isFetching: true, expiresAt: null }),
-  [LOG_IN_FAILED]: (state, action) => ({
+  [validateSession.type]: (state) => ({ ...state, isFetching: true }),
+  [validateSessionComplete.type]: (state, { payload: active }) => ({ ...state, isFetching: false, active }),
+  [validateSessionFailed.type]: (state) => ({ ...state, isFetching: false }),
+  [sessionTimeout.type]: () => initialState,
+  [login.type]: (state) => ({ ...state, isFetching: true }),
+  [loginComplete.type]: () => ({ active: true, error: null, isFetching: true, expiresAt: null }),
+  [loginFailed.type]: (state, action) => ({
     ...state,
     isFetching: false,
     error:
@@ -63,7 +63,7 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
             remedialAction: 'Please try again momentarily or contact support'
           }
   }),
-  [LOG_OUT_COMPLETE]: () => initialState
+  [logoutComplete.type]: () => initialState
 });
 
 export default reducer;
