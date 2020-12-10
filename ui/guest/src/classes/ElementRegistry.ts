@@ -382,3 +382,16 @@ export function getParentElementFromICEProps(
 
   return recordId === -1 ? null : $(fromICEId(recordId).element);
 }
+export function getParentsElementFromICEProps(
+  modelId: string,
+  fieldId: string,
+  index: string | number
+): JQuery<Element>[] {
+  const recordId = iceRegistry.exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
+  });
+
+  return recordId === -1 ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
+}
