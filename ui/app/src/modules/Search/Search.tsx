@@ -13,9 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
@@ -34,28 +34,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from 'clsx';
 import { History, Location } from 'history';
-import { fetchWorkflowAffectedItems, getContentXML } from '../../services/content';
-import {
-  closeDeleteDialog,
-  deleteDialogClosed,
-  showCodeEditorDialog,
-  showDeleteDialog,
-  showEditDialog,
-  showPreviewDialog,
-  showWorkflowCancellationDialog,
-  updatePreviewDialog
-} from '../../state/actions/dialogs';
+import { getContentXML } from '../../services/content';
+import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useSelection } from '../../utils/hooks';
 import { fetchUserPermissions } from '../../state/actions/content';
-import { Resource } from '../../models/Resource';
-import { LookupTable } from '../../models/LookupTable';
-import { Loader } from '../../components/ItemMenu/ItemMenu';
-import { isEditableAsset } from '../../utils/content';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { getStoredPreviewChoice } from '../../utils/state';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
@@ -192,15 +175,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const loaderStyles = makeStyles(() =>
-  createStyles({
-    loadingWrapper: {
-      width: '75px',
-      padding: '0px 15px'
-    }
-  })
-);
-
 const initialSearchParameters: ElasticParams = {
   query: '',
   keywords: '',
@@ -276,16 +250,11 @@ export default function Search(props: SearchProps) {
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
-  const permissions = usePermissions();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
-  });
-  const [simpleMenu, setSimpleMenu] = useState<{ item: MediaItem; anchorEl: Element }>({
-    item: null,
-    anchorEl: null
   });
   const [drawerOpen, setDrawerOpen] = useState(true);
 
@@ -523,17 +492,13 @@ export default function Search(props: SearchProps) {
 
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
     dispatch(fetchUserPermissions({ path: item.path }));
-    setSimpleMenu({
-      item,
-      anchorEl: event.currentTarget
-    });
-  };
-
-  const onNavigate = (item: MediaItem) => {
-    if (item.path) {
-      let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(item.path)}&site=${site}`;
-    }
+    dispatch(
+      showItemMenu({
+        path: item.path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX }
+      })
+    );
   };
 
   const onPreview = (item: MediaItem) => {
@@ -595,63 +560,6 @@ export default function Search(props: SearchProps) {
         break;
       }
     }
-  };
-
-  const onEdit = (item: MediaItem) => {
-    if (item.type === 'Page' || item.type === 'Taxonomy' || item.type === 'Component') {
-      const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form`;
-      fetchWorkflowAffectedItems(site, item.path).subscribe((items) => {
-        if (items?.length > 0) {
-          dispatch(
-            showWorkflowCancellationDialog({
-              items,
-              onContinue: showEditDialog({ src })
-            })
-          );
-        } else {
-          dispatch(showEditDialog({ src }));
-        }
-      });
-    } else {
-      let src = `${legacyFormSrc}site=${site}&path=${item.path}&type=asset`;
-      dispatch(showCodeEditorDialog({ src }));
-    }
-  };
-
-  const onDelete = (item: MediaItem) => {
-    const idDialogSuccess = 'deleteDialogSuccess';
-    const idDialogCancel = 'deleteDialogCancel';
-    dispatch(
-      showDeleteDialog({
-        items: [item],
-        onSuccess: batchActions([
-          dispatchDOMEvent({
-            id: idDialogSuccess
-          }),
-          closeDeleteDialog()
-        ]),
-        onClosed: batchActions([dispatchDOMEvent({ id: idDialogCancel }), deleteDialogClosed()])
-      })
-    );
-
-    let unsubscribe, cancelUnsubscribe;
-
-    unsubscribe = createCallbackListener(idDialogSuccess, function() {
-      refreshSearch();
-      cancelUnsubscribe();
-    });
-
-    cancelUnsubscribe = createCallbackListener(idDialogCancel, function() {
-      refreshSearch();
-      unsubscribe();
-    });
-  };
-
-  const onMenuClose = () => {
-    setSimpleMenu({
-      item: null,
-      anchorEl: null
-    });
   };
 
   const toggleDrawer = () => {
@@ -749,145 +657,7 @@ export default function Search(props: SearchProps) {
             </Grid>
           )}
         </section>
-        {simpleMenu.item?.path && (
-          <SimpleMenu
-            permissions={permissions?.[simpleMenu.item.path]}
-            item={simpleMenu.item}
-            anchorEl={simpleMenu.anchorEl}
-            onClose={onMenuClose}
-            onNavigate={onNavigate}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            messages={{
-              edit: formatMessage(messages.edit),
-              delete: formatMessage(messages.delete),
-              preview: formatMessage(messages.preview),
-              noPermissions: formatMessage(messages.noPermissions)
-            }}
-          />
-        )}
       </section>
     </>
   );
-}
-
-interface SimpleMenuProps {
-  permissions: LookupTable<boolean>;
-  item: MediaItem;
-  anchorEl: Element;
-  messages: {
-    delete: string;
-    edit: string;
-    preview: string;
-    noPermissions: string;
-  };
-  onClose(): void;
-  onNavigate(item: MediaItem): void;
-  onEdit(item: MediaItem): void;
-  onDelete(item: MediaItem): void;
-}
-
-interface SimpleMenuUIProps {
-  resource: Resource<LookupTable<boolean>>;
-  messages: {
-    delete: string;
-    edit: string;
-    preview: string;
-    noPermissions: string;
-  };
-  onClose(): void;
-  onNavigate(): void;
-  onEdit(): void;
-  onDelete(): void;
-}
-
-function SimpleMenu(props: SimpleMenuProps) {
-  const classes = loaderStyles({});
-  const resource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(props.permissions, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => ({
-      ...source,
-      editable: isEditableAsset(props.item.path),
-      preview: props.item.type === 'Page'
-    }),
-    errorSelector: (source) => null
-  });
-
-  return (
-    <Menu anchorEl={props.anchorEl} open={Boolean(props.anchorEl)} onClose={props.onClose}>
-      <Suspense
-        fallback={
-          <div className={classes.loadingWrapper}>
-            <Loader numOfItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2} />
-          </div>
-        }
-      >
-        <SimpleMenuUI
-          resource={resource}
-          messages={props.messages}
-          onClose={props.onClose}
-          onNavigate={() => props.onNavigate(props.item)}
-          onEdit={() => props.onEdit(props.item)}
-          onDelete={() => props.onDelete(props.item)}
-        />
-      </Suspense>
-    </Menu>
-  );
-}
-
-function SimpleMenuUI(props: SimpleMenuUIProps) {
-  const { resource, onEdit, onClose, onDelete, messages, onNavigate } = props;
-  const permissions = resource.read();
-  const editable = permissions.editable;
-  const preview = permissions.preview;
-  const isWriteAllowed = permissions.write;
-  const isDeleteAllowed = permissions.delete;
-  return (
-    <>
-      {editable && isWriteAllowed && (
-        <MenuItem
-          onClick={() => {
-            onClose();
-            onEdit();
-          }}
-        >
-          {messages.edit}
-        </MenuItem>
-      )}
-      {isDeleteAllowed && (
-        <MenuItem
-          onClick={() => {
-            onClose();
-            onDelete();
-          }}
-        >
-          {messages.delete}
-        </MenuItem>
-      )}
-      {preview && (
-        <MenuItem
-          onClick={() => {
-            onNavigate();
-          }}
-        >
-          {messages.preview}
-        </MenuItem>
-      )}
-      {!isWriteAllowed && !isDeleteAllowed && <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>}
-    </>
-  );
-}
-
-function createCallbackListener(id: string, listener: EventListener): Function {
-  let callback;
-  callback = (e) => {
-    listener(e.detail);
-    document.removeEventListener(id, callback, false);
-  };
-  document.addEventListener(id, callback, false);
-  return () => {
-    document.removeEventListener(id, callback, false);
-  };
 }
