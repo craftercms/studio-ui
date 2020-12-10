@@ -17,7 +17,7 @@
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { isNullOrUndefined, notNullOrUndefined, setProperty } from './object';
+import { isNullOrUndefined, notNullOrUndefined } from './object';
 import * as Model from './model';
 import { forEach, mergeArraysAlternatively } from './array';
 import { popPiece } from './string';
@@ -85,9 +85,19 @@ export function getCollection(model: ContentInstance, fieldId: string, index: st
 export function setCollection(model: ContentInstance, fieldId: string, index: number | string, collection: string[]) {
   if (fieldId.includes('.')) {
     const concatFieldId = mergeArraysAlternatively(fieldId.split('.'), index.toString().split('.')).join('.');
-    setProperty(model, concatFieldId, collection);
+    const array = concatFieldId.split('.');
+
+    const _model = { ...model };
+
+    array.reduce((acc, value, i) => {
+      if (i === array.length - 1) {
+        acc[value] = collection;
+      } else {
+        return (acc[value] = { ...acc[value] });
+      }
+    }, _model);
+    return _model;
   } else {
-    Model.value(model, fieldId, collection);
+    return { ...model, [fieldId]: collection };
   }
-  return model;
 }

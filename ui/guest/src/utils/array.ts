@@ -37,6 +37,12 @@ export function forEach<T = unknown, R = undefined>(
   return emptyReturnValue;
 }
 
+/**
+ * Receives two different arrays of string, it will combine it selecting one string of the first array
+ * and then other string of the second array, until there are no more strings
+ * @param a
+ * @param b
+ */
 export function mergeArraysAlternatively(a: string[], b: string[]): string[] {
   return (a.length > b.length ? a : b).reduce(
     (acc, cur, i) => (a[i] && b[i] ? [...acc, a[i], b[i]] : [...acc, cur]),
