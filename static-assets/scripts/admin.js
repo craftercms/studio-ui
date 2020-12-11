@@ -285,7 +285,6 @@
       }
 
       function usersActions(action, params) {
-        debugger;
         if (params) {
           return Constants.SERVICE2 + 'users/' + action + params;
         } else {
