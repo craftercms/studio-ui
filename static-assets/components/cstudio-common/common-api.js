@@ -3014,6 +3014,9 @@ var nodeOpen = false,
           }
           eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
           document.dispatchEvent(eventNS);
+          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemRejected, { count: 1 }));
         });
       },
 
