@@ -911,17 +911,36 @@ var nodeOpen = false,
           cancelUnsubscribe();
           const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
           const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          const isAdmin = CrafterCMSNext.system.store
+            .getState()
+            .user.rolesBySite[CrafterCMSNext.system.store.getState().sites.active].includes('admin');
+          const environment = response.environment;
+          const count = response.items.length;
           let message;
           if (response.schedule === 'now') {
-            message = formatMessage(messages.itemPublishedNow, {
-              environment: response.environment,
-              count: response.items.length
-            });
+            if (isAdmin) {
+              message = formatMessage(messages.itemPublishedNow, {
+                environment,
+                count
+              });
+            } else {
+              message = formatMessage(messages.itemRequestedToPublishNow, {
+                environment,
+                count
+              });
+            }
           } else {
-            message = formatMessage(messages.itemSchedulePublished, {
-              environment: response.environment,
-              count: response.items.length
-            });
+            if (isAdmin) {
+              message = formatMessage(messages.itemSchedulePublished, {
+                environment,
+                count
+              });
+            } else {
+              message = formatMessage(messages.itemRequestedToSchedulePublish, {
+                environment,
+                count
+              });
+            }
           }
           CStudioAuthoring.Utils.showNotification(message, null, null, 'default');
         });
