@@ -1,0 +1,94 @@
+
+$dark-mode-background-default: #212121;
+$dark-mode-background-default-dimmed: #21212150;
+$dark-mode-background-paper: #424242;
+$dark-mode-font-color: #fff;
+$dark-mode-font-highlight: #70D7FF;
+
+@media (prefers-color-scheme: light) {
+  .craftercms-logo-dark {
+    display: none !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #studioBar {
+    &> .navbar-fixed-top {
+      color: $dark-mode-font-color;
+      background-color: $dark-mode-background-default;
+
+      #navbar-site-name {
+        color: $dark-mode-font-color;
+      }
+
+      #activeContentActions {
+        .acn-link a, .context-nav-title-element{
+          color: $dark-mode-font-color;
+        }
+      }
+
+      #activeContentActions, #toolbarGlobalNav {
+        border-color: transparent;
+      }
+    }
+  }
+  .cstudio-navbar {
+    color: $dark-mode-font-color;
+    background-color: $dark-mode-background-default;
+  }
+
+  #categories-panel {
+    background-color: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color;
+    border-color: $dark-mode-background-default-dimmed !important;
+
+    .cstudio-admin-console-item-selected {
+      background-color: rgba(0, 0, 0, 0.08);
+      color: $dark-mode-font-color;
+    }
+  }
+
+  .craftercms-entitlement {
+    border-color: $dark-mode-background-default-dimmed !important;
+    .craftercms-entitlement-copy {
+      &, a {
+        color: $dark-mode-font-color;
+      }
+    }
+  }
+
+  #acn-dropdown-menu-wrapper {
+    background-color: $dark-mode-background-paper;
+    border-color: $dark-mode-background-default-dimmed;
+
+    .sidebar-module-legacy--with-divider {
+      border-color: $dark-mode-background-default-dimmed;
+    }
+
+    #acn-sites-link, .acn-parent-folder, .acn-admin-console, .ygtvcell {
+      color: $dark-mode-font-color;
+    }
+
+    .preview {
+      color: $dark-mode-font-highlight;
+    }
+
+    #acn-dropdown-menu-inner {
+      .no-preview, .folder {
+        color: $dark-mode-font-color !important;
+      }
+    }
+
+    .ygtv-highlight0:hover {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .cs-item-icon.icon-container .studio-fa-stack-2x {
+    color: $dark-mode-font-color !important;
+  }
+
+  .craftercms-logo {
+    display: none !important;
+  }
+}

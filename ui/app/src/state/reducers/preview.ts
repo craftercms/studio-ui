@@ -33,10 +33,11 @@ import {
   fetchAudiencesPanelModel,
   fetchAudiencesPanelModelComplete,
   fetchAudiencesPanelModelFailed,
-  fetchPrimaryGuestModelComplete,
   fetchGuestModelComplete,
+  fetchPrimaryGuestModelComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
+  guestModelUpdated,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
@@ -50,8 +51,7 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   UPDATE_AUDIENCES_PANEL_MODEL,
-  updateToolsPanelWidth,
-  guestModelUpdated
+  updateToolsPanelWidth
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import {
@@ -134,7 +134,7 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 
 const reducer = createReducer<GlobalState['preview']>(
   {
-    editMode: false,
+    editMode: true,
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe
