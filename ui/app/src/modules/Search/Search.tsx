@@ -317,7 +317,7 @@ export default function Search(props: SearchProps) {
     if (items.length > 0) {
       return items.map((item: MediaItem, i: number) => {
         return currentView === 'grid' ? (
-          <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Grid key={i} item xs={12} sm={6} md={4} lg={4} xl={3}>
             <MediaCard
               item={item}
               onPreview={onPreview}
