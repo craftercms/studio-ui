@@ -259,7 +259,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           if (initialCommit) {
             sections.push([menuOptions.compareTo]);
           } else {
-            sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
+            sections.push([menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious]);
           }
         }
 
