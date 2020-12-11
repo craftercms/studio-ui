@@ -46,6 +46,10 @@ export function fetchAll(options?: PaginationOptions): Observable<PagedArray<Use
   );
 }
 
+export function fetchByUsername(username: string): Observable<User> {
+  return get(`/studio/api/2/users/${encodeURIComponent(username)}`).pipe(pluck('response', 'user'));
+}
+
 export function fetchRolesInSite(username: string, siteId: string): Observable<string[]> {
   return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }

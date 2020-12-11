@@ -44,7 +44,7 @@
       };
 
       this.getUser = function(id) {
-        return $http.get(usersActions(id));
+        return usersApi.fetchByUsername(id).toPromise();
       };
 
       this.createUser = function(user) {
@@ -1411,15 +1411,17 @@
 
         $scope.adminModal = $scope.showModal('resetPassword.html', null, null, 'modal-top-override modal-reset-pass');
 
-        adminService
-          .getUser(encodeURIComponent(user.username) + '.json')
-          .success(function(data) {
+        adminService.getUser(user.username).then(
+          function(data) {
+            data = { user: data };
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
-          })
-          .error(function(error) {
+            $scope.$apply();
+          },
+          function(error) {
             console.log(error);
-          });
+          }
+        );
       };
       users.editPassword = function(user) {
         user.password = user.newPassword;
@@ -1451,16 +1453,18 @@
         $scope.dialogMode = 'EDIT';
         $scope.dialogEdit = true;
 
-        adminService
-          .getUser(encodeURIComponent(user.username) + '.json')
-          .success(function(data) {
+        adminService.getUser(user.username).then(
+          function(data) {
+            data = { user: data };
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
-          })
-          .error(function(error) {
+            $scope.$apply();
+          },
+          function(error) {
             console.log(error);
             //TODO: properly display error
-          });
+          }
+        );
       };
       users.editUser = function(user) {
         var currentUser = {};
@@ -1504,16 +1508,18 @@
 
         $scope.adminModal = $scope.showModal('modalView.html');
 
-        adminService
-          .getUser(encodeURIComponent(user.username) + '.json')
-          .success(function(data) {
+        adminService.getUser(user.username).then(
+          function(data) {
+            data = { user: data };
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
-          })
-          .error(function(error) {
+            $scope.$apply();
+          },
+          function(error) {
             console.log(error);
             //TODO: properly display error
-          });
+          }
+        );
       };
       users.toggleUserStatus = function(user) {
         var newStatus = $('#enabled').is(':checked') ? 'enable' : 'disable';
