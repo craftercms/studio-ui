@@ -35,7 +35,6 @@ import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
-import { logout } from '../../services/auth';
 import Cookies from 'js-cookie';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
@@ -50,6 +49,10 @@ import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import ApiResponseErrorState from '../ApiResponseErrorState';
+import DashboardIcon from '@material-ui/icons/DashboardRounded';
+import SearchIcon from '@material-ui/icons/SearchRounded';
+import BuildIcon from '@material-ui/icons/BuildRounded';
+import PreviewIcon from '../Icons/Preview';
 
 const tileStyles = makeStyles((theme) =>
   createStyles({
@@ -398,8 +401,8 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   useMount(() => {
     getGlobalMenuItems().subscribe(
-      ({ response }) => {
-        setMenuItems(response.menuItems);
+      (menuItems) => {
+        setMenuItems(menuItems);
       },
       (error) => {
         if (error.response) {
@@ -516,6 +519,22 @@ export default function GlobalNav(props: GlobalNavProps) {
                 />
                 <Tile icon={About} link={getLink('about', authoringUrl)} title={formatMessage(messages.about)} />
               </nav>
+              {/* region Site */}
+              <Typography
+                variant="subtitle1"
+                component="h2"
+                className={classes.title}
+                style={{ margin: '0px 0 10px 0' }}
+              >
+                Site
+              </Typography>
+              <nav className={classes.sitesApps}>
+                <Tile icon={DashboardIcon} title="Dashboard" link="http://localhost:8080/studio/site-dashboard" />
+                <Tile icon={PreviewIcon} title="Preview" link="http://localhost:8080/studio/next/preview" />
+                <Tile icon={BuildIcon} title="Site Tools" link="http://localhost:8080/studio/site-config" />
+                <Tile icon={SearchIcon} title="Search" link="http://localhost:8080/studio/search" />
+              </nav>
+              {/* endregion */}
             </div>
             <div className={classes.railBottom}>
               <Card className={classes.userCardRoot}>
@@ -570,8 +589,6 @@ function navigateTo(link: string): void {
 }
 
 function onLogout(url) {
-  logout().subscribe(() => {
-    Cookies.set('userSession', null);
-    window.location.href = url;
-  });
+  Cookies.set('userSession', null);
+  window.location.href = url;
 }
