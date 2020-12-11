@@ -1442,7 +1442,7 @@ export const itemSuccessMessages = defineMessages({
   },
   itemSavedAsDraft: {
     id: 'item.savedAsDraft',
-    defaultMessage: 'Item saved as draft'
+    defaultMessage: 'Item draft saved'
   }
 });
 

@@ -961,18 +961,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   uri = content.uri;
 
                 if (isWrite && '/site/website/index.xml' != uri) {
-                  var duplicateContentCallback = {
-                    success: function() {
-                      if (YDom.get('duplicate-loading')) {
-                        YDom.get('duplicate-loading').style.display = 'none';
-                      }
-                    },
-                    failure: function() {
-                      if (YDom.get('duplicate-loading')) {
-                        YDom.get('duplicate-loading').style.display = 'none';
-                      }
-                    }
-                  };
                   option.onclick = function() {
                     CrafterCMSNext.system.store.dispatch({
                       type: 'SHOW_CONFIRM_DIALOG',
