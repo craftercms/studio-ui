@@ -145,7 +145,7 @@ const useStyles = makeStyles((theme) =>
     dialogRoot: {
       transition: 'all 600ms ease',
       '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
-      '& .MuiInput-root, & .MuiButton-root': { marginBottom: theme.spacing(1) }
+      '& .MuiFormControl-root, & .MuiButton-root': { marginBottom: theme.spacing(1) }
     },
     dialogRootFetching: {
       opacity: 0.2
@@ -643,7 +643,7 @@ function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
 
 export default function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
-  const classes = useStyles({});
+  const classes = useStyles();
   const token = parse(window.location.search).token as string;
   const passwordRequirementsRegex = props.passwordRequirementsRegex;
 

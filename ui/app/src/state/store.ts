@@ -22,8 +22,8 @@ import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
-import { forkJoin, Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 import { fetchRolesInSiteForCurrent, me } from '../services/users';
 import { fetchSites } from '../services/sites';
 import LookupTable from '../models/LookupTable';
@@ -34,8 +34,7 @@ import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { refreshSession } from '../services/auth';
 import { setJwt } from '../utils/auth';
-import { storeInitialize } from './actions/system';
-import { refreshAuthTokenComplete } from './actions/auth';
+import { storeInitialized } from './actions/system';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
 
@@ -43,39 +42,34 @@ export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
 export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>;
 
-let store: CrafterCMSStore;
+let store$: BehaviorSubject<CrafterCMSStore>;
 
 export function createStore(useMock = false): Observable<CrafterCMSStore> {
-  if (store) {
-    return of(store);
+  if (store$) {
+    return store$.pipe(take(1));
+  } else {
+    store$ = new BehaviorSubject(null);
+    return refreshSession().pipe(
+      tap(({ token }) => setJwt(token)),
+      switchMap((auth) => {
+        const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
+        return (preloadState
+          ? of(createStoreSync(preloadState))
+          : fetchInitialState().pipe(map((initialState) => createStoreSync(initialState)))
+        ).pipe(
+          tap((store) => {
+            store.dispatch(storeInitialized({ auth }));
+            store$.next(store);
+          })
+        );
+      }),
+      switchMap(() => store$.pipe(take(1)))
+    );
   }
-  return refreshSession().pipe(
-    tap(({ token }) => setJwt(token)),
-    switchMap((auth) => {
-      const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
-      if (preloadState) {
-        return of(createStoreSync(preloadState)).pipe(
-          tap((s) => {
-            store = s;
-            store.dispatch(refreshAuthTokenComplete(auth));
-          })
-        );
-      } else {
-        return fetchInitialState().pipe(
-          map((initialState) => createStoreSync(initialState)),
-          tap((s) => {
-            store = s;
-            store.dispatch(refreshAuthTokenComplete(auth));
-          })
-        );
-      }
-    }),
-    tap((store) => store.dispatch(storeInitialize()))
-  );
 }
 
 export function getStore(): CrafterCMSStore {
-  return store;
+  return store$?.value;
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {

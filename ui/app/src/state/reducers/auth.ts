@@ -22,11 +22,14 @@ import {
   loginComplete,
   loginFailed,
   logoutComplete,
+  refreshAuthToken,
   refreshAuthTokenComplete,
+  refreshAuthTokenFailed,
   validateSession,
   validateSessionComplete,
   validateSessionFailed
 } from '../actions/auth';
+import { storeInitialized } from '../actions/system';
 
 export const initialState: GlobalState['auth'] = {
   error: null,
@@ -37,9 +40,23 @@ export const initialState: GlobalState['auth'] = {
 
 // TODO: Update actions for JWT
 const reducer = createReducer<GlobalState['auth']>(initialState, {
+  [storeInitialized.type]: (state, { payload }) => ({
+    ...state,
+    expiresAt: fromExpiresAtString(payload.auth.expiresAt)
+  }),
+  [refreshAuthToken.type]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
   [refreshAuthTokenComplete.type]: (state, { payload }) => ({
     ...state,
-    expiresAt: new Date(payload.expiresAt).getTime()
+    isFetching: false,
+    expiresAt: fromExpiresAtString(payload.expiresAt)
+  }),
+  [refreshAuthTokenFailed.type]: (state) => ({
+    ...state,
+    active: false,
+    isFetching: false
   }),
   [validateSession.type]: (state) => ({ ...state, isFetching: true }),
   [validateSessionComplete.type]: (state, { payload: active }) => ({ ...state, isFetching: false, active }),
@@ -65,5 +82,9 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
   }),
   [logoutComplete.type]: () => initialState
 });
+
+function fromExpiresAtString(expiresAt: string) {
+  return new Date(expiresAt).getTime();
+}
 
 export default reducer;

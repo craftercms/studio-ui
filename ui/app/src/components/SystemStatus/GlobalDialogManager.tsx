@@ -52,6 +52,7 @@ const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/BulkUploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemMenu/ItemMenu'));
+const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -291,7 +292,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Auth Monitor */}
-      {/* TODO: Move auth monitor here */}
+      <AuthMonitor />
       {/* endregion */}
 
       {/* region Workflow Cancellation */}

@@ -17,9 +17,9 @@
 import { ofType } from 'redux-observable';
 import {
   login,
-  logout,
   loginComplete,
   loginFailed,
+  logout,
   logoutComplete,
   logoutFailed,
   refreshAuthToken,
@@ -29,12 +29,14 @@ import {
   validateSessionComplete,
   validateSessionFailed
 } from '../actions/auth';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, mapTo, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
+import { interval } from 'rxjs';
+import { storeInitialized } from '../actions/system';
 
 const epics: CrafterCMSEpic[] = [
   (action$) =>
@@ -68,7 +70,16 @@ const epics: CrafterCMSEpic[] = [
           catchAjaxError(refreshAuthTokenFailed)
         )
       )
-    )
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
+      )
+    ),
+  (action$) => action$.pipe(ofType(loginComplete.type), mapTo(refreshAuthToken()))
 ];
 
 export default epics;

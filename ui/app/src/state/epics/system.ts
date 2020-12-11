@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, mapTo, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, tap } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
@@ -29,12 +29,9 @@ import {
   showPublishItemSuccessNotification,
   showRevertItemSuccessNotification,
   showSystemNotification,
-  showUnlockItemSuccessNotification,
-  storeInitialize
+  showUnlockItemSuccessNotification
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
-import { interval } from 'rxjs';
-import { refreshAuthToken } from '../actions/auth';
 
 const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
@@ -184,19 +181,6 @@ const systemEpics: CrafterCMSEpic[] = [
         hostToHost$.next(showSystemNotification(payload));
       }),
       ignoreElements()
-    ),
-  (action$, state$) =>
-    action$.pipe(
-      ofType(storeInitialize.type),
-      withLatestFrom(state$),
-      switchMap(([, state]) =>
-        // TODO: This interval runs permanently.
-        // Would be nice to enable disable when/if session expires and until user logs back in.
-        interval(60000).pipe(
-          filter(() => state.auth.active && Math.floor(state.auth.expiresAt - Date.now()) < 60000),
-          mapTo(refreshAuthToken())
-        )
-      )
     )
 ];
 

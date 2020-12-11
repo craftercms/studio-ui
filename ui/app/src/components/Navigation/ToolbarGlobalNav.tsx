@@ -89,7 +89,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
-  const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
+  const [logoutUrl, setLogoutUrl] = useState<string>('/studio/logout');
   const { authoringBase } = useEnv();
   const version = useSystemVersion();
   const sites = useSiteList();

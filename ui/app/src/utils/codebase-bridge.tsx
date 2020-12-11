@@ -316,9 +316,13 @@ export function createCodebaseBridge() {
   // @ts-ignore
   window.CrafterCMSNext = Bridge;
 
-  createStore().subscribe((store) => {
-    Bridge.system.store = store;
-  });
+  // The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
+  // and the store creation is dependant on successfully retrieving the JWT.
+  if (!window.location.pathname.includes('/studio/login')) {
+    createStore().subscribe((store) => {
+      Bridge.system.store = store;
+    });
+  }
 }
 
 intl$.subscribe(updateIntl);

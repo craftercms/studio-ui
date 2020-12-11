@@ -19,6 +19,8 @@ import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -28,13 +30,22 @@ export type LogInFormProps = PropsWithChildren<{
   onSetPassword: Function;
   enableUsernameInput?: boolean;
   onSetUsername?: Function;
-  classes?: Partial<Record<'username' | 'password' | 'submit', string>>;
+  classes?: Partial<Record<'username' | 'password' | 'submit' | 'recover', string>>;
   action?: string;
   method?: 'get' | 'post';
   onRecover?: Function;
 }>;
 
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    spacing: {
+      marginBottom: theme.spacing(1)
+    }
+  })
+);
+
 export default function LogInForm(props: LogInFormProps) {
+  const cls = useStyles();
   const {
     children,
     username,
@@ -61,7 +72,7 @@ export default function LogInForm(props: LogInFormProps) {
         type="text"
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
-        className={classes?.username}
+        className={clsx(cls.spacing, classes?.username)}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
       />
       <PasswordTextField
@@ -71,7 +82,7 @@ export default function LogInForm(props: LogInFormProps) {
         autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
-        className={classes?.password}
+        className={clsx(cls.spacing, classes?.password)}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
       <Button
@@ -80,7 +91,7 @@ export default function LogInForm(props: LogInFormProps) {
         fullWidth
         type="submit"
         disabled={isFetching}
-        className={classes?.submit}
+        className={clsx(onRecover && cls.spacing, classes?.submit)}
       >
         <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
       </Button>
@@ -91,6 +102,7 @@ export default function LogInForm(props: LogInFormProps) {
           disabled={isFetching}
           variant="text"
           fullWidth
+          className={classes?.recover}
           onClick={() => onRecover()}
         >
           <FormattedMessage id="loginView.forgotPasswordButtonLabel" defaultMessage="Forgot your password?" />
