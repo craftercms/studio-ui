@@ -20,8 +20,6 @@ import {
   loginComplete,
   loginFailed,
   logout,
-  logoutComplete,
-  logoutFailed,
   refreshAuthToken,
   refreshAuthTokenComplete,
   refreshAuthTokenFailed,
@@ -29,7 +27,7 @@ import {
   validateSessionComplete,
   validateSessionFailed
 } from '../actions/auth';
-import { map, mapTo, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mapTo, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
@@ -44,10 +42,12 @@ const epics: CrafterCMSEpic[] = [
       ofType(login.type),
       switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
     ),
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(logout.type),
-      switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
+      withLatestFrom(state$),
+      tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
+      ignoreElements()
     ),
   (action$) =>
     action$.pipe(

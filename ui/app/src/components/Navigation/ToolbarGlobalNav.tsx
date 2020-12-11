@@ -20,7 +20,7 @@ import CrafterChevron from '../Icons/CrafterChevron';
 import GlobalNav from './GlobalNav';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
-import { getLogoutInfoURL } from '../../services/auth';
+import { getSSOLogoutURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
 import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList, useSystemVersion } from '../../utils/hooks';
 import palette from '../../styles/palette';
@@ -97,7 +97,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
 
   useMount(() => {
     if (user.authType === authHeaders || user.authType === authSaml) {
-      getLogoutInfoURL().subscribe((response) => {
+      getSSOLogoutURL().subscribe((response) => {
         setLogoutUrl(response.logoutUrl ?? null);
       });
     }

@@ -84,7 +84,7 @@
 <ui-view class="general-view"></ui-view>
 
 <section class="craftercms-entitlement" ng-show="isFooter">
-  <img class="craftercms-entitlement-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
+  <img class="craftercms-entitlement-logo" alt="Crafter CMS" src="/studio/static-assets/images/logo.svg" />
   <p class="craftercms-entitlement-copy">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
 </section>
 

@@ -30,7 +30,7 @@ import * as marketplace from '../services/marketplace';
 import * as publishing from '../services/publishing';
 import * as content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
@@ -39,6 +39,7 @@ import * as babel from './babelHelpers-legacy';
 import * as security from '../services/security';
 import * as authService from '../services/auth';
 import * as translation from '../services/translation';
+import * as monitoring from '../services/monitoring';
 import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import createStore, { CrafterCMSStore } from '../state/store';
@@ -114,7 +115,7 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { debounceTime, filter, map, switchMap, take }
+      operators: { debounceTime, filter, map, switchMap, take, tap }
     },
 
     components: {
@@ -202,7 +203,8 @@ export function createCodebaseBridge() {
       content,
       auth: authService,
       security,
-      translation
+      translation,
+      monitoring
     },
 
     render(

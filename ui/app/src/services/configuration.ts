@@ -229,8 +229,8 @@ export function getSiteUiConfig(
 
 // endregion
 
-export function getGlobalMenuItems() {
-  return get('/studio/api/2/ui/views/global_menu.json');
+export function getGlobalMenuItems(): Observable<{ id: string; icon: string; label: string }[]> {
+  return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
 }
 
 export function getProductLanguages(): Observable<{ id: string; label: string }[]> {

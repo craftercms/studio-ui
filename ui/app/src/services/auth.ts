@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, get, post, postJSON } from '../utils/ajax';
+import { get, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { User } from '../models/User';
@@ -24,13 +24,8 @@ import { ApiResponse } from '../models/ApiResponse';
 import { me } from './users';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
+export function getSSOLogoutURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
-}
-
-// TODO: This use now useless? Kill?
-export function logout(): Observable<boolean> {
-  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON).pipe(mapTo(true));
 }
 
 export function login(credentials: Credentials): Observable<User> {

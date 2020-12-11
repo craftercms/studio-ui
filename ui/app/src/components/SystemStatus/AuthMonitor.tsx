@@ -27,7 +27,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { login, validateSession } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
-import { getLogoutInfoURL } from '../../services/auth';
+import { getSSOLogoutURL } from '../../services/auth';
 import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -88,7 +88,7 @@ export default function AuthMonitor() {
   const firstRender = useRef(true);
   useMount(() => {
     if (isSSO)
-      getLogoutInfoURL()
+      getSSOLogoutURL()
         .pipe(pluck('logoutUrl'))
         .subscribe(setLogoutUrl, () => console.error('[AuthMonitor] Error fetching logout url.'));
   });
