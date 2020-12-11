@@ -42,10 +42,10 @@ export {
   useGuestContext
 };
 
-export function initPageBuilder({ path, documentDomain }) {
+export function initPageBuilder({ path }) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   ReactDOM.render(
-    <Guest path={path} isAuthoring documentDomain={documentDomain}>
+    <Guest path={path} isAuthoring>
       <GuestProxy />
     </Guest>,
     guestProxyElement
