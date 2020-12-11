@@ -14,21 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { forkJoin, Observable, of, OperatorFunction } from 'rxjs';
-import { LegacyUser, User } from '../models/User';
+import { forkJoin, Observable, of } from 'rxjs';
+import { User } from '../models/User';
 import { get } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
 import { fetchSites } from './sites';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
-
-export const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, User>((user) => ({
-  ...user,
-  authType: user.authenticationType
-}));
+import { PagedArray } from '../models/PagedArray';
+import PaginationOptions from '../models/PaginationOptions';
+import { toQueryString } from '../utils/object';
 
 export function me(): Observable<User> {
-  return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'), mapToUser);
+  return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'));
+}
+
+export function fetchAll(options?: PaginationOptions): Observable<PagedArray<User>> {
+  const qs = toQueryString({
+    limit: 100,
+    offset: 0,
+    ...options
+  });
+  return get(`/studio/api/2/users${qs}`).pipe(
+    map(({ response }) =>
+      Object.assign(response.users, {
+        limit: response.limit,
+        offset: response.offset,
+        total: response.total
+      })
+    )
+  );
 }
 
 export function fetchRolesInSite(username: string, siteId: string): Observable<string[]> {

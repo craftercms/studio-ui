@@ -123,7 +123,7 @@ export function createMockInitialState(): Partial<GlobalState> {
       lastName: 'Admin',
       email: 'admin@craftercms.org',
       username: 'admin',
-      authType: 'DB',
+      authenticationType: 'DB',
       rolesBySite: {
         editorial: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
         headless: ['author', 'admin', 'developer', 'reviewer', 'publisher'],

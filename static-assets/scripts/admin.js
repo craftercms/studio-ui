@@ -32,27 +32,15 @@
   app.service('adminService', [
     '$http',
     'Constants',
-    '$cookies',
-    '$timeout',
-    '$window',
-    function($http, Constants, $cookies, $timeout, $window) {
-      var me = this;
-      this.maxInt = 32000;
+    function($http, Constants) {
+      let usersApi = CrafterCMSNext.services.users;
 
-      this.getSites = function() {
-        return $http.get(users('get-sites-3'));
-      };
+      this.maxInt = 32000;
 
       //USERS
 
-      this.getUsers = function(params, isNewApi) {
-        if (params) {
-          return $http.get(users2(), {
-            params: params
-          });
-        } else {
-          return $http.get(users2());
-        }
+      this.getUsers = function(params) {
+        return usersApi.fetchAll(params).toPromise();
       };
 
       this.getUser = function(id) {
@@ -83,15 +71,6 @@
         };
         //return $http.patch(users(status), user);
         return $http.patch(usersActions(action), body);
-      };
-
-      this.getSitesPerUser = function(id, params) {
-        return $http.get(
-          usersActions(
-            id + '/sites',
-            'id=' + params.id + '&offset=' + params.offset + '&limit=' + params.limit + '&sort=' + params.sort
-          )
-        );
       };
 
       this.setPassword = function(data) {
@@ -306,6 +285,7 @@
       }
 
       function usersActions(action, params) {
+        debugger;
         if (params) {
           return Constants.SERVICE2 + 'users/' + action + params;
         } else {
@@ -344,6 +324,7 @@
           return Constants.SERVICE + 'group/' + action + '.json';
         }
       }
+
       function groups2(params) {
         if (params) {
           return Constants.SERVICE2 + 'groups?' + params;
@@ -351,6 +332,7 @@
           return Constants.SERVICE2 + 'groups';
         }
       }
+
       function groupsMembers(id, isMember, params) {
         var url = Constants.SERVICE2 + 'groups/' + id;
         if (isMember) {
@@ -1364,9 +1346,10 @@
           }
           params.sort = 'desc';
 
-          adminService.getUsers(params).success(function(data) {
+          adminService.getUsers(params).then(function(data) {
             users.totalLogs = data.total;
-            $scope.usersCollection = data.users;
+            $scope.usersCollection = data;
+            $scope.$apply();
           });
         }
       };
@@ -1382,11 +1365,12 @@
           if (!users.searchdirty) {
             users.searchdirty = true;
 
-            adminService.getUsers().success(function(data) {
+            adminService.getUsers().then(function(data) {
               users.usersCollectionBackup = $scope.usersCollection;
               users.itemsPerPageBackup = users.itemsPerPage;
-              $scope.usersCollection = data.users;
+              $scope.usersCollection = data;
               users.itemsPerPage = adminService.maxInt;
+              $scope.$apply();
             });
           }
         }
@@ -1910,10 +1894,9 @@
       groups.getUsersAutocomplete = function() {
         var params = {};
         params.limit = 1000;
-        adminService.getUsers(params).success(function(data) {
+        adminService.getUsers(params).then(function(data) {
           groups.usersAutocomplete = [];
-
-          data.users.forEach(function(user) {
+          data.forEach(function(user) {
             var added = false;
             groups.usersFromGroupCollection.forEach(function(userCompare) {
               if (user.username == userCompare.username) {
@@ -1925,6 +1908,7 @@
               groups.usersAutocomplete.push(user);
             }
           });
+          $scope.$apply();
         });
       };
 

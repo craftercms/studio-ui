@@ -36,7 +36,7 @@
       "lastName": "${user.lastName!""}",
       "email": "${user.email!""}",
       "username": "${user.username!""}",
-      "authType": "${user.authenticationType!""}",
+      "authenticationType": "${user.authenticationType!""}",
       "rolesBySite": {
         <#list sites as site>
         <#if site.siteId??>

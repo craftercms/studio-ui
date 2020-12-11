@@ -365,12 +365,6 @@
               controller: 'LogConsolePreviewCtrl'
             }
           }
-        })
-        .state('preview', {
-          url: '/preview?site&url',
-          cssClass: 'studio-preview',
-          templateUrl: '/studio/static-assets/ng-views/preview.html',
-          controller: 'PreviewCtrl'
         });
 
       $translateProvider.preferredLanguage('en');
@@ -436,13 +430,12 @@
 
   app.service('sitesService', [
     '$rootScope',
-    '$http',
     'Constants',
     '$cookies',
     '$timeout',
     '$window',
     '$translate',
-    function($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
+    function($rootScope, Constants, $cookies, $timeout, $window, $translate) {
       var me = this;
       var securityApi = CrafterCMSNext.services.security;
       var sitesApi = CrafterCMSNext.services.sites;
@@ -450,12 +443,6 @@
 
       this.getSites = function(params) {
         return sitesApi.fetchSites().toPromise();
-      };
-
-      this.getSite = function(id) {
-        return $http.get(json('get-site'), {
-          params: { siteId: id }
-        });
       };
 
       this.setCookie = function(cookieGenName, value) {
@@ -596,22 +583,6 @@
       this.getGlobalMenu = function() {
         return configurationApi.getGlobalMenuItems().toPromise();
       };
-
-      function api(action) {
-        return Constants.SERVICE + 'site/' + action + '.json';
-      }
-
-      function json(action) {
-        return Constants.SERVICE + 'user/' + action + '.json';
-      }
-
-      function userActions(action, params) {
-        if (params) {
-          return Constants.SERVICE2 + 'users/' + action + params;
-        } else {
-          return Constants.SERVICE2 + 'users/' + action;
-        }
-      }
 
       return this;
     }
@@ -1310,11 +1281,10 @@
     '$rootScope',
     '$scope',
     '$element',
-    '$http',
     '$timeout',
     '$uibModal',
     '$state',
-    function($rootScope, $scope, $element, $http, $timeout, $uibModal, $state) {
+    function($rootScope, $scope, $element, $timeout, $uibModal, $state) {
       $scope.globalConfig = {};
       let globalConfig = $scope.globalConfig;
       $scope.messages = {
@@ -1339,6 +1309,8 @@
       $scope.uiEnabled = false;
       let defaultValue = '';
       let sampleValue = '';
+
+      let configurationApi = CrafterCMSNext.services.configuration;
 
       $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
@@ -1369,64 +1341,54 @@
         globalConfig.isModified = true;
       });
 
-      $http
-        .get('/studio/api/2/configuration/get_configuration', {
-          params: {
-            siteId: 'studio_root',
-            module: 'studio',
-            path: '/configuration/studio-config-override.yaml'
-          }
-        })
-        .then((data) => {
-          aceEditor.setValue(data.data.content || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
+      configurationApi
+        .getRawConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio')
+        .subscribe((data) => {
+          aceEditor.setValue(data || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
           aceEditor.focus();
-          defaultValue = data.data.content;
+          defaultValue = data;
           globalConfig.isModified = false;
           enableUI(true);
+          $scope.$apply();
         });
 
       // Differ the loading of the sample config file to the "background"
       // Loading the value from this higher order controller allows caching,
       // avoiding fetching it multiple times on every sample modal open.
       setTimeout(() => {
-        $http
-          .get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
-            params: {
-              site: 'studio_root',
-              path: '/configuration/samples/sample-studio-config-override.yaml'
-            }
-          })
-          .then((content) => {
-            sampleValue = content.data;
+        configurationApi
+          .getRawConfiguration('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio')
+          .subscribe((data) => {
+            sampleValue = data;
+            $scope.$apply();
           });
       });
 
       $scope.save = function() {
         enableUI(false);
         const value = aceEditor.getValue();
-        $http
-          .post('/studio/api/2/configuration/write_configuration', {
-            siteId: 'studio_root',
-            module: 'studio',
-            path: '/configuration/studio-config-override.yaml',
-            content: value
-          })
-          .then(() => {
-            enableUI(true);
-            defaultValue = value;
-            aceEditor.focus();
-            $element.notify(formatMessage(globalConfigMessages.successfulSave), {
-              position: 'top left',
-              className: 'success'
-            });
-            globalConfig.isModified = false;
-          })
-          .catch(() => {
-            $element.notify(formatMessage(globalConfigMessages.failedSave), {
-              position: 'top left',
-              className: 'error'
-            });
-          });
+        configurationApi
+          .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
+          .subscribe(
+            () => {
+              enableUI(true);
+              defaultValue = value;
+              aceEditor.focus();
+              globalConfig.isModified = false;
+              $element.notify(formatMessage(globalConfigMessages.successfulSave), {
+                position: 'top left',
+                className: 'success'
+              });
+              $scope.$apply();
+            },
+            () => {
+              $element.notify(formatMessage(globalConfigMessages.failedSave), {
+                position: 'top left',
+                className: 'error'
+              });
+              $scope.$apply();
+            }
+          );
       };
 
       $scope.reset = function() {
@@ -1582,56 +1544,6 @@
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
-    }
-  ]);
-
-  app.controller('PreviewCtrl', [
-    '$scope',
-    '$state',
-    '$window',
-    '$sce',
-    function($scope, $state, $window, $sce) {
-      function getIFrame(getContentWindow) {
-        var el = $window.document.getElementById('studioIFrame');
-        return getContentWindow ? el.contentWindow : el;
-      }
-
-      function sendMessage() {
-        var message = data.message;
-        var popup = getIFrame(true);
-
-        popup.postMessage(message, url);
-      }
-
-      function receiveMessage(event) {
-        // checking this here is not secure anyway and origin needs to be dynamic, not hardcoded
-        // if (event.origin !== 'http://HOST:PORT') {
-        //    return;
-        // }
-
-        // var frame = event.source;
-        // var message = event.data;
-
-        $scope.$apply(function() {
-          $scope.status = event.data;
-        });
-      }
-
-      function reloadIFrame() {
-        getIFrame(true).location.reload();
-      }
-
-      var data = {};
-      var url = $state.params.url;
-
-      $scope.data = data;
-      $scope.url = $sce.trustAsResourceUrl(url);
-      $scope.status = '';
-
-      $scope.sendMessage = sendMessage;
-      $scope.reloadIFrame = reloadIFrame;
-
-      $window.addEventListener('message', receiveMessage, false);
     }
   ]);
 

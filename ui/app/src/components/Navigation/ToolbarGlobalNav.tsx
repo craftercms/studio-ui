@@ -96,7 +96,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const dispatch = useDispatch();
 
   useMount(() => {
-    if (user.authType === authHeaders || user.authType === authSaml) {
+    if (user.authenticationType === authHeaders || user.authenticationType === authSaml) {
       getSSOLogoutURL().subscribe((response) => {
         setLogoutUrl(response.logoutUrl ?? null);
       });

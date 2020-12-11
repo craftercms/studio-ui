@@ -21,7 +21,7 @@ export interface User {
   lastName: string;
   email: string;
   username: string;
-  authType: string;
+  authenticationType: string;
   rolesBySite: LookupTable<string[]>;
   sites: string[];
   preferences: LookupTable;

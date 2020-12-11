@@ -80,11 +80,14 @@ const useStyles = makeStyles((theme) =>
 export default function AuthMonitor() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { username, authType } = useSelection((state) => state.user) ?? { username: '', authType: 'db' };
+  const { username, authenticationType } = useSelection((state) => state.user) ?? {
+    username: '',
+    authenticationType: 'db'
+  };
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   const { active } = useSelection((state) => state.auth);
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
-  const isSSO = authType?.toLowerCase() !== 'db';
+  const isSSO = authenticationType?.toLowerCase() !== 'db';
   const firstRender = useRef(true);
   useMount(() => {
     if (isSSO)
