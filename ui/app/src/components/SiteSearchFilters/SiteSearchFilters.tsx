@@ -31,27 +31,29 @@ import SiteSearchSortBy from '../SiteSearchSortBy';
 import SiteSearchSortOrder from '../SiteSearchSortOrder';
 import SiteSearchFilter from '../SiteSearchFilter';
 import SiteSearchPathSelector from '../SiteSearchPathSelector';
+import Button from '@material-ui/core/Button';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme: Theme) => ({
   header: {
     width: '100%',
-    padding: '10px 10px 10px 22px',
-    borderTop: `1px solid ${theme.palette.divider}`,
+    padding: '10px 15px 10px 20px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    '&.open': {
-      borderBottom: `1px solid ${theme.palette.divider}`
-    },
-    '&.first': {
-      borderTop: 0
-    }
+    border: 'none',
+    color: theme.palette.type === 'dark' ? palette.white : '#828282'
+  },
+  filterLabel: {
+    fontWeight: 600,
+    textTransform: 'uppercase'
   },
   body: {
     padding: '10px'
   },
   filterChecked: {
-    marginLeft: '10px'
+    marginLeft: '10px',
+    color: theme.palette.type === 'dark' ? palette.white : palette.black
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -65,6 +67,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listPadding: {
     padding: '0'
+  },
+  clearButtonContainer: {
+    padding: '10px 20px',
+    '& button': {
+      fontWeight: 600
+    }
   }
 }));
 
@@ -108,6 +116,10 @@ const messages: any = defineMessages({
   height: {
     id: 'words.height',
     defaultMessage: 'Height'
+  },
+  clearFilters: {
+    id: 'searchFilter.clearFilters',
+    defaultMessage: 'Clear Filters'
   }
 });
 
@@ -117,25 +129,36 @@ interface SiteSearchFiltersProps {
   facets: [Facet];
   queryParams: Partial<ElasticParams>;
   mode: string;
-
+  checkedFilters: object;
+  clearFilters(): void;
+  setCheckedFilters(checkedFilters: object): any;
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
+  handleClearClick(filter: string): void;
 }
 
 export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   const classes = useStyles({});
-  const { facets, handleFilterChange, queryParams, mode } = props;
+  const {
+    facets,
+    handleFilterChange,
+    queryParams,
+    mode,
+    checkedFilters,
+    setCheckedFilters,
+    clearFilters,
+    handleClearClick
+  } = props;
   const { formatMessage } = useIntl();
   const [expanded, setExpanded] = useState({
     sortBy: false,
     path: false
   });
-  const [checkedFilters, setCheckedFilters] = React.useState({});
 
   useEffect(
     function() {
       setCheckedFilters(setCheckedParameterFromURL(queryParams));
     },
-    [queryParams]
+    [queryParams, setCheckedFilters]
   );
 
   const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
@@ -178,7 +201,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
           <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick(name)}>
             <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
               <Typography variant="body1">
-                <strong>{formatMessage(messages[name])}</strong>
+                <span className={classes.filterLabel}>{formatMessage(messages[name])}</span>
               </Typography>
               {checkedFilters[key] && <CheckIcon className={classes.filterChecked} />}
               <ExpandMoreIcon className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)} />
@@ -192,6 +215,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
                 checkedFilters={checkedFilters}
                 setCheckedFilters={setCheckedFilters}
                 facetsLookupTable={facetsLookupTable}
+                handleClearClick={handleClearClick}
               />
             </div>
           </Collapse>
@@ -202,11 +226,16 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
 
   return (
     <div>
+      <div className={classes.clearButtonContainer}>
+        <Button variant="outlined" fullWidth disabled={Object.keys(checkedFilters).length === 0} onClick={clearFilters}>
+          {formatMessage(messages.clearFilters)}
+        </Button>
+      </div>
       <List classes={{ padding: classes.listPadding }}>
         <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
           <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
             <Typography variant="body1">
-              <strong>{formatMessage(messages.path)}</strong>
+              <span className={classes.filterLabel}>{formatMessage(messages.path)}</span>
             </Typography>
             {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
             <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
@@ -223,7 +252,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
           <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
             <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
               <Typography variant="body1">
-                <strong>{formatMessage(messages.sortBy)}</strong>
+                <span className={classes.filterLabel}>{formatMessage(messages.sortBy)}</span>
               </Typography>
               {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
               <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)} />

@@ -51,14 +51,14 @@ interface FilterProps {
   checkedFilters: LookupTable;
 
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
-
+  handleClearClick(filter: string): void;
   setCheckedFilters(checkedFilters: object): any;
 }
 
 export default function SiteSearchFilter(props: FilterProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { facet, handleFilterChange, facetsLookupTable, checkedFilters, setCheckedFilters } = props;
+  const { facet, handleFilterChange, facetsLookupTable, checkedFilters, setCheckedFilters, handleClearClick } = props;
 
   const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
     const facetFilter = checkedFilters[facet] || {};
@@ -81,21 +81,6 @@ export default function SiteSearchFilter(props: FilterProps) {
       }
       handleFilterChange({ name: facet, value: values }, true);
     }
-  };
-
-  const handleClearClick = (facet: string) => {
-    if (checkedFilters[facet]) {
-      if (typeof checkedFilters[facet] === 'string') {
-        setCheckedFilters({ ...checkedFilters, [facet]: '' });
-      } else {
-        let emptyFilter = { ...checkedFilters[facet] };
-        Object.keys(emptyFilter).forEach((name) => {
-          emptyFilter[name] = false;
-        });
-        setCheckedFilters({ ...checkedFilters, [facet]: emptyFilter });
-      }
-    }
-    handleFilterChange({ name: facet, value: undefined }, true);
   };
 
   return (

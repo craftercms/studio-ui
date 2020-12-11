@@ -26,6 +26,7 @@ import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import SearchBar from '../../components/Controls/SearchBar';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import AppsIcon from '@material-ui/icons/Apps';
+import palette from '../../styles/palette';
 
 const translations = defineMessages({
   showHideFilters: {
@@ -40,8 +41,13 @@ const translations = defineMessages({
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    appBar: {
+      boxShadow: 'none',
+      borderBottom: `1px solid ${palette.gray.light3}`
+    },
     toolBar: {
-      placeContent: 'center space-between'
+      placeContent: 'center space-between',
+      backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.default : palette.white
     },
     actionButtonSection: {
       display: 'flex',
@@ -54,6 +60,16 @@ const useStyles = makeStyles((theme: Theme) =>
     globalNavSection: {
       display: 'flex',
       alignItems: 'center'
+    },
+    searchBarContainer: {
+      width: '33%',
+      minWidth: '500px'
+    },
+    searchBar: {
+      backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light1
+    },
+    currentViewButton: {
+      marginRight: '10px'
     }
   })
 );
@@ -74,7 +90,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
   const classes = useStyles({});
 
   return (
-    <AppBar position="static" color="default">
+    <AppBar position="static" color="default" className={classes.appBar}>
       <Toolbar className={classes.toolBar}>
         <section className={classes.actionButtonSection}>
           <IconButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick}>
@@ -86,11 +102,19 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             </Typography>
           </section>
         </section>
-        <section>
-          <SearchBar onChange={onChange} keyword={keyword} showActionButton={showActionButton} showDecoratorIcon />
+        <section className={classes.searchBarContainer}>
+          <SearchBar
+            onChange={onChange}
+            keyword={keyword}
+            showActionButton={showActionButton}
+            showDecoratorIcon
+            classes={{
+              root: classes.searchBar
+            }}
+          />
         </section>
         <div>
-          <IconButton onClick={handleChangeView}>
+          <IconButton onClick={handleChangeView} className={classes.currentViewButton}>
             {currentView === 'grid' ? <FormatListBulletedIcon /> : <AppsIcon />}
           </IconButton>
           <ToolbarGlobalNav />

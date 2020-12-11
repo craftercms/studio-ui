@@ -38,19 +38,21 @@ import { getContentXML } from '../../services/content';
 import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useSelection } from '../../utils/hooks';
-import { fetchUserPermissions } from '../../state/actions/content';
+import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
 import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 
+const drawerWidth = 300;
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
+    height: 'calc(100vh - 65px) !important',
+    overflowY: 'scroll',
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -169,9 +171,23 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexShrink: 0
   },
   drawerPaper: {
-    top: 64,
+    top: 65,
     bottom: 0,
-    width: '240px'
+    width: drawerWidth
+  },
+  paginationCaption: {
+    order: -1,
+    marginRight: '25px'
+  },
+  paginationSelectRoot: {
+    marginRight: 0
+  },
+  paginationSelect: {
+    border: 'none'
+  },
+  filtersActive: {
+    color: '#FFB400',
+    marginLeft: '2px'
   }
 }));
 
@@ -225,6 +241,14 @@ const messages = defineMessages({
   preview: {
     id: 'search.goToPreview',
     defaultMessage: 'Go to page'
+  },
+  resultsCaption: {
+    id: 'search.resultsCaption',
+    defaultMessage: '{from}-{to} of {count} results for <b>“{keyword}”</b>'
+  },
+  filtersActive: {
+    id: 'search.filtersActive',
+    defaultMessage: ' • <span>Filters Active</span>'
   }
 });
 
@@ -257,6 +281,7 @@ export default function Search(props: SearchProps) {
     errorResponse: null
   });
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const [checkedFilters, setCheckedFilters] = React.useState({});
 
   refs.createQueryString = createQueryString;
 
@@ -351,6 +376,25 @@ export default function Search(props: SearchProps) {
     } else {
       return false;
     }
+  }
+
+  function clearFilter(facet: string) {
+    if (checkedFilters[facet]) {
+      if (typeof checkedFilters[facet] === 'string') {
+        setCheckedFilters({ ...checkedFilters, [facet]: '' });
+      } else {
+        let emptyFilter = { ...checkedFilters[facet] };
+        Object.keys(emptyFilter).forEach((name) => {
+          emptyFilter[name] = false;
+        });
+        setCheckedFilters({ ...checkedFilters, [facet]: emptyFilter });
+      }
+    }
+    handleFilterChange({ name: facet, value: undefined }, true);
+  }
+
+  function clearFilters() {
+    searchResults.facets.forEach((facet) => clearFilter(facet.name));
   }
 
   // createQueryString:
@@ -491,10 +535,12 @@ export default function Search(props: SearchProps) {
   }
 
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
-    dispatch(fetchUserPermissions({ path: item.path }));
+    const path = item.path;
+    dispatch(fetchUserPermissions({ path }));
+    dispatch(completeDetailedItem({ path }));
     dispatch(
       showItemMenu({
-        path: item.path,
+        path,
         anchorReference: 'anchorPosition',
         anchorPosition: { top: event.clientY, left: event.clientX }
       })
@@ -591,6 +637,10 @@ export default function Search(props: SearchProps) {
             facets={searchResults.facets}
             handleFilterChange={handleFilterChange}
             queryParams={queryParams}
+            checkedFilters={checkedFilters}
+            setCheckedFilters={setCheckedFilters}
+            clearFilters={clearFilters}
+            handleClearClick={clearFilter}
           />
         )}
       </Drawer>
@@ -600,7 +650,7 @@ export default function Search(props: SearchProps) {
           select: mode === 'select',
           [classes.shift]: drawerOpen
         })}
-        style={drawerOpen ? { width: 'calc(100% - 240px', marginLeft: '240px' } : {}}
+        style={drawerOpen ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth } : { marginLeft: 0 }}
       >
         {searchResults && !!searchResults.total && (
           <div className={classes.searchHelperBar}>
@@ -629,7 +679,29 @@ export default function Search(props: SearchProps) {
               rowsPerPageOptions={[9, 15, 21]}
               className={classes.pagination}
               component="div"
-              labelRowsPerPage={formatMessage(messages.itemsPerPage)}
+              labelRowsPerPage={null}
+              labelDisplayedRows={({ from, to, count }) => (
+                <>
+                  {formatMessage(messages.resultsCaption, {
+                    from,
+                    to,
+                    count,
+                    keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                    b: (content) => <strong key={content}>{content}</strong>
+                  })}
+                  {Object.keys(checkedFilters).length > 0 && (
+                    <strong>
+                      {formatMessage(messages.filtersActive, {
+                        span: (content) => (
+                          <span key={content} className={classes.filtersActive}>
+                            {content}
+                          </span>
+                        )
+                      })}
+                    </strong>
+                  )}
+                </>
+              )}
               count={searchResults.total}
               rowsPerPage={searchParameters.limit}
               page={Math.ceil(searchParameters.offset / searchParameters.limit)}
@@ -641,6 +713,11 @@ export default function Search(props: SearchProps) {
               }}
               onChangePage={handleChangePage}
               onChangeRowsPerPage={handleChangeRowsPerPage}
+              classes={{
+                caption: classes.paginationCaption,
+                selectRoot: classes.paginationSelectRoot,
+                select: classes.paginationSelect
+              }}
             />
           </div>
         )}
