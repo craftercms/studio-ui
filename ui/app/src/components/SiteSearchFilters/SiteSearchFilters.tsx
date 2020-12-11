@@ -249,25 +249,25 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
               disabled={mode === 'select'}
             />
           </div>
-          <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
-            <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
-              <Typography variant="body1">
-                <span className={classes.filterLabel}>{formatMessage(messages.sortBy)}</span>
-              </Typography>
-              {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
-              <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)} />
-            </header>
-          </ListItem>
-          <Collapse in={expanded && expanded['sortBy']} timeout={300}>
-            <div className={classes.body}>
-              <SiteSearchSortBy
-                queryParams={queryParams}
-                filterKeys={filterKeys}
-                handleFilterChange={handleFilterChange}
-              />
-              <SiteSearchSortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
-            </div>
-          </Collapse>
+        </Collapse>
+        <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
+          <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
+            <Typography variant="body1">
+              <span className={classes.filterLabel}>{formatMessage(messages.sortBy)}</span>
+            </Typography>
+            {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
+            <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)} />
+          </header>
+        </ListItem>
+        <Collapse in={expanded && expanded['sortBy']} timeout={300}>
+          <div className={classes.body}>
+            <SiteSearchSortBy
+              queryParams={queryParams}
+              filterKeys={filterKeys}
+              handleFilterChange={handleFilterChange}
+            />
+            <SiteSearchSortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
+          </div>
         </Collapse>
         {renderFilters()}
       </List>
