@@ -85,7 +85,7 @@ const systemEpics: CrafterCMSEpic[] = [
       ofType(showEditItemSuccessNotification.type),
       tap(({ payload: { action } }) => {
         let message;
-        if (['save', 'saveAndMinimize'].includes(action)) {
+        if (action === 'save') {
           message = getIntl().formatMessage(itemSuccessMessages.itemSavedAsDraft);
         } else {
           message = getIntl().formatMessage(itemSuccessMessages.itemEdited);

@@ -1769,15 +1769,6 @@ var CStudioForms =
                     }
                   }
                 ];
-                //this means the editor was open on a legacyFormDialog
-                if (iceWindowCallback.id) {
-                  options.push({
-                    label: formatMessage(formEngineMessages.saveAndMinimize),
-                    callback: () => {
-                      saveFn(false, true, null, 'saveAndMinimize');
-                    }
-                  });
-                }
                 if (type.previewable) {
                   options.push({
                     label: formatMessage(formEngineMessages.saveAndPreview),

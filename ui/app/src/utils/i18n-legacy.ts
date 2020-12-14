@@ -566,10 +566,6 @@ export const codeEditorMessages = defineMessages({
     id: 'codeEditor.saveAndClose',
     defaultMessage: 'Save & Close'
   },
-  saveAndMinimize: {
-    id: 'codeEditor.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
-  },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
     defaultMessage:
@@ -696,11 +692,7 @@ export const formEngineMessages = defineMessages({
   },
   save: {
     id: 'words.save',
-    defaultMessage: 'Save'
-  },
-  saveAndMinimize: {
-    id: 'formEngine.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
+    defaultMessage: 'Save as Draft'
   },
   saveAndClose: {
     id: 'formEngine.saveAndClose',
