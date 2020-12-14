@@ -29,6 +29,10 @@ export function getRequestForgeryTokenHeaderName(): string {
   return XSRF_TOKEN_HEADER_NAME;
 }
 
+export function getRequestForgeryTokenParamName(): string {
+  return '_csrf';
+}
+
 export function setRequestForgeryToken(headerName = XSRF_TOKEN_HEADER_NAME): void {
   const token = getRequestForgeryToken();
   setGlobalHeaders({ [headerName]: token });

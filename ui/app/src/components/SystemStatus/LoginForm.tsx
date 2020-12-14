@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { getRequestForgeryToken, getRequestForgeryTokenHeaderName } from '../../utils/auth';
+import { getRequestForgeryToken, getRequestForgeryTokenParamName } from '../../utils/auth';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function LogInForm(props: LogInFormProps) {
   const cls = useStyles();
+  const xsrf = useMemo(() => ({ name: getRequestForgeryTokenParamName(), value: getRequestForgeryToken() }), []);
   const {
     children,
     username,
@@ -86,7 +87,7 @@ export default function LogInForm(props: LogInFormProps) {
         className={clsx(cls.spacing, classes?.password)}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
-      <input type="hidden" name={getRequestForgeryTokenHeaderName()} value={getRequestForgeryToken()} />
+      <input type="hidden" name={xsrf.name} value={xsrf.value} />
       <Button
         color="primary"
         variant="contained"
