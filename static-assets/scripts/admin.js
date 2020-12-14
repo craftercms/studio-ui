@@ -49,11 +49,11 @@
 
       this.createUser = function(user) {
         delete user.passwordVerification;
-        return $http.post(users2(), user);
+        return usersApi.create(user).toPromise();
       };
 
       this.editUser = function(user) {
-        return $http.patch(users2(), user);
+        return usersApi.update(user).toPromise();
       };
 
       this.deleteUser = function(user) {
@@ -1384,25 +1384,25 @@
         $scope.dialogEdit = false;
       };
       users.createUser = function(user) {
-        adminService
-          .createUser(user)
-          .success(function(data) {
+        adminService.createUser(user).then(
+          function(data) {
             $scope.hideModal();
-            user = data.user;
+            user = data;
             $scope.usersCollection.push(user);
             $scope.users.totalLogs++;
             $scope.users.pagination.goToLast();
-
             $rootScope.showNotification(formatMessage(usersAdminMessages.userCreated, { username: user.username }));
-          })
-          .error(function(response) {
+            $scope.$apply();
+          },
+          function(response) {
             $rootScope.showNotification(
               response.response.message + '. ' + response.response.remedialAction,
               null,
               null,
               'error'
             );
-          });
+          }
+        );
       };
       users.resetPasswordDialog = function(user) {
         $scope.editedUser = user;
@@ -1477,9 +1477,8 @@
         currentUser.enabled = user.enabled;
         currentUser.externallyManaged = user.externallyManaged;
 
-        adminService
-          .editUser(currentUser)
-          .success(function(data) {
+        adminService.editUser(currentUser).then(
+          function(data) {
             var index = $scope.usersCollection.indexOf($scope.editedUser);
 
             if (index != -1) {
@@ -1489,15 +1488,16 @@
 
             $scope.hideModal();
             $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
-          })
-          .error(function(error) {
+          },
+          function(error) {
             $rootScope.showNotification(
               error.response.message + '. ' + error.response.remedialAction,
               null,
               null,
               'error'
             );
-          });
+          }
+        );
 
         users.toggleUserStatus(user);
       };

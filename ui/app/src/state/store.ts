@@ -24,7 +24,7 @@ import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
-import { fetchRolesInSiteForCurrent, me } from '../services/users';
+import { fetchMyRolesInSite, me } from '../services/users';
 import { fetchSites } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
@@ -168,7 +168,7 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
       sites.length
         ? forkJoin<LookupTable<Observable<string[]>>, ''>(
             sites.reduce((lookup, site) => {
-              lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
+              lookup[site.id] = fetchMyRolesInSite(site.id);
               return lookup;
             }, {})
           ).pipe(

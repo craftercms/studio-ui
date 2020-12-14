@@ -46,8 +46,8 @@ type Source = { items: DetailedItem[]; publishingChannels: any[]; apiState: ApiS
 type Return = Omit<Source, 'apiState'>;
 
 export interface DependenciesResultObject {
-  items1: [];
-  items2: [];
+  items1: string[];
+  items2: string[];
 }
 
 interface PublishDialogContentUIProps {

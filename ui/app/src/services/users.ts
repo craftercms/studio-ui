@@ -16,17 +16,30 @@
 
 import { forkJoin, Observable, of } from 'rxjs';
 import { User } from '../models/User';
-import { get } from '../utils/ajax';
-import { map, pluck, switchMap } from 'rxjs/operators';
+import { del, get, patchJSON, postJSON } from '../utils/ajax';
+import { map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
 import { fetchSites } from './sites';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
 import { PagedArray } from '../models/PagedArray';
 import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
+import { asArray } from '../utils/array';
 
 export function me(): Observable<User> {
   return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'));
+}
+
+export function create(user: Partial<User>): Observable<User> {
+  return postJSON(`/studio/api/2/users`, user).pipe(pluck('response', 'user'));
+}
+
+export function update(user: Partial<User>): Observable<User> {
+  return patchJSON(`/studio/api/2/users`, user).pipe(pluck('response', 'user'));
+}
+
+export function trash(username: string): Observable<true> {
+  return del(`/studio/api/2/users?username=${encodeURIComponent(username)}`).pipe(tap(console.log), mapTo(true));
 }
 
 export function fetchAll(options?: PaginationOptions): Observable<PagedArray<User>> {
@@ -46,6 +59,40 @@ export function fetchAll(options?: PaginationOptions): Observable<PagedArray<Use
   );
 }
 
+export function byId(): Observable<User> {
+  return null;
+}
+
+export function enable(username: string): Observable<User>;
+export function enable(usernames: string[]): Observable<User[]>;
+export function enable(usernames: string | string[]): Observable<User | User[]> {
+  return postJSON('/studio/api/2/users/enable', { usernames: asArray(usernames) }).pipe(
+    pluck('response', 'users'),
+    map((users) => (Array.isArray(usernames) ? users : users[0]))
+  );
+}
+
+export function disable(username: string): Observable<User>;
+export function disable(usernames: string[]): Observable<User[]>;
+export function disable(usernames: string | string[]): Observable<User | User[]> {
+  return postJSON('/studio/api/2/users/disable', { usernames: asArray(usernames) }).pipe(
+    pluck('response', 'users'),
+    map((users) => (Array.isArray(usernames) ? users : users[0]))
+  );
+}
+
+export function setPassword(): Observable<boolean> {
+  return null;
+}
+
+export function resetPassword(): Observable<boolean> {
+  return null;
+}
+
+export function setMyPassword(): Observable<boolean> {
+  return null;
+}
+
 export function fetchByUsername(username: string): Observable<User> {
   return get(`/studio/api/2/users/${encodeURIComponent(username)}`).pipe(pluck('response', 'user'));
 }
@@ -54,7 +101,8 @@ export function fetchRolesInSite(username: string, siteId: string): Observable<s
   return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
 
-export function fetchRolesInSiteForCurrent(siteId: string): Observable<string[]> {
+// renamed from fetchRolesInSiteForCurrent
+export function fetchMyRolesInSite(siteId: string): Observable<string[]> {
   return get(`/studio/api/2/users/me/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
 
@@ -74,12 +122,13 @@ export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<
   );
 }
 
-export function fetchRolesBySiteForCurrent(sites?: Site[]): Observable<LookupTable<string[]>> {
+// renamed from fetchRolesBySiteForCurrent
+export function fetchMyRolesBySite(sites?: Site[]): Observable<LookupTable<string[]>> {
   return (sites ? of(sites) : fetchSites()).pipe(
     switchMap((sites) =>
       forkJoin<LookupTable<Observable<string[]>>, ''>(
         sites.reduce((lookup, site) => {
-          lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
+          lookup[site.id] = fetchMyRolesInSite(site.id);
           return lookup;
         }, {})
       )
