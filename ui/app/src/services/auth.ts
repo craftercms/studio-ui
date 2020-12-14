@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, postJSON } from '../utils/ajax';
+import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { User } from '../models/User';
@@ -35,7 +35,8 @@ export function login(credentials: Credentials): Observable<User> {
       cache: 'no-cache',
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...getGlobalHeaders()
       },
       redirect: 'manual',
       body: `username=${credentials.username}&password=${credentials.password}`
