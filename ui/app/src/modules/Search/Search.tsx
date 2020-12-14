@@ -31,7 +31,6 @@ import Typography from '@material-ui/core/Typography';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from 'clsx';
 import { History, Location } from 'history';
 import { getContentXML } from '../../services/content';
@@ -44,6 +43,8 @@ import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
 import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
+import palette from '../../styles/palette';
+import ActionsBar from '../../components/ActionsBar';
 
 const drawerWidth = 300;
 const useStyles = makeStyles((theme: Theme) => ({
@@ -89,11 +90,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '0 6px 0 20px',
     alignItems: 'center',
     background: theme.palette.background.paper
-  },
-  resultsSelected: {
-    marginRight: '10px',
-    display: 'flex',
-    alignItems: 'center'
   },
   clearSelected: {
     marginLeft: '5px',
@@ -244,7 +240,7 @@ const messages = defineMessages({
   },
   resultsCaption: {
     id: 'search.resultsCaption',
-    defaultMessage: '{from}-{to} of {count} results for <b>“{keyword}”</b>'
+    defaultMessage: '{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}} '
   },
   filtersActive: {
     id: 'search.filtersActive',
@@ -490,6 +486,8 @@ export default function Search(props: SearchProps) {
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
       setSelected([...selected, path]);
+      dispatch(fetchUserPermissions({ path }));
+      dispatch(completeDetailedItem({ path }));
     } else {
       let selectedItems = [...selected];
       let index = selectedItems.indexOf(path);
@@ -666,15 +664,6 @@ export default function Search(props: SearchProps) {
                 label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
               />
             </FormGroup>
-            {selected.length > 0 && (
-              <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
-                {formatMessage(messages.resultsSelected, {
-                  count: selected.length,
-                  total: searchResults.total
-                })}
-                <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
-              </Typography>
-            )}
             <TablePagination
               rowsPerPageOptions={[9, 15, 21]}
               className={classes.pagination}
@@ -687,6 +676,7 @@ export default function Search(props: SearchProps) {
                     to,
                     count,
                     keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                    keywordLength: keyword.length,
                     b: (content) => <strong key={content}>{content}</strong>
                   })}
                   {Object.keys(checkedFilters).length > 0 && (
@@ -735,6 +725,8 @@ export default function Search(props: SearchProps) {
           )}
         </section>
       </section>
+
+      <ActionsBar open={selected.length > 0} selectedItems={selected} handleClearSelected={handleClearSelected} />
     </>
   );
 }
