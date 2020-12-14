@@ -66,7 +66,7 @@ export function byId(): Observable<User> {
 export function enable(username: string): Observable<User>;
 export function enable(usernames: string[]): Observable<User[]>;
 export function enable(usernames: string | string[]): Observable<User | User[]> {
-  return postJSON('/studio/api/2/users/enable', { usernames: asArray(usernames) }).pipe(
+  return patchJSON('/studio/api/2/users/enable', { usernames: asArray(usernames) }).pipe(
     pluck('response', 'users'),
     map((users) => (Array.isArray(usernames) ? users : users[0]))
   );
@@ -75,7 +75,7 @@ export function enable(usernames: string | string[]): Observable<User | User[]> 
 export function disable(username: string): Observable<User>;
 export function disable(usernames: string[]): Observable<User[]>;
 export function disable(usernames: string | string[]): Observable<User | User[]> {
-  return postJSON('/studio/api/2/users/disable', { usernames: asArray(usernames) }).pipe(
+  return patchJSON('/studio/api/2/users/disable', { usernames: asArray(usernames) }).pipe(
     pluck('response', 'users'),
     map((users) => (Array.isArray(usernames) ? users : users[0]))
   );
@@ -89,8 +89,12 @@ export function resetPassword(): Observable<boolean> {
   return null;
 }
 
-export function setMyPassword(): Observable<boolean> {
-  return null;
+export function setMyPassword(username: string, currentPassword: string, newPassword: string): Observable<User> {
+  return postJSON('/studio/api/2/users/me/change_password', {
+    username,
+    current: currentPassword,
+    new: newPassword
+  }).pipe(pluck('response', 'user'));
 }
 
 export function fetchByUsername(username: string): Observable<User> {

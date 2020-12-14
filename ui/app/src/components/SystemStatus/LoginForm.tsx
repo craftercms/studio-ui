@@ -21,6 +21,7 @@ import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { getRequestForgeryToken, getRequestForgeryTokenHeaderName } from '../../utils/auth';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -85,6 +86,7 @@ export default function LogInForm(props: LogInFormProps) {
         className={clsx(cls.spacing, classes?.password)}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
+      <input type="hidden" name={getRequestForgeryTokenHeaderName()} value={getRequestForgeryToken()} />
       <Button
         color="primary"
         variant="contained"
