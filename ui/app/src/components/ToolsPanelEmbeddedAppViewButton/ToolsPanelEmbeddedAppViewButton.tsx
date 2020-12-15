@@ -85,6 +85,7 @@ export default function ToolsPanelEmbeddedAppViewButton(props) {
       <ToolsPanelListItemButton {...props} onClick={openEmbeddedApp} />
       <Dialog
         open={open && !minimized}
+        keepMounted={minimized}
         onClose={() => setOpen(false)}
         fullWidth
         maxWidth="xl"
