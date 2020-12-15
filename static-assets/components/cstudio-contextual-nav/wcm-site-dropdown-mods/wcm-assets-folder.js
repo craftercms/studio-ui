@@ -587,13 +587,13 @@ var storage = CStudioAuthoring.Storage;
           nodeSpan.dataset.uri = treeNodeTO.uri;
         }
 
-        // Adding ItemMenu Icon and Trigger
-        const menuIcon = document.createElement('i');
-        menuIcon.className = 'fa fa-ellipsis-v item-menu-trigger';
-        menuIcon.onclick = function(event) {
-          event.preventDefault();
-          event.stopPropagation();
-          const path = treeNodeTO.uri;
+        const path = treeNodeTO.uri;
+
+        const loaderItems = CrafterCMSNext.util.content.getNumOfMenuOptionsForItem(
+          CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(treeNodeTO)
+        );
+
+        const openItemMenu = () => {
           CrafterCMSNext.system.store.dispatch({
             type: 'BATCH_ACTIONS',
             payload: [
@@ -613,12 +613,22 @@ var storage = CStudioAuthoring.Storage;
                 type: 'SHOW_ITEM_MENU',
                 payload: {
                   path,
+                  loaderItems,
                   anchorReference: 'anchorPosition',
                   anchorPosition: { top: event.clientY - 10, left: event.clientX - 10 }
                 }
               }
             ]
           });
+        };
+
+        // Adding ItemMenu Icon and Trigger
+        const menuIcon = document.createElement('i');
+        menuIcon.className = 'fa fa-ellipsis-v item-menu-trigger';
+        menuIcon.onclick = function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          openItemMenu();
         };
         nodeSpan.appendChild(menuIcon);
 
@@ -636,6 +646,11 @@ var storage = CStudioAuthoring.Storage;
         treeNode.treeNodeTO = treeNodeTO;
         treeNode.renderHidden = true;
         treeNode.nowrap = true;
+
+        treeNode.html.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          openItemMenu();
+        });
 
         if (highlight) {
           window.setTimeout(function() {
