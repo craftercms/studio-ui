@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SiteSearchPathSelector';
+export { default } from './PathSelector';
 
-export * from './SiteSearchPathSelector';
+export * from './PathSelector';

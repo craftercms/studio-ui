@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -311,6 +311,26 @@ export default function Search(props: SearchProps) {
     return () => subscription.unsubscribe();
   }, [history, onSearch$, refs]);
 
+  const refreshSearch = useCallback(() => {
+    search(site, searchParameters).subscribe(
+      (result) => {
+        setSearchResults(result);
+      },
+      ({ response }) => {
+        if (response) {
+          setApiState({ error: true, errorResponse: response });
+        }
+      }
+    );
+  }, [searchParameters, site]);
+
+  const handleClearSelected = useCallback(() => {
+    selected.forEach((path) => {
+      onSelect(path, false);
+    });
+    setSelected([]);
+  }, [onSelect, selected]);
+
   useEffect(() => {
     if (selected.length === 1) {
       unsubscribeOnActionSuccess = createCallbackListener(idActionSuccess, function() {
@@ -320,7 +340,7 @@ export default function Search(props: SearchProps) {
     } else if (!selected.length) {
       unsubscribeOnActionSuccess?.();
     }
-  }, [selected]);
+  }, [selected, handleClearSelected, refreshSearch]);
 
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
@@ -483,19 +503,6 @@ export default function Search(props: SearchProps) {
     });
   }
 
-  function refreshSearch() {
-    search(site, searchParameters).subscribe(
-      (result) => {
-        setSearchResults(result);
-      },
-      ({ response }) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: response });
-        }
-      }
-    );
-  }
-
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
       setSelected([...selected, path]);
@@ -531,13 +538,6 @@ export default function Search(props: SearchProps) {
       });
       setSelected(newSelectedItems);
     }
-  }
-
-  function handleClearSelected() {
-    selected.forEach((path) => {
-      onSelect(path, false);
-    });
-    setSelected([]);
   }
 
   function areAllSelected() {

@@ -78,7 +78,7 @@ interface PathSelectorProps {
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
-export default function SiteSearchPathSelector(props: PathSelectorProps) {
+export default function PathSelector(props: PathSelectorProps) {
   const { handleFilterChange, value, disabled } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();

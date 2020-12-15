@@ -30,7 +30,7 @@ import { LookupTable } from '../../models/LookupTable';
 import SiteSearchSortBy from '../SiteSearchSortBy';
 import SiteSearchSortOrder from '../SiteSearchSortOrder';
 import SiteSearchFilter from '../SiteSearchFilter';
-import SiteSearchPathSelector from '../SiteSearchPathSelector';
+import PathSelector from '../SiteSearchPathSelector';
 import Button from '@material-ui/core/Button';
 import palette from '../../styles/palette';
 
@@ -243,7 +243,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
         </ListItem>
         <Collapse in={expanded && expanded['path']} timeout={300}>
           <div className={classes.body}>
-            <SiteSearchPathSelector
+            <PathSelector
               value={queryParams['path']?.replace('.+', '')}
               handleFilterChange={handleFilterChange}
               disabled={mode === 'select'}
