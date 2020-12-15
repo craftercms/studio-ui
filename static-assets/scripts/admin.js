@@ -37,7 +37,7 @@
 
       this.maxInt = 32000;
 
-      //USERS
+      // USERS
 
       this.getUsers = function(params) {
         return usersApi.fetchAll(params).toPromise();
@@ -57,40 +57,23 @@
       };
 
       this.deleteUser = function(user) {
-        return $http.delete(users2('id=' + user.id));
-      };
-
-      this.getUserStatus = function(username) {
-        return $http.get(users('status', 'username=' + username));
+        return usersApi.trash(user.username).toPromise();
       };
 
       this.toggleUserStatus = function(user, action) {
-        var body = {
-          ids: [user.id],
-          usernames: [user.username]
-        };
-        //return $http.patch(users(status), user);
-        return $http.patch(usersActions(action), body);
+        return (action === 'enable' ? usersApi.enable(user.username) : usersApi.disable(user.username)).toPromise();
       };
 
-      this.setPassword = function(data) {
-        return $http.post(usersActions('/set_password'), data);
-      };
-
-      //Allow the administrator to reset Crafter Studio’s user password provided.
+      // Allow the administrator to reset Crafter Studio’s user password provided.
       this.resetPassword = function(data) {
-        return $http.post(usersActions(data.username + '/reset_password'), data);
+        return usersApi.setPassword(data.username, data.new).toPromise();
       };
 
       this.changePassword = function(data) {
-        return $http.post(usersActions('/me/change_password'), data);
+        return usersApi.setMyPassword(data.username, data.current, data.new).toPromise();
       };
 
-      this.forgotPassword = function(username) {
-        return $http.get(usersActions('/forgot_password', 'username=' + username));
-      };
-
-      //CLUSTERS
+      // CLUSTERS
       this.getClusterMembers = function(id) {
         return $http.get(cluster(id));
       };
@@ -99,7 +82,7 @@
         return $http.delete(cluster('id=' + clusterParam.id));
       };
 
-      //GROUPS
+      // GROUPS
 
       this.getGroups = function(params) {
         return $http.get(groups2(), {
@@ -141,7 +124,7 @@
         return $http.post(groupsMembers(data.groupId, true), body);
       };
 
-      //REPOSITORIES
+      // REPOSITORIES
 
       this.getRepositories = function(data) {
         return $http.get(repositories('list_remotes', 'siteId=' + data.site));
@@ -185,7 +168,7 @@
         return $http.post(repositories('cancel_failed_pull'), data);
       };
 
-      //AUDIT
+      // AUDIT
 
       this.getAudit = function(data) {
         return $http.get(audit(), {
@@ -203,7 +186,7 @@
         });
       };
 
-      //LOGGING
+      // LOGGING
 
       this.getLoggers = function() {
         return $http.get(Constants.SERVICE + 'server/get-loggers.json');
@@ -228,7 +211,7 @@
         });
       };
 
-      //PUBLISHING
+      // PUBLISHING
       this.getPublishStatus = function(site) {
         return $http.get(publish('status', 'site_id=' + site));
       };
@@ -241,7 +224,7 @@
         return $http.post(publish('stop'), site);
       };
 
-      //BULKPUBLISH
+      // BULKPUBLISH
       this.getPublishingChannels = function(site) {
         return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
       };
@@ -257,10 +240,10 @@
         );
       };
 
-      //COMMITSPUBLISH
+      // COMMITSPUBLISH
 
       this.commitsPublish = function(data) {
-        //return $http.post(publish('commits', 'site_id=' + site + "&commit_ids=" + commitIds + "&environment=" + environmet));
+        // return $http.post(publish('commits', 'site_id=' + site + "&commit_ids=" + commitIds + "&environment=" + environmet));
         return $http.post(publish('commits'), data);
       };
 
@@ -341,7 +324,7 @@
           url += '?' + params;
         }
         return url;
-        //'/members.json?offset=0&limit=1000&sort=desc';
+        // '/members.json?offset=0&limit=1000&sort=desc';
       }
 
       function repositories(action, params) {
@@ -530,7 +513,7 @@
           .getSpecificAudit(id)
           .success(function(data) {
             var parameters = data.auditLog.parameters;
-            //parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
+            // parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
 
             if (parameters.length > 0) {
               html = "<div class='mt10 has-children'>";
@@ -787,7 +770,7 @@
       };
 
       logs.stopTimer = function() {
-        //Cancel the Timer.
+        // Cancel the Timer.
         if (angular.isDefined(logs.timer)) {
           $interval.cancel(logs.timer);
         }
@@ -941,9 +924,9 @@
       $location,
       moment
     ) {
-      //PUBLISHING
+      // PUBLISHING
 
-      //MODAL
+      // MODAL
 
       $scope.publish = {};
       var currentIconColor;
@@ -964,7 +947,7 @@
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
           backdrop: 'static',
           keyboard: true,
-          //controller: 'PublishingCtrl',
+          // controller: 'PublishingCtrl',
           scope: $scope,
           size: size ? size : ''
         });
@@ -1097,7 +1080,7 @@
           });
       };
 
-      //BULK PUBLISH
+      // BULK PUBLISH
 
       var currentIconColor;
       publish.channels;
@@ -1160,7 +1143,7 @@
         });
       });
 
-      //COMMITS PUBLISH
+      // COMMITS PUBLISH
 
       publish.commitIds;
       publish.publishComment = '';
@@ -1199,7 +1182,7 @@
 
         document.getElementById('publishComment').addEventListener('keyup', function(e) {
           CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-            commentLength: publish.publishComment.length ?? 0
+            commentLength: publish.publishComment.length || 0
           });
         });
       });
@@ -1308,7 +1291,7 @@
 
       this.init();
 
-      //table setup
+      // table setup
       users.itemsPerPage = 10;
       $scope.usersCollection = [];
 
@@ -1430,18 +1413,20 @@
             username: user.username,
             new: user.newPassword
           })
-          .success(function() {
-            $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
-            $scope.hideModal();
-          })
-          .error(function(error) {
-            $rootScope.showNotification(
-              error.response.message + '. ' + error.response.remedialAction,
-              null,
-              null,
-              'error'
-            );
-          });
+          .then(
+            function() {
+              $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
+              $scope.hideModal();
+            },
+            function(error) {
+              $rootScope.showNotification(
+                error.response.message + '. ' + error.response.remedialAction,
+                null,
+                null,
+                'error'
+              );
+            }
+          );
         delete user.newPassword;
       };
       users.editUserDialog = function(user) {
@@ -1462,7 +1447,7 @@
           },
           function(error) {
             console.log(error);
-            //TODO: properly display error
+            // TODO: properly display error
           }
         );
       };
@@ -1517,32 +1502,32 @@
           },
           function(error) {
             console.log(error);
-            //TODO: properly display error
+            // TODO: properly display error
           }
         );
       };
       users.toggleUserStatus = function(user) {
         var newStatus = $('#enabled').is(':checked') ? 'enable' : 'disable';
-        //user.status.enabled = $('#enabled').is(':checked');
+        // user.status.enabled = $('#enabled').is(':checked');
 
         adminService.toggleUserStatus(user, newStatus);
       };
       users.removeUser = function(user) {
         var deleteUser = function() {
-          adminService
-            .deleteUser(user)
-            .success(function(data) {
+          adminService.deleteUser(user).then(
+            function(data) {
               var index = $scope.usersCollection.indexOf(user);
               if (index !== -1) {
                 $scope.usersCollection.splice(index, 1);
                 $scope.users.totalLogs--;
               }
               $rootScope.showNotification(formatMessage(usersAdminMessages.userDeleted, { username: user.username }));
-            })
-            .error(function(data) {
+            },
+            function(data) {
               $scope.error = data.response.message;
               $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteUser;
@@ -1608,7 +1593,7 @@
       };
       this.init();
 
-      //table setup
+      // table setup
       $scope.membersCollection = [];
 
       clusters.getClusters = function() {
@@ -1717,12 +1702,12 @@
       };
       this.init();
 
-      //table setup
+      // table setup
       groups.itemsPerPage = 10;
       groups.members.itemsPerPage = 10;
       $scope.groupsCollection = [];
 
-      /////////////////// MULTIPLE GROUPS VIEW ////////////////////
+      /// //////////////// MULTIPLE GROUPS VIEW ////////////////////
 
       var getGroups = function() {
         groups.totalLogs = 0;
@@ -1745,7 +1730,7 @@
         function getResultsPage(pageNumber) {
           var params = {};
 
-          //params.site_id = site;
+          // params.site_id = site;
 
           if (groups.totalLogs && groups.totalLogs > 0) {
             var offset = (pageNumber - 1) * groups.itemsPerPage,
@@ -1794,7 +1779,7 @@
         $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
       };
       $scope.createGroup = function(group) {
-        //group.site_id = groups.site;
+        // group.site_id = groups.site;
 
         adminService
           .createGroup(group)
@@ -1824,11 +1809,11 @@
             $scope.group = data;
           })
           .error(function() {
-            //TODO: properly display error.
+            // TODO: properly display error.
           });
       };
       $scope.editGroup = function(group) {
-        //group.site_id = groups.site;
+        // group.site_id = groups.site;
 
         adminService
           .editGroup(group)
@@ -1845,7 +1830,7 @@
       };
       $scope.removeGroup = function(group) {
         var deleteGroup = function() {
-          //group.site_id = groups.site;
+          // group.site_id = groups.site;
 
           adminService
             .deleteGroup(group)
@@ -1876,7 +1861,7 @@
         $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
       };
 
-      /////////////////// SINGLE GROUP VIEW ////////////////////
+      /// //////////////// SINGLE GROUP VIEW ////////////////////
 
       groups.viewGroup = function(group) {
         groups.selectedGroup = group;
@@ -2018,7 +2003,7 @@
         var deleteUserFromGroupParams = {};
         deleteUserFromGroupParams.userId = user.id;
         deleteUserFromGroupParams.username = user.username;
-        //user.site_id = groups.site;
+        // user.site_id = groups.site;
 
         var removeUserFromGroup = function() {
           adminService

@@ -39,7 +39,7 @@ export function update(user: Partial<User>): Observable<User> {
 }
 
 export function trash(username: string): Observable<true> {
-  return del(`/studio/api/2/users?username=${encodeURIComponent(username)}`).pipe(tap(console.log), mapTo(true));
+  return del(`/studio/api/2/users?username=${encodeURIComponent(username)}`).pipe(mapTo(true));
 }
 
 export function fetchAll(options?: PaginationOptions): Observable<PagedArray<User>> {

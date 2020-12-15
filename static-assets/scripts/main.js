@@ -400,6 +400,7 @@
       var script = $document[0].getElementById('user');
       var authApi = CrafterCMSNext.services.auth;
       var monitoringApi = CrafterCMSNext.services.monitoring;
+      var usersApi = CrafterCMSNext.services.users;
 
       if (script) {
         script = angular.element(script);
@@ -422,6 +423,10 @@
 
       this.getStudioInfo = function() {
         return monitoringApi.version().toPromise();
+      };
+
+      this.changePassword = function(data) {
+        return usersApi.setMyPassword(data.username, data.current, data.new).toPromise();
       };
 
       return this;
@@ -825,24 +830,19 @@
         $scope.data.username = $scope.user.username;
         $translate.use($scope.langSelected);
 
-        if ($scope.data.new == $scope.data.confirmation) {
+        if ($scope.data.new === $scope.data.confirmation) {
           authService.changePassword($scope.data).then(
-            function(data) {
-              $scope.error = $scope.message = null;
-
-              if (data.type === 'error') {
-                $scope.error = data.message;
-              } else if (data.error) {
-                $scope.error = data.error;
-              } else {
-                $scope.message = data.message;
-                $timeout(() => CrafterCMSNext.system.store.dispatch({ type: 'LOG_OUT' }), 1500, false);
-              }
+            function() {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_SYSTEM_NOTIFICATION',
+                payload: {
+                  message: formatMessage(i18n.messages.usersAdminMessages.passwordChangeSuccess)
+                }
+              });
             },
             function(error) {
-              var errorResponse = error.data.response;
+              var errorResponse = error.response.response;
               $('#current').focus();
-
               if (errorResponse.code === 6003) {
                 $scope.error =
                   $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') +
