@@ -22,6 +22,8 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { decodeHTML, fileNameFromPath } from './string';
+import { isRootPath } from './path';
+import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
 
 export function isEditableAsset(path: string) {
   return (
@@ -93,17 +95,17 @@ function getLegacyItemSystemType(item: LegacyItem) {
     case item.contentType === 'folder': {
       return 'folder';
     }
-    case item.asset: {
+    case item.asset || item.isAsset: {
       return 'asset';
     }
-    case item.component: {
+    case item.component || item.isComponent: {
       return 'component';
     }
-    case item.page: {
+    case item.page || item.isPage: {
       return 'page';
     }
     case item.folder:
-    case item.container: {
+    case item.container || item.isContainer: {
       return 'folder';
     }
     case item.contentType === 'taxonomy': {
@@ -533,4 +535,14 @@ export function denormalizeModel(
     }
   });
   return model;
+}
+
+export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
+  if (isNavigable(item)) {
+    return isRootPath(item.path) ? 11 : 16;
+  } else if (isFolder(item)) {
+    return isRootPath(item.path) ? 3 : 6;
+  } else if (isPreviewable(item)) {
+    return 10;
+  }
 }
