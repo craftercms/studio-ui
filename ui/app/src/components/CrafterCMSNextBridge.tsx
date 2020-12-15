@@ -29,6 +29,7 @@ import I18nProvider from './I18nProvider';
 import StoreProvider from './StoreProvider';
 import CrafterThemeProvider from './CrafterThemeProvider';
 import SnackbarCloseButton from './SnackbarCloseButton';
+import LegacyConcierge from './LegacyConcierge';
 
 const useStyles = makeStyles({
   topSnackbar: {
@@ -40,6 +41,7 @@ function Bridge(
   props: PropsWithChildren<{
     mountGlobalDialogManager?: boolean;
     mountSnackbarProvider?: boolean;
+    mountLegacyConcierge?: boolean;
     resource: Resource<CrafterCMSStore>;
     themeOptions?: ThemeOptions;
   }>
@@ -48,10 +50,13 @@ function Bridge(
   const classes = useStyles();
   const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
   const mountSnackbarProvider = props.mountSnackbarProvider ?? true;
+  const mountLegacyConcierge = props.mountLegacyConcierge ?? true;
+
   const body = (
     <>
       <Suspense fallback="" children={props.children} />
       {mountGlobalDialogManager && <GlobalDialogManager />}
+      {mountLegacyConcierge && <LegacyConcierge />}
     </>
   );
   return (
@@ -80,7 +85,11 @@ function Bridge(
 }
 
 export default function CrafterCMSNextBridge(
-  props: PropsWithChildren<{ mountGlobalDialogManager?: boolean; mountSnackbarProvider?: boolean }>
+  props: PropsWithChildren<{
+    mountGlobalDialogManager?: boolean;
+    mountSnackbarProvider?: boolean;
+    mountLegacyConcierge?: boolean;
+  }>
 ) {
   const [storeResource] = useState(() =>
     createResource(() => createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise())
@@ -90,6 +99,7 @@ export default function CrafterCMSNextBridge(
       <Bridge
         mountGlobalDialogManager={props.mountGlobalDialogManager}
         mountSnackbarProvider={props.mountSnackbarProvider}
+        mountLegacyConcierge={props.mountLegacyConcierge}
         resource={storeResource}
         children={props.children}
       />
