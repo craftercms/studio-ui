@@ -691,7 +691,7 @@ export const formEngineMessages = defineMessages({
     defaultMessage: 'Draft Save Completed'
   },
   save: {
-    id: 'words.save',
+    id: 'formEngine.save',
     defaultMessage: 'Save as Draft'
   },
   saveAndClose: {
