@@ -16,20 +16,21 @@
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, from, forkJoin } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
 import { ApiResponse } from '../models/ApiResponse';
 import { me } from './users';
-import { fromPromise } from 'rxjs/internal-compatibility';
 
 export function getSSOLogoutURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 
-export function login(credentials: Credentials): Observable<User> {
-  return fromPromise(
+export function login(credentials: Credentials): Observable<{ user: User; auth: RefreshSessionResponse }> {
+  // Regular post works fine, but fetch provides the redirect: 'manual' option which cancels the 302
+  // that's is useless for when doing the async style login.
+  return from(
     fetch('/studio/login', {
       method: 'POST',
       cache: 'no-cache',
@@ -41,11 +42,7 @@ export function login(credentials: Credentials): Observable<User> {
       redirect: 'manual',
       body: `username=${credentials.username}&password=${credentials.password}`
     })
-  ).pipe(switchMap(() => me()));
-}
-
-export function validateSession(): Observable<boolean> {
-  return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(pluck('response', 'active'));
+  ).pipe(switchMap(() => forkJoin({ user: me(), auth: refreshSession() })));
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {

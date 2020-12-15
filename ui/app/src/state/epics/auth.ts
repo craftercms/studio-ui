@@ -22,12 +22,9 @@ import {
   logout,
   refreshAuthToken,
   refreshAuthTokenComplete,
-  refreshAuthTokenFailed,
-  validateSession,
-  validateSessionComplete,
-  validateSessionFailed
+  refreshAuthTokenFailed
 } from '../actions/auth';
-import { ignoreElements, map, mapTo, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mapTo, pluck, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
@@ -35,6 +32,7 @@ import { setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
 import { interval } from 'rxjs';
 import { storeInitialized } from '../actions/system';
+import { sessionTimeout } from '../actions/user';
 
 const epics: CrafterCMSEpic[] = [
   (action$) =>
@@ -51,14 +49,9 @@ const epics: CrafterCMSEpic[] = [
     ),
   (action$) =>
     action$.pipe(
-      ofType(validateSession.type),
-      switchMap(() =>
-        auth.validateSession().pipe(
-          tap((isValid) => !isValid && setRequestForgeryToken()),
-          map(validateSessionComplete),
-          catchAjaxError(validateSessionFailed)
-        )
-      )
+      ofType(sessionTimeout.type),
+      tap(() => setRequestForgeryToken()),
+      ignoreElements()
     ),
   (action$) =>
     action$.pipe(
@@ -79,7 +72,7 @@ const epics: CrafterCMSEpic[] = [
         interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
       )
     ),
-  (action$) => action$.pipe(ofType(loginComplete.type), mapTo(refreshAuthToken()))
+  (action$) => action$.pipe(ofType(loginComplete.type), pluck('payload', 'auth'), map(refreshAuthTokenComplete))
 ];
 
 export default epics;

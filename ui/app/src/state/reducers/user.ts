@@ -19,13 +19,6 @@ import { User } from '../../models/User';
 import { logoutComplete } from '../actions/auth';
 
 const reducer = createReducer<User>(null, {
-  // Service doesn't return the "right" user. For now just keeping the one that
-  // would have originally come from the FTL pre-loaded state.
-  // [LOG_IN_COMPLETE]: (state, action) => {
-  //   return {
-  //     ...action.payload
-  //   };
-  // },
   [logoutComplete.type]: () => null
 });
 

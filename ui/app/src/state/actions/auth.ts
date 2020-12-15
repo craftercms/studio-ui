@@ -22,7 +22,7 @@ import { RefreshSessionResponse } from '../../services/auth';
 // region Login
 
 export const login = createAction<Credentials>('LOG_IN');
-export const loginComplete = createAction<User>('LOG_IN_COMPLETE');
+export const loginComplete = createAction<{ user: User; auth: RefreshSessionResponse }>('LOG_IN_COMPLETE');
 export const loginFailed = createAction('LOG_IN_FAILED');
 
 // endregion
@@ -35,11 +35,7 @@ export const logoutFailed = createAction('LOG_OUT_FAILED');
 
 // endregion
 
-// region Validate Session
-
-export const validateSession = createAction('VALIDATE_SESSION');
-export const validateSessionComplete = createAction<boolean>('VALIDATE_SESSION_COMPLETE');
-export const validateSessionFailed = createAction('VALIDATE_SESSION_FAILED');
+// region User Session control
 
 export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
 export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');

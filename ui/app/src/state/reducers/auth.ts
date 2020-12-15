@@ -24,10 +24,7 @@ import {
   logoutComplete,
   refreshAuthToken,
   refreshAuthTokenComplete,
-  refreshAuthTokenFailed,
-  validateSession,
-  validateSessionComplete,
-  validateSessionFailed
+  refreshAuthTokenFailed
 } from '../actions/auth';
 import { storeInitialized } from '../actions/system';
 
@@ -38,7 +35,6 @@ export const initialState: GlobalState['auth'] = {
   isFetching: false
 };
 
-// TODO: Update actions for JWT
 const reducer = createReducer<GlobalState['auth']>(initialState, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...state,
@@ -50,6 +46,7 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
   }),
   [refreshAuthTokenComplete.type]: (state, { payload }) => ({
     ...state,
+    active: true,
     isFetching: false,
     expiresAt: fromExpiresAtString(payload.expiresAt)
   }),
@@ -58,9 +55,6 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
     active: false,
     isFetching: false
   }),
-  [validateSession.type]: (state) => ({ ...state, isFetching: true }),
-  [validateSessionComplete.type]: (state, { payload: active }) => ({ ...state, isFetching: false, active }),
-  [validateSessionFailed.type]: (state) => ({ ...state, isFetching: false }),
   [sessionTimeout.type]: () => initialState,
   [login.type]: (state) => ({ ...state, isFetching: true }),
   [loginComplete.type]: () => ({ active: true, error: null, isFetching: true, expiresAt: null }),

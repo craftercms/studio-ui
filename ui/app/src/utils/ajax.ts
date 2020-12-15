@@ -39,6 +39,9 @@ export function getGlobalHeaders(): object {
   return { ...HEADERS };
 }
 
+/**
+ * Merges the supplied `headers` object with the current global headers and returns the resulting object.
+ **/
 function mergeHeaders(headers: object = {}): object {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;

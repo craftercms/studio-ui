@@ -25,7 +25,7 @@ import Button from '@material-ui/core/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { login, validateSession } from '../../state/actions/auth';
+import { login, refreshAuthToken } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { getSSOLogoutURL } from '../../services/auth';
 import { pluck } from 'rxjs/operators';
@@ -144,7 +144,7 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
     e.preventDefault();
     e.stopPropagation();
     if (isSSO) {
-      dispatch(validateSession());
+      dispatch(refreshAuthToken());
       setSSOButtonClicked(false);
     } else {
       !isBlank(password) && dispatch(login({ username, password }));

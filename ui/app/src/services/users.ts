@@ -81,14 +81,29 @@ export function disable(usernames: string | string[]): Observable<User | User[]>
   );
 }
 
-export function setPassword(): Observable<boolean> {
-  return null;
+/**
+ * Sets the password for the supplied username. Requires UPDATE_USERS permission.
+ **/
+export function setPassword(username: string, password: string): Observable<void> {
+  return postJSON(`/studio/api/2/users/${encodeURIComponent(username)}/reset_password`, {
+    username,
+    new: password
+  }).pipe(pluck('response'));
 }
 
-export function resetPassword(): Observable<boolean> {
-  return null;
+/**
+ * Set a new password using a valid password reset token.
+ **/
+export function resetPasswordWithToken(token: string, password: string): Observable<boolean> {
+  return postJSON('/studio/api/2/users/set_password', {
+    token,
+    new: password
+  }).pipe(pluck('response', 'user'));
 }
 
+/**
+ * Set the password for the current user.
+ **/
 export function setMyPassword(username: string, currentPassword: string, newPassword: string): Observable<User> {
   return postJSON('/studio/api/2/users/me/change_password', {
     username,
