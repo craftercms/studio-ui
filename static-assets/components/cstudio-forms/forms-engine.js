@@ -771,10 +771,6 @@ var CStudioForms =
       sendMessage({ type: FORM_REQUEST, key });
     }
 
-    function saveDraftDialog() {
-      // deprecated
-    }
-
     function setButtonsEnabled(enabled) {
       if (enabled === undefined) {
         enabled = true;
@@ -933,7 +929,6 @@ var CStudioForms =
         } else {
           messages$.subscribe((message) => {
             if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
-              saveDraftDialog();
               setButtonsEnabled(true);
             }
           });
@@ -1419,7 +1414,6 @@ var CStudioForms =
                           iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
-                            saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1429,7 +1423,6 @@ var CStudioForms =
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             CStudioAuthoring.Operations.refreshPreview();
-                            saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
