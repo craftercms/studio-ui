@@ -34,7 +34,9 @@ import {
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
   fetchDeleteDependenciesFailed,
-  newContentCreationComplete
+  newContentCreationComplete,
+  showConfirmDialog,
+  showEditDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { getVersion } from '../../services/content';
@@ -44,6 +46,8 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
+import { updateDialog } from '../reducers/dialogs/minimizedDialogs';
+import { formEngineMessages } from '../../utils/i18n-legacy';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -125,6 +129,32 @@ const dialogEpics: CrafterCMSEpic[] = [
           catchAjaxError(fetchDeleteDependenciesFailed)
         )
       )
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showEditDialog.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        if (payload.src === state.dialogs.edit.src) {
+          const id = 'legacy-editor';
+          if (state.dialogs.minimizedDialogs[id].minimized === true) {
+            return of(
+              updateDialog({
+                id,
+                minimized: false
+              })
+            );
+          } else {
+            return NEVER;
+          }
+        } else {
+          return of(
+            showConfirmDialog({
+              body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation)
+            })
+          );
+        }
+      })
     )
 ] as Epic[];
 

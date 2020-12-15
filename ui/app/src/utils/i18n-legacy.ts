@@ -686,6 +686,10 @@ export const browseSearchMessages = defineMessages({
 });
 
 export const formEngineMessages = defineMessages({
+  inProgressConfirmation: {
+    id: 'formEngine.inProgressConfirmation',
+    defaultMessage: 'There are an edit in progress, to open a new edit form please close or save the previous one'
+  },
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
