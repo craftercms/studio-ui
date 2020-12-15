@@ -53,14 +53,15 @@ const styles = makeStyles(() =>
       height: '0',
       border: 0,
       '&.complete': {
-        height: '100%'
+        height: '100%',
+        flexGrow: 1
       }
     },
     dialog: {
       minHeight: '90vh'
     },
     loadingRoot: {
-      height: 'calc(100% - 104px)',
+      flexGrow: 1,
       justifyContent: 'center'
     },
     edited: {
@@ -178,7 +179,7 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
       open={props.open && !minimized}
       keepMounted={minimized}
       onClose={props.onClose}
-      fullScreen
+      fullWidth
       maxWidth="xl"
       classes={{ paper: classes.dialog }}
     >

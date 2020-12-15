@@ -534,6 +534,10 @@ export const siteComponentDSMessages = defineMessages({
 });
 
 export const codeEditorMessages = defineMessages({
+  inProgressConfirmation: {
+    id: 'codeEditor.inProgressConfirmation',
+    defaultMessage: 'Another form is currently open & minimized. Please close the current form before opening another'
+  },
   confirm: {
     id: 'codeEditor.confirm',
     defaultMessage: 'Confirm Close'
@@ -688,7 +692,7 @@ export const browseSearchMessages = defineMessages({
 export const formEngineMessages = defineMessages({
   inProgressConfirmation: {
     id: 'formEngine.inProgressConfirmation',
-    defaultMessage: 'There are an edit in progress, to open a new edit form please close or save the previous one'
+    defaultMessage: 'Another form is currently open & minimized. Please close the current form before opening another'
   },
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
