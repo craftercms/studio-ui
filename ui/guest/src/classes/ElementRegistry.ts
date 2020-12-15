@@ -239,10 +239,9 @@ export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
   }
 }
 
-export function compileDropZone(iceId: number): DropZone {
-  const physicalRecord = fromICEId(iceId);
-  const physicalRecordId = physicalRecord.id;
-  const element = physicalRecord.element;
+function getDropZoneFromRegistryEntry(elementRecord: RegistryEntry, iceId: number): DropZone {
+  const elementRecordId = elementRecord.id;
+  const element = elementRecord.element;
   const children: Element[] = Array.from(element.children);
   const childrenRects = children.map((child: Element) => child.getBoundingClientRect());
   const rect = element.getBoundingClientRect();
@@ -251,12 +250,22 @@ export function compileDropZone(iceId: number): DropZone {
     element,
     children,
     iceId,
-    physicalRecordId,
+    elementRecordId,
     rect,
     arrangement: getChildArrangement(children, childrenRects, rect),
     childrenRects,
     validations: {}
   };
+}
+
+export function compileDropZone(iceId: number): DropZone {
+  const elementRecord = fromICEId(iceId);
+  return getDropZoneFromRegistryEntry(elementRecord, iceId);
+}
+
+export function compileAllDropZones(iceId: number): DropZone[] {
+  const elementRecords = getRecordsFromIceId(iceId);
+  return elementRecords.map((elementRecord) => getDropZoneFromRegistryEntry(elementRecord, iceId));
 }
 
 export function getSiblingRects(id: number): LookupTable<DOMRect> {
@@ -305,7 +314,7 @@ export function hasElement(element: Element): boolean {
 }
 
 export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData> {
-  return dropZones.reduce((object, { physicalRecordId: id, validations }) => {
+  return dropZones.reduce((object, { elementRecordId: id, validations }) => {
     object[id] = getHoverData(id);
     object[id].validations = validations;
     return object;
@@ -323,15 +332,21 @@ export function getDragContextFromReceptacles(
     players: [],
     containers: []
   };
+
   receptacles.forEach(({ id }) => {
-    const dropZone = compileDropZone(id);
-    dropZone.origin = null;
-    dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
-    dropZone.validations = validationsLookup?.[id] ?? {};
-    response.dropZones.push(dropZone);
-    response.siblings = [...response.siblings, ...dropZone.children];
-    response.players = [...response.players, ...dropZone.children, dropZone.element];
-    response.containers.push(dropZone.element);
+    const dropZones = compileAllDropZones(id);
+    const dropZonesFiltered = currentRecord
+      ? dropZones.filter((dropZone) => dropZone.children.includes(currentRecord.element))
+      : null;
+    (dropZonesFiltered && dropZonesFiltered.length ? dropZonesFiltered : dropZones).forEach((dropZone) => {
+      dropZone.origin = null;
+      dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
+      dropZone.validations = validationsLookup?.[id] ?? {};
+      response.dropZones.push(dropZone);
+      response.siblings = [...response.siblings, ...dropZone.children];
+      response.players = [...response.players, ...dropZone.children, dropZone.element];
+      response.containers.push(dropZone.element);
+    });
   });
   return response;
 }
@@ -366,4 +381,17 @@ export function getParentElementFromICEProps(
   });
 
   return recordId === -1 ? null : $(fromICEId(recordId).element);
+}
+export function getParentsElementFromICEProps(
+  modelId: string,
+  fieldId: string,
+  index: string | number
+): JQuery<Element>[] {
+  const recordId = iceRegistry.exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
+  });
+
+  return recordId === -1 ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
 }
