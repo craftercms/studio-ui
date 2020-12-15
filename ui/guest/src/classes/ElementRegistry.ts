@@ -239,9 +239,9 @@ export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
   }
 }
 
-function getDropZoneFromRegistryEntry(physicalRecord: RegistryEntry, iceId: number): DropZone {
-  const elementRecordId = physicalRecord.id;
-  const element = physicalRecord.element;
+function getDropZoneFromRegistryEntry(elementRecord: RegistryEntry, iceId: number): DropZone {
+  const elementRecordId = elementRecord.id;
+  const element = elementRecord.element;
   const children: Element[] = Array.from(element.children);
   const childrenRects = children.map((child: Element) => child.getBoundingClientRect());
   const rect = element.getBoundingClientRect();
@@ -259,13 +259,13 @@ function getDropZoneFromRegistryEntry(physicalRecord: RegistryEntry, iceId: numb
 }
 
 export function compileDropZone(iceId: number): DropZone {
-  const physicalRecord = fromICEId(iceId);
-  return getDropZoneFromRegistryEntry(physicalRecord, iceId);
+  const elementRecord = fromICEId(iceId);
+  return getDropZoneFromRegistryEntry(elementRecord, iceId);
 }
 
 export function compileAllDropZones(iceId: number): DropZone[] {
-  const physicalRecords = getRecordsFromIceId(iceId);
-  return physicalRecords.map((physicalRecord) => getDropZoneFromRegistryEntry(physicalRecord, iceId));
+  const elementRecords = getRecordsFromIceId(iceId);
+  return elementRecords.map((elementRecord) => getDropZoneFromRegistryEntry(elementRecord, iceId));
 }
 
 export function getSiblingRects(id: number): LookupTable<DOMRect> {
