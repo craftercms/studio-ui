@@ -353,17 +353,17 @@ function Guest(props: GuestProps) {
 
   // Listen for mouse switching between drop zones
   const dragContextDropZoneIceId = state.dragContext?.dropZone?.iceId;
-  const dragContextDropZonePhysicalRecordId = state.dragContext?.dropZone?.physicalRecordId;
+  const dragContextDropZoneElementRecordId = state.dragContext?.dropZone?.elementRecordId;
   useEffect(() => {
     if (nnou(dragContextDropZoneIceId)) {
       dispatch({
         type: 'drop_zone_enter',
-        payload: { physicalRecordId: dragContextDropZonePhysicalRecordId }
+        payload: { elementRecordId: dragContextDropZoneElementRecordId }
       });
       return () => {
         dispatch({
           type: 'drop_zone_leave',
-          payload: { physicalRecordId: dragContextDropZonePhysicalRecordId }
+          payload: { elementRecordId: dragContextDropZoneElementRecordId }
         });
       };
     }

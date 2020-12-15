@@ -240,7 +240,7 @@ export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
 }
 
 function getDropZoneFromRegistryEntry(physicalRecord: RegistryEntry, iceId: number): DropZone {
-  const physicalRecordId = physicalRecord.id;
+  const elementRecordId = physicalRecord.id;
   const element = physicalRecord.element;
   const children: Element[] = Array.from(element.children);
   const childrenRects = children.map((child: Element) => child.getBoundingClientRect());
@@ -250,7 +250,7 @@ function getDropZoneFromRegistryEntry(physicalRecord: RegistryEntry, iceId: numb
     element,
     children,
     iceId,
-    physicalRecordId,
+    elementRecordId,
     rect,
     arrangement: getChildArrangement(children, childrenRects, rect),
     childrenRects,
@@ -314,7 +314,7 @@ export function hasElement(element: Element): boolean {
 }
 
 export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData> {
-  return dropZones.reduce((object, { physicalRecordId: id, validations }) => {
+  return dropZones.reduce((object, { elementRecordId: id, validations }) => {
     object[id] = getHoverData(id);
     object[id].validations = validations;
     return object;

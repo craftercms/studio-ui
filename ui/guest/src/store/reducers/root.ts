@@ -514,8 +514,8 @@ const content_type_receptacles_request: GuestReducer = (state, action) => {
   const highlighted = {};
 
   iceRegistry.getContentTypeReceptacles(contentTypeId).forEach((item) => {
-    let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
-    highlighted[physicalRecordId] = ElementRegistry.getHoverData(physicalRecordId);
+    let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
+    highlighted[elementRecordId] = ElementRegistry.getHoverData(elementRecordId);
   });
 
   return {
@@ -573,9 +573,9 @@ const scrolling_stopped: GuestReducer = (state) => {
 // region drop_zone_enter
 // TODO: Not pure
 const drop_zone_enter: GuestReducer = (state, action) => {
-  const { physicalRecordId } = action.payload;
+  const { elementRecordId } = action.payload;
   const { dropZones: currentDropZones } = state.dragContext;
-  const currentDropZone = currentDropZones.find((dropZone) => dropZone.physicalRecordId === physicalRecordId);
+  const currentDropZone = currentDropZones.find((dropZone) => dropZone.elementRecordId === elementRecordId);
   let length = currentDropZone.children.length;
   let invalidDrop = currentDropZone.origin ? false : state.dragContext.invalidDrop;
   let rest = reversePluckProps(currentDropZone.validations, 'maxCount', 'minCount');
@@ -612,12 +612,12 @@ const drop_zone_enter: GuestReducer = (state, action) => {
 // region drop_zone_leave
 // TODO: Not pure
 const drop_zone_leave: GuestReducer = (state, action) => {
-  const { physicalRecordId } = action.payload;
+  const { elementRecordId } = action.payload;
   if (!state.dragContext) {
     return;
   }
   const { dropZones: currentDropZones } = state.dragContext;
-  const currentDropZone = currentDropZones.find((dropZone) => dropZone.physicalRecordId === physicalRecordId);
+  const currentDropZone = currentDropZones.find((dropZone) => dropZone.elementRecordId === elementRecordId);
   let length = currentDropZone.children.length;
   let invalidDrop = state.status === EditingStatus.SORTING_COMPONENT ? state.dragContext.invalidDrop : false;
   let rest = reversePluckProps(currentDropZone.validations, 'minCount');

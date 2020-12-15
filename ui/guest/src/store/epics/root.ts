@@ -341,8 +341,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       tap((action) => {
         const { contentTypeId } = action.payload;
         const receptacles = iceRegistry.getContentTypeReceptacles(contentTypeId).map((item) => {
-          let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
-          let highlight = ElementRegistry.getHoverData(physicalRecordId);
+          let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
+          let highlight = ElementRegistry.getHoverData(elementRecordId);
           return {
             modelId: item.modelId,
             fieldId: item.fieldId,
@@ -393,16 +393,16 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region drop_zone_enter
-  (action$: ActionsObservable<GuestStandardAction<{ physicalRecordId: number }>>, state$: GuestStateObservable) => {
+  (action$: ActionsObservable<GuestStandardAction<{ elementRecordId: number }>>, state$: GuestStateObservable) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
       ofType('drop_zone_enter'),
       withLatestFrom(state$),
       tap(([action, state]) => {
-        const { physicalRecordId } = action.payload;
+        const { elementRecordId } = action.payload;
         const { validations } = state.dragContext.dropZones.find(
-          (dropZone) => dropZone.physicalRecordId === physicalRecordId
+          (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         Object.values(validations).forEach((validation) => {
           post({ type: 'VALIDATION_MESSAGE', payload: validation });
@@ -414,7 +414,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region drop_zone_leave
-  (action$: ActionsObservable<GuestStandardAction<{ physicalRecordId: number }>>, state$: GuestStateObservable) => {
+  (action$: ActionsObservable<GuestStandardAction<{ elementRecordId: number }>>, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('drop_zone_leave'),
       withLatestFrom(state$),
@@ -422,9 +422,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         if (!state.dragContext) {
           return;
         }
-        const { physicalRecordId } = action.payload;
+        const { elementRecordId } = action.payload;
         const { validations } = state.dragContext.dropZones.find(
-          (dropZone) => dropZone.physicalRecordId === physicalRecordId
+          (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         if (validations.minCount) {
           post({ type: INSTANCE_DRAG_ENDED });
