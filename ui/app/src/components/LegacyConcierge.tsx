@@ -20,6 +20,8 @@ import { fetchContentTypes } from '../state/actions/preview';
 import { useActiveSiteId } from '../utils/hooks';
 
 export default function LegacyConcierge() {
+  // As it stands, this should be a hook, but creating as a component for the convenience of mounting it
+  // only once on the CrafterCMSNextBridge component. As a hook, it would be out of the StoreProvider.
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   useEffect(() => {
