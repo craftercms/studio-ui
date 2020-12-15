@@ -26,9 +26,12 @@ import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../uti
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { SectionItem } from '../ContextMenu';
 import { useDispatch } from 'react-redux';
+import StandardAction from '../../models/StandardAction';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionsBar: {
+    zIndex: 1200,
+
     '& .MuiSnackbarContent-root': {
       backgroundColor: '#e6f2ff', // TODO: move to palette
       color: palette.black,
@@ -71,10 +74,11 @@ interface ActionsBarProps {
   open: boolean;
   selectedItems: string[];
   handleClearSelected(): void;
+  onActionSuccess?: StandardAction;
 }
 
 export default function ActionsBar(props: ActionsBarProps) {
-  const { open, selectedItems, handleClearSelected } = props;
+  const { open, selectedItems, handleClearSelected, onActionSuccess } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const permissions = usePermissions();
@@ -114,11 +118,28 @@ export default function ActionsBar(props: ActionsBarProps) {
     }
   }, [permissions, items, selectedItems]);
 
-  // TODO: this only works with 1 item selected - implement for multiple
   const onActionItemClicked = (option: SectionItem) => {
-    const path = selectedItems[0];
-    const item = items.byPath?.[path];
-    itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard);
+    if (selectedItems.length > 1) {
+      const detailedItems = [];
+
+      selectedItems.forEach((path) => {
+        detailedItems.push(items.byPath?.[path]);
+      });
+      itemActionDispatcher(
+        site,
+        detailedItems,
+        option,
+        legacyFormSrc,
+        dispatch,
+        formatMessage,
+        clipboard,
+        onActionSuccess
+      );
+    } else {
+      const path = selectedItems[0];
+      const item = items.byPath?.[path];
+      itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, onActionSuccess);
+    }
   };
 
   return (

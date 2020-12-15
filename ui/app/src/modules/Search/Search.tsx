@@ -43,10 +43,12 @@ import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
 import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
-import palette from '../../styles/palette';
 import ActionsBar from '../../components/ActionsBar';
+import { dispatchDOMEvent } from '../../state/actions/misc';
 
 const drawerWidth = 300;
+let unsubscribeOnActionSuccess;
+const idActionSuccess = 'actionSuccess';
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
     margin: 'auto',
@@ -308,6 +310,17 @@ export default function Search(props: SearchProps) {
     });
     return () => subscription.unsubscribe();
   }, [history, onSearch$, refs]);
+
+  useEffect(() => {
+    if (selected.length === 1) {
+      unsubscribeOnActionSuccess = createCallbackListener(idActionSuccess, function() {
+        handleClearSelected();
+        refreshSearch();
+      });
+    } else if (!selected.length) {
+      unsubscribeOnActionSuccess?.();
+    }
+  }, [selected]);
 
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
@@ -726,7 +739,24 @@ export default function Search(props: SearchProps) {
         </section>
       </section>
 
-      <ActionsBar open={selected.length > 0} selectedItems={selected} handleClearSelected={handleClearSelected} />
+      <ActionsBar
+        open={selected.length > 0}
+        selectedItems={selected}
+        handleClearSelected={handleClearSelected}
+        onActionSuccess={dispatchDOMEvent({ id: idActionSuccess })}
+      />
     </>
   );
+}
+
+function createCallbackListener(id: string, listener: EventListener): Function {
+  let callback;
+  callback = (e) => {
+    listener(e.detail);
+    document.removeEventListener(id, callback, false);
+  };
+  document.addEventListener(id, callback, false);
+  return () => {
+    document.removeEventListener(id, callback, false);
+  };
 }

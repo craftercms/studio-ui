@@ -331,37 +331,44 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
   }
 }
 
-// TODO: cases need more validation to properly return options
 export function generateMultipleItemOptions(itemsDetails): SectionItem[] {
   let publish = true;
   let deleteItem = true;
   let reject = true;
   let options = [];
 
-  console.log(itemsDetails);
-
   itemsDetails.forEach((details) => {
     const permissions = details.permissions;
-    if (publish) {
-      publish = permissions.publish;
-    }
-    if (deleteItem) {
-      deleteItem = permissions.delete;
-    }
-    if (reject) {
-      reject = permissions.cancel_publish;
-    }
+    publish = publish ? permissions.publish : publish;
+    deleteItem = deleteItem ? permissions.delete : deleteItem;
+    reject = reject ? permissions.cancel_publish : reject;
   });
 
   if (publish) {
-    options.push(menuOptions.publish);
-    options.push(menuOptions.schedule);
+    const itemsPublish = itemsDetails.filter(({ item }) => {
+      return !item.isLocked && !item.stateMap.live;
+    });
+
+    if (itemsPublish.length === itemsDetails.length) {
+      options.push(menuOptions.publish);
+      options.push(menuOptions.schedule);
+    }
   }
   if (deleteItem) {
-    options.push(menuOptions.delete);
+    const itemsDelete = itemsDetails.filter(({ item }) => !item.isRootFolder);
+
+    if (itemsDelete.length === itemsDetails.length) {
+      options.push(menuOptions.delete);
+    }
   }
   if (reject) {
-    options.push(menuOptions.reject);
+    const itemsReject = itemsDetails.filter(({ item }) => {
+      return item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted;
+    });
+
+    if (itemsReject.length === itemsDetails.length) {
+      options.push(menuOptions.reject);
+    }
   }
 
   return options;
@@ -369,347 +376,367 @@ export function generateMultipleItemOptions(itemsDetails): SectionItem[] {
 
 export const itemActionDispatcher = (
   site: string,
-  item: DetailedItem,
+  item: DetailedItem | DetailedItem[],
   option: SectionItem,
   legacyFormSrc: string,
   dispatch,
   formatMessage,
-  clipboard
+  clipboard,
+  onActionSuccess?: any
 ) => {
-  switch (option.id) {
-    case 'view': {
-      const path = item.path;
-      const src = `${legacyFormSrc}site=${site}&path=${path}&type=form&readonly=true`;
-      dispatch(showEditDialog({ src }));
-      break;
-    }
-    case 'edit': {
-      const path = item.path;
-      const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-      // TODO: open a embedded form needs the following:
-      // src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
+  // actions that support only one item
+  if (!Array.isArray(item)) {
+    switch (option.id) {
+      case 'view': {
+        const path = item.path;
+        const src = `${legacyFormSrc}site=${site}&path=${path}&type=form&readonly=true`;
+        dispatch(showEditDialog({ src }));
+        break;
+      }
+      case 'edit': {
+        const path = item.path;
+        const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
+        // TODO: open a embedded form needs the following:
+        // src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
-      fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-        if (items?.length > 0) {
-          dispatch(
-            showWorkflowCancellationDialog({
-              items,
-              onContinue: showEditDialog({
-                src,
-                onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
-              })
-            })
-          );
-        } else {
-          dispatch(
-            showEditDialog({
-              src,
-              onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
-            })
-          );
-        }
-      });
-      break;
-    }
-    case 'createFolder': {
-      dispatch(
-        showCreateFolderDialog({
-          path: withoutIndex(item.path),
-          allowBraces: item.path.startsWith('/scripts/rest')
-        })
-      );
-      break;
-    }
-    case 'renameFolder': {
-      dispatch(
-        showCreateFolderDialog({
-          path: withoutIndex(item.path),
-          allowBraces: item.path.startsWith('/scripts/rest'),
-          rename: true,
-          value: item.label
-        })
-      );
-      break;
-    }
-    case 'createContent': {
-      dispatch(
-        showNewContentDialog({
-          item,
-          rootPath: getRootPath(item.path),
-          onContentTypeSelected: showEditDialog({})
-        })
-      );
-      break;
-    }
-    case 'delete': {
-      let items = [item];
-      dispatch(
-        showDeleteDialog({
-          items,
-          onSuccess: batchActions([showDeleteItemSuccessNotification(), closeDeleteDialog()])
-        })
-      );
-      break;
-    }
-    case 'changeContentType': {
-      dispatch(
-        showConfirmDialog({
-          title: formatMessage(translations.changeContentType),
-          body: formatMessage(translations.changeContentTypeBody),
-          onCancel: closeConfirmDialog(),
-          onOk: batchActions([
-            closeConfirmDialog(),
-            showChangeContentTypeDialog({
-              item,
-              rootPath: getRootPath(item.path),
-              selectedContentType: item.contentTypeId,
-              onContentTypeSelected: batchActions([
-                CloseChangeContentTypeDialog(),
-                changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
-              ])
-            })
-          ])
-        })
-      );
-      break;
-    }
-    case 'cut': {
-      dispatch(
-        batchActions([
-          setClipBoard({
-            type: 'CUT',
-            paths: [item.path],
-            sourcePath: item.path
-          }),
-          emitSystemEvent(itemCut({ target: item.path })),
-          showCutItemSuccessNotification()
-        ])
-      );
-      break;
-    }
-    case 'copy': {
-      getLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
-        (legacyItem: LegacyItem) => {
-          if (legacyItem.children.length) {
-            dispatch(
-              showCopyDialog({
-                title: formatMessage(translations.copyDialogTitle),
-                subtitle: formatMessage(translations.copyDialogSubtitle),
-                item: legacyItem,
-                onOk: batchActions([
-                  closeCopyDialog(),
-                  setClipBoard({
-                    type: 'COPY',
-                    sourcePath: item.path
-                  }),
-                  showCopyItemSuccessNotification()
-                ])
-              })
-            );
-          } else {
-            dispatch(
-              batchActions([
-                setClipBoard({
-                  type: 'COPY',
-                  paths: [item.path],
-                  sourcePath: item.path
-                }),
-                showCopyItemSuccessNotification()
-              ])
-            );
-          }
-        },
-        (response) => {
-          dispatch(
-            showErrorDialog({
-              error: response
-            })
-          );
-        }
-      );
-      break;
-    }
-    case 'paste': {
-      if (clipboard.type === 'CUT') {
-        fetchWorkflowAffectedItems(site, clipboard.sourcePath).subscribe((items) => {
+        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(
               showWorkflowCancellationDialog({
                 items,
-                onContinue: pasteItem({ path: item.path })
+                onContinue: showEditDialog({
+                  src,
+                  onSaveSuccess: batchActions([
+                    showEditItemSuccessNotification(),
+                    reloadDetailedItem({ path }),
+                    onActionSuccess
+                  ])
+                })
               })
             );
           } else {
-            dispatch(pasteItem({ path: item.path }));
+            dispatch(
+              showEditDialog({
+                src,
+                onSaveSuccess: batchActions([
+                  showEditItemSuccessNotification(),
+                  reloadDetailedItem({ path }),
+                  onActionSuccess
+                ])
+              })
+            );
           }
         });
-      } else {
-        dispatch(pasteItem({ path: item.path }));
+        break;
       }
-      break;
-    }
-    case 'duplicateAsset': {
-      dispatch(
-        showConfirmDialog({
-          title: formatMessage(translations.duplicate),
-          body: formatMessage(translations.duplicateDialogBody),
-          onCancel: closeConfirmDialog(),
-          onOk: batchActions([
-            closeConfirmDialog(),
-            duplicateAsset({
-              path: item.path,
-              onSuccess: showDuplicatedItemSuccessNotification()
-            })
+      case 'createFolder': {
+        dispatch(
+          showCreateFolderDialog({
+            path: withoutIndex(item.path),
+            allowBraces: item.path.startsWith('/scripts/rest')
+          })
+        );
+        break;
+      }
+      case 'renameFolder': {
+        dispatch(
+          showCreateFolderDialog({
+            path: withoutIndex(item.path),
+            allowBraces: item.path.startsWith('/scripts/rest'),
+            rename: true,
+            value: item.label
+          })
+        );
+        break;
+      }
+      case 'createContent': {
+        dispatch(
+          showNewContentDialog({
+            item,
+            rootPath: getRootPath(item.path),
+            onContentTypeSelected: showEditDialog({})
+          })
+        );
+        break;
+      }
+      case 'changeContentType': {
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.changeContentType),
+            body: formatMessage(translations.changeContentTypeBody),
+            onCancel: closeConfirmDialog(),
+            onOk: batchActions([
+              closeConfirmDialog(),
+              showChangeContentTypeDialog({
+                item,
+                rootPath: getRootPath(item.path),
+                selectedContentType: item.contentTypeId,
+                onContentTypeSelected: batchActions([
+                  CloseChangeContentTypeDialog(),
+                  changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
+                ])
+              })
+            ])
+          })
+        );
+        break;
+      }
+      case 'cut': {
+        dispatch(
+          batchActions([
+            setClipBoard({
+              type: 'CUT',
+              paths: [item.path],
+              sourcePath: item.path
+            }),
+            emitSystemEvent(itemCut({ target: item.path })),
+            showCutItemSuccessNotification()
           ])
-        })
-      );
-      break;
-    }
-    case 'duplicate': {
-      dispatch(
-        showConfirmDialog({
-          title: formatMessage(translations.duplicate),
-          body: formatMessage(translations.duplicateDialogBody),
-          onCancel: closeConfirmDialog(),
-          onOk: batchActions([
-            closeConfirmDialog(),
-            duplicateItem({
-              path: item.path,
-              onSuccess: showDuplicatedItemSuccessNotification()
-            })
+        );
+        break;
+      }
+      case 'copy': {
+        getLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
+          (legacyItem: LegacyItem) => {
+            if (legacyItem.children.length) {
+              dispatch(
+                showCopyDialog({
+                  title: formatMessage(translations.copyDialogTitle),
+                  subtitle: formatMessage(translations.copyDialogSubtitle),
+                  item: legacyItem,
+                  onOk: batchActions([
+                    closeCopyDialog(),
+                    setClipBoard({
+                      type: 'COPY',
+                      sourcePath: item.path
+                    }),
+                    showCopyItemSuccessNotification()
+                  ])
+                })
+              );
+            } else {
+              dispatch(
+                batchActions([
+                  setClipBoard({
+                    type: 'COPY',
+                    paths: [item.path],
+                    sourcePath: item.path
+                  }),
+                  showCopyItemSuccessNotification()
+                ])
+              );
+            }
+          },
+          (response) => {
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
+          }
+        );
+        break;
+      }
+      case 'paste': {
+        if (clipboard.type === 'CUT') {
+          fetchWorkflowAffectedItems(site, clipboard.sourcePath).subscribe((items) => {
+            if (items?.length > 0) {
+              dispatch(
+                showWorkflowCancellationDialog({
+                  items,
+                  onContinue: pasteItem({ path: item.path })
+                })
+              );
+            } else {
+              dispatch(pasteItem({ path: item.path }));
+            }
+          });
+        } else {
+          dispatch(pasteItem({ path: item.path }));
+        }
+        break;
+      }
+      case 'duplicateAsset': {
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.duplicate),
+            body: formatMessage(translations.duplicateDialogBody),
+            onCancel: closeConfirmDialog(),
+            onOk: batchActions([
+              closeConfirmDialog(),
+              duplicateAsset({
+                path: item.path,
+                onSuccess: batchActions([showDuplicatedItemSuccessNotification(), onActionSuccess])
+              })
+            ])
+          })
+        );
+        break;
+      }
+      case 'duplicate': {
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.duplicate),
+            body: formatMessage(translations.duplicateDialogBody),
+            onCancel: closeConfirmDialog(),
+            onOk: batchActions([
+              closeConfirmDialog(),
+              duplicateItem({
+                path: item.path,
+                onSuccess: batchActions([showDuplicatedItemSuccessNotification(), onActionSuccess])
+              })
+            ])
+          })
+        );
+        break;
+      }
+      case 'history': {
+        dispatch(
+          batchActions([
+            fetchItemVersions({
+              item,
+              rootPath: getRootPath(item.path)
+            }),
+            showHistoryDialog({})
           ])
+        );
+        break;
+      }
+      case 'dependencies': {
+        dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
+        break;
+      }
+      case 'translation': {
+        break;
+      }
+      case 'editTemplate': {
+        dispatch(editTemplate({ contentTypeId: item.contentTypeId }));
+        break;
+      }
+      case 'editController': {
+        const path = `/scripts/pages/${popPiece(item.contentTypeId, '/')}.groovy`;
+        let src = `${legacyFormSrc}site=${site}&path=${path}&type=controller`;
+
+        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          if (items?.length > 0) {
+            dispatch(
+              showWorkflowCancellationDialog({
+                items,
+                onContinue: showCodeEditorDialog({ src })
+              })
+            );
+          } else {
+            dispatch(showCodeEditorDialog({ src }));
+          }
+        });
+        break;
+      }
+      case 'createTemplate': {
+        dispatch(
+          showCreateFileDialog({
+            path: withoutIndex(item.path),
+            type: 'template',
+            onCreated: closeCreateFileDialog()
+          })
+        );
+        break;
+      }
+      case 'createController': {
+        dispatch(
+          showCreateFileDialog({
+            path: withoutIndex(item.path),
+            type: 'controller',
+            onCreated: closeCreateFileDialog()
+          })
+        );
+        break;
+      }
+      case 'codeEditor': {
+        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset`;
+        dispatch(showCodeEditorDialog({ src }));
+        break;
+      }
+      case 'viewCodeEditor': {
+        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset&readonly=true`;
+        dispatch(showCodeEditorDialog({ src }));
+        break;
+      }
+      case 'viewImage': {
+        dispatch(
+          showPreviewDialog({
+            type: 'image',
+            title: item.label,
+            url: item.path
+          })
+        );
+        break;
+      }
+      case 'upload': {
+        dispatch(
+          showUploadDialog({
+            path: item.path,
+            site,
+            onClose: closeUploadDialog()
+          })
+        );
+        break;
+      }
+      case 'unlock': {
+        dispatch(
+          unlockItem({
+            path: item.path
+          })
+        );
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  // actions that support multiple items
+  switch (option.id) {
+    case 'delete': {
+      let items = Array.isArray(item) ? item : [item];
+      dispatch(
+        showDeleteDialog({
+          items,
+          onSuccess: batchActions([showDeleteItemSuccessNotification(), closeDeleteDialog(), onActionSuccess])
         })
       );
       break;
     }
     case 'schedule': {
+      const items = Array.isArray(item) ? item : [item];
       dispatch(
         showPublishDialog({
-          items: [item],
+          items,
           scheduling: 'custom',
           onSuccess: batchActions([
             showPublishItemSuccessNotification(),
-            reloadDetailedItem({ path: item.path }),
-            closePublishDialog()
+            ...items.map((item) => reloadDetailedItem({ path: item.path })),
+            closePublishDialog(),
+            onActionSuccess
           ])
         })
       );
       break;
     }
     case 'publish': {
+      const items = Array.isArray(item) ? item : [item];
       dispatch(
         showPublishDialog({
-          items: [item],
+          items,
           scheduling: 'now',
           onSuccess: batchActions([
             showPublishItemSuccessNotification(),
-            reloadDetailedItem({ path: item.path }),
-            closePublishDialog()
+            ...items.map((item) => reloadDetailedItem({ path: item.path })),
+            closePublishDialog(),
+            onActionSuccess
           ])
         })
       );
       break;
     }
-    case 'history': {
-      dispatch(
-        batchActions([
-          fetchItemVersions({
-            item,
-            rootPath: getRootPath(item.path)
-          }),
-          showHistoryDialog({})
-        ])
-      );
-      break;
-    }
-    case 'dependencies': {
-      dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
-      break;
-    }
-    case 'translation': {
-      break;
-    }
-    case 'editTemplate': {
-      dispatch(editTemplate({ contentTypeId: item.contentTypeId }));
-      break;
-    }
-    case 'editController': {
-      const path = `/scripts/pages/${popPiece(item.contentTypeId, '/')}.groovy`;
-      let src = `${legacyFormSrc}site=${site}&path=${path}&type=controller`;
-
-      fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-        if (items?.length > 0) {
-          dispatch(
-            showWorkflowCancellationDialog({
-              items,
-              onContinue: showCodeEditorDialog({ src })
-            })
-          );
-        } else {
-          dispatch(showCodeEditorDialog({ src }));
-        }
-      });
-      break;
-    }
-    case 'createTemplate': {
-      dispatch(
-        showCreateFileDialog({
-          path: withoutIndex(item.path),
-          type: 'template',
-          onCreated: closeCreateFileDialog()
-        })
-      );
-      break;
-    }
-    case 'createController': {
-      dispatch(
-        showCreateFileDialog({
-          path: withoutIndex(item.path),
-          type: 'controller',
-          onCreated: closeCreateFileDialog()
-        })
-      );
-      break;
-    }
-    case 'codeEditor': {
-      let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset`;
-      dispatch(showCodeEditorDialog({ src }));
-      break;
-    }
-    case 'viewCodeEditor': {
-      let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset&readonly=true`;
-      dispatch(showCodeEditorDialog({ src }));
-      break;
-    }
-    case 'viewImage': {
-      dispatch(
-        showPreviewDialog({
-          type: 'image',
-          title: item.label,
-          url: item.path
-        })
-      );
-      break;
-    }
-    case 'upload': {
-      dispatch(
-        showUploadDialog({
-          path: item.path,
-          site,
-          onClose: closeUploadDialog()
-        })
-      );
-      break;
-    }
-    case 'unlock': {
-      dispatch(
-        unlockItem({
-          path: item.path
-        })
-      );
-      break;
-    }
-    default:
-      break;
   }
 };
