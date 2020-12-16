@@ -79,7 +79,7 @@
   <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
 </head>
-<body class="{{$state.current.cssClass}}">
+<body class="{{$state.current.cssClass}} user-dashboard">
 
 <ui-view class="general-view"></ui-view>
 
