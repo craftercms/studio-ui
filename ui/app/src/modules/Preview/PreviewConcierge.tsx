@@ -345,6 +345,7 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case GUEST_CHECK_OUT:
+          requestedSourceMapPaths.current = {};
           dispatch(checkOutGuest());
           break;
         case SORT_ITEM_OPERATION: {
