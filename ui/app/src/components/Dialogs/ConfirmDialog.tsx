@@ -81,6 +81,7 @@ interface ConfirmDialogBaseProps {
   title?: string;
   body?: string;
   hideBackdrop?: boolean;
+  imageUrl?: string;
   disableEnforceFocus?: boolean;
   disableEscapeKeyDown?: boolean;
   disableBackdropClick?: boolean;
@@ -127,13 +128,13 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
 }
 
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
-  const { onOk, onCancel, body, title, children, classes } = props;
+  const { onOk, onCancel, body, title, children, classes, imageUrl = questionGraphicUrl } = props;
   const { formatMessage } = useIntl();
   useUnmount(props.onClosed);
   return (
     <>
       <DialogContent id="confirmDialogBody" className={classes.dialogBody}>
-        <img src={questionGraphicUrl} alt="" />
+        <img src={imageUrl} alt="" />
         {title && (
           <Typography variant="body1" component="h2" className={classes.dialogTitle}>
             {title}
