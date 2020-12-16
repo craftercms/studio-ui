@@ -132,7 +132,7 @@ interface SiteSearchFiltersProps {
   checkedFilters: object;
   clearFilters(): void;
   setCheckedFilters(checkedFilters: object): any;
-  handleFilterChange(filter: FilterType, isFilter: boolean): any;
+  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
   handleClearClick(filter: string): void;
 }
 
@@ -193,6 +193,25 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     setExpanded({ ...expanded, [item]: !expanded[item] });
   };
 
+  const pathToFilter = (path: string) => {
+    if (path) {
+      if (path.endsWith('/')) {
+        return `${path}.+`;
+      } else {
+        return `${path}/.+`;
+      }
+    } else {
+      return undefined;
+    }
+  };
+
+  const onPathSelected = (path: string) => {
+    handleFilterChange({
+      name: 'path',
+      value: pathToFilter(path)
+    });
+  };
+
   const renderFilters = () => {
     return filterKeys.map((key: string, i: number) => {
       let name = camelize(key);
@@ -245,7 +264,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
           <div className={classes.body}>
             <PathSelector
               value={queryParams['path']?.replace('.+', '')}
-              handleFilterChange={handleFilterChange}
+              onPathSelected={onPathSelected}
               disabled={mode === 'select'}
             />
           </div>

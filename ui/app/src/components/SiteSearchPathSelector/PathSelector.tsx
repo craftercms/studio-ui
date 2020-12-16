@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Filter as FilterType } from '../../models/Search';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import React, { useState } from 'react';
@@ -75,11 +74,11 @@ const messages = defineMessages({
 interface PathSelectorProps {
   value: string;
   disabled: boolean;
-  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+  onPathSelected(path: string): void;
 }
 
 export default function PathSelector(props: PathSelectorProps) {
-  const { handleFilterChange, value, disabled } = props;
+  const { onPathSelected, value, disabled } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles({});
@@ -88,26 +87,11 @@ export default function PathSelector(props: PathSelectorProps) {
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
 
-  const keywordToFilter = (keyword) => {
-    if (keyword) {
-      if (keyword.endsWith('/')) {
-        return `${keyword}.+`;
-      } else {
-        return `${keyword}/.+`;
-      }
-    } else {
-      return undefined;
-    }
-  };
-
   const onClean = (e) => {
     e.stopPropagation();
     e.preventDefault();
     setKeyword('');
-    handleFilterChange({
-      name: 'path',
-      value: undefined
-    });
+    onPathSelected(undefined);
   };
 
   const onOpenPathSelectionDialog = () => {
@@ -130,10 +114,8 @@ export default function PathSelector(props: PathSelectorProps) {
     const successCallback = (e) => {
       const keyword = e.detail.path;
       setKeyword(keyword);
-      handleFilterChange({
-        name: 'path',
-        value: keywordToFilter(keyword)
-      });
+      onPathSelected(keyword);
+
       document.removeEventListener(idSuccess, successCallback, false);
       document.removeEventListener(idCancel, cancelCallback, false);
     };
