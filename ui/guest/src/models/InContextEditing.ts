@@ -22,7 +22,7 @@ export interface DropZone {
   element: Element;
   children: Element[];
   iceId: string | number;
-  physicalRecordId: number;
+  elementRecordId: number;
   rect: DOMRect;
   arrangement: string;
   childrenRects: DOMRect[];

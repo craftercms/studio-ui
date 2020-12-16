@@ -248,7 +248,11 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge mountGlobalDialogManager={!isLegacy} mountSnackbarProvider={!isLegacy}>
+            <CrafterCMSNextBridge
+              mountGlobalDialogManager={!isLegacy}
+              mountSnackbarProvider={!isLegacy}
+              mountLegacyConcierge={isLegacy}
+            >
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,

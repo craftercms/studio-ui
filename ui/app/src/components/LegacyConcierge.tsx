@@ -14,26 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../../models/Item';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchContentTypes } from '../state/actions/preview';
+import { useActiveSiteId } from '../utils/hooks';
 
-export function isNavigable(item: DetailedItem): boolean {
-  return item.systemType === 'page';
-}
-
-export function isPreviewable(item: DetailedItem): boolean {
-  return (
-    item.systemType === 'component' ||
-    item.systemType === 'asset' ||
-    item.systemType === 'template' ||
-    item.systemType === 'script' ||
-    item.systemType === 'taxonomy'
-  );
-}
-
-export function isFolder(item: DetailedItem): boolean {
-  return item.systemType === 'folder';
-}
-
-export function rand(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+export default function LegacyConcierge() {
+  // As it stands, this should be a hook, but creating as a component for the convenience of mounting it
+  // only once on the CrafterCMSNextBridge component. As a hook, it would be out of the StoreProvider.
+  const site = useActiveSiteId();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (site) {
+      dispatch(fetchContentTypes());
+    }
+  }, [site, dispatch]);
+  return null;
 }
