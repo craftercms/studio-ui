@@ -56,7 +56,7 @@ import ItemMenu from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
-import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable } from './utils';
+import { isFolder, isNavigable, isPreviewable } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
 import { StateStylingProps } from '../../../models/UiConfig';
@@ -75,6 +75,7 @@ import {
 } from '../../../state/actions/system';
 import List from '@material-ui/core/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
+import { getNumOfMenuOptionsForItem } from '../../../utils/content';
 
 export interface WidgetProps {
   id: string;

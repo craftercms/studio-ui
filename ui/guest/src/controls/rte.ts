@@ -89,6 +89,8 @@ export function initTinyMCE(
             e.stopImmediatePropagation();
             editor.setContent(originalContent);
             cancel();
+          } else if (e.key === 'Enter') {
+            editor.fire('focusout');
           } else if (
             validations?.maxLength &&
             // TODO: Check/improve regex
