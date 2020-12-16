@@ -49,7 +49,7 @@ import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
 import { updateDialog } from '../reducers/dialogs/minimizedDialogs';
 import { codeEditorMessages, formEngineMessages } from '../../utils/i18n-legacy';
-import informationGraphicUrl from '../../assets/information.svg';
+import infoGraphic from '../../assets/information.svg';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -153,7 +153,7 @@ const dialogEpics: CrafterCMSEpic[] = [
           return of(
             showConfirmDialog({
               body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
-              imageUrl: informationGraphicUrl
+              imageUrl: infoGraphic
             })
           );
         }
