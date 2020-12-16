@@ -256,7 +256,7 @@ interface SearchProps {
   location: Location;
   mode?: string;
   embedded?: boolean;
-  onSelect(path: string, selected: boolean): any;
+  onSelect?(path: string, selected: boolean): any;
 }
 
 export default function Search(props: SearchProps) {
@@ -330,7 +330,7 @@ export default function Search(props: SearchProps) {
 
   const handleClearSelected = useCallback(() => {
     selected.forEach((path) => {
-      onSelect(path, false);
+      onSelect?.(path, false);
     });
     setSelected([]);
   }, [onSelect, selected]);
@@ -518,7 +518,7 @@ export default function Search(props: SearchProps) {
       selectedItems.splice(index, 1);
       setSelected(selectedItems);
     }
-    onSelect(path, isSelected);
+    onSelect?.(path, isSelected);
   }
 
   function handleSelectAll(checked: boolean) {
@@ -527,7 +527,7 @@ export default function Search(props: SearchProps) {
       searchResults.items.forEach((item: any) => {
         if (selected.indexOf(item.path) === -1) {
           selectedItems.push(item.path);
-          onSelect(item.path, true);
+          onSelect?.(item.path, true);
         }
       });
       setSelected([...selected, ...selectedItems]);
@@ -537,7 +537,7 @@ export default function Search(props: SearchProps) {
         let index = newSelectedItems.indexOf(item.path);
         if (index >= 0) {
           newSelectedItems.splice(index, 1);
-          onSelect(item.path, false);
+          onSelect?.(item.path, false);
         }
       });
       setSelected(newSelectedItems);
