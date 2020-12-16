@@ -29,7 +29,7 @@ export function getSSOLogoutURL(): Observable<{ logoutUrl: string }> {
 
 export function login(credentials: Credentials): Observable<{ user: User; auth: RefreshSessionResponse }> {
   // Regular post works fine, but fetch provides the redirect: 'manual' option which cancels the 302
-  // that's is useless for when doing the async style login.
+  // that's useless for when doing the async style login.
   return from(
     fetch('/studio/login', {
       method: 'POST',
