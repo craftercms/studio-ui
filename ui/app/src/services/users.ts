@@ -17,7 +17,7 @@
 import { forkJoin, Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { del, get, patchJSON, postJSON } from '../utils/ajax';
-import { map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
+import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { fetchSites } from './sites';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
@@ -26,9 +26,12 @@ import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
 import { asArray } from '../utils/array';
 
+// Check services/auth/login if `me` method is changed.
 export function me(): Observable<User> {
-  return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'));
+  return get(me.url).pipe(pluck('response', 'authenticatedUser'));
 }
+
+me.url = '/studio/api/2/users/me.json';
 
 export function create(user: Partial<User>): Observable<User> {
   return postJSON(`/studio/api/2/users`, user).pipe(pluck('response', 'user'));

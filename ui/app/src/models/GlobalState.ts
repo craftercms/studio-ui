@@ -15,7 +15,7 @@
  */
 
 import { LookupTable } from './LookupTable';
-import { User } from './User';
+import { EnhancedUser } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
@@ -90,7 +90,7 @@ export interface GlobalState {
     expiresAt: number;
     isFetching: boolean;
   };
-  user: User;
+  user: EnhancedUser;
   sites: {
     active: string;
     isFetching: boolean;

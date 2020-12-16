@@ -19,9 +19,10 @@ import Login from '../../pages/Login';
 import { refreshSession } from '../../services/auth';
 import I18nProvider from '../I18nProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
+import { getRequestForgeryToken } from '../../utils/auth';
 
 export function AuthBoundary(props) {
-  const [loggedIn, setLoggedIn] = useState<boolean>(true);
+  const [loggedIn, setLoggedIn] = useState<boolean>(null);
   useEffect(() => {
     refreshSession()
       .pipe()
@@ -31,14 +32,18 @@ export function AuthBoundary(props) {
       );
   }, []);
   if (loggedIn === null) {
-    return null;
+    return 'Checking auth...';
   } else if (loggedIn) {
     return props.children;
   } else {
     return (
       <I18nProvider>
         <CrafterThemeProvider>
-          <Login passwordRequirementsRegex="'^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$'" />
+          <Login
+            passwordRequirementsRegex="'^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$'"
+            xsrfToken={getRequestForgeryToken()}
+            xsrfParamName="_csrf"
+          />
         </CrafterThemeProvider>
       </I18nProvider>
     );

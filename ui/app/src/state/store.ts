@@ -23,7 +23,7 @@ import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { fetchMyRolesInSite, me } from '../services/users';
 import { fetchSites } from '../services/sites';
 import LookupTable from '../models/LookupTable';
@@ -35,6 +35,8 @@ import { IntlShape } from 'react-intl';
 import { refreshSession } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
+import { EnhancedUser } from '../models/User';
+import { Site } from '../models/Site';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
 
@@ -46,7 +48,10 @@ let store$: BehaviorSubject<CrafterCMSStore>;
 
 export function createStore(useMock = false): Observable<CrafterCMSStore> {
   if (store$) {
-    return store$.pipe(take(1));
+    return store$.pipe(
+      filter((store) => store !== null),
+      take(1)
+    );
   } else {
     store$ = new BehaviorSubject(null);
     return refreshSession().pipe(
@@ -119,6 +124,9 @@ export function createMockInitialState(): Partial<GlobalState> {
   return {
     auth: { ...authInitialState, active: true },
     user: {
+      id: 1,
+      enabled: true,
+      externallyManaged: false,
       firstName: 'Mr.',
       lastName: 'Admin',
       email: 'admin@craftercms.org',
@@ -173,17 +181,25 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
             }, {})
           ).pipe(
             map((rolesBySite) => {
-              user.rolesBySite = rolesBySite;
-              user.sites = sites.map(({ id }) => id);
               return {
-                user,
+                user: {
+                  ...user,
+                  rolesBySite: rolesBySite,
+                  sites: sites.map(({ id }) => id),
+                  preferences: {}
+                },
                 sites: { ...sitesInitialState, byId: createLookupTable(sites) },
                 auth: { ...authInitialState, active: true }
               };
             })
           )
         : of({
-            user,
+            user: {
+              ...user,
+              sites: [],
+              rolesBySite: {},
+              preferences: {}
+            },
             sites: { ...sitesInitialState, byId: {} },
             auth: { ...authInitialState, active: true }
           })

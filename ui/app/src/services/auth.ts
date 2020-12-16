@@ -16,12 +16,13 @@
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
-import { Observable, of, from, forkJoin } from 'rxjs';
+import { Observable, of, from } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
 import { ApiResponse } from '../models/ApiResponse';
 import { me } from './users';
+import { getJwtHeaders } from '../utils/auth';
 
 export function getSSOLogoutURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
@@ -42,7 +43,14 @@ export function login(credentials: Credentials): Observable<{ user: User; auth: 
       redirect: 'manual',
       body: `username=${credentials.username}&password=${credentials.password}`
     })
-  ).pipe(switchMap(() => forkJoin({ user: me(), auth: refreshSession() })));
+  ).pipe(
+    switchMap(() => refreshSession()),
+    switchMap((auth) =>
+      get(me.url, getJwtHeaders(auth.token))
+        .pipe(pluck('response', 'authenticatedUser'))
+        .pipe(map((user: User) => ({ user, auth })))
+    )
+  );
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {

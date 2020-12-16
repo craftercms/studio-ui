@@ -15,10 +15,10 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import { User } from '../../models/User';
+import { EnhancedUser } from '../../models/User';
 import { logoutComplete } from '../actions/auth';
 
-const reducer = createReducer<User>(null, {
+const reducer = createReducer<EnhancedUser>(null, {
   [logoutComplete.type]: () => null
 });
 

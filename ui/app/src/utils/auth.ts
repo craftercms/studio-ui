@@ -39,7 +39,11 @@ export function setRequestForgeryToken(headerName = XSRF_TOKEN_HEADER_NAME): voi
 }
 
 export function setJwt(token: string): void {
-  setGlobalHeaders({ Authorization: `Bearer ${token}` });
+  setGlobalHeaders(getJwtHeaders(token));
+}
+
+export function getJwtHeaders(token: string): object {
+  return { Authorization: `Bearer ${token}` };
 }
 
 export function getCookieDomain(): string {

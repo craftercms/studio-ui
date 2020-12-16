@@ -57,7 +57,6 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
   }),
   [sessionTimeout.type]: () => initialState,
   [login.type]: (state) => ({ ...state, isFetching: true }),
-  [loginComplete.type]: () => ({ active: true, error: null, isFetching: true, expiresAt: null }),
   [loginFailed.type]: (state, action) => ({
     ...state,
     isFetching: false,

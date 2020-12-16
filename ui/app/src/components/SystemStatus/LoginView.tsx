@@ -69,6 +69,8 @@ interface LanguageDropDownProps {
 }
 
 export interface LoginViewProps {
+  xsrfToken: string;
+  xsrfParamName: string;
   passwordRequirementsRegex: string;
 }
 
@@ -87,6 +89,8 @@ type SubViewProps = React.PropsWithChildren<{
   onSnack: React.Dispatch<React.SetStateAction<{ open: boolean; message: string }>>;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
   onRecover: Function;
+  xsrfParamName: string;
+  xsrfToken: string;
 }>;
 
 interface PasswordRequirementsDisplayProps {
@@ -219,7 +223,17 @@ const retrieveStoredLangPreferences = () =>
 const buildKey = (username: string) => `${username}_crafterStudioLanguage`;
 
 function LoginView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, classes, setLanguage, onRecover, formatMessage } = props;
+  const {
+    children,
+    isFetching,
+    onSubmit,
+    classes,
+    setLanguage,
+    onRecover,
+    formatMessage,
+    xsrfParamName,
+    xsrfToken
+  } = props;
   const [username, setUsername] = useState(() => localStorage.getItem('userName') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -272,6 +286,8 @@ function LoginView(props: SubViewProps) {
             setUsername(user);
             username$.next(user);
           }}
+          xsrfParamName={xsrfParamName}
+          xsrfToken={xsrfToken}
         />
       </DialogContent>
     </>
@@ -645,7 +661,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles();
   const token = parse(window.location.search).token as string;
-  const passwordRequirementsRegex = props.passwordRequirementsRegex;
+  const { passwordRequirementsRegex, xsrfToken, xsrfParamName } = props;
 
   const [mode, setMode] = useState<Modes>(token ? 'reset' : 'login');
   const [language, setLanguage] = useState(() => getCurrentLocale());
@@ -666,6 +682,8 @@ export default function LoginViewContainer(props: LoginViewProps) {
     passwordRequirementsRegex,
     setLanguage,
     onRecover: () => setMode('recover'),
+    xsrfToken,
+    xsrfParamName,
     children: (
       <LanguageDropDown
         language={language}

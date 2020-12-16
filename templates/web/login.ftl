@@ -46,7 +46,12 @@
       createElement(
         ui.React.Suspense,
         { fallback: '' },
-        createElement(CrafterCMSNext.components.Login, { passwordRequirementsRegex: '${passwordRequirementsRegex}' })
+        createElement(CrafterCMSNext.components.Login, {
+          xsrfToken: '${_csrf.token}',
+          xsrfParamName: '${_csrf.parameterName}',
+          xsrfHeaderName: '${_csrf.headerName}',
+          passwordRequirementsRegex: '${passwordRequirementsRegex}'
+        })
       ),
       document.querySelector('#root')
     );

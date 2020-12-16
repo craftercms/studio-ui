@@ -35,6 +35,8 @@ export type LogInFormProps = PropsWithChildren<{
   action?: string;
   method?: 'get' | 'post';
   onRecover?: Function;
+  xsrfParamName?: string;
+  xsrfToken?: string;
 }>;
 
 const useStyles = makeStyles((theme) =>
@@ -47,7 +49,6 @@ const useStyles = makeStyles((theme) =>
 
 export default function LogInForm(props: LogInFormProps) {
   const cls = useStyles();
-  const xsrf = useMemo(() => ({ name: getRequestForgeryTokenParamName(), value: getRequestForgeryToken() }), []);
   const {
     children,
     username,
@@ -60,7 +61,9 @@ export default function LogInForm(props: LogInFormProps) {
     classes,
     action = '/studio/login',
     method = 'post',
-    onRecover
+    onRecover,
+    xsrfParamName,
+    xsrfToken
   } = props;
   return (
     <form action={action} method={method} onSubmit={onSubmit}>
@@ -87,7 +90,7 @@ export default function LogInForm(props: LogInFormProps) {
         className={clsx(cls.spacing, classes?.password)}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
-      <input type="hidden" name={xsrf.name} value={xsrf.value} />
+      {xsrfParamName && <input type="hidden" name={xsrfParamName} value={xsrfToken} />}
       <Button
         color="primary"
         variant="contained"
