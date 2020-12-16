@@ -15,7 +15,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
@@ -45,6 +45,7 @@ import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ActionsBar from '../../components/ActionsBar';
 import { dispatchDOMEvent } from '../../state/actions/misc';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const drawerWidth = 300;
 let unsubscribeOnActionSuccess;
@@ -278,8 +279,10 @@ export default function Search(props: SearchProps) {
     error: false,
     errorResponse: null
   });
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(!(mode === 'embedded'));
   const [checkedFilters, setCheckedFilters] = React.useState({});
+  const theme = useTheme();
+  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
 
   refs.createQueryString = createQueryString;
 
@@ -661,7 +664,11 @@ export default function Search(props: SearchProps) {
           select: mode === 'select',
           [classes.shift]: drawerOpen
         })}
-        style={drawerOpen ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth } : { marginLeft: 0 }}
+        style={
+          drawerOpen && desktopScreen && mode !== 'embedded'
+            ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
+            : { marginLeft: 0 }
+        }
       >
         {searchResults && !!searchResults.total && (
           <div className={classes.searchHelperBar}>
