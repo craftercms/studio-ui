@@ -61,6 +61,7 @@ import {
 import {
   deleteItem,
   getComponentInstanceHTML,
+  getContentInstance,
   getContentInstanceDescriptor,
   insertComponent,
   insertInstance,
@@ -69,9 +70,9 @@ import {
   updateField,
   uploadDataUrl
 } from '../../services/content';
-import { filter, pluck, take, takeUntil } from 'rxjs/operators';
+import { filter, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
-import { interval, ReplaySubject, Subscription } from 'rxjs';
+import { forkJoin, interval, Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
@@ -101,6 +102,8 @@ import { completeDetailedItem, restoreClipBoard } from '../../state/actions/cont
 import EditFormPanel from './Tools/EditFormPanel';
 import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
 import moment from 'moment-timezone';
+import ContentInstance from '../../models/ContentInstance';
+import LookupTable from '../../models/LookupTable';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -149,6 +152,7 @@ export function PreviewConcierge(props: any) {
   const editMode = useSelection((state) => state.preview.editMode);
   const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
   const previewNextCheckInNotificationRef = useRef(false);
+  const requestedSourceMapPaths = useRef({});
   const handlePreviewCompatDialogRemember = useCallback(
     (remember, goOrStay) => {
       setStoredPreviewChoice(site, remember ? goOrStay : 'ask');
@@ -259,7 +263,32 @@ export function PreviewConcierge(props: any) {
               .pipe(
                 // If another check in comes while loading, this request should be cancelled.
                 // This may happen if navigating rapidly from one page to another (guest-side).
-                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type))))
+                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
+                switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
+                  let requests: Array<Observable<ContentInstance>> = [];
+                  Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
+                    if (!requestedSourceMapPaths.current[path]) {
+                      requestedSourceMapPaths.current[path] = true;
+                      requests.push(getContentInstance(site, path, contentTypes));
+                    }
+                  });
+                  if (requests.length) {
+                    forkJoin(requests).subscribe((response) => {
+                      let lookup = { ...obj.modelLookup };
+                      response.forEach((contentInstance) => {
+                        lookup = {
+                          ...lookup,
+                          [contentInstance.craftercms.id]: contentInstance
+                        };
+                      });
+                      return of({
+                        ...obj,
+                        modelLookup: lookup
+                      });
+                    });
+                  }
+                  return of(obj);
+                })
               )
               .subscribe(({ model, modelLookup }) => {
                 const childrenMap = createChildModelLookup(modelLookup, contentTypes);

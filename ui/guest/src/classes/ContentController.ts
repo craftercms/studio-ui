@@ -152,6 +152,14 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
   }
 }
 
+export function getContentInstanceByPath(path: string): Observable<ContentInstance> {
+  return paths$.pipe(
+    filter((paths) => Boolean(paths[path])),
+    pluck(path),
+    map((modelId) => models$.value[modelId])
+  );
+}
+
 export function fetchByPath(
   path: string
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {

@@ -327,6 +327,11 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
   const model = contentController.getCachedModel(record.modelId);
   const contentTypeId = Model.getContentTypeId(model);
   const contentType = contentController.getCachedContentType(contentTypeId);
+  if (record.fieldId === 'testeo_s') {
+    // console.log(contentController.getContentInstanceByPath());
+  }
+  // if record dont exist on ContentType?? search in sourceMap > { testeo_o : path }
+  // contentController.getModelByPath(path)
   const field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
   return {
     model,
