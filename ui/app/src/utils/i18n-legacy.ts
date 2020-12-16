@@ -1401,7 +1401,17 @@ export const itemSuccessMessages = defineMessages({
   itemPublishedNow: {
     id: 'item.publishedNow',
     defaultMessage:
-      '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
+      '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly} other {The selected items has been pushed to {environment}. Them will be visible shortly}}'
+  },
+  itemRequestedToPublishNow: {
+    id: 'item.requestedToPublishNow',
+    defaultMessage:
+      '{count, plural, one {The selected item has been requested to be pushed to {environment}} other {The selected items has been requested to be pushed to {environment}}}'
+  },
+  itemRequestedToSchedulePublish: {
+    id: 'item.requestedToSchedulePublish',
+    defaultMessage:
+      '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
   },
   itemSchedulePublished: {
     id: 'item.schedulePublished',
@@ -1431,6 +1441,10 @@ export const itemSuccessMessages = defineMessages({
   itemCut: {
     id: 'item.cut',
     defaultMessage: 'Item cut successfully'
+  },
+  itemRejected: {
+    id: 'item.rejected',
+    defaultMessage: '{count, plural, one {Item rejected successfully} other {Items rejected successfully}}'
   },
   itemReverted: {
     id: 'item.reverted',
