@@ -36,10 +36,10 @@ import {
 } from '../constants';
 import { createLookupTable, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
-import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId } from '../utils/ice';
+import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import { modelsToLookup, normalizeModelsLookup } from '../utils/content';
+import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
 
@@ -234,19 +234,22 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
 
 export function insertItem(modelId: string, fieldId: string, index: number | string, item: ContentInstance): void {
   const models = getCachedModels();
-  const model = { ...models[modelId] };
-  const collection = Model.value(model, fieldId);
+  const collection = Model.value(models[modelId], fieldId);
   const result = collection.slice(0);
 
   // Insert in desired position
   result.splice(index, 0, item);
 
+  const model = setCollection(
+    models[modelId],
+    fieldId,
+    typeof index === 'string' && index.includes('.') ? removeLastPiece(index) : index,
+    result
+  );
+
   models$.next({
     ...models,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
@@ -271,8 +274,7 @@ export function insertComponent(
   }
 
   const models = getCachedModels();
-  const model = { ...models[modelId] };
-  const result = getCollection(model, fieldId, targetIndex).concat();
+  const result = getCollection(models[modelId], fieldId, targetIndex).concat();
 
   // Create Item
   // const now = new Date().toISOString();
@@ -313,13 +315,17 @@ export function insertComponent(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
+  const model = setCollection(
+    models[modelId],
+    fieldId,
+    typeof targetIndex === 'string' ? removeLastPiece(targetIndex) : targetIndex,
+    result
+  );
+
   models$.next({
     ...models,
     [instance.craftercms.id]: instance,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   children[modelId]?.push(instance.craftercms.id);
@@ -349,20 +355,23 @@ export function insertInstance(
   instance: ContentInstance
 ): void {
   const models = getCachedModels();
-  const model = { ...models[modelId] };
 
-  const result = getCollection(model, fieldId, targetIndex).concat();
+  const result = getCollection(models[modelId], fieldId, targetIndex).concat();
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
+  const model = setCollection(
+    models[modelId],
+    fieldId,
+    typeof targetIndex === 'string' ? removeLastPiece(targetIndex) : targetIndex,
+    result
+  );
+
   models$.next({
     ...models,
     [instance.craftercms.id]: instance,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(INSERT_INSTANCE_OPERATION, {
@@ -388,21 +397,24 @@ export function sortItem(
   targetIndex: number | string
 ): void {
   const models = getCachedModels();
-  const model = { ...models[modelId] };
   const currentIndexParsed = typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
   const targetIndexParsed = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
-  const collection = getCollection(model, fieldId, currentIndex);
+  const collection = getCollection(models[modelId], fieldId, currentIndex);
   const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
+  const model = setCollection(
+    models[modelId],
+    fieldId,
+    typeof currentIndex === 'string' ? removeLastPiece(currentIndex) : currentIndex,
+    result
+  );
+
   models$.next({
     ...models,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(SORT_ITEM_OPERATION, {
@@ -525,17 +537,22 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
 
   const models = getCachedModels();
-  const model = models[modelId];
-  const collection = isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
+  const collection = isStringIndex
+    ? Model.extractCollection(models[modelId], fieldId, index)
+    : Model.value(models[modelId], fieldId);
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
+  const model = setCollection(
+    models[modelId],
+    fieldId,
+    typeof index === 'string' ? removeLastPiece(index) : index,
+    result
+  );
+
   models$.next({
     ...models,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
+    [modelId]: model
   });
 
   post(DELETE_ITEM_OPERATION, {
