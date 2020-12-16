@@ -26,6 +26,7 @@ import {
   closeCreateFileDialog,
   closeDeleteDialog,
   closePublishDialog,
+  closeRejectDialog,
   closeUploadDialog,
   showChangeContentTypeDialog,
   showCodeEditorDialog,
@@ -40,6 +41,7 @@ import {
   showNewContentDialog,
   showPreviewDialog,
   showPublishDialog,
+  showRejectDialog,
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
@@ -53,7 +55,8 @@ import {
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
-  showPublishItemSuccessNotification
+  showPublishItemSuccessNotification,
+  showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
   duplicateAsset,
@@ -230,9 +233,14 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         }
         if (publish && !isLocked && !item.stateMap.live) {
           _optionsA.push(menuOptions.schedule);
-          _optionsA.push(menuOptions.publish);
         }
-        if (reject && (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted)) {
+        if (!isLocked && !item.stateMap.live) {
+          _optionsA.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
+        }
+        if (
+          reject &&
+          (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
+        ) {
           _optionsA.push(menuOptions.reject);
         }
         _optionsA.push(menuOptions.history);
@@ -314,7 +322,15 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         }
         if (publish && !item.lockOwner && !item.stateMap.live) {
           _optionsA.push(menuOptions.schedule);
-          _optionsA.push(menuOptions.publish);
+        }
+        if (!isLocked && !item.stateMap.live) {
+          _optionsA.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
+        }
+        if (
+          reject &&
+          (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
+        ) {
+          _optionsA.push(menuOptions.reject);
         }
         _optionsA.push(menuOptions.history);
         _optionsA.push(menuOptions.dependencies);
@@ -363,7 +379,7 @@ export function generateMultipleItemOptions(itemsDetails): SectionItem[] {
   }
   if (reject) {
     const itemsReject = itemsDetails.filter(({ item }) => {
-      return item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted;
+      return item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted;
     });
 
     if (itemsReject.length === itemsDetails.length) {
@@ -734,6 +750,16 @@ export const itemActionDispatcher = (
             closePublishDialog(),
             onActionSuccess
           ])
+        })
+      );
+      break;
+    }
+    case 'reject': {
+      let items = Array.isArray(item) ? item : [item];
+      dispatch(
+        showRejectDialog({
+          items,
+          onRejectSuccess: batchActions([showRejectItemSuccessNotification(), closeRejectDialog(), onActionSuccess])
         })
       );
       break;

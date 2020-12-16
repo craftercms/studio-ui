@@ -26,7 +26,8 @@ type States =
   | 'live'
   | 'translationUpToDate'
   | 'translationPending'
-  | 'translationInProgress';
+  | 'translationInProgress'
+  | 'submitted';
 
 export interface BaseItem {
   id: string;

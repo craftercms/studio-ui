@@ -255,13 +255,14 @@ interface SearchProps {
   history: History;
   location: Location;
   mode?: string;
+  embedded?: boolean;
   onSelect(path: string, selected: boolean): any;
 }
 
 export default function Search(props: SearchProps) {
   const classes = useStyles({});
   const { current: refs } = useRef<any>({});
-  const { history, location, mode = 'default', onSelect } = props;
+  const { history, location, mode = 'default', onSelect, embedded = false } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -279,7 +280,7 @@ export default function Search(props: SearchProps) {
     error: false,
     errorResponse: null
   });
-  const [drawerOpen, setDrawerOpen] = useState(!(mode === 'embedded'));
+  const [drawerOpen, setDrawerOpen] = useState(!embedded);
   const [checkedFilters, setCheckedFilters] = React.useState({});
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
@@ -665,7 +666,7 @@ export default function Search(props: SearchProps) {
           [classes.shift]: drawerOpen
         })}
         style={
-          drawerOpen && desktopScreen && mode !== 'embedded'
+          drawerOpen && desktopScreen && !embedded
             ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
             : { marginLeft: 0 }
         }
