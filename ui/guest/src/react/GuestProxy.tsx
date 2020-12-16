@@ -21,11 +21,12 @@ import { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import * as iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import {
-  operations$,
   contentTypes$,
   getCachedContentType,
   getCachedModel,
-  models$
+  models$,
+  operations$,
+  paths$
 } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -147,7 +148,7 @@ export default function GuestProxy() {
       }
     };
 
-    zip(models$, contentTypes$)
+    zip(models$, contentTypes$, paths$)
       .pipe(take(1))
       .subscribe(() => {
         document.querySelectorAll('[data-craftercms-model-id]').forEach(registerElement);
@@ -372,7 +373,8 @@ export default function GuestProxy() {
           );
           const model = getCachedModel(modelId);
           const contentType = getCachedContentType(model.craftercms.contentTypeId);
-          const fieldType = ContentType.getField(contentType, fieldId).type;
+          const field = ContentType.getField(contentType, fieldId);
+          const fieldType = field.type;
 
           if (fieldType === 'image') {
             const tagName = updatedField

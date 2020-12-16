@@ -82,8 +82,9 @@ const contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
 const notEmpty = (objects) => Object.keys(objects).length > 0;
 const modelsObs$ = models$.pipe(filter(notEmpty));
 const contentTypesObs$ = contentTypes$.pipe(filter(notEmpty));
+const pathsObs$ = paths$.pipe(filter(notEmpty));
 
-export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$ };
+export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$, pathsObs$ as paths$ };
 
 // region Models
 
@@ -152,12 +153,9 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
   }
 }
 
-export function getContentInstanceByPath(path: string): Observable<ContentInstance> {
-  return paths$.pipe(
-    filter((paths) => Boolean(paths[path])),
-    pluck(path),
-    map((modelId) => models$.value[modelId])
-  );
+export function getContentInstanceByPath(path: string): ContentInstance {
+  let modelId = paths$.value[path];
+  return models$.value[modelId];
 }
 
 export function fetchByPath(

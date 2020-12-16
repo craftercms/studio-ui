@@ -16,6 +16,7 @@
 
 import { ElementRecord } from '../models/InContextEditing';
 import * as iceRegistry from '../classes/ICERegistry';
+import { getReferentialEntries } from '../classes/ICERegistry';
 import { Editor } from 'tinymce';
 import * as contentController from '../classes/ContentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
@@ -113,7 +114,8 @@ export function initTinyMCE(
         function save() {
           const content = getContent();
           if (changed) {
-            contentController.updateField(record.modelId, field.id, record.index, content);
+            const model = getReferentialEntries({ ...record, fieldId: field.id }).model;
+            contentController.updateField(model.craftercms.id, field.id, record.index, content);
           }
         }
 

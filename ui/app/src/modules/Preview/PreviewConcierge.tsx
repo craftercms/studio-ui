@@ -70,7 +70,7 @@ import {
   updateField,
   uploadDataUrl
 } from '../../services/content';
-import { filter, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
+import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { forkJoin, interval, Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
@@ -273,21 +273,24 @@ export function PreviewConcierge(props: any) {
                     }
                   });
                   if (requests.length) {
-                    forkJoin(requests).subscribe((response) => {
-                      let lookup = { ...obj.modelLookup };
-                      response.forEach((contentInstance) => {
-                        lookup = {
-                          ...lookup,
-                          [contentInstance.craftercms.id]: contentInstance
+                    return forkJoin(requests).pipe(
+                      map((response) => {
+                        let lookup = obj.modelLookup;
+                        response.forEach((contentInstance) => {
+                          lookup = {
+                            ...lookup,
+                            [contentInstance.craftercms.id]: contentInstance
+                          };
+                        });
+                        return {
+                          ...obj,
+                          modelLookup: lookup
                         };
-                      });
-                      return of({
-                        ...obj,
-                        modelLookup: lookup
-                      });
-                    });
+                      })
+                    );
+                  } else {
+                    return of(obj);
                   }
-                  return of(obj);
                 })
               )
               .subscribe(({ model, modelLookup }) => {
