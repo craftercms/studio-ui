@@ -400,10 +400,12 @@ export function PreviewConcierge(props: any) {
         case INSERT_COMPONENT_OPERATION: {
           const { fieldId, targetIndex, instance, shared } = payload;
           let { modelId, parentModelId } = payload;
+
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
             parentModelId = findParentModelId(modelId, childrenMap, models);
           }
+
           insertComponent(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -429,7 +431,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_INSTANCE_OPERATION:
-          const { modelId, fieldId, targetIndex, instance, parentModelId } = payload;
+          const { fieldId, targetIndex, instance } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           insertInstance(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -509,6 +518,7 @@ export function PreviewConcierge(props: any) {
         case UPDATE_FIELD_VALUE_OPERATION: {
           const { fieldId, index, value } = payload;
           let { modelId, parentModelId } = payload;
+
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
             parentModelId = findParentModelId(modelId, childrenMap, models);
