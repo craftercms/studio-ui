@@ -215,6 +215,10 @@ export function getSiteUiConfig(
           return {
             preview: {
               toolsPanel: applyDeserializedXMLTransforms(deserialize(widgets), { arrays, lookupTables, renameTable })
+            },
+            // TODO: parse XML.
+            globalNav: {
+              sections: []
             }
           };
         } else {

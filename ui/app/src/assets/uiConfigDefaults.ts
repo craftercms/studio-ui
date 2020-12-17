@@ -497,6 +497,52 @@ const uiConfigDefaults = {
         }
       ]
     }
+  },
+  globalNav: {
+    sections: [
+      {
+        uiKey: count++,
+        title: 'Site',
+        widgets: [
+          {
+            id: 'craftercms.components.GlobalNavLinkTile',
+            uiKey: count++,
+            configuration: {
+              title: 'Dashboard',
+              systemLinkId: 'siteDashboard',
+              icon: { id: '@material-ui/icons/DashboardRounded' }
+            }
+          },
+          {
+            id: 'craftercms.components.GlobalNavLinkTile',
+            uiKey: count++,
+            configuration: {
+              title: 'Preview',
+              systemLinkId: 'preview',
+              icon: { id: 'craftercms.icons.Preview' }
+            }
+          },
+          {
+            id: 'craftercms.components.GlobalNavLinkTile',
+            uiKey: count++,
+            configuration: {
+              title: 'Site Tools',
+              systemLinkId: 'siteTools',
+              icon: { id: '@material-ui/icons/BuildRounded' }
+            }
+          },
+          {
+            id: 'craftercms.components.GlobalNavLinkTile',
+            uiKey: count++,
+            configuration: {
+              title: 'Search',
+              systemLinkId: 'siteSearch',
+              icon: { id: '@material-ui/icons/SearchRounded' }
+            }
+          }
+        ]
+      }
+    ]
   }
 };
 

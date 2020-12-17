@@ -132,6 +132,7 @@ function GlobalDialogManager() {
         open={state.confirm.open}
         title={state.confirm.title}
         body={state.confirm.body}
+        styles={state.confirm.styles}
         imageUrl={state.confirm.imageUrl}
         hideBackdrop={state.confirm.hideBackdrop}
         onOk={createCallback(state.confirm.onOk, dispatch)}
