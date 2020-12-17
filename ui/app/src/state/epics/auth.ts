@@ -47,14 +47,14 @@ const epics: CrafterCMSEpic[] = [
       // Spring requires regular post for logout....
       // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
       tap(([, state]) => {
-        let form = document.createElement('form');
-        let tokenField = document.createElement('input');
+        const tokenField = document.createElement('input');
         tokenField.type = 'hidden';
         tokenField.name = state.env.xsrfArgument;
         tokenField.value = getRequestForgeryToken();
-        form.appendChild(tokenField);
+        const form = document.createElement('form');
         form.method = 'post';
         form.action = `${state.env.authoringBase}/logout`;
+        form.appendChild(tokenField);
         document.body.appendChild(form);
         form.submit();
       }),
