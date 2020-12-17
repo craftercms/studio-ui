@@ -183,7 +183,9 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       color: config.zoneLabelTextColor,
       padding: '10px',
       borderRadius: 10,
-      display: 'inline-block',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       fontSize: '14px',
       position: 'fixed',
       top: '1em',
@@ -311,6 +313,9 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       }
     },
     // Classes
+    '.craftercms-zone-marker-icon': {
+      marginLeft: '10px'
+    },
     '.craftercms-required-validation-failed': {
       outlineColor: config.validationMandatoryColor,
       '& craftercms-zone-marker-label': {

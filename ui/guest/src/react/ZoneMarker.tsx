@@ -37,7 +37,9 @@ export default function ZoneMarker(props: ZoneMarkerProps) {
     <craftercms-zone-marker style={zoneStyle} class={classes?.marker}>
       <craftercms-zone-marker-label class={classes?.label}>
         {label}
-        {inherited && <img src="/studio/static-assets/images/inheritedIcon.svg" alt="" />}
+        {inherited && (
+          <img className="craftercms-zone-marker-icon" src="/studio/static-assets/images/inheritedIcon.svg" alt="" />
+        )}
       </craftercms-zone-marker-label>
     </craftercms-zone-marker>
   );
