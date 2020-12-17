@@ -36,7 +36,7 @@
   <#if RequestParameters.mode?exists && mode == 'select'>
     <#assign embedded = true />
   </#if>
-  <div id="root" style="height: calc(100vh - 64px);"></div>
+  <div id="root" style="height: calc(100vh <#if embedded?exists>- 64px</#if>);"></div>
 
   <div id="cstudio-command-controls-container"></div>
 

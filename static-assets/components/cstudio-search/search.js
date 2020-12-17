@@ -24,7 +24,8 @@
 
   /* default search context */
   CStudioSearch.searchContext = {
-    searchId: null
+    searchId: null,
+    mode: 'default' // possible mode values: [default|select]
   };
 
   CStudioSearch.init = function() {
@@ -36,9 +37,12 @@
       words: CrafterCMSNext.i18n.messages.words
     };
 
+    this.searchContext.mode = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'mode') || 'default';
     this.searchContext.searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'searchId');
 
-    this.renderFormControls();
+    if (this.searchContext.mode === 'select') {
+      this.renderFormControls();
+    }
     this.bindEvents();
   };
 
