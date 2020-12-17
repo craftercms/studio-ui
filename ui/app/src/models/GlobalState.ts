@@ -52,6 +52,7 @@ import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelecti
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemMenu/ItemMenu';
+import { MessageDescriptor } from 'react-intl';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -189,6 +190,9 @@ export interface GlobalState {
       toolsPanel: {
         widgets: WidgetDescriptor[];
       };
+    };
+    globalNav: {
+      sections: { uiKey: number; title: string | MessageDescriptor; widgets: WidgetDescriptor[]; roles?: string[] }[];
     };
   };
   pathNavigator: {
