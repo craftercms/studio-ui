@@ -25,7 +25,7 @@ import Button from '@material-ui/core/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { login, refreshAuthToken } from '../../state/actions/auth';
+import { login, logout, refreshAuthToken } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { getSSOLogoutURL } from '../../services/auth';
 import { pluck } from 'rxjs/operators';
@@ -134,7 +134,7 @@ interface AuthMonitorBodyProps {
 }
 
 function AuthMonitorBody(props: AuthMonitorBodyProps) {
-  const { logoutUrl, authoringUrl, username, isSSO, dispatch, formatMessage } = props;
+  const { authoringUrl, username, isSSO, dispatch, formatMessage } = props;
   const classes = useStyles();
   const { error, isFetching } = useSelection((state) => state.auth);
   const [password, setPassword] = useState<string>('');
@@ -150,7 +150,7 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
       !isBlank(password) && dispatch(login({ username, password }));
     }
   };
-  const onClose = () => (window.location.href = logoutUrl ?? authoringUrl);
+  const onClose = () => dispatch(logout());
   return (
     <>
       <DialogTitle id="craftercmsReLoginDialog" className={classes.title} style={styles}>
