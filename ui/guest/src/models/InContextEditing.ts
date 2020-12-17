@@ -61,6 +61,7 @@ export interface ElementRecord extends Omit<BaseICERecord, 'fieldId'> {
   element: Element;
   complete: boolean;
   fieldId: string[];
+  inherited: boolean;
 }
 
 export interface ElementRecordRegistration extends ICEProps {
@@ -72,6 +73,7 @@ export interface HighlightData {
   id: number;
   rect: DOMRect;
   label: string;
+  inherited: boolean;
   validations: LookupTable<ValidationResult>;
 }
 

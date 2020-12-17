@@ -373,8 +373,7 @@ export default function GuestProxy() {
           );
           const model = getCachedModel(modelId);
           const contentType = getCachedContentType(model.craftercms.contentTypeId);
-          const field = ContentType.getField(contentType, fieldId);
-          const fieldType = field.type;
+          const fieldType = ContentType.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
             const tagName = updatedField
