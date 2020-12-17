@@ -28,7 +28,7 @@ import { ignoreElements, map, mapTo, pluck, switchMap, take, tap, withLatestFrom
 import * as auth from '../../services/auth';
 import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
-import { setJwt, setRequestForgeryToken } from '../../utils/auth';
+import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
 import { interval } from 'rxjs';
 import { storeInitialized } from '../actions/system';
@@ -48,6 +48,11 @@ const epics: CrafterCMSEpic[] = [
       // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
       tap(([, state]) => {
         let form = document.createElement('form');
+        let tokenField = document.createElement('input');
+        tokenField.type = 'hidden';
+        tokenField.name = state.env.xsrfArgument;
+        tokenField.value = getRequestForgeryToken();
+        form.appendChild(tokenField);
         form.method = 'post';
         form.action = `${state.env.authoringBase}/logout`;
         document.body.appendChild(form);
