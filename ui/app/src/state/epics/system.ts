@@ -200,7 +200,7 @@ const systemEpics: CrafterCMSEpic[] = [
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemRejected)
+            message: getIntl().formatMessage(itemSuccessMessages.itemRejected, { count: payload?.count ?? 1 })
           })
         );
       }),

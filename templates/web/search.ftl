@@ -33,7 +33,9 @@
 </head>
 
 <body>
-  <#assign mode = RequestParameters.mode />
+  <#if RequestParameters.mode?exists && mode == 'select'>
+    <#assign embedded = true />
+  </#if>
   <div id="root" style="height: calc(100vh - 64px);"></div>
 
   <div id="cstudio-command-controls-container"></div>
@@ -60,7 +62,7 @@
 
   <script>
     CrafterCMSNext.render('#root', 'Search', {
-      embedded: <#if mode?exists && mode == 'select'>true<#else>false</#if>,
+      embedded: <#if embedded?exists>true<#else>false</#if>,
       onSelect: CStudioSearch.changeSelectStatus
     }, false);
   </script>

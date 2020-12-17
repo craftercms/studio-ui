@@ -61,7 +61,9 @@ export const showDuplicatedItemSuccessNotification = createAction('SHOW_DUPLICAT
 
 export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showRejectItemSuccessNotification = createAction('SHOW_REJECT_ITEM_SUCCESS_NOTIFICATION');
+export const showRejectItemSuccessNotification = createAction<{ count?: number }>(
+  'SHOW_REJECT_ITEM_SUCCESS_NOTIFICATION'
+);
 
 export const showSystemNotification = createAction<{
   message: string;

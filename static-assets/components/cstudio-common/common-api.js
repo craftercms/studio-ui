@@ -2157,16 +2157,14 @@ var nodeOpen = false,
                   .height()
                   .toString()
               );
-              $(dialog).height(60);
+              $(dialog).css('cssText', $(dialog).attr('style') + 'height: 65px !important');
               controlContainer.addClass('collapseForm');
               overlayContainer && overlayContainer.addClass('overlay-collapsed');
-              iframe.css('top', -(iframe.height() - 60));
               overlayContainer.hide();
             } else {
               $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie('formEngineHeight')));
               controlContainer.removeClass('collapseForm');
               overlayContainer && overlayContainer.removeClass('overlay-collapsed');
-              iframe.css('top', 0);
               overlayContainer.show();
             }
           });

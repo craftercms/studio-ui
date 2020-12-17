@@ -292,7 +292,6 @@ export default function Search(props: SearchProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    console.log('searchParameters', searchParameters);
     search(site, searchParameters).subscribe(
       (result) => {
         setSearchResults(result);

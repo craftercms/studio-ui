@@ -759,7 +759,13 @@ export const itemActionDispatcher = (
       dispatch(
         showRejectDialog({
           items,
-          onRejectSuccess: batchActions([showRejectItemSuccessNotification(), closeRejectDialog(), onActionSuccess])
+          onRejectSuccess: batchActions([
+            showRejectItemSuccessNotification({
+              count: items.length
+            }),
+            closeRejectDialog(),
+            onActionSuccess
+          ])
         })
       );
       break;
