@@ -588,19 +588,15 @@ interface FetchGuestModelCompletePayload {
   path: string;
   model: ContentInstance;
   modelLookup: LookupTable<ContentInstance>;
+  modelIdByPath: LookupTable<string>;
   childrenMap: LookupTable<string[]>;
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, childrenMap }: FetchGuestModelCompletePayload) => {
-    const modelIdByPath = {};
-    Object.values(modelLookup).forEach((model) => {
-      // Embedded components don't have a path.
-      if (model.craftercms.path) {
-        pathsRequested[model.craftercms.path] = true;
-        modelIdByPath[model.craftercms.path] = model.craftercms.id;
-      }
+  .subscribe(({ modelLookup, childrenMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
+    Object.keys(modelIdByPath).forEach((path) => {
+      pathsRequested[path] = true;
     });
     Object.assign(children, childrenMap);
     models$.next({ ...models$.value, ...modelLookup });

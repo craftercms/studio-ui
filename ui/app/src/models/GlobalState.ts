@@ -71,6 +71,7 @@ export interface GuestData {
   origin: string;
   models: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
+  modelIdByPath: LookupTable<string>;
   modelId: string;
   path: string;
   selected: EditSelection[];

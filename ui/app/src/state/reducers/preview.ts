@@ -119,6 +119,10 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
           ...state.guest.models,
           ...payload.modelLookup
         },
+        modelIdByPath: {
+          ...state.guest.modelIdByPath,
+          ...payload.modelIdByPath
+        },
         childrenMap: {
           ...state.guest?.childrenMap,
           ...payload.childrenMap
@@ -225,6 +229,7 @@ const reducer = createReducer<GlobalState['preview']>(
           path,
           models: null,
           childrenMap: null,
+          modelIdByPath: null,
           selected: null,
           itemBeingDragged: null
         },

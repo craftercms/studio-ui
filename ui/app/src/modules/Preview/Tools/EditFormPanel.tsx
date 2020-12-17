@@ -100,7 +100,7 @@ export default function EditFormPanel(props) {
 function EditFormPanelBody() {
   const dispatch = useDispatch();
   const {
-    guest: { selected, models, childrenMap }
+    guest: { selected, models, childrenMap, modelIdByPath }
   } = usePreviewState();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
@@ -112,9 +112,17 @@ function EditFormPanelBody() {
   const defaultSrc = `${authoringBase}/legacy/form?`;
 
   const item = selected[0];
-  const model = models[item.modelId];
-  const contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
   const fieldId = item.fieldId[0];
+  let model = models[item.modelId];
+  let contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
+  const levelDescriptorPath = model.craftercms.sourceMap[fieldId];
+  // is isInheritedField
+  if (levelDescriptorPath) {
+    const modelId = modelIdByPath[levelDescriptorPath];
+    model = models[modelId];
+    contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
+  }
+
   const field = fieldId ? getField(contentType, fieldId) : null;
   let title;
   let selectedId;

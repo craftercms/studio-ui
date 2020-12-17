@@ -297,16 +297,30 @@ export function PreviewConcierge(props: any) {
                 const childrenMap = createChildModelLookup(modelLookup, contentTypes);
                 const normalizedModels = normalizeModelsLookup(modelLookup);
                 const normalizedModel = normalizedModels[model.craftercms.id];
+                const modelIdByPath = {};
+                Object.values(modelLookup).forEach((model) => {
+                  // Embedded components don't have a path.
+                  if (model.craftercms.path) {
+                    modelIdByPath[model.craftercms.path] = model.craftercms.id;
+                  }
+                });
                 dispatch(
                   completeAction({
                     model: normalizedModel,
                     modelLookup: normalizedModels,
+                    modelIdByPath: modelIdByPath,
                     childrenMap
                   })
                 );
                 hostToGuest$.next({
                   type: 'FETCH_GUEST_MODEL_COMPLETE',
-                  payload: { path, model: normalizedModel, modelLookup: normalizedModels, childrenMap }
+                  payload: {
+                    path,
+                    model: normalizedModel,
+                    modelLookup: normalizedModels,
+                    childrenMap,
+                    modelIdByPath: modelIdByPath
+                  }
                 });
               });
           // endregion
