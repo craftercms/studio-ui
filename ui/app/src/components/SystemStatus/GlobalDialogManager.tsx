@@ -132,6 +132,7 @@ function GlobalDialogManager() {
         open={state.confirm.open}
         title={state.confirm.title}
         body={state.confirm.body}
+        styles={state.confirm.styles}
         hideBackdrop={state.confirm.hideBackdrop}
         onOk={createCallback(state.confirm.onOk, dispatch)}
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
@@ -405,6 +406,7 @@ function GlobalDialogManager() {
       <ItemMenu
         open={state.itemMenu.open}
         path={state.itemMenu.path}
+        loaderItems={state.itemMenu.loaderItems}
         onClose={createCallback(state.itemMenu.onClose, dispatch)}
         anchorReference={state.itemMenu.anchorReference}
         anchorPosition={state.itemMenu.anchorPosition}

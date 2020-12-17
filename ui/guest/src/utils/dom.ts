@@ -409,7 +409,7 @@ export function updateDropZoneValidations(
   const newDropZone = { ...dropZone };
   let newDropZones = [...dropZones];
   newDropZone.validations = validations;
-  newDropZones = newDropZones.filter((item) => item.iceId !== newDropZone.iceId);
+  newDropZones = newDropZones.filter((item) => item.elementRecordId !== newDropZone.elementRecordId);
   newDropZones.push(newDropZone);
   return newDropZones;
 }
