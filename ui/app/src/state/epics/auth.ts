@@ -44,7 +44,15 @@ const epics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(logout.type),
       withLatestFrom(state$),
-      tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
+      // Spring requires regular post for logout....
+      // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
+      tap(([, state]) => {
+        let form = document.createElement('form');
+        form.method = 'post';
+        form.action = `${state.env.authoringBase}/logout`;
+        document.body.appendChild(form);
+        form.submit();
+      }),
       ignoreElements()
     ),
   (action$) =>
