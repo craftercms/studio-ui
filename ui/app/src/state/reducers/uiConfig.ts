@@ -26,6 +26,9 @@ const initialState: GlobalState['uiConfig'] = {
     toolsPanel: {
       widgets: null
     }
+  },
+  globalNav: {
+    sections: []
   }
 };
 

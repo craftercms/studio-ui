@@ -47,7 +47,7 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
   return (
     <ListItem button onClick={onClick} ContainerComponent="div">
       <ListItemIcon>
-        <SystemIcon icon={icon} />
+        <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
       </ListItemIcon>
       <ListItemText
         primary={usePossibleTranslation(title)}
