@@ -158,6 +158,19 @@ export function getContentInstanceByPath(path: string): ContentInstance {
   return models$.value[modelId];
 }
 
+export function isInheritedField(modelId: string, fieldId: string): boolean {
+  return !!getCachedModel(modelId).craftercms.sourceMap?.[fieldId];
+}
+
+export function getModelIdFromInheritedField(modelId: string, fieldId): string {
+  const levelDescriptorPath = models$.value[modelId].craftercms.sourceMap?.[fieldId];
+  if (levelDescriptorPath) {
+    return getContentInstanceByPath(levelDescriptorPath).craftercms.id;
+  } else {
+    return modelId;
+  }
+}
+
 export function fetchByPath(
   path: string
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
@@ -234,7 +247,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
 
   operations$.next({
     type: UPDATE_FIELD_VALUE_OPERATION,
-    args: { modelId, fieldId, index, value }
+    args: { modelId: getModelIdFromInheritedField(modelId, fieldId), fieldId, index, value }
   });
 }
 

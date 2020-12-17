@@ -19,9 +19,9 @@ import { getById } from './ICERegistry';
 import {
   byPathFetchIfNotLoaded,
   getCachedContentType,
-  getCachedModel,
   getCachedModels,
   hasCachedModel,
+  isInheritedField,
   model$
 } from './ContentController';
 import { take } from 'rxjs/operators';
@@ -410,8 +410,4 @@ export function getParentsElementFromICEProps(
   });
 
   return recordId === -1 ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
-}
-
-export function isInheritedField(modelId: string, fieldId: string): boolean {
-  return !!getCachedModel(modelId).craftercms.sourceMap[fieldId];
 }

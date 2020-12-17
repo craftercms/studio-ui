@@ -85,7 +85,7 @@ import {
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
-import { nnou, pluckProps } from '../../utils/object';
+import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
@@ -104,6 +104,7 @@ import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseCon
 import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
+import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -148,6 +149,8 @@ export function PreviewConcierge(props: any) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
   const models = guest?.models;
+  const modelIdByPath = guest?.modelIdByPath;
+  const childrenMap = guest?.childrenMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
   const editMode = useSelection((state) => state.preview.editMode);
   const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
@@ -395,7 +398,12 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_COMPONENT_OPERATION: {
-          const { modelId, fieldId, targetIndex, instance, parentModelId, shared } = payload;
+          const { fieldId, targetIndex, instance, shared } = payload;
+          let { modelId, parentModelId } = payload;
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
           insertComponent(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -499,7 +507,13 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          const { modelId, fieldId, index, parentModelId, value } = payload;
+          const { fieldId, index, value } = payload;
+          let { modelId, parentModelId } = payload;
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           updateField(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -613,6 +627,8 @@ export function PreviewConcierge(props: any) {
     enqueueSnackbar,
     formatMessage,
     models,
+    modelIdByPath,
+    childrenMap,
     guestBase,
     site,
     xsrfArgument,

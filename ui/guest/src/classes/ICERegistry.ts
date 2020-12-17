@@ -329,7 +329,7 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
   let contentType = contentController.getCachedContentType(contentTypeId);
   let field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
 
-  if (!field && record.fieldId && model.craftercms.sourceMap[record.fieldId]) {
+  if (!field && record.fieldId && model.craftercms.sourceMap?.[record.fieldId]) {
     model = contentController.getContentInstanceByPath(model.craftercms.sourceMap[record.fieldId]);
     contentTypeId = Model.getContentTypeId(model);
     contentType = contentController.getCachedContentType(contentTypeId);
