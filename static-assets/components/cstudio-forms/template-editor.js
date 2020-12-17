@@ -692,14 +692,6 @@ CStudioAuthoring.Module.requireModule(
                           }
                         }
                       ];
-                      if (onSaveCb.id) {
-                        options.push({
-                          label: formatMessage(messages.saveAndMinimize),
-                          callback: () => {
-                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
-                          }
-                        });
-                      }
                       CrafterCMSNext.render(saveEl, 'SplitButton', {
                         options,
                         defaultSelected: 1
