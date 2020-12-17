@@ -693,8 +693,7 @@ export const browseSearchMessages = defineMessages({
 export const formEngineMessages = defineMessages({
   inProgressConfirmation: {
     id: 'formEngine.inProgressConfirmation',
-    defaultMessage:
-      'Another editor is currently open & minimized. Please close the current editor before opening another'
+    defaultMessage: 'Another form is currently open & minimized. Please close the current form before opening another'
   },
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',

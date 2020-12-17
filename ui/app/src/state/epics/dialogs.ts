@@ -179,7 +179,8 @@ const dialogEpics: CrafterCMSEpic[] = [
         } else {
           return of(
             showConfirmDialog({
-              body: getIntl().formatMessage(codeEditorMessages.inProgressConfirmation)
+              body: getIntl().formatMessage(codeEditorMessages.inProgressConfirmation),
+              imageUrl: infoGraphic
             })
           );
         }
