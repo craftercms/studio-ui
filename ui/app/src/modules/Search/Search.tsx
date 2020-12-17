@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100vh - 65px) !important',
+    height: 'calc(100% - 65px)',
     overflowY: 'scroll',
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
@@ -171,6 +171,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   drawerPaper: {
     top: 65,
+    height: 'calc(100% - 65px)',
     bottom: 0,
     width: drawerWidth
   },
@@ -284,12 +285,14 @@ export default function Search(props: SearchProps) {
   const [checkedFilters, setCheckedFilters] = React.useState({});
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
+  const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
 
   refs.createQueryString = createQueryString;
 
   setRequestForgeryToken();
 
   useEffect(() => {
+    console.log('searchParameters', searchParameters);
     search(site, searchParameters).subscribe(
       (result) => {
         setSearchResults(result);
@@ -428,6 +431,12 @@ export default function Search(props: SearchProps) {
 
   function clearFilters() {
     searchResults.facets.forEach((facet) => clearFilter(facet.name));
+    clearPath();
+  }
+
+  function clearPath() {
+    handleFilterChange({ name: 'path', value: undefined }, false);
+    setSelectedPath(undefined);
   }
 
   // createQueryString:
@@ -526,6 +535,8 @@ export default function Search(props: SearchProps) {
       let selectedItems: any[] = [];
       searchResults.items.forEach((item: any) => {
         if (selected.indexOf(item.path) === -1) {
+          dispatch(fetchUserPermissions({ path: item.path }));
+          dispatch(completeDetailedItem({ path: item.path }));
           selectedItems.push(item.path);
           onSelect?.(item.path, true);
         }
@@ -636,6 +647,7 @@ export default function Search(props: SearchProps) {
         currentView={currentView}
         keyword={keyword}
         showActionButton={Boolean(keyword)}
+        embedded={embedded}
       />
       <Drawer
         variant="persistent"
@@ -656,12 +668,13 @@ export default function Search(props: SearchProps) {
             setCheckedFilters={setCheckedFilters}
             clearFilters={clearFilters}
             handleClearClick={clearFilter}
+            selectedPath={selectedPath}
+            setSelectedPath={setSelectedPath}
           />
         )}
       </Drawer>
       <section
         className={clsx(classes.wrapper, {
-          hasContent: searchResults && searchResults.total,
           select: mode === 'select',
           [classes.shift]: drawerOpen
         })}
@@ -671,67 +684,65 @@ export default function Search(props: SearchProps) {
             : { marginLeft: 0 }
         }
       >
-        {searchResults && !!searchResults.total && (
-          <div className={classes.searchHelperBar}>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                    checked={areAllSelected()}
-                    onClick={(e: any) => handleSelectAll(e.target.checked)}
-                  />
-                }
-                label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
-              />
-            </FormGroup>
-            <TablePagination
-              rowsPerPageOptions={[9, 15, 21]}
-              className={classes.pagination}
-              component="div"
-              labelRowsPerPage={null}
-              labelDisplayedRows={({ from, to, count }) => (
-                <>
-                  {formatMessage(messages.resultsCaption, {
-                    from,
-                    to,
-                    count,
-                    keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
-                    keywordLength: keyword.length,
-                    b: (content) => <strong key={content}>{content}</strong>
-                  })}
-                  {Object.keys(checkedFilters).length > 0 && (
-                    <strong>
-                      {formatMessage(messages.filtersActive, {
-                        span: (content) => (
-                          <span key={content} className={classes.filtersActive}>
-                            {content}
-                          </span>
-                        )
-                      })}
-                    </strong>
-                  )}
-                </>
-              )}
-              count={searchResults.total}
-              rowsPerPage={searchParameters.limit}
-              page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-              backIconButtonProps={{
-                'aria-label': 'previous page'
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'next page'
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              classes={{
-                caption: classes.paginationCaption,
-                selectRoot: classes.paginationSelectRoot,
-                select: classes.paginationSelect
-              }}
+        <div className={classes.searchHelperBar}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={areAllSelected()}
+                  onClick={(e: any) => handleSelectAll(e.target.checked)}
+                />
+              }
+              label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
             />
-          </div>
-        )}
+          </FormGroup>
+          <TablePagination
+            rowsPerPageOptions={[9, 15, 21]}
+            className={classes.pagination}
+            component="div"
+            labelRowsPerPage={null}
+            labelDisplayedRows={({ from, to, count }) => (
+              <>
+                {formatMessage(messages.resultsCaption, {
+                  from,
+                  to,
+                  count,
+                  keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                  keywordLength: keyword.length,
+                  b: (content) => <strong key={content}>{content}</strong>
+                })}
+                {(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
+                  <strong>
+                    {formatMessage(messages.filtersActive, {
+                      span: (content) => (
+                        <span key={content} className={classes.filtersActive}>
+                          {content}
+                        </span>
+                      )
+                    })}
+                  </strong>
+                )}
+              </>
+            )}
+            count={searchResults?.total ?? 0}
+            rowsPerPage={searchParameters.limit}
+            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
+            backIconButtonProps={{
+              'aria-label': 'previous page'
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'next page'
+            }}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            classes={{
+              caption: classes.paginationCaption,
+              selectRoot: classes.paginationSelectRoot,
+              select: classes.paginationSelect
+            }}
+          />
+        </div>
         <section className={classes.content}>
           {apiState.error ? (
             <ApiResponseErrorState error={apiState.errorResponse} />

@@ -1450,10 +1450,6 @@ export const itemSuccessMessages = defineMessages({
     id: 'item.reverted',
     defaultMessage: 'Item reverted successfully'
   },
-  itemRejected: {
-    id: 'item.rejected',
-    defaultMessage: 'Item rejected successfully'
-  },
   itemContentTypeChanged: {
     id: 'item.contentTypeChanged',
     defaultMessage: 'Item type changed successfully'

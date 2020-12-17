@@ -24,8 +24,7 @@
 
   /* default search context */
   CStudioSearch.searchContext = {
-    searchId: null,
-    mode: 'default' // possible mode values: [default|select]
+    searchId: null
   };
 
   CStudioSearch.init = function() {
@@ -37,24 +36,10 @@
       words: CrafterCMSNext.i18n.messages.words
     };
 
-    this.searchContext.mode = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'mode') || 'default';
     this.searchContext.searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'searchId');
-    $('section.cstudio-search').addClass(this.searchContext.mode);
 
-    // arrange iframe according to search mode
-    if (this.searchContext.mode != 'select') {
-      CStudioAuthoring.Events.contextNavLoaded.subscribe(function() {
-        CStudioAuthoring.ContextualNav.hookNavOverlayFromAuthoring();
-        CStudioAuthoring.InContextEdit.autoInitializeEditRegions();
-      });
-    } else this.renderFormControls();
-
+    this.renderFormControls();
     this.bindEvents();
-    const container = document.querySelector('.cstudio-search');
-    CrafterCMSNext.render(container, 'Search', {
-      onSelect: CStudioSearch.changeSelectStatus,
-      mode: this.searchContext.mode
-    });
   };
 
   CStudioSearch.bindEvents = function() {

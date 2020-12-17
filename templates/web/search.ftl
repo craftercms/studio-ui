@@ -22,15 +22,47 @@
 <head>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
-    <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
-    <#include "/templates/web/common/page-fragments/head.ftl" />
+  <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
+  <script src="/studio/static-assets/libs/handlebars/handlebars.js"></script>
+  <#include "/templates/web/common/page-fragments/head.ftl" />
+  <#include "/templates/web/common/page-fragments/studio-context.ftl" />
+
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/search.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
+  <script type="text/javascript" src="/studio/static-assets/components/cstudio-search/search.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 </head>
 
 <body>
-  <div id="root"></div>
+  <#assign mode = RequestParameters.mode />
+  <div id="root" style="height: calc(100vh - 64px);"></div>
+
+  <div id="cstudio-command-controls-container"></div>
+
+  <script id="hb-command-controls" type="text/x-handlebars-template">
+    <div id="cstudio-command-controls">
+      <div id="submission-controls" class="cstudio-form-controls-button-container">
+        <input
+          id="formSaveButton" type="button"
+          class="cstudio-search-btn cstudio-button btn btn-primary" value="Add Selection"
+          disabled
+        >
+        <input
+          id="formCancelButton" type="button"
+          class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel"
+        >
+      </div>
+    </div>
+  </script>
+
+  <script type="text/javascript">
+    CStudioSearch.init();
+  </script>
+
   <script>
-    CrafterCMSNext.render('#root', 'Search');
+    CrafterCMSNext.render('#root', 'Search', {
+      embedded: <#if mode?exists && mode == 'select'>true<#else>false</#if>,
+      onSelect: CStudioSearch.changeSelectStatus
+    }, false);
   </script>
 </body>
 </html>

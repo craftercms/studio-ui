@@ -78,14 +78,14 @@ interface SiteSearchToolBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
   currentView: string;
+  embedded: boolean;
   handleChangeView(): void;
   onChange(value: string): void;
   onMenuIconClick(): void;
 }
 
-// TODO: create global Toolbar Component to reuse in preview and search
 export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
-  const { onChange, keyword, showActionButton, handleChangeView, currentView, onMenuIconClick } = props;
+  const { onChange, keyword, showActionButton, handleChangeView, currentView, onMenuIconClick, embedded } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
 
@@ -117,7 +117,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
           <IconButton onClick={handleChangeView} className={classes.currentViewButton}>
             {currentView === 'grid' ? <FormatListBulletedIcon /> : <AppsIcon />}
           </IconButton>
-          <ToolbarGlobalNav />
+          {!embedded && <ToolbarGlobalNav />}
         </div>
       </Toolbar>
     </AppBar>

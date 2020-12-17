@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     border: 'none',
-    color: theme.palette.type === 'dark' ? palette.white : '#828282'
+    color: theme.palette.type === 'dark' ? palette.white : ''
   },
   filterLabel: {
     fontWeight: 600,
@@ -130,6 +130,8 @@ interface SiteSearchFiltersProps {
   queryParams: Partial<ElasticParams>;
   mode: string;
   checkedFilters: object;
+  selectedPath: string;
+  setSelectedPath(path: string): void;
   clearFilters(): void;
   setCheckedFilters(checkedFilters: object): any;
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
@@ -146,7 +148,9 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     checkedFilters,
     setCheckedFilters,
     clearFilters,
-    handleClearClick
+    handleClearClick,
+    selectedPath,
+    setSelectedPath
   } = props;
   const { formatMessage } = useIntl();
   const [expanded, setExpanded] = useState({
@@ -210,6 +214,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
       name: 'path',
       value: pathToFilter(path)
     });
+    setSelectedPath(path);
   };
 
   const renderFilters = () => {
@@ -246,14 +251,19 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   return (
     <div>
       <div className={classes.clearButtonContainer}>
-        <Button variant="outlined" fullWidth disabled={Object.keys(checkedFilters).length === 0} onClick={clearFilters}>
+        <Button
+          variant="outlined"
+          fullWidth
+          disabled={Object.keys(checkedFilters).length === 0 && !Boolean(selectedPath)}
+          onClick={clearFilters}
+        >
           {formatMessage(messages.clearFilters)}
         </Button>
       </div>
       <List classes={{ padding: classes.listPadding }}>
         <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
           <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
-            <Typography variant="body1">
+            <Typography variant="body1" color="textPrimary">
               <span className={classes.filterLabel}>{formatMessage(messages.path)}</span>
             </Typography>
             {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
@@ -263,7 +273,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
         <Collapse in={expanded && expanded['path']} timeout={300}>
           <div className={classes.body}>
             <PathSelector
-              value={queryParams['path']?.replace('.+', '')}
+              value={selectedPath?.replace('.+', '')}
               onPathSelected={onPathSelected}
               disabled={mode === 'select'}
             />

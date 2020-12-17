@@ -16,7 +16,7 @@
 
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   closePathSelectionDialog,
   pathSelectionDialogClosed,
@@ -86,6 +86,10 @@ export default function PathSelector(props: PathSelectorProps) {
   const rootPath = keyword.split('/')[1] ? `/${keyword.split('/')[1]}` : null;
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
+
+  useEffect(() => {
+    setKeyword(value ?? '');
+  }, [value]);
 
   const onClean = (e) => {
     e.stopPropagation();

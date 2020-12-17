@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'row',
     padding: 0,
-    color: palette.blue.main
+    color: theme.palette.primary.main
   },
   resultsSelected: {
     margin: '0 16px',
@@ -91,30 +91,31 @@ export default function ActionsBar(props: ActionsBarProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (permissions && selectedItems.length === 1) {
-      const path = selectedItems[0];
-      const item = items.byPath?.[path];
+    if (permissions && selectedItems.length) {
+      if (selectedItems.length === 1) {
+        const path = selectedItems[0];
+        const item = items.byPath?.[path];
 
-      if (item) {
-        const options = generateSingleItemOptions(item, permissions[path]);
-        setSelectionOptions(options[0].filter((option) => actions.includes(option.id)));
-      }
-    }
-    if (permissions && selectedItems.length > 1) {
-      let itemsDetails = [];
-
-      selectedItems.forEach((itemPath) => {
-        const itemPermissions = permissions[itemPath];
-        const item = items.byPath?.[itemPath];
-        if (itemPermissions && item) {
-          itemsDetails.push({
-            permissions: itemPermissions,
-            item
-          });
+        if (item) {
+          const options = generateSingleItemOptions(item, permissions[path]);
+          setSelectionOptions(options[0].filter((option) => actions.includes(option.id)));
         }
-      });
+      } else {
+        let itemsDetails = [];
 
-      setSelectionOptions(generateMultipleItemOptions(itemsDetails));
+        selectedItems.forEach((itemPath) => {
+          const itemPermissions = permissions[itemPath];
+          const item = items.byPath?.[itemPath];
+          if (itemPermissions && item) {
+            itemsDetails.push({
+              permissions: itemPermissions,
+              item
+            });
+          }
+        });
+
+        setSelectionOptions(generateMultipleItemOptions(itemsDetails));
+      }
     }
   }, [permissions, items, selectedItems]);
 
