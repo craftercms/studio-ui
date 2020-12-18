@@ -389,7 +389,7 @@ var storage = CStudioAuthoring.Storage;
         )
         .subscribe(({ type, payload }) => {
           const Self = RootFolder();
-          const tree = RootFolder().myTreeAssets;
+          const tree = RootFolder().myTreePages[treeId];
           switch (type) {
             case 'ITEM_CUT': {
               const node = tree.getNodeByProperty('path', CrafterCMSNext.util.path.withoutIndex(payload.target));

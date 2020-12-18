@@ -675,6 +675,7 @@
             )
           )
           .subscribe(({ type, payload }) => {
+            const tree = Self.myTreePages[treeId];
             switch (type) {
               case 'ITEM_CUT': {
                 const node = tree.getNodeByProperty('path', CrafterCMSNext.util.path.withoutIndex(payload.target));
