@@ -38,6 +38,7 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   guestModelUpdated,
+  guestPathUpdated,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
@@ -518,7 +519,14 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         toolsPanelPageStack: stack
       };
-    }
+    },
+    [guestPathUpdated.type]: (state, { payload }) => ({
+      ...state,
+      guest: {
+        ...state.guest,
+        path: payload.path
+      }
+    })
   }
 );
 
