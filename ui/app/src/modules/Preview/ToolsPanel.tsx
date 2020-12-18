@@ -49,6 +49,7 @@ import Audiences from '@material-ui/icons/EmojiPeopleRounded';
 import PageExplorer from '../../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
 import Simulator from '@material-ui/icons/DevicesRounded';
+import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -165,7 +166,8 @@ Object.entries({
   'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
   'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
   'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
-  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame
+  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
+  'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

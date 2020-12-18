@@ -494,6 +494,23 @@ const uiConfigDefaults = {
               }
             ]
           }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          roles: ['admin', 'developer'],
+          configuration: {
+            title: 'Settings',
+            icon: {
+              baseClass: 'fa fa-cog'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewSettingsPanel',
+                uiKey: count++
+              }
+            ]
+          }
         }
       ]
     }

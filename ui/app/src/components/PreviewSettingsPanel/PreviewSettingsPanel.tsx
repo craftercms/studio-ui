@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React from 'react';
+import { defineMessages, useIntl } from 'react-intl';
+import { makeStyles } from '@material-ui/core/styles';
+import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
+import { EditSwitch } from '../../modules/Preview/ToolBar';
+
+const translations = defineMessages({
+  editMode: {
+    id: 'settingsPanel.editMode',
+    defaultMessage: 'Edit Mode'
+  },
+  editModeHelperText: {
+    id: 'settingsPanel.editModeHelperText',
+    defaultMessage: 'Enable In-context editing, highlighting editable zones as you hover on them.'
+  },
+  highlightMode: {
+    id: 'settingsPanel.highlightMode',
+    defaultMessage: 'Highlight Mode'
+  },
+  highlightModeHelperText: {
+    id: 'settingsPanel.highlightModeHelperText',
+    defaultMessage: 'When "highlight movable" is active, only content items you can move around drop zones highlight.'
+  }
+});
+
+const useStyles = makeStyles(() => ({
+  root: {
+    padding: '15px'
+  },
+  labelRoot: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginLeft: 0
+  }
+}));
+
+export default function PreviewSettingsPanel() {
+  const classes = useStyles({});
+  const { formatMessage } = useIntl();
+
+  return (
+    <section className={classes.root}>
+      <FormControl>
+        <FormControlLabel
+          classes={{ root: classes.labelRoot }}
+          control={<EditSwitch color="default" onChange={() => {}} />}
+          label={formatMessage(translations.editMode)}
+          labelPlacement="start"
+        />
+        <FormHelperText>{formatMessage(translations.editModeHelperText)}</FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel component="legend">{formatMessage(translations.highlightMode)}</FormLabel>
+        <RadioGroup value="all" onChange={() => {}}>
+          <FormControlLabel value="all" control={<Radio />} label="Highlight All Zones" />
+          <FormControlLabel value="movable" control={<Radio />} label="Highlight Movable" />
+        </RadioGroup>
+        <FormHelperText>{formatMessage(translations.highlightModeHelperText)}</FormHelperText>
+      </FormControl>
+    </section>
+  );
+}

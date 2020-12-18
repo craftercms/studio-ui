@@ -86,7 +86,7 @@ const translations = defineMessages({
 
 const foo = () => void 0;
 
-const EditSwitch = withStyles({
+export const EditSwitch = withStyles({
   checked: {
     color: palette.green.tint
   }
