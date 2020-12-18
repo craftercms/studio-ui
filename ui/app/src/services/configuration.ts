@@ -176,7 +176,8 @@ export function deserializeActiveTargetingModelData<T extends Object>(
 }
 
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
-  const qs = toQueryString({ segment: data.segment, id: data.craftercms.id, ...(data.name && { name: data.name }) });
+  const model = reversePluckProps(data, 'craftercms');
+  const qs = toQueryString({ ...model, id: data.craftercms.id });
   return get(`/api/1/profile/set${qs}`).pipe(pluck('response'));
 }
 
