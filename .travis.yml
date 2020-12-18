@@ -1,10 +1,26 @@
 language:
    - node_js
+   - java
 node_js:
    - "14.5.0"
+jdk:
+  - openjdk11
+branches:
+  only:
+  - develop
+  - support/.*
+  - master
+notifications:
+  irc:
+    channels:
+    - chat.freenode.net#craftercms
+    use_notice: true
+    skip_join: true
+  slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 before_script:
    - gem install travis
 script:
-   - chmod +x travisTrigger.sh
+  - chmod +x travisTrigger.sh
+  - bash -c "mvn -q -Dmaven.javadoc.skip=true clean package"
 after_script:
     ./travisTrigger.sh
