@@ -568,7 +568,7 @@
 
       this.getPermissions = function (siteId, path, user) {
         return $http.get(security('get-user-permissions'), {
-          params: { site: siteId, path: path, user: user }
+          params: { site: siteId, path: path }
         });
       };
 
