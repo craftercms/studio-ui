@@ -468,16 +468,19 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case MOVE_ITEM_OPERATION: {
-          const {
-            originalModelId,
-            originalFieldId,
-            originalIndex,
-            targetModelId,
-            targetFieldId,
-            targetIndex,
-            originalParentModelId,
-            targetParentModelId
-          } = payload;
+          const { originalFieldId, originalIndex, targetFieldId, targetIndex } = payload;
+          let { originalModelId, originalParentModelId, targetModelId, targetParentModelId } = payload;
+
+          if (isInheritedField(models[originalModelId], originalFieldId)) {
+            originalModelId = getModelIdFromInheritedField(models[originalModelId], originalFieldId, modelIdByPath);
+            originalParentModelId = findParentModelId(originalModelId, childrenMap, models);
+          }
+
+          if (isInheritedField(models[targetModelId], targetFieldId)) {
+            targetModelId = getModelIdFromInheritedField(models[targetModelId], targetFieldId, modelIdByPath);
+            targetParentModelId = findParentModelId(targetModelId, childrenMap, models);
+          }
+
           moveItem(
             site,
             originalParentModelId ? originalModelId : models[originalModelId].craftercms.path,

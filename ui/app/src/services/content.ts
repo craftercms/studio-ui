@@ -313,7 +313,10 @@ export function moveItem(
   // TODO Warning: cannot perform as transaction whilst the UI is the one to do all this.
   // const isOriginalEmbedded = nnou(originalParentModelId);
   // const isTargetEmbedded = nnou(targetParentModelId);
-  if (originalModelId === targetModelId || originalParentModelId === targetParentModelId) {
+  if (
+    originalModelId === targetModelId ||
+    (nnou(originalParentModelId) && nnou(targetParentModelId) && originalParentModelId === targetParentModelId)
+  ) {
     if (originalParentModelId === targetParentModelId && nnou(originalParentModelId)) {
       debugger;
     }
