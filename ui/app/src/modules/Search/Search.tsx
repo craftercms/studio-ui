@@ -295,6 +295,7 @@ export default function Search(props: SearchProps) {
     search(site, searchParameters).subscribe(
       (result) => {
         setSearchResults(result);
+        getItemsDetails(result.items);
       },
       ({ response }) => {
         if (response) {
@@ -321,6 +322,7 @@ export default function Search(props: SearchProps) {
     search(site, searchParameters).subscribe(
       (result) => {
         setSearchResults(result);
+        getItemsDetails(result.items);
       },
       ({ response }) => {
         if (response) {
@@ -347,6 +349,13 @@ export default function Search(props: SearchProps) {
       unsubscribeOnActionSuccess?.();
     }
   }, [selected, handleClearSelected, refreshSearch]);
+
+  function getItemsDetails(items) {
+    items.forEach((item) => {
+      dispatch(fetchUserPermissions({ path: item.path }));
+      dispatch(completeDetailedItem({ path: item.path }));
+    });
+  }
 
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
@@ -518,8 +527,6 @@ export default function Search(props: SearchProps) {
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
       setSelected([...selected, path]);
-      dispatch(fetchUserPermissions({ path }));
-      dispatch(completeDetailedItem({ path }));
     } else {
       let selectedItems = [...selected];
       let index = selectedItems.indexOf(path);
@@ -534,8 +541,6 @@ export default function Search(props: SearchProps) {
       let selectedItems: any[] = [];
       searchResults.items.forEach((item: any) => {
         if (selected.indexOf(item.path) === -1) {
-          dispatch(fetchUserPermissions({ path: item.path }));
-          dispatch(completeDetailedItem({ path: item.path }));
           selectedItems.push(item.path);
           onSelect?.(item.path, true);
         }

@@ -53,7 +53,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   resultsSelected: {
     margin: '0 16px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    color: palette.gray.dark1
   },
   clearSelected: {
     marginLeft: '5px',
@@ -161,7 +162,7 @@ export default function ActionsBar(props: ActionsBarProps) {
           </List>
 
           {selectedItems.length > 0 && (
-            <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
+            <Typography variant="body2" className={classes.resultsSelected}>
               {formatMessage(messages.resultsSelected, {
                 count: selectedItems.length
               })}
