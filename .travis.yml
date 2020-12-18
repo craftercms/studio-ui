@@ -1,10 +1,10 @@
 language:
-   - node_js
-   - java
+- node_js
+- java
 node_js:
-   - "14.5.0"
+- 14.5.0
 jdk:
-  - openjdk11
+- openjdk11
 branches:
   only:
   - develop
@@ -18,9 +18,11 @@ notifications:
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 before_script:
-   - gem install travis
+- gem install travis
 script:
-  - chmod +x travisTrigger.sh
-  - bash -c "mvn -q -Dmaven.javadoc.skip=true clean package"
-after_script:
-    ./travisTrigger.sh
+- chmod +x trigger-studio-build.sh
+- bash -c "mvn -q -Dmaven.javadoc.skip=true clean package"
+after_script: "./trigger-studio-build.sh"
+env:
+  global:
+    secure: mEu7J/CAGwbFDxPmRFWy/fws4duLs3ZLVv08Jq8qxu2d3Py0EdL0TIF2eqlwv40Zeb4S2qUbIplTL6UjTMgaXdSjPUs/jmsUXXSuSPrqDSmITWsm0aC9zaVqGf5RPAlaEsj84L60PeK/0/m1jvhRvJpusp7htyMyn7DzctC+zeheRlV5urmIPCiDdNW1p8PptFcgstEKfXkrd0rUWLfRcEqEIMRDV6snWOfS+/tkQwoEp5I4ZqIUMv3GQrArBR/4IVKRxsiupzyaTFVHq/9PFmIColXOCXQpBHZITZEMFm1O9hHN7noNgDPowcvQePuUegIoHwgsKXf2LQe5a+I3eeTYbS7AolT7wqJCoSROH3IYXyNNgpXnL91zz9z057HW73tt8jlVRn7RAVkPvaEvV5WmKovUFyomdMzAQi7liGapyoIEn5bCD6YIZN87q33+FumOe5EdslsPAeSjZhXPCo1V/QRxd2gSuzHaVczPC0llFBw2TkQpODIViVEluHtaRXa27UfY8JNMwwznqoo7IHofdoJr/T0knp9paELvkfASzRnFNT00BLWsd9KsEGW14IU/KHQieiL7PSehZv2gCADu/5POJziOvfRUQSYr03ObLTLgvYthcz854iXYUlMbsB5P11wIXd9C6KNTja7VeaoxU8a2I9LhMfNybNgoy38=
