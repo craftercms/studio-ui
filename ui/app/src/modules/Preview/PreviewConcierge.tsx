@@ -366,7 +366,14 @@ export function PreviewConcierge(props: any) {
           dispatch(checkOutGuest());
           break;
         case SORT_ITEM_OPERATION: {
-          const { modelId, fieldId, currentIndex, targetIndex, parentModelId } = payload;
+          const { fieldId, currentIndex, targetIndex } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           sortItem(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -493,7 +500,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DELETE_ITEM_OPERATION: {
-          const { modelId, fieldId, index, parentModelId } = payload;
+          const { fieldId, index } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           deleteItem(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
