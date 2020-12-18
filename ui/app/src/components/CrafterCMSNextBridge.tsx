@@ -50,7 +50,7 @@ function Bridge(
   const classes = useStyles();
   const mountGlobalDialogManager = props.mountGlobalDialogManager ?? true;
   const mountSnackbarProvider = props.mountSnackbarProvider ?? true;
-  const mountLegacyConcierge = props.mountLegacyConcierge ?? true;
+  const mountLegacyConcierge = props.mountLegacyConcierge ?? false;
 
   const body = (
     <>
