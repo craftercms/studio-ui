@@ -131,3 +131,15 @@ body {
 }
 
 @import "components-panel";
+
+$dark-mode-background-paper: #424242;
+$dark-mode-font-color: #fff;
+@media (prefers-color-scheme: dark) {
+  .studio-components-panel {
+    background-color: $dark-mode-background-paper !important;
+
+    .studio-panel-title {
+      color: $dark-mode-font-color !important;
+    }
+  }
+}

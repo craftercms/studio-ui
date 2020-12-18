@@ -91,4 +91,49 @@ $dark-mode-font-highlight: #70D7FF;
   .craftercms-logo {
     display: none !important;
   }
+
+  #preview-tools-panel-container {
+    background-color: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color;
+
+    .hd, .acn-accordion-header {
+      background-color: $dark-mode-background-paper !important;
+      color: $dark-mode-font-color !important;
+      border: none !important;
+
+      .acn-accordion-toggle {
+        color: $dark-mode-font-color !important;
+      }
+    }
+  }
+
+  #cstudioPreviewTargetingOverlay {
+    background-color: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color;
+
+    select, input {
+      background-color: $dark-mode-background-paper !important;
+    }
+
+    .fa {
+      color: $dark-mode-font-color !important;
+    }
+  }
+
+  #status-dialog_c {
+    background-color: transparent !important;
+    #status-dialog {
+      background-color: transparent !important;
+      border: none;
+
+      .hd, .bd, .ft, .yui-button, .yui-button span {
+        color: $dark-mode-font-color;
+        background-color: $dark-mode-background-paper !important;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom-color: $dark-mode-background-default-dimmed;
+      }
+    }
+  }
 }
