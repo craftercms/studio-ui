@@ -41,11 +41,16 @@ import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import { Drawer } from '@material-ui/core';
+import { AppBar, Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ActionsBar from '../../components/ActionsBar';
 import { dispatchDOMEvent } from '../../state/actions/misc';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { DetailedItem } from '../../models/Item';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import palette from '../../styles/palette';
 
 const drawerWidth = 300;
 let unsubscribeOnActionSuccess;
@@ -57,6 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column',
     height: 'calc(100% - 65px)',
     overflowY: 'scroll',
+    background: theme.palette.background.default,
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -67,6 +73,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&.select': {
       paddingBottom: '60px'
     }
+  },
+  wrapperSelectMode: {
+    height: 'calc(100% - 130px)'
   },
   shift: {
     transition: theme.transitions.create('margin', {
@@ -105,8 +114,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '25px 30px',
-    background: theme.palette.background.default
+    padding: '25px 30px'
   },
   empty: {
     height: '100%',
@@ -175,6 +183,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     bottom: 0,
     width: drawerWidth
   },
+  drawerPaperSelect: {
+    top: 130,
+    height: 'calc(100% - 130px)'
+  },
   paginationCaption: {
     order: -1,
     marginRight: '25px'
@@ -188,6 +200,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   filtersActive: {
     color: '#FFB400',
     marginLeft: '2px'
+  },
+  selectAppbar: {
+    boxShadow: 'none',
+    borderBottom: `1px solid ${palette.gray.light3}`
+  },
+  selectToolbar: {
+    placeContent: 'center space-between',
+    backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.default : palette.white
+  },
+  selectToolbarTitle: {
+    flexGrow: 1
   }
 }));
 
@@ -249,6 +272,10 @@ const messages = defineMessages({
   filtersActive: {
     id: 'search.filtersActive',
     defaultMessage: ' • <span>Filters Active</span>'
+  },
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
   }
 });
 
@@ -257,13 +284,15 @@ interface SearchProps {
   location: Location;
   mode?: string;
   embedded?: boolean;
+  onClose?(): void;
   onSelect?(path: string, selected: boolean): any;
+  onAcceptSelection?(items: DetailedItem[]): any;
 }
 
 export default function Search(props: SearchProps) {
   const classes = useStyles({});
   const { current: refs } = useRef<any>({});
-  const { history, location, mode = 'default', onSelect, embedded = false } = props;
+  const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -648,6 +677,27 @@ export default function Search(props: SearchProps) {
 
   return (
     <>
+      {mode === 'select' && (
+        <AppBar position="static" color="default" className={classes.selectAppbar}>
+          <Toolbar className={classes.selectToolbar}>
+            <Typography variant="h5" className={classes.selectToolbarTitle}>
+              {formatMessage(messages.search)}
+            </Typography>
+            <div>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={onClose}
+                color="inherit"
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </Toolbar>
+        </AppBar>
+      )}
+
       <SiteSearchToolBar
         onChange={handleSearchKeyword}
         onMenuIconClick={toggleDrawer}
@@ -662,7 +712,9 @@ export default function Search(props: SearchProps) {
         anchor="left"
         open={drawerOpen}
         className={classes.drawer}
-        classes={{ paper: classes.drawerPaper }}
+        classes={{
+          paper: clsx(classes.drawerPaper, { [classes.drawerPaperSelect]: mode === 'select' })
+        }}
       >
         {searchResults && searchResults.facets && (
           <SiteSearchFilters
@@ -684,7 +736,8 @@ export default function Search(props: SearchProps) {
       <section
         className={clsx(classes.wrapper, {
           select: mode === 'select',
-          [classes.shift]: drawerOpen
+          [classes.shift]: drawerOpen,
+          [classes.wrapperSelectMode]: mode === 'select'
         })}
         style={
           drawerOpen && desktopScreen && !embedded
@@ -768,9 +821,11 @@ export default function Search(props: SearchProps) {
 
       <ActionsBar
         open={selected.length > 0}
+        mode={mode}
         selectedItems={selected}
         handleClearSelected={handleClearSelected}
         onActionSuccess={dispatchDOMEvent({ id: idActionSuccess })}
+        onAcceptSelection={onAcceptSelection}
       />
     </>
   );

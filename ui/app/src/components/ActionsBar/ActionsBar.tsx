@@ -27,13 +27,14 @@ import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispa
 import { SectionItem } from '../ContextMenu';
 import { useDispatch } from 'react-redux';
 import StandardAction from '../../models/StandardAction';
+import { DetailedItem } from '../../models/Item';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionsBar: {
     zIndex: 1200,
 
     '& .MuiSnackbarContent-root': {
-      backgroundColor: '#e6f2ff', // TODO: move to palette
+      backgroundColor: palette.blue.highlightHex,
       color: palette.black,
       borderRadius: '6px',
       padding: '0 10px',
@@ -66,6 +67,10 @@ const messages = defineMessages({
   resultsSelected: {
     id: 'search.resultsSelected',
     defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}'
+  },
+  acceptSelection: {
+    id: 'search.acceptSelection',
+    defaultMessage: 'Accept Selection'
   }
 });
 
@@ -74,12 +79,14 @@ const actions = ['edit', 'publish', 'delete', 'reject', 'schedule', 'duplicateAs
 interface ActionsBarProps {
   open: boolean;
   selectedItems: string[];
+  mode?: string;
   handleClearSelected(): void;
   onActionSuccess?: StandardAction;
+  onAcceptSelection?(items: DetailedItem[]): any;
 }
 
 export default function ActionsBar(props: ActionsBarProps) {
-  const { open, selectedItems, handleClearSelected, onActionSuccess } = props;
+  const { open, selectedItems, handleClearSelected, onActionSuccess, mode = 'default', onAcceptSelection } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const permissions = usePermissions();
@@ -153,20 +160,28 @@ export default function ActionsBar(props: ActionsBarProps) {
       }}
       message={
         <>
-          <List className={classes.actionsList}>
-            {selectionOptions.map((option) => (
-              <ListItem button key={option.id} onClick={() => onActionItemClicked(option)}>
-                <ListItemText primary={formatMessage(option.label)} />
+          {mode === 'default' ? (
+            <List className={classes.actionsList}>
+              {selectionOptions.map((option) => (
+                <ListItem button key={option.id} onClick={() => onActionItemClicked(option)}>
+                  <ListItemText primary={formatMessage(option.label)} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <List className={classes.actionsList}>
+              <ListItem button onClick={() => onAcceptSelection?.(selectedItems.map((path) => items.byPath?.[path]))}>
+                <ListItemText primary={formatMessage(messages.acceptSelection)} />
               </ListItem>
-            ))}
-          </List>
+            </List>
+          )}
 
           {selectedItems.length > 0 && (
             <Typography variant="body2" className={classes.resultsSelected}>
               {formatMessage(messages.resultsSelected, {
                 count: selectedItems.length
               })}
-              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
+              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} color="primary" />
             </Typography>
           )}
         </>

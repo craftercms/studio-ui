@@ -96,11 +96,11 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
           <IconButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick}>
             <CustomMenu />
           </IconButton>
-          <section>
+          {!embedded && (
             <Typography variant="h5" component="h2">
               {formatMessage(translations.search)}
             </Typography>
-          </section>
+          )}
         </section>
         <section className={classes.searchBarContainer}>
           <SearchBar

@@ -17,7 +17,13 @@
 const palette = {
   white: '#fff',
   black: '#000',
-  blue: { tint: '#409CFF', main: '#007AFF', shade: '#0040DD', highlight: 'rgba(0, 122, 255, .1)' },
+  blue: {
+    tint: '#409CFF',
+    main: '#007AFF',
+    shade: '#0040DD',
+    highlight: 'rgba(0, 122, 255, .1)',
+    highlightHex: '#E6F2FF'
+  },
   green: { tint: '#30DB5B', main: '#34C759', shade: '#248A3D', highlight: '#EBFAEF' },
   indigo: { tint: '#7D7AFF', main: '#5856D6', shade: '#3634A3' },
   orange: { tint: '#FFB340', main: '#FF9500', shade: '#C93400' },

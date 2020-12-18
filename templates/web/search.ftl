@@ -23,12 +23,8 @@
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
   <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
-  <script src="/studio/static-assets/libs/handlebars/handlebars.js"></script>
   <#include "/templates/web/common/page-fragments/head.ftl" />
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
-
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/search.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-search/search.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 </head>
 
@@ -36,34 +32,30 @@
   <#if RequestParameters.mode?exists && mode == 'select'>
     <#assign embedded = true />
   </#if>
-  <div id="root" style="height: calc(100vh <#if embedded?exists>- 64px</#if>);"></div>
-
-  <div id="cstudio-command-controls-container"></div>
-
-  <script id="hb-command-controls" type="text/x-handlebars-template">
-    <div id="cstudio-command-controls">
-      <div id="submission-controls" class="cstudio-form-controls-button-container">
-        <input
-          id="formSaveButton" type="button"
-          class="cstudio-search-btn cstudio-button btn btn-primary" value="Add Selection"
-          disabled
-        >
-        <input
-          id="formCancelButton" type="button"
-          class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel"
-        >
-      </div>
-    </div>
-  </script>
-
-  <script type="text/javascript">
-    CStudioSearch.init();
-  </script>
+  <div id="root" style="height: calc(100vh - 65px)"></div>
 
   <script>
+    const opener = window.opener ? window.opener : parent.iframeOpener;
+    const searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'searchId');
+    const openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
+    const searchConfig = openerChildSearchMgr.searches[searchId];
+    const callback = searchConfig.saveCallback;
+    const closeSearch = () => {
+      window.close();
+      $(window.frameElement.parentElement)
+        .closest('.studio-ice-dialog')
+        .parent()
+        .remove();
+    }
+
     CrafterCMSNext.render('#root', 'Search', {
       embedded: <#if embedded?exists>true<#else>false</#if>,
-      onSelect: CStudioSearch.changeSelectStatus
+      mode: <#if embedded?exists>'select'<#else>'default'</#if>,
+      onAcceptSelection: (selectedItems) => {
+        callback.success('', selectedItems);
+        closeSearch();
+      },
+      onClose: closeSearch
     }, false);
   </script>
 </body>
