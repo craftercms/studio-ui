@@ -36,6 +36,14 @@ const translations = defineMessages({
   highlightModeHelperText: {
     id: 'settingsPanel.highlightModeHelperText',
     defaultMessage: 'When "highlight movable" is active, only content items you can move around drop zones highlight.'
+  },
+  highlightAllZones: {
+    id: 'settingsPanel.highlightAllZones',
+    defaultMessage: 'Highlight All Zones'
+  },
+  highlightMovable: {
+    id: 'settingsPanel.highlightMovable',
+    defaultMessage: 'Highlight Movable'
   }
 });
 
@@ -43,11 +51,18 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: '15px'
   },
+  highlightModeWrapper: {
+    padding: '15px'
+  },
   labelRoot: {
     width: '100%',
     display: 'flex',
     justifyContent: 'space-between',
     marginLeft: 0
+  },
+  margin: {
+    marginTop: '15px',
+    marginBottom: '10px'
   }
 }));
 
@@ -60,17 +75,29 @@ export default function PreviewSettingsPanel() {
       <FormControl>
         <FormControlLabel
           classes={{ root: classes.labelRoot }}
-          control={<EditSwitch color="default" onChange={() => {}} />}
+          control={<EditSwitch color="default" onChange={() => {}} edge="end" />}
           label={formatMessage(translations.editMode)}
           labelPlacement="start"
         />
         <FormHelperText>{formatMessage(translations.editModeHelperText)}</FormHelperText>
       </FormControl>
       <FormControl>
-        <FormLabel component="legend">{formatMessage(translations.highlightMode)}</FormLabel>
+        <FormLabel className={classes.margin}>{formatMessage(translations.highlightMode)}</FormLabel>
         <RadioGroup value="all" onChange={() => {}}>
-          <FormControlLabel value="all" control={<Radio />} label="Highlight All Zones" />
-          <FormControlLabel value="movable" control={<Radio />} label="Highlight Movable" />
+          <FormControlLabel
+            value="all"
+            classes={{ root: classes.labelRoot }}
+            control={<Radio color="primary" edge="end" />}
+            label={formatMessage(translations.highlightAllZones)}
+            labelPlacement="start"
+          />
+          <FormControlLabel
+            value="movable"
+            classes={{ root: classes.labelRoot }}
+            control={<Radio color="primary" edge="end" />}
+            label={formatMessage(translations.highlightMovable)}
+            labelPlacement="start"
+          />
         </RadioGroup>
         <FormHelperText>{formatMessage(translations.highlightModeHelperText)}</FormHelperText>
       </FormControl>
