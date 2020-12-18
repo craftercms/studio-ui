@@ -291,6 +291,17 @@ export default function Search(props: SearchProps) {
 
   setRequestForgeryToken();
 
+  const getItemsDetails = useCallback(
+    (items) => {
+      items.forEach((item) => {
+        dispatch(fetchUserPermissions({ path: item.path }));
+        dispatch(completeDetailedItem({ path: item.path }));
+      });
+    },
+
+    [dispatch]
+  );
+
   useEffect(() => {
     search(site, searchParameters).subscribe(
       (result) => {
@@ -304,7 +315,7 @@ export default function Search(props: SearchProps) {
       }
     );
     return () => setApiState({ error: false, errorResponse: null });
-  }, [searchParameters, site]);
+  }, [searchParameters, site, getItemsDetails]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
@@ -330,7 +341,7 @@ export default function Search(props: SearchProps) {
         }
       }
     );
-  }, [searchParameters, site]);
+  }, [searchParameters, site, getItemsDetails]);
 
   const handleClearSelected = useCallback(() => {
     selected.forEach((path) => {
@@ -349,13 +360,6 @@ export default function Search(props: SearchProps) {
       unsubscribeOnActionSuccess?.();
     }
   }, [selected, handleClearSelected, refreshSearch]);
-
-  function getItemsDetails(items) {
-    items.forEach((item) => {
-      dispatch(fetchUserPermissions({ path: item.path }));
-      dispatch(completeDetailedItem({ path: item.path }));
-    });
-  }
 
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
