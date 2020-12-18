@@ -20,32 +20,32 @@ import ErrorRounded from '@material-ui/icons/ErrorRounded';
 import { components } from '../../services/plugin';
 import { SvgIconProps, Tooltip } from '@material-ui/core';
 
+export type SystemIconDescriptor = { id: string } | { baseClass?: string; baseStyle?: object; content?: string };
+
 export interface SystemIconProps {
-  icon: Partial<{ id: string; baseClass: string; baseStyle: object; content: string }>;
-  iconProps?: IconProps;
+  icon: SystemIconDescriptor;
+  fontIconProps?: IconProps;
   svgIconProps?: SvgIconProps;
 }
 
 export default function SystemIcon(props: SystemIconProps) {
-  let icon = props.icon;
-  if (icon.id) {
+  let { icon } = props;
+  if ('id' in icon) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
-    if (!IconComponent) {
-      return (
-        <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
-          <ErrorRounded />
-        </Tooltip>
-      );
-    } else {
-      return <IconComponent {...props.svgIconProps} />;
-    }
+    return IconComponent ? (
+      <IconComponent {...props.svgIconProps} />
+    ) : (
+      <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
+        <ErrorRounded />
+      </Tooltip>
+    );
   } else {
     return (
       <CoreIcon
-        fontSize="small"
         className={icon.baseClass}
-        style={{ ...icon.baseStyle, ...props.iconProps?.style }}
         children={icon.content}
+        {...props.fontIconProps}
+        style={{ ...icon.baseStyle, ...props.fontIconProps?.style }}
       />
     );
   }
