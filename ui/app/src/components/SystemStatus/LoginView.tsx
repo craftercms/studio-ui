@@ -114,7 +114,7 @@ const translations = defineMessages({
   },
   recoverYourPasswordSuccessMessage: {
     id: 'loginView.recoverYourPasswordSuccessMessage',
-    defaultMessage: 'A recovery email has been sent if "{username}" exists'
+    defaultMessage: 'If "{username}" exists, a recovery email has been sent'
   },
   resetPasswordFieldPlaceholderLabel: {
     id: 'resetView.resetPasswordFieldPlaceholderLabel',
