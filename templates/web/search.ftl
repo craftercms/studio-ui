@@ -35,6 +35,7 @@
   <div id="root" style="height: calc(100vh - 65px)"></div>
 
   <script>
+    <#if embedded?exists>
     const opener = window.opener ? window.opener : parent.iframeOpener;
     const searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'searchId');
     const openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
@@ -47,15 +48,18 @@
         .parent()
         .remove();
     }
+    </#if>
 
     CrafterCMSNext.render('#root', 'Search', {
       embedded: <#if embedded?exists>true<#else>false</#if>,
       mode: <#if embedded?exists>'select'<#else>'default'</#if>,
+      <#if embedded?exists>
       onAcceptSelection: (selectedItems) => {
         callback.success('', selectedItems);
         closeSearch();
       },
       onClose: closeSearch
+      </#if>
     }, false);
   </script>
 </body>

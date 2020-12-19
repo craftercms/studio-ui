@@ -425,7 +425,7 @@ export const itemActionDispatcher = (
                   onSaveSuccess: batchActions([
                     showEditItemSuccessNotification(),
                     reloadDetailedItem({ path }),
-                    onActionSuccess
+                    ...(onActionSuccess ? [onActionSuccess] : [])
                   ])
                 })
               })
@@ -437,7 +437,7 @@ export const itemActionDispatcher = (
                 onSaveSuccess: batchActions([
                   showEditItemSuccessNotification(),
                   reloadDetailedItem({ path }),
-                  onActionSuccess
+                  ...(onActionSuccess ? [onActionSuccess] : [])
                 ])
               })
             );
@@ -582,7 +582,10 @@ export const itemActionDispatcher = (
               closeConfirmDialog(),
               duplicateAsset({
                 path: item.path,
-                onSuccess: batchActions([showDuplicatedItemSuccessNotification(), onActionSuccess])
+                onSuccess: batchActions([
+                  showDuplicatedItemSuccessNotification(),
+                  ...(onActionSuccess ? [onActionSuccess] : [])
+                ])
               })
             ])
           })
@@ -599,7 +602,10 @@ export const itemActionDispatcher = (
               closeConfirmDialog(),
               duplicateItem({
                 path: item.path,
-                onSuccess: batchActions([showDuplicatedItemSuccessNotification(), onActionSuccess])
+                onSuccess: batchActions([
+                  showDuplicatedItemSuccessNotification(),
+                  ...(onActionSuccess ? [onActionSuccess] : [])
+                ])
               })
             ])
           })
@@ -717,7 +723,11 @@ export const itemActionDispatcher = (
       dispatch(
         showDeleteDialog({
           items,
-          onSuccess: batchActions([showDeleteItemSuccessNotification(), closeDeleteDialog(), onActionSuccess])
+          onSuccess: batchActions([
+            showDeleteItemSuccessNotification(),
+            closeDeleteDialog(),
+            ...(onActionSuccess ? [onActionSuccess] : [])
+          ])
         })
       );
       break;
@@ -732,7 +742,7 @@ export const itemActionDispatcher = (
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),
             closePublishDialog(),
-            onActionSuccess
+            ...(onActionSuccess ? [onActionSuccess] : [])
           ])
         })
       );
@@ -748,7 +758,7 @@ export const itemActionDispatcher = (
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),
             closePublishDialog(),
-            onActionSuccess
+            ...(onActionSuccess ? [onActionSuccess] : [])
           ])
         })
       );
@@ -764,7 +774,7 @@ export const itemActionDispatcher = (
               count: items.length
             }),
             closeRejectDialog(),
-            onActionSuccess
+            ...(onActionSuccess ? [onActionSuccess] : [])
           ])
         })
       );
