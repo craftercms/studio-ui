@@ -25,14 +25,18 @@ const initialState: LegacyFormDialogStateProps = {
 };
 
 export default createReducer<GlobalState['dialogs']['edit']>(initialState, {
-  [showEditDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeEditDialog(),
-    onClosed: editDialogClosed(),
-    onDismiss: closeEditDialog(),
-    ...payload,
-    open: true
-  }),
+  [showEditDialog.type]: (state, { payload }) => {
+    return state.open
+      ? state
+      : {
+          ...state,
+          onClose: closeEditDialog(),
+          onClosed: editDialogClosed(),
+          onDismiss: closeEditDialog(),
+          ...payload,
+          open: true
+        };
+  },
   [updateEditConfig.type]: (state, { payload }) => ({
     ...state,
     ...payload
