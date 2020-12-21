@@ -785,133 +785,209 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
              */
             renderEdit: {
               render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
-                var content = CStudioAuthoring.SelectedContent.getSelectedContent();
+                const content = CStudioAuthoring.SelectedContent.getSelectedContent();
 
-                //                            for (var i = 0, l = content.length; i < l; ++i) {
-                //                                if (content[i].asset) return;
-                //                            }
-
-                var editCallback = {
-                  success: function(contentTO, editorId, name, value, draft) {
-                    var oCurrentTextNodeOldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri;
-                    var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL('page');
-                    if (
-                      CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri != contentTO.item.browserUri
-                    ) {
-                      eventNS.oldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
-                      CStudioAuthoring.SelectedContent.getSelectedContent()[0] = contentTO.item;
-                      if (oCurrentTextNodeOldPath.split('.')[0] == pageParameter.split('.')[0]) {
-                        var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(
-                          window.location.href,
-                          'page',
-                          contentTO.item.browserUri.indexOf('.xml') > 0
-                            ? contentTO.item.browserUri.split('.')[0] + '.html'
-                            : contentTO.item.browserUri
-                        );
-                        window.location.href = currentURL;
+                option.onclick = function() {
+                  const path = content[0].uri;
+                  const site = CrafterCMSNext.system.store.getState().sites.active;
+                  const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
+                  const legacyFormSrc = `${authoringBase}/legacy/form?`;
+                  const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
+                  if (isWrite) {
+                    // Edit Mode
+                    CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+                      let eventIdSuccess = 'editDialogSuccess';
+                      let eventIdDismissed = 'editDialogDismissed';
+                      let unsubscribe, cancelUnsubscribe;
+                      if (items && items.length > 0) {
+                        CrafterCMSNext.system.store.dispatch({
+                          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                          payload: {
+                            items,
+                            onContinue: {
+                              type: 'SHOW_EDIT_DIALOG',
+                              payload: {
+                                src,
+                                onSaveSuccess: {
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: eventIdSuccess }
+                                    },
+                                    {
+                                      type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+                                    },
+                                    {
+                                      type: 'RELOAD_DETAILED_ITEM',
+                                      payload: {
+                                        path
+                                      }
+                                    }
+                                  ]
+                                },
+                                onCancel: {
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'CLOSE_EDIT_DIALOG'
+                                    },
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: eventIdDismissed }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            onClose: {
+                              type: 'BATCH_ACTIONS',
+                              payload: [
+                                {
+                                  type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+                                },
+                                {
+                                  type: 'DISPATCH_DOM_EVENT',
+                                  payload: { id: eventIdDismissed }
+                                }
+                              ]
+                            }
+                          }
+                        });
+                      } else {
+                        CrafterCMSNext.system.store.dispatch({
+                          type: 'SHOW_EDIT_DIALOG',
+                          payload: {
+                            src,
+                            onSaveSuccess: {
+                              type: 'BATCH_ACTIONS',
+                              payload: [
+                                {
+                                  type: 'DISPATCH_DOM_EVENT',
+                                  payload: { id: eventIdSuccess }
+                                },
+                                {
+                                  type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+                                },
+                                {
+                                  type: 'RELOAD_DETAILED_ITEM',
+                                  payload: {
+                                    path
+                                  }
+                                }
+                              ]
+                            },
+                            onCancel: {
+                              type: 'BATCH_ACTIONS',
+                              payload: [
+                                {
+                                  type: 'CLOSE_EDIT_DIALOG'
+                                },
+                                {
+                                  type: 'DISPATCH_DOM_EVENT',
+                                  payload: { id: eventIdDismissed }
+                                }
+                              ]
+                            }
+                          }
+                        });
                       }
-                    }
-                    if (CStudioAuthoringContext.isPreview) {
-                      try {
-                        var currentContentTO,
-                          URLBrowseUri = pageParameter,
-                          contentTOBrowseUri = contentTO.item.browserUri == '' ? '/' : contentTO.item.browserUri;
 
-                        if (URLBrowseUri == contentTOBrowseUri) {
-                          currentContentTO = null;
-                        } else {
-                          currentContentTO = contentTO.item;
-                        }
-
-                        CStudioAuthoring.Operations.refreshPreview(currentContentTO);
-                      } catch (err) {
-                        if (!draft) {
-                          this.callingWindow.location.reload(true);
-                        } else {
-                          var previewFrameEl = document.getElementById('engineWindow');
-                          if (previewFrameEl) {
-                            previewFrameEl.contentWindow.location.reload();
+                      unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+                        const contentTO = response;
+                        const draft = response.action === 'save';
+                        const oCurrentTextNodeOldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0]
+                          .browserUri;
+                        const pageParameter = CStudioAuthoring.Utils.getQueryParameterURL('page');
+                        if (
+                          CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri !==
+                          contentTO.item.browserUri
+                        ) {
+                          eventNS.oldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
+                          CStudioAuthoring.SelectedContent.getSelectedContent()[0] = contentTO.item;
+                          if (oCurrentTextNodeOldPath.split('.')[0] === pageParameter.split('.')[0]) {
+                            const currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(
+                              window.location.href,
+                              'page',
+                              contentTO.item.browserUri.indexOf('.xml') > 0
+                                ? contentTO.item.browserUri.split('.')[0] + '.html'
+                                : contentTO.item.browserUri
+                            );
+                            window.location.href = currentURL;
                           }
                         }
-                      }
-                    } else {
-                      if (!draft) {
-                        //this.callingWindow.location.reload(true);
-                      }
-                    }
+                        if (CStudioAuthoringContext.isPreview) {
+                          try {
+                            let currentContentTO,
+                              contentTOBrowseUri = contentTO.item.browserUri === '' ? '/' : contentTO.item.browserUri;
 
-                    if (
-                      contentTO.updatedModel &&
-                      contentTO.initialModel &&
-                      contentTO.updatedModel.orderDefault_f != contentTO.initialModel.orderDefault_f
-                    ) {
-                      if (CStudioAuthoring.ContextualNav.WcmRootFolder) {
-                        eventYS.data = contentTO.item;
-                        eventYS.typeAction = 'edit';
-                        eventYS.draft = draft;
-                        document.dispatchEvent(eventYS);
-                      } else {
-                        eventNS.data = contentTO.item;
-                        eventNS.typeAction = 'edit';
-                        eventNS.draft = draft;
-                        document.dispatchEvent(eventNS);
-                      }
-                    } else {
-                      eventNS.data = contentTO.item;
-                      eventNS.typeAction = 'edit';
-                      eventNS.draft = draft;
-                      document.dispatchEvent(eventNS);
-                    }
+                            if (pageParameter === contentTOBrowseUri) {
+                              currentContentTO = null;
+                            } else {
+                              currentContentTO = contentTO.item;
+                            }
 
-                    if (!CStudioAuthoringContext.isPreview) {
-                      if (draft) {
-                        CStudioAuthoring.Utils.Cookies.createCookie(
-                          'dashboard-checked',
-                          JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent())
-                        );
-                      } else {
-                        CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
-                      }
-                    }
-                  },
-                  failure: function() {},
-                  callingWindow: window
-                };
+                            CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                          } catch (err) {
+                            if (!draft) {
+                              this.callingWindow.location.reload(true);
+                            } else {
+                              const previewFrameEl = document.getElementById('engineWindow');
+                              if (previewFrameEl) {
+                                previewFrameEl.contentWindow.location.reload();
+                              }
+                            }
+                          }
+                        }
 
-                var viewCb = {
-                  success: function() {},
-                  failure: function() {},
-                  callingWindow: window
-                };
+                        if (
+                          contentTO.updatedModel &&
+                          contentTO.initialModel &&
+                          contentTO.updatedModel.orderDefault_f !== contentTO.initialModel.orderDefault_f
+                        ) {
+                          if (CStudioAuthoring.ContextualNav.WcmRootFolder) {
+                            eventYS.data = contentTO.item;
+                            eventYS.typeAction = 'edit';
+                            eventYS.draft = draft;
+                            document.dispatchEvent(eventYS);
+                          } else {
+                            eventNS.data = contentTO.item;
+                            eventNS.typeAction = 'edit';
+                            eventNS.draft = draft;
+                            document.dispatchEvent(eventNS);
+                          }
+                        } else {
+                          eventNS.data = contentTO.item;
+                          eventNS.typeAction = 'edit';
+                          eventNS.draft = draft;
+                          document.dispatchEvent(eventNS);
+                        }
 
-                content = content[0];
-                option.onclick = function() {
-                  this.style.pointerEvents = 'none';
-                  if (typeof CStudioAuthoring.editDisabled === 'undefined') {
-                    CStudioAuthoring.editDisabled = [];
-                  }
-                  CStudioAuthoring.editDisabled.push(this);
+                        if (!CStudioAuthoringContext.isPreview) {
+                          if (draft) {
+                            CStudioAuthoring.Utils.Cookies.createCookie(
+                              'dashboard-checked',
+                              JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent())
+                            );
+                          } else {
+                            CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
+                          }
+                        }
+                        cancelUnsubscribe();
+                      });
 
-                  if (isWrite == false) {
-                    CStudioAuthoring.Operations.viewContent(
-                      content.form,
-                      CStudioAuthoringContext.siteId,
-                      content.uri,
-                      content.nodeRef,
-                      content.uri,
-                      false,
-                      viewCb
-                    );
+                      cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
+                        unsubscribe();
+                      });
+                    });
                   } else {
-                    CStudioAuthoring.Operations.editContent(
-                      content.form,
-                      CStudioAuthoringContext.siteId,
-                      content.mimeType,
-                      content.nodeRef,
-                      content.uri,
-                      false,
-                      editCallback
-                    );
+                    // View Mode
+                    CrafterCMSNext.system.store.dispatch({
+                      type: 'SHOW_EDIT_DIALOG',
+                      payload: {
+                        src: `${src}&readonly=true`
+                      }
+                    });
                   }
                 };
 
@@ -923,12 +999,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     content.document ||
                     (content.component && content.contentType.indexOf('level-descriptor') != -1)) &&
                   state.indexOf('Delete') == -1;
-                //if item is deleted and in the go live queue , enable edit.
+                // if item is deleted and in the go live queue , enable edit.
                 if (state.indexOf('Submitted for Delete') >= 0 || state.indexOf('Scheduled for Delete') >= 0) {
                   rflag = true;
                 }
 
-                /** for edit, if in read-only mode, it should display View, not Edit **/
+                // for edit, if in read-only mode, it should display View, not Edit
                 if (isWrite == false) {
                   option.name = CMgs.format(contextNavLangBundle, 'wcmContentView');
                 } else {
@@ -947,18 +1023,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   uri = content.uri;
 
                 if (isWrite && '/site/website/index.xml' != uri) {
-                  var duplicateContentCallback = {
-                    success: function() {
-                      if (YDom.get('duplicate-loading')) {
-                        YDom.get('duplicate-loading').style.display = 'none';
-                      }
-                    },
-                    failure: function() {
-                      if (YDom.get('duplicate-loading')) {
-                        YDom.get('duplicate-loading').style.display = 'none';
-                      }
-                    }
-                  };
                   option.onclick = function() {
                     CrafterCMSNext.system.store.dispatch({
                       type: 'SHOW_CONFIRM_DIALOG',

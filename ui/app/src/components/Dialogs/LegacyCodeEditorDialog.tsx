@@ -34,6 +34,7 @@ import StandardAction from '../../models/StandardAction';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
+import DialogHeader from './DialogHeader';
 
 const translations = defineMessages({
   title: {
@@ -52,11 +53,15 @@ const styles = makeStyles(() =>
       height: '0',
       border: 0,
       '&.complete': {
-        height: '100%'
+        height: '100%',
+        flexGrow: 1
       }
     },
+    dialog: {
+      minHeight: '90vh'
+    },
     loadingRoot: {
-      height: 'calc(100% - 104px)',
+      flexGrow: 1,
       justifyContent: 'center'
     },
     edited: {
@@ -71,7 +76,6 @@ interface LegacyCodeEditorDialogBaseProps {
   open?: boolean;
   src?: string;
   inProgress?: boolean;
-  onMinimized?(): void;
 }
 
 export type LegacyCodeEditorDialogProps = PropsWithChildren<
@@ -91,7 +95,7 @@ export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialog
 }
 
 function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
-  const { src, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
+  const { src, inProgress, onSuccess, onDismiss, onClosed } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -114,10 +118,6 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
               onDismiss();
               break;
             }
-            case 'saveAndMinimize': {
-              onMinimized();
-              break;
-            }
           }
           break;
         }
@@ -137,7 +137,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSuccess, messages, dispatch, onMinimized, onDismiss]);
+  }, [inProgress, onSuccess, messages, dispatch, onDismiss]);
 
   useUnmount(onClosed);
 
@@ -160,10 +160,13 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
   const id = 'legacy-code-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const classes = styles();
+
+  const title = formatMessage(translations.title);
 
   const minimized = useMinimizeDialog({
     id,
-    title: formatMessage(translations.title),
+    title,
     minimized: false
   });
 
@@ -172,8 +175,24 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
   };
 
   return (
-    <Dialog open={props.open && !minimized} keepMounted={minimized} fullScreen onClose={props.onClose}>
-      <EmbeddedLegacyCodeEditor {...props} onMinimized={onMinimized} />
+    <Dialog
+      open={props.open && !minimized}
+      keepMounted={minimized}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="xl"
+      classes={{ paper: classes.dialog }}
+    >
+      <DialogHeader
+        title={title}
+        rightActions={[
+          {
+            icon: 'MinimizeIcon',
+            onClick: onMinimized
+          }
+        ]}
+      />
+      <EmbeddedLegacyCodeEditor {...props} />
     </Dialog>
   );
 }

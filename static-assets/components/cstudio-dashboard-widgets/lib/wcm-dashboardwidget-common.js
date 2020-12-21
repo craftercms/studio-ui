@@ -819,9 +819,117 @@ WcmDashboardWidgetCommon.toggleTable = function(widgetId) {
  * edit an item
  */
 WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
-  var editCallback = {
-    success: function(contentTO, editorId, name, value, draft) {
+  const path = WcmDashboardWidgetCommon.getItemPathFromMatchedElement(matchedElement);
+  const site = CrafterCMSNext.system.store.getState().sites.active;
+  const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
+  const legacyFormSrc = `${authoringBase}/legacy/form?`;
+  const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
+  WcmDashboardWidgetCommon.Ajax.disableDashboard();
+
+  CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+    let eventIdSuccess = 'editDialogSuccess';
+    let eventIdDismissed = 'editDialogDismissed';
+    let unsubscribe, cancelUnsubscribe;
+    if (items && items.length > 0) {
+      CrafterCMSNext.system.store.dispatch({
+        type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+        payload: {
+          items,
+          onContinue: {
+            type: 'SHOW_EDIT_DIALOG',
+            payload: {
+              src,
+              onSaveSuccess: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: eventIdSuccess }
+                  },
+                  {
+                    type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+                  },
+                  {
+                    type: 'RELOAD_DETAILED_ITEM',
+                    payload: {
+                      path
+                    }
+                  }
+                ]
+              },
+              onCancel: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'CLOSE_EDIT_DIALOG'
+                  },
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: eventIdDismissed }
+                  }
+                ]
+              }
+            }
+          },
+          onClose: {
+            type: 'BATCH_ACTIONS',
+            payload: [
+              {
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              },
+              {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: eventIdDismissed }
+              }
+            ]
+          }
+        }
+      });
+    } else {
+      CrafterCMSNext.system.store.dispatch({
+        type: 'SHOW_EDIT_DIALOG',
+        payload: {
+          src,
+          onSaveSuccess: {
+            type: 'BATCH_ACTIONS',
+            payload: [
+              {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: eventIdSuccess }
+              },
+              {
+                type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+              },
+              {
+                type: 'RELOAD_DETAILED_ITEM',
+                payload: {
+                  path
+                }
+              }
+            ]
+          },
+          onCancel: {
+            type: 'BATCH_ACTIONS',
+            payload: [
+              {
+                type: 'CLOSE_EDIT_DIALOG'
+              },
+              {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: eventIdDismissed }
+              }
+            ]
+          }
+        }
+      });
+    }
+
+    unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
       matchedElement.style.pointerEvents = 'auto';
+      WcmDashboardWidgetCommon.Ajax.enableDashboard();
+      const contentTO = response;
+      const draft = response.action === 'save';
+
       if (CStudioAuthoringContext.isPreview) {
         try {
           CStudioAuthoring.Operations.refreshPreview();
@@ -830,16 +938,12 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
             this.callingWindow.location.reload(true);
           }
         }
-      } else {
-        if (!draft) {
-          //this.callingWindow.location.reload(true);
-        }
       }
 
       if (
         contentTO.updatedModel &&
         contentTO.initialModel &&
-        contentTO.updatedModel.orderDefault_f != contentTO.initialModel.orderDefault_f
+        contentTO.updatedModel.orderDefault_f !== contentTO.initialModel.orderDefault_f
       ) {
         if (CStudioAuthoring.ContextualNav.WcmRootFolder) {
           eventYS.data = contentTO.item;
@@ -858,68 +962,28 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
         eventNS.draft = draft;
         document.dispatchEvent(eventNS);
       }
-    },
-    failure: function() {},
-    callingWindow: window
-  };
 
-  var getContentCallback = {
-    success: function(contentTO) {
-      WcmDashboardWidgetCommon.Ajax.enableDashboard();
+      cancelUnsubscribe();
+    });
 
-      CStudioAuthoring.Operations.editContent(
-        contentTO.form,
-        CStudioAuthoringContext.siteId,
-        contentTO.mimeType,
-        contentTO.nodeRef,
-        contentTO.uri,
-        false,
-        editCallback
-      );
-    },
-
-    failure: function() {
-      WcmDashboardWidgetCommon.Ajax.enableDashboard();
-    }
-  };
-  WcmDashboardWidgetCommon.Ajax.disableDashboard();
-  WcmDashboardWidgetCommon.getContentItemForMatchedElement(matchedElement, getContentCallback);
+    cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
+      unsubscribe();
+    });
+  });
 };
 
 WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
-  var editCallback = {
-    success: function() {
-      this.callingWindow.location.reload(true);
-    },
-    failure: function() {},
-    callingWindow: window
-  };
-
-  var getContentCallback = {
-    success: function(contentTO) {
-      WcmDashboardWidgetCommon.Ajax.enableDashboard();
-
-      if (contentTO.uri.indexOf('/site') == 0) {
-        CStudioAuthoring.Operations.viewContent(
-          contentTO.form,
-          CStudioAuthoringContext.siteId,
-          contentTO.uri,
-          contentTO.nodeRef,
-          contentTO.uri,
-          false,
-          editCallback
-        );
-      } else {
-        // CStudioAuthoring.Operations.openTemplateEditor(contentTO.uri, "default", editCallback);
-      }
-    },
-
-    failure: function() {
-      WcmDashboardWidgetCommon.Ajax.enableDashboard();
+  const path = WcmDashboardWidgetCommon.getItemPathFromMatchedElement(matchedElement);
+  const site = CrafterCMSNext.system.store.getState().sites.active;
+  const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
+  const legacyFormSrc = `${authoringBase}/legacy/form?`;
+  const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
+  CrafterCMSNext.system.store.dispatch({
+    type: 'SHOW_EDIT_DIALOG',
+    payload: {
+      src: `${src}&readonly=true`
     }
-  };
-  WcmDashboardWidgetCommon.Ajax.disableDashboard();
-  WcmDashboardWidgetCommon.getContentItemForMatchedElement(matchedElement, getContentCallback);
+  });
 };
 
 /**
@@ -965,6 +1029,22 @@ WcmDashboardWidgetCommon.selectItem = function(matchedElement, isChecked, trigge
   };
 
   WcmDashboardWidgetCommon.getContentItemForMatchedElement(matchedElement, callback);
+};
+
+/**
+ * return the item Path for the matched item
+ */
+
+WcmDashboardWidgetCommon.getItemPathFromMatchedElement = function(matchedElement) {
+  // walk the DOM to get the path  get parent of current element
+  const parentTD = YDom.getAncestorByTagName(matchedElement, 'td');
+
+  // get a sibling, that is <td>, that has attribute of title
+  const urlEl = YDom.getNextSiblingBy(parentTD, function(el) {
+    return el.getAttribute('title') == 'fullUri';
+  });
+
+  return urlEl.innerHTML;
 };
 
 /**

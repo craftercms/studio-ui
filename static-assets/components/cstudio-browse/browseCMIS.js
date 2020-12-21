@@ -24,7 +24,8 @@
 
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
-    browseCMISMessages = i18n.messages.browseCMISMessages;
+    browseCMISMessages = i18n.messages.browseCMISMessages,
+    words = i18n.messages.words;
 
   CStudioBrowseCMIS.init = function() {
     var me = this;
@@ -106,6 +107,8 @@
           event: event
         });
       }
+
+      me.renderContextMenu('.jstree-anchor');
     });
 
     $tree.on('select_node.jstree', function(event, data) {
@@ -586,6 +589,40 @@
 
       CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, searchTerm, callbackContent);
     }
+  };
+
+  CStudioBrowseCMIS.renderContextMenu = function(selector) {
+    var me = this;
+
+    $.contextMenu({
+      selector: selector,
+      callback: function(key, options) {
+        var pathToUpload = options.$trigger.attr('data-path'),
+          basePath = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        pathToUpload = pathToUpload === 'cmis-root' ? basePath : pathToUpload;
+
+        me.uploadContent(CStudioAuthoringContext.site, pathToUpload).then(function() {
+          me.renderSiteContent(pathToUpload);
+        });
+      },
+      items: {
+        upload: { name: formatMessage(words.upload) }
+      }
+    });
+  };
+
+  CStudioBrowseCMIS.uploadContent = function(site, path) {
+    var d = new $.Deferred(),
+      repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId');
+
+    CStudioAuthoring.Operations.uploadCMISAsset(site, path, repoId, {
+      success: function(results) {
+        d.resolve(results);
+      },
+      failure: function() {}
+    });
+
+    return d.promise();
   };
 
   (CStudioBrowseCMIS.getConfig = function(callback) {

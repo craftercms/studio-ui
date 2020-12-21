@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useMemo, useState } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -30,7 +30,7 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { useMount } from '../../utils/hooks';
+import { useEnv, useMount, useSiteUIConfig } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -50,8 +50,15 @@ import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import ApiResponseErrorState from '../ApiResponseErrorState';
+import DashboardIcon from '@material-ui/icons/DashboardRounded';
+import SearchIcon from '@material-ui/icons/SearchRounded';
+import BuildIcon from '@material-ui/icons/BuildRounded';
+import PreviewIcon from '../Icons/Preview';
+import { components } from '../../services/plugin';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
+import { renderWidgets } from '../Widget';
 
-const tileStyles = makeStyles((theme) =>
+const useTileStyles = makeStyles((theme) =>
   createStyles({
     tile: {
       width: '120px',
@@ -62,23 +69,23 @@ const tileStyles = makeStyles((theme) =>
       justifyContent: 'center',
       cursor: 'pointer',
       textAlign: 'center',
-      '&:hover': {
-        textDecoration: 'none',
-        '& .MuiTypography-root': {
-          textDecoration: 'underline'
-        }
+      borderRadius: theme.shape.borderRadius,
+      transition: 'background 250ms ease, box-shadow 500ms ease',
+      margin: 5,
+      '&:hover, &:focus': {
+        background: theme.palette.action.hover,
+        boxShadow: theme.shadows[2],
+        textDecoration: 'none'
       },
       '&.disabled': {
-        opacity: '0.5',
+        opacity: theme.palette.action.disabledOpacity,
+        background: theme.palette.action.disabled,
         pointerEvents: 'none'
       }
     },
     iconAvatar: {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: 'transparent',
       color: theme.palette.text.secondary
-    },
-    icon: {
-      fontSize: '35px !important'
     }
   })
 );
@@ -195,19 +202,17 @@ const messages = defineMessages({
 });
 
 interface TileProps {
-  icon: ElementType<any> | string;
+  icon: SystemIconDescriptor;
   title: string;
   link?: string;
   target?: string;
   disabled?: any;
-
   onClick?(id?: string, type?: string): any;
 }
 
 function Tile(props: TileProps) {
-  const { title, icon: Icon, link, target, onClick, disabled = false } = props;
-  const classes = tileStyles({});
-
+  const { title, icon, link, target, onClick, disabled = false } = props;
+  const classes = useTileStyles();
   return (
     <Link
       className={clsx(classes.tile, disabled && 'disabled')}
@@ -215,12 +220,8 @@ function Tile(props: TileProps) {
       onClick={() => (!disabled && onClick ? onClick() : null)}
       target={target ? target : '_self'}
     >
-      <Avatar variant="rounded" className={classes.iconAvatar}>
-        {typeof Icon === 'string' ? (
-          <i className={clsx(classes.icon, 'fa', Icon)} />
-        ) : (
-          <Icon className={classes.icon} />
-        )}
+      <Avatar variant="rounded" className={classes.iconAvatar} color="inherit">
+        <SystemIcon icon={icon} />
       </Avatar>
       <Typography color="textPrimary">{title}</Typography>
     </Link>
@@ -344,6 +345,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles();
   const [menuItems, setMenuItems] = useState(null);
+  const sections = useSiteUIConfig().globalNav.sections;
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
@@ -496,7 +498,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   <Tile
                     key={item.id}
                     title={formatMessage(messages[popPiece(camelize(item.id))])}
-                    icon={item.icon}
+                    icon={{ baseClass: `fa ${item.icon}` }}
                     link={getLink(item.id, authoringUrl)}
                     onClick={onMenuClose}
                   />
@@ -504,18 +506,37 @@ export default function GlobalNav(props: GlobalNavProps) {
                 {/* prettier-ignore */}
                 <Tile
                   title={formatMessage(messages.docs)}
-                  icon={Docs}
+                  icon={{ id: 'craftercms.icons.Docs' }}
                   link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
                   target="_blank"
                 />
                 <Tile
                   title={formatMessage(messages.settings)}
-                  icon={SettingsRoundedIcon}
+                  icon={{ id: '@material-ui/icons/SettingsRounded' }}
                   link={getLink('settings', authoringUrl)}
                   disabled={!site}
                 />
-                <Tile icon={About} link={getLink('about', authoringUrl)} title={formatMessage(messages.about)} />
+                <Tile
+                  icon={{ id: 'craftercms.icons.CrafterIcon' }}
+                  link={getLink('about', authoringUrl)}
+                  title={formatMessage(messages.about)}
+                />
               </nav>
+              {/* region Site */}
+              {sections.map((section) => (
+                <Fragment key={section.uiKey}>
+                  <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    className={classes.title}
+                    style={{ margin: '0px 0 10px 0' }}
+                  >
+                    {typeof section.title === 'string' ? section.title : formatMessage(section.title)}
+                  </Typography>
+                  <nav className={classes.sitesApps}>{renderWidgets(section.widgets, section.roles)}</nav>
+                </Fragment>
+              ))}
+              {/* endregion */}
             </div>
             <div className={classes.railBottom}>
               <Card className={classes.userCardRoot}>
@@ -575,3 +596,35 @@ function onLogout(url) {
     window.location.href = url;
   });
 }
+
+const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
+  const { authoringBase } = useEnv();
+  return (
+    <Tile
+      icon={icon}
+      title={title}
+      link={
+        link ??
+        {
+          preview: `${authoringBase}/next/preview`,
+          siteTools: `${authoringBase}/site-config`,
+          siteSearch: `${authoringBase}/search`,
+          siteDashboard: `${authoringBase}/site-dashboard`
+        }[systemLinkId]
+      }
+    />
+  );
+};
+
+Object.entries({
+  'craftercms.components.GlobalNavLinkTile': GlobalNavLinkTile,
+  'craftercms.icons.Preview': PreviewIcon,
+  'craftercms.icons.CrafterIcon': About,
+  'craftercms.icons.Docs': Docs,
+  '@material-ui/icons/DashboardRounded': DashboardIcon,
+  '@material-ui/icons/SearchRounded': SearchIcon,
+  '@material-ui/icons/BuildRounded': BuildIcon,
+  '@material-ui/icons/SettingsRounded': SettingsRoundedIcon
+}).forEach(([id, component]) => {
+  components.set(id, component);
+});

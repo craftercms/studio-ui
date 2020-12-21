@@ -718,9 +718,10 @@ var CStudioForms =
     const { fromEvent, operators } = CrafterCMSNext.rxjs;
     const { map, filter, take } = operators;
     const FlattenerState = {};
-    const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    const formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
-    const words = CrafterCMSNext.i18n.messages.words;
+    const i18n = CrafterCMSNext.i18n;
+    const formatMessage = i18n.intl.formatMessage;
+    const formEngineMessages = i18n.messages.formEngineMessages;
+    const words = i18n.messages.words;
 
     const messages$ = fromEvent(window, 'message').pipe(
       filter((event) => event.data && event.data.type),
@@ -768,10 +769,6 @@ var CStudioForms =
         )
         .subscribe(observer);
       sendMessage({ type: FORM_REQUEST, key });
-    }
-
-    function saveDraftDialog() {
-      $.notify(formatMessage(formEngineMessages.saveDraftCompleted), 'success');
     }
 
     function setButtonsEnabled(enabled) {
@@ -932,7 +929,6 @@ var CStudioForms =
         } else {
           messages$.subscribe((message) => {
             if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
-              saveDraftDialog();
               setButtonsEnabled(true);
             }
           });
@@ -1418,7 +1414,6 @@ var CStudioForms =
                           iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
-                            saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1428,7 +1423,6 @@ var CStudioForms =
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             CStudioAuthoring.Operations.refreshPreview();
-                            saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1768,15 +1762,6 @@ var CStudioForms =
                     }
                   }
                 ];
-                //this means the editor was open on a legacyFormDialog
-                if (iceWindowCallback.id) {
-                  options.push({
-                    label: formatMessage(formEngineMessages.saveAndMinimize),
-                    callback: () => {
-                      saveFn(false, true, null, 'saveAndMinimize');
-                    }
-                  });
-                }
                 if (type.previewable) {
                   options.push({
                     label: formatMessage(formEngineMessages.saveAndPreview),

@@ -43,27 +43,29 @@ type ConfirmDialogStateClassKey = 'dialog' | 'dialogBody' | 'dialogTitle' | 'dia
 
 type ConfirmDialogStateStyles = Partial<Record<ConfirmDialogStateClassKey, CSSProperties>>;
 
-const confirmDialogStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles<ConfirmDialogStateClassKey, ConfirmDialogStateStyles>({
-    dialog: {
+    dialog: (styles) => ({
       '& .MuiPaper-root': {
         borderRadius: '20px'
-      }
-    },
-    dialogBody: {
+      },
+      ...styles.dialog
+    }),
+    dialogBody: (styles) => ({
       textAlign: 'center',
-      padding: '40px 20px 0 !important'
-    },
-    dialogTitle: {
+      padding: '40px 20px 0 !important',
+      ...styles.dialogBody
+    }),
+    dialogTitle: (styles) => ({
       paddingTop: '35px',
-      paddingBottom: '5px'
-    },
-    dialogFooter: {
+      paddingBottom: '5px',
+      ...styles.dialogTitle
+    }),
+    dialogFooter: (styles) => ({
       borderTop: 'none',
       display: 'flex',
       flexDirection: 'column',
       padding: '25px 40px 35px',
-
       '& button': {
         fontWeight: 600,
         letterSpacing: '0.46px'
@@ -71,8 +73,9 @@ const confirmDialogStyles = makeStyles((theme) =>
       '& > :not(:first-child)': {
         marginTop: '10px',
         marginLeft: 0
-      }
-    }
+      },
+      ...styles.dialogFooter
+    })
   })
 );
 
@@ -81,9 +84,11 @@ interface ConfirmDialogBaseProps {
   title?: string;
   body?: string;
   hideBackdrop?: boolean;
+  imageUrl?: string;
   disableEnforceFocus?: boolean;
   disableEscapeKeyDown?: boolean;
   disableBackdropClick?: boolean;
+  styles?: ConfirmDialogStateStyles;
 }
 
 export type ConfirmDialogProps = PropsWithChildren<
@@ -106,7 +111,7 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const classes = confirmDialogStyles({});
+  const classes = useStyles(props.styles);
   return (
     <Dialog
       open={props.open}
@@ -127,13 +132,13 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
 }
 
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
-  const { onOk, onCancel, body, title, children, classes } = props;
+  const { onOk, onCancel, body, title, children, classes, imageUrl = questionGraphicUrl } = props;
   const { formatMessage } = useIntl();
   useUnmount(props.onClosed);
   return (
     <>
       <DialogContent id="confirmDialogBody" className={classes.dialogBody}>
-        <img src={questionGraphicUrl} alt="" />
+        <img src={imageUrl} alt="" />
         {title && (
           <Typography variant="body1" component="h2" className={classes.dialogTitle}>
             {title}
