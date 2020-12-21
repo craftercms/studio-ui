@@ -30,14 +30,18 @@ const initialState: LegacyCodeEditorDialogStateProps = {
 };
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {
-  [showCodeEditorDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeCodeEditorDialog(),
-    onClosed: codeEditorDialogClosed(),
-    onDismiss: closeCodeEditorDialog(),
-    ...payload,
-    open: true
-  }),
+  [showCodeEditorDialog.type]: (state, { payload }) => {
+    return state.open
+      ? state
+      : {
+          ...state,
+          onClose: closeCodeEditorDialog(),
+          onClosed: codeEditorDialogClosed(),
+          onDismiss: closeCodeEditorDialog(),
+          ...payload,
+          open: true
+        };
+  },
   [updateCodeEditorDialog.type]: (state, { payload }) => ({
     ...state,
     ...payload
