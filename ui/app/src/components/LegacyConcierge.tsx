@@ -16,8 +16,10 @@
 
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchContentTypes } from '../state/actions/preview';
+import { fetchContentTypes, RELOAD_REQUEST } from '../state/actions/preview';
 import { useActiveSiteId } from '../utils/hooks';
+import { filter } from 'rxjs/operators';
+import { getHostToGuestBus } from '../modules/Preview/previewContext';
 
 export default function LegacyConcierge() {
   // As it stands, this should be a hook, but creating as a component for the convenience of mounting it
@@ -29,5 +31,17 @@ export default function LegacyConcierge() {
       dispatch(fetchContentTypes());
     }
   }, [site, dispatch]);
+
+  useEffect(() => {
+    const hostToGuest$ = getHostToGuestBus();
+    const subscription = hostToGuest$.pipe(filter((action) => action.type === RELOAD_REQUEST)).subscribe(() => {
+      // @ts-ignore
+      CStudioAuthoring.Operations.refreshPreview();
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return null;
 }

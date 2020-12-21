@@ -48,7 +48,7 @@ $dark-mode-font-highlight: #70D7FF;
     }
   }
 
-  .craftercms-entitlement {
+  body:not(.user-dashboard) .craftercms-entitlement {
     border-color: $dark-mode-background-default-dimmed !important;
     .craftercms-entitlement-copy {
       &, a {
