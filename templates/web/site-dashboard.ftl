@@ -69,7 +69,7 @@
 <#else>
   <#assign embedded = false />
 </#if>
-<body class="<#if embedded>embedded</#if>">
+<body class="site-dashboard-body <#if embedded>embedded</#if>">
 
 <section class="site-dashboard" style="visibility: hidden">
   <div class="container">
