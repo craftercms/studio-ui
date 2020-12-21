@@ -105,6 +105,12 @@ $dark-mode-font-highlight: #70D7FF;
         color: $dark-mode-font-color !important;
       }
     }
+
+    button, select, input {
+      background-color: $dark-mode-background-paper;
+      color: $dark-mode-font-color;
+      border: 1px solid $dark-mode-font-color;
+    }
   }
 
   #cstudioPreviewTargetingOverlay {
