@@ -230,7 +230,7 @@
   "loginView.loginButtonLabel": "로그인",
   "loginView.recoverYourPasswordBackButtonLabel": "뒤로",
   "loginView.recoverYourPasswordIntroText": "사용자 이름이 존재하면 재설정 링크가 포함 된 이메일이 발송됩니다.",
-  "loginView.recoverYourPasswordSuccessMessage": "비밀번호 재설정이 성공적으로 전송되었습니다. 비밀번호를 재설정하려면 이메일을 확인하십시오.",
+  "loginView.recoverYourPasswordSuccessMessage": "\"{username}\"이 있으면 복구 이메일이 전송되었습니다.",
   "loginView.resetYourPasswordIntroText": "새 비밀번호를 입력하십시오",
   "loginView.usernameTextFieldLabel": "사용자 이름",
   "numericInputControl.childContent": "최저한의",

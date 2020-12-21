@@ -230,7 +230,7 @@
   "loginView.loginButtonLabel": "Einloggen",
   "loginView.recoverYourPasswordBackButtonLabel": "Zurück",
   "loginView.recoverYourPasswordIntroText": "Wenn Ihr Benutzername vorhanden ist, wird Ihnen eine E-Mail mit einem Reset-Link gesendet.",
-  "loginView.recoverYourPasswordSuccessMessage": "Das Zurücksetzen des Passworts wurde erfolgreich gesendet. Bitte überprüfen Sie Ihre E-Mails, um Ihr Passwort zurückzusetzen.",
+  "loginView.recoverYourPasswordSuccessMessage": "Wenn \"{username}\" vorhanden ist, wurde eine Wiederherstellungs-E-Mail gesendet",
   "loginView.resetYourPasswordIntroText": "Bitte geben Sie Ihr neues Passwort ein",
   "loginView.usernameTextFieldLabel": "Benutzername",
   "numericInputControl.childContent": "Minimum",
