@@ -19,8 +19,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
 import { EditSwitch } from '../../modules/Preview/ToolBar';
-import { useSelection } from '../../utils/hooks';
-import { setPreviewEditMode } from '../../state/actions/preview';
+import { usePreviewState } from '../../utils/hooks';
+import { setHighlightMode, setPreviewEditMode } from '../../state/actions/preview';
 import { useSnackbar } from 'notistack';
 import { useDispatch } from 'react-redux';
 
@@ -81,7 +81,7 @@ const useStyles = makeStyles(() => ({
 export default function PreviewSettingsPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const editMode = useSelection((state) => state.preview.editMode);
+  const { editMode, highlightMode } = usePreviewState();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
@@ -112,8 +112,19 @@ export default function PreviewSettingsPanel() {
         <FormHelperText>{formatMessage(translations.editModeHelperText)}</FormHelperText>
       </FormControl>
       <FormControl>
-        <FormLabel className={classes.margin}>{formatMessage(translations.highlightMode)}</FormLabel>
-        <RadioGroup value="all" onChange={() => {}}>
+        <FormLabel focused={false} className={classes.margin}>
+          {formatMessage(translations.highlightMode)}
+        </FormLabel>
+        <RadioGroup
+          value={highlightMode}
+          onChange={(e) => {
+            dispatch(
+              setHighlightMode({
+                highlightMode: e.target.value
+              })
+            );
+          }}
+        >
           <FormControlLabel
             value="all"
             classes={{ root: classes.labelRoot }}

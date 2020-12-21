@@ -51,6 +51,7 @@ import {
   EditingStatus,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
+  HIGHLIGHT_MODE_CHANGED,
   HOST_CHECK_IN,
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
@@ -159,6 +160,7 @@ function Guest(props: GuestProps) {
     const sub = message$.subscribe(function(action) {
       const { type, payload } = action;
       switch (type) {
+        case HIGHLIGHT_MODE_CHANGED:
         case EDIT_MODE_CHANGED:
           dispatch(action);
           break;

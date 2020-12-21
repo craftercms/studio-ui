@@ -50,6 +50,7 @@ import {
   pushToolsPanelPage,
   selectForEdit,
   setContentTypeReceptacles,
+  setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
@@ -92,6 +93,7 @@ import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
+  getStoredHighlightModeChoice,
   getStoredPreviewChoice,
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard,
@@ -138,7 +140,7 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, currentUrl, computedUrl } = usePreviewState();
+  const { guest, currentUrl, computedUrl, editMode, highlightMode } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
@@ -146,7 +148,6 @@ export function PreviewConcierge(props: any) {
   const { formatMessage } = useIntl();
   const models = guest?.models;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
-  const editMode = useSelection((state) => state.preview.editMode);
   const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
   const previewNextCheckInNotificationRef = useRef(false);
   const handlePreviewCompatDialogRemember = useCallback(
@@ -177,12 +178,17 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, write, editMode]);
   // endregion
 
-  // Guest detection, document domain restoring, editMode preference retrieval, clipboard retrieval
+  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
     const localEditMode = getStoredEditModeChoice() ? getStoredEditModeChoice() === 'true' : null;
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
+    }
+
+    const localHighlightMode = getStoredHighlightModeChoice();
+    if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
+      dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
     const localClipboard = getStoredClipboard(site);

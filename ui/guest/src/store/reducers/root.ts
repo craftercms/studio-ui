@@ -45,6 +45,7 @@ import {
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
   EditingStatus,
+  HIGHLIGHT_MODE_CHANGED,
   HOST_CHECK_IN,
   TRASHED
 } from '../../constants';
@@ -655,6 +656,13 @@ const set_edit_mode = (state, action) => ({
 });
 // endregion
 
+// region set_edit_mode
+const set_highlight_mode = (state, action) => ({
+  ...state,
+  highlightMode: action.payload.highlightMode
+});
+// endregion
+
 const initialState: GuestState = {
   dragContext: null,
   draggable: {},
@@ -663,6 +671,7 @@ const initialState: GuestState = {
   ICE_GUEST_INIT: false,
   status: EditingStatus.LISTENING,
   editMode: false,
+  highLightMode: 'all',
   uploading: {},
   models: {},
   contentTypes: {},
@@ -705,6 +714,7 @@ const reducerFunctions: {
   [COMPONENT_INSTANCE_DRAG_ENDED]: foo,
   [DESKTOP_ASSET_DRAG_ENDED]: foo,
   [EDIT_MODE_CHANGED]: set_edit_mode,
+  [HIGHLIGHT_MODE_CHANGED]: set_highlight_mode,
   [CONTENT_TYPE_RECEPTACLES_REQUEST]: content_type_receptacles_request,
   [CLEAR_HIGHLIGHTED_RECEPTACLES]: clear_highlighted_receptacles,
   [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
