@@ -31,7 +31,7 @@ import { DetailedItem } from '../../models/Item';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionsBar: {
-    zIndex: 1200,
+    zIndex: theme.zIndex.modal,
 
     '& .MuiSnackbarContent-root': {
       backgroundColor: palette.blue.highlightHex,
