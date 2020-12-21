@@ -19,6 +19,10 @@ import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
 import { EditSwitch } from '../../modules/Preview/ToolBar';
+import { useSelection } from '../../utils/hooks';
+import { setPreviewEditMode } from '../../state/actions/preview';
+import { useSnackbar } from 'notistack';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   editMode: {
@@ -44,6 +48,14 @@ const translations = defineMessages({
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
     defaultMessage: 'Highlight Movable'
+  },
+  editModeOn: {
+    id: 'previewToolbar.editModeOn',
+    defaultMessage: 'Edit mode switched on'
+  },
+  editModeOff: {
+    id: 'previewToolbar.editModeOff',
+    defaultMessage: 'Edit mode switched off'
   }
 });
 
@@ -69,13 +81,31 @@ const useStyles = makeStyles(() => ({
 export default function PreviewSettingsPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
+  const editMode = useSelection((state) => state.preview.editMode);
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
 
   return (
     <section className={classes.root}>
       <FormControl>
         <FormControlLabel
           classes={{ root: classes.labelRoot }}
-          control={<EditSwitch color="default" onChange={() => {}} edge="end" />}
+          control={
+            <EditSwitch
+              color="default"
+              checked={editMode}
+              onChange={(e) => {
+                // prettier-ignore
+                enqueueSnackbar(formatMessage(
+                                   e.target.checked
+                                     ? translations.editModeOn
+                                     : translations.editModeOff
+                                 ));
+                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+              }}
+              edge="end"
+            />
+          }
           label={formatMessage(translations.editMode)}
           labelPlacement="start"
         />
