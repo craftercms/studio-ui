@@ -106,7 +106,7 @@ function extractCollectionPiece(model, fieldId, index) {
 }
 
 export function isInheritedField(model, fieldId) {
-  return !!model.craftercms.sourceMap?.[fieldId];
+  return Boolean(model.craftercms.sourceMap?.[fieldId]);
 }
 
 export function getModelIdFromInheritedField(

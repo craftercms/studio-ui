@@ -319,9 +319,6 @@ export function moveItem(
     originalModelId === targetModelId ||
     (nnou(originalParentModelId) && nnou(targetParentModelId) && originalParentModelId === targetParentModelId)
   ) {
-    if (originalParentModelId === targetParentModelId && nnou(originalParentModelId)) {
-      debugger;
-    }
     // Moving items between two fields of the same model...
     return performMutation(site, originalModelId, originalParentModelId, (doc) => {
       const item = extractNode(doc, originalFieldId, originalIndex);
