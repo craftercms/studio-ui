@@ -41,16 +41,14 @@ import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import { AppBar, Drawer } from '@material-ui/core';
+import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ActionsBar from '../../components/ActionsBar';
 import { dispatchDOMEvent } from '../../state/actions/misc';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { DetailedItem } from '../../models/Item';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import palette from '../../styles/palette';
+import Button from '@material-ui/core/Button';
 
 const drawerWidth = 300;
 let unsubscribeOnActionSuccess;
@@ -184,8 +182,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: drawerWidth
   },
   drawerPaperSelect: {
-    top: 130,
-    height: 'calc(100% - 130px)'
+    top: 0,
+    height: '100%'
   },
   paginationCaption: {
     order: -1,
@@ -215,6 +213,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   drawerModal: {
     '& .MuiBackdrop-root': {
       background: 'transparent'
+    }
+  },
+  actionsMenu: {
+    flex: '0 0 auto',
+    display: 'flex',
+    padding: '14px 20px',
+    justifyContent: 'flex-end',
+    borderTop: `1px solid ${palette.gray.light3}`,
+    '& > :not(:first-child)': {
+      marginLeft: '12px'
     }
   }
 }));
@@ -281,6 +289,14 @@ const messages = defineMessages({
   search: {
     id: 'words.search',
     defaultMessage: 'Search'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
+  },
+  acceptSelection: {
+    id: 'search.acceptSelection',
+    defaultMessage: 'Accept Selection'
   }
 });
 
@@ -320,6 +336,7 @@ export default function Search(props: SearchProps) {
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
   const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
+  const items = useSelection((state) => state.content.items);
 
   refs.createQueryString = createQueryString;
 
@@ -682,27 +699,6 @@ export default function Search(props: SearchProps) {
 
   return (
     <>
-      {mode === 'select' && (
-        <AppBar position="static" color="default" className={classes.selectAppbar}>
-          <Toolbar className={classes.selectToolbar}>
-            <Typography variant="h5" className={classes.selectToolbarTitle}>
-              {formatMessage(messages.search)}
-            </Typography>
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={onClose}
-                color="inherit"
-              >
-                <CloseIcon />
-              </IconButton>
-            </div>
-          </Toolbar>
-        </AppBar>
-      )}
-
       <SiteSearchToolBar
         onChange={handleSearchKeyword}
         onMenuIconClick={toggleDrawer}
@@ -722,7 +718,12 @@ export default function Search(props: SearchProps) {
           modal: classes.drawerModal
         }}
         ModalProps={{
-          ...(desktopScreen && !embedded ? {} : { onBackdropClick: toggleDrawer })
+          ...(desktopScreen && !embedded
+            ? {}
+            : {
+                onBackdropClick: toggleDrawer,
+                onEscapeKeyDown: toggleDrawer
+              })
         }}
       >
         {searchResults && searchResults.facets && (
@@ -828,14 +829,32 @@ export default function Search(props: SearchProps) {
         </section>
       </section>
 
-      <ActionsBar
-        open={selected.length > 0}
-        mode={mode}
-        selectedItems={selected}
-        handleClearSelected={handleClearSelected}
-        onActionSuccess={dispatchDOMEvent({ id: idActionSuccess })}
-        onAcceptSelection={onAcceptSelection}
-      />
+      {mode === 'default' && (
+        <ActionsBar
+          open={selected.length > 0}
+          mode={mode}
+          selectedItems={selected}
+          handleClearSelected={handleClearSelected}
+          onActionSuccess={dispatchDOMEvent({ id: idActionSuccess })}
+          onAcceptSelection={onAcceptSelection}
+        />
+      )}
+
+      {mode === 'select' && (
+        <section className={classes.actionsMenu}>
+          <Button variant="outlined" onClick={onClose}>
+            {formatMessage(messages.cancel)}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={selected.length === 0}
+            onClick={() => onAcceptSelection?.(selected.map((path) => items.byPath?.[path]))}
+          >
+            {formatMessage(messages.acceptSelection)}
+          </Button>
+        </section>
+      )}
     </>
   );
 }
