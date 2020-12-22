@@ -171,7 +171,7 @@
   "createSiteDialog.reviewSite": "Review set up summary and create your site",
   "createSiteDialog.sandboxBranch": "Sandbox Branch",
   "createSiteDialog.showIncompatible": "Show Incompatible Plugins",
-  "createSiteDialog.siteFormat": "Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_).",
+  "createSiteDialog.siteFormat": "Max length: 50 characters, consisting of: lowercase letters, numbers & dash (-).",
   "createSiteDialog.siteId": "Site ID",
   "createSiteDialog.siteInfo": "Site Info",
   "createSiteDialog.token": "Token",

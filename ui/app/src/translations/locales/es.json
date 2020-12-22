@@ -171,7 +171,7 @@
   "createSiteDialog.reviewSite": "Revise el resumen de configuración y cree su sitio",
   "createSiteDialog.sandboxBranch": "Rama Sandbox",
   "createSiteDialog.showIncompatible": "Mostrar complementos incompatibles",
-  "createSiteDialog.siteFormat": "Longitud máxima: 50 caracteres, que consta de: letras minúsculas, números, guión (-) y guión bajo (_).",
+  "createSiteDialog.siteFormat": "Longitud máxima: 50 caracteres, que consta de: letras minúsculas, números y guión (-).",
   "createSiteDialog.siteId": "Identificación del sitio",
   "createSiteDialog.siteInfo": "Información del sitio",
   "createSiteDialog.token": "Simbólico",

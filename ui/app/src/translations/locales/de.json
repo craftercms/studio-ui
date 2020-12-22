@@ -171,7 +171,7 @@
   "createSiteDialog.reviewSite": "Überprüfen Sie die Zusammenfassung der Einrichtung und erstellen Sie Ihre Website",
   "createSiteDialog.sandboxBranch": "Sandbox Branch",
   "createSiteDialog.showIncompatible": "Inkompatible Plugins anzeigen",
-  "createSiteDialog.siteFormat": "Maximale Länge: 50 Zeichen, bestehend aus: Kleinbuchstaben, Zahlen, Bindestrich (-) und Unterstrich (_).",
+  "createSiteDialog.siteFormat": "Maximale Länge: 50 Zeichen, bestehend aus: Kleinbuchstaben, Zahlen und Bindestrich (-).",
   "createSiteDialog.siteId": "Webseitenadresse",
   "createSiteDialog.siteInfo": "Site Info",
   "createSiteDialog.token": "Zeichen",
