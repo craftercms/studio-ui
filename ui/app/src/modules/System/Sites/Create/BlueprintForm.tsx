@@ -72,7 +72,7 @@ const messages = defineMessages({
   },
   siteFormat: {
     id: 'createSiteDialog.siteFormat',
-    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_).'
+    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers & dash (-).'
   },
   idExist: {
     id: 'createSiteDialog.idExist',
