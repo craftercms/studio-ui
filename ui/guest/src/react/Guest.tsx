@@ -112,6 +112,7 @@ function Guest(props: GuestProps) {
           if (isNullOrUndefined(record)) {
             console.error('No record found for dispatcher element');
           } else {
+            // HighlightMode validations helps to dont stop the event propagation
             if (
               ['click', 'dblclick'].includes(type) &&
               (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVABLE && !draggable))
