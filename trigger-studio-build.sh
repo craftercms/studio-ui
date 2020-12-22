@@ -12,5 +12,5 @@ curl -s -X POST \
   -H "Travis-API-Version: 3" \
   -H "Authorization: token ${env.CI_TOKEN}" \
   -d "$body" \
-  https://api.travis-ci.org/repo/craftercms/studio/requests
+  https://api.travis-ci.com/repo/craftercms%2Fstudio/requests
 fi
