@@ -63,7 +63,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchBarContainer: {
       width: '33%',
-      minWidth: '500px'
+      [theme.breakpoints.up('md')]: {
+        minWidth: '500px'
+      }
     },
     searchBar: {
       backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light1
