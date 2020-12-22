@@ -105,7 +105,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
           });
 
           me.context.buildModules(config, bar);
-          CStudioAuthoring.Operations.createNavBarDropDown('quick-create');
         });
       },
       failure: function() {},
