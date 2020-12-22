@@ -75,3 +75,8 @@ export enum EditingStatus {
   SHOW_RECEPTACLES = 'SHOW_RECEPTACLES',
   SELECT_FIELD = 'SELECT_FIELD'
 }
+
+export enum HighlightMode {
+  ALL = 'ALL',
+  MOVABLE = 'MOVABLE'
+}

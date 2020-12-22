@@ -126,14 +126,14 @@ export default function PreviewSettingsPanel() {
           }}
         >
           <FormControlLabel
-            value="all"
+            value="ALL"
             classes={{ root: classes.labelRoot }}
             control={<Radio color="primary" edge="end" />}
             label={formatMessage(translations.highlightAllZones)}
             labelPlacement="start"
           />
           <FormControlLabel
-            value="movable"
+            value="MOVABLE"
             classes={{ root: classes.labelRoot }}
             control={<Radio color="primary" edge="end" />}
             label={formatMessage(translations.highlightMovable)}

@@ -46,6 +46,7 @@ import {
   EDIT_MODE_CHANGED,
   EditingStatus,
   HIGHLIGHT_MODE_CHANGED,
+  HighlightMode,
   HOST_CHECK_IN,
   TRASHED
 } from '../../constants';
@@ -57,10 +58,14 @@ const mouseover: GuestReducer = (state, action) => {
   if (state.status === EditingStatus.LISTENING) {
     const highlight = ElementRegistry.getHoverData(record.id);
     const draggable = ElementRegistry.getDraggable(record.id);
-    const nextState = {
-      ...state,
-      highlighted: { [record.id]: highlight }
-    };
+    const nextState = { ...state };
+
+    if (
+      (state.highlightMode === HighlightMode.MOVABLE && draggable !== false) ||
+      state.highlightMode === HighlightMode.ALL
+    ) {
+      nextState.highlighted = { [record.id]: highlight };
+    }
     if (draggable !== false) {
       nextState.draggable = { [record.id]: draggable };
     } else if (record.id in state.draggable) {
@@ -657,9 +662,9 @@ const set_edit_mode = (state, action) => ({
 // endregion
 
 // region set_edit_mode
-const set_highlight_mode = (state, action) => ({
+const set_highlight_mode = (state, { payload }) => ({
   ...state,
-  highlightMode: action.payload.highlightMode
+  highlightMode: payload.highlightMode
 });
 // endregion
 
@@ -671,7 +676,7 @@ const initialState: GuestState = {
   ICE_GUEST_INIT: false,
   status: EditingStatus.LISTENING,
   editMode: false,
-  highLightMode: 'all',
+  highlightMode: HighlightMode.ALL,
   uploading: {},
   models: {},
   contentTypes: {},
@@ -730,6 +735,7 @@ const reducerFunctions: {
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
+    highlightMode: action.payload.highlightMode,
     editMode: action.payload.editMode
   })
 };

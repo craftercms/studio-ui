@@ -136,7 +136,7 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
-    highlightMode: 'all',
+    highlightMode: 'ALL',
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe

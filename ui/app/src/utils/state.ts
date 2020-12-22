@@ -43,11 +43,11 @@ export function setStoredEditModeChoice(value: string) {
   return window.localStorage.setItem(`craftercms.editModeChoice`, value);
 }
 
-export function getStoredHighlightModeChoice(): string {
+export function getStoredhighlightModeChoice(): string {
   return window.localStorage.getItem(`craftercms.highlightModeChoice`);
 }
 
-export function setStoredHighlightModeChoice(value: string) {
+export function setStoredhighlightModeChoice(value: string) {
   return window.localStorage.setItem(`craftercms.highlightModeChoice`, value);
 }
 

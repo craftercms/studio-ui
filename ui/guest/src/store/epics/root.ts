@@ -44,6 +44,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_STARTED,
   EditingStatus,
+  HighlightMode,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -262,36 +263,47 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType('click'),
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.LISTENING),
-      switchMap(([action]) => {
+      switchMap(([action, state]) => {
         const { record } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+        const draggable = ElementRegistry.getDraggable(record.id);
         const validations = field?.validations;
         const type = field?.type;
-        switch (type) {
-          case 'html':
-          case 'text':
-          case 'textarea': {
-            if (!window.tinymce) {
-              alert(
-                'Looks like tinymce is not added on the page. ' + 'Please add tinymce on to the page to enable editing.'
-              );
-            } else if (not(validations?.readOnly?.value)) {
-              return initTinyMCE(record, validations);
+        const iceZoneSelected = () => {
+          post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
+          return merge(
+            escape$.pipe(
+              takeUntil(clearAndListen$),
+              tap(() => post(CLEAR_SELECTED_ZONES)),
+              map(() => ({ type: 'start_listening' })),
+              take(1)
+            ),
+            of({ type: 'ice_zone_selected', payload: action.payload })
+          );
+        };
+        if (state.highlightMode === HighlightMode.ALL) {
+          switch (type) {
+            case 'html':
+            case 'text':
+            case 'textarea': {
+              if (!window.tinymce) {
+                alert(
+                  'Looks like tinymce is not added on the page. ' +
+                    'Please add tinymce on to the page to enable editing.'
+                );
+              } else if (not(validations?.readOnly?.value)) {
+                return initTinyMCE(record, validations);
+              }
+              return NEVER;
             }
-            return NEVER;
+            default: {
+              return iceZoneSelected();
+            }
           }
-          default: {
-            post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
-            return merge(
-              escape$.pipe(
-                takeUntil(clearAndListen$),
-                tap(() => post(CLEAR_SELECTED_ZONES)),
-                map(() => ({ type: 'start_listening' })),
-                take(1)
-              ),
-              of({ type: 'ice_zone_selected', payload: action.payload })
-            );
-          }
+        } else if (draggable) {
+          return iceZoneSelected();
+        } else {
+          return NEVER;
         }
       })
     );

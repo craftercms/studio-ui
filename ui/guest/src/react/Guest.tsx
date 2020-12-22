@@ -52,6 +52,7 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HIGHLIGHT_MODE_CHANGED,
+  HighlightMode,
   HOST_CHECK_IN,
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
@@ -92,6 +93,7 @@ function Guest(props: GuestProps) {
   const dispatch = useDispatch();
   const state = useSelector<GuestState, GuestState>((state) => state);
   const editMode = state.editMode;
+  const highlightMode = state.highlightMode;
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
@@ -102,6 +104,7 @@ function Guest(props: GuestProps) {
       hasHost,
       editMode,
       draggable,
+      highlightMode,
       onEvent(event: Event, dispatcherElementRecordId: number) {
         if (hasHost && editMode && refs.current.contentReady) {
           const { type } = event;
@@ -109,7 +112,10 @@ function Guest(props: GuestProps) {
           if (isNullOrUndefined(record)) {
             console.error('No record found for dispatcher element');
           } else {
-            if (['click', 'dblclick'].includes(type)) {
+            if (
+              ['click', 'dblclick'].includes(type) &&
+              (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVABLE && !draggable))
+            ) {
               event.preventDefault();
               event.stopPropagation();
             }
@@ -120,7 +126,7 @@ function Guest(props: GuestProps) {
         return false;
       }
     }),
-    [dispatch, hasHost, draggable, editMode]
+    [dispatch, hasHost, draggable, editMode, highlightMode]
   );
 
   // Sets document domain

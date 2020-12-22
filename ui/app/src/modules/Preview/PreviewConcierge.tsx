@@ -93,7 +93,7 @@ import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
-  getStoredHighlightModeChoice,
+  getStoredhighlightModeChoice,
   getStoredPreviewChoice,
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard,
@@ -186,7 +186,7 @@ export function PreviewConcierge(props: any) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
-    const localHighlightMode = getStoredHighlightModeChoice();
+    const localHighlightMode = getStoredhighlightModeChoice();
     if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
@@ -285,7 +285,7 @@ export function PreviewConcierge(props: any) {
               });
           // endregion
           if (type === GUEST_CHECK_IN) {
-            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -576,6 +576,7 @@ export function PreviewConcierge(props: any) {
     site,
     xsrfArgument,
     editMode,
+    highlightMode,
     handlePreviewCompatibilityDialogGo
   ]);
 

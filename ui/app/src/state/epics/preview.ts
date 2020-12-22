@@ -22,7 +22,7 @@ import {
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
   setStoredEditModeChoice,
-  setStoredHighlightModeChoice,
+  setStoredhighlightModeChoice,
   setStoredPreviewToolsPanelPage
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
@@ -71,7 +71,7 @@ export default [
     action$.pipe(
       ofType(setHighlightMode.type),
       tap((action) => {
-        setStoredHighlightModeChoice(action.payload.highlightMode);
+        setStoredhighlightModeChoice(action.payload.highlightMode);
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
