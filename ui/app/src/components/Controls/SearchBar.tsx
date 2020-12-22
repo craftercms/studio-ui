@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) =>
     search: {
       position: 'relative',
       background: (props: any) => props.background ?? theme.palette.background.default,
-      width: '100%',
       display: 'flex',
       alignItems: 'center',
       padding: '0 12px',

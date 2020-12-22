@@ -211,6 +211,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   selectToolbarTitle: {
     flexGrow: 1
+  },
+  drawerModal: {
+    '& .MuiBackdrop-root': {
+      background: 'transparent'
+    }
   }
 }));
 
@@ -708,12 +713,16 @@ export default function Search(props: SearchProps) {
         embedded={embedded}
       />
       <Drawer
-        variant="persistent"
+        variant={desktopScreen && !embedded ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}
         className={classes.drawer}
         classes={{
-          paper: clsx(classes.drawerPaper, { [classes.drawerPaperSelect]: mode === 'select' })
+          paper: clsx(classes.drawerPaper, { [classes.drawerPaperSelect]: mode === 'select' }),
+          modal: classes.drawerModal
+        }}
+        ModalProps={{
+          ...(desktopScreen && !embedded ? {} : { onBackdropClick: toggleDrawer })
         }}
       >
         {searchResults && searchResults.facets && (
