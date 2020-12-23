@@ -868,6 +868,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@cush/relative@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@cush/relative/-/relative-0.1.0.tgz#19bfc2c8d46335205932f2032e3569f99fd61b40"
+  integrity sha512-pnF2c2hhHyC520CmYYKq3hGOS0kipkGBgRnp3z7wx7lDzykaUwQW3wPQmiX9YtbHUcgUu1qQtzstixmeYMwQoA==
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -877,6 +882,11 @@ abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
+
+ansi-256-colors@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ansi-256-colors/-/ansi-256-colors-1.1.0.tgz#910de50efcc7c09e3d82f2f87abd6b700c18818a"
+  integrity sha1-kQ3lDvzHwJ49gvL4er1rcAwYgYo=
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -1052,6 +1062,16 @@ browserslist@^4.6.0, browserslist@^4.8.2:
     caniuse-lite "^1.0.30001015"
     electron-to-chromium "^1.3.322"
     node-releases "^1.1.42"
+
+build-if-changed@^1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/build-if-changed/-/build-if-changed-1.5.5.tgz#895d63b72a7a43a4bad6f9b7b5ba94edfcbb744d"
+  integrity sha512-Ev9XU5r+HWulJYf58ZyeIIB0TYywReSiWdfxtW37FyGm7p4xHEAYza+c/Gj3IZxnMSYydrW+Xu1a7brJjs1W3A==
+  dependencies:
+    ansi-256-colors "^1.1.0"
+    has-flag "^4.0.0"
+    recrawl "^1.1.1"
+    saxon "^0.1.15"
 
 cache-base@^1.0.1:
   version "1.0.1"
@@ -1415,6 +1435,11 @@ glob-parent@^3.1.0:
     is-glob "^3.1.0"
     path-dirname "^1.0.0"
 
+glob-regex@^0.3.0:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/glob-regex/-/glob-regex-0.3.2.tgz#27348f2f60648ec32a4a53137090b9fb934f3425"
+  integrity sha512-m5blUd3/OqDTWwzBBtWBPrGlAzatRywHameHeekAZyZrskYouOGdNB8T/q6JucucvJXtOuyHIn0/Yia7iDasDw==
+
 glob@^7.0.0, glob@^7.1.3:
   version "7.1.6"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
@@ -1441,6 +1466,11 @@ has-flag@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
   integrity sha1-tdRU3CGZriJWmfNGfloH87lVuv0=
+
+has-flag@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
+  integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
 
 has-symbols@^1.0.0:
   version "1.0.1"
@@ -2112,6 +2142,15 @@ readdirp@^2.2.1:
     micromatch "^3.1.10"
     readable-stream "^2.0.2"
 
+recrawl@^1.1.1:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/recrawl/-/recrawl-1.2.3.tgz#5b35c83cd47611c4e83a321d76f9c18e83fea140"
+  integrity sha512-BJjwjefrfI4/OYPrZ+I2SEfSE3+BoIom15KpNYLabNJJ/G0zn/2niS4AILT60aRjqLR4+IucD5YU8D96z32EvQ==
+  dependencies:
+    "@cush/relative" "^0.1.0"
+    glob-regex "^0.3.0"
+    tslib "^1.9.3"
+
 regenerate-unicode-properties@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-8.1.0.tgz#ef51e0f0ea4ad424b77bf7cb41f3e015c70a3f0e"
@@ -2238,6 +2277,13 @@ sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
+
+saxon@^0.1.15:
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/saxon/-/saxon-0.1.18.tgz#fbedb05150ae2e4f307202efc84e9e7ad48f88a1"
+  integrity sha512-JMdJjBJCSquNY7Glyl+FNMQyZhbny6wKta8KE5PWrEbU5oB2FfONbtBPHlMOXJrFc9FqUYBJ9QsavygJW1QiBg==
+  dependencies:
+    graceful-fs "^4.1.11"
 
 semver@^5.3.0, semver@^5.4.1, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0:
   version "5.7.1"
@@ -2432,6 +2478,11 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     extend-shallow "^3.0.2"
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
+
+tslib@^1.9.3:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
+  integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

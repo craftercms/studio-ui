@@ -11,5 +11,8 @@
   "dependencies": {
     "node-sass": "^4.13.1",
     "rxjs": "^6.5.2"
+  },
+  "devDependencies": {
+    "build-if-changed": "^1.5.5"
   }
 }
