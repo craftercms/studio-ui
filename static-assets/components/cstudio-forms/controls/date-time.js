@@ -710,7 +710,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
     dl.setAttribute('alt', '');
     dl.setAttribute('href', '#');
-    dl.className = 'date-link';
+    dl.className = 'date-link btn btn-default btn-sm';
     dl.innerHTML = label;
 
     YAHOO.util.Event.on(
@@ -848,7 +848,6 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     if (this.showDate) {
       var dateEl = document.createElement('input');
@@ -1004,7 +1003,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
     if (this.showNowLink && !this.readonly) {
       // only show the link if the field is editable
-      this._renderDateLink(controlWidgetContainerEl, 'Set Now');
+      this._renderDateLink(dateElContainer, 'Set Now');
     }
 
     if (!this.readonly && this.showClear) {
@@ -1013,7 +1012,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         clearDateLabel = document.createTextNode(CMgs.format(langBundle, 'clearVal')),
         self = this;
 
-      clearDateEl.className = 'clear-link';
+      clearDateEl.className = 'clear-link btn btn-default btn-sm';
       clearDateEl.href = '#';
       clearDateEl.appendChild(clearDateLabel);
 
@@ -1031,7 +1030,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         this
       );
 
-      controlWidgetContainerEl.appendChild(clearDateEl);
+      dateElContainer.appendChild(clearDateEl);
     }
 
     this.renderHelp(config, controlWidgetContainerEl);
@@ -1048,6 +1047,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
     dateElContainer.appendChild(calEl);
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
 

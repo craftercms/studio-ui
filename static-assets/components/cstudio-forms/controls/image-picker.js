@@ -491,7 +491,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var inputEl = document.createElement('input');
     this.inputEl = inputEl;
@@ -570,7 +569,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       addEl.value = CMgs.format(langBundle, 'replace');
     }
 
-    YAHOO.util.Dom.addClass(addEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(addEl, 'cstudio-button btn btn-default btn-sm');
     ctrlOptionsEl.appendChild(addEl);
 
     var delEl = document.createElement('input');
@@ -578,7 +577,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     delEl.type = 'button';
     delEl.value = CMgs.format(langBundle, 'delete');
     delEl.style.position = 'relative';
-    YAHOO.util.Dom.addClass(delEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(delEl, 'cstudio-button btn btn-default btn-sm');
 
     ctrlOptionsEl.appendChild(delEl);
 
@@ -639,6 +638,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
 
