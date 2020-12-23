@@ -8,8 +8,9 @@
   "dependencies": {
     "ace-builds": "^1.4.12"
   },
-  "devDependencies": {},
   "scripts": {
-    "build": "chmod +x build.sh; ./build.sh"
+    "build": "run-s build:install build:app",
+    "build:install": "yarn",
+    "build:app": "chmod +x build.sh; ./build.sh"
   }
 }
