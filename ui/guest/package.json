@@ -31,7 +31,9 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "run-s build:install build:app",
+    "build:install": "yarn",
+    "build:app": "rollup -c",
     "watch": "rollup -c -w",
     "rollup": "rollup -c",
     "rollup:watch": "rollup -c -w",
@@ -91,5 +93,13 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.3.0",
     "yargs": "^15.3.1"
+  },
+  "bic": {
+    "skip": [
+      "build",
+      "build_tsc",
+      "README.md",
+      "CHANGE_LOG.md"
+    ]
   }
 }

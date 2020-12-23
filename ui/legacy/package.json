@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "babel ./src -d ../../static-assets",
+    "build": "run-s build:install build:app",
+    "build:install": "yarn",
+    "build:app": "babel ./src -d ../../static-assets",
     "watch": "babel -w ./src -d ../../static-assets"
   },
   "devDependencies": {
@@ -29,5 +31,11 @@
     "babel-plugin-macros": "2.7.1",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "babel-preset-react-app": "^9.1.0"
+  },
+  "bic": {
+    "skip": [
+      "README.md",
+      "CHANGE_LOG.md"
+    ]
   }
 }
