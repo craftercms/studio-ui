@@ -193,6 +193,8 @@ export const fetchGuestModelComplete = createAction<{
 
 export const guestModelUpdated = createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
 
+export const guestPathUpdated = createAction<{ path: string }>('GUEST_PATH_UPDATED');
+
 export function changeCurrentUrl(nextValue: string): StandardAction {
   return {
     type: CHANGE_CURRENT_URL,

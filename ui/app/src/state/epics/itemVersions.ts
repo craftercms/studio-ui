@@ -39,6 +39,9 @@ import { historyDialogClosed } from '../actions/dialogs';
 import { getHistory as getConfigurationHistory } from '../../services/configuration';
 import { reloadDetailedItem } from '../actions/content';
 import { showRevertItemSuccessNotification } from '../actions/system';
+import { batchActions } from '../actions/misc';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { RELOAD_REQUEST } from '../actions/preview';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -85,14 +88,22 @@ export default [
         )
       )
     ),
-  (action$) =>
+  (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(revertContentComplete.type),
-      switchMap(({ payload }) => [
-        fetchItemVersions(),
-        showRevertItemSuccessNotification(),
-        reloadDetailedItem({ path: payload.path })
-      ])
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        if (payload.path === state.preview.guest.path) {
+          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+        }
+        return of(
+          batchActions([
+            fetchItemVersions(),
+            showRevertItemSuccessNotification(),
+            reloadDetailedItem({ path: payload.path })
+          ])
+        );
+      })
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
