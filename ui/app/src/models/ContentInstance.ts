@@ -22,7 +22,7 @@ export interface ContentInstanceSystemProps {
   dateCreated: string;
   dateModified: string;
   contentTypeId: string;
-  sourceMap?: { [path: string]: string }; // path: contentTypeId
+  sourceMap?: { [fieldId: string]: string }; // fieldId: path
 }
 
 export interface ContentInstance {

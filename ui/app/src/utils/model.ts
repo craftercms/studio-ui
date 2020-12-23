@@ -16,6 +16,8 @@
 
 import { nou, retrieveProperty, setProperty } from './object';
 import { removeLastPiece } from './string';
+import ContentInstance from '../models/ContentInstance';
+import LookupTable from '../models/LookupTable';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
@@ -101,4 +103,18 @@ function extractCollectionPiece(model, fieldId, index) {
     const field = fields[fields.length - 1];
     return aux[field];
   }
+}
+
+export function isInheritedField(model, fieldId) {
+  return Boolean(model.craftercms.sourceMap?.[fieldId]);
+}
+
+export function getModelIdFromInheritedField(
+  model: ContentInstance,
+  fieldId: string,
+  modelIdByPath: LookupTable<string>
+) {
+  return model.craftercms.sourceMap?.[fieldId]
+    ? modelIdByPath[model.craftercms.sourceMap?.[fieldId]]
+    : model.craftercms.id;
 }

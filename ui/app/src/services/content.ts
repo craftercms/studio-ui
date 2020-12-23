@@ -313,10 +313,12 @@ export function moveItem(
   // TODO Warning: cannot perform as transaction whilst the UI is the one to do all this.
   // const isOriginalEmbedded = nnou(originalParentModelId);
   // const isTargetEmbedded = nnou(targetParentModelId);
-  if (originalModelId === targetModelId || originalParentModelId === targetParentModelId) {
-    if (originalParentModelId === targetParentModelId && nnou(originalParentModelId)) {
-      debugger;
-    }
+  // When Moving between inherited dropzone to other dropzone, the modelsIds will be different but in some cases the parentId will be null for both targets
+  // in that case we need to add a nnou validation to parentsModelId;
+  if (
+    originalModelId === targetModelId ||
+    (nnou(originalParentModelId) && nnou(targetParentModelId) && originalParentModelId === targetParentModelId)
+  ) {
     // Moving items between two fields of the same model...
     return performMutation(site, originalModelId, originalParentModelId, (doc) => {
       const item = extractNode(doc, originalFieldId, originalIndex);

@@ -324,10 +324,18 @@ export function runValidation(iceId: number, validationId: ValidationKeys, args?
 
 export function getReferentialEntries(record: number | ICERecord): ReferentialEntries {
   record = typeof record === 'object' ? record : getById(record);
-  const model = contentController.getCachedModel(record.modelId);
-  const contentTypeId = Model.getContentTypeId(model);
-  const contentType = contentController.getCachedContentType(contentTypeId);
-  const field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
+  let model = contentController.getCachedModel(record.modelId);
+  let contentTypeId = Model.getContentTypeId(model);
+  let contentType = contentController.getCachedContentType(contentTypeId);
+  let field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
+
+  if (!field && record.fieldId && model.craftercms.sourceMap?.[record.fieldId]) {
+    model = contentController.getContentInstanceByPath(model.craftercms.sourceMap[record.fieldId]);
+    contentTypeId = Model.getContentTypeId(model);
+    contentType = contentController.getCachedContentType(contentTypeId);
+    field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
+  }
+
   return {
     model,
     field,
