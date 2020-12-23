@@ -95,12 +95,7 @@ export default function PreviewSettingsPanel() {
               color="default"
               checked={editMode}
               onChange={(e) => {
-                // prettier-ignore
-                enqueueSnackbar(formatMessage(
-                                   e.target.checked
-                                     ? translations.editModeOn
-                                     : translations.editModeOff
-                                 ));
+                enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
                 dispatch(setPreviewEditMode({ editMode: e.target.checked }));
               }}
               edge="end"

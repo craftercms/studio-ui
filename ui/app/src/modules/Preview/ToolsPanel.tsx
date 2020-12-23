@@ -46,6 +46,7 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import Asset from '@material-ui/icons/ImageOutlined';
 import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
 import Audiences from '@material-ui/icons/EmojiPeopleRounded';
+import Settings from '@material-ui/icons/Settings';
 import PageExplorer from '../../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
 import Simulator from '@material-ui/icons/DevicesRounded';
@@ -152,6 +153,7 @@ Object.entries({
   '@material-ui/icons/DevicesRounded': Simulator,
   'craftercms.icons.PageExplorer': PageExplorer,
   'craftercms.icons.SiteExplorer': SiteExplorer,
+  '@material-ui/icons/Settings': Settings,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,

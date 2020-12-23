@@ -599,10 +599,11 @@ function onLogout(url) {
 
 const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { authoringBase } = useEnv();
+  const { formatMessage } = useIntl();
   return (
     <Tile
       icon={icon}
-      title={title}
+      title={typeof title === 'string' ? title : formatMessage(title)}
       link={
         link ??
         {
