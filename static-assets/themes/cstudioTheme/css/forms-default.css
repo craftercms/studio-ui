@@ -1318,12 +1318,26 @@ body.yui-skin-cstudioTheme.masked {
 .cstudio-form-control-file-name-container,
 .cstudio-form-control-node-selector-container,
 .cstudio-form-control-image-picker-container,
-.cstudio-form-control-dropdown-container{
+.cstudio-form-control-dropdown-container,
+.cstudio-form-control-page-nav-order-container,
+.cstudio-form-control-video-picker-container {
   width: 100% !important;
   display: flex !important;
   max-width: 100%;
   flex-wrap: wrap;
   padding-top: 5px;
+}
+
+.cstudio-form-control-video-picker-container .url {
+  display: block;
+  width: 100%;
+}
+.cstudio-form-control-video-picker-container .cstudio-button {
+  align-self: flex-start;
+}
+
+.cstudio-form-control-asset-picker-preview-block {
+  margin-right: 5px;
 }
 
 .cstudio-form-control-input-container {
@@ -1343,6 +1357,8 @@ body.yui-skin-cstudioTheme.masked {
 
 .cstudio-form-control-input,
 .date-time-container .date-control,
+.date-time-container .time-control,
+.date-time-container .time-zone-picker,
 .cstudio-form-control-dropdown {
   width: 100%;
   border: 1px solid #ced4da;
@@ -1354,16 +1370,18 @@ body.yui-skin-cstudioTheme.masked {
   max-width: 100%;
 }
 
-.date-time-container {
-  display: flex;
+.date-time-container, .zone-container, .date-el-container, .time-container {
+  display: flex !important;
   width: 100%;
   align-items: center;
 }
 
-.date-el-container {
-  display: flex !important;
-  width: 100%;
-  margin-top: 5px;
+.date-time-container .time-container {
+  margin: 0 5px;
+}
+
+.date-time-container .date-control {
+  margin-right: 0;
 }
 
 .date-link {
@@ -1405,11 +1423,7 @@ body.yui-skin-cstudioTheme.masked {
   order: 1;
 }
 
-.cstudio-form-control-filename-edit {
-  position: absolute;
-  bottom: 28px;
-  right: 22px;
-}
+.cstudio-form-control-filename-edit {}
 
 .cstudio-form-control-checkbox {
   width: 15px;
@@ -1488,4 +1502,14 @@ body.yui-skin-cstudioTheme.masked {
 .cstudio-form-control-rte-container {
   padding-left: 0 !important;
   margin-top: 28px !important;
+}
+
+.image-picker-control .cstudio-form-field-title {
+  float: left;
+}
+
+.cstudio-form-control-page-nav-order-container .edit-position {}
+
+.cstudio-form-control-validation {
+  width: 16px;
 }

@@ -326,8 +326,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     this.renderHelp(config, controlWidgetContainerEl);
 
-    this._renderEdit(controlWidgetContainerEl);
-
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
@@ -335,6 +333,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     containerEl.appendChild(titleEl);
     containerEl.appendChild(validEl);
+    this._renderEdit(containerEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
   },

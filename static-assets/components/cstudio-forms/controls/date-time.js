@@ -976,7 +976,13 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
 
       if (this.useCustomTimezone) {
+        var zoneWrapper = document.createElement('div');
+        YAHOO.util.Dom.addClass(zoneWrapper, 'zone-container');
+
+        timeWrapper.appendChild(timeEl);
+
         timezoneEl = document.createElement('select');
+        YAHOO.util.Dom.addClass(timezoneEl, 'time-zone-picker');
         this.addTimezoneOptions(timezoneEl);
 
         YAHOO.util.Event.addListener(
@@ -998,7 +1004,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
 
       timezoneEl.id = divPrefix + 'timezoneCode';
-      controlWidgetContainerEl.appendChild(timezoneEl);
+      zoneWrapper.appendChild(timezoneEl);
+      controlWidgetContainerEl.appendChild(zoneWrapper);
     }
 
     if (this.showNowLink && !this.readonly) {
