@@ -59,7 +59,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "yarn && react-scripts --max_old_space_size=4096 build && node scripts/build.js",
+    "build": "run-s build:install build:app",
+    "build:install": "yarn",
+    "build:app": "react-scripts --max_old_space_size=4096 build && node scripts/build.js",
     "compile": "tsc -p tsconfig.json",
     "build:tsc": "tsc -p tsconfig.build.json",
     "format:npm": "prettier --config ../../prettier.config.js ./build_tsc/**/*.{js,ts} --write",
@@ -138,7 +140,6 @@
     "@babel/core": "^7.8.3",
     "@babel/runtime": "^7.8.3",
     "babel-plugin-react-intl": "^5.1.16",
-    "build-if-changed": "^1.5.5",
     "ncp": "^2.0.0",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",

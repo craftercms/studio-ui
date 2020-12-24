@@ -38,6 +38,7 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   guestModelUpdated,
+  guestPathUpdated,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
@@ -119,6 +120,10 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
         models: {
           ...state.guest.models,
           ...payload.modelLookup
+        },
+        modelIdByPath: {
+          ...state.guest.modelIdByPath,
+          ...payload.modelIdByPath
         },
         childrenMap: {
           ...state.guest?.childrenMap,
@@ -227,6 +232,7 @@ const reducer = createReducer<GlobalState['preview']>(
           path,
           models: null,
           childrenMap: null,
+          modelIdByPath: null,
           selected: null,
           itemBeingDragged: null
         },
@@ -520,6 +526,14 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         toolsPanelPageStack: stack
       };
+    },
+    [guestPathUpdated.type]: (state, { payload }) => ({
+      ...state,
+      guest: {
+        ...state.guest,
+        path: payload.path
+      }
+    })
     },
     [setHighlightMode.type]: (state, { payload }) => ({
       ...state,

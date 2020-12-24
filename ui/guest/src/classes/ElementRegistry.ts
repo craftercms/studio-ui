@@ -21,6 +21,7 @@ import {
   getCachedContentType,
   getCachedModels,
   hasCachedModel,
+  isInheritedField,
   model$
 } from './ContentController';
 import { take } from 'rxjs/operators';
@@ -117,18 +118,32 @@ export function register(payload: ElementRecordRegistration): number {
         ? fieldId
         : fieldId.split(',').map((str) => str.trim());
 
-  // Create/register the physical record
-  db[id] = { id, element, modelId, index, label, fieldId: fieldIds, iceIds, complete: false };
+  function create() {
+    // Create/register the physical record
+    db[id] = {
+      id,
+      element,
+      modelId,
+      index,
+      label,
+      fieldId: fieldIds,
+      iceIds,
+      complete: false,
+      inherited: fieldIds.some((fieldId) => isInheritedField(modelId, fieldId))
+    };
+  }
 
   // If the relevant model is loaded, complete it's registration, otherwise,
   // request it and complete registration when it does load.
   if (hasCachedModel(modelId)) {
+    create();
     completeDeferredRegistration(id);
   } else {
     path && byPathFetchIfNotLoaded(path).subscribe();
     model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
+        create();
         completeDeferredRegistration(id);
       });
   }
@@ -196,6 +211,7 @@ export function getHoverData(id: number): HighlightData {
   return {
     id,
     rect: record.element.getBoundingClientRect(),
+    inherited: record.inherited,
     label: record.label,
     validations: {}
   };

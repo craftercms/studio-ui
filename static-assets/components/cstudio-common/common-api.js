@@ -4340,7 +4340,6 @@ var nodeOpen = false,
       getGoLive: function(callback, data) {
         var serviceUrl = this.getGoLiveServiceUrl;
         serviceUrl += '?site=' + CStudioAuthoringContext.site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
         CStudioAuthoring.Service.request({
           method: 'POST',
           data: data,
@@ -4363,7 +4362,7 @@ var nodeOpen = false,
 
       getUserPermissions: function(site, path, callback) {
         var serviceUrl = this.getPermissionsServiceUrl;
-        serviceUrl += '?site=' + site + '&path=' + encodeURI(path) + '&user=' + CStudioAuthoringContext.user;
+        serviceUrl += '?site=' + site + '&path=' + encodeURI(path);
         var serviceCallback = {
           success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
@@ -4464,9 +4463,6 @@ var nodeOpen = false,
         callback.beforeServiceCall();
         var serviceUrl = this.getUserActivitiesServiceUrl;
         serviceUrl += '?site=' + site;
-        if (user != undefined && user != null) {
-          serviceUrl += '&user=' + user;
-        }
         if (sortBy != null && sortBy != null) {
           serviceUrl += '&sort=' + sortBy;
 

@@ -16,10 +16,11 @@
 
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchContentTypes, RELOAD_REQUEST } from '../state/actions/preview';
+import { fetchContentTypes, guestPathUpdated, RELOAD_REQUEST } from '../state/actions/preview';
 import { useActiveSiteId } from '../utils/hooks';
 import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from '../modules/Preview/previewContext';
+import { LegacyItem } from '../models/Item';
 
 export default function LegacyConcierge() {
   // As it stands, this should be a hook, but creating as a component for the convenience of mounting it
@@ -38,10 +39,20 @@ export default function LegacyConcierge() {
       // @ts-ignore
       CStudioAuthoring.Operations.refreshPreview();
     });
+
+    const updateGuest = ({ contentTO: item }: { contentTO: LegacyItem }) => {
+      dispatch(guestPathUpdated({ path: item.uri }));
+    };
+
+    // @ts-ignore
+    amplify.subscribe('SELECTED_CONTENT_SET', updateGuest);
+
     return () => {
       subscription.unsubscribe();
+      // @ts-ignore
+      amplify.unsubscribe('SELECTED_CONTENT_SET', updateGuest);
     };
-  }, []);
+  }, [dispatch]);
 
   return null;
 }

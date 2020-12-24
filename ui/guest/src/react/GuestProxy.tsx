@@ -21,11 +21,12 @@ import { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import * as iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import {
-  operations$,
   contentTypes$,
   getCachedContentType,
   getCachedModel,
-  models$
+  models$,
+  operations$,
+  paths$
 } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -147,7 +148,7 @@ export default function GuestProxy() {
       }
     };
 
-    zip(models$, contentTypes$)
+    zip(models$, contentTypes$, paths$)
       .pipe(take(1))
       .subscribe(() => {
         document.querySelectorAll('[data-craftercms-model-id]').forEach(registerElement);

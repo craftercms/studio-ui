@@ -4,11 +4,12 @@
   "description": "SASS for studio",
   "private": true,
   "scripts": {
-    "build": "node scripts/index.js",
+    "build": "run-s build:install build:app",
+    "build:install": "yarn",
+    "build:app": "node scripts/index.js",
     "build:dev": "node scripts/withSourceMaps.js",
     "watch": "node scripts/watch.js"
   },
-  "dependencies": {},
   "devDependencies": {
     "node-sass": "^4.13.1",
     "rxjs": "^6.5.4"

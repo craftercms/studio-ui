@@ -18,7 +18,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
 import { getTranslation } from '../../utils/i18n';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { ScreenRotationRounded } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
@@ -45,6 +44,14 @@ const translations = defineMessages({
     id: 'words.phone',
     defaultMessage: 'Phone'
   },
+  width: {
+    id: 'words.width',
+    defaultMessage: 'Width'
+  },
+  height: {
+    id: 'words.height',
+    defaultMessage: 'Height'
+  },
   tablet: {
     id: 'words.tablet',
     defaultMessage: 'Tablet'
@@ -69,18 +76,20 @@ const translations = defineMessages({
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    simulatorFlipColumn: {
+    topPanel: {
       display: 'flex',
-      alignItems: 'flex-end'
-    },
-    simulatorFlipButton: {
-      marginBottom: `${theme.spacing(1)}px`
+      padding: '15px',
+      alignItems: 'flex-end',
+      '& > div:first-child': {
+        marginRight: '10px'
+      }
     },
     presetFieldset: {
-      marginTop: theme.spacing(1)
+      padding: '15px',
+      width: '100%'
     },
-    panelBodyInner: {
-      padding: theme.spacing(1)
+    margin: {
+      marginBottom: '10px'
     }
   })
 );
@@ -209,67 +218,55 @@ export default function PreviewSimulatorPanel(props: any) {
   const PRESETS = formatMessage(translations.presets);
 
   return (
-    <>
-      <div className={classes.panelBodyInner}>
-        <Grid container spacing={1}>
-          <Grid item xs={4}>
-            <TextField
-              id="standard-basic"
-              label="Width"
-              name="width"
-              type="number"
-              margin="normal"
-              placeholder="auto"
-              onKeyUp={onDimensionKeyUp}
-              onChange={(e) => setWidth(e.target.value)}
-              value={width}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              id="standard-basic"
-              label="Height"
-              type="number"
-              name="height"
-              margin="normal"
-              placeholder="auto"
-              onKeyUp={onDimensionKeyUp}
-              onChange={(e) => setHeight(e.target.value)}
-              value={height}
-            />
-          </Grid>
-          <Grid item xs={4} className={classes.simulatorFlipColumn}>
-            <IconButton onClick={onFlipDimensions} className={classes.simulatorFlipButton}>
-              <ScreenRotationRounded />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Divider />
-        <FormControl component="fieldset" className={classes.presetFieldset}>
-          <FormLabel component="legend">{PRESETS}</FormLabel>
-          <RadioGroup value={preset} onChange={handlePresetChange} aria-label={PRESETS} name="words.device">
+    <section>
+      <section className={classes.topPanel}>
+        <TextField
+          label={formatMessage(translations.width)}
+          name="width"
+          type="number"
+          onKeyUp={onDimensionKeyUp}
+          onChange={(e) => setWidth(e.target.value)}
+          value={width}
+        />
+        <TextField
+          label={formatMessage(translations.height)}
+          type="number"
+          name="height"
+          onKeyUp={onDimensionKeyUp}
+          onChange={(e) => setHeight(e.target.value)}
+          value={height}
+        />
+        <IconButton onClick={onFlipDimensions} edge="end">
+          <ScreenRotationRounded />
+        </IconButton>
+      </section>
+      <Divider />
+      <FormControl className={classes.presetFieldset}>
+        <FormLabel focused={false} className={classes.margin}>
+          {PRESETS}
+        </FormLabel>
+        <RadioGroup value={preset} onChange={handlePresetChange} aria-label={PRESETS} name="words.device">
+          <FormControlLabel
+            value={SIMULATOR_PANEL_CUSTOM_MODE}
+            control={<Radio />}
+            label={formatMessage(translations.custom)}
+            disabled={true}
+          />
+          <FormControlLabel
+            value={SIMULATOR_PANEL_RESPONSIVE_MODE}
+            control={<Radio />}
+            label={formatMessage(translations.previewWindowSize)}
+          />
+          {devices.map((device) => (
             <FormControlLabel
-              value={SIMULATOR_PANEL_CUSTOM_MODE}
+              key={device.value}
+              value={device.value}
               control={<Radio />}
-              label={formatMessage(translations.custom)}
-              disabled={true}
+              label={formatMessage(getTranslation(device.title, translations))}
             />
-            <FormControlLabel
-              value={SIMULATOR_PANEL_RESPONSIVE_MODE}
-              control={<Radio />}
-              label={formatMessage(translations.previewWindowSize)}
-            />
-            {devices.map((device) => (
-              <FormControlLabel
-                key={device.value}
-                value={device.value}
-                control={<Radio />}
-                label={formatMessage(getTranslation(device.title, translations))}
-              />
-            ))}
-          </RadioGroup>
-        </FormControl>
-      </div>
-    </>
+          ))}
+        </RadioGroup>
+      </FormControl>
+    </section>
   );
 }

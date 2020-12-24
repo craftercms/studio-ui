@@ -15,5 +15,5 @@
 #
 
 rm -rf ../../static-assets/libs/ace
-cp -r node_modules/ace-builds/src-min-noconflict ../../static-assets/libs/ace
+cp -r ../../node_modules/ace-builds/src-min-noconflict ../../static-assets/libs/ace
 cat src/ace-append.js >> ../../static-assets/libs/ace/ace.js

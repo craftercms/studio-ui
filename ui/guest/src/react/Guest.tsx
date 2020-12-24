@@ -301,7 +301,8 @@ function Guest(props: GuestProps) {
       .pipe(
         filter(({ payload }) => payload.path === path),
         pluck('payload', 'model'),
-        withLatestFrom(contentTypes$)
+        withLatestFrom(contentTypes$),
+        take(1)
       )
       .subscribe(([model]) => {
         iceId = iceRegistry.register({ modelId: model.craftercms.id });
