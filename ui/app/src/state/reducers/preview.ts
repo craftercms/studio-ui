@@ -533,8 +533,7 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state.guest,
         path: payload.path
       }
-    })
-    },
+    }),
     [setHighlightMode.type]: (state, { payload }) => ({
       ...state,
       highlightMode: payload.highlightMode
