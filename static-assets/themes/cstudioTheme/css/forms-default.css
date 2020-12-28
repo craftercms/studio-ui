@@ -1513,3 +1513,7 @@ body.yui-skin-cstudioTheme.masked {
 .cstudio-form-control-validation {
   width: 16px;
 }
+
+.form-engine-body {
+  background: #fafafa;
+}
