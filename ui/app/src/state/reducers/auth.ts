@@ -18,8 +18,8 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { sessionTimeout } from '../actions/user';
 import {
+  authTokenRefreshedFromAnotherTab,
   login,
-  loginComplete,
   loginFailed,
   logoutComplete,
   refreshAuthToken,
@@ -35,6 +35,13 @@ export const initialState: GlobalState['auth'] = {
   isFetching: false
 };
 
+const refreshAuthTokenReducer = (state, { payload }) => ({
+  ...state,
+  active: true,
+  isFetching: false,
+  expiresAt: fromExpiresAtString(payload.expiresAt)
+});
+
 const reducer = createReducer<GlobalState['auth']>(initialState, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...state,
@@ -44,12 +51,8 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
     ...state,
     isFetching: true
   }),
-  [refreshAuthTokenComplete.type]: (state, { payload }) => ({
-    ...state,
-    active: true,
-    isFetching: false,
-    expiresAt: fromExpiresAtString(payload.expiresAt)
-  }),
+  [refreshAuthTokenComplete.type]: refreshAuthTokenReducer,
+  [authTokenRefreshedFromAnotherTab.type]: refreshAuthTokenReducer,
   [refreshAuthTokenFailed.type]: (state) => ({
     ...state,
     active: false,

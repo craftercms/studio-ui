@@ -35,16 +35,18 @@ import { IntlShape } from 'react-intl';
 import { refreshSession } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
-import { EnhancedUser } from '../models/User';
-import { Site } from '../models/Site';
 
-export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
+export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; systemBroadcastChannel: BroadcastChannel };
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
 export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>;
 
 let store$: BehaviorSubject<CrafterCMSStore>;
+
+// TODO: Re-assess the location of this object.
+const systemBroadcastChannel =
+  window.BroadcastChannel !== undefined ? new BroadcastChannel('org.craftercms.systemChannel') : null;
 
 export function createStore(useMock = false): Observable<CrafterCMSStore> {
   if (store$) {
@@ -77,14 +79,13 @@ export function getStore(): CrafterCMSStore {
   return store$?.value;
 }
 
+export function getSystemBroadcastChannel() {
+  return systemBroadcastChannel;
+}
+
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<
-    StandardAction,
-    StandardAction,
-    GlobalState,
-    { getIntl: () => IntlShape }
-  >({
-    dependencies: { getIntl: getCurrentIntl }
+  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
+    dependencies: { getIntl: getCurrentIntl, systemBroadcastChannel }
   });
   const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({

@@ -40,5 +40,8 @@ export const logoutFailed = createAction('LOG_OUT_FAILED');
 export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
 export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
+export const authTokenRefreshedFromAnotherTab = createAction<RefreshSessionResponse>(
+  'AUTH_TOKEN_REFRESHED_FROM_ANOTHER_TAB'
+);
 
 // endregion

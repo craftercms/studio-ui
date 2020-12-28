@@ -16,6 +16,7 @@
 
 import { ofType } from 'redux-observable';
 import {
+  authTokenRefreshedFromAnotherTab,
   login,
   loginComplete,
   loginFailed,
@@ -24,7 +25,7 @@ import {
   refreshAuthTokenComplete,
   refreshAuthTokenFailed
 } from '../actions/auth';
-import { ignoreElements, map, mapTo, pluck, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mapTo, pluck, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
@@ -33,6 +34,7 @@ import { CrafterCMSEpic } from '../store';
 import { interval } from 'rxjs';
 import { storeInitialized } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 const epics: CrafterCMSEpic[] = [
   (action$) =>
@@ -69,20 +71,35 @@ const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(refreshAuthToken.type),
-      switchMap(() =>
-        refreshSession().pipe(
-          tap(({ token }) => setJwt(token)),
-          map(refreshAuthTokenComplete),
-          catchAjaxError(refreshAuthTokenFailed)
-        )
-      )
+      switchMap(() => refreshSession().pipe(map(refreshAuthTokenComplete), catchAjaxError(refreshAuthTokenFailed)))
+    ),
+  (action$, state$, { systemBroadcastChannel }) =>
+    action$.pipe(
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
+      // Note refreshAuthTokenComplete & storeInitialized payload signatures are different.
+      tap(({ payload }) => {
+        const auth = payload.auth ?? payload;
+        const token = auth.token;
+        const action = authTokenRefreshedFromAnotherTab(auth);
+        setJwt(token);
+        // For other tabs...
+        systemBroadcastChannel?.postMessage(action);
+        // For other frames on this tab....
+        getHostToHostBus().next(action);
+      }),
+      ignoreElements()
     ),
   (action$, state$) =>
     action$.pipe(
-      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type, authTokenRefreshedFromAnotherTab.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
-        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
+        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(
+          mapTo(refreshAuthToken()),
+          // Cancel any running interval if another action of the same purpose comes.
+          takeUntil(action$.pipe(ofType(authTokenRefreshedFromAnotherTab.type, refreshAuthTokenComplete.type))),
+          take(1)
+        )
       )
     ),
   (action$) => action$.pipe(ofType(loginComplete.type), pluck('payload', 'auth'), map(refreshAuthTokenComplete))
