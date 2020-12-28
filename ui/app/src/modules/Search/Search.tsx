@@ -709,6 +709,8 @@ export default function Search(props: SearchProps) {
         embedded={embedded}
       />
       <Drawer
+        // Keep mounted so that on embedded mode, it doesn't loose state of opened panels
+        keepMounted
         variant={desktopScreen && !embedded ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}

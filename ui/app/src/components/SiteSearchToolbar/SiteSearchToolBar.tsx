@@ -69,9 +69,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchBar: {
       backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light1
-    },
-    currentViewButton: {
-      marginRight: '10px'
     }
   })
 );
@@ -98,11 +95,9 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
           <IconButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick}>
             <CustomMenu />
           </IconButton>
-          {!embedded && (
-            <Typography variant="h5" component="h2">
-              {formatMessage(translations.search)}
-            </Typography>
-          )}
+          <Typography variant="h5" component="h2">
+            {formatMessage(translations.search)}
+          </Typography>
         </section>
         <section className={classes.searchBarContainer}>
           <SearchBar
@@ -116,7 +111,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
           />
         </section>
         <div>
-          <IconButton onClick={handleChangeView} className={classes.currentViewButton}>
+          <IconButton onClick={handleChangeView}>
             {currentView === 'grid' ? <FormatListBulletedIcon /> : <AppsIcon />}
           </IconButton>
           {!embedded && <ToolbarGlobalNav />}
