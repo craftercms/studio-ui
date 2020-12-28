@@ -164,7 +164,6 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var dropdownEl = document.createElement('select');
     YAHOO.util.Dom.addClass(dropdownEl, 'datum');
@@ -185,13 +184,12 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
 
     var editPositionEl = document.createElement('input');
     this.editPositionEl = editPositionEl;
-    YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-primary');
+    YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-primary edit-position');
     editPositionEl.type = 'button';
     editPositionEl.value = 'Edit Position';
     editPositionEl.style.padding = '1px 5px';
     editPositionEl.style.marginLeft = '5px';
     editPositionEl.style.display = 'none';
-    controlWidgetContainerEl.appendChild(editPositionEl);
 
     this.renderHelp(config, controlWidgetContainerEl);
 
@@ -201,6 +199,8 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     descriptionEl.innerHTML = config.description;
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
+    containerEl.appendChild(editPositionEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
 

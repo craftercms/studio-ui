@@ -183,7 +183,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
+    containerEl.appendChild(validEl);
 
     this.fileEl = document.createElement('p');
     YAHOO.util.Dom.addClass(this.fileEl, 'itemsSelected');

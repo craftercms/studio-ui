@@ -132,7 +132,6 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var inputEl = document.createElement('textarea');
     this.inputEl = inputEl;
@@ -171,8 +170,8 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 
     this.renderHelp(config, controlsWrapperEl);
 
-    dataWrapperEl.appendChild(controlsWrapperEl);
     dataWrapperEl.appendChild(inputEl);
+    dataWrapperEl.appendChild(controlsWrapperEl);
 
     controlWidgetContainerEl.appendChild(dataWrapperEl);
 
@@ -210,6 +209,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     descriptionEl.innerHTML = config.description;
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
   },

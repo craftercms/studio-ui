@@ -2148,7 +2148,7 @@ var CStudioForms =
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
-          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           addEl.innerHTML = 'Add First Item';
           addEl.onclick = function() {
             repeatContainerEl.form.setFocusedField(repeatContainerEl);
@@ -2185,7 +2185,7 @@ var CStudioForms =
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
-          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           addEl.innerHTML = CMgs.format(formsLangBundle, 'repeatAddAnother');
           if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
             YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
@@ -2208,7 +2208,7 @@ var CStudioForms =
 
           var upEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(upEl);
-          YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           upEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveUp');
           if (form.readOnly || i == 0) {
             YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
@@ -2234,7 +2234,7 @@ var CStudioForms =
 
           var downEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(downEl);
-          YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           downEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveDown');
           if (form.readOnly || i == repeatCount - 1) {
             YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
@@ -2260,7 +2260,7 @@ var CStudioForms =
 
           var deleteEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(deleteEl);
-          YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           deleteEl.innerHTML = CMgs.format(formsLangBundle, 'repeatDelete');
           if (form.readOnly || currentCount <= minOccurs) {
             YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');
