@@ -58,7 +58,7 @@
 
 </head>
 
-<body class="yui-skin-cstudioTheme">
+<body class="yui-skin-cstudioTheme form-engine-body">
 
 <header id="formHeader" style="display: none; overflow: hidden">
   <hgroup>
