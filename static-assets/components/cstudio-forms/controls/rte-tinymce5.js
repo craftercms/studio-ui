@@ -284,7 +284,9 @@ CStudioAuthoring.Module.requireModule(
           templates = rteConfig.templates && rteConfig.templates.template ? rteConfig.templates.template : null;
 
           // https://www.tiny.cloud/docs/plugins/
-          pluginList = rteConfig.plugins;
+          // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
+          // configuration file).
+          pluginList = rteConfig.plugins + ' paste';
           pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
 
           extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
