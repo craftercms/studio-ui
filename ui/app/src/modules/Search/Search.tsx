@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     background: theme.palette.background.default,
-    borderBotton: `1px solid ${theme.palette.divider}`
+    borderBottom: `1px solid ${theme.palette.divider}`
   },
   searchDropdown: {
     marginRight: '7px'

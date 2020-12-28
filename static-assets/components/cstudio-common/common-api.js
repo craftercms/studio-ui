@@ -9690,5 +9690,5 @@ function getTopLegacyWindow(nextWindow) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  CrafterCMSNext.renderBackgroundUI();
+  CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
 });
