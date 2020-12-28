@@ -171,7 +171,6 @@
       var validEl = document.createElement('span');
       YAHOO.util.Dom.addClass(validEl, 'validation-hint');
       YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-      controlWidgetContainerEl.appendChild(validEl);
 
       var inputEl = document.createElement('input');
       inputEl.setAttribute('type', 'number');
@@ -249,6 +248,7 @@
       descriptionEl.innerHTML = config.description;
 
       containerEl.appendChild(titleEl);
+      containerEl.appendChild(validEl);
       containerEl.appendChild(controlWidgetContainerEl);
       containerEl.appendChild(descriptionEl);
     },
