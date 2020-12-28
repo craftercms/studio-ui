@@ -2053,7 +2053,7 @@ var nodeOpen = false,
         animator.slideInDown();
       },
 
-      _openIframe: function(url, name) {
+      _openIframe: function(url, name, showCollapseBtn = true) {
         let topWindow = getTopLegacyWindow();
         var id = CSA.Utils.getScopedId(),
           animator,
@@ -2067,13 +2067,14 @@ var nodeOpen = false,
             '" id="studio-ice-container-' +
             editorId +
             '">' +
-            '       <div class="bd">' +
-            '           <input id="colExpButton" class="btn btn-default" type="button" value="Collapse">' +
-            '       </div>' +
-            '   </div>' +
-            '</div>',
-          $modal = $(modalTpl),
-          template =
+            '<div class="bd">';
+
+        if (showCollapseBtn) {
+          modalTpl += '<input id="colExpButton" class="btn btn-default" type="button" value="Collapse">';
+        }
+        modalTpl += '</div></div></div>';
+        ($modal = $(modalTpl)),
+          (template =
             '<iframe name="' +
             name +
             '" id="in-context-edit-editor-' +
@@ -2082,8 +2083,8 @@ var nodeOpen = false,
             topWindow.studioFormZorder +
             ';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' +
             editorId +
-            '\');"></iframe>',
-          parentEl = topWindow.document.body;
+            '\');"></iframe>'),
+          (parentEl = topWindow.document.body);
 
         animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
@@ -2120,16 +2121,14 @@ var nodeOpen = false,
                   .height()
                   .toString()
               );
-              $(dialog).height(60);
+              $(dialog).css('cssText', $(dialog).attr('style') + 'height: 65px !important');
               controlContainer.addClass('collapseForm');
               overlayContainer && overlayContainer.addClass('overlay-collapsed');
-              iframe.css('top', -(iframe.height() - 60));
               overlayContainer.hide();
             } else {
               $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie('formEngineHeight')));
               controlContainer.removeClass('collapseForm');
               overlayContainer && overlayContainer.removeClass('overlay-collapsed');
-              iframe.css('top', 0);
               overlayContainer.show();
             }
           });
@@ -8805,7 +8804,7 @@ var nodeOpen = false,
           newWindow = document.location = childSearchConfig.searchUrl;
         } else {
           var newWindow;
-          CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
+          CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId, false); //TODO: test name on iframe
         }
       }
     },

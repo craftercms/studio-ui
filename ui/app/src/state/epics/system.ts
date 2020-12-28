@@ -29,7 +29,8 @@ import {
   showPublishItemSuccessNotification,
   showRevertItemSuccessNotification,
   showSystemNotification,
-  showUnlockItemSuccessNotification
+  showUnlockItemSuccessNotification,
+  showRejectItemSuccessNotification
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 
@@ -195,6 +196,19 @@ const systemEpics: CrafterCMSEpic[] = [
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(showSystemNotification(payload));
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showRejectItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: getIntl().formatMessage(itemSuccessMessages.itemRejected, { count: payload?.count ?? 1 })
+          })
+        );
       }),
       ignoreElements()
     )

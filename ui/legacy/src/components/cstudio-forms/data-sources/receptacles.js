@@ -193,8 +193,8 @@
         {
           success(searchId, selectedTOs) {
             selectedTOs.forEach(function(item) {
-              const value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
-              control.newInsertItem(item.uri, value, 'shared');
+              const value = item.label && item.label !== '' ? item.label : item.path;
+              control.newInsertItem(item.path, value, 'shared');
               control._renderItems();
             });
           },
