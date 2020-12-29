@@ -14,6 +14,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses}.
  */
 
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  pageBuilder: {
+    id: 'pageBuilder.title',
+    defaultMessage: 'Page Builder'
+  },
+  dashboard: {
+    id: 'words.dashboard',
+    defaultMessage: 'Dashboard'
+  },
+  siteTools: {
+    id: 'siteTools.title',
+    defaultMessage: 'Site Tools'
+  },
+  contentTypes: {
+    id: 'contentTypes.title',
+    defaultMessage: 'Content Types'
+  },
+  encryptionTool: {
+    id: 'encryptionTool.title',
+    defaultMessage: 'Encryption Tool'
+  },
+  configuration: {
+    id: 'worlds.configuration',
+    defaultMessage: 'Configuration'
+  },
+  audit: {
+    id: 'words.audit',
+    defaultMessage: 'Audit'
+  },
+  workflowStates: {
+    id: 'workflowStates.title',
+    defaultMessage: 'Workflow States'
+  },
+  logConsole: {
+    id: 'logConsole.title',
+    defaultMessage: 'Log Console'
+  },
+  publishing: {
+    id: 'words.publishing',
+    defaultMessage: 'Publishing'
+  },
+  remoteRepositories: {
+    id: 'remoteRepositories.title',
+    defaultMessage: 'Remote Repositories'
+  },
+  graphql: {
+    id: 'graphql.title',
+    defaultMessage: 'GraphQL'
+  },
+  settings: {
+    id: 'words.settings',
+    defaultMessage: 'Settings'
+  },
+  site: {
+    id: 'words.site',
+    defaultMessage: 'Site'
+  },
+  preview: {
+    id: 'words.preview',
+    defaultMessage: 'Preview'
+  }
+});
+
 let count = 0;
 
 const uiConfigDefaults = {
@@ -24,7 +89,10 @@ const uiConfigDefaults = {
           id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
           uiKey: count++,
           configuration: {
-            title: 'Dashboard',
+            title: {
+              id: 'words.dashboard',
+              defaultMessage: 'Dashboard'
+            },
             icon: {
               baseClass: 'fa fa-tasks'
             },
@@ -38,7 +106,10 @@ const uiConfigDefaults = {
           id: 'craftercms.components.ToolsPanelPageButton',
           uiKey: count++,
           configuration: {
-            title: 'Page Builder',
+            title: {
+              id: 'pageBuilder.title',
+              defaultMessage: 'Page Builder'
+            },
             icon: {
               baseClass: 'fa fa-paint-brush'
             },
@@ -396,7 +467,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'configuration.title',
+                    id: 'worlds.configuration',
                     defaultMessage: 'Configuration'
                   },
                   icon: {
@@ -416,7 +487,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'audit.title',
+                    id: 'words.audit',
                     defaultMessage: 'Audit'
                   },
                   icon: {
@@ -476,7 +547,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'publishing.title',
+                    id: 'words.publishing',
                     defaultMessage: 'Publishing'
                   },
                   icon: {

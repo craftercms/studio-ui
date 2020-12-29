@@ -30,7 +30,7 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { useEnv, useMount, useSiteUIConfig } from '../../utils/hooks';
+import { useEnv, useMount, usePossibleTranslation, useSiteUIConfig } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -599,11 +599,10 @@ function onLogout(url) {
 
 const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { authoringBase } = useEnv();
-  const { formatMessage } = useIntl();
   return (
     <Tile
       icon={icon}
-      title={typeof title === 'string' ? title : formatMessage(title)}
+      title={usePossibleTranslation(title)}
       link={
         link ??
         {
