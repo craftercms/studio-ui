@@ -94,12 +94,7 @@ const epics: CrafterCMSEpic[] = [
       ofType(refreshAuthTokenComplete.type, storeInitialized.type, authTokenRefreshedFromAnotherTab.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
-        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(
-          mapTo(refreshAuthToken()),
-          // Cancel any running interval if another action of the same purpose comes.
-          takeUntil(action$.pipe(ofType(authTokenRefreshedFromAnotherTab.type, refreshAuthTokenComplete.type))),
-          take(1)
-        )
+        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
       )
     ),
   (action$) => action$.pipe(ofType(loginComplete.type), pluck('payload', 'auth'), map(refreshAuthTokenComplete))
