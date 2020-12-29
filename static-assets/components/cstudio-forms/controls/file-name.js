@@ -258,6 +258,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var inputContainer = document.createElement('div');
     YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap input-wrapper');
     inputContainer.appendChild(pathEl);
+    this.inputContainer = inputContainer;
     controlWidgetContainerEl.appendChild(inputContainer);
 
     var inputEl = document.createElement('input');
@@ -369,6 +370,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       containerEl.appendChild(editFileNameEl);
 
       this.inputEl.disabled = true;
+      YAHOO.util.Dom.addClass(this.inputContainer, 'disabled');
 
       var createWarningDialog = function() {
         var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
@@ -414,6 +416,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
             text: 'OK',
             handler: function() {
               _self.inputEl.disabled = false;
+              YAHOO.util.Dom.removeClass(_self.inputContainer, 'disabled');
               _self.inputEl.focus();
               editFileNameEl.style.display = 'none';
               this.destroy();
