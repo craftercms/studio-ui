@@ -21,37 +21,17 @@ const messages = defineMessages({
     id: 'pageBuilder.title',
     defaultMessage: 'Page Builder'
   },
-  dashboard: {
-    id: 'words.dashboard',
-    defaultMessage: 'Dashboard'
-  },
   siteTools: {
     id: 'siteTools.title',
     defaultMessage: 'Site Tools'
   },
-  contentTypes: {
-    id: 'contentTypes.title',
-    defaultMessage: 'Content Types'
-  },
-  encryptionTool: {
-    id: 'encryptionTool.title',
-    defaultMessage: 'Encryption Tool'
-  },
   configuration: {
-    id: 'worlds.configuration',
+    id: 'words.configuration',
     defaultMessage: 'Configuration'
-  },
-  audit: {
-    id: 'words.audit',
-    defaultMessage: 'Audit'
   },
   workflowStates: {
     id: 'workflowStates.title',
     defaultMessage: 'Workflow States'
-  },
-  logConsole: {
-    id: 'logConsole.title',
-    defaultMessage: 'Log Console'
   },
   publishing: {
     id: 'words.publishing',
@@ -60,22 +40,6 @@ const messages = defineMessages({
   remoteRepositories: {
     id: 'remoteRepositories.title',
     defaultMessage: 'Remote Repositories'
-  },
-  graphql: {
-    id: 'graphql.title',
-    defaultMessage: 'GraphQL'
-  },
-  settings: {
-    id: 'words.settings',
-    defaultMessage: 'Settings'
-  },
-  site: {
-    id: 'words.site',
-    defaultMessage: 'Site'
-  },
-  preview: {
-    id: 'words.preview',
-    defaultMessage: 'Preview'
   }
 });
 
@@ -427,7 +391,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'contentTypes.title',
+                    id: 'receptaclesMessages.contentTypes',
                     defaultMessage: 'Content Types'
                   },
                   icon: {
@@ -447,7 +411,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'encryptionTool.title',
+                    id: 'GlobalMenu.EncryptionToolEntryLabel',
                     defaultMessage: 'Encryption Tool'
                   },
                   icon: {
@@ -467,7 +431,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'worlds.configuration',
+                    id: 'words.configuration',
                     defaultMessage: 'Configuration'
                   },
                   icon: {
@@ -487,7 +451,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'words.audit',
+                    id: 'GlobalMenu.AuditEntryLabel',
                     defaultMessage: 'Audit'
                   },
                   icon: {
@@ -527,7 +491,7 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'logConsole.title',
+                    id: 'GlobalMenu.LogConsoleEntryLabel',
                     defaultMessage: 'Log Console'
                   },
                   icon: {
@@ -586,10 +550,7 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: {
-                    id: 'graphql.title',
-                    defaultMessage: 'GraphQL'
-                  },
+                  title: 'GraphQL',
                   icon: {
                     baseClass: 'fa fa-line-chart'
                   },
