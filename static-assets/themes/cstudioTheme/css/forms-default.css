@@ -1328,6 +1328,14 @@ body.yui-skin-cstudioTheme.masked {
   padding-top: 5px;
 }
 
+
+.cstudio-form-control-input.cstudio-form-control-file-name {
+  border: 0;
+  background: none;
+  padding: 0;
+  outline: none;
+}
+
 .cstudio-form-control-video-picker-container .url {
   display: block;
   width: 100%;
@@ -1350,9 +1358,25 @@ body.yui-skin-cstudioTheme.masked {
   flex-wrap: nowrap;
 }
 
+.cstudio-form-control-input-container.input-wrapper {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+
+.cstudio-form-control-input-container.focused {
+  outline: -webkit-focus-ring-color auto 1px;
+  outline-color: -webkit-focus-ring-color;
+  outline-style: auto;
+  outline-width: 1px;
+}
+
 .input-path {
   font-size: 16px;
   margin-right: 5px;
+  color: #737373;
+  font-weight: 600;
+  margin-right: 0;
 }
 
 .cstudio-form-control-input,

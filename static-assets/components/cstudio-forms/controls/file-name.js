@@ -231,6 +231,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
 
+    const self = this;
+
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -254,7 +256,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     pathEl.innerHTML = path + ' ';
 
     var inputContainer = document.createElement('div');
-    YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap');
+    YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap input-wrapper');
     inputContainer.appendChild(pathEl);
     controlWidgetContainerEl.appendChild(inputContainer);
 
@@ -278,8 +280,24 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       },
       this
     );
+    Event.on(
+      inputEl,
+      'focus',
+      function() {
+        YAHOO.util.Dom.addClass(inputContainer, 'focused');
+      },
+      this
+    );
     Event.on(inputEl, 'change', this._onChangeVal, this);
-    Event.on(inputEl, 'blur', this._onChange, this);
+    Event.on(
+      inputEl,
+      'blur',
+      function(evt, obj) {
+        YAHOO.util.Dom.removeClass(inputContainer, 'focused');
+        self._onChange(evt, obj);
+      },
+      this
+    );
     Event.on(inputEl, 'keyup', this.processKey, inputEl);
     Event.on(
       inputEl,
