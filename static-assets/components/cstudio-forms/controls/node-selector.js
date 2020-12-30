@@ -204,7 +204,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       )}</button>`
     );
     const $dropdown = $('<div class="dropdown"></div>');
-    const $dropdownMenu = $('<ul class="dropdown-menu"></ul>');
+    const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
     this.$dropdown = $dropdown;
     this.$dropdownMenu = $dropdownMenu;
     this.$addBtn = $addBtn;

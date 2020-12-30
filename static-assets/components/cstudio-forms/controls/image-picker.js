@@ -554,7 +554,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       `<button id="add-image" class="cstudio-button btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">${dropdownLabel}</button>`
     );
     const $dropdown = $('<div class="dropdown"></div>');
-    const $dropdownMenu = $('<ul class="dropdown-menu"></ul>');
+    const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
     this.$dropdown = $dropdown;
     this.$dropdownMenu = $dropdownMenu;
     this.$addBtn = $addBtn;
