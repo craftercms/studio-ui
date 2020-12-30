@@ -1555,3 +1555,15 @@ body.yui-skin-cstudioTheme.masked {
   cursor: pointer;
   padding: 10px 0 10px 15px;
 }
+
+.btn .caret {
+   margin-left: 2px !important;
+}
+
+.dropdown {
+  display: inline-block;
+}
+
+.dropdown-menu>li>a.cstudio-form-control-image-picker-add-container-item {
+  color: #0176B1;
+}
