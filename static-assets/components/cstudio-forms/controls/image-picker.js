@@ -651,7 +651,9 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     );
 
     // adding options to $dropdownMenu;
-    this.addImage();
+    if (!this.$addBtn.attr('disabled')) {
+      this.addImage();
+    }
 
     YAHOO.util.Event.addListener(
       $addBtn[0],
