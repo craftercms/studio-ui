@@ -1661,7 +1661,7 @@ var CStudioForms =
                       text: CMgs.format(formsLangBundle, 'no'),
                       handler: function() {
                         if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
+                          iceWindowCallback.cancelled({ close: false });
                         }
                         this.destroy();
                       },
