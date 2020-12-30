@@ -2018,6 +2018,7 @@ var CStudioForms =
             sectionContainerEl
           )[0];
           var sectionBodyEl = YDom.getElementsByClassName('panel-body', null, sectionContainerEl)[0];
+          var sectionHeadingEl = YDom.getElementsByClassName('panel-heading', null, sectionContainerEl)[0];
 
           if (section.defaultOpen == 'false' || section.defaultOpen == '' || section.defaultOpen == false) {
             sectionBodyEl.style.display = 'none';
@@ -2028,7 +2029,7 @@ var CStudioForms =
           formSection.sectionOpenCloseWidgetEl = sectionOpenCloseWidgetEl;
           formSection.sectionBodyEl = sectionBodyEl;
 
-          sectionContainerEl.onclick = function() {
+          sectionHeadingEl.onclick = function() {
             YDom.getElementsByClassName('panel-body', null, this)[0];
             if (YDom.getElementsByClassName('panel-body', null, this)[0].style.display === 'none') {
               YDom.getElementsByClassName('panel-body', null, this)[0].style.display = 'block';
@@ -2043,7 +2044,7 @@ var CStudioForms =
                 'cstudio-form-section-widget-closed'
               );
             }
-          };
+          }.bind(sectionContainerEl);
 
           for (var j = 0; j < section.fields.length; j++) {
             var field = section.fields[j];
