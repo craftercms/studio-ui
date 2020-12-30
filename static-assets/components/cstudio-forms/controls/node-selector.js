@@ -374,6 +374,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     var items = this.items;
 
+    if (items.length === 0) {
+      this.editButtonEl.disabled = true;
+      this.deleteButtonEl.disabled = true;
+      YAHOO.util.Dom.addClass(this.editButtonEl, 'cstudio-button-disabled');
+      YAHOO.util.Dom.addClass(this.deleteButtonEl, 'cstudio-button-disabled');
+      this.selectedItemIndex = -1;
+    }
+
     itemsContainerEl.innerHTML = '';
     var tar = new YAHOO.util.DDTarget(itemsContainerEl);
     for (var i = 0; i < items.length; i++) {
