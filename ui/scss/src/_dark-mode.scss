@@ -9,9 +9,15 @@ $dark-mode-font-highlight: #70D7FF;
   .craftercms-logo-dark {
     display: none !important;
   }
+  .cstudio-form-controls-container {
+    background: white;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
+  .cstudio-form-controls-container {
+    background: $dark-mode-background-paper;
+  }
   #studioBar {
     &> .navbar-fixed-top {
       color: $dark-mode-font-color;

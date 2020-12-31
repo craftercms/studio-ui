@@ -38,12 +38,7 @@ CStudioForms.Datasources.EmbeddedContent = function(id, form, properties, constr
 YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
-  createElementAction: function(control, _self, addContainerEl, onlyAppend) {
-    if (onlyAppend) {
-      control.addContainerEl = null;
-      control.containerEl.removeChild(addContainerEl);
-    }
-
+  createElementAction: function(control, _self) {
     if (_self.contentType === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
@@ -87,7 +82,6 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
     var _self = this;
-    var addContainerEl = control.addContainerEl || null;
 
     var datasourceDef = this.form.definition.datasources,
       newElTitle = '';
@@ -98,32 +92,23 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
       }
     }
 
-    if (!addContainerEl && onlyAppend) {
-      addContainerEl = document.createElement('div');
-      control.containerEl.appendChild(addContainerEl);
-      YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-      control.addContainerEl = addContainerEl;
-      control.addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
-      control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
-    }
-
     if (onlyAppend) {
-      addContainerEl.create = document.createElement('div');
-      addContainerEl.appendChild(addContainerEl.create);
-      YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+      const create = $(
+        `<li class="cstudio-form-controls-create-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
+          langBundle,
+          'createNew'
+        )} - ${newElTitle}</a></li>`
+      );
 
-      var createEl = document.createElement('div');
-      YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = CMgs.format(langBundle, 'createNew') + ' - ' + newElTitle;
-      control.addContainerEl.create.appendChild(createEl);
-      var addContainerEl = control.addContainerEl;
+      control.$dropdownMenu.append(create);
+
       YAHOO.util.Event.on(
-        createEl,
+        create[0],
         'click',
         function() {
-          _self.createElementAction(control, _self, addContainerEl, onlyAppend);
+          _self.createElementAction(control, _self);
         },
-        createEl
+        create[0]
       );
     } else {
       _self.createElementAction(control, _self);

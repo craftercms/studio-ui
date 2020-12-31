@@ -148,7 +148,9 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           break;
         }
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          onDismiss();
+          if (e.data.close) {
+            onDismiss();
+          }
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
