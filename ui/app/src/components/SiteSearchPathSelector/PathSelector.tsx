@@ -29,10 +29,10 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   pathSelectorInputRoot: {
     flexGrow: 1
   },
@@ -41,22 +41,28 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: palette.gray.medium4
   },
   pathSelectorWrapper: {
+    flex: 1,
+    minHeight: 40,
     display: 'flex',
-    padding: '10px 0px 10px 12px',
-    border: `1px solid  ${palette.gray.light1}`,
-    borderRadius: '5px',
-    '&.disabled': {
-      opacity: 0.7
+    cursor: 'pointer',
+    padding: '0 0 0 10px',
+    backgroundColor: theme.palette.background.default,
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover
     },
-    '&:not(.disabled):hover': {
-      borderColor: palette.gray.light6
-    }
+    '&.disabled': {
+      opacity: 0.7,
+      cursor: 'default',
+      backgroundColor: theme.palette.action.disabled
+    },
+    '&:not(.disabled):hover': {}
   },
   invisibleInput: {
-    padding: 0,
     border: 0,
-    background: 'none',
+    padding: 0,
     height: '100%',
+    cursor: 'pointer',
+    background: 'none',
     '&:focus': {
       borderColor: 'none',
       boxShadow: 'inherit'
@@ -134,9 +140,10 @@ export default function PathSelector(props: PathSelectorProps) {
   };
 
   return (
-    <div
-      className={clsx(classes.pathSelectorWrapper, disabled && 'disabled')}
+    <Paper
+      variant="outlined"
       onClick={disabled ? null : onOpenPathSelectionDialog}
+      className={clsx(classes.pathSelectorWrapper, disabled && 'disabled')}
     >
       <InputBase
         classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
@@ -153,6 +160,6 @@ export default function PathSelector(props: PathSelectorProps) {
           ) : null
         }
       />
-    </div>
+    </Paper>
   );
 }

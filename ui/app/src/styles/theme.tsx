@@ -120,7 +120,30 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         root: {
           '&:before': {
             display: 'none'
+          },
+          '&$expanded': {
+            margin: '0'
           }
+        }
+      },
+      MuiAccordionSummary: {
+        root: {
+          '&$expanded': {
+            minHeight: 'auto'
+          },
+          '&:hover:not($disabled)': {
+            background: defaultTheme.palette.action.hover
+          }
+        },
+        content: {
+          '&$expanded': {
+            margin: '12px 0'
+          }
+        }
+      },
+      MuiAccordionDetails: {
+        root: {
+          display: 'block'
         }
       }
     }

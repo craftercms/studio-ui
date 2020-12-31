@@ -99,7 +99,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     padding: '0 6px 0 20px',
     alignItems: 'center',
-    background: theme.palette.background.paper
+    background: theme.palette.background.paper,
+    borderBottom: `1px solid ${theme.palette.divider}`
   },
   clearSelected: {
     marginLeft: '5px',
@@ -179,7 +180,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: 65,
     height: 'calc(100% - 65px)',
     bottom: 0,
-    width: drawerWidth
+    width: drawerWidth,
+    zIndex: theme.zIndex.appBar - 1
   },
   drawerPaperSelect: {
     top: 0,
@@ -709,8 +711,6 @@ export default function Search(props: SearchProps) {
         embedded={embedded}
       />
       <Drawer
-        // Keep mounted so that on embedded mode, it doesn't loose state of opened panels
-        keepMounted
         variant={desktopScreen && !embedded ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}
@@ -731,7 +731,6 @@ export default function Search(props: SearchProps) {
         {searchResults && searchResults.facets && (
           <SiteSearchFilters
             mode={mode}
-            text={'Filters'}
             className={classes.searchDropdown}
             facets={searchResults.facets}
             handleFilterChange={handleFilterChange}
@@ -830,7 +829,6 @@ export default function Search(props: SearchProps) {
           )}
         </section>
       </section>
-
       {mode === 'default' && (
         <ActionsBar
           open={selected.length > 0}
@@ -841,7 +839,6 @@ export default function Search(props: SearchProps) {
           onAcceptSelection={onAcceptSelection}
         />
       )}
-
       {mode === 'select' && (
         <section className={classes.actionsMenu}>
           <Button variant="outlined" onClick={onClose}>
