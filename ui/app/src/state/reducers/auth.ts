@@ -16,31 +16,51 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { SESSION_TIMEOUT } from '../actions/user';
+import { sessionTimeout } from '../actions/user';
 import {
-  LOG_IN,
-  LOG_IN_COMPLETE,
-  LOG_IN_FAILED,
-  LOG_OUT_COMPLETE,
-  VALIDATE_SESSION,
-  VALIDATE_SESSION_COMPLETE,
-  VALIDATE_SESSION_FAILED
+  authTokenRefreshedFromAnotherTab,
+  login,
+  loginFailed,
+  logoutComplete,
+  refreshAuthToken,
+  refreshAuthTokenComplete,
+  refreshAuthTokenFailed
 } from '../actions/auth';
+import { storeInitialized } from '../actions/system';
 
-export const initialState = {
+export const initialState: GlobalState['auth'] = {
   error: null,
   active: false,
+  expiresAt: null,
   isFetching: false
 };
 
+const refreshAuthTokenReducer = (state, { payload }) => ({
+  ...state,
+  active: true,
+  isFetching: false,
+  expiresAt: fromExpiresAtString(payload.expiresAt)
+});
+
 const reducer = createReducer<GlobalState['auth']>(initialState, {
-  [VALIDATE_SESSION]: (state) => ({ ...state, isFetching: true }),
-  [VALIDATE_SESSION_COMPLETE]: (state, { payload: active }) => ({ ...state, isFetching: false, active }),
-  [VALIDATE_SESSION_FAILED]: (state) => ({ ...state, isFetching: false }),
-  [SESSION_TIMEOUT]: () => initialState,
-  [LOG_IN]: (state) => ({ ...state, isFetching: true }),
-  [LOG_IN_COMPLETE]: () => ({ active: true, error: null, isFetching: true }),
-  [LOG_IN_FAILED]: (state, action) => ({
+  [storeInitialized.type]: (state, { payload }) => ({
+    ...state,
+    expiresAt: fromExpiresAtString(payload.auth.expiresAt)
+  }),
+  [refreshAuthToken.type]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
+  [refreshAuthTokenComplete.type]: refreshAuthTokenReducer,
+  [authTokenRefreshedFromAnotherTab.type]: refreshAuthTokenReducer,
+  [refreshAuthTokenFailed.type]: (state) => ({
+    ...state,
+    active: false,
+    isFetching: false
+  }),
+  [sessionTimeout.type]: () => initialState,
+  [login.type]: (state) => ({ ...state, isFetching: true }),
+  [loginFailed.type]: (state, action) => ({
     ...state,
     isFetching: false,
     error:
@@ -56,7 +76,11 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
             remedialAction: 'Please try again momentarily or contact support'
           }
   }),
-  [LOG_OUT_COMPLETE]: () => initialState
+  [logoutComplete.type]: () => initialState
 });
+
+function fromExpiresAtString(expiresAt: string) {
+  return new Date(expiresAt).getTime();
+}
 
 export default reducer;

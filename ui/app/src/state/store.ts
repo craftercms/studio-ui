@@ -22,9 +22,9 @@ import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
-import { forkJoin, Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
-import { fetchRolesInSiteForCurrent, me } from '../services/users';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { fetchMyRolesInSite, me } from '../services/users';
 import { fetchSites } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
@@ -32,42 +32,60 @@ import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
+import { refreshSession } from '../services/auth';
+import { setJwt } from '../utils/auth';
+import { storeInitialized } from './actions/system';
 
-export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
+export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; systemBroadcastChannel: BroadcastChannel };
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
 export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>;
 
-let store: CrafterCMSStore;
+let store$: BehaviorSubject<CrafterCMSStore>;
+
+// TODO: Re-assess the location of this object.
+const systemBroadcastChannel =
+  window.BroadcastChannel !== undefined ? new BroadcastChannel('org.craftercms.systemChannel') : null;
 
 export function createStore(useMock = false): Observable<CrafterCMSStore> {
-  if (store) {
-    return of(store);
-  }
-  const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
-  if (preloadState) {
-    return of(createStoreSync(preloadState)).pipe(tap((s) => (store = s)));
+  if (store$) {
+    return store$.pipe(
+      filter((store) => store !== null),
+      take(1)
+    );
   } else {
-    return fetchInitialState().pipe(
-      map((initialState) => createStoreSync(initialState)),
-      tap((s) => (store = s))
+    store$ = new BehaviorSubject(null);
+    return refreshSession().pipe(
+      tap(({ token }) => setJwt(token)),
+      switchMap((auth) => {
+        const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
+        return (preloadState
+          ? of(createStoreSync(preloadState))
+          : fetchInitialState().pipe(map((initialState) => createStoreSync(initialState)))
+        ).pipe(
+          tap((store) => {
+            store.dispatch(storeInitialized({ auth }));
+            store$.next(store);
+          })
+        );
+      }),
+      switchMap(() => store$.pipe(take(1)))
     );
   }
 }
 
 export function getStore(): CrafterCMSStore {
-  return store;
+  return store$?.value;
+}
+
+export function getSystemBroadcastChannel() {
+  return systemBroadcastChannel;
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware<
-    StandardAction,
-    StandardAction,
-    GlobalState,
-    { getIntl: () => IntlShape }
-  >({
-    dependencies: { getIntl: getCurrentIntl }
+  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
+    dependencies: { getIntl: getCurrentIntl, systemBroadcastChannel }
   });
   const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({
@@ -107,11 +125,14 @@ export function createMockInitialState(): Partial<GlobalState> {
   return {
     auth: { ...authInitialState, active: true },
     user: {
+      id: 1,
+      enabled: true,
+      externallyManaged: false,
       firstName: 'Mr.',
       lastName: 'Admin',
       email: 'admin@craftercms.org',
       username: 'admin',
-      authType: 'DB',
+      authenticationType: 'DB',
       rolesBySite: {
         editorial: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
         headless: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
@@ -156,22 +177,30 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
       sites.length
         ? forkJoin<LookupTable<Observable<string[]>>, ''>(
             sites.reduce((lookup, site) => {
-              lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
+              lookup[site.id] = fetchMyRolesInSite(site.id);
               return lookup;
             }, {})
           ).pipe(
             map((rolesBySite) => {
-              user.rolesBySite = rolesBySite;
-              user.sites = sites.map(({ id }) => id);
               return {
-                user,
+                user: {
+                  ...user,
+                  rolesBySite: rolesBySite,
+                  sites: sites.map(({ id }) => id),
+                  preferences: {}
+                },
                 sites: { ...sitesInitialState, byId: createLookupTable(sites) },
                 auth: { ...authInitialState, active: true }
               };
             })
           )
         : of({
-            user,
+            user: {
+              ...user,
+              sites: [],
+              rolesBySite: {},
+              preferences: {}
+            },
             sites: { ...sitesInitialState, byId: {} },
             auth: { ...authInitialState, active: true }
           })

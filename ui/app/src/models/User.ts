@@ -17,16 +17,20 @@
 import { LookupTable } from './LookupTable';
 
 export interface User {
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
   username: string;
-  authType: string;
+  authenticationType: string;
+  enabled: boolean;
+  externallyManaged: boolean;
+}
+
+export interface EnhancedUser extends User {
   rolesBySite: LookupTable<string[]>;
   sites: string[];
   preferences: LookupTable;
 }
 
-export interface LegacyUser extends Omit<User, 'authType'> {
-  authenticationType: string;
-}
+export default User;

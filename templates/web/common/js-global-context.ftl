@@ -32,11 +32,14 @@
     <#assign user = userService.getCurrentUser()/>
     <#assign sites = userService.getCurrentUserSites()/>
     "user": {
+      "id": ${user.id!"-1"},
+      "enabled": ${(user.enabled!true)?string('true', 'false')},
+      "externallyManaged": ${(user.externallyManaged!true)?string('true', 'false')},
       "firstName": "${user.firstName!""}",
       "lastName": "${user.lastName!""}",
       "email": "${user.email!""}",
       "username": "${user.username!""}",
-      "authType": "${user.authenticationType!""}",
+      "authenticationType": "${user.authenticationType!""}",
       "rolesBySite": {
         <#list sites as site>
         <#if site.siteId??>
@@ -76,8 +79,8 @@
     "env": {
       "authoringBase": `${'$'}{origin}/studio`,
       "guestBase": origin,
-      "xsrfHeader": "${env_config.headerName!''}",
-      "xsrfArgument": "${env_config.parameterName!''}",
+      "xsrfHeader": "${env_config.headerName!_csrf.headerName!''}",
+      "xsrfArgument": "${env_config.parameterName!_csrf.parameterName!''}",
       'siteCookieName': 'crafterSite',
       'previewLandingBase': `${'$'}{origin}/studio/preview-landing`,
       'version': null

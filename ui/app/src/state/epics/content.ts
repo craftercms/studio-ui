@@ -76,7 +76,7 @@ const content = [
       withLatestFrom(state$),
       filter(([{ payload }, state]) => !state.content.items.permissionsByPath?.[payload.path]),
       mergeMap(([{ payload }, state]) =>
-        getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
+        getUserPermissions(state.sites.active, payload.path).pipe(
           map((permissions: string[]) =>
             fetchUserPermissionsComplete({
               path: payload.path,

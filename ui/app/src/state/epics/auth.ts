@@ -14,47 +14,90 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import {
-  LOG_IN,
-  LOG_OUT,
+  authTokenRefreshedFromAnotherTab,
+  login,
   loginComplete,
   loginFailed,
-  logoutComplete,
-  logoutFailed,
-  VALIDATE_SESSION,
-  validateSessionComplete,
-  validateSessionFailed
+  logout,
+  refreshAuthToken,
+  refreshAuthTokenComplete,
+  refreshAuthTokenFailed
 } from '../actions/auth';
-import { map, switchMap, tap } from 'rxjs/operators';
-import { StandardAction } from '../../models/StandardAction';
-import GlobalState from '../../models/GlobalState';
+import { ignoreElements, map, mapTo, pluck, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
+import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
-import { setRequestForgeryToken } from '../../utils/auth';
+import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
+import { CrafterCMSEpic } from '../store';
+import { interval } from 'rxjs';
+import { storeInitialized } from '../actions/system';
+import { sessionTimeout } from '../actions/user';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
-const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) =>
-  action$.pipe(
-    ofType(LOG_IN),
-    switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
-  );
-
-const logout: Epic = (action$) =>
-  action$.pipe(
-    ofType(LOG_OUT),
-    switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
-  );
-
-const validateSession: Epic = (action$) =>
-  action$.pipe(
-    ofType(VALIDATE_SESSION),
-    switchMap(() =>
-      auth.validateSession().pipe(
-        tap((isValid) => !isValid && setRequestForgeryToken()),
-        map(validateSessionComplete),
-        catchAjaxError(validateSessionFailed)
+const epics: CrafterCMSEpic[] = [
+  (action$) =>
+    action$.pipe(
+      ofType(login.type),
+      switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(logout.type),
+      withLatestFrom(state$),
+      // Spring requires regular post for logout....
+      // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
+      tap(([, state]) => {
+        const tokenField = document.createElement('input');
+        tokenField.type = 'hidden';
+        tokenField.name = state.env.xsrfArgument;
+        tokenField.value = getRequestForgeryToken();
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = `${state.env.authoringBase}/logout`;
+        form.appendChild(tokenField);
+        document.body.appendChild(form);
+        form.submit();
+      }),
+      ignoreElements()
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(sessionTimeout.type),
+      tap(() => setRequestForgeryToken()),
+      ignoreElements()
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(refreshAuthToken.type),
+      switchMap(() => refreshSession().pipe(map(refreshAuthTokenComplete), catchAjaxError(refreshAuthTokenFailed)))
+    ),
+  (action$, state$, { systemBroadcastChannel }) =>
+    action$.pipe(
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
+      // Note refreshAuthTokenComplete & storeInitialized payload signatures are different.
+      tap(({ payload }) => {
+        const auth = payload.auth ?? payload;
+        const token = auth.token;
+        const action = authTokenRefreshedFromAnotherTab(auth);
+        setJwt(token);
+        // For other tabs...
+        systemBroadcastChannel?.postMessage(action);
+        // For other frames on this tab....
+        getHostToHostBus().next(action);
+      }),
+      ignoreElements()
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type, authTokenRefreshedFromAnotherTab.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
       )
-    )
-  );
+    ),
+  (action$) => action$.pipe(ofType(loginComplete.type), pluck('payload', 'auth'), map(refreshAuthTokenComplete))
+];
 
-export default [login, logout, validateSession] as Epic[];
+export default epics;

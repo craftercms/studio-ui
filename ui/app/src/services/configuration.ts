@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get } from '../utils/ajax';
+import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
@@ -40,6 +40,20 @@ export function getConfigurationDOM(
   module: CrafterCMSModules
 ): Observable<XMLDocument> {
   return getRawConfiguration(site, configPath, module).pipe(map(fromString));
+}
+
+export function writeConfiguration(
+  site: string,
+  path: string,
+  module: CrafterCMSModules,
+  content: string
+): Observable<any> {
+  return postJSON('/studio/api/2/configuration/write_configuration', {
+    siteId: site,
+    module,
+    path,
+    content
+  });
 }
 
 // region AudiencesPanelConfig
@@ -221,8 +235,8 @@ export function getSiteUiConfig(
 
 // endregion
 
-export function getGlobalMenuItems() {
-  return get('/studio/api/2/ui/views/global_menu.json');
+export function getGlobalMenuItems(): Observable<{ id: string; icon: string; label: string }[]> {
+  return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
 }
 
 export function getProductLanguages(): Observable<{ id: string; label: string }[]> {

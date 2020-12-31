@@ -17,6 +17,8 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LoginView, { LoginViewProps } from '../components/SystemStatus/LoginView';
+import CrafterThemeProvider from '../components/CrafterThemeProvider';
+import I18nProvider from '../components/I18nProvider';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -45,7 +47,7 @@ const useStyles = makeStyles(() =>
 );
 
 export default function Login(props: LoginViewProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   // **************************************************************************
   // TODO: To be enabled or removed depending on the background video decision.
   // **************************************************************************
@@ -56,24 +58,28 @@ export default function Login(props: LoginViewProps) {
   //   video.play();
   // }, []);
   return (
-    <div className={classes.root}>
-      {/*
-      **************************************************************************
-      TODO: To be enabled or removed depending on the background video decision.
-      **************************************************************************
-      <video
-        loop
-        muted
-        ref={videoRef}
-        // autoPlay
-        id="loginVideo"
-        preload="auto"
-        className={classes.video}
-        poster="/studio/static-assets/images/camera-moving-through-cogs.jpeg"
-        src="/studio/static-assets/images/camera-moving-through-cogs.mp4"
-      />
-      */}
-      <LoginView {...props} />
-    </div>
+    <I18nProvider>
+      <CrafterThemeProvider>
+        <div className={classes.root}>
+          {/*
+          **************************************************************************
+          TODO: To be enabled or removed depending on the background video decision.
+          **************************************************************************
+          <video
+            loop
+            muted
+            ref={videoRef}
+            // autoPlay
+            id="loginVideo"
+            preload="auto"
+            className={classes.video}
+            poster="/studio/static-assets/images/camera-moving-through-cogs.jpeg"
+            src="/studio/static-assets/images/camera-moving-through-cogs.mp4"
+          />
+          */}
+          <LoginView {...props} />
+        </div>
+      </CrafterThemeProvider>
+    </I18nProvider>
   );
 }
