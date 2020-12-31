@@ -92,7 +92,7 @@ export default function ToolsPanelEmbeddedAppViewButton(props) {
         classes={{ paper: classes.dialog }}
       >
         <DialogHeader
-          title={props.title}
+          title={usePossibleTranslation(props.title)}
           rightActions={[
             {
               icon: 'MinimizeIcon',

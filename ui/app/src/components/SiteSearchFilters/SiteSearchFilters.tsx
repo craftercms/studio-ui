@@ -15,14 +15,12 @@
  */
 import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
 import { camelize } from '../../utils/string';
 import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
@@ -33,8 +31,13 @@ import SiteSearchFilter from '../SiteSearchFilter';
 import PathSelector from '../SiteSearchPathSelector';
 import Button from '@material-ui/core/Button';
 import palette from '../../styles/palette';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { useSpreadState } from '../../utils/hooks';
+import Divider from '@material-ui/core/Divider/Divider';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   header: {
     width: '100%',
     padding: '10px 15px 10px 20px',
@@ -44,29 +47,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     border: 'none',
     color: theme.palette.type === 'dark' ? palette.white : ''
   },
-  filterLabel: {
+  accordionTitle: {
+    display: 'flex',
     fontWeight: 600,
-    textTransform: 'uppercase'
-  },
-  body: {
-    padding: '10px'
-  },
-  filterChecked: {
-    marginLeft: '10px',
-    color: theme.palette.type === 'dark' ? palette.white : palette.black
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest
-    })
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)'
-  },
-  listPadding: {
-    padding: '0'
+    alignItems: 'center'
   },
   clearButtonContainer: {
     padding: '10px 20px',
@@ -124,7 +108,6 @@ const messages: any = defineMessages({
 });
 
 interface SiteSearchFiltersProps {
-  text: string;
   className: any;
   facets: [Facet];
   queryParams: Partial<ElasticParams>;
@@ -153,7 +136,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     setSelectedPath
   } = props;
   const { formatMessage } = useIntl();
-  const [expanded, setExpanded] = useState({
+  const [expanded, setExpanded] = useSpreadState({
     sortBy: false,
     path: false
   });
@@ -194,7 +177,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   });
 
   const handleExpandClick = (item: string) => {
-    setExpanded({ ...expanded, [item]: !expanded[item] });
+    setExpanded({ [item]: !expanded[item] });
   };
 
   const pathToFilter = (path: string) => {
@@ -217,39 +200,27 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     setSelectedPath(path);
   };
 
-  const renderFilters = () => {
-    return filterKeys.map((key: string, i: number) => {
-      let name = camelize(key);
-      return (
-        <div key={i}>
-          <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick(name)}>
-            <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
-              <Typography variant="body1">
-                <span className={classes.filterLabel}>{formatMessage(messages[name])}</span>
-              </Typography>
-              {checkedFilters[key] && <CheckIcon className={classes.filterChecked} />}
-              <ExpandMoreIcon className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)} />
-            </header>
-          </ListItem>
-          <Collapse in={!!(expanded && expanded[name])} timeout={300}>
-            <div className={classes.body}>
-              <SiteSearchFilter
-                facet={key}
-                handleFilterChange={handleFilterChange}
-                checkedFilters={checkedFilters}
-                setCheckedFilters={setCheckedFilters}
-                facetsLookupTable={facetsLookupTable}
-                handleClearClick={handleClearClick}
-              />
-            </div>
-          </Collapse>
-        </div>
-      );
-    });
-  };
-
   return (
     <div>
+      <Accordion expanded={expanded.sortBy} elevation={0} onChange={() => handleExpandClick('sortBy')}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.accordionTitle}>
+            {formatMessage(messages.sortBy)}
+            {queryParams['sortBy'] && <CheckIcon />}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <>
+            <SiteSearchSortBy
+              queryParams={queryParams}
+              filterKeys={filterKeys}
+              handleFilterChange={handleFilterChange}
+            />
+            <SiteSearchSortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
+          </>
+        </AccordionDetails>
+      </Accordion>
+      <Divider />
       <div className={classes.clearButtonContainer}>
         <Button
           variant="outlined"
@@ -260,46 +231,41 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
           {formatMessage(messages.clearFilters)}
         </Button>
       </div>
-      <List classes={{ padding: classes.listPadding }}>
-        <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('path')}>
-          <header className={clsx(classes.header, 'first', !!(expanded && expanded['path']) && 'open')}>
-            <Typography variant="body1" color="textPrimary">
-              <span className={classes.filterLabel}>{formatMessage(messages.path)}</span>
+      <Accordion expanded={expanded.path} elevation={0} onChange={() => handleExpandClick('path')}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.accordionTitle}>
+            {formatMessage(messages.path)}
+            {queryParams['path'] && <CheckIcon />}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <PathSelector
+            value={selectedPath?.replace('.+', '')}
+            onPathSelected={onPathSelected}
+            disabled={mode === 'select'}
+          />
+        </AccordionDetails>
+      </Accordion>
+      {filterKeys.map((key: string) => (
+        <Accordion key={key} expanded={expanded[key] ?? false} elevation={0} onChange={() => handleExpandClick(key)}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className={classes.accordionTitle}>
+              {formatMessage(messages[camelize(key)])}
+              {checkedFilters[key] && <CheckIcon />}
             </Typography>
-            {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
-            <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['path'] && classes.expandOpen)} />
-          </header>
-        </ListItem>
-        <Collapse in={expanded && expanded['path']} timeout={300}>
-          <div className={classes.body}>
-            <PathSelector
-              value={selectedPath?.replace('.+', '')}
-              onPathSelected={onPathSelected}
-              disabled={mode === 'select'}
-            />
-          </div>
-        </Collapse>
-        <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
-          <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
-            <Typography variant="body1">
-              <span className={classes.filterLabel}>{formatMessage(messages.sortBy)}</span>
-            </Typography>
-            {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
-            <ExpandMoreIcon className={clsx(classes.expand, expanded && expanded['sortBy'] && classes.expandOpen)} />
-          </header>
-        </ListItem>
-        <Collapse in={expanded && expanded['sortBy']} timeout={300}>
-          <div className={classes.body}>
-            <SiteSearchSortBy
-              queryParams={queryParams}
-              filterKeys={filterKeys}
+          </AccordionSummary>
+          <AccordionDetails>
+            <SiteSearchFilter
+              facet={key}
               handleFilterChange={handleFilterChange}
+              checkedFilters={checkedFilters}
+              setCheckedFilters={setCheckedFilters}
+              facetsLookupTable={facetsLookupTable}
+              handleClearClick={handleClearClick}
             />
-            <SiteSearchSortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
-          </div>
-        </Collapse>
-        {renderFilters()}
-      </List>
+          </AccordionDetails>
+        </Accordion>
+      ))}
     </div>
   );
 }

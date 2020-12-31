@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function PagesSearchAhead(props) {
-  const { value, placeholder, disabled, onEnter } = props;
+  const { value, placeholder, disabled, onEnter, onFocus, onBlur } = props;
   const classes = useStyles({});
   const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
@@ -159,10 +159,12 @@ export default function PagesSearchAhead(props) {
         <InputBase
           {...inputProps}
           onFocus={(e) => {
+            onFocus?.();
             inputProps.onFocus(e);
             e.target.select();
           }}
           onBlur={(e) => {
+            onBlur?.();
             inputProps.onFocus(e);
             onClean();
           }}
