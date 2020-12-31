@@ -77,10 +77,6 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
   itemsAreContentReferences: true,
 
   createElementAction: function(control, _self) {
-    // if (this.countOptions > 1) {
-    //   control.addContainerEl = null;
-    //   control.containerEl.removeChild(addContainerEl);
-    // }
     if (_self.type === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
@@ -117,10 +113,6 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
   },
 
   browseExistingElementAction: function(control, _self) {
-    // if (this.countOptions > 1) {
-    //   control.addContainerEl = null;
-    //   control.containerEl.removeChild(addContainerEl);
-    // }
     // if the browsePath property is set, use the property instead of the repoPath property
     // otherwise continue to use the repoPath for both cases for backward compatibility
     var browsePath = _self.repoPath;
@@ -148,11 +140,6 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
   },
 
   searchExistingElementAction: function(control, _self) {
-    // if (this.countOptions > 1) {
-    //   control.addContainerEl = null;
-    //   control.containerEl.removeChild(addContainerEl);
-    // }
-
     var searchContext = {
       searchId: null,
       itemsPerPage: 12,
