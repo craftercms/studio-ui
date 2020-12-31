@@ -231,6 +231,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
 
+    const self = this;
+
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -254,8 +256,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     pathEl.innerHTML = path + ' ';
 
     var inputContainer = document.createElement('div');
-    YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap');
+    YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap input-wrapper');
     inputContainer.appendChild(pathEl);
+    this.inputContainer = inputContainer;
     controlWidgetContainerEl.appendChild(inputContainer);
 
     var inputEl = document.createElement('input');
@@ -278,8 +281,24 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       },
       this
     );
+    Event.on(
+      inputEl,
+      'focus',
+      function() {
+        YAHOO.util.Dom.addClass(inputContainer, 'focused');
+      },
+      this
+    );
     Event.on(inputEl, 'change', this._onChangeVal, this);
-    Event.on(inputEl, 'blur', this._onChange, this);
+    Event.on(
+      inputEl,
+      'blur',
+      function(evt, obj) {
+        YAHOO.util.Dom.removeClass(inputContainer, 'focused');
+        self._onChange(evt, obj);
+      },
+      this
+    );
     Event.on(inputEl, 'keyup', this.processKey, inputEl);
     Event.on(
       inputEl,
@@ -351,6 +370,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       containerEl.appendChild(editFileNameEl);
 
       this.inputEl.disabled = true;
+      YAHOO.util.Dom.addClass(this.inputContainer, 'disabled');
 
       var createWarningDialog = function() {
         var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
@@ -396,6 +416,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
             text: 'OK',
             handler: function() {
               _self.inputEl.disabled = false;
+              YAHOO.util.Dom.removeClass(_self.inputContainer, 'disabled');
               _self.inputEl.focus();
               editFileNameEl.style.display = 'none';
               this.destroy();

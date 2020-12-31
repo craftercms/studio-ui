@@ -1661,7 +1661,7 @@ var CStudioForms =
                       text: CMgs.format(formsLangBundle, 'no'),
                       handler: function() {
                         if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
+                          iceWindowCallback.cancelled({ close: false });
                         }
                         this.destroy();
                       },
@@ -2018,6 +2018,7 @@ var CStudioForms =
             sectionContainerEl
           )[0];
           var sectionBodyEl = YDom.getElementsByClassName('panel-body', null, sectionContainerEl)[0];
+          var sectionHeadingEl = YDom.getElementsByClassName('panel-heading', null, sectionContainerEl)[0];
 
           if (section.defaultOpen == 'false' || section.defaultOpen == '' || section.defaultOpen == false) {
             sectionBodyEl.style.display = 'none';
@@ -2028,15 +2029,22 @@ var CStudioForms =
           formSection.sectionOpenCloseWidgetEl = sectionOpenCloseWidgetEl;
           formSection.sectionBodyEl = sectionBodyEl;
 
-          sectionOpenCloseWidgetEl.onclick = function() {
-            if (this.sectionBodyEl.style.display == 'none') {
-              this.sectionBodyEl.style.display = 'block';
-              YAHOO.util.Dom.removeClass(this, 'cstudio-form-section-widget-closed');
+          sectionHeadingEl.onclick = function() {
+            YDom.getElementsByClassName('panel-body', null, this)[0];
+            if (YDom.getElementsByClassName('panel-body', null, this)[0].style.display === 'none') {
+              YDom.getElementsByClassName('panel-body', null, this)[0].style.display = 'block';
+              YAHOO.util.Dom.removeClass(
+                YDom.getElementsByClassName('cstudio-form-section-widget', null, this)[0],
+                'cstudio-form-section-widget-closed'
+              );
             } else {
-              this.sectionBodyEl.style.display = 'none';
-              YAHOO.util.Dom.addClass(this, 'cstudio-form-section-widget-closed');
+              YDom.getElementsByClassName('panel-body', null, this)[0].style.display = 'none';
+              YAHOO.util.Dom.addClass(
+                YDom.getElementsByClassName('cstudio-form-section-widget', null, this)[0],
+                'cstudio-form-section-widget-closed'
+              );
             }
-          };
+          }.bind(sectionContainerEl);
 
           for (var j = 0; j < section.fields.length; j++) {
             var field = section.fields[j];
