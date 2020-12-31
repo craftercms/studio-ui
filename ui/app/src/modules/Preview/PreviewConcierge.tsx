@@ -50,6 +50,7 @@ import {
   pushToolsPanelPage,
   selectForEdit,
   setContentTypeReceptacles,
+  setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
@@ -93,6 +94,7 @@ import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
+  getStoredhighlightModeChoice,
   getStoredPreviewChoice,
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard,
@@ -142,7 +144,7 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, currentUrl, computedUrl } = usePreviewState();
+  const { guest, currentUrl, computedUrl, editMode, highlightMode } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
@@ -152,7 +154,6 @@ export function PreviewConcierge(props: any) {
   const modelIdByPath = guest?.modelIdByPath;
   const childrenMap = guest?.childrenMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
-  const editMode = useSelection((state) => state.preview.editMode);
   const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
   const previewNextCheckInNotificationRef = useRef(false);
   const requestedSourceMapPaths = useRef({});
@@ -184,12 +185,17 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, write, editMode]);
   // endregion
 
-  // Guest detection, document domain restoring, editMode preference retrieval, clipboard retrieval
+  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
     const localEditMode = getStoredEditModeChoice() ? getStoredEditModeChoice() === 'true' : null;
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
+    }
+
+    const localHighlightMode = getStoredhighlightModeChoice();
+    if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
+      dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
     const localClipboard = getStoredClipboard(site);
@@ -328,7 +334,7 @@ export function PreviewConcierge(props: any) {
               });
           // endregion
           if (type === GUEST_CHECK_IN) {
-            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -660,6 +666,7 @@ export function PreviewConcierge(props: any) {
     site,
     xsrfArgument,
     editMode,
+    highlightMode,
     handlePreviewCompatibilityDialogGo
   ]);
 

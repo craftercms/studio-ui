@@ -288,3 +288,7 @@ export const pushToolsPanelPage = createAction<WidgetDescriptor>('PUSH_TOOLS_PAN
 export const popToolsPanelPage = createAction('POP_TOOLS_PANEL_PAGE');
 
 // endregion
+
+// settings Mode
+
+export const setHighlightMode = createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');

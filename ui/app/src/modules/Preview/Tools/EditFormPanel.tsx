@@ -137,8 +137,13 @@ function EditFormPanelBody() {
         const id = ModelHelper.value(model, fieldId)[item.index];
         component = models[id];
       }
-      selectedId = component.craftercms.id;
-      title = `${component.craftercms.label} (${contentTypesBranch.byId[component.craftercms.contentTypeId].name})`;
+      if (component) {
+        selectedId = component.craftercms.id;
+        title = `${component.craftercms.label} (${contentTypesBranch.byId[component.craftercms.contentTypeId].name})`;
+      } else {
+        selectedId = item.modelId;
+        title = field.name;
+      }
     } else {
       selectedId = item.modelId;
       title = field.name;
