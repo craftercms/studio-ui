@@ -16,12 +16,13 @@
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
-import { popToolsPanelPage, pushToolsPanelPage, setPreviewEditMode } from '../actions/preview';
+import { popToolsPanelPage, pushToolsPanelPage, setHighlightMode, setPreviewEditMode } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
   setStoredEditModeChoice,
+  setStoredhighlightModeChoice,
   setStoredPreviewToolsPanelPage
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
@@ -56,12 +57,21 @@ export default [
       ignoreElements()
     ),
   // region setPreviewEditMode
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$) =>
     action$.pipe(
       ofType(setPreviewEditMode.type),
-      withLatestFrom(state$),
-      tap(([action, state]) => {
+      tap((action) => {
         setStoredEditModeChoice(action.payload.editMode);
+        getHostToGuestBus().next(action);
+      }),
+      ignoreElements()
+    ),
+  // region setHighlightMode
+  (action$) =>
+    action$.pipe(
+      ofType(setHighlightMode.type),
+      tap((action) => {
+        setStoredhighlightModeChoice(action.payload.highlightMode);
         getHostToGuestBus().next(action);
       }),
       ignoreElements()

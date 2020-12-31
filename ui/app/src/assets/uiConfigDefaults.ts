@@ -14,6 +14,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses}.
  */
 
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  pageBuilder: {
+    id: 'pageBuilder.title',
+    defaultMessage: 'Page Builder'
+  },
+  siteTools: {
+    id: 'siteTools.title',
+    defaultMessage: 'Site Tools'
+  },
+  configuration: {
+    id: 'words.configuration',
+    defaultMessage: 'Configuration'
+  },
+  workflowStates: {
+    id: 'workflowStates.title',
+    defaultMessage: 'Workflow States'
+  },
+  publishing: {
+    id: 'words.publishing',
+    defaultMessage: 'Publishing'
+  },
+  remoteRepositories: {
+    id: 'remoteRepositories.title',
+    defaultMessage: 'Remote Repositories'
+  }
+});
+
 let count = 0;
 
 const uiConfigDefaults = {
@@ -24,7 +53,10 @@ const uiConfigDefaults = {
           id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
           uiKey: count++,
           configuration: {
-            title: 'Dashboard',
+            title: {
+              id: 'words.dashboard',
+              defaultMessage: 'Dashboard'
+            },
             icon: {
               baseClass: 'fa fa-tasks'
             },
@@ -38,7 +70,10 @@ const uiConfigDefaults = {
           id: 'craftercms.components.ToolsPanelPageButton',
           uiKey: count++,
           configuration: {
-            title: 'Page Builder',
+            title: {
+              id: 'pageBuilder.title',
+              defaultMessage: 'Page Builder'
+            },
             icon: {
               baseClass: 'fa fa-paint-brush'
             },
@@ -48,7 +83,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewSearchPanel.title'
+                    id: 'previewSearchPanel.title',
+                    defaultMessage: 'Search'
                   },
                   icon: {
                     id: '@material-ui/icons/SearchRounded'
@@ -66,7 +102,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewComponentsPanel.title'
+                    id: 'previewComponentsPanel.title',
+                    defaultMessage: 'Add Components'
                   },
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
@@ -84,7 +121,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewBrowseComponentsPanel.title'
+                    id: 'previewBrowseComponentsPanel.title',
+                    defaultMessage: 'Browse Components'
                   },
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
@@ -102,7 +140,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewReceptaclesPanel.title'
+                    id: 'previewReceptaclesPanel.title',
+                    defaultMessage: 'Component Receptacles'
                   },
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
@@ -120,7 +159,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewAssetsPanel.title'
+                    id: 'previewAssetsPanel.title',
+                    defaultMessage: 'Assets'
                   },
                   icon: {
                     id: '@material-ui/icons/ImageOutlined'
@@ -138,7 +178,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewAudiencesPanel.title'
+                    id: 'previewAudiencesPanel.title',
+                    defaultMessage: 'Audience Targeting'
                   },
                   icon: {
                     id: '@material-ui/icons/EmojiPeopleRounded'
@@ -189,7 +230,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewPageExplorerPanel.title'
+                    id: 'previewPageExplorerPanel.title',
+                    defaultMessage: 'Page Explorer'
                   },
                   icon: {
                     id: 'craftercms.icons.PageExplorer'
@@ -207,7 +249,8 @@ const uiConfigDefaults = {
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewSimulatorPanel.title'
+                    id: 'previewSimulatorPanel.title',
+                    defaultMessage: 'Device Simulator'
                   },
                   icon: {
                     id: '@material-ui/icons/DevicesRounded'
@@ -242,7 +285,8 @@ const uiConfigDefaults = {
           uiKey: count++,
           configuration: {
             title: {
-              id: 'previewSiteExplorerPanel.title'
+              id: 'previewSiteExplorerPanel.title',
+              defaultMessage: 'Site Explorer'
             },
             icon: {
               id: 'craftercms.icons.SiteExplorer'
@@ -334,7 +378,10 @@ const uiConfigDefaults = {
           uiKey: count++,
           roles: ['admin', 'developer'],
           configuration: {
-            title: 'Site Tools',
+            title: {
+              id: 'siteTools.title',
+              defaultMessage: 'Site Tools'
+            },
             icon: {
               baseClass: 'fa fa-sliders'
             },
@@ -343,7 +390,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Content Types',
+                  title: {
+                    id: 'receptaclesMessages.contentTypes',
+                    defaultMessage: 'Content Types'
+                  },
                   icon: {
                     baseClass: 'fa fa-th-large'
                   },
@@ -360,7 +410,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Encryption Tool',
+                  title: {
+                    id: 'GlobalMenu.EncryptionToolEntryLabel',
+                    defaultMessage: 'Encryption Tool'
+                  },
                   icon: {
                     baseClass: 'fa fa-lock'
                   },
@@ -377,7 +430,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Configuration',
+                  title: {
+                    id: 'words.configuration',
+                    defaultMessage: 'Configuration'
+                  },
                   icon: {
                     baseClass: 'fa fa-cogs'
                   },
@@ -394,7 +450,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Audit',
+                  title: {
+                    id: 'GlobalMenu.AuditEntryLabel',
+                    defaultMessage: 'Audit'
+                  },
                   icon: {
                     baseClass: 'fa fa-align-justify'
                   },
@@ -411,7 +470,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Workflow States',
+                  title: {
+                    id: 'workflowStates.title',
+                    defaultMessage: 'Workflow States'
+                  },
                   icon: {
                     baseClass: 'fa fa-cog'
                   },
@@ -428,7 +490,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Log Console',
+                  title: {
+                    id: 'GlobalMenu.LogConsoleEntryLabel',
+                    defaultMessage: 'Log Console'
+                  },
                   icon: {
                     baseClass: 'fa fa-align-left'
                   },
@@ -445,7 +510,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Publishing',
+                  title: {
+                    id: 'words.publishing',
+                    defaultMessage: 'Publishing'
+                  },
                   icon: {
                     baseClass: 'fa fa-cloud-upload'
                   },
@@ -462,7 +530,10 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: 'Remote Repositories',
+                  title: {
+                    id: 'remoteRepositories.title',
+                    defaultMessage: 'Remote Repositories'
+                  },
                   icon: {
                     baseClass: 'fa fa-database'
                   },
@@ -494,6 +565,25 @@ const uiConfigDefaults = {
               }
             ]
           }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            title: {
+              id: 'words.settings',
+              defaultMessage: 'Settings'
+            },
+            icon: {
+              id: '@material-ui/icons/Settings'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewSettingsPanel',
+                uiKey: count++
+              }
+            ]
+          }
         }
       ]
     }
@@ -502,13 +592,19 @@ const uiConfigDefaults = {
     sections: [
       {
         uiKey: count++,
-        title: 'Site',
+        title: {
+          id: 'words.site',
+          defaultMessage: 'Site'
+        },
         widgets: [
           {
             id: 'craftercms.components.GlobalNavLinkTile',
             uiKey: count++,
             configuration: {
-              title: 'Dashboard',
+              title: {
+                id: 'words.dashboard',
+                defaultMessage: 'Dashboard'
+              },
               systemLinkId: 'siteDashboard',
               icon: { id: '@material-ui/icons/DashboardRounded' }
             }
@@ -517,7 +613,10 @@ const uiConfigDefaults = {
             id: 'craftercms.components.GlobalNavLinkTile',
             uiKey: count++,
             configuration: {
-              title: 'Preview',
+              title: {
+                id: 'words.preview',
+                defaultMessage: 'Preview'
+              },
               systemLinkId: 'preview',
               icon: { id: 'craftercms.icons.Preview' }
             }
@@ -526,7 +625,10 @@ const uiConfigDefaults = {
             id: 'craftercms.components.GlobalNavLinkTile',
             uiKey: count++,
             configuration: {
-              title: 'Site Tools',
+              title: {
+                id: 'siteTools.title',
+                defaultMessage: 'Site Tools'
+              },
               systemLinkId: 'siteTools',
               icon: { id: '@material-ui/icons/BuildRounded' }
             }
@@ -535,7 +637,10 @@ const uiConfigDefaults = {
             id: 'craftercms.components.GlobalNavLinkTile',
             uiKey: count++,
             configuration: {
-              title: 'Search',
+              title: {
+                id: 'words.search',
+                defaultMessage: 'Search'
+              },
               systemLinkId: 'siteSearch',
               icon: { id: '@material-ui/icons/SearchRounded' }
             }

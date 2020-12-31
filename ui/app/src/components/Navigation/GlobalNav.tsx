@@ -30,7 +30,7 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { useEnv, useMount, useSiteUIConfig } from '../../utils/hooks';
+import { useEnv, useMount, usePossibleTranslation, useSiteUIConfig } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -96,15 +96,15 @@ const messages = defineMessages({
     defaultMessage: 'My Sites'
   },
   site: {
-    id: 'globalMenu.site',
+    id: 'words.site',
     defaultMessage: 'Site'
   },
   global: {
-    id: 'globalMenu.global',
+    id: 'words.global',
     defaultMessage: 'Global'
   },
   preview: {
-    id: 'globalMenu.preview',
+    id: 'words.preview',
     defaultMessage: 'Preview'
   },
   preview2: {
@@ -168,19 +168,19 @@ const messages = defineMessages({
     defaultMessage: 'Encryption Tool'
   },
   dashboard: {
-    id: 'globalMenu.dashboard',
+    id: 'words.dashboard',
     defaultMessage: 'Dashboard'
   },
   remove: {
-    id: 'globalMenu.remove',
+    id: 'words.remove',
     defaultMessage: 'Remove'
   },
   ok: {
-    id: 'globalMenu.ok',
+    id: 'words.ok',
     defaultMessage: 'Ok'
   },
   cancel: {
-    id: 'globalMenu.cancel',
+    id: 'words.cancel',
     defaultMessage: 'Cancel'
   },
   removeSite: {
@@ -196,7 +196,7 @@ const messages = defineMessages({
     defaultMessage: 'Sign Out'
   },
   settings: {
-    id: 'toolbarGlobalNav.settings',
+    id: 'words.settings',
     defaultMessage: 'Settings'
   }
 });
@@ -602,7 +602,7 @@ const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   return (
     <Tile
       icon={icon}
-      title={title}
+      title={usePossibleTranslation(title)}
       link={
         link ??
         {

@@ -121,6 +121,7 @@ export interface GlobalState {
   };
   preview: {
     editMode: boolean;
+    highlightMode: string;
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;

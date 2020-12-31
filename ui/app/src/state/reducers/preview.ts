@@ -51,6 +51,7 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
+  setHighlightMode,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateToolsPanelWidth
 } from '../actions/preview';
@@ -140,6 +141,7 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
+    highlightMode: 'ALL',
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe
@@ -531,6 +533,10 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state.guest,
         path: payload.path
       }
+    }),
+    [setHighlightMode.type]: (state, { payload }) => ({
+      ...state,
+      highlightMode: payload.highlightMode
     })
   }
 );
