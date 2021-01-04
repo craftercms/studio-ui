@@ -554,7 +554,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   action={
                     // TODO: what will happen with logoutUrl now that we're always just posting back to /studio/logout?
                     logoutUrl && (
-                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => dispatch(logout())}>
+                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
                         <ExitToAppRoundedIcon />
                       </IconButton>
                     )
