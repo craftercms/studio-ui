@@ -66,6 +66,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { envInitialState } from './env';
+import { fetchGlobalPreferencesComplete } from '../actions/system';
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -537,7 +538,14 @@ const reducer = createReducer<GlobalState['preview']>(
     [setHighlightMode.type]: (state, { payload }) => ({
       ...state,
       highlightMode: payload.highlightMode
-    })
+    }),
+    [fetchGlobalPreferencesComplete.type]: (state, { payload }) => {
+      return {
+        ...state,
+        ...(nnou(payload.editMode) && { editMode: payload.editMode === 'true' }),
+        ...(nnou(payload.highlightMode) && { highlightMode: payload.highlightMode })
+      };
+    }
   }
 );
 

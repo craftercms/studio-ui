@@ -50,9 +50,7 @@ import {
   pushToolsPanelPage,
   selectForEdit,
   setContentTypeReceptacles,
-  setHighlightMode,
   setItemBeingDragged,
-  setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
@@ -93,8 +91,6 @@ import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/Pr
 import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
-  getStoredEditModeChoice,
-  getStoredhighlightModeChoice,
   getStoredPreviewChoice,
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard,
@@ -188,16 +184,6 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice() ? getStoredEditModeChoice() === 'true' : null;
-    if (nnou(localEditMode) && editMode !== localEditMode) {
-      dispatch(setPreviewEditMode({ editMode: localEditMode }));
-    }
-
-    const localHighlightMode = getStoredhighlightModeChoice();
-    if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
-      dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
-    }
-
     const localClipboard = getStoredClipboard(site);
     if (localClipboard) {
       let hours = moment().diff(moment(localClipboard.timestamp), 'hours');

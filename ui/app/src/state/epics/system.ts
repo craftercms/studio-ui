@@ -15,11 +15,16 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
+  fetchGlobalPreferences as fetchGlobalPreferencesAction,
+  fetchGlobalPreferencesComplete,
+  fetchSitePreferences as fetchSitePreferencesAction,
+  deletePreferences as deletePreferencesAction,
+  fetchSitePreferencesComplete,
   showCopyItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -27,14 +32,16 @@ import {
   showEditItemSuccessNotification,
   showPasteItemSuccessNotification,
   showPublishItemSuccessNotification,
+  showRejectItemSuccessNotification,
   showRevertItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification,
-  showRejectItemSuccessNotification,
-  storeInitialized
+  storeInitialized,
+  deletePreferencesComplete
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
-import { fromEvent } from 'rxjs';
+import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
+import { NEVER } from 'rxjs';
 
 const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
@@ -215,18 +222,42 @@ const systemEpics: CrafterCMSEpic[] = [
       ignoreElements()
     ),
   (action$, state$, { systemBroadcastChannel }) =>
+    // @ts-ignore
     action$.pipe(
       // When store is initialized...
       ofType(storeInitialized.type),
       // ...if the browser supports Broadcast Channels,
-      filter(() => Boolean(systemBroadcastChannel)),
+      // filter(() => Boolean(systemBroadcastChannel)),
       // ...begin listening for system events sent through the broadcast channel.
       switchMap(() =>
-        fromEvent<MessageEvent>(systemBroadcastChannel, 'message').pipe(filter((e) => e.data && e.data.type))
+        [
+          // TODO: Not working
+          // Boolean(systemBroadcastChannel) && fromEvent<MessageEvent>(systemBroadcastChannel, 'message').pipe(filter((e) => e.data && e.data.type)),
+          fetchGlobalPreferencesAction(),
+          fetchSitePreferencesAction()
+        ].filter(Boolean)
       )
       // This mechanism has been added to support multi-tab UX on studio with the JWT mechanics since,
       // when other tabs are opened, refreshToken API is called, invalidating the token of other tabs.
       // The idea, however, is that this mechanics are now available for other purposes.
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(fetchGlobalPreferencesAction.type),
+      switchMap(() => fetchGlobalPreferences().pipe(map(fetchGlobalPreferencesComplete)))
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(fetchSitePreferencesAction.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        state.sites.active ? fetchSitePreferences(state.sites.active).pipe(map(fetchSitePreferencesComplete)) : NEVER
+      )
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(deletePreferencesAction.type),
+      switchMap((action) => deletePreferences(action.payload.siteId).pipe(map(deletePreferencesComplete)))
     )
 ];
 

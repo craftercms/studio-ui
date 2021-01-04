@@ -35,22 +35,6 @@ export function setStoredPreviewChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
 }
 
-export function getStoredEditModeChoice(): string {
-  return window.localStorage.getItem(`craftercms.editModeChoice`);
-}
-
-export function setStoredEditModeChoice(value: string) {
-  return window.localStorage.setItem(`craftercms.editModeChoice`, value);
-}
-
-export function getStoredhighlightModeChoice(): string {
-  return window.localStorage.getItem(`craftercms.highlightModeChoice`);
-}
-
-export function setStoredhighlightModeChoice(value: string) {
-  return window.localStorage.setItem(`craftercms.highlightModeChoice`, value);
-}
-
 export function setStoredClipboard(site: string, value: object) {
   return window.localStorage.setItem(
     `craftercms.clipboard.${site}`,

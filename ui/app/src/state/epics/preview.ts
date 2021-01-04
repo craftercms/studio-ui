@@ -21,12 +21,11 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
-  setStoredEditModeChoice,
-  setStoredhighlightModeChoice,
   setStoredPreviewToolsPanelPage
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipBoard } from '../actions/content';
+import { setPreferences } from '../../services/users';
 
 export default [
   (action$, state$) =>
@@ -57,11 +56,11 @@ export default [
       ignoreElements()
     ),
   // region setPreviewEditMode
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(setPreviewEditMode.type),
       tap((action) => {
-        setStoredEditModeChoice(action.payload.editMode);
+        setPreferences({ editMode: action.payload.editMode }).subscribe(() => {});
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
@@ -71,7 +70,7 @@ export default [
     action$.pipe(
       ofType(setHighlightMode.type),
       tap((action) => {
-        setStoredhighlightModeChoice(action.payload.highlightMode);
+        setPreferences({ highlightMode: action.payload.highlightMode }).subscribe(() => {});
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
