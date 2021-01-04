@@ -35,18 +35,6 @@ export function setStoredPreviewChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
 }
 
-export function setStoredPreviewToolsPanelPage(site: string, value: object) {
-  return window.localStorage.setItem(`craftercms.previewToolsPanelPage.${site}`, JSON.stringify(value));
-}
-
-export function getStoredPreviewToolsPanelPage(site: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.previewToolsPanelPage.${site}`));
-}
-
-export function removeStoredPreviewToolsPanelPage(site: string) {
-  return window.localStorage.removeItem(`craftercms.previewToolsPanelPage.${site}`);
-}
-
 export function setStoredPathNavigator(site: string, id: string, value: object) {
   return window.localStorage.setItem(`craftercms.pathNavigator.${site}.${id}`, JSON.stringify(value));
 }

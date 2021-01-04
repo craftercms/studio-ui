@@ -66,7 +66,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { envInitialState } from './env';
-import { fetchGlobalPreferencesComplete } from '../actions/system';
+import { fetchGlobalPreferencesComplete, fetchSitePreferencesComplete } from '../actions/system';
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -544,6 +544,14 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         ...(nnou(payload.editMode) && { editMode: payload.editMode === 'true' }),
         ...(nnou(payload.highlightMode) && { highlightMode: payload.highlightMode })
+      };
+    },
+    [fetchSitePreferencesComplete.type]: (state, { payload }) => {
+      return {
+        ...state,
+        ...(nnou(payload.toolsPanelPage) && {
+          toolsPanelPageStack: [...state.toolsPanelPageStack, JSON.parse(payload.toolsPanelPage)]
+        })
       };
     }
   }

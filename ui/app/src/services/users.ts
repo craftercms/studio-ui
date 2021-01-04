@@ -164,7 +164,7 @@ export function fetchGlobalPreferences(): Observable<LookupTable<any>> {
 }
 
 export function fetchSitePreferences(siteId: string): Observable<LookupTable<any>> {
-  return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(pluck('response', 'properties'));
+  return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(pluck('response', 'properties', siteId));
 }
 
 export function setPreferences(
@@ -173,7 +173,7 @@ export function setPreferences(
 ): Observable<{ response: ApiResponse; properties: LookupTable<any> }> {
   return postJSON(siteId ? `/studio/api/2/users/me/properties?siteId=${siteId}` : '/studio/api/2/users/me/properties', {
     siteId,
-    properties: { ...properties }
+    properties
   }).pipe(pluck('response'));
 }
 

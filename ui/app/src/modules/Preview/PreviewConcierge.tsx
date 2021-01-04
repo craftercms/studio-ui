@@ -47,7 +47,6 @@ import {
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
-  pushToolsPanelPage,
   selectForEdit,
   setContentTypeReceptacles,
   setItemBeingDragged,
@@ -89,7 +88,7 @@ import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
-import { getStoredPreviewChoice, getStoredPreviewToolsPanelPage, setStoredPreviewChoice } from '../../utils/state';
+import { getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
@@ -182,27 +181,11 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    // const localClipboard = getStoredClipboard(site);
-    // if (localClipboard) {
-    //   let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
-    //   if (hours >= 24) {
-    //     removeStoredClipboard(site);
-    //   } else {
-    //     dispatch(
-    //       restoreClipBoard({
-    //         type: localClipboard.type,
-    //         paths: localClipboard.paths,
-    //         sourcePath: localClipboard.sourcePath
-    //       })
-    //     );
-    //   }
-    // }
-
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
-    const storedPage = getStoredPreviewToolsPanelPage(site);
-    if (storedPage) {
-      dispatch(pushToolsPanelPage(storedPage));
-    }
+    // const storedPage = getStoredPreviewToolsPanelPage(site);
+    // if (storedPage) {
+    //   dispatch(pushToolsPanelPage(storedPage));
+    // }
     return () => {
       sub.unsubscribe();
       contentTypes$.complete();

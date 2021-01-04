@@ -22,7 +22,6 @@ import {
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
   fetchUserPermissionsComplete,
-  restoreClipBoard,
   setClipBoard,
   unSetClipBoard
 } from '../actions/content';
@@ -40,6 +39,7 @@ import { createLookupTable, nnou } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
 import { fetchGlobalPreferencesComplete } from '../actions/system';
+import moment from 'moment-timezone';
 
 type ContentState = GlobalState['content'];
 
@@ -116,10 +116,6 @@ const reducer = createReducer<ContentState>(initialState, {
       }
     };
   },
-  [restoreClipBoard.type]: (state, { payload }) => ({
-    ...state,
-    clipboard: payload
-  }),
   [setClipBoard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
@@ -151,10 +147,20 @@ const reducer = createReducer<ContentState>(initialState, {
     };
   },
   [fetchGlobalPreferencesComplete.type]: (state, { payload }) => {
-    return {
-      ...state,
-      ...(nnou(payload.clipboard) && { clipboard: JSON.parse(payload.clipboard) })
-    };
+    if (nnou(payload.clipboard)) {
+      const clipboard = JSON.parse(payload.clipboard);
+      let hours = moment().diff(moment(clipboard.timestamp), 'hours');
+      if (hours >= 24) {
+        return state;
+      } else {
+        return {
+          ...state,
+          clipboard
+        };
+      }
+    } else {
+      return state;
+    }
   },
   [changeSite.type]: () => initialState
 });

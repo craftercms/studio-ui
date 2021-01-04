@@ -15,17 +15,11 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
-  deletePreferences as deletePreferencesAction,
-  deletePreferencesComplete,
   emitSystemEvent,
-  fetchGlobalPreferences as fetchGlobalPreferencesAction,
-  fetchGlobalPreferencesComplete,
-  fetchSitePreferences as fetchSitePreferencesAction,
-  fetchSitePreferencesComplete,
   showCopyItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -40,8 +34,7 @@ import {
   storeInitialized
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
-import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
-import { fromEvent, NEVER } from 'rxjs';
+import { fromEvent } from 'rxjs';
 
 const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
@@ -234,29 +227,6 @@ const systemEpics: CrafterCMSEpic[] = [
       // This mechanism has been added to support multi-tab UX on studio with the JWT mechanics since,
       // when other tabs are opened, refreshToken API is called, invalidating the token of other tabs.
       // The idea, however, is that this mechanics are now available for other purposes.
-    ),
-  (action$) =>
-    action$.pipe(
-      ofType(storeInitialized.type),
-      switchMap(() => [fetchGlobalPreferencesAction(), fetchSitePreferencesAction()])
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(fetchGlobalPreferencesAction.type),
-      switchMap(() => fetchGlobalPreferences().pipe(map(fetchGlobalPreferencesComplete)))
-    ),
-  (action$, state$) =>
-    action$.pipe(
-      ofType(fetchSitePreferencesAction.type),
-      withLatestFrom(state$),
-      switchMap(([, state]) =>
-        state.sites.active ? fetchSitePreferences(state.sites.active).pipe(map(fetchSitePreferencesComplete)) : NEVER
-      )
-    ),
-  (action$) =>
-    action$.pipe(
-      ofType(deletePreferencesAction.type),
-      switchMap((action) => deletePreferences(action.payload.siteId).pipe(map(deletePreferencesComplete)))
     )
 ];
 

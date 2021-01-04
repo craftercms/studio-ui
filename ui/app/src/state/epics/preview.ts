@@ -18,9 +18,8 @@ import { Epic, ofType } from 'redux-observable';
 import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import { popToolsPanelPage, pushToolsPanelPage, setHighlightMode, setPreviewEditMode } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { removeStoredPreviewToolsPanelPage, setStoredPreviewToolsPanelPage } from '../../utils/state';
 import { setClipBoard } from '../actions/content';
-import { setPreferences } from '../../services/users';
+import { deletePreferences, setPreferences } from '../../services/users';
 
 export default [
   (action$, state$) =>
@@ -29,7 +28,7 @@ export default [
       withLatestFrom(state$),
       tap(([{ type, payload }, state]) => {
         if (payload) {
-          setStoredPreviewToolsPanelPage(state.sites.active, payload);
+          setPreferences({ toolsPanelPage: JSON.stringify(payload) }, state.sites.active).subscribe(() => {});
         }
       }),
       ignoreElements()
@@ -40,12 +39,16 @@ export default [
       withLatestFrom(state$),
       tap(([, state]) => {
         if (state.preview.toolsPanelPageStack.length) {
-          setStoredPreviewToolsPanelPage(
-            state.sites.active,
-            state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1]
-          );
+          setPreferences(
+            {
+              toolsPanelPage: JSON.stringify(
+                state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1]
+              )
+            },
+            state.sites.active
+          ).subscribe(() => {});
         } else {
-          removeStoredPreviewToolsPanelPage(state.sites.active);
+          deletePreferences(['toolsPanelPage'], state.sites.active).subscribe(() => {});
         }
       }),
       ignoreElements()

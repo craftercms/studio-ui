@@ -49,12 +49,6 @@ export const setClipBoard = createAction<{
   sourcePath: string;
 }>('SET_CLIPBOARD');
 
-export const restoreClipBoard = createAction<{
-  type: 'CUT' | 'COPY';
-  paths?: string[];
-  sourcePath: string;
-}>('SET_CLIPBOARD');
-
 export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 
