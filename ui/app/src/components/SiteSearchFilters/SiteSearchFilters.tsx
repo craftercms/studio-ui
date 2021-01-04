@@ -13,15 +13,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
-import Collapse from '@material-ui/core/Collapse';
-import clsx from 'clsx';
 import { camelize } from '../../utils/string';
 import { makeStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
 import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
 import { LookupTable } from '../../models/LookupTable';
@@ -57,6 +54,10 @@ const useStyles = makeStyles((theme) => ({
     '& button': {
       fontWeight: 600
     }
+  },
+  divider: {
+    width: 'auto',
+    margin: '0 10px'
   }
 }));
 
@@ -122,7 +123,7 @@ interface SiteSearchFiltersProps {
 }
 
 export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const {
     facets,
     handleFilterChange,
@@ -220,7 +221,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
           </>
         </AccordionDetails>
       </Accordion>
-      <Divider />
+      <Divider className={classes.divider} />
       <div className={classes.clearButtonContainer}>
         <Button
           variant="outlined"

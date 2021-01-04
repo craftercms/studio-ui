@@ -163,6 +163,11 @@ export function PreviewConcierge(props: any) {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
 
+  function clearSelectedZonesHandler() {
+    dispatch(clearSelectForEdit());
+    getHostToGuestBus().next({ type: CLEAR_SELECTED_ZONES });
+  }
+
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
   const permissions = usePermissions();
@@ -676,7 +681,7 @@ export function PreviewConcierge(props: any) {
         open={nnou(guest?.itemBeingDragged)}
         onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
-      <EditFormPanel open={nnou(guest?.selected)} />
+      <EditFormPanel open={nnou(guest?.selected)} onDismiss={clearSelectedZonesHandler} />
       <PreviewCompatibilityDialogContainer
         isPreviewNext={false}
         open={previewCompatibilityDialogOpen}

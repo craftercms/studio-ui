@@ -70,10 +70,7 @@ const uiConfigDefaults = {
           id: 'craftercms.components.ToolsPanelPageButton',
           uiKey: count++,
           configuration: {
-            title: {
-              id: 'pageBuilder.title',
-              defaultMessage: 'Page Builder'
-            },
+            title: messages.pageBuilder,
             icon: {
               baseClass: 'fa fa-paint-brush'
             },
@@ -378,10 +375,7 @@ const uiConfigDefaults = {
           uiKey: count++,
           roles: ['admin', 'developer'],
           configuration: {
-            title: {
-              id: 'siteTools.title',
-              defaultMessage: 'Site Tools'
-            },
+            title: messages.siteTools,
             icon: {
               baseClass: 'fa fa-sliders'
             },
@@ -430,10 +424,7 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: {
-                    id: 'words.configuration',
-                    defaultMessage: 'Configuration'
-                  },
+                  title: messages.configuration,
                   icon: {
                     baseClass: 'fa fa-cogs'
                   },
@@ -470,10 +461,7 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: {
-                    id: 'workflowStates.title',
-                    defaultMessage: 'Workflow States'
-                  },
+                  title: messages.workflowStates,
                   icon: {
                     baseClass: 'fa fa-cog'
                   },
@@ -510,10 +498,7 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: {
-                    id: 'words.publishing',
-                    defaultMessage: 'Publishing'
-                  },
+                  title: messages.publishing,
                   icon: {
                     baseClass: 'fa fa-cloud-upload'
                   },
@@ -530,10 +515,7 @@ const uiConfigDefaults = {
                 id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
                 uiKey: count++,
                 configuration: {
-                  title: {
-                    id: 'remoteRepositories.title',
-                    defaultMessage: 'Remote Repositories'
-                  },
+                  title: messages.remoteRepositories,
                   icon: {
                     baseClass: 'fa fa-database'
                   },

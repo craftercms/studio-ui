@@ -109,6 +109,7 @@ export type DialogTitleProps<
     titleWrapper?: string;
     subtitleWrapper?: string;
   };
+  className?: string;
   onDismiss?(): void;
   onBack?(): void;
 }>;
@@ -135,11 +136,17 @@ export default function DialogHeader(props: DialogTitleProps) {
     subtitleTypographyProps = {
       variant: 'subtitle1',
       component: 'p'
-    }
+    },
+    className
   } = props;
   // endregion
   return (
-    <MuiDialogTitle id={id} disableTypography classes={{ root: clsx(classes.root, props.classes?.root) }}>
+    <MuiDialogTitle
+      id={id}
+      disableTypography
+      className={className}
+      classes={{ root: clsx(classes.root, props.classes?.root) }}
+    >
       <section className={clsx(classes.titleWrapper, props.classes?.titleWrapper)}>
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
