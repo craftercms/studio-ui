@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
@@ -25,6 +25,7 @@ import {
   fetchSitePreferences as fetchSitePreferencesAction,
   deletePreferences as deletePreferencesAction,
   fetchSitePreferencesComplete,
+  deletePreferencesComplete,
   showCopyItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -36,12 +37,11 @@ import {
   showRevertItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification,
-  storeInitialized,
-  deletePreferencesComplete
+  storeInitialized
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
-import { NEVER } from 'rxjs';
+import { NEVER, fromEvent } from 'rxjs';
 
 const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
@@ -227,7 +227,6 @@ const systemEpics: CrafterCMSEpic[] = [
       // When store is initialized...
       ofType(storeInitialized.type),
       // ...if the browser supports Broadcast Channels,
-      // filter(() => Boolean(systemBroadcastChannel)),
       // ...begin listening for system events sent through the broadcast channel.
       switchMap(() =>
         [

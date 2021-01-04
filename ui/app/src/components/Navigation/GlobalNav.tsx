@@ -56,7 +56,6 @@ import PreviewIcon from '../Icons/Preview';
 import { components } from '../../services/plugin';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { renderWidgets } from '../Widget';
-import { logout } from '../../state/actions/auth';
 
 const useTileStyles = makeStyles((theme) =>
   createStyles({
