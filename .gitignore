@@ -133,6 +133,8 @@ static-assets/images/blueprints
 *.ignore.*
 scripts/settings_local.sh
 
+target/
+
 ui/app/.env.development
 
 # Ignore irrelevant generated translation system files

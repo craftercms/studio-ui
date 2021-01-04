@@ -718,9 +718,10 @@ var CStudioForms =
     const { fromEvent, operators } = CrafterCMSNext.rxjs;
     const { map, filter, take } = operators;
     const FlattenerState = {};
-    const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    const formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
-    const words = CrafterCMSNext.i18n.messages.words;
+    const i18n = CrafterCMSNext.i18n;
+    const formatMessage = i18n.intl.formatMessage;
+    const formEngineMessages = i18n.messages.formEngineMessages;
+    const words = i18n.messages.words;
 
     const messages$ = fromEvent(window, 'message').pipe(
       filter((event) => event.data && event.data.type),
@@ -768,10 +769,6 @@ var CStudioForms =
         )
         .subscribe(observer);
       sendMessage({ type: FORM_REQUEST, key });
-    }
-
-    function saveDraftDialog() {
-      $.notify(formatMessage(formEngineMessages.saveDraftCompleted), 'success');
     }
 
     function setButtonsEnabled(enabled) {
@@ -932,7 +929,6 @@ var CStudioForms =
         } else {
           messages$.subscribe((message) => {
             if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
-              saveDraftDialog();
               setButtonsEnabled(true);
             }
           });
@@ -1418,7 +1414,6 @@ var CStudioForms =
                           iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
-                            saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1428,7 +1423,6 @@ var CStudioForms =
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             CStudioAuthoring.Operations.refreshPreview();
-                            saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1667,7 +1661,7 @@ var CStudioForms =
                       text: CMgs.format(formsLangBundle, 'no'),
                       handler: function() {
                         if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
+                          iceWindowCallback.cancelled({ close: false });
                         }
                         this.destroy();
                       },
@@ -1768,15 +1762,6 @@ var CStudioForms =
                     }
                   }
                 ];
-                //this means the editor was open on a legacyFormDialog
-                if (iceWindowCallback.id) {
-                  options.push({
-                    label: formatMessage(formEngineMessages.saveAndMinimize),
-                    callback: () => {
-                      saveFn(false, true, null, 'saveAndMinimize');
-                    }
-                  });
-                }
                 if (type.previewable) {
                   options.push({
                     label: formatMessage(formEngineMessages.saveAndPreview),
@@ -2033,6 +2018,7 @@ var CStudioForms =
             sectionContainerEl
           )[0];
           var sectionBodyEl = YDom.getElementsByClassName('panel-body', null, sectionContainerEl)[0];
+          var sectionHeadingEl = YDom.getElementsByClassName('panel-heading', null, sectionContainerEl)[0];
 
           if (section.defaultOpen == 'false' || section.defaultOpen == '' || section.defaultOpen == false) {
             sectionBodyEl.style.display = 'none';
@@ -2043,15 +2029,22 @@ var CStudioForms =
           formSection.sectionOpenCloseWidgetEl = sectionOpenCloseWidgetEl;
           formSection.sectionBodyEl = sectionBodyEl;
 
-          sectionOpenCloseWidgetEl.onclick = function() {
-            if (this.sectionBodyEl.style.display == 'none') {
-              this.sectionBodyEl.style.display = 'block';
-              YAHOO.util.Dom.removeClass(this, 'cstudio-form-section-widget-closed');
+          sectionHeadingEl.onclick = function() {
+            YDom.getElementsByClassName('panel-body', null, this)[0];
+            if (YDom.getElementsByClassName('panel-body', null, this)[0].style.display === 'none') {
+              YDom.getElementsByClassName('panel-body', null, this)[0].style.display = 'block';
+              YAHOO.util.Dom.removeClass(
+                YDom.getElementsByClassName('cstudio-form-section-widget', null, this)[0],
+                'cstudio-form-section-widget-closed'
+              );
             } else {
-              this.sectionBodyEl.style.display = 'none';
-              YAHOO.util.Dom.addClass(this, 'cstudio-form-section-widget-closed');
+              YDom.getElementsByClassName('panel-body', null, this)[0].style.display = 'none';
+              YAHOO.util.Dom.addClass(
+                YDom.getElementsByClassName('cstudio-form-section-widget', null, this)[0],
+                'cstudio-form-section-widget-closed'
+              );
             }
-          };
+          }.bind(sectionContainerEl);
 
           for (var j = 0; j < section.fields.length; j++) {
             var field = section.fields[j];
@@ -2163,7 +2156,7 @@ var CStudioForms =
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
-          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           addEl.innerHTML = 'Add First Item';
           addEl.onclick = function() {
             repeatContainerEl.form.setFocusedField(repeatContainerEl);
@@ -2200,7 +2193,7 @@ var CStudioForms =
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
-          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           addEl.innerHTML = CMgs.format(formsLangBundle, 'repeatAddAnother');
           if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
             YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
@@ -2223,7 +2216,7 @@ var CStudioForms =
 
           var upEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(upEl);
-          YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           upEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveUp');
           if (form.readOnly || i == 0) {
             YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
@@ -2249,7 +2242,7 @@ var CStudioForms =
 
           var downEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(downEl);
-          YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           downEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveDown');
           if (form.readOnly || i == repeatCount - 1) {
             YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
@@ -2275,7 +2268,7 @@ var CStudioForms =
 
           var deleteEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(deleteEl);
-          YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control');
+          YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           deleteEl.innerHTML = CMgs.format(formsLangBundle, 'repeatDelete');
           if (form.readOnly || currentCount <= minOccurs) {
             YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');

@@ -22,14 +22,14 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
-import Box from '@material-ui/core/Box';
+import { Paper } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     search: {
+      flex: 1,
       position: 'relative',
       background: (props: any) => props.background ?? theme.palette.background.default,
-      width: '100%',
       display: 'flex',
       alignItems: 'center',
       padding: '0 12px',
@@ -115,8 +115,9 @@ export default function SearchBar(props: SearchBarProps) {
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   return (
-    <Box
-      boxShadow={focus ? 4 : 0}
+    <Paper
+      variant={focus ? 'elevation' : 'outlined'}
+      elevation={focus ? 4 : 0}
       className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && <DecoratorIcon className={classes.searchIcon} />}
@@ -143,6 +144,6 @@ export default function SearchBar(props: SearchBarProps) {
           <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       )}
-    </Box>
+    </Paper>
   );
 }

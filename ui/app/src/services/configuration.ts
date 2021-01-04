@@ -19,7 +19,7 @@ import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
-import { applyDeserializedXMLTransforms, createLookupTable, reversePluckProps } from '../utils/object';
+import { applyDeserializedXMLTransforms, createLookupTable, reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
@@ -191,20 +191,8 @@ export function deserializeActiveTargetingModelData<T extends Object>(
 
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
-
-  Object.keys(model).forEach((key) => {
-    if (Array.isArray(model[key])) {
-      model[key] = model[key].join(',');
-    }
-  });
-
-  const params = encodeURIComponent(
-    Object.entries(model)
-      .map(([key, val]) => `${key}=${val}`)
-      .join('&')
-  );
-
-  return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
+  const qs = toQueryString({ ...model, id: data.craftercms.id });
+  return get(`/api/1/profile/set${qs}`).pipe(pluck('response'));
 }
 
 // endregion
@@ -229,6 +217,10 @@ export function getSiteUiConfig(
           return {
             preview: {
               toolsPanel: applyDeserializedXMLTransforms(deserialize(widgets), { arrays, lookupTables, renameTable })
+            },
+            // TODO: parse XML.
+            globalNav: {
+              sections: []
             }
           };
         } else {

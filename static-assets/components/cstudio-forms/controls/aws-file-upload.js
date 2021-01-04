@@ -164,7 +164,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
+    containerEl.appendChild(validEl);
 
     this.fileEl = document.createElement('span');
     controlWidgetContainerEl.appendChild(this.fileEl);

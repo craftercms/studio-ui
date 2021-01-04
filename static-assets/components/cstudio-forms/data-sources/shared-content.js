@@ -76,11 +76,7 @@ CStudioForms.Datasources.SharedContent = function(id, form, properties, constrai
 YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
-  createElementAction: function(control, _self, addContainerEl) {
-    if (this.countOptions > 1) {
-      control.addContainerEl = null;
-      control.containerEl.removeChild(addContainerEl);
-    }
+  createElementAction: function(control, _self) {
     if (_self.type === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
@@ -116,11 +112,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
   },
 
-  browseExistingElementAction: function(control, _self, addContainerEl) {
-    if (this.countOptions > 1) {
-      control.addContainerEl = null;
-      control.containerEl.removeChild(addContainerEl);
-    }
+  browseExistingElementAction: function(control, _self) {
     // if the browsePath property is set, use the property instead of the repoPath property
     // otherwise continue to use the repoPath for both cases for backward compatibility
     var browsePath = _self.repoPath;
@@ -147,12 +139,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     );
   },
 
-  searchExistingElementAction: function(control, _self, addContainerEl) {
-    if (this.countOptions > 1) {
-      control.addContainerEl = null;
-      control.containerEl.removeChild(addContainerEl);
-    }
-
+  searchExistingElementAction: function(control, _self) {
     var searchContext = {
       searchId: null,
       itemsPerPage: 12,
@@ -183,8 +170,8 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       {
         success(searchId, selectedTOs) {
           selectedTOs.forEach(function(item) {
-            var value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
-            control.insertItem(item.uri, value, null, null, _self.id);
+            const value = item.label && item.label !== '' ? item.label : item.path;
+            control.insertItem(item.path, value, null, null, _self.id);
             control._renderItems();
           });
         },
@@ -200,8 +187,6 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
     var _self = this;
 
-    var addContainerEl = control.addContainerEl ? control.addContainerEl : null;
-
     var datasourceDef = this.form.definition.datasources,
       newElTitle = '';
 
@@ -211,33 +196,24 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       }
     }
 
-    if (!addContainerEl && (this.countOptions > 1 || onlyAppend)) {
-      addContainerEl = document.createElement('div');
-      control.containerEl.appendChild(addContainerEl);
-      YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-      control.addContainerEl = addContainerEl;
-      control.addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
-      control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
-    }
-
     if (this.enableCreateNew || this.defaultEnableCreateNew) {
       if (this.countOptions > 1 || onlyAppend) {
-        addContainerEl.create = document.createElement('div');
-        addContainerEl.appendChild(addContainerEl.create);
-        YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+        const create = $(
+          `<li class="cstudio-form-controls-create-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
+            langBundle,
+            'createNew'
+          )} - ${newElTitle}</a></li>`
+        );
 
-        var createEl = document.createElement('div');
-        YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-        createEl.innerHTML = CMgs.format(langBundle, 'createNew') + ' - ' + newElTitle;
-        control.addContainerEl.create.appendChild(createEl);
-        var addContainerEl = control.addContainerEl;
+        control.$dropdownMenu.append(create);
+
         YAHOO.util.Event.on(
-          createEl,
+          create[0],
           'click',
           function() {
-            _self.createElementAction(control, _self, addContainerEl);
+            _self.createElementAction(control, _self);
           },
-          createEl
+          create[0]
         );
       } else {
         _self.createElementAction(control, _self);
@@ -246,22 +222,22 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
     if (this.enableBrowseExisting || this.defaultEnableBrowseExisting) {
       if (this.countOptions > 1 || onlyAppend) {
-        addContainerEl.browse = document.createElement('div');
-        addContainerEl.appendChild(addContainerEl.browse);
-        YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
+        const browse = $(
+          `<li class="cstudio-form-controls-browse-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
+            langBundle,
+            'browseExisting'
+          )} - ${newElTitle}</a></li>`
+        );
 
-        var browseEl = document.createElement('div');
-        browseEl.innerHTML = CMgs.format(langBundle, 'browseExisting') + ' - ' + newElTitle;
-        YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
-        control.addContainerEl.browse.appendChild(browseEl);
-        var addContainerEl = control.addContainerEl;
+        control.$dropdownMenu.append(browse);
+
         YAHOO.util.Event.on(
-          browseEl,
+          browse[0],
           'click',
           function() {
-            _self.browseExistingElementAction(control, _self, addContainerEl);
+            _self.browseExistingElementAction(control, _self);
           },
-          browseEl
+          browse[0]
         );
       } else {
         _self.browseExistingElementAction(control, _self);
@@ -270,22 +246,22 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
     if (this.enableSearchExisting || this.defaultEnableSearchExisting) {
       if (this.countOptions > 1) {
-        addContainerEl.search = document.createElement('div');
-        addContainerEl.appendChild(addContainerEl.search);
-        YAHOO.util.Dom.addClass(addContainerEl.search, 'cstudio-form-controls-search-element');
+        const search = $(
+          `<li class="cstudio-form-controls-search-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
+            langBundle,
+            'searchExisting'
+          )} - ${newElTitle}</a></li>`
+        );
 
-        var searchEl = document.createElement('div');
-        searchEl.innerHTML = CMgs.format(langBundle, 'searchExisting') + ' - ' + newElTitle;
-        YAHOO.util.Dom.addClass(searchEl, 'cstudio-form-control-node-selector-add-container-item');
-        control.addContainerEl.search.appendChild(searchEl);
-        var addContainerEl = control.addContainerEl;
+        control.$dropdownMenu.append(search);
+
         YAHOO.util.Event.on(
-          searchEl,
+          search[0],
           'click',
           function() {
-            _self.searchExistingElementAction(control, _self, addContainerEl);
+            _self.searchExistingElementAction(control, _self);
           },
-          searchEl
+          search[0]
         );
       } else {
         _self.searchExistingElementAction(control, _self);

@@ -111,6 +111,7 @@
                               {
                                 success: (response, editorId, name, value, draft, action) => {
                                   window.top.postMessage({
+                                    ...response,
                                     type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
                                     refresh: true,
                                     tab: type,
@@ -127,10 +128,15 @@
                                     message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
                                   }, '*');
                                 },
-                                cancelled: () => {
+                                cancelled: (response) => {
+                                  let close = true;
+                                  if(response && response.close === false) {
+                                    close = false;
+                                  }
                                   window.top.postMessage({
                                     type: 'EMBEDDED_LEGACY_FORM_CLOSE',
                                     refresh: false,
+                                    close: close,
                                     tab: type,
                                     action: 'cancelled'
                                   }, '*');

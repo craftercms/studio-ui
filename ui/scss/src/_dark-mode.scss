@@ -9,9 +9,15 @@ $dark-mode-font-highlight: #70D7FF;
   .craftercms-logo-dark {
     display: none !important;
   }
+  .cstudio-form-controls-container {
+    background: white;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
+  .cstudio-form-controls-container {
+    background: $dark-mode-background-paper;
+  }
   #studioBar {
     &> .navbar-fixed-top {
       color: $dark-mode-font-color;
@@ -48,7 +54,7 @@ $dark-mode-font-highlight: #70D7FF;
     }
   }
 
-  .craftercms-entitlement {
+  body:not(.user-dashboard) .craftercms-entitlement {
     border-color: $dark-mode-background-default-dimmed !important;
     .craftercms-entitlement-copy {
       &, a {
@@ -90,5 +96,56 @@ $dark-mode-font-highlight: #70D7FF;
 
   .craftercms-logo {
     display: none !important;
+  }
+
+  #preview-tools-panel-container {
+    background-color: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color;
+
+    .hd, .acn-accordion-header {
+      background-color: $dark-mode-background-paper !important;
+      color: $dark-mode-font-color !important;
+      border: none !important;
+
+      .acn-accordion-toggle {
+        color: $dark-mode-font-color !important;
+      }
+    }
+
+    button, select, input {
+      background-color: $dark-mode-background-paper;
+      color: $dark-mode-font-color;
+      border: 1px solid $dark-mode-font-color;
+    }
+  }
+
+  #cstudioPreviewTargetingOverlay {
+    background-color: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color;
+
+    select, input {
+      background-color: $dark-mode-background-paper !important;
+    }
+
+    .fa {
+      color: $dark-mode-font-color !important;
+    }
+  }
+
+  #status-dialog_c {
+    background-color: transparent !important;
+    #status-dialog {
+      background-color: transparent !important;
+      border: none;
+
+      .hd, .bd, .ft, .yui-button, .yui-button span {
+        color: $dark-mode-font-color;
+        background-color: $dark-mode-background-paper !important;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom-color: $dark-mode-background-default-dimmed;
+      }
+    }
   }
 }

@@ -13,11 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import AppsIcon from '@material-ui/icons/Apps';
-import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
@@ -27,49 +25,46 @@ import Spinner from '../../components/SystemStatus/Spinner';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import EmptyState from '../../components/SystemStatus/EmptyState';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import FilterSearchDropdown from './FilterSearchDropdown';
 import queryString from 'query-string';
 import TablePagination from '@material-ui/core/TablePagination';
 import Typography from '@material-ui/core/Typography';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from 'clsx';
 import { History, Location } from 'history';
-import { fetchWorkflowAffectedItems, getContentXML } from '../../services/content';
-import SearchBar from '../../components/Controls/SearchBar';
-import {
-  closeDeleteDialog,
-  deleteDialogClosed,
-  showCodeEditorDialog,
-  showDeleteDialog,
-  showEditDialog,
-  showPreviewDialog,
-  showWorkflowCancellationDialog,
-  updatePreviewDialog
-} from '../../state/actions/dialogs';
+import { getContentXML } from '../../services/content';
+import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
-import { fetchUserPermissions } from '../../state/actions/content';
-import { Resource } from '../../models/Resource';
-import { LookupTable } from '../../models/LookupTable';
-import { Loader } from '../../components/ItemMenu/ItemMenu';
-import { isEditableAsset } from '../../utils/content';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { getStoredPreviewChoice } from '../../utils/state';
+import { useActiveSiteId, useSelection } from '../../utils/hooks';
+import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
+import SiteSearchToolBar from '../../components/SiteSearchToolbar';
+import { Drawer } from '@material-ui/core';
+import SiteSearchFilters from '../../components/SiteSearchFilters';
+import ActionsBar from '../../components/ActionsBar';
+import { dispatchDOMEvent } from '../../state/actions/misc';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { DetailedItem } from '../../models/Item';
+import palette from '../../styles/palette';
+import Button from '@material-ui/core/Button';
 
+const drawerWidth = 300;
+let unsubscribeOnActionSuccess;
+const idActionSuccess = 'actionSuccess';
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
+    height: 'calc(100% - 65px)',
+    overflowY: 'scroll',
+    background: theme.palette.background.default,
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
     '&.hasContent': {
       height: 'inherit'
     },
@@ -77,13 +72,22 @@ const useStyles = makeStyles((theme: Theme) => ({
       paddingBottom: '60px'
     }
   },
+  wrapperSelectMode: {
+    height: 'calc(100% - 130px)'
+  },
+  shift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
   searchHeader: {
     padding: '15px 20px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     background: theme.palette.background.default,
-    borderBotton: `1px solid ${theme.palette.divider}`
+    borderBottom: `1px solid ${theme.palette.divider}`
   },
   searchDropdown: {
     marginRight: '7px'
@@ -95,12 +99,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     padding: '0 6px 0 20px',
     alignItems: 'center',
-    background: theme.palette.background.paper
-  },
-  resultsSelected: {
-    marginRight: '10px',
-    display: 'flex',
-    alignItems: 'center'
+    background: theme.palette.background.paper,
+    borderBottom: `1px solid ${theme.palette.divider}`
   },
   clearSelected: {
     marginLeft: '5px',
@@ -113,8 +113,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '25px 30px',
-    background: theme.palette.background.default
+    padding: '25px 30px'
   },
   empty: {
     height: '100%',
@@ -173,17 +172,62 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '80px',
     paddingTop: '0',
     order: -1
+  },
+  drawer: {
+    flexShrink: 0
+  },
+  drawerPaper: {
+    top: 65,
+    height: 'calc(100% - 65px)',
+    bottom: 0,
+    width: drawerWidth,
+    zIndex: theme.zIndex.appBar - 1
+  },
+  drawerPaperSelect: {
+    top: 0,
+    height: '100%'
+  },
+  paginationCaption: {
+    order: -1,
+    marginRight: '25px'
+  },
+  paginationSelectRoot: {
+    marginRight: 0
+  },
+  paginationSelect: {
+    border: 'none'
+  },
+  filtersActive: {
+    color: '#FFB400',
+    marginLeft: '2px'
+  },
+  selectAppbar: {
+    boxShadow: 'none',
+    borderBottom: `1px solid ${palette.gray.light3}`
+  },
+  selectToolbar: {
+    placeContent: 'center space-between',
+    backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.default : palette.white
+  },
+  selectToolbarTitle: {
+    flexGrow: 1
+  },
+  drawerModal: {
+    '& .MuiBackdrop-root': {
+      background: 'transparent'
+    }
+  },
+  actionsMenu: {
+    flex: '0 0 auto',
+    display: 'flex',
+    padding: '14px 20px',
+    justifyContent: 'flex-end',
+    borderTop: `1px solid ${palette.gray.light3}`,
+    '& > :not(:first-child)': {
+      marginLeft: '12px'
+    }
   }
 }));
-
-const loaderStyles = makeStyles(() =>
-  createStyles({
-    loadingWrapper: {
-      width: '75px',
-      padding: '0px 15px'
-    }
-  })
-);
 
 const initialSearchParameters: ElasticParams = {
   query: '',
@@ -235,6 +279,26 @@ const messages = defineMessages({
   preview: {
     id: 'search.goToPreview',
     defaultMessage: 'Go to page'
+  },
+  resultsCaption: {
+    id: 'search.resultsCaption',
+    defaultMessage: '{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}} '
+  },
+  filtersActive: {
+    id: 'search.filtersActive',
+    defaultMessage: ' • <span>Filters Active</span>'
+  },
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
+  },
+  acceptSelection: {
+    id: 'search.acceptSelection',
+    defaultMessage: 'Accept Selection'
   }
 });
 
@@ -242,13 +306,16 @@ interface SearchProps {
   history: History;
   location: Location;
   mode?: string;
-  onSelect(path: string, selected: boolean): any;
+  embedded?: boolean;
+  onClose?(): void;
+  onSelect?(path: string, selected: boolean): any;
+  onAcceptSelection?(items: DetailedItem[]): any;
 }
 
 export default function Search(props: SearchProps) {
   const classes = useStyles({});
   const { current: refs } = useRef<any>({});
-  const { history, location, mode = 'default', onSelect } = props;
+  const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -260,26 +327,39 @@ export default function Search(props: SearchProps) {
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
-  const permissions = usePermissions();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
   });
-  const [simpleMenu, setSimpleMenu] = useState<{ item: MediaItem; anchorEl: Element }>({
-    item: null,
-    anchorEl: null
-  });
+  const [drawerOpen, setDrawerOpen] = useState(!embedded);
+  const [checkedFilters, setCheckedFilters] = React.useState({});
+  const theme = useTheme();
+  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
+  const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
+  const items = useSelection((state) => state.content.items);
 
   refs.createQueryString = createQueryString;
 
   setRequestForgeryToken();
 
+  const getItemsDetails = useCallback(
+    (items) => {
+      items.forEach((item) => {
+        dispatch(fetchUserPermissions({ path: item.path }));
+        dispatch(completeDetailedItem({ path: item.path }));
+      });
+    },
+
+    [dispatch]
+  );
+
   useEffect(() => {
     search(site, searchParameters).subscribe(
       (result) => {
         setSearchResults(result);
+        getItemsDetails(result.items);
       },
       ({ response }) => {
         if (response) {
@@ -288,7 +368,7 @@ export default function Search(props: SearchProps) {
       }
     );
     return () => setApiState({ error: false, errorResponse: null });
-  }, [searchParameters, site]);
+  }, [searchParameters, site, getItemsDetails]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
@@ -302,11 +382,43 @@ export default function Search(props: SearchProps) {
     return () => subscription.unsubscribe();
   }, [history, onSearch$, refs]);
 
+  const refreshSearch = useCallback(() => {
+    search(site, searchParameters).subscribe(
+      (result) => {
+        setSearchResults(result);
+        getItemsDetails(result.items);
+      },
+      ({ response }) => {
+        if (response) {
+          setApiState({ error: true, errorResponse: response });
+        }
+      }
+    );
+  }, [searchParameters, site, getItemsDetails]);
+
+  const handleClearSelected = useCallback(() => {
+    selected.forEach((path) => {
+      onSelect?.(path, false);
+    });
+    setSelected([]);
+  }, [onSelect, selected]);
+
+  useEffect(() => {
+    if (selected.length === 1) {
+      unsubscribeOnActionSuccess = createCallbackListener(idActionSuccess, function() {
+        handleClearSelected();
+        refreshSearch();
+      });
+    } else if (!selected.length) {
+      unsubscribeOnActionSuccess?.();
+    }
+  }, [selected, handleClearSelected, refreshSearch]);
+
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
       return items.map((item: MediaItem, i: number) => {
         return currentView === 'grid' ? (
-          <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Grid key={i} item xs={12} sm={6} md={4} lg={4} xl={3}>
             <MediaCard
               item={item}
               onPreview={onPreview}
@@ -365,6 +477,31 @@ export default function Search(props: SearchProps) {
     } else {
       return false;
     }
+  }
+
+  function clearFilter(facet: string) {
+    if (checkedFilters[facet]) {
+      if (typeof checkedFilters[facet] === 'string') {
+        setCheckedFilters({ ...checkedFilters, [facet]: '' });
+      } else {
+        let emptyFilter = { ...checkedFilters[facet] };
+        Object.keys(emptyFilter).forEach((name) => {
+          emptyFilter[name] = false;
+        });
+        setCheckedFilters({ ...checkedFilters, [facet]: emptyFilter });
+      }
+    }
+    handleFilterChange({ name: facet, value: undefined }, true);
+  }
+
+  function clearFilters() {
+    searchResults.facets.forEach((facet) => clearFilter(facet.name));
+    clearPath();
+  }
+
+  function clearPath() {
+    handleFilterChange({ name: 'path', value: undefined }, false);
+    setSelectedPath(undefined);
   }
 
   // createQueryString:
@@ -444,19 +581,6 @@ export default function Search(props: SearchProps) {
     });
   }
 
-  function refreshSearch() {
-    search(site, searchParameters).subscribe(
-      (result) => {
-        setSearchResults(result);
-      },
-      ({ response }) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: response });
-        }
-      }
-    );
-  }
-
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
       setSelected([...selected, path]);
@@ -466,7 +590,7 @@ export default function Search(props: SearchProps) {
       selectedItems.splice(index, 1);
       setSelected(selectedItems);
     }
-    onSelect(path, isSelected);
+    onSelect?.(path, isSelected);
   }
 
   function handleSelectAll(checked: boolean) {
@@ -475,7 +599,7 @@ export default function Search(props: SearchProps) {
       searchResults.items.forEach((item: any) => {
         if (selected.indexOf(item.path) === -1) {
           selectedItems.push(item.path);
-          onSelect(item.path, true);
+          onSelect?.(item.path, true);
         }
       });
       setSelected([...selected, ...selectedItems]);
@@ -485,18 +609,11 @@ export default function Search(props: SearchProps) {
         let index = newSelectedItems.indexOf(item.path);
         if (index >= 0) {
           newSelectedItems.splice(index, 1);
-          onSelect(item.path, false);
+          onSelect?.(item.path, false);
         }
       });
       setSelected(newSelectedItems);
     }
-  }
-
-  function handleClearSelected() {
-    selected.forEach((path) => {
-      onSelect(path, false);
-    });
-    setSelected([]);
   }
 
   function areAllSelected() {
@@ -505,18 +622,16 @@ export default function Search(props: SearchProps) {
   }
 
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
-    dispatch(fetchUserPermissions({ path: item.path }));
-    setSimpleMenu({
-      item,
-      anchorEl: event.currentTarget
-    });
-  };
-
-  const onNavigate = (item: MediaItem) => {
-    if (item.path) {
-      let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(item.path)}&site=${site}`;
-    }
+    const path = item.path;
+    dispatch(fetchUserPermissions({ path }));
+    dispatch(completeDetailedItem({ path }));
+    dispatch(
+      showItemMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX }
+      })
+    );
   };
 
   const onPreview = (item: MediaItem) => {
@@ -580,94 +695,67 @@ export default function Search(props: SearchProps) {
     }
   };
 
-  const onEdit = (item: MediaItem) => {
-    if (item.type === 'Page' || item.type === 'Taxonomy' || item.type === 'Component') {
-      const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form`;
-      fetchWorkflowAffectedItems(site, item.path).subscribe((items) => {
-        if (items?.length > 0) {
-          dispatch(
-            showWorkflowCancellationDialog({
-              items,
-              onContinue: showEditDialog({ src })
-            })
-          );
-        } else {
-          dispatch(showEditDialog({ src }));
-        }
-      });
-    } else {
-      let src = `${legacyFormSrc}site=${site}&path=${item.path}&type=asset`;
-      dispatch(showCodeEditorDialog({ src }));
-    }
-  };
-
-  const onDelete = (item: MediaItem) => {
-    const idDialogSuccess = 'deleteDialogSuccess';
-    const idDialogCancel = 'deleteDialogCancel';
-    dispatch(
-      showDeleteDialog({
-        items: [item],
-        onSuccess: batchActions([
-          dispatchDOMEvent({
-            id: idDialogSuccess
-          }),
-          closeDeleteDialog()
-        ]),
-        onClosed: batchActions([dispatchDOMEvent({ id: idDialogCancel }), deleteDialogClosed()])
-      })
-    );
-
-    let unsubscribe, cancelUnsubscribe;
-
-    unsubscribe = createCallbackListener(idDialogSuccess, function() {
-      refreshSearch();
-      cancelUnsubscribe();
-    });
-
-    cancelUnsubscribe = createCallbackListener(idDialogCancel, function() {
-      refreshSearch();
-      unsubscribe();
-    });
-  };
-
-  const onMenuClose = () => {
-    setSimpleMenu({
-      item: null,
-      anchorEl: null
-    });
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   return (
-    <section
-      className={clsx(classes.wrapper, {
-        hasContent: searchResults && searchResults.total,
-        select: mode === 'select'
-      })}
-    >
-      <header className={classes.searchHeader}>
-        <div className={classes.search}>
-          <SearchBar
-            onChange={handleSearchKeyword}
-            keyword={keyword}
-            showActionButton={Boolean(keyword)}
-            showDecoratorIcon
+    <>
+      <SiteSearchToolBar
+        onChange={handleSearchKeyword}
+        onMenuIconClick={toggleDrawer}
+        handleChangeView={handleChangeView}
+        currentView={currentView}
+        keyword={keyword}
+        showActionButton={Boolean(keyword)}
+        embedded={embedded}
+      />
+      <Drawer
+        variant={desktopScreen && !embedded ? 'persistent' : 'temporary'}
+        anchor="left"
+        open={drawerOpen}
+        className={classes.drawer}
+        classes={{
+          paper: clsx(classes.drawerPaper, { [classes.drawerPaperSelect]: mode === 'select' }),
+          modal: classes.drawerModal
+        }}
+        ModalProps={{
+          ...(desktopScreen && !embedded
+            ? {}
+            : {
+                onBackdropClick: toggleDrawer,
+                onEscapeKeyDown: toggleDrawer
+              })
+        }}
+      >
+        {searchResults && searchResults.facets && (
+          <SiteSearchFilters
+            mode={mode}
+            className={classes.searchDropdown}
+            facets={searchResults.facets}
+            handleFilterChange={handleFilterChange}
+            queryParams={queryParams}
+            checkedFilters={checkedFilters}
+            setCheckedFilters={setCheckedFilters}
+            clearFilters={clearFilters}
+            handleClearClick={clearFilter}
+            selectedPath={selectedPath}
+            setSelectedPath={setSelectedPath}
           />
-        </div>
-        <div className={classes.helperContainer}>
-          {searchResults && searchResults.facets && (
-            <FilterSearchDropdown
-              mode={mode}
-              text={'Filters'}
-              className={classes.searchDropdown}
-              facets={searchResults.facets}
-              handleFilterChange={handleFilterChange}
-              queryParams={queryParams}
-            />
-          )}
-          <IconButton onClick={handleChangeView}>{currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}</IconButton>
-        </div>
-      </header>
-      {searchResults && !!searchResults.total && (
+        )}
+      </Drawer>
+      <section
+        className={clsx(classes.wrapper, {
+          select: mode === 'select',
+          [classes.shift]: drawerOpen,
+          [classes.wrapperSelectMode]: mode === 'select'
+        })}
+        style={
+          drawerOpen && desktopScreen && !embedded
+            ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
+            : { marginLeft: 0 }
+        }
+      >
         <div className={classes.searchHelperBar}>
           <FormGroup>
             <FormControlLabel
@@ -681,21 +769,35 @@ export default function Search(props: SearchProps) {
               label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
             />
           </FormGroup>
-          {selected.length > 0 && (
-            <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
-              {formatMessage(messages.resultsSelected, {
-                count: selected.length,
-                total: searchResults.total
-              })}
-              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
-            </Typography>
-          )}
           <TablePagination
             rowsPerPageOptions={[9, 15, 21]}
             className={classes.pagination}
             component="div"
-            labelRowsPerPage={formatMessage(messages.itemsPerPage)}
-            count={searchResults.total}
+            labelRowsPerPage={null}
+            labelDisplayedRows={({ from, to, count }) => (
+              <>
+                {formatMessage(messages.resultsCaption, {
+                  from,
+                  to,
+                  count,
+                  keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                  keywordLength: keyword.length,
+                  b: (content) => <strong key={content}>{content}</strong>
+                })}
+                {(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
+                  <strong>
+                    {formatMessage(messages.filtersActive, {
+                      span: (content) => (
+                        <span key={content} className={classes.filtersActive}>
+                          {content}
+                        </span>
+                      )
+                    })}
+                  </strong>
+                )}
+              </>
+            )}
+            count={searchResults?.total ?? 0}
             rowsPerPage={searchParameters.limit}
             page={Math.ceil(searchParameters.offset / searchParameters.limit)}
             backIconButtonProps={{
@@ -706,148 +808,52 @@ export default function Search(props: SearchProps) {
             }}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
+            classes={{
+              caption: classes.paginationCaption,
+              selectRoot: classes.paginationSelectRoot,
+              select: classes.paginationSelect
+            }}
           />
         </div>
-      )}
-      <section className={classes.content}>
-        {apiState.error ? (
-          <ApiResponseErrorState error={apiState.errorResponse} />
-        ) : (
-          <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
-            {searchResults === null ? (
-              <Spinner background="inherit" />
-            ) : (
-              renderMediaCards(searchResults.items, currentView)
-            )}
-          </Grid>
-        )}
+        <section className={classes.content}>
+          {apiState.error ? (
+            <ApiResponseErrorState error={apiState.errorResponse} />
+          ) : (
+            <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
+              {searchResults === null ? (
+                <Spinner background="inherit" />
+              ) : (
+                renderMediaCards(searchResults.items, currentView)
+              )}
+            </Grid>
+          )}
+        </section>
       </section>
-      {simpleMenu.item?.path && (
-        <SimpleMenu
-          permissions={permissions?.[simpleMenu.item.path]}
-          item={simpleMenu.item}
-          anchorEl={simpleMenu.anchorEl}
-          onClose={onMenuClose}
-          onNavigate={onNavigate}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          messages={{
-            edit: formatMessage(messages.edit),
-            delete: formatMessage(messages.delete),
-            preview: formatMessage(messages.preview),
-            noPermissions: formatMessage(messages.noPermissions)
-          }}
+      {mode === 'default' && (
+        <ActionsBar
+          open={selected.length > 0}
+          mode={mode}
+          selectedItems={selected}
+          handleClearSelected={handleClearSelected}
+          onActionSuccess={dispatchDOMEvent({ id: idActionSuccess })}
+          onAcceptSelection={onAcceptSelection}
         />
       )}
-    </section>
-  );
-}
-
-interface SimpleMenuProps {
-  permissions: LookupTable<boolean>;
-  item: MediaItem;
-  anchorEl: Element;
-  messages: {
-    delete: string;
-    edit: string;
-    preview: string;
-    noPermissions: string;
-  };
-  onClose(): void;
-  onNavigate(item: MediaItem): void;
-  onEdit(item: MediaItem): void;
-  onDelete(item: MediaItem): void;
-}
-
-interface SimpleMenuUIProps {
-  resource: Resource<LookupTable<boolean>>;
-  messages: {
-    delete: string;
-    edit: string;
-    preview: string;
-    noPermissions: string;
-  };
-  onClose(): void;
-  onNavigate(): void;
-  onEdit(): void;
-  onDelete(): void;
-}
-
-function SimpleMenu(props: SimpleMenuProps) {
-  const classes = loaderStyles({});
-  const resource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(props.permissions, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => ({
-      ...source,
-      editable: isEditableAsset(props.item.path),
-      preview: props.item.type === 'Page'
-    }),
-    errorSelector: (source) => null
-  });
-
-  return (
-    <Menu anchorEl={props.anchorEl} open={Boolean(props.anchorEl)} onClose={props.onClose}>
-      <Suspense
-        fallback={
-          <div className={classes.loadingWrapper}>
-            <Loader numOfItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2} />
-          </div>
-        }
-      >
-        <SimpleMenuUI
-          resource={resource}
-          messages={props.messages}
-          onClose={props.onClose}
-          onNavigate={() => props.onNavigate(props.item)}
-          onEdit={() => props.onEdit(props.item)}
-          onDelete={() => props.onDelete(props.item)}
-        />
-      </Suspense>
-    </Menu>
-  );
-}
-
-function SimpleMenuUI(props: SimpleMenuUIProps) {
-  const { resource, onEdit, onClose, onDelete, messages, onNavigate } = props;
-  const permissions = resource.read();
-  const editable = permissions.editable;
-  const preview = permissions.preview;
-  const isWriteAllowed = permissions.write;
-  const isDeleteAllowed = permissions.delete;
-  return (
-    <>
-      {editable && isWriteAllowed && (
-        <MenuItem
-          onClick={() => {
-            onClose();
-            onEdit();
-          }}
-        >
-          {messages.edit}
-        </MenuItem>
+      {mode === 'select' && (
+        <section className={classes.actionsMenu}>
+          <Button variant="outlined" onClick={onClose}>
+            {formatMessage(messages.cancel)}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={selected.length === 0}
+            onClick={() => onAcceptSelection?.(selected.map((path) => items.byPath?.[path]))}
+          >
+            {formatMessage(messages.acceptSelection)}
+          </Button>
+        </section>
       )}
-      {isDeleteAllowed && (
-        <MenuItem
-          onClick={() => {
-            onClose();
-            onDelete();
-          }}
-        >
-          {messages.delete}
-        </MenuItem>
-      )}
-      {preview && (
-        <MenuItem
-          onClick={() => {
-            onNavigate();
-          }}
-        >
-          {messages.preview}
-        </MenuItem>
-      )}
-      {!isWriteAllowed && !isDeleteAllowed && <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>}
     </>
   );
 }

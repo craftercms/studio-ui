@@ -82,8 +82,9 @@ const contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
 const notEmpty = (objects) => Object.keys(objects).length > 0;
 const modelsObs$ = models$.pipe(filter(notEmpty));
 const contentTypesObs$ = contentTypes$.pipe(filter(notEmpty));
+const pathsObs$ = paths$.pipe(filter(notEmpty));
 
-export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$ };
+export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$, pathsObs$ as paths$ };
 
 // region Models
 
@@ -149,6 +150,24 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
   } else {
     pathsRequested[path] = true;
     return fetchByPath(path).pipe(pluck('model'));
+  }
+}
+
+export function getContentInstanceByPath(path: string): ContentInstance {
+  let modelId = paths$.value[path];
+  return models$.value[modelId];
+}
+
+export function isInheritedField(modelId: string, fieldId: string): boolean {
+  return !!getCachedModel(modelId).craftercms.sourceMap?.[fieldId];
+}
+
+export function getModelIdFromInheritedField(modelId: string, fieldId): string {
+  const levelDescriptorPath = models$.value[modelId].craftercms.sourceMap?.[fieldId];
+  if (levelDescriptorPath) {
+    return getContentInstanceByPath(levelDescriptorPath).craftercms.id;
+  } else {
+    return modelId;
   }
 }
 
@@ -228,7 +247,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
 
   operations$.next({
     type: UPDATE_FIELD_VALUE_OPERATION,
-    args: { modelId, fieldId, index, value }
+    args: { modelId: getModelIdFromInheritedField(modelId, fieldId), fieldId, index, value }
   });
 }
 
@@ -582,19 +601,15 @@ interface FetchGuestModelCompletePayload {
   path: string;
   model: ContentInstance;
   modelLookup: LookupTable<ContentInstance>;
+  modelIdByPath: LookupTable<string>;
   childrenMap: LookupTable<string[]>;
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, childrenMap }: FetchGuestModelCompletePayload) => {
-    const modelIdByPath = {};
-    Object.values(modelLookup).forEach((model) => {
-      // Embedded components don't have a path.
-      if (model.craftercms.path) {
-        pathsRequested[model.craftercms.path] = true;
-        modelIdByPath[model.craftercms.path] = model.craftercms.id;
-      }
+  .subscribe(({ modelLookup, childrenMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
+    Object.keys(modelIdByPath).forEach((path) => {
+      pathsRequested[path] = true;
     });
     Object.assign(children, childrenMap);
     models$.next({ ...models$.value, ...modelLookup });

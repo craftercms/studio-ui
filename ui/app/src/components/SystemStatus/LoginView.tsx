@@ -120,7 +120,7 @@ const translations = defineMessages({
   },
   recoverYourPasswordSuccessMessage: {
     id: 'loginView.recoverYourPasswordSuccessMessage',
-    defaultMessage: 'Password reset was sent successfully. Please check your email to reset your password.'
+    defaultMessage: 'If "{username}" exists, a recovery email has been sent'
   },
   resetPasswordFieldPlaceholderLabel: {
     id: 'resetView.resetPasswordFieldPlaceholderLabel',
@@ -310,7 +310,7 @@ function RecoverView(props: SubViewProps) {
           setMode('login');
           onSnack({
             open: true,
-            message: formatMessage(translations.recoverYourPasswordSuccessMessage)
+            message: formatMessage(translations.recoverYourPasswordSuccessMessage, { username })
           });
         },
         (error) => {
@@ -666,7 +666,10 @@ export default function LoginViewContainer(props: LoginViewProps) {
   const [mode, setMode] = useState<Modes>(token ? 'reset' : 'login');
   const [language, setLanguage] = useState(() => getCurrentLocale());
   const [languages, setLanguages] = useState<SystemLang[]>();
-  const [snack, onSnack] = useState({ open: false, message: '' });
+  const [snack, onSnack] = useState<{ open: boolean; message: string; autoHideDuration?: number }>({
+    open: false,
+    message: ''
+  });
   const [isFetching, onSubmit] = useState(false);
 
   let [CurrentView, setCurrentView] = useState<React.ElementType>(() => LoginView);
@@ -752,7 +755,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
       </Dialog>
       <Snackbar
         open={snack.open}
-        autoHideDuration={5000}
+        autoHideDuration={snack.autoHideDuration ?? 8000}
         onClose={() => onSnack({ open: false, message: '' })}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         message={snack.message}

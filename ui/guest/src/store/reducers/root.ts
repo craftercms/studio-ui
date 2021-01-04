@@ -45,6 +45,8 @@ import {
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
   EditingStatus,
+  HIGHLIGHT_MODE_CHANGED,
+  HighlightMode,
   HOST_CHECK_IN,
   TRASHED
 } from '../../constants';
@@ -56,10 +58,14 @@ const mouseover: GuestReducer = (state, action) => {
   if (state.status === EditingStatus.LISTENING) {
     const highlight = ElementRegistry.getHoverData(record.id);
     const draggable = ElementRegistry.getDraggable(record.id);
-    const nextState = {
-      ...state,
-      highlighted: { [record.id]: highlight }
-    };
+    const nextState = { ...state };
+
+    if (
+      (state.highlightMode === HighlightMode.MOVABLE && draggable !== false) ||
+      state.highlightMode === HighlightMode.ALL
+    ) {
+      nextState.highlighted = { [record.id]: highlight };
+    }
     if (draggable !== false) {
       nextState.draggable = { [record.id]: draggable };
     } else if (record.id in state.draggable) {
@@ -655,6 +661,13 @@ const set_edit_mode = (state, action) => ({
 });
 // endregion
 
+// region set_edit_mode
+const set_highlight_mode = (state, { payload }) => ({
+  ...state,
+  highlightMode: payload.highlightMode
+});
+// endregion
+
 const initialState: GuestState = {
   dragContext: null,
   draggable: {},
@@ -663,6 +676,7 @@ const initialState: GuestState = {
   ICE_GUEST_INIT: false,
   status: EditingStatus.LISTENING,
   editMode: false,
+  highlightMode: HighlightMode.ALL,
   uploading: {},
   models: {},
   contentTypes: {},
@@ -705,6 +719,7 @@ const reducerFunctions: {
   [COMPONENT_INSTANCE_DRAG_ENDED]: foo,
   [DESKTOP_ASSET_DRAG_ENDED]: foo,
   [EDIT_MODE_CHANGED]: set_edit_mode,
+  [HIGHLIGHT_MODE_CHANGED]: set_highlight_mode,
   [CONTENT_TYPE_RECEPTACLES_REQUEST]: content_type_receptacles_request,
   [CLEAR_HIGHLIGHTED_RECEPTACLES]: clear_highlighted_receptacles,
   [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
@@ -720,6 +735,7 @@ const reducerFunctions: {
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
+    highlightMode: action.payload.highlightMode,
     editMode: action.payload.editMode
   })
 };

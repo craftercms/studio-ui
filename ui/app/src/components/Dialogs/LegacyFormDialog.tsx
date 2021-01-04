@@ -40,6 +40,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import { getQueryVariable } from '../../utils/path';
+import DialogHeader from './DialogHeader';
 
 const translations = defineMessages({
   title: {
@@ -58,11 +59,15 @@ const styles = makeStyles(() =>
       height: '0',
       border: 0,
       '&.complete': {
-        height: '100%'
+        height: '100%',
+        flexGrow: 1
       }
     },
+    dialog: {
+      minHeight: '90vh'
+    },
     loadingRoot: {
-      height: 'calc(100% - 104px)',
+      flexGrow: 1,
       justifyContent: 'center'
     },
     edited: {
@@ -77,7 +82,6 @@ interface LegacyFormDialogBaseProps {
   open?: boolean;
   src?: string;
   inProgress?: boolean;
-  onMinimized?(): void;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -97,7 +101,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 }
 
 function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
-  const { src, inProgress, onSaveSuccess, onDismiss, onClosed, onMinimized } = props;
+  const { src, inProgress, onSaveSuccess, onDismiss, onClosed } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -135,19 +139,18 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
             case 'save': {
               break;
             }
+            case 'saveAndPreview':
             case 'saveAndClose': {
               onDismiss();
-              break;
-            }
-            case 'saveAndMinimize': {
-              onMinimized();
               break;
             }
           }
           break;
         }
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          onDismiss();
+          if (e.data.close) {
+            onDismiss();
+          }
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
@@ -169,12 +172,9 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
             case 'save': {
               break;
             }
-            case 'saveAndClose': {
+            case 'saveAndClose':
+            case 'saveAndPreview': {
               onDismiss();
-              break;
-            }
-            case 'saveAndMinimize': {
-              onMinimized();
               break;
             }
           }
@@ -191,7 +191,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onMinimized, onDismiss]);
+  }, [inProgress, onSave, messages, dispatch, onDismiss]);
 
   useUnmount(onClosed);
 
@@ -215,10 +215,13 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const id = 'legacy-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const classes = styles();
+
+  const title = formatMessage(translations.title);
 
   const minimized = useMinimizeDialog({
     id,
-    title: formatMessage(translations.title),
+    title,
     minimized: false
   });
 
@@ -227,8 +230,24 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   };
 
   return (
-    <Dialog open={props.open && !minimized} keepMounted={minimized} fullScreen onClose={props.onClose}>
-      <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
+    <Dialog
+      open={props.open && !minimized}
+      keepMounted={minimized}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="xl"
+      classes={{ paper: classes.dialog }}
+    >
+      <DialogHeader
+        title={title}
+        rightActions={[
+          {
+            icon: 'MinimizeIcon',
+            onClick: onMinimized
+          }
+        ]}
+      />
+      <EmbeddedLegacyEditor {...props} />
     </Dialog>
   );
 }

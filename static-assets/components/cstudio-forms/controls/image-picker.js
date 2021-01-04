@@ -225,6 +225,8 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
   },
 
   setImageData: function(imagePicker, imageData) {
+    let CMgs = CStudioAuthoring.Messages;
+    let langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
     imagePicker.inputEl.value = imageData.relativeUrl;
 
     imagePicker.previewEl.src = imageData.previewUrl.replace(/ /g, '%20') + '?' + new Date().getTime();
@@ -232,7 +234,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     imagePicker.downloadEl.href = imageData.previewUrl;
     imagePicker.remote = imageData.remote && imageData.remote === true ? true : false;
 
-    imagePicker.addEl.value = 'Replace';
+    imagePicker.$addBtn.text(CMgs.format(langBundle, 'replace'));
 
     imagePicker.noPreviewEl.style.display = 'none';
     imagePicker.previewEl.style.display = 'inline';
@@ -257,12 +259,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var _self = this;
     var imageManagerNames = this.datasources;
 
-    if (this.addContainerEl) {
-      this.ctrlOptionsEl.removeChild(this.addContainerEl);
-      this.addContainerEl = null;
-      return false;
-    }
-
     imageManagerNames = !imageManagerNames
       ? ''
       : Array.isArray(imageManagerNames)
@@ -272,14 +268,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       datasourceDef = this.form.definition.datasources;
 
     if (imageManagerNames !== '' && imageManagerNames.indexOf(',') !== -1) {
-      addContainerEl = document.createElement('div');
-      this.ctrlOptionsEl.appendChild(addContainerEl);
-      YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-image-picker-add-container');
-      this.addContainerEl = addContainerEl;
-
-      addContainerEl.style.left = this.addEl.offsetLeft + 'px';
-      addContainerEl.style.top = this.addEl.offsetTop + 22 + 'px';
-
       // The datasource title is only found in the definition.datasources. It'd make more sense to have all
       // the information in just one place.
 
@@ -292,26 +280,21 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         if (imageManagerNames.indexOf(el.id) !== -1) {
           mapDatasource = datasourceMap[el.id];
 
-          var itemEl = document.createElement('div');
-          YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
-          itemEl.innerHTML = el.title;
-          addContainerEl.appendChild(itemEl);
+          const $itemEl = $(`<li><a class="cstudio-form-control-image-picker-add-container-item">${el.title}</a></li>`);
+
+          _self.$dropdownMenu.append($itemEl);
 
           YAHOO.util.Event.on(
-            itemEl,
+            $itemEl[0],
             'click',
             function() {
-              _self.addContainerEl = null;
-              _self.ctrlOptionsEl.removeChild(addContainerEl);
-
               _self._addImage(mapDatasource);
             },
-            itemEl
+            $itemEl[0]
           );
         }
       };
       datasourceDef.forEach(addMenuOption);
-      //}
     } else if (imageManagerNames !== '') {
       imageManagerNames = imageManagerNames.replace('["', '').replace('"]', '');
       this._addImage(datasourceMap[imageManagerNames]);
@@ -450,7 +433,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       this.previewEl.style.display = 'none';
       this.previewEl.src = '';
       this.noPreviewEl.style.display = 'inline';
-      this.addEl.value = CMgs.format(langBundle, 'add');
+      this.$addBtn.text(CMgs.format(langBundle, 'add'));
       this.remote = false;
 
       this.downloadEl.style.display = 'none';
@@ -491,7 +474,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var inputEl = document.createElement('input');
     this.inputEl = inputEl;
@@ -559,26 +541,34 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     this.ctrlOptionsEl = ctrlOptionsEl;
 
-    var addEl = document.createElement('input');
-    this.addEl = addEl;
-    addEl.type = 'button';
-    addEl.style.position = 'relative';
-    addEl.id = 'add-image';
+    let dropdownLabel;
+
     if (this.inputEl.value === null || this.inputEl.value === '') {
-      addEl.value = CMgs.format(langBundle, 'add');
+      dropdownLabel = CMgs.format(langBundle, 'add');
     } else {
-      addEl.value = CMgs.format(langBundle, 'replace');
+      dropdownLabel = CMgs.format(langBundle, 'replace');
     }
 
-    YAHOO.util.Dom.addClass(addEl, 'cstudio-button');
-    ctrlOptionsEl.appendChild(addEl);
+    // dropdownBtn and dropdownMenu
+    const $addBtn = $(
+      `<button id="add-image" class="cstudio-button btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">${dropdownLabel}</button>`
+    );
+    const $dropdown = $('<div class="dropdown"></div>');
+    const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
+    this.$dropdown = $dropdown;
+    this.$dropdownMenu = $dropdownMenu;
+    this.$addBtn = $addBtn;
+    $dropdown.append($addBtn);
+    $dropdown.append($dropdownMenu);
+
+    $(ctrlOptionsEl).append($dropdown);
 
     var delEl = document.createElement('input');
     this.delEl = delEl;
     delEl.type = 'button';
     delEl.value = CMgs.format(langBundle, 'delete');
     delEl.style.position = 'relative';
-    YAHOO.util.Dom.addClass(delEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(delEl, 'cstudio-button btn btn-default btn-sm');
 
     ctrlOptionsEl.appendChild(delEl);
 
@@ -639,13 +629,14 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
 
     if (this.readonly === true) {
-      addEl.disabled = true;
+      this.$addBtn.attr('disabled', 'disabled');
+      this.$addBtn.addClass('cstudio-button-disabled');
       delEl.disabled = true;
-      YAHOO.util.Dom.addClass(addEl, 'cstudio-button-disabled');
       YAHOO.util.Dom.addClass(delEl, 'cstudio-button-disabled');
     }
 
@@ -658,16 +649,22 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       this,
       true
     );
+
+    // adding options to $dropdownMenu;
+    if (!this.$addBtn.attr('disabled')) {
+      this.addImage();
+    }
+
     YAHOO.util.Event.addListener(
-      addEl,
+      $addBtn[0],
       'click',
       function(evt, context) {
         context.form.setFocusedField(context);
-        this.addImage();
       },
       this,
       true
     );
+
     YAHOO.util.Event.addListener(
       delEl,
       'click',
@@ -839,7 +836,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       this.urlEl.innerHTML = this.external ? value.replace('?crafterCMIS=true', '') : value;
       this.downloadEl.href = this.external ? value.replace('?crafterCMIS=true', '') : value;
 
-      this.addEl.value = CMgs.format(langBundle, 'replace');
+      this.$addBtn.text(CMgs.format(langBundle, 'replace'));
 
       var loaded = false;
       var image = new Image();

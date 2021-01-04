@@ -46,9 +46,11 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import Asset from '@material-ui/icons/ImageOutlined';
 import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
 import Audiences from '@material-ui/icons/EmojiPeopleRounded';
+import Settings from '@material-ui/icons/Settings';
 import PageExplorer from '../../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
 import Simulator from '@material-ui/icons/DevicesRounded';
+import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -151,6 +153,7 @@ Object.entries({
   '@material-ui/icons/DevicesRounded': Simulator,
   'craftercms.icons.PageExplorer': PageExplorer,
   'craftercms.icons.SiteExplorer': SiteExplorer,
+  '@material-ui/icons/Settings': Settings,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,
@@ -165,7 +168,8 @@ Object.entries({
   'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
   'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
   'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
-  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame
+  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
+  'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

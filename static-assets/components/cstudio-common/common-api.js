@@ -344,43 +344,6 @@ var nodeOpen = false,
        */
       init: function() {},
       /**
-       * get content items in clipboard
-       */
-      getClipboardContent: function(callback) {
-        CSA.Service.getClipboardItems(CStudioAuthoringContext.site, callback);
-      },
-      /**
-       * copy an content item on to the clipboard
-       */
-      copyContent: function(contentTO, callback) {
-        CSA.Service.copyContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function() {
-          callback && callback();
-        });
-      },
-      /**
-       * cut a content item on to the clipboard
-       */
-      cutContent: function(contentTO, callback) {
-        CSA.Service.cutContentToClipboard(CStudioAuthoringContext.site, contentTO.uri, 'content', function() {
-          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
-          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-          CStudioAuthoring.Utils.showNotification(
-            formatMessage(messages.itemCopied, { count: 1 }),
-            null,
-            null,
-            'default'
-          );
-          callback && callback();
-        });
-      },
-      /**
-       * paste all content as child of contentTO
-       */
-      pasteContent: function(contentTO, callback) {
-        CSA.Service.pasteContentFromClipboard(CStudioAuthoringContext.site, contentTO.uri, callback);
-      },
-
-      /**
        * permissions to display the items on clipboard
        */
       getPermissions: function(path, callback) {
@@ -911,17 +874,36 @@ var nodeOpen = false,
           cancelUnsubscribe();
           const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
           const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          const isAdmin = CrafterCMSNext.system.store
+            .getState()
+            .user.rolesBySite[CrafterCMSNext.system.store.getState().sites.active].includes('admin');
+          const environment = response.environment;
+          const count = response.items.length;
           let message;
           if (response.schedule === 'now') {
-            message = formatMessage(messages.itemPublishedNow, {
-              environment: response.environment,
-              count: response.items.length
-            });
+            if (isAdmin) {
+              message = formatMessage(messages.itemPublishedNow, {
+                environment,
+                count
+              });
+            } else {
+              message = formatMessage(messages.itemRequestedToPublishNow, {
+                environment,
+                count
+              });
+            }
           } else {
-            message = formatMessage(messages.itemSchedulePublished, {
-              environment: response.environment,
-              count: response.items.length
-            });
+            if (isAdmin) {
+              message = formatMessage(messages.itemSchedulePublished, {
+                environment,
+                count
+              });
+            } else {
+              message = formatMessage(messages.itemRequestedToSchedulePublish, {
+                environment,
+                count
+              });
+            }
           }
           CStudioAuthoring.Utils.showNotification(message, null, null, 'default');
         });
@@ -2071,7 +2053,7 @@ var nodeOpen = false,
         animator.slideInDown();
       },
 
-      _openIframe: function(url, name) {
+      _openIframe: function(url, name, showCollapseBtn = true) {
         let topWindow = getTopLegacyWindow();
         var id = CSA.Utils.getScopedId(),
           animator,
@@ -2085,13 +2067,14 @@ var nodeOpen = false,
             '" id="studio-ice-container-' +
             editorId +
             '">' +
-            '       <div class="bd">' +
-            '           <input id="colExpButton" class="btn btn-default" type="button" value="Collapse">' +
-            '       </div>' +
-            '   </div>' +
-            '</div>',
-          $modal = $(modalTpl),
-          template =
+            '<div class="bd">';
+
+        if (showCollapseBtn) {
+          modalTpl += '<input id="colExpButton" class="btn btn-default" type="button" value="Collapse">';
+        }
+        modalTpl += '</div></div></div>';
+        ($modal = $(modalTpl)),
+          (template =
             '<iframe name="' +
             name +
             '" id="in-context-edit-editor-' +
@@ -2100,8 +2083,8 @@ var nodeOpen = false,
             topWindow.studioFormZorder +
             ';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' +
             editorId +
-            '\');"></iframe>',
-          parentEl = topWindow.document.body;
+            '\');"></iframe>'),
+          (parentEl = topWindow.document.body);
 
         animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
@@ -2138,16 +2121,14 @@ var nodeOpen = false,
                   .height()
                   .toString()
               );
-              $(dialog).height(60);
+              $(dialog).css('cssText', $(dialog).attr('style') + 'height: 65px !important');
               controlContainer.addClass('collapseForm');
               overlayContainer && overlayContainer.addClass('overlay-collapsed');
-              iframe.css('top', -(iframe.height() - 60));
               overlayContainer.hide();
             } else {
               $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie('formEngineHeight')));
               controlContainer.removeClass('collapseForm');
               overlayContainer && overlayContainer.removeClass('overlay-collapsed');
-              iframe.css('top', 0);
               overlayContainer.show();
             }
           });
@@ -2164,58 +2145,6 @@ var nodeOpen = false,
         window.open(url, name);
 
         animator.slideInDown();
-      },
-
-      openCopyDialog: function(site, uri, callback, args) {
-        var idx = uri.lastIndexOf('index.xml');
-        var folderPath = uri;
-        if (idx > 0) {
-          folderPath = uri.substring(0, uri.lastIndexOf('index.xml'));
-        }
-        var cut = false, // args.cut was the original value, but this parameter is always returning undefined
-          serviceUri =
-            CSA.Service.getPagesServiceUrl +
-            '?site=' +
-            site +
-            '&path=' +
-            folderPath +
-            '&depth=' +
-            CStudioAuthoring.Constants.MAX_INT_VALUE +
-            '&order=default',
-          getCopyTreeItemRequest = CStudioAuthoring.Service.createServiceUri(serviceUri);
-
-        submitDialogCb = {
-          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-            dialogClass.createDialog(cut, site);
-
-            var fillCopyDialog = {
-              success: function(response) {
-                var copyTree = eval('(' + response.responseText + ')');
-                dialogClass.updateDialog(copyTree, cut);
-              },
-              failure: function() {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'error-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(formsLangBundle, 'notification'),
-                  CMgs.format(formsLangBundle, 'loadContentsError'),
-                  null, // use default button
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-              }
-            };
-            // Call to get the dialog contents
-            YConnect.asyncRequest('GET', getCopyTreeItemRequest, fillCopyDialog);
-          }
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'dialog-copy',
-          '/static-assets/components/cstudio-dialogs/copyDialog.js',
-          {},
-          submitDialogCb
-        );
       },
 
       /**
@@ -2707,128 +2636,6 @@ var nodeOpen = false,
       },
 
       /**
-       * Duplicate operation
-       */
-      duplicateContent: function(site, path, opCallBack) {
-        if (path) {
-          CStudioAuthoring.Service.lookupContentItem(site, path, {
-            success: function(content) {
-              var contentTO = content.item;
-              var parentPath = contentTO.uri;
-              if (contentTO.uri.indexOf('index.xml') != -1) {
-                parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf('/'));
-                parentPath = parentPath.substring(0, parentPath.lastIndexOf('/'));
-                parentPath += '/index.xml';
-              }
-
-              var refreshFn = function(to, newTo) {
-                if (!CStudioAuthoringContext.isPreview) {
-                  // clear only while on dashboard
-                  CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
-                }
-
-                if (newTo) {
-                  CStudioAuthoring.Operations.refreshPreview(newTo);
-                }
-
-                eventYS.data = to;
-                eventYS.typeAction = '';
-                eventYS.oldPath = null;
-                eventYS.parent = false;
-                document.dispatchEvent(eventYS);
-              };
-
-              CStudioAuthoring.Service.lookupContentItem(
-                site,
-                parentPath,
-                {
-                  success: function(parentItemTo) {
-                    var copyCb = {
-                      success: function() {
-                        var pasteCb = {
-                          success: function(pasteResponse) {
-                            var filePath = pasteResponse.status[0];
-                            var extension = filePath.split('.')[filePath.split('.').length - 1];
-
-                            const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
-                            const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-                            CStudioAuthoring.Utils.showNotification(
-                              formatMessage(messages.itemPasted),
-                              null,
-                              null,
-                              'default'
-                            );
-
-                            var editCb = {
-                              success: function(newItem) {
-                                refreshFn(parentItemTo.item, newItem.item);
-                                opCallBack.success();
-                              },
-                              failure: function(errorResponse) {
-                                opCallBack.failure(errorResponse);
-                              },
-
-                              cancelled: function() {
-                                refreshFn(parentItemTo.item, null);
-                              }
-                            };
-
-                            if (CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.mimeTyp)) {
-                              CStudioAuthoring.Operations.editContent(
-                                contentTO.contentType,
-                                CStudioAuthoringContext.site,
-                                contentTO.mimeType,
-                                '',
-                                filePath,
-                                false,
-                                editCb,
-                                new Array()
-                              );
-                            } else {
-                              refreshFn(parentItemTo.item, null);
-                            }
-                          },
-                          failure: function(errorResponse) {
-                            opCallBack.failure(errorResponse);
-                          }
-                        };
-
-                        CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
-                      },
-
-                      failure: function(errorResponse) {
-                        opCallBack.failure(errorResponse);
-                      }
-                    };
-
-                    //This method doesn't seem to do the rght thing
-                    //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
-                    var serviceUri = CStudioAuthoring.Service.copyServiceUrl + '?site=' + site;
-                    var copyData = '{ "item":[{ "uri": "' + contentTO.uri + '"}]}';
-                    YAHOO.util.Connect.setDefaultPostHeader(false);
-                    YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
-                    YAHOO.util.Connect.initHeader(
-                      CStudioAuthoringContext.xsrfHeaderName,
-                      CrafterCMSNext.util.auth.getRequestForgeryToken()
-                    );
-                    YAHOO.util.Connect.asyncRequest(
-                      'POST',
-                      CStudioAuthoring.Service.createServiceUri(serviceUri),
-                      copyCb,
-                      copyData
-                    );
-                  },
-                  failure: function() {}
-                },
-                false,
-                false
-              );
-            }
-          });
-        }
-      },
-
-      /**
        * create new template
        */
       createNewTemplate: function(path, templateSaveCb) {
@@ -3014,6 +2821,9 @@ var nodeOpen = false,
           }
           eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
           document.dispatchEvent(eventNS);
+          const messages = CrafterCMSNext.i18n.messages.itemSuccessMessages;
+          const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+          CStudioAuthoring.Utils.showNotification(formatMessage(messages.itemRejected, { count: 1 }));
         });
       },
 
@@ -3309,92 +3119,6 @@ var nodeOpen = false,
           '/static-assets/components/cstudio-dialogs/uploadS3-dialog.js',
           moduleConfig,
           openUploadDialogCb
-        );
-      },
-
-      /**
-       * create a folder at a given location within the web project
-       */
-      createFolder: function(site, path, callingWindow, callback) {
-        CStudioAuthoring.Operations.openCreateNewFolderDialog(site, path, callingWindow, callback);
-      },
-
-      /**
-       * open the create folder dialog
-       */
-      openCreateNewFolderDialog: function(site, path, callingWindow, callback) {
-        if (path.lastIndexOf('.') > 0) {
-          path = path.substring(0, path.lastIndexOf('/'));
-        }
-        var serviceUri = CStudioAuthoring.Service.createFolderServiceUrl;
-        var openCreateFolderDialogCb = {
-          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog(
-              moduleConfig.site,
-              moduleConfig.path,
-              moduleConfig.serviceUri,
-              moduleConfig.callingWindow,
-              moduleConfig.callback
-            );
-          }
-        };
-
-        var moduleConfig = {
-          path: path,
-          site: site,
-          serviceUri: serviceUri,
-          callingWindow: callingWindow,
-          callback: callback
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'new-folder-name-dialog',
-          '/static-assets/components/cstudio-dialogs/new-folder-name-dialog.js',
-          moduleConfig,
-          openCreateFolderDialogCb
-        );
-      },
-
-      /**
-       * rename a folder at a given location within the web project
-       */
-      renameFolder: function(site, path, callingWindow, callback) {
-        CStudioAuthoring.Operations.openRenameFolderDialog(site, path, callingWindow, callback);
-      },
-
-      /**
-       * open the create folder dialog
-       */
-      openRenameFolderDialog: function(site, path, callingWindow, callback) {
-        if (path.lastIndexOf('.') > 0) {
-          path = path.substring(0, path.lastIndexOf('/'));
-        }
-        var serviceUri = CStudioAuthoring.Service.renameFolderServiceUrl;
-        var openCreateFolderDialogCb = {
-          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog(
-              callback,
-              moduleConfig.path,
-              moduleConfig.serviceUri,
-              moduleConfig.callingWindow,
-              moduleConfig.callback
-            );
-          }
-        };
-
-        var moduleConfig = {
-          path: path,
-          site: site,
-          serviceUri: serviceUri,
-          callingWindow: callingWindow,
-          callback: callback
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'rename-folder-dialog',
-          '/static-assets/components/cstudio-dialogs/rename-folder.js',
-          moduleConfig,
-          openCreateFolderDialogCb
         );
       },
 
@@ -3720,14 +3444,6 @@ var nodeOpen = false,
       getWorkflowJobsServiceUrl: '/api/1/services/api/1/workflow/get-active-jobs.json',
       rejectContentServiceUrl: '/api/1/services/api/1/workflow/reject.json',
       getGoLiveServiceUrl: '/api/1/services/api/1/workflow/go-live.json',
-
-      // Clipboard
-      copyServiceUrl: '/api/1/services/api/1/clipboard/copy-item.json',
-      copyContentToClipboardServiceUri: '/api/1/services/api/1/clipboard/copy-item.json',
-      cutContentToClipboardServiceUri: '/api/1/services/api/1/clipboard/cut-item.json',
-      pasteContentFromClipboardServiceUri: '/api/1/services/api/1/clipboard/paste-item.json',
-      getClipboardItemsServiceUri: '/api/1/services/api/1/clipboard/get-items.json',
-      duplicateContentServiceUri: '/api/1/services/api/1/clipboard/duplicate.json',
 
       // Dependencies
       lookupContentDependenciesServiceUri: '/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&',
@@ -4481,101 +4197,6 @@ var nodeOpen = false,
           YConnect.abort(cObj, serviceCallback);
         }, 20000);
       },
-      /**
-       * copy content to clipboard
-       */
-      copyContentToClipboard: function(site, contentId, contentType, callback) {
-        var serviceUrl = this.copyContentToClipboardServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
-        serviceUrl += '&contentId=' + contentId;
-        serviceUrl += '&contentType=content';
-        var serviceCallback = {
-          success: function(jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
-            callback.success(results);
-          },
-          failure: function(response) {
-            callback.failure(response);
-          }
-        };
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
-      },
-      /**
-       * cut content to clipboard
-       */
-      cutContentToClipboard: function(site, contentId, contentType, callback) {
-        var serviceUrl = this.cutContentToClipboardServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
-        serviceUrl += '&contentId=' + contentId;
-        serviceUrl += '&contentType=content';
-        var serviceCallback = {
-          success: function(jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
-            callback.success(results);
-          },
-          failure: function(response) {
-            callback.failure(response);
-          }
-        };
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
-      },
-      /**
-       * copy content to clipboard
-       */
-      pasteContentFromClipboard: function(site, toPathContentId, callback) {
-        var serviceUrl = this.pasteContentFromClipboardServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&parentPath=' + toPathContentId;
-        var serviceCallback = {
-          success: function(jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
-            callback.success(results);
-          },
-          failure: function(response) {
-            var errorResponse = eval('(' + response.responseText + ')');
-            CStudioAuthoring.Operations.showSimpleDialog(
-              'pasteContentFromClipboardError-dialog',
-              CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              CMgs.format(formsLangBundle, 'notification'),
-              errorResponse.error,
-              [
-                {
-                  text: 'OK',
-                  handler: function() {
-                    this.hide();
-                    callback.failure(response);
-                  },
-                  isDefault: false
-                }
-              ],
-              YAHOO.widget.SimpleDialog.ICON_BLOCK,
-              'studioDialog'
-            );
-          }
-        };
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
-      },
-      /**
-       * get clipboard items
-       */
-      getClipboardItems: function(site, callback) {
-        var serviceUrl = this.getClipboardItemsServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
-
-        var serviceCallback = {
-          success: function(jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
-            callback.success(results);
-          },
-          failure: function(response) {
-            callback.failure(response);
-          }
-        };
-        YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
-      },
 
       previewServerSyncAll: function(site, callback) {
         var serviceUrl = this.previewSyncAllServiceUrl;
@@ -4718,7 +4339,6 @@ var nodeOpen = false,
       getGoLive: function(callback, data) {
         var serviceUrl = this.getGoLiveServiceUrl;
         serviceUrl += '?site=' + CStudioAuthoringContext.site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
         CStudioAuthoring.Service.request({
           method: 'POST',
           data: data,
@@ -4741,7 +4361,7 @@ var nodeOpen = false,
 
       getUserPermissions: function(site, path, callback) {
         var serviceUrl = this.getPermissionsServiceUrl;
-        serviceUrl += '?site=' + site + '&path=' + encodeURI(path) + '&user=' + CStudioAuthoringContext.user;
+        serviceUrl += '?site=' + site + '&path=' + encodeURI(path);
         var serviceCallback = {
           success: function(jsonResponse) {
             var results = eval('(' + jsonResponse.responseText + ')');
@@ -4842,9 +4462,6 @@ var nodeOpen = false,
         callback.beforeServiceCall();
         var serviceUrl = this.getUserActivitiesServiceUrl;
         serviceUrl += '?site=' + site;
-        if (user != undefined && user != null) {
-          serviceUrl += '&user=' + user;
-        }
         if (sortBy != null && sortBy != null) {
           serviceUrl += '&sort=' + sortBy;
 
@@ -9187,7 +8804,7 @@ var nodeOpen = false,
           newWindow = document.location = childSearchConfig.searchUrl;
         } else {
           var newWindow;
-          CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
+          CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId, false); //TODO: test name on iframe
         }
       }
     },
@@ -10072,6 +9689,8 @@ function getTopLegacyWindow(nextWindow) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  CrafterCMSNext.renderBackgroundUI();
-});
+if (!window.location.pathname.includes('/studio/search')) {
+  document.addEventListener('DOMContentLoaded', function() {
+    CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+  });
+}

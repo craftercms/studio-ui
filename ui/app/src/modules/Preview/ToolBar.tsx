@@ -16,8 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
-import AppBar from '@material-ui/core/AppBar';
+import ViewToolbar from '../../components/ViewToolbar';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -56,6 +55,7 @@ import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import ItemMenu from '../../components/ItemMenu/ItemMenu';
 import PagesSearchAhead from '../../components/Navigation/PagesSearchAhead';
+import clsx from 'clsx';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -86,7 +86,7 @@ const translations = defineMessages({
 
 const foo = () => void 0;
 
-const EditSwitch = withStyles({
+export const EditSwitch = withStyles({
   checked: {
     color: palette.green.tint
   }
@@ -94,17 +94,18 @@ const EditSwitch = withStyles({
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    toolBar: {
+    toolbar: {
       placeContent: 'center space-between'
-      // background: palette.gray.dark4
     },
     addressBarInput: {
       width: 400,
       padding: '2px 4px',
-      // margin: '0 5px 0 0 ',
       display: 'flex',
-      alignItems: 'center'
-      // backgroundColor: palette.gray.dark6
+      alignItems: 'center',
+      backgroundColor: theme.palette.background.default
+    },
+    addressBarInputFocused: {
+      backgroundColor: theme.palette.background.paper
     },
     inputContainer: {
       marginLeft: theme.spacing(1)
@@ -130,23 +131,6 @@ const useStyles = makeStyles((theme: Theme) =>
     divider: {
       height: 28,
       margin: 4
-    },
-    addressBarContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    actionButtonSection: {
-      display: 'flex',
-      alignItems: 'center',
-
-      '& > *': {
-        marginRight: theme.spacing(1)
-      }
-    },
-    globalNavSection: {
-      display: 'flex',
-      alignItems: 'center'
     },
     selectorPopoverRoot: {
       width: 400,
@@ -177,6 +161,7 @@ export function AddressBar(props: AddressBarProps) {
   const [anchorEl, setAnchorEl] = useState(null);
   const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
+  const [focus, setFocus] = useState(false);
 
   useEffect(() => {
     url && setInternalUrl(url);
@@ -206,7 +191,11 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} title={formatMessage(translations.reload)} onClick={onRefresh}>
         <RefreshRounded />
       </IconButton>
-      <Paper className={classes.addressBarInput}>
+      <Paper
+        variant={focus ? 'elevation' : 'outlined'}
+        elevation={focus ? 2 : 0}
+        className={clsx(classes.addressBarInput, focus && classes.addressBarInputFocused)}
+      >
         <Select
           value={site}
           classes={{ select: classes.input, selectMenu: classes.siteSwitcherSelectMenu }}
@@ -232,6 +221,8 @@ export function AddressBar(props: AddressBarProps) {
           classes={{
             input: classes.input
           }}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
         />
         <SingleItemSelector
           disabled={noSiteSet}
@@ -288,49 +279,42 @@ export default function ToolBar() {
   // endregion
 
   return (
-    <AppBar position="static" color="default">
-      <Toolbar className={classes.toolBar}>
-        <section className={classes.actionButtonSection}>
-          <IconButton
-            aria-label={formatMessage(translations.openToolsPanel)}
-            onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
-          >
-            <CustomMenu />
-          </IconButton>
-          <section className={!createContent ? classes.hidden : ''}>
-            <QuickCreate />
-          </section>
-          <Tooltip title={formatMessage(translations.toggleEditMode)} className={!write ? classes.hidden : ''}>
-            <EditSwitch
-              color="default"
-              checked={editMode}
-              onChange={(e) => {
-                // prettier-ignore
-                enqueueSnackbar(formatMessage(
-                  e.target.checked
-                    ? translations.editModeOn
-                    : translations.editModeOff
-                ));
-                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-              }}
-            />
-          </Tooltip>
+    <ViewToolbar>
+      <section>
+        <IconButton
+          aria-label={formatMessage(translations.openToolsPanel)}
+          onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
+        >
+          <CustomMenu />
+        </IconButton>
+        <section className={!createContent ? classes.hidden : ''}>
+          <QuickCreate />
         </section>
-        <section className={classes.addressBarContainer}>
-          <AddressBar
-            site={site ?? ''}
-            sites={sites}
-            url={computedUrl}
-            item={item}
-            onSiteChange={(site) => dispatch(changeSite(site))}
-            onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
-            onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
+        <Tooltip title={formatMessage(translations.toggleEditMode)} className={!write ? classes.hidden : ''}>
+          <EditSwitch
+            color="default"
+            checked={editMode}
+            onChange={(e) => {
+              enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
+              dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+            }}
           />
-        </section>
-        <div className={classes.globalNavSection}>
-          <ToolbarGlobalNav />
-        </div>
-      </Toolbar>
-    </AppBar>
+        </Tooltip>
+      </section>
+      <section>
+        <AddressBar
+          site={site ?? ''}
+          sites={sites}
+          url={computedUrl}
+          item={item}
+          onSiteChange={(site) => dispatch(changeSite(site))}
+          onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
+          onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
+        />
+      </section>
+      <div>
+        <ToolbarGlobalNav />
+      </div>
+    </ViewToolbar>
   );
 }

@@ -215,6 +215,7 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
 
 const systemPropsList = [
   'orderDefault_f',
+  'savedAsDraft',
   'content-type',
   'display-template',
   'no-template-required',

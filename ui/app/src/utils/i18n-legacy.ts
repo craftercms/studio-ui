@@ -538,6 +538,11 @@ export const siteComponentDSMessages = defineMessages({
 });
 
 export const codeEditorMessages = defineMessages({
+  inProgressConfirmation: {
+    id: 'codeEditor.inProgressConfirmation',
+    defaultMessage:
+      'Another editor is currently open & minimized. Please close the current editor before opening another'
+  },
   confirm: {
     id: 'codeEditor.confirm',
     defaultMessage: 'Confirm Close'
@@ -569,10 +574,6 @@ export const codeEditorMessages = defineMessages({
   saveAndClose: {
     id: 'codeEditor.saveAndClose',
     defaultMessage: 'Save & Close'
-  },
-  saveAndMinimize: {
-    id: 'codeEditor.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
   },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
@@ -694,17 +695,17 @@ export const browseSearchMessages = defineMessages({
 });
 
 export const formEngineMessages = defineMessages({
+  inProgressConfirmation: {
+    id: 'formEngine.inProgressConfirmation',
+    defaultMessage: 'Another form is currently open & minimized. Please close the current form before opening another'
+  },
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
   },
   save: {
-    id: 'words.save',
-    defaultMessage: 'Save'
-  },
-  saveAndMinimize: {
-    id: 'formEngine.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
+    id: 'formEngine.save',
+    defaultMessage: 'Save as Draft'
   },
   saveAndClose: {
     id: 'formEngine.saveAndClose',
@@ -1405,7 +1406,17 @@ export const itemSuccessMessages = defineMessages({
   itemPublishedNow: {
     id: 'item.publishedNow',
     defaultMessage:
-      '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly.} other {The selected items has been pushed to {environment}. Them will be visible shortly.}}'
+      '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly} other {The selected items has been pushed to {environment}. Them will be visible shortly}}'
+  },
+  itemRequestedToPublishNow: {
+    id: 'item.requestedToPublishNow',
+    defaultMessage:
+      '{count, plural, one {The selected item has been requested to be pushed to {environment}} other {The selected items has been requested to be pushed to {environment}}}'
+  },
+  itemRequestedToSchedulePublish: {
+    id: 'item.requestedToSchedulePublish',
+    defaultMessage:
+      '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
   },
   itemSchedulePublished: {
     id: 'item.schedulePublished',
@@ -1436,6 +1447,10 @@ export const itemSuccessMessages = defineMessages({
     id: 'item.cut',
     defaultMessage: 'Item cut successfully'
   },
+  itemRejected: {
+    id: 'item.rejected',
+    defaultMessage: '{count, plural, one {Item rejected successfully} other {Items rejected successfully}}'
+  },
   itemReverted: {
     id: 'item.reverted',
     defaultMessage: 'Item reverted successfully'
@@ -1443,6 +1458,10 @@ export const itemSuccessMessages = defineMessages({
   itemContentTypeChanged: {
     id: 'item.contentTypeChanged',
     defaultMessage: 'Item type changed successfully'
+  },
+  itemSavedAsDraft: {
+    id: 'item.savedAsDraft',
+    defaultMessage: 'Item draft saved'
   }
 });
 

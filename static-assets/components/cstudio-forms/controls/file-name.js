@@ -231,6 +231,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
 
+    const self = this;
+
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -242,7 +244,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var path = this._getPath();
     path = path.replace(/^\/site\/website/, ''); //From Pages
@@ -251,8 +252,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     path = path.replace('//', '/');
 
     var pathEl = document.createElement('span');
+    YAHOO.util.Dom.addClass(pathEl, 'input-path');
     pathEl.innerHTML = path + ' ';
-    controlWidgetContainerEl.appendChild(pathEl);
+
+    var inputContainer = document.createElement('div');
+    YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap input-wrapper');
+    inputContainer.appendChild(pathEl);
+    this.inputContainer = inputContainer;
+    controlWidgetContainerEl.appendChild(inputContainer);
 
     var inputEl = document.createElement('input');
     this.inputEl = inputEl;
@@ -260,7 +267,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-file-name');
     inputEl.id = 'studioFileName';
-    controlWidgetContainerEl.appendChild(inputEl);
+    inputContainer.appendChild(inputEl);
 
     this.defaultValue = config.defaultValue;
 
@@ -274,8 +281,24 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       },
       this
     );
+    Event.on(
+      inputEl,
+      'focus',
+      function() {
+        YAHOO.util.Dom.addClass(inputContainer, 'focused');
+      },
+      this
+    );
     Event.on(inputEl, 'change', this._onChangeVal, this);
-    Event.on(inputEl, 'blur', this._onChange, this);
+    Event.on(
+      inputEl,
+      'blur',
+      function(evt, obj) {
+        YAHOO.util.Dom.removeClass(inputContainer, 'focused');
+        self._onChange(evt, obj);
+      },
+      this
+    );
     Event.on(inputEl, 'keyup', this.processKey, inputEl);
     Event.on(
       inputEl,
@@ -322,15 +345,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     this.renderHelp(config, controlWidgetContainerEl);
 
-    this._renderEdit(controlWidgetContainerEl);
-
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
     descriptionEl.innerHTML = config.description;
-    //controlWidgetContainerEl.appendChild(descriptionEl);
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
+    this._renderEdit(containerEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
   },
@@ -348,6 +370,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       containerEl.appendChild(editFileNameEl);
 
       this.inputEl.disabled = true;
+      YAHOO.util.Dom.addClass(this.inputContainer, 'disabled');
 
       var createWarningDialog = function() {
         var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
@@ -393,6 +416,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
             text: 'OK',
             handler: function() {
               _self.inputEl.disabled = false;
+              YAHOO.util.Dom.removeClass(_self.inputContainer, 'disabled');
               _self.inputEl.focus();
               editFileNameEl.style.display = 'none';
               this.destroy();

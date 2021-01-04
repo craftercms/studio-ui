@@ -38,6 +38,7 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   guestModelUpdated,
+  guestPathUpdated,
   OPEN_TOOLS,
   popToolsPanelPage,
   pushToolsPanelPage,
@@ -50,6 +51,7 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
+  setHighlightMode,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateToolsPanelWidth
 } from '../actions/preview';
@@ -119,6 +121,10 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
           ...state.guest.models,
           ...payload.modelLookup
         },
+        modelIdByPath: {
+          ...state.guest.modelIdByPath,
+          ...payload.modelIdByPath
+        },
         childrenMap: {
           ...state.guest?.childrenMap,
           ...payload.childrenMap
@@ -135,6 +141,7 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
+    highlightMode: 'ALL',
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe
@@ -225,6 +232,7 @@ const reducer = createReducer<GlobalState['preview']>(
           path,
           models: null,
           childrenMap: null,
+          modelIdByPath: null,
           selected: null,
           itemBeingDragged: null
         },
@@ -518,7 +526,18 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         toolsPanelPageStack: stack
       };
-    }
+    },
+    [guestPathUpdated.type]: (state, { payload }) => ({
+      ...state,
+      guest: {
+        ...state.guest,
+        path: payload.path
+      }
+    }),
+    [setHighlightMode.type]: (state, { payload }) => ({
+      ...state,
+      highlightMode: payload.highlightMode
+    })
   }
 );
 

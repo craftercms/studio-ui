@@ -15,7 +15,7 @@
  */
 
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   completeDetailedItem,
   duplicateAsset,
@@ -75,8 +75,8 @@ const content = [
       filter(({ payload }) => !payload.__CRAFTERCMS_GUEST_LANDING__),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => !state.content.items.permissionsByPath?.[payload.path]),
-      switchMap(([{ payload }, state]) =>
-        getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
+      mergeMap(([{ payload }, state]) =>
+        getUserPermissions(state.sites.active, payload.path).pipe(
           map((permissions: string[]) =>
             fetchUserPermissionsComplete({
               path: payload.path,
@@ -108,7 +108,7 @@ const content = [
     action$.pipe(
       ofType(completeDetailedItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload, type }, state]) => {
+      mergeMap(([{ payload, type }, state]) => {
         if (state.content.items.byPath?.[payload.path]?.live) {
           return NEVER;
         } else {

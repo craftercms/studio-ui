@@ -20,6 +20,7 @@ import { getZoneMarkerStyle } from '../utils/dom';
 interface ZoneMarkerProps {
   rect: DOMRect;
   label: string;
+  inherited: boolean;
   classes?: {
     marker?: string;
     label?: string;
@@ -27,14 +28,19 @@ interface ZoneMarkerProps {
 }
 
 export default function ZoneMarker(props: ZoneMarkerProps) {
-  const { rect, label, classes } = props;
+  const { rect, label, classes, inherited } = props;
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
   useEffect(() => {
     setZoneStyle(getZoneMarkerStyle(rect));
   }, [rect]);
   return (
     <craftercms-zone-marker style={zoneStyle} class={classes?.marker}>
-      <craftercms-zone-marker-label class={classes?.label}>{label}</craftercms-zone-marker-label>
+      <craftercms-zone-marker-label class={classes?.label}>
+        {label}
+        {inherited && (
+          <img className="craftercms-zone-marker-icon" src="/studio/static-assets/images/inheritedIcon.svg" alt="" />
+        )}
+      </craftercms-zone-marker-label>
     </craftercms-zone-marker>
   );
 }

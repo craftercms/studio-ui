@@ -52,6 +52,7 @@ import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelecti
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemMenu/ItemMenu';
+import { MessageDescriptor } from 'react-intl';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -71,6 +72,7 @@ export interface GuestData {
   origin: string;
   models: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
+  modelIdByPath: LookupTable<string>;
   modelId: string;
   path: string;
   selected: EditSelection[];
@@ -120,6 +122,7 @@ export interface GlobalState {
   };
   preview: {
     editMode: boolean;
+    highlightMode: string;
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
@@ -190,6 +193,9 @@ export interface GlobalState {
       toolsPanel: {
         widgets: WidgetDescriptor[];
       };
+    };
+    globalNav: {
+      sections: { uiKey: number; title: string | MessageDescriptor; widgets: WidgetDescriptor[]; roles?: string[] }[];
     };
   };
   pathNavigator: {

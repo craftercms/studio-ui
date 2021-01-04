@@ -55,15 +55,13 @@
           } else {
             let sharedMessage = formatMessage('createNewShared');
             let embeddedMessage = formatMessage('createNewEmbedded');
-            $(control.addContainerEl).append(
+            $(control.$dropdownMenu).append(
               self._createOption(sharedMessage, () => {
-                self._clearAddContainerEl(control);
                 self._openCreateAny(control, 'shared');
               })
             );
-            $(control.addContainerEl).append(
+            $(control.$dropdownMenu).append(
               self._createOption(embeddedMessage, () => {
-                self._clearAddContainerEl(control);
                 self._openCreateAny(control, 'embedded');
               })
             );
@@ -72,9 +70,8 @@
       }
       if (this.allowShared && this.enableSearch) {
         let message = formatMessage('searchExisting');
-        $(control.addContainerEl).append(
+        $(control.$dropdownMenu).append(
           self._createOption(message, () => {
-            self._clearAddContainerEl(control);
             self._openSearch(control);
           })
         );
@@ -193,8 +190,8 @@
         {
           success(searchId, selectedTOs) {
             selectedTOs.forEach(function(item) {
-              const value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
-              control.newInsertItem(item.uri, value, 'shared');
+              const value = item.label && item.label !== '' ? item.label : item.path;
+              control.newInsertItem(item.path, value, 'shared');
               control._renderItems();
             });
           },
@@ -270,25 +267,23 @@
 
     _createContentTypesControls(contentType, control) {
       const self = this;
-      const $addContainerEl = $(control.addContainerEl);
 
       if (self.allowEmbedded) {
         let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
         let type = 'embedded';
-        $addContainerEl.append(self._createOption(message, callback(type)));
+        control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared) {
         let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
         let type = 'shared';
-        $addContainerEl.append(self._createOption(message, callback(type)));
+        control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared && self.enableBrowse) {
         let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
-        $addContainerEl.append(
+        control.$dropdownMenu.append(
           self._createOption(message, () => {
-            self._clearAddContainerEl(control);
             self._openBrowse(contentType, control);
           })
         );
@@ -296,22 +291,16 @@
 
       function callback(type) {
         return () => {
-          self._clearAddContainerEl(control);
           self._openContentTypeForm(contentType, type, control);
         };
       }
     },
 
-    _clearAddContainerEl(control) {
-      $(control.addContainerEl).remove();
-      control.addContainerEl = null;
-    },
-
     _createOption(message, callback) {
       let $option = $(`
-            <div class="cstudio-form-control-node-selector-add-container-item">
-              ${message}
-            </div>
+            <li>
+              <a class="cstudio-form-control-node-selector-add-container-item">${message}</a>
+            </li>
           `);
       $option.on('click', function() {
         callback();

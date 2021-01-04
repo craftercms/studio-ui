@@ -50,6 +50,7 @@ import {
   pushToolsPanelPage,
   selectForEdit,
   setContentTypeReceptacles,
+  setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
@@ -61,6 +62,7 @@ import {
 import {
   deleteItem,
   getComponentInstanceHTML,
+  getContentInstance,
   getContentInstanceDescriptor,
   insertComponent,
   insertInstance,
@@ -69,9 +71,9 @@ import {
   updateField,
   uploadDataUrl
 } from '../../services/content';
-import { filter, pluck, take, takeUntil } from 'rxjs/operators';
+import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
-import { interval, ReplaySubject, Subscription } from 'rxjs';
+import { forkJoin, interval, Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
@@ -84,7 +86,7 @@ import {
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
-import { nnou, pluckProps } from '../../utils/object';
+import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
@@ -92,6 +94,7 @@ import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
+  getStoredhighlightModeChoice,
   getStoredPreviewChoice,
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard,
@@ -101,6 +104,9 @@ import { completeDetailedItem, restoreClipBoard } from '../../state/actions/cont
 import EditFormPanel from './Tools/EditFormPanel';
 import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
 import moment from 'moment-timezone';
+import ContentInstance from '../../models/ContentInstance';
+import LookupTable from '../../models/LookupTable';
+import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -138,17 +144,19 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, currentUrl, computedUrl } = usePreviewState();
+  const { guest, currentUrl, computedUrl, editMode, highlightMode } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
   const models = guest?.models;
+  const modelIdByPath = guest?.modelIdByPath;
+  const childrenMap = guest?.childrenMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
-  const editMode = useSelection((state) => state.preview.editMode);
   const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
   const previewNextCheckInNotificationRef = useRef(false);
+  const requestedSourceMapPaths = useRef({});
   const handlePreviewCompatDialogRemember = useCallback(
     (remember, goOrStay) => {
       setStoredPreviewChoice(site, remember ? goOrStay : 'ask');
@@ -158,6 +166,11 @@ export function PreviewConcierge(props: any) {
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
+
+  function clearSelectedZonesHandler() {
+    dispatch(clearSelectForEdit());
+    getHostToGuestBus().next({ type: CLEAR_SELECTED_ZONES });
+  }
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
@@ -177,12 +190,17 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, write, editMode]);
   // endregion
 
-  // Guest detection, document domain restoring, editMode preference retrieval, clipboard retrieval
+  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
     const localEditMode = getStoredEditModeChoice() ? getStoredEditModeChoice() === 'true' : null;
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
+    }
+
+    const localHighlightMode = getStoredhighlightModeChoice();
+    if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
+      dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
     const localClipboard = getStoredClipboard(site);
@@ -259,27 +277,69 @@ export function PreviewConcierge(props: any) {
               .pipe(
                 // If another check in comes while loading, this request should be cancelled.
                 // This may happen if navigating rapidly from one page to another (guest-side).
-                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type))))
+                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
+                switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
+                  let requests: Array<Observable<ContentInstance>> = [];
+                  Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
+                    if (!requestedSourceMapPaths.current[path]) {
+                      requestedSourceMapPaths.current[path] = true;
+                      requests.push(getContentInstance(site, path, contentTypes));
+                    }
+                  });
+                  if (requests.length) {
+                    return forkJoin(requests).pipe(
+                      map((response) => {
+                        let lookup = obj.modelLookup;
+                        response.forEach((contentInstance) => {
+                          lookup = {
+                            ...lookup,
+                            [contentInstance.craftercms.id]: contentInstance
+                          };
+                        });
+                        return {
+                          ...obj,
+                          modelLookup: lookup
+                        };
+                      })
+                    );
+                  } else {
+                    return of(obj);
+                  }
+                })
               )
               .subscribe(({ model, modelLookup }) => {
                 const childrenMap = createChildModelLookup(modelLookup, contentTypes);
                 const normalizedModels = normalizeModelsLookup(modelLookup);
                 const normalizedModel = normalizedModels[model.craftercms.id];
+                const modelIdByPath = {};
+                Object.values(modelLookup).forEach((model) => {
+                  // Embedded components don't have a path.
+                  if (model.craftercms.path) {
+                    modelIdByPath[model.craftercms.path] = model.craftercms.id;
+                  }
+                });
                 dispatch(
                   completeAction({
                     model: normalizedModel,
                     modelLookup: normalizedModels,
+                    modelIdByPath: modelIdByPath,
                     childrenMap
                   })
                 );
                 hostToGuest$.next({
                   type: 'FETCH_GUEST_MODEL_COMPLETE',
-                  payload: { path, model: normalizedModel, modelLookup: normalizedModels, childrenMap }
+                  payload: {
+                    path,
+                    model: normalizedModel,
+                    modelLookup: normalizedModels,
+                    childrenMap,
+                    modelIdByPath: modelIdByPath
+                  }
                 });
               });
           // endregion
           if (type === GUEST_CHECK_IN) {
-            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -313,10 +373,18 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case GUEST_CHECK_OUT:
+          requestedSourceMapPaths.current = {};
           dispatch(checkOutGuest());
           break;
         case SORT_ITEM_OPERATION: {
-          const { modelId, fieldId, currentIndex, targetIndex, parentModelId } = payload;
+          const { fieldId, currentIndex, targetIndex } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           sortItem(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -348,7 +416,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_COMPONENT_OPERATION: {
-          const { modelId, fieldId, targetIndex, instance, parentModelId, shared } = payload;
+          const { fieldId, targetIndex, instance, shared } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           insertComponent(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -374,7 +449,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_INSTANCE_OPERATION:
-          const { modelId, fieldId, targetIndex, instance, parentModelId } = payload;
+          const { fieldId, targetIndex, instance } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           insertInstance(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -397,16 +479,19 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case MOVE_ITEM_OPERATION: {
-          const {
-            originalModelId,
-            originalFieldId,
-            originalIndex,
-            targetModelId,
-            targetFieldId,
-            targetIndex,
-            originalParentModelId,
-            targetParentModelId
-          } = payload;
+          const { originalFieldId, originalIndex, targetFieldId, targetIndex } = payload;
+          let { originalModelId, originalParentModelId, targetModelId, targetParentModelId } = payload;
+
+          if (isInheritedField(models[originalModelId], originalFieldId)) {
+            originalModelId = getModelIdFromInheritedField(models[originalModelId], originalFieldId, modelIdByPath);
+            originalParentModelId = findParentModelId(originalModelId, childrenMap, models);
+          }
+
+          if (isInheritedField(models[targetModelId], targetFieldId)) {
+            targetModelId = getModelIdFromInheritedField(models[targetModelId], targetFieldId, modelIdByPath);
+            targetParentModelId = findParentModelId(targetModelId, childrenMap, models);
+          }
+
           moveItem(
             site,
             originalParentModelId ? originalModelId : models[originalModelId].craftercms.path,
@@ -429,7 +514,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DELETE_ITEM_OPERATION: {
-          const { modelId, fieldId, index, parentModelId } = payload;
+          const { fieldId, index } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           deleteItem(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -452,7 +544,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          const { modelId, fieldId, index, parentModelId, value } = payload;
+          const { fieldId, index, value } = payload;
+          let { modelId, parentModelId } = payload;
+
+          if (isInheritedField(models[modelId], fieldId)) {
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+            parentModelId = findParentModelId(modelId, childrenMap, models);
+          }
+
           updateField(
             site,
             parentModelId ? modelId : models[modelId].craftercms.path,
@@ -566,10 +665,13 @@ export function PreviewConcierge(props: any) {
     enqueueSnackbar,
     formatMessage,
     models,
+    modelIdByPath,
+    childrenMap,
     guestBase,
     site,
     xsrfArgument,
     editMode,
+    highlightMode,
     handlePreviewCompatibilityDialogGo
   ]);
 
@@ -593,7 +695,7 @@ export function PreviewConcierge(props: any) {
         open={nnou(guest?.itemBeingDragged)}
         onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
-      <EditFormPanel open={nnou(guest?.selected)} />
+      <EditFormPanel open={nnou(guest?.selected)} onDismiss={clearSelectedZonesHandler} />
       <PreviewCompatibilityDialogContainer
         isPreviewNext={false}
         open={previewCompatibilityDialogOpen}

@@ -248,11 +248,7 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge
-              mountGlobalDialogManager={!isLegacy}
-              mountSnackbarProvider={!isLegacy}
-              mountLegacyConcierge={isLegacy}
-            >
+            <CrafterCMSNextBridge mountGlobalDialogManager={!isLegacy} mountSnackbarProvider={!isLegacy}>
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,
@@ -280,7 +276,8 @@ export function createCodebaseBridge() {
       });
     },
 
-    renderBackgroundUI() {
+    renderBackgroundUI(options) {
+      const { mountLegacyConcierge = false } = options ?? {};
       const element = document.createElement('div');
       element.setAttribute('class', 'craftercms-background-ui');
       document.body.appendChild(element);
@@ -290,7 +287,7 @@ export function createCodebaseBridge() {
             ReactDOM.unmountComponentAtNode(element);
             document.body.removeChild(element);
           };
-          ReactDOM.render(<CrafterCMSNextBridge />, element, () =>
+          ReactDOM.render(<CrafterCMSNextBridge mountLegacyConcierge={mountLegacyConcierge} />, element, () =>
             resolve({
               unmount: (options) => {
                 options = Object.assign({ delay: false }, options || {});

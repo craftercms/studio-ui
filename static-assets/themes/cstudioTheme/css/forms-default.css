@@ -270,19 +270,25 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   position: relative;
 }
 
+.cstudio-form-section-widget:before {
+  content: "\f0d8";
+}
+
+.cstudio-form-section-widget-closed:before {
+  content: "\f0d7";
+}
+
 .cstudio-form-section-widget {
-  background: url("../images/icons/icon_strip.gif") no-repeat scroll -20px 5px transparent;
-  display: block;
-  float: left;
-  height: 30px;
-  margin-right: 5px;
-  width: 12px;
-  position: relative;
-  top: -7px;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  float: right;
+  padding: 0 10px;
 }
 
 .cstudio-form-section-widget-closed {
-  background: url("../images/icons/icon_strip.gif") no-repeat scroll 0px 5px transparent;
 }
 
 .cstudio-form-section-indicator {
@@ -1311,5 +1317,250 @@ body.yui-skin-cstudioTheme.masked {
 .itemsSelected {
   display: inline-block;
   width: 67%;
+}
+
+/**** Material Styles ****/
+.cstudio-form-control-input-container,
+.cstudio-form-control-file-name-container,
+.cstudio-form-control-node-selector-container,
+.cstudio-form-control-image-picker-container,
+.cstudio-form-control-dropdown-container,
+.cstudio-form-control-page-nav-order-container,
+.cstudio-form-control-video-picker-container {
+  width: 100% !important;
+  display: flex !important;
+  max-width: 100%;
+  flex-wrap: wrap;
+  padding-top: 5px;
+}
+
+
+.cstudio-form-control-input.cstudio-form-control-file-name {
+  border: 0;
+  background: none;
+  padding: 0;
+  outline: none;
+}
+
+.cstudio-form-control-video-picker-container .url {
+  display: block;
+  width: 100%;
+}
+.cstudio-form-control-video-picker-container .cstudio-button {
+  align-self: flex-start;
+}
+
+.cstudio-form-control-asset-picker-preview-block {
+  margin-right: 5px;
+}
+
+.cstudio-form-control-input-container {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.cstudio-form-control-input-container.no-wrap {
+  flex-wrap: nowrap;
+}
+
+.cstudio-form-control-input-container.input-wrapper {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+
+.cstudio-form-control-input-container.disabled {
+  background-color: whitesmoke;
+}
+.cstudio-form-control-input-container.focused {
+  outline: -webkit-focus-ring-color auto 1px;
+  outline-color: -webkit-focus-ring-color;
+  outline-style: auto;
+  outline-width: 1px;
+}
+
+.input-path {
+  font-size: 16px;
+  margin-right: 5px;
+  color: #737373;
+  font-weight: 600;
+  margin-right: 0;
+}
+
+.cstudio-form-control-input,
+.date-time-container .date-control,
+.date-time-container .time-control,
+.date-time-container .time-zone-picker,
+.cstudio-form-control-dropdown {
+  width: 100%;
+  border: 1px solid #ced4da;
+  height: 1.1876em;
+  padding: 10px 12px;
+  font-size: 16px;
+  box-sizing: content-box;
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.date-time-container, .zone-container, .date-el-container, .time-container {
+  display: flex !important;
+  width: 100%;
+  align-items: center;
+}
+
+.date-time-container .time-container {
+  margin: 0 5px;
+}
+
+.date-time-container .date-control {
+  margin-right: 0;
+}
+
+.date-link {
+  margin-right: 5px;
+}
+
+.date-link, .clear-link {
+  font-size: 16px !important;
+}
+
+.cstudio-form-field-title {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 1rem;
+  font-weight: 400;
+  width: auto;
+  margin-right: 5px;
+}
+
+.cstudio-form-control-input-count {
+  margin-left: auto;
+  order: 2;
+}
+
+.cstudio-form-control-input-data {
+  width: 100%;
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.cstudio-form-control-input-controls {
+  margin-left: auto;
+}
+
+.cstudio-form-control-validation {
+  height: auto;
+}
+
+.cstudio-form-control-input-url-err {
+  order: 1;
+}
+
+.cstudio-form-control-filename-edit {}
+
+.cstudio-form-control-checkbox {
+  width: 15px;
+  height: 15px;
+  margin-top: 3px;
+  margin-left: 5px;
+}
+
+.cstudio-form-control-node-selector-controlbox {
+  width: 100%;
+  display: flex;
+}
+
+.cstudio-form-control-node-selector-items-container {
+  width: auto;
+  flex-grow: 1;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  margin-left: 0;
+}
+
+.cstudio-form-control-node-selector-item {
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin: 5px;
+}
+
+.cstudio-form-control-node-selector-options {
+  padding-left: 10px;
+}
+
+.cstudio-form-field-description {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.panel-default {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px !important;
+  border: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+.page-header {
+  margin: 0px 0 20px !important;
+}
+
+#cstudio-form-expand-all {
+  margin: 2px 10px 2px 2px;
+}
+
+.checkbox-group .input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+}
+
+.checkbox-group > .checkbox span {
+  font-weight: 400;
+}
+
+.date-link {
+  text-decoration: none !important;
+}
+
+.cstudio-form-repeat-container {
+  border-radius: 4px;
+  background-color: #f3f3f3;
+  border: 1px solid #ced4da;
+  margin: 15px 15px;
+}
+
+.cstudio-form-control-rte-container .tox-tinymce {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}
+
+.cstudio-form-control-rte-container {
+  padding-left: 0 !important;
+  margin-top: 28px !important;
+}
+
+.image-picker-control .cstudio-form-field-title {
+  float: left;
+}
+
+.cstudio-form-control-page-nav-order-container .edit-position {}
+
+.cstudio-form-control-validation {
+  width: 16px;
+}
+
+.form-engine-body {
+  background: #fafafa;
+}
+
+.panel-default>.panel-heading {
+  cursor: pointer;
+  padding: 10px 0 10px 15px;
+}
+
+.btn .caret {
+   margin-left: 2px !important;
+}
+
+.dropdown {
+  display: inline-block;
 }
 

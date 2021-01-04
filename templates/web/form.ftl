@@ -58,7 +58,7 @@
 
 </head>
 
-<body class="yui-skin-cstudioTheme">
+<body class="yui-skin-cstudioTheme form-engine-body">
 
 <header id="formHeader" style="display: none; overflow: hidden">
   <hgroup>
@@ -76,8 +76,8 @@
     </div>
   </hgroup>
   <div class="container">
-    <a id="cstudio-form-expand-all" href="javascript:"></a> |
-    <a id="cstudio-form-collapse-all" href="javascript:"></a>
+    <a id="cstudio-form-expand-all" class="btn btn-default btn-sm" href="javascript:"></a>
+    <a id="cstudio-form-collapse-all" class="btn btn-default btn-sm" href="javascript:"></a>
   </div>
 </header>
 

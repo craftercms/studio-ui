@@ -174,7 +174,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var hiddenEl = document.createElement('input');
     hiddenEl.type = 'hidden';
@@ -197,23 +196,29 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     YAHOO.util.Dom.addClass(nodeOptionsEl, 'cstudio-form-control-node-selector-options');
     nodeControlboxEl.appendChild(nodeOptionsEl);
 
-    //Add button
-    var addButtonEl = document.createElement('input');
-    addButtonEl.type = 'button';
-    addButtonEl.value = CMgs.format(langBundle, 'add');
-    addButtonEl.disabled = true;
-    YAHOO.util.Dom.addClass(addButtonEl, 'btn btn-default');
-    YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-drop-arrow-button');
-    YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-button-disabled');
-    nodeOptionsEl.appendChild(addButtonEl);
-    this.addButtonEl = addButtonEl;
+    // dropdownBtn and dropdownMenu
+    const $addBtn = $(
+      `<button id="add-image" class="cstudio-button btn btn-default btn-sm dropdown-toggle cstudio-button-disabled" type="button" data-toggle="dropdown" disabled="true">${CMgs.format(
+        langBundle,
+        'add'
+      )}</button>`
+    );
+    const $dropdown = $('<div class="dropdown"></div>');
+    const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
+    this.$dropdown = $dropdown;
+    this.$dropdownMenu = $dropdownMenu;
+    this.$addBtn = $addBtn;
+    $dropdown.append($addBtn);
+    $dropdown.append($dropdownMenu);
+
+    $(nodeOptionsEl).append($dropdown);
 
     //Edit button
     var editButtonEl = document.createElement('input');
     editButtonEl.type = 'button';
     editButtonEl.value = CMgs.format(langBundle, 'edit');
     editButtonEl.disabled = true;
-    YAHOO.util.Dom.addClass(editButtonEl, 'btn btn-default');
+    YAHOO.util.Dom.addClass(editButtonEl, 'btn btn-default btn-sm');
     YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button-disabled');
     nodeOptionsEl.appendChild(editButtonEl);
     this.editButtonEl = editButtonEl;
@@ -222,17 +227,17 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var deleteButtonEl = document.createElement('input');
     deleteButtonEl.type = 'button';
     deleteButtonEl.value = 'X';
-    YAHOO.util.Dom.addClass(deleteButtonEl, 'btn btn-default');
+    YAHOO.util.Dom.addClass(deleteButtonEl, 'btn btn-default btn-sm');
     YAHOO.util.Dom.addClass(deleteButtonEl, 'cstudio-button-disabled');
     nodeOptionsEl.appendChild(deleteButtonEl);
     deleteButtonEl.disabled = true;
     this.deleteButtonEl = deleteButtonEl;
 
     if (this.readonly == true) {
-      addButtonEl.disabled = true;
+      $addBtn.attr('disabled', 'true');
       editButtonEl.disabled = true;
       deleteButtonEl.disabled = true;
-      YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-button-disabled');
+      $addBtn.addClass('cstudio-button-disabled');
       YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button-disabled');
       YAHOO.util.Dom.addClass(deleteButtonEl, 'cstudio-button-disabled');
     }
@@ -249,9 +254,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
     descriptionEl.innerHTML = config.description;
-    //controlWidgetContainerEl.appendChild(descriptionEl);
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
 
@@ -273,7 +278,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
   _setActions: function() {
     var _self = this;
-    //var datasource = this.form.datasourceMap[this.datasourceName];
 
     var dataSourceNames = this.datasourceName.split(','),
       datasources = [];
@@ -283,8 +287,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       datasources.push(currentDatasource);
 
       if (currentDatasource.add && !this.readonly) {
-        YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
-        this.addButtonEl.disabled = false;
+        this.$addBtn.removeClass('cstudio-button-disabled');
+        this.$addBtn.removeAttr('disabled');
       }
       if (currentDatasource.edit) {
         this.allowEdit = true;
@@ -296,14 +300,21 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     if (datasource && !this.readonly) {
       this.datasource = datasource;
 
-      if (!this.addButtonEl.disabled) {
+      if (!this.$addBtn.attr('disabled')) {
+        datasources.forEach((datasource) => {
+          datasource.add(_self, true);
+        });
+
+        // adding options to $dropdownMenu;
         YAHOO.util.Event.on(
-          this.addButtonEl,
+          this.$addBtn[0],
           'click',
           function(evt) {
             var selectItemsCount = _self.getItemsLeftCount();
             _self.form.setFocusedField(_self);
-            if (selectItemsCount == 0) {
+            if (selectItemsCount === 0) {
+              evt.preventDefault();
+              evt.stopPropagation();
               var CMgs = CStudioAuthoring.Messages;
               var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
               CStudioAuthoring.Operations.showSimpleDialog(
@@ -316,28 +327,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 'studioDialog'
               );
             } else {
-              if (_self.addContainerEl) {
-                var addContainerEl = _self.addContainerEl;
-                _self.addContainerEl = null;
-                _self.containerEl.removeChild(addContainerEl);
-              } else {
-                const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
-
-                $(_self.containerEl).append($addContainerEl);
-                _self.addContainerEl = $addContainerEl[0];
-                $addContainerEl.css({
-                  left: _self.addButtonEl.offsetLeft + 'px',
-                  top: _self.addButtonEl.offsetTop + 22 + 'px'
-                });
-
-                for (let x = 0; x < datasources.length; x++) {
-                  datasources[x].selectItemsCount = selectItemsCount;
-                  datasources[x].add(_self, true);
-                }
-              }
+              datasources.forEach((datasource) => {
+                datasource.selectItemsCount = selectItemsCount;
+              });
             }
           },
-          this.addButtonEl
+          this.$addBtn[0]
         );
       }
 
@@ -378,6 +373,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
 
     var items = this.items;
+
+    if (items.length === 0) {
+      this.editButtonEl.disabled = true;
+      this.deleteButtonEl.disabled = true;
+      YAHOO.util.Dom.addClass(this.editButtonEl, 'cstudio-button-disabled');
+      YAHOO.util.Dom.addClass(this.deleteButtonEl, 'cstudio-button-disabled');
+      this.selectedItemIndex = -1;
+    }
 
     itemsContainerEl.innerHTML = '';
     var tar = new YAHOO.util.DDTarget(itemsContainerEl);

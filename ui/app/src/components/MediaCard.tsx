@@ -29,11 +29,16 @@ import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import cardTitleStyles from '../styles/card';
 import { defineMessages, useIntl } from 'react-intl';
 import palette from '../styles/palette';
+import moment from 'moment-timezone';
 
 const translations = defineMessages({
   options: {
     id: 'media.card.title',
     defaultMessage: 'options'
+  },
+  itemLastEdition: {
+    id: 'media.card.itemLastEdition',
+    defaultMessage: 'Edited {time}'
   }
 });
 
@@ -237,7 +242,13 @@ function MediaCard(props: MediaCardProps) {
         // @ts-ignore */}
         <CardHeader
           title={name}
-          subheader={hasSubheader ? type : null}
+          subheader={
+            hasSubheader
+              ? `${type}, ${formatMessage(translations.itemLastEdition, {
+                  time: moment(item.lastModified).fromNow()
+                })}`
+              : null
+          }
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
           onClick={() => onPreview(item)}

@@ -131,3 +131,34 @@ body {
 }
 
 @import "components-panel";
+
+$dark-mode-background-default: #212121;
+$dark-mode-background-paper: #424242;
+$dark-mode-font-color: #fff;
+@media (prefers-color-scheme: dark) {
+  .studio-components-panel {
+    background-color: $dark-mode-background-paper !important;
+
+    .studio-panel-title {
+      color: $dark-mode-font-color !important;
+    }
+
+    .studio-category {
+      .studio-category-name {
+        background-color: $dark-mode-background-default !important;
+        color: $dark-mode-font-color !important;
+        border: none !important;
+      }
+
+      sul {
+        background-color: $dark-mode-background-paper !important;
+        sli {
+          border: none !important;
+          sa {
+            color: $dark-mode-font-color !important;
+          }
+        }
+      }
+    }
+  }
+}

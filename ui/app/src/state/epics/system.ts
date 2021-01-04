@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, switchMap, tap } from 'rxjs/operators';
+import { filter, ignoreElements, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
@@ -30,6 +30,7 @@ import {
   showRevertItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification,
+  showRejectItemSuccessNotification,
   storeInitialized
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
@@ -63,20 +64,30 @@ const systemEpics: CrafterCMSEpic[] = [
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showPublishItemSuccessNotification.type),
-      tap(({ payload }) => {
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
         const hostToHost$ = getHostToHostBus();
+        const isAdmin = state.user.rolesBySite[state.sites.active].includes('admin');
         hostToHost$.next(
           showSystemNotification({
             message:
               payload.schedule === 'now'
-                ? getIntl().formatMessage(itemSuccessMessages.itemPublishedNow, {
-                    count: payload.items.length,
-                    environment: payload.environment
-                  })
-                : getIntl().formatMessage(itemSuccessMessages.itemSchedulePublished, {
-                    count: payload.items.length,
-                    environment: payload.environment
-                  })
+                ? getIntl().formatMessage(
+                    isAdmin ? itemSuccessMessages.itemPublishedNow : itemSuccessMessages.itemRequestedToPublishNow,
+                    {
+                      count: payload.items.length,
+                      environment: payload.environment
+                    }
+                  )
+                : getIntl().formatMessage(
+                    isAdmin
+                      ? itemSuccessMessages.itemSchedulePublished
+                      : itemSuccessMessages.itemRequestedToSchedulePublish,
+                    {
+                      count: payload.items.length,
+                      environment: payload.environment
+                    }
+                  )
           })
         );
       }),
@@ -85,11 +96,17 @@ const systemEpics: CrafterCMSEpic[] = [
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditItemSuccessNotification.type),
-      tap(({ payload }) => {
+      tap(({ payload: { action } }) => {
+        let message;
+        if (action === 'save') {
+          message = getIntl().formatMessage(itemSuccessMessages.itemSavedAsDraft);
+        } else {
+          message = getIntl().formatMessage(itemSuccessMessages.itemEdited);
+        }
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message: getIntl().formatMessage(itemSuccessMessages.itemEdited)
+            message
           })
         );
       }),
@@ -181,6 +198,19 @@ const systemEpics: CrafterCMSEpic[] = [
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(showSystemNotification(payload));
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showRejectItemSuccessNotification.type),
+      tap(({ payload }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: getIntl().formatMessage(itemSuccessMessages.itemRejected, { count: payload?.count ?? 1 })
+          })
+        );
       }),
       ignoreElements()
     ),

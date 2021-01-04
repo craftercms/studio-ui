@@ -523,7 +523,7 @@
       };
 
       this.getPermissions = function(siteId, path, user) {
-        return securityApi.getUserPermissions(siteId, path, user).toPromise();
+        return securityApi.getUserPermissions(siteId, path).toPromise();
       };
 
       this.getAvailableLanguages = function() {

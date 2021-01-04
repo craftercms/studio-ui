@@ -193,6 +193,8 @@ export const fetchGuestModelComplete = createAction<{
 
 export const guestModelUpdated = createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
 
+export const guestPathUpdated = createAction<{ path: string }>('GUEST_PATH_UPDATED');
+
 export function changeCurrentUrl(nextValue: string): StandardAction {
   return {
     type: CHANGE_CURRENT_URL,
@@ -286,3 +288,7 @@ export const pushToolsPanelPage = createAction<WidgetDescriptor>('PUSH_TOOLS_PAN
 export const popToolsPanelPage = createAction('POP_TOOLS_PANEL_PAGE');
 
 // endregion
+
+// settings Mode
+
+export const setHighlightMode = createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');
