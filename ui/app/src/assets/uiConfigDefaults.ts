@@ -19,7 +19,7 @@ import { defineMessages } from 'react-intl';
 const messages = defineMessages({
   pageBuilder: {
     id: 'pageBuilder.title',
-    defaultMessage: 'Page Builder'
+    defaultMessage: 'Page Building'
   },
   siteTools: {
     id: 'siteTools.title',
@@ -70,9 +70,102 @@ const uiConfigDefaults = {
           id: 'craftercms.components.ToolsPanelPageButton',
           uiKey: count++,
           configuration: {
+            title: {
+              id: 'previewSiteExplorerPanel.title',
+              defaultMessage: 'Site Explorer'
+            },
+            icon: {
+              id: 'craftercms.icons.SiteExplorer'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PathNavigator',
+                uiKey: count++,
+                configuration: {
+                  id: 'Pages',
+                  label: 'Pages',
+                  icon: {
+                    baseClass: 'fa',
+                    expandedClass: 'fa-file-text-o',
+                    collapsedClass: 'fa-file-text'
+                  },
+                  rootPath: '/site/website',
+                  locale: 'en'
+                }
+              },
+              {
+                id: 'craftercms.components.PathNavigator',
+                uiKey: count++,
+                configuration: {
+                  id: 'Components',
+                  label: 'Components',
+                  icon: {
+                    baseClass: 'fa fa-puzzle-piece'
+                  },
+                  rootPath: '/site/components',
+                  locale: 'en'
+                }
+              },
+              {
+                id: 'craftercms.components.PathNavigator',
+                uiKey: count++,
+                configuration: {
+                  id: 'Taxonomy',
+                  label: 'Taxonomy',
+                  icon: {
+                    baseClass: 'fa fa-tags'
+                  },
+                  rootPath: '/site/taxonomy',
+                  locale: 'en'
+                }
+              },
+              {
+                id: 'craftercms.components.PathNavigator',
+                uiKey: count++,
+                configuration: {
+                  id: 'StaticAssets',
+                  label: 'Static Assets',
+                  icon: {
+                    baseClass: 'fa fa-image'
+                  },
+                  rootPath: '/static-assets',
+                  locale: 'en'
+                }
+              },
+              {
+                id: 'craftercms.components.PathNavigator',
+                uiKey: count++,
+                configuration: {
+                  label: 'Templates',
+                  icon: {
+                    baseClass: 'fa fa-file-code-o'
+                  },
+                  rootPath: '/templates',
+                  locale: 'en'
+                }
+              },
+              {
+                id: 'craftercms.components.PathNavigator',
+                uiKey: count++,
+                configuration: {
+                  label: 'Scripts',
+                  icon: {
+                    baseClass: 'fa fa-code'
+                  },
+                  rootPath: '/scripts',
+                  locale: 'en'
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
             title: messages.pageBuilder,
             icon: {
-              baseClass: 'fa fa-paint-brush'
+              id: '@material-ui/icons/BrushOutlined'
             },
             widgets: [
               {
@@ -273,98 +366,24 @@ const uiConfigDefaults = {
                     }
                   ]
                 }
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: count++,
-          configuration: {
-            title: {
-              id: 'previewSiteExplorerPanel.title',
-              defaultMessage: 'Site Explorer'
-            },
-            icon: {
-              id: 'craftercms.icons.SiteExplorer'
-            },
-            widgets: [
-              {
-                id: 'craftercms.components.PathNavigator',
-                uiKey: count++,
-                configuration: {
-                  id: 'Pages',
-                  label: 'Pages',
-                  icon: {
-                    baseClass: 'fa',
-                    expandedClass: 'fa-file-text-o',
-                    collapsedClass: 'fa-file-text'
-                  },
-                  rootPath: '/site/website',
-                  locale: 'en'
-                }
               },
               {
-                id: 'craftercms.components.PathNavigator',
+                id: 'craftercms.components.ToolsPanelPageButton',
                 uiKey: count++,
                 configuration: {
-                  id: 'Components',
-                  label: 'Components',
-                  icon: {
-                    baseClass: 'fa fa-puzzle-piece'
+                  title: {
+                    id: 'words.settings',
+                    defaultMessage: 'Settings'
                   },
-                  rootPath: '/site/components',
-                  locale: 'en'
-                }
-              },
-              {
-                id: 'craftercms.components.PathNavigator',
-                uiKey: count++,
-                configuration: {
-                  id: 'Taxonomy',
-                  label: 'Taxonomy',
                   icon: {
-                    baseClass: 'fa fa-tags'
+                    id: '@material-ui/icons/SettingsOutlined'
                   },
-                  rootPath: '/site/taxonomy',
-                  locale: 'en'
-                }
-              },
-              {
-                id: 'craftercms.components.PathNavigator',
-                uiKey: count++,
-                configuration: {
-                  id: 'StaticAssets',
-                  label: 'Static Assets',
-                  icon: {
-                    baseClass: 'fa fa-image'
-                  },
-                  rootPath: '/static-assets',
-                  locale: 'en'
-                }
-              },
-              {
-                id: 'craftercms.components.PathNavigator',
-                uiKey: count++,
-                configuration: {
-                  label: 'Templates',
-                  icon: {
-                    baseClass: 'fa fa-file-code-o'
-                  },
-                  rootPath: '/templates',
-                  locale: 'en'
-                }
-              },
-              {
-                id: 'craftercms.components.PathNavigator',
-                uiKey: count++,
-                configuration: {
-                  label: 'Scripts',
-                  icon: {
-                    baseClass: 'fa fa-code'
-                  },
-                  rootPath: '/scripts',
-                  locale: 'en'
+                  widgets: [
+                    {
+                      id: 'craftercms.components.PreviewSettingsPanel',
+                      uiKey: count++
+                    }
+                  ]
                 }
               }
             ]
@@ -544,25 +563,6 @@ const uiConfigDefaults = {
                     }
                   }
                 }
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: count++,
-          configuration: {
-            title: {
-              id: 'words.settings',
-              defaultMessage: 'Settings'
-            },
-            icon: {
-              id: '@material-ui/icons/Settings'
-            },
-            widgets: [
-              {
-                id: 'craftercms.components.PreviewSettingsPanel',
-                uiKey: count++
               }
             ]
           }
