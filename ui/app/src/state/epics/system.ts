@@ -19,13 +19,13 @@ import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxj
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
+  deletePreferences as deletePreferencesAction,
+  deletePreferencesComplete,
   emitSystemEvent,
   fetchGlobalPreferences as fetchGlobalPreferencesAction,
   fetchGlobalPreferencesComplete,
   fetchSitePreferences as fetchSitePreferencesAction,
-  deletePreferences as deletePreferencesAction,
   fetchSitePreferencesComplete,
-  deletePreferencesComplete,
   showCopyItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -41,7 +41,7 @@ import {
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
-import { NEVER, fromEvent } from 'rxjs';
+import { fromEvent, NEVER } from 'rxjs';
 
 const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
@@ -222,30 +222,30 @@ const systemEpics: CrafterCMSEpic[] = [
       ignoreElements()
     ),
   (action$, state$, { systemBroadcastChannel }) =>
-    // @ts-ignore
     action$.pipe(
       // When store is initialized...
       ofType(storeInitialized.type),
       // ...if the browser supports Broadcast Channels,
+      filter(() => Boolean(systemBroadcastChannel)),
       // ...begin listening for system events sent through the broadcast channel.
       switchMap(() =>
-        [
-          // TODO: Not working
-          // Boolean(systemBroadcastChannel) && fromEvent<MessageEvent>(systemBroadcastChannel, 'message').pipe(filter((e) => e.data && e.data.type)),
-          fetchGlobalPreferencesAction(),
-          fetchSitePreferencesAction()
-        ].filter(Boolean)
+        fromEvent<MessageEvent>(systemBroadcastChannel, 'message').pipe(filter((e) => e.data && e.data.type))
       )
       // This mechanism has been added to support multi-tab UX on studio with the JWT mechanics since,
       // when other tabs are opened, refreshToken API is called, invalidating the token of other tabs.
       // The idea, however, is that this mechanics are now available for other purposes.
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(storeInitialized.type),
+      switchMap(() => [fetchGlobalPreferencesAction(), fetchSitePreferencesAction()])
     ),
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(fetchGlobalPreferencesAction.type),
       switchMap(() => fetchGlobalPreferences().pipe(map(fetchGlobalPreferencesComplete)))
     ),
-  (action$, state$, { getIntl }) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(fetchSitePreferencesAction.type),
       withLatestFrom(state$),
@@ -253,7 +253,7 @@ const systemEpics: CrafterCMSEpic[] = [
         state.sites.active ? fetchSitePreferences(state.sites.active).pipe(map(fetchSitePreferencesComplete)) : NEVER
       )
     ),
-  (action$, state$, { getIntl }) =>
+  (action$) =>
     action$.pipe(
       ofType(deletePreferencesAction.type),
       switchMap((action) => deletePreferences(action.payload.siteId).pipe(map(deletePreferencesComplete)))
