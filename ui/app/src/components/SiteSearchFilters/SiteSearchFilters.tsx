@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   divider: {
+    width: 'auto',
     margin: '0 10px'
   }
 }));

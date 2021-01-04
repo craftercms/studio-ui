@@ -9689,6 +9689,8 @@ function getTopLegacyWindow(nextWindow) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
-});
+if (!window.location.pathname.includes('/studio/search')) {
+  document.addEventListener('DOMContentLoaded', function() {
+    CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+  });
+}
