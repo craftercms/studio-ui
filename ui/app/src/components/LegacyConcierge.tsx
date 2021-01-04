@@ -34,24 +34,27 @@ export default function LegacyConcierge() {
   }, [site, dispatch]);
 
   useEffect(() => {
-    const hostToGuest$ = getHostToGuestBus();
-    const subscription = hostToGuest$.pipe(filter((action) => action.type === RELOAD_REQUEST)).subscribe(() => {
-      // @ts-ignore
-      CStudioAuthoring.Operations.refreshPreview();
-    });
-
-    const updateGuest = ({ contentTO: item }: { contentTO: LegacyItem }) => {
-      dispatch(guestPathUpdated({ path: item.uri }));
-    };
-
     // @ts-ignore
-    amplify.subscribe('SELECTED_CONTENT_SET', updateGuest);
+    if (window.amplify) {
+      const hostToGuest$ = getHostToGuestBus();
+      const subscription = hostToGuest$.pipe(filter((action) => action.type === RELOAD_REQUEST)).subscribe(() => {
+        // @ts-ignore
+        CStudioAuthoring.Operations.refreshPreview();
+      });
 
-    return () => {
-      subscription.unsubscribe();
+      const updateGuest = ({ contentTO: item }: { contentTO: LegacyItem }) => {
+        dispatch(guestPathUpdated({ path: item.uri }));
+      };
+
       // @ts-ignore
-      amplify.unsubscribe('SELECTED_CONTENT_SET', updateGuest);
-    };
+      amplify.subscribe('SELECTED_CONTENT_SET', updateGuest);
+
+      return () => {
+        subscription.unsubscribe();
+        // @ts-ignore
+        amplify.unsubscribe('SELECTED_CONTENT_SET', updateGuest);
+      };
+    }
   }, [dispatch]);
 
   return null;

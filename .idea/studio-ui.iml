@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
-    <exclude-output />
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/static-assets/components/cstudio-common/ace" />
+      <excludeFolder url="file://$MODULE_DIR$/static-assets/jquery" />
+      <excludeFolder url="file://$MODULE_DIR$/static-assets/libs" />
+      <excludeFolder url="file://$MODULE_DIR$/static-assets/modules" />
+      <excludeFolder url="file://$MODULE_DIR$/static-assets/next" />
+      <excludeFolder url="file://$MODULE_DIR$/static-assets/yui" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/app.backup" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/app/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/app/build_tsc" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/guest/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/guest/build_tsc" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/static-assets/components/cstudio-common/ace" />
       <excludeFolder url="file://$MODULE_DIR$/static-assets/jquery" />
