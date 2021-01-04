@@ -36,9 +36,10 @@ import {
   pathNavigatorFetchPathComplete
 } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nnou } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
+import { fetchGlobalPreferencesComplete } from '../actions/system';
 
 type ContentState = GlobalState['content'];
 
@@ -147,6 +148,12 @@ const reducer = createReducer<ContentState>(initialState, {
           ...state.items.byPath
         }
       }
+    };
+  },
+  [fetchGlobalPreferencesComplete.type]: (state, { payload }) => {
+    return {
+      ...state,
+      ...(nnou(payload.clipboard) && { clipboard: JSON.parse(payload.clipboard) })
     };
   },
   [changeSite.type]: () => initialState

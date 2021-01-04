@@ -89,17 +89,10 @@ import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
-import {
-  getStoredClipboard,
-  getStoredPreviewChoice,
-  getStoredPreviewToolsPanelPage,
-  removeStoredClipboard,
-  setStoredPreviewChoice
-} from '../../utils/state';
-import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
+import { getStoredPreviewChoice, getStoredPreviewToolsPanelPage, setStoredPreviewChoice } from '../../utils/state';
+import { completeDetailedItem } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
-import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
 import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
@@ -189,21 +182,21 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    const localClipboard = getStoredClipboard(site);
-    if (localClipboard) {
-      let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
-      if (hours >= 24) {
-        removeStoredClipboard(site);
-      } else {
-        dispatch(
-          restoreClipBoard({
-            type: localClipboard.type,
-            paths: localClipboard.paths,
-            sourcePath: localClipboard.sourcePath
-          })
-        );
-      }
-    }
+    // const localClipboard = getStoredClipboard(site);
+    // if (localClipboard) {
+    //   let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
+    //   if (hours >= 24) {
+    //     removeStoredClipboard(site);
+    //   } else {
+    //     dispatch(
+    //       restoreClipBoard({
+    //         type: localClipboard.type,
+    //         paths: localClipboard.paths,
+    //         sourcePath: localClipboard.sourcePath
+    //       })
+    //     );
+    //   }
+    // }
 
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     const storedPage = getStoredPreviewToolsPanelPage(site);

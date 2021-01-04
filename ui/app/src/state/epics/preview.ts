@@ -14,16 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
+import { Epic, ofType } from 'redux-observable';
 import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import { popToolsPanelPage, pushToolsPanelPage, setHighlightMode, setPreviewEditMode } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import {
-  removeStoredPreviewToolsPanelPage,
-  setStoredClipboard,
-  setStoredPreviewToolsPanelPage
-} from '../../utils/state';
-import GlobalState from '../../models/GlobalState';
+import { removeStoredPreviewToolsPanelPage, setStoredPreviewToolsPanelPage } from '../../utils/state';
 import { setClipBoard } from '../actions/content';
 import { setPreferences } from '../../services/users';
 
@@ -56,7 +51,7 @@ export default [
       ignoreElements()
     ),
   // region setPreviewEditMode
-  (action$, state$) =>
+  (action$) =>
     action$.pipe(
       ofType(setPreviewEditMode.type),
       tap((action) => {
@@ -76,12 +71,11 @@ export default [
       ignoreElements()
     ),
   // region Clipboard
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$) =>
     action$.pipe(
       ofType(setClipBoard.type),
-      withLatestFrom(state$),
-      tap(([{ payload }, state]) => {
-        setStoredClipboard(state.sites.active, payload);
+      tap(({ payload }) => {
+        setPreferences({ clipboard: JSON.stringify({ ...payload, timestamp: Date.now() }) }).subscribe(() => {});
       }),
       ignoreElements()
     )

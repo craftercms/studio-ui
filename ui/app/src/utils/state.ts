@@ -35,21 +35,6 @@ export function setStoredPreviewChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
 }
 
-export function setStoredClipboard(site: string, value: object) {
-  return window.localStorage.setItem(
-    `craftercms.clipboard.${site}`,
-    JSON.stringify({ ...value, timestamp: Date.now() })
-  );
-}
-
-export function getStoredClipboard(site: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.clipboard.${site}`));
-}
-
-export function removeStoredClipboard(site: string) {
-  return window.localStorage.removeItem(`craftercms.clipboard.${site}`);
-}
-
 export function setStoredPreviewToolsPanelPage(site: string, value: object) {
   return window.localStorage.setItem(`craftercms.previewToolsPanelPage.${site}`, JSON.stringify(value));
 }
