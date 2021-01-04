@@ -30,7 +30,7 @@ import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dia
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import { getField } from '../../../utils/contentType';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 
 interface EditFormPanelProps {
   open: boolean;
