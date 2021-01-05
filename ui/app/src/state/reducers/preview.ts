@@ -546,11 +546,13 @@ const reducer = createReducer<GlobalState['preview']>(
       previewChoice: { ...state.previewChoice, [payload.site]: payload.previewChoice }
     }),
     [fetchGlobalPreferencesComplete.type]: (state, { payload }) => {
-      return {
-        ...state,
-        ...(nnou(payload.editMode) && { editMode: payload.editMode === 'true' }),
-        ...(nnou(payload.highlightMode) && { highlightMode: payload.highlightMode })
-      };
+      return nnou(payload.editMode) || nnou(payload.highlightMode)
+        ? {
+            ...state,
+            editMode: payload.editMode === 'true',
+            highlightMode: ['ALL', 'MOVABLE'].includes(payload.highlightMode) ? payload.highlightMode : 'all'
+          }
+        : state;
     },
     [fetchSitePreferencesComplete.type]: (state, { payload }) => {
       return nnou(payload.toolsPanelPage) || nnou(payload.previewChoice)
