@@ -49,6 +49,8 @@ export const setClipBoard = createAction<{
   sourcePath: string;
 }>('SET_CLIPBOARD');
 
+export const setClipBoardComplete = createAction('SET_CLIPBOARD_COMPLETE');
+
 export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
 // endregion
 

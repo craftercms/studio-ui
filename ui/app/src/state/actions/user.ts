@@ -17,3 +17,15 @@
 import { createAction } from '@reduxjs/toolkit';
 
 export const sessionTimeout = createAction('SESSION_TIMEOUT');
+
+export const fetchGlobalPreferences = createAction('FETCH_GLOBAL_PREFERENCES');
+
+export const fetchGlobalPreferencesComplete = createAction('FETCH_GLOBAL_PREFERENCES_COMPLETE');
+
+export const fetchSitePreferences = createAction('FETCH_SITE_PREFERENCES');
+
+export const fetchSitePreferencesComplete = createAction('FETCH_SITE_PREFERENCES_COMPLETE');
+
+export const deletePreferences = createAction<{ properties: string[]; siteId?: string }>('DELETE_PREFERENCES');
+
+export const deletePreferencesComplete = createAction('DELETE_PREFERENCES_COMPLETE');

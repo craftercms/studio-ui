@@ -459,7 +459,7 @@
         $timeout(
           function() {
             $window.location.href =
-              CrafterCMSNext.util.state.getStoredPreviewChoice(site.id) === '2'
+              CrafterCMSNext.system.store.getState().preview.previewChoice[site.id] === '2'
                 ? '/studio/next/preview'
                 : '/studio/preview';
           },

@@ -25,6 +25,7 @@ import {
   useEnv,
   useLogicResource,
   useMount,
+  usePreviewState,
   useSelection,
   useSiteLocales,
   useSpreadState
@@ -51,7 +52,6 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
-import { getStoredPreviewChoice } from '../../../utils/state';
 import ItemMenu from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
@@ -147,6 +147,7 @@ export default function PathNavigator(props: WidgetProps) {
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -383,7 +384,7 @@ export default function PathNavigator(props: WidgetProps) {
 
     if (navigable) {
       if (item.previewUrl) {
-        let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
+        let previewBase = previewChoice[site] === '2' ? 'next/preview' : 'preview';
         window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
       }
     } else if (folder) {

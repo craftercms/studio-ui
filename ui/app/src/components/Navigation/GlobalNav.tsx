@@ -30,7 +30,7 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { useEnv, useMount, usePossibleTranslation, useSiteUIConfig } from '../../utils/hooks';
+import { useEnv, useMount, usePossibleTranslation, usePreviewState, useSiteUIConfig } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -44,7 +44,6 @@ import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
 import { User } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
-import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
@@ -344,6 +343,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles();
   const [menuItems, setMenuItems] = useState(null);
+  const { previewChoice } = usePreviewState();
   const sections = useSiteUIConfig().globalNav.sections;
   const [apiState, setApiState] = useState({
     error: false,
@@ -364,7 +364,7 @@ export default function GlobalNav(props: GlobalNavProps) {
       {
         name: formatMessage(messages.preview),
         href(site) {
-          return getLink(getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview', authoringUrl);
+          return getLink(previewChoice[site] === '1' ? 'legacy.preview' : 'preview', authoringUrl);
         },
         onClick(site) {
           setSiteCookie(site);
@@ -381,7 +381,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     ],
     // Disable exhaustive hooks check since only need to create on mount
     // eslint-disable-next-line
-    []
+    [previewChoice]
   );
 
   const handleErrorBack = () => setApiState({ ...apiState, error: false });
@@ -389,7 +389,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
     if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
-      navigateTo(getStoredPreviewChoice(id) === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
+      navigateTo(previewChoice[id] === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
     } else {
       setTimeout(() => {
         window.location.reload();

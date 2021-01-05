@@ -14,21 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
+import { storeInitialized } from '../actions/system';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
+import { NEVER } from 'rxjs';
+import { nnou } from '../../utils/object';
+import moment from 'moment-timezone';
 import {
   deletePreferences as deletePreferencesAction,
   deletePreferencesComplete,
   fetchGlobalPreferences as fetchGlobalPreferencesAction,
   fetchGlobalPreferencesComplete,
   fetchSitePreferences as fetchSitePreferencesAction,
-  fetchSitePreferencesComplete,
-  storeInitialized
-} from '../actions/system';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
-import { NEVER } from 'rxjs';
-import { nnou } from '../../utils/object';
-import moment from 'moment-timezone';
+  fetchSitePreferencesComplete
+} from '../actions/user';
+import { CrafterCMSEpic } from '../store';
 
 /*
  * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
@@ -88,4 +89,4 @@ export default [
         deletePreferences(action.payload.properties, action.payload.siteId).pipe(map(deletePreferencesComplete))
       )
     )
-] as Epic[];
+] as CrafterCMSEpic[];

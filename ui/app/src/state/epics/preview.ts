@@ -15,10 +15,19 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
-import { popToolsPanelPage, pushToolsPanelPage, setHighlightMode, setPreviewEditMode } from '../actions/preview';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  popToolsPanelPage,
+  pushToolsPanelPage,
+  setHighlightMode,
+  setHighlightModeComplete,
+  setPreviewChoice,
+  setPreviewChoiceComplete,
+  setPreviewEditMode,
+  setPreviewEditModeComplete
+} from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { setClipBoard } from '../actions/content';
+import { setClipBoard, setClipBoardComplete } from '../actions/content';
 import { deletePreferences, setPreferences } from '../../services/users';
 
 export default [
@@ -57,30 +66,36 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(setPreviewEditMode.type),
-      tap((action) => {
-        setPreferences({ editMode: action.payload.editMode }).subscribe(() => {});
+      switchMap((action) => {
         getHostToGuestBus().next(action);
+        return setPreferences({ editMode: action.payload.editMode });
       }),
-      ignoreElements()
+      map(setPreviewEditModeComplete)
+    ),
+  // region setPreviewChoice
+  (action$, state$) =>
+    action$.pipe(
+      ofType(setPreviewChoice.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) => setPreferences({ previewChoice: state.preview.previewChoice })),
+      map(setPreviewChoiceComplete)
     ),
   // region setHighlightMode
   (action$) =>
     action$.pipe(
       ofType(setHighlightMode.type),
-      tap((action) => {
-        setPreferences({ highlightMode: action.payload.highlightMode }).subscribe(() => {});
+      switchMap((action) => {
         getHostToGuestBus().next(action);
+        return setPreferences({ highlightMode: action.payload.highlightMode });
       }),
-      ignoreElements()
+      map(setHighlightModeComplete)
     ),
   // region Clipboard
   (action$) =>
     action$.pipe(
       ofType(setClipBoard.type),
-      tap(({ payload }) => {
-        setPreferences({ clipboard: JSON.stringify({ ...payload, timestamp: Date.now() }) }).subscribe(() => {});
-      }),
-      ignoreElements()
+      switchMap(({ payload }) => setPreferences({ clipboard: JSON.stringify({ ...payload, timestamp: Date.now() }) })),
+      map(setClipBoardComplete)
     )
   // endregion
 ] as Epic[];

@@ -52,6 +52,7 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   setHighlightMode,
+  setPreviewChoice,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateToolsPanelWidth
 } from '../actions/preview';
@@ -66,7 +67,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { envInitialState } from './env';
-import { fetchGlobalPreferencesComplete, fetchSitePreferencesComplete } from '../actions/system';
+import { fetchGlobalPreferencesComplete, fetchSitePreferencesComplete } from '../actions/user';
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -143,6 +144,7 @@ const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
     highlightMode: 'ALL',
+    previewChoice: null,
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe
@@ -539,6 +541,10 @@ const reducer = createReducer<GlobalState['preview']>(
       ...state,
       highlightMode: payload.highlightMode
     }),
+    [setPreviewChoice.type]: (state, { payload }) => ({
+      ...state,
+      previewChoice: { ...state.previewChoice, [payload.site]: payload.previewChoice }
+    }),
     [fetchGlobalPreferencesComplete.type]: (state, { payload }) => {
       return {
         ...state,
@@ -547,12 +553,17 @@ const reducer = createReducer<GlobalState['preview']>(
       };
     },
     [fetchSitePreferencesComplete.type]: (state, { payload }) => {
-      return {
-        ...state,
-        ...(nnou(payload.toolsPanelPage) && {
-          toolsPanelPageStack: [...state.toolsPanelPageStack, JSON.parse(payload.toolsPanelPage)]
-        })
-      };
+      return nnou(payload.toolsPanelPage) || nnou(payload.previewChoice)
+        ? {
+            ...state,
+            ...(nnou(payload.toolsPanelPage) && {
+              toolsPanelPageStack: [...state.toolsPanelPageStack, JSON.parse(payload.toolsPanelPage)]
+            }),
+            ...(nnou(payload.previewChoice) && {
+              previewChoice: payload.previewChoice
+            })
+          }
+        : state;
     }
   }
 );

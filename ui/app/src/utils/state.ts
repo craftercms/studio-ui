@@ -27,14 +27,6 @@ export function getStateMapFromLegacyItem(item: LegacyItem) {
   };
 }
 
-export function getStoredPreviewChoice(site: string) {
-  return window.localStorage.getItem(`craftercms.previewCompatChoice.${site}`);
-}
-
-export function setStoredPreviewChoice(site: string, value: string) {
-  return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
-}
-
 export function setStoredPathNavigator(site: string, id: string, value: object) {
   return window.localStorage.setItem(`craftercms.pathNavigator.${site}.${id}`, JSON.stringify(value));
 }

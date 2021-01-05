@@ -38,8 +38,8 @@ import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable, nnou } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
-import { fetchGlobalPreferencesComplete } from '../actions/system';
 import moment from 'moment-timezone';
+import { fetchGlobalPreferencesComplete } from '../actions/user';
 
 type ContentState = GlobalState['content'];
 

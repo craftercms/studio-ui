@@ -278,6 +278,10 @@ export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER
 export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+export const setPreviewEditModeComplete = createAction('EDIT_MODE_CHANGED_COMPLETE');
+
+export const setPreviewChoice = createAction<{ site: string; previewChoice: string }>('SET_PREVIEW_CHOICE');
+export const setPreviewChoiceComplete = createAction('SET_PREVIEW_CHOICE_COMPLETE');
 
 // endregion
 
@@ -292,3 +296,4 @@ export const popToolsPanelPage = createAction('POP_TOOLS_PANEL_PAGE');
 // settings Mode
 
 export const setHighlightMode = createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');
+export const setHighlightModeComplete = createAction('HIGHLIGHT_MODE_CHANGED_COMPLETE');

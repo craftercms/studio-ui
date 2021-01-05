@@ -168,19 +168,17 @@ export function fetchSitePreferences(siteId: string): Observable<LookupTable<any
 }
 
 export function setPreferences(
-  properties: LookupTable<string>,
+  properties: LookupTable<string | number>,
   siteId?: string
 ): Observable<{ response: ApiResponse; properties: LookupTable<any> }> {
-  return postJSON(siteId ? `/studio/api/2/users/me/properties?siteId=${siteId}` : '/studio/api/2/users/me/properties', {
+  return postJSON('studio/api/2/users/me/properties', {
     siteId,
     properties
   }).pipe(pluck('response'));
 }
 
-export function deletePreferences(properties: string[], siteId?: string) {
-  return del(
-    siteId
-      ? `/studio/api/2/users/me/properties?siteId=${siteId}&properties=${properties}`
-      : `/studio/api/2/users/me/properties?properties=${properties}`
-  ).pipe(mapTo(true));
+export function deletePreferences(properties: string[], siteId?: string): Observable<Boolean> {
+  return del(`/studio/api/2/users/me/properties?${siteId ? `siteId=${siteId}&` : ``}properties=${properties}`).pipe(
+    mapTo(true)
+  );
 }
