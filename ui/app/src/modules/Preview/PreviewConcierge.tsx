@@ -52,6 +52,7 @@ import {
   setContentTypeReceptacles,
   setHighlightMode,
   setItemBeingDragged,
+  setPreviewChoice,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
@@ -95,10 +96,8 @@ import {
   getStoredClipboard,
   getStoredEditModeChoice,
   getStoredhighlightModeChoice,
-  getStoredPreviewChoice,
   getStoredPreviewToolsPanelPage,
-  removeStoredClipboard,
-  setStoredPreviewChoice
+  removeStoredClipboard
 } from '../../utils/state';
 import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
@@ -144,7 +143,7 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, currentUrl, computedUrl, editMode, highlightMode } = usePreviewState();
+  const { guest, currentUrl, computedUrl, editMode, highlightMode, previewChoice } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
@@ -159,9 +158,9 @@ export function PreviewConcierge(props: any) {
   const requestedSourceMapPaths = useRef({});
   const handlePreviewCompatDialogRemember = useCallback(
     (remember, goOrStay) => {
-      setStoredPreviewChoice(site, remember ? goOrStay : 'ask');
+      dispatch(setPreviewChoice({ site, previewChoice: remember ? goOrStay : 'ask' }));
     },
-    [site]
+    [dispatch, site]
   );
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
@@ -253,9 +252,9 @@ export function PreviewConcierge(props: any) {
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
-            let previousChoice = getStoredPreviewChoice(site);
+            let previousChoice = previewChoice[site];
             if (previousChoice === null) {
-              setStoredPreviewChoice(site, (previousChoice = '1'));
+              dispatch(setPreviewChoice({ site, previewChoice: previousChoice = '1' }));
             }
             if (previousChoice && !compatibilityAsk) {
               if (previousChoice === '1') {
@@ -672,6 +671,7 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     editMode,
     highlightMode,
+    previewChoice,
     handlePreviewCompatibilityDialogGo
   ]);
 

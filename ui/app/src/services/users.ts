@@ -25,6 +25,7 @@ import { PagedArray } from '../models/PagedArray';
 import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
 import { asArray } from '../utils/array';
+import ApiResponse from '../models/ApiResponse';
 
 // Check services/auth/login if `me` method is changed.
 export function me(): Observable<User> {
@@ -155,5 +156,29 @@ export function fetchMyRolesBySite(sites?: Site[]): Observable<LookupTable<strin
         }, {})
       )
     )
+  );
+}
+
+export function fetchGlobalPreferences(): Observable<LookupTable<any>> {
+  return get('/studio/api/2/users/me/properties').pipe(pluck('response', 'properties', ''));
+}
+
+export function fetchSitePreferences(siteId: string): Observable<LookupTable<any>> {
+  return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(pluck('response', 'properties', siteId));
+}
+
+export function setPreferences(
+  properties: LookupTable<string | number>,
+  siteId?: string
+): Observable<{ response: ApiResponse; properties: LookupTable<any> }> {
+  return postJSON('studio/api/2/users/me/properties', {
+    siteId,
+    properties
+  }).pipe(pluck('response'));
+}
+
+export function deletePreferences(properties: string[], siteId?: string): Observable<Boolean> {
+  return del(`/studio/api/2/users/me/properties?${siteId ? `siteId=${siteId}&` : ``}properties=${properties}`).pipe(
+    mapTo(true)
   );
 }

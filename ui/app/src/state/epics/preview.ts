@@ -15,8 +15,15 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
-import { popToolsPanelPage, pushToolsPanelPage, setHighlightMode, setPreviewEditMode } from '../actions/preview';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  popToolsPanelPage,
+  pushToolsPanelPage,
+  setHighlightMode,
+  setPreviewChoice,
+  setPreviewChoiceComplete,
+  setPreviewEditMode
+} from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   removeStoredPreviewToolsPanelPage,
@@ -27,6 +34,7 @@ import {
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipBoard } from '../actions/content';
+import { setPreferences } from '../../services/users';
 
 export default [
   (action$, state$) =>
@@ -66,6 +74,16 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region setPreviewChoice
+  (action$, state$) =>
+    action$.pipe(
+      ofType(setPreviewChoice.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) => setPreferences({ previewChoice: state.preview.previewChoice })),
+      map(setPreviewChoiceComplete)
+    ),
+  // endregion
   // region setHighlightMode
   (action$) =>
     action$.pipe(
@@ -76,6 +94,7 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
   // region Clipboard
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
