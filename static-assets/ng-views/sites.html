@@ -63,7 +63,7 @@
             current-page="pagination"
             total-items="totalSites"
           >
-            <td class="name site-name trim">{{site.name ? site.name : site.id }}</td>
+            <td class="name site-name trim" title="{{site.name ? site.name : site.id }}">{{site.name ? site.name : site.id }}</td>
             <td class="preview">
               <a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a>
             </td>
