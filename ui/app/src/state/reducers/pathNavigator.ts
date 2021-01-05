@@ -16,8 +16,6 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { WidgetState } from '../../components/Navigation/PathNavigator/PathNavigator';
-import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorClearChecked,
@@ -35,8 +33,10 @@ import {
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
+import { fetchSitePreferencesComplete } from '../actions/user';
+import GlobalState from '../../models/GlobalState';
 
-const reducer = createReducer<LookupTable<WidgetState>>(
+const reducer = createReducer<GlobalState['pathNavigator']>(
   {},
   {
     [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {
@@ -57,7 +57,8 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           limit: 10,
           offset: 0,
           count: 0,
-          collapsed
+          collapsed,
+          ...state.preferences[id]
         }
       };
     },
@@ -204,6 +205,29 @@ const reducer = createReducer<LookupTable<WidgetState>>(
       ...state,
       [payload.id]: { ...state[payload.id], ...payload }
     }),
+    [fetchSitePreferencesComplete.type]: (state, { payload }) => {
+      let hasPathNavigatorPreference = false;
+      let preferences = {};
+      let updatedState = {};
+      Object.keys(payload).forEach((key) => {
+        if (key.includes('craftercms.pathNavigator')) {
+          let preference = JSON.parse(payload[key]);
+          if (state[key]) {
+            // if the widget was already initialized we need to update the widgetState with the preferences
+            updatedState[key] = { ...state[key], preference };
+          }
+          preferences[key.replace('craftercms.pathNavigator.', '')] = preference;
+          hasPathNavigatorPreference = true;
+        }
+      });
+      return hasPathNavigatorPreference
+        ? {
+            ...state,
+            ...updatedState,
+            preferences
+          }
+        : state;
+    },
     [changeSite.type]: () => ({})
   }
 );

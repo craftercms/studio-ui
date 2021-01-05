@@ -20,7 +20,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
 import { getIndividualPaths } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
   pathNavigatorConditionallySetPath,
@@ -34,28 +34,24 @@ import {
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
-  pathNavigatorSetKeyword,
-  pathNavigatorUpdate
+  pathNavigatorSetKeyword
 } from '../actions/pathNavigator';
-import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/state';
+import { setPreferences } from '../../services/users';
+import { getCrafterPreferenceId } from '../utils';
 
 export default [
-  (action$, state$) =>
+  (action$) =>
     action$.pipe(
       ofType(pathNavigatorInit.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        const { id } = payload;
-        const site = state.sites.active;
-        const storedState = getStoredPathNavigator(site, id);
-        return [
-          storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
+      switchMap(({ payload }) => {
+        const { id, path, excludes } = payload;
+        return of(
           pathNavigatorFetchParentItems({
             id,
-            path: storedState ? storedState.currentPath : payload.path,
-            excludes: payload.excludes
+            path,
+            excludes
           })
-        ].filter(Boolean);
+        );
       })
     ),
   (action$, state$: StateObservable<GlobalState>) =>
@@ -153,10 +149,15 @@ export default [
           state
         ]) => {
           if (response?.length > 0 || type === pathNavigatorSetCollapsed.type) {
-            setStoredPathNavigator(state.sites.active, id, {
-              currentPath: state.pathNavigator[id].currentPath,
-              collapsed: state.pathNavigator[id].collapsed
-            });
+            setPreferences(
+              {
+                [getCrafterPreferenceId(`pathNavigator.${id}`)]: JSON.stringify({
+                  currentPath: state.pathNavigator[id].currentPath,
+                  collapsed: state.pathNavigator[id].collapsed
+                })
+              },
+              state.sites.active
+            ).subscribe(() => {});
           }
         }
       ),

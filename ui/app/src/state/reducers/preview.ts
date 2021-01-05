@@ -550,7 +550,7 @@ const reducer = createReducer<GlobalState['preview']>(
         ? {
             ...state,
             editMode: payload.editMode === 'true',
-            highlightMode: ['ALL', 'MOVABLE'].includes(payload.highlightMode) ? payload.highlightMode : 'all'
+            highlightMode: ['ALL', 'MOVABLE'].includes(payload.highlightMode) ? payload.highlightMode : 'ALL'
           }
         : state;
     },

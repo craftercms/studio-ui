@@ -201,6 +201,7 @@ export interface GlobalState {
   };
   pathNavigator: {
     [id: string]: WidgetState;
+    // preferences: any;
   };
 }
 
