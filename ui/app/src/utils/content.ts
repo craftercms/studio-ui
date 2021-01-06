@@ -21,7 +21,7 @@ import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
-import { decodeHTML, fileNameFromPath } from './string';
+import { unescapeHTML, fileNameFromPath } from './string';
 import { isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
 
@@ -340,7 +340,7 @@ function parseElementByContentType(
       return array;
     }
     case 'html':
-      return decodeHTML(getInnerHtml(element));
+      return unescapeHTML(getInnerHtml(element));
     case 'checkbox-group': {
       const deserialized = deserialize(element);
       const extract = deserialized[element.tagName].item;

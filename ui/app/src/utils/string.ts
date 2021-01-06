@@ -119,10 +119,16 @@ export function fileNameFromPath(path: string) {
   return path.substr(path.lastIndexOf('/') + 1).replace(/\.xml/, '');
 }
 
-export function decodeHTML(html: string): string {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
+export function escapeHTML(str: string): string {
+  const element = document.createElement('textarea');
+  element.textContent = str;
+  return element.innerHTML;
+}
+
+export function unescapeHTML(html: string): string {
+  const element = document.createElement('textarea');
+  element.innerHTML = html;
+  return element.textContent;
 }
 
 export function bytesToSize(bytes: number, separator: string = '') {
