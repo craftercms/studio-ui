@@ -323,7 +323,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
    */
   this.handleTopDownPathDependenciesItemsClick = function (event, matchedEl) {
     var isChecked = matchedEl.checked;
-    var selectedElementURI = matchedEl.id;
+    var selectedElementURI = decodeURIComponent(matchedEl.id);
     var item = CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap[selectedElementURI];
     WcmDashboardWidgetCommon.selectItem(matchedEl, matchedEl.checked);
     //CStudioAuthoring.SelectedContent.selectContent({"item":item});
