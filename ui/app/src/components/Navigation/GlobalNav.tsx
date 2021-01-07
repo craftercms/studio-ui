@@ -364,7 +364,7 @@ export default function GlobalNav(props: GlobalNavProps) {
       {
         name: formatMessage(messages.preview),
         href(site) {
-          return getLink(previewChoice[site] === '1' ? 'legacy.preview' : 'preview', authoringUrl);
+          return getLink(previewChoice[site] === '2' ? 'preview' : 'legacy.preview', authoringUrl);
         },
         onClick(site) {
           setSiteCookie(site);

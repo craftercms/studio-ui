@@ -177,7 +177,7 @@ export function setPreferences(
   }).pipe(pluck('response'));
 }
 
-export function deletePreferences(properties: string[], siteId?: string): Observable<Boolean> {
+export function deletePreferences(properties: string[], siteId?: string): Observable<boolean> {
   return del(`/studio/api/2/users/me/properties?${siteId ? `siteId=${siteId}&` : ``}properties=${properties}`).pipe(
     mapTo(true)
   );
