@@ -185,6 +185,15 @@
               },
               {
                 type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+              },
+              {
+                type: 'RELOAD_DETAILED_ITEM',
+                payload: {
+                  path: path
+                }
+              },
+              {
+                type: 'CLOSE_EDIT_DIALOG'
               }
             ]
           },
