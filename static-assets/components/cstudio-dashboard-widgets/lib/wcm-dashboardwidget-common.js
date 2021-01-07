@@ -980,7 +980,7 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
       }
     });
   } else {
-    console.error(`[edit] Was not possible to found a edit method for type: ${type}`);
+    console.error(`[WcmDashboardWidgetCommon.editItem] Unable to find a edit method for type: ${type}`);
   }
 };
 
@@ -1008,7 +1008,7 @@ WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
       }
     });
   } else {
-    console.error(`[edit] Was not possible to found a edit method for type: ${type}`);
+    console.error(`[WcmDashboardWidgetCommon.viewItem] Unable to find a view method for type: ${type}`);
   }
 };
 
