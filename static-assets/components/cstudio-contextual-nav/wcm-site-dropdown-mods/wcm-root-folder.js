@@ -982,9 +982,9 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted
-            ? treeNodeTO.path
-            : CrafterCMSNext.util.string.escapeHTML(treeNodeTO.label);
+          nodeSpan.innerHTML += CrafterCMSNext.util.string.escapeHTML(
+            treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label
+          );
           const tooltip = treeNodeTO.statusObj.deleted
             ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(
                 CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
