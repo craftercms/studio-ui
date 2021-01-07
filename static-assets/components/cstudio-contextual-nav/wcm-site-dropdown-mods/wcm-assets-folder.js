@@ -562,7 +562,7 @@ var storage = CStudioAuthoring.Storage;
           nodeSpan.appendChild(icon);
         }
 
-        nodeSpan.innerHTML += treeNodeTO.label;
+        nodeSpan.innerHTML += CrafterCMSNext.util.string.escapeHTML(treeNodeTO.label);
         nodeSpan.setAttribute('title', treeNodeTO.title);
         nodeSpan.className = treeNodeTO.style + ' yui-resize-label treenode-label';
 
@@ -1208,6 +1208,7 @@ var storage = CStudioAuthoring.Storage;
         itemNameLabel = 'Page';
       }
 
+      label = CrafterCMSNext.util.string.escapeHTML(label);
       label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
       return CStudioAuthoring.Utils.buildToolTip(
@@ -1245,6 +1246,7 @@ var storage = CStudioAuthoring.Storage;
         itemNameLabel = 'Page';
       }
 
+      label = CrafterCMSNext.util.string.escapeHTML(label);
       label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
       try {
@@ -1261,7 +1263,7 @@ var storage = CStudioAuthoring.Storage;
           icon
         );
       } catch (err) {
-        //console.log(err);
+        console.log(err);
       }
       return toolTip;
     },

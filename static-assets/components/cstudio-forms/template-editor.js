@@ -504,7 +504,7 @@ CStudioAuthoring.Module.requireModule(
                     var filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
                     var filenameH2 = document.createElement('p');
                     filenameH2.id = 'fileName';
-                    filenameH2.innerHTML = filename;
+                    filenameH2.textContent = filename;
                     templateEditorToolbarVarElt.appendChild(filenameH2);
 
                     if (templatePath.indexOf('.ftl') != -1 || templatePath.indexOf('.groovy')) {
