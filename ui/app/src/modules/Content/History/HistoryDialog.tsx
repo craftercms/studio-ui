@@ -257,7 +257,9 @@ function HistoryDialogBody(props: HistoryDialogProps) {
       if (count > 1) {
         if (hasOptions) {
           if (initialCommit) {
-            sections.push([menuOptions.compareTo]);
+            sections.push([menuOptions.compareTo, menuOptions.compareToCurrent]);
+          } else if (isCurrent) {
+            sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
           } else {
             sections.push([menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious]);
           }
