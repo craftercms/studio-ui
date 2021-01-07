@@ -289,8 +289,8 @@
 
         parentFolderLinkEl.appendChild(moduleClosed);
         parentFolderLinkEl.appendChild(moduleOpen);
+        parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
-        parentFolderLinkEl.innerHTML += label;
         parentFolderLinkEl.onclick = Self.onRootFolderClick;
         parentFolderLinkEl.componentInstance = instance;
 
