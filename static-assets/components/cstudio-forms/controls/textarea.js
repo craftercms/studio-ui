@@ -64,7 +64,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
   },
   _onChangeVal: function (evt, obj) {
     obj.edited = true;
-    this._onChange(evt, obj);
+    obj._onChange(evt, obj);
   },
 
   /**
