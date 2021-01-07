@@ -820,170 +820,196 @@ WcmDashboardWidgetCommon.toggleTable = function(widgetId) {
  */
 WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
   const path = WcmDashboardWidgetCommon.getItemPathFromMatchedElement(matchedElement);
+  const type = CrafterCMSNext.util.content.getSystemTypeFromPath(path);
   const site = CrafterCMSNext.system.store.getState().sites.active;
   const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
-  const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-  WcmDashboardWidgetCommon.Ajax.disableDashboard();
 
-  CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-    let eventIdSuccess = 'editDialogSuccess';
-    let eventIdDismissed = 'editDialogDismissed';
-    let unsubscribe, cancelUnsubscribe;
-    if (items && items.length > 0) {
-      CrafterCMSNext.system.store.dispatch({
-        type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-        payload: {
-          items,
-          onContinue: {
-            type: 'SHOW_EDIT_DIALOG',
-            payload: {
-              src,
-              onSaveSuccess: {
-                type: 'BATCH_ACTIONS',
-                payload: [
-                  {
-                    type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: eventIdSuccess }
-                  },
-                  {
-                    type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
-                  },
-                  {
-                    type: 'RELOAD_DETAILED_ITEM',
-                    payload: {
-                      path
+  if (['page', 'component', 'taxonomy'].includes(type)) {
+    const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
+
+    CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+      let eventIdSuccess = 'editDialogSuccess';
+      let eventIdDismissed = 'editDialogDismissed';
+      let unsubscribe, cancelUnsubscribe;
+      if (items && items.length > 0) {
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+          payload: {
+            items,
+            onContinue: {
+              type: 'SHOW_EDIT_DIALOG',
+              payload: {
+                src,
+                onSaveSuccess: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: eventIdSuccess }
+                    },
+                    {
+                      type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+                    },
+                    {
+                      type: 'RELOAD_DETAILED_ITEM',
+                      payload: {
+                        path
+                      }
                     }
-                  }
-                ]
-              },
-              onCancel: {
-                type: 'BATCH_ACTIONS',
-                payload: [
-                  {
-                    type: 'CLOSE_EDIT_DIALOG'
-                  },
-                  {
-                    type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: eventIdDismissed }
-                  }
-                ]
-              }
-            }
-          },
-          onClose: {
-            type: 'BATCH_ACTIONS',
-            payload: [
-              {
-                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
-              },
-              {
-                type: 'DISPATCH_DOM_EVENT',
-                payload: { id: eventIdDismissed }
-              }
-            ]
-          }
-        }
-      });
-    } else {
-      CrafterCMSNext.system.store.dispatch({
-        type: 'SHOW_EDIT_DIALOG',
-        payload: {
-          src,
-          onSaveSuccess: {
-            type: 'BATCH_ACTIONS',
-            payload: [
-              {
-                type: 'DISPATCH_DOM_EVENT',
-                payload: { id: eventIdSuccess }
-              },
-              {
-                type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
-              },
-              {
-                type: 'RELOAD_DETAILED_ITEM',
-                payload: {
-                  path
+                  ]
+                },
+                onCancel: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'CLOSE_EDIT_DIALOG'
+                    },
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: eventIdDismissed }
+                    }
+                  ]
                 }
               }
-            ]
-          },
-          onCancel: {
-            type: 'BATCH_ACTIONS',
-            payload: [
-              {
-                type: 'CLOSE_EDIT_DIALOG'
-              },
-              {
-                type: 'DISPATCH_DOM_EVENT',
-                payload: { id: eventIdDismissed }
-              }
-            ]
+            },
+            onClose: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+                },
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdDismissed }
+                }
+              ]
+            }
           }
-        }
-      });
-    }
-
-    unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
-      matchedElement.style.pointerEvents = 'auto';
-      WcmDashboardWidgetCommon.Ajax.enableDashboard();
-      const contentTO = response;
-      const draft = response.action === 'save';
-
-      if (CStudioAuthoringContext.isPreview) {
-        try {
-          CStudioAuthoring.Operations.refreshPreview();
-        } catch (err) {
-          if (!draft) {
-            this.callingWindow.location.reload(true);
+        });
+      } else {
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_EDIT_DIALOG',
+          payload: {
+            src,
+            onSaveSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
+                },
+                {
+                  type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+                },
+                {
+                  type: 'RELOAD_DETAILED_ITEM',
+                  payload: {
+                    path
+                  }
+                }
+              ]
+            },
+            onCancel: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'CLOSE_EDIT_DIALOG'
+                },
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdDismissed }
+                }
+              ]
+            }
           }
-        }
+        });
       }
 
-      if (
-        contentTO.updatedModel &&
-        contentTO.initialModel &&
-        contentTO.updatedModel.orderDefault_f !== contentTO.initialModel.orderDefault_f
-      ) {
-        if (CStudioAuthoring.ContextualNav.WcmRootFolder) {
-          eventYS.data = contentTO.item;
-          eventYS.typeAction = 'edit';
-          eventYS.draft = draft;
-          document.dispatchEvent(eventYS);
+      unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        matchedElement.style.pointerEvents = 'auto';
+        const contentTO = response;
+        const draft = response.action === 'save';
+
+        if (CStudioAuthoringContext.isPreview) {
+          try {
+            CStudioAuthoring.Operations.refreshPreview();
+          } catch (err) {
+            if (!draft) {
+              this.callingWindow.location.reload(true);
+            }
+          }
+        }
+
+        if (
+          contentTO.updatedModel &&
+          contentTO.initialModel &&
+          contentTO.updatedModel.orderDefault_f !== contentTO.initialModel.orderDefault_f
+        ) {
+          if (CStudioAuthoring.ContextualNav.WcmRootFolder) {
+            eventYS.data = contentTO.item;
+            eventYS.typeAction = 'edit';
+            eventYS.draft = draft;
+            document.dispatchEvent(eventYS);
+          } else {
+            eventNS.data = contentTO.item;
+            eventNS.typeAction = 'edit';
+            eventNS.draft = draft;
+            document.dispatchEvent(eventNS);
+          }
         } else {
           eventNS.data = contentTO.item;
           eventNS.typeAction = 'edit';
           eventNS.draft = draft;
           document.dispatchEvent(eventNS);
         }
-      } else {
-        eventNS.data = contentTO.item;
-        eventNS.typeAction = 'edit';
-        eventNS.draft = draft;
-        document.dispatchEvent(eventNS);
+
+        cancelUnsubscribe();
+      });
+
+      cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
+        unsubscribe();
+      });
+    });
+  } else if (['config', 'template', 'asset', 'script'].includes(type)) {
+    const src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(path)}&type=asset`;
+    CrafterCMSNext.system.store.dispatch({
+      type: 'SHOW_CODE_EDITOR_DIALOG',
+      payload: {
+        src: src
       }
-
-      cancelUnsubscribe();
     });
-
-    cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
-      unsubscribe();
-    });
-  });
+  } else {
+    console.error(`[WcmDashboardWidgetCommon.editItem] Unable to find a edit method for type: ${type}`);
+  }
 };
 
 WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
   const path = WcmDashboardWidgetCommon.getItemPathFromMatchedElement(matchedElement);
+  const type = CrafterCMSNext.util.content.getSystemTypeFromPath(path);
   const site = CrafterCMSNext.system.store.getState().sites.active;
   const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
-  const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-  CrafterCMSNext.system.store.dispatch({
-    type: 'SHOW_EDIT_DIALOG',
-    payload: {
-      src: `${src}&readonly=true`
-    }
-  });
+
+  if (['page', 'component', 'taxonomy'].includes(type)) {
+    const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
+    CrafterCMSNext.system.store.dispatch({
+      type: 'SHOW_EDIT_DIALOG',
+      payload: {
+        src: `${src}&readonly=true`
+      }
+    });
+  } else if (['config', 'template', 'asset', 'script'].includes(type)) {
+    const src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(path)}&type=asset`;
+    CrafterCMSNext.system.store.dispatch({
+      type: 'SHOW_CODE_EDITOR_DIALOG',
+      payload: {
+        src: `${src}&readonly=true`
+      }
+    });
+  } else {
+    console.error(`[WcmDashboardWidgetCommon.viewItem] Unable to find a view method for type: ${type}`);
+  }
 };
 
 /**

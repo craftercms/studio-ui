@@ -196,14 +196,20 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     YAHOO.util.Dom.addClass(nodeOptionsEl, 'cstudio-form-control-node-selector-options');
     nodeControlboxEl.appendChild(nodeOptionsEl);
 
+    var countEl = document.createElement('div');
+    YAHOO.util.Dom.addClass(countEl, 'item-count');
+    YAHOO.util.Dom.addClass(countEl, 'cstudio-form-control-node-selector-count');
+    this.countEl = countEl;
+    nodeOptionsEl.appendChild(countEl);
+
     // dropdownBtn and dropdownMenu
     const $addBtn = $(
-      `<button id="add-image" class="cstudio-button btn btn-default btn-sm dropdown-toggle cstudio-button-disabled" type="button" data-toggle="dropdown" disabled="true">${CMgs.format(
+      `<button id="add-item" class="cstudio-button btn btn-transparent dropdown-toggle cstudio-button-disabled" type="button" data-toggle="dropdown" disabled="true">${CMgs.format(
         langBundle,
         'add'
-      )}</button>`
+      )}<i class="fa fa-plus add-icon" aria-hidden="true"></i></button>`
     );
-    const $dropdown = $('<div class="dropdown"></div>');
+    const $dropdown = $('<div class="dropdown ml-auto dropup"></div>');
     const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
     this.$dropdown = $dropdown;
     this.$dropdownMenu = $dropdownMenu;
@@ -213,42 +219,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     $(nodeOptionsEl).append($dropdown);
 
-    //Edit button
-    var editButtonEl = document.createElement('input');
-    editButtonEl.type = 'button';
-    editButtonEl.value = CMgs.format(langBundle, 'edit');
-    editButtonEl.disabled = true;
-    YAHOO.util.Dom.addClass(editButtonEl, 'btn btn-default btn-sm');
-    YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button-disabled');
-    nodeOptionsEl.appendChild(editButtonEl);
-    this.editButtonEl = editButtonEl;
-
-    //Delete button
-    var deleteButtonEl = document.createElement('input');
-    deleteButtonEl.type = 'button';
-    deleteButtonEl.value = 'X';
-    YAHOO.util.Dom.addClass(deleteButtonEl, 'btn btn-default btn-sm');
-    YAHOO.util.Dom.addClass(deleteButtonEl, 'cstudio-button-disabled');
-    nodeOptionsEl.appendChild(deleteButtonEl);
-    deleteButtonEl.disabled = true;
-    this.deleteButtonEl = deleteButtonEl;
-
     if (this.readonly == true) {
       $addBtn.attr('disabled', 'true');
-      editButtonEl.disabled = true;
-      deleteButtonEl.disabled = true;
       $addBtn.addClass('cstudio-button-disabled');
-      YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button-disabled');
-      YAHOO.util.Dom.addClass(deleteButtonEl, 'cstudio-button-disabled');
     }
 
     this.renderHelp(config, nodeOptionsEl);
-
-    var countEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(countEl, 'item-count');
-    YAHOO.util.Dom.addClass(countEl, 'cstudio-form-control-node-selector-count');
-    this.countEl = countEl;
-    nodeOptionsEl.appendChild(countEl);
 
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
@@ -295,11 +271,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
     }
 
+    this.datasources = datasources;
+
     var datasource = datasources[0];
 
     if (datasource && !this.readonly) {
       this.datasource = datasource;
-
       if (!this.$addBtn.attr('disabled')) {
         datasources.forEach((datasource) => {
           datasource.add(_self, true);
@@ -335,38 +312,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           this.$addBtn[0]
         );
       }
-
-      if (this.allowEdit) {
-        YAHOO.util.Event.on(
-          this.editButtonEl,
-          'click',
-          function(evt) {
-            _self.form.setFocusedField(_self);
-            var selectedDatasource =
-              datasources.find((item) => item.id === _self.items[_self.selectedItemIndex].datasource) || datasources[0];
-            selectedDatasource.edit(_self.items[_self.selectedItemIndex].key, _self);
-          },
-          this.editButtonEl
-        );
-      }
-
-      YAHOO.util.Event.on(
-        this.deleteButtonEl,
-        'click',
-        function(evt) {
-          _self.form.setFocusedField(_self);
-          _self.deleteItem(_self.selectedItemIndex);
-          _self._renderItems();
-        },
-        this.deleteButtonEl
-      );
     }
-
-    // var datasource = datasources[0];
   },
 
   _renderItems: function() {
     var itemsContainerEl = this.itemsContainerEl;
+    const _self = this;
 
     if (typeof this.items == 'string') {
       this.items = [];
@@ -375,17 +326,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var items = this.items;
 
     if (items.length === 0) {
-      this.editButtonEl.disabled = true;
-      this.deleteButtonEl.disabled = true;
-      YAHOO.util.Dom.addClass(this.editButtonEl, 'cstudio-button-disabled');
-      YAHOO.util.Dom.addClass(this.deleteButtonEl, 'cstudio-button-disabled');
       this.selectedItemIndex = -1;
     }
 
     itemsContainerEl.innerHTML = '';
     var tar = new YAHOO.util.DDTarget(itemsContainerEl);
     for (var i = 0; i < items.length; i++) {
-      var item = items[i];
+      const item = items[i];
+      const itemIndex = i;
       var itemEl = document.createElement('div');
       if (this.readonly != true) {
         var dd = new NodeSelectorDragAndDropDecorator(itemEl);
@@ -397,32 +345,29 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       itemEl.style.overflowWrap = 'break-word';
       itemEl._index = i;
       itemEl.context = this;
+      const editBtn = $('<span class="fa fa-pencil node-selector-item-icon ml-auto"></span>');
+      const deleteBtn = $('<span class="fa fa-trash node-selector-item-icon"></span>');
 
       if (this.selectedItemIndex == i) {
         YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item-selected');
       }
 
-      if (this.readonly != true) {
-        itemEl._onMouseDown = function() {
-          this.context.selectedItemIndex = this._index;
-          var selectedEl = YAHOO.util.Dom.getElementsByClassName(
-            'cstudio-form-control-node-selector-item-selected',
-            null,
-            this.context.itemsContainerEl
-          )[0];
-          if (selectedEl) {
-            YAHOO.util.Dom.removeClass(selectedEl, 'cstudio-form-control-node-selector-item-selected');
-          }
+      if (this.readonly != true && this.allowEdit) {
+        $(itemEl).append(editBtn);
+        $(itemEl).append(deleteBtn);
 
-          YAHOO.util.Dom.addClass(this, 'cstudio-form-control-node-selector-item-selected');
-          YAHOO.util.Dom.removeClass(this.context.deleteButtonEl, 'cstudio-button-disabled');
-          this.context.deleteButtonEl.disabled = false;
+        editBtn.on('click', function() {
+          let selectedDatasource =
+            _self.datasources.find((item) => item.id === item.datasource) || _self.datasources[0];
+          selectedDatasource.edit(item.key, _self);
+        });
 
-          if (this.context.allowEdit == true) {
-            YAHOO.util.Dom.removeClass(this.context.editButtonEl, 'cstudio-button-disabled');
-            this.context.editButtonEl.disabled = false;
-          }
-        };
+        deleteBtn.on('click', function() {
+          _self.deleteItem(itemIndex);
+          _self._renderItems();
+        });
+
+        itemEl._onMouseDown = function() {};
       }
       itemsContainerEl.appendChild(itemEl);
     }
@@ -758,10 +703,12 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
     this.oldIndex = clickEl._index;
     YAHOO.util.Dom.setStyle(clickEl, 'visibility', 'hidden');
 
-    dragEl.innerHTML = clickEl.innerHTML;
+    dragEl.innerHTML = clickEl.textContent;
     YAHOO.util.Dom.setStyle(dragEl, 'color', YAHOO.util.Dom.getStyle(clickEl, 'color'));
     YAHOO.util.Dom.setStyle(dragEl, 'backgroundColor', YAHOO.util.Dom.getStyle(clickEl, 'backgroundColor'));
-    YAHOO.util.Dom.setStyle(dragEl, 'border', '2px solid #7EA6B2');
+    YAHOO.util.Dom.setStyle(dragEl, 'border', '1px solid #7EA6B2');
+    YAHOO.util.Dom.setStyle(dragEl, 'padding', '7px 5px 7px 12px');
+    YAHOO.util.Dom.setStyle(dragEl, 'border-radius', '4px');
   },
 
   endDrag: function(e) {
