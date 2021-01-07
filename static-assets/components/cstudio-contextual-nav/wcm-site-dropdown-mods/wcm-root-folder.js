@@ -633,8 +633,6 @@
             document.addEventListener(
               'crafter.refresh',
               function (e) {
-                /*eventCM.typeAction = e.typeAction;
-                            document.dispatchEvent(eventCM);*/
                 try {
                   if (e.data && e.data.length) {
                     for (var i = 0; i < e.data.length; i++) {
@@ -1792,7 +1790,6 @@
                               currentInternalName =
                                 treeData.item.internalName != '' ? treeData.item.internalName : treeData.item.name,
                               curElt = YDom.get(curNode.labelElId);
-                            // curElt ? curElt.innerHTML = currentInternalName : null;
                             curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                             if (
                               typeAction === 'publish' &&
@@ -1886,7 +1883,9 @@
                             var icon = CStudioAuthoring.Utils.getContentItemIcon(treeData.item);
                             curElt.innerHTML = '';
                             curElt.appendChild(icon);
-                            curElt ? (curElt.innerHTML += currentInternalName) : null;
+                            curElt
+                              ? (curElt.innerHTML += CrafterCMSNext.util.string.escapeHTML(currentInternalName))
+                              : null;
                           }
                         },
                         failure: function () {}
