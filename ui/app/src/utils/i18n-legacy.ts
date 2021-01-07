@@ -840,6 +840,10 @@ export const globalMenuMessages = defineMessages({
     id: 'GlobalMenu.EncryptionTool',
     defaultMessage: 'Encryption Tool'
   },
+  'home.globalMenu.tokenManagement': {
+    id: 'GlobalMenu.TokenManagement',
+    defaultMessage: 'Token Management'
+  },
   'home.about-us': {
     id: 'GlobalMenu.AboutUs',
     defaultMessage: 'About'

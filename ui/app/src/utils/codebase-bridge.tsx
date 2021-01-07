@@ -153,7 +153,8 @@ export function createCodebaseBridge() {
         import('../components/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
         }))
-      )
+      ),
+      TokenManagement: lazy(() => import('../components/TokenManagement'))
     },
 
     system: {
