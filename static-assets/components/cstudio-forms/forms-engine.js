@@ -367,7 +367,6 @@ var CStudioForms =
                 helpDialogEl = document.createElement('div');
                 helpDialogEl.id = 'help-dialog';
                 YAHOO.util.Dom.addClass(helpDialogEl, 'seethrough');
-
                 document.body.appendChild(helpDialogEl);
               }
 
@@ -375,7 +374,6 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(maskEl, 'dialog-dialog-mask');
               maskEl.style.display = 'block';
               maskEl.id = 'dialogMask';
-              //window.parent.document.body.appendChild(maskEl);
               document.body.appendChild(maskEl);
 
               helpDialogEl.style.display = 'block';
@@ -390,7 +388,7 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(helpDialogContainerEl, 'dialog-body');
               helpDialogEl.appendChild(helpDialogContainerEl);
 
-              helpDialogContainerEl.innerHTML = CStudioForms.Util.unEscapeXml(config.help);
+              helpDialogContainerEl.innerHTML = config.help;
 
               var buttonContainerEl = document.createElement('div');
               YAHOO.util.Dom.addClass(buttonContainerEl, 'dialog-button-bar');
@@ -2106,7 +2104,7 @@ var CStudioForms =
           var titleEl = document.createElement('span');
           repeatInstanceContainerEl.appendChild(titleEl);
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.innerHTML = repeat.title;
+          titleEl.textContent = repeat.title;
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
@@ -2143,7 +2141,7 @@ var CStudioForms =
           var titleEl = document.createElement('span');
           repeatInstanceContainerEl.appendChild(titleEl);
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.innerHTML = repeat.title;
+          titleEl.textContent = repeat.title;
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
@@ -2437,11 +2435,11 @@ var CStudioForms =
         var locationEl = document.getElementById('page-location');
 
         if (pageEl) {
-          pageEl.innerHTML = formDef.pageName;
+          pageEl.textContent = formDef.pageName;
         }
 
         if (locationEl) {
-          locationEl.innerHTML = formDef.pageLocation;
+          locationEl.textContent = formDef.pageLocation;
         }
       },
 
@@ -2483,22 +2481,22 @@ var CStudioForms =
 
           html +=
             "<div id='" +
-            section.id +
+            encodeURIComponent(section.id) +
             "-heading' class='panel-heading'>" +
             '<div class="cstudio-form-section-widget"></div>' +
             '<div class="cstudio-form-section-indicator fa f18"></div>' +
             '<h2 class="panel-title">' +
-            section.title +
+            CrafterCMSNext.util.string.escapeHTML(section.title) +
             '</h2>' +
             '<span class="cstudio-form-section-validation"></span>' +
             '</div>';
 
           html +=
             '<div id="' +
-            section.id +
+            encodeURIComponent(section.id) +
             '-body" class="panel-collapse collapse in">' +
             '<div class="panel-body">' +
-            (section.description ? '<p>' + section.description + '</p>' : '') +
+            (section.description ? '<p>' + CrafterCMSNext.util.string.escapeHTML(section.description) + '</p>' : '') +
             '<div id="' +
             section.id +
             '-body-controls"></div>' +
