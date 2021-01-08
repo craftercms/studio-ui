@@ -33,28 +33,6 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       self = this;
     CStudioAuthoring.Service.getQuickCreate({
       success: function (response) {
-        var createCb = {
-          success: function (contentTO, editorId, name, value, draft) {
-            var page = CStudioAuthoring.Utils.getQueryParameterURL('page');
-            var acnDraftContent = $('.acnDraftContent').get(0);
-            eventYS.data = contentTO.item;
-            eventYS.typeAction = 'createContent';
-            eventYS.oldPath = null;
-            eventYS.parent = contentTO.item.path === '/site/website' ? null : false;
-            document.dispatchEvent(eventYS);
-
-            if (contentTO.item.isPage) {
-              CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-              if (page == contentTO.item.browserUri && acnDraftContent) {
-                CStudioAuthoring.SelectedContent.setContent(contentTO.item);
-              }
-            } else {
-              CStudioAuthoring.Operations.refreshPreview();
-            }
-          },
-          failure: function () {},
-          callingWindow: window
-        };
         if (CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard) {
           $(quickCreateWrapper).removeClass('hide');
           if (response && response.length > 0) {
@@ -62,7 +40,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
               html = '';
             for (var i = 0; i < response.length; i++) {
               (function (item) {
-                html = $(self.rowTemplate(item.label, i));
+                html = $(self.rowTemplate(CrafterCMSNext.util.string.escapeHTML(item.label), i));
                 html.click(function () {
                   CStudioAuthoring.Operations.openContentWebForm(
                     item.contentTypeId,
@@ -71,7 +49,27 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
                     CStudioAuthoring.Operations.processPathsForMacros(item.path, null, true),
                     false,
                     false,
-                    createCb,
+                    {
+                      success: function (contentTO, editorId, name, value, draft) {
+                        var page = CStudioAuthoring.Utils.getQueryParameterURL('page');
+                        var acnDraftContent = $('.acnDraftContent').get(0);
+                        eventYS.data = contentTO.item;
+                        eventYS.typeAction = 'createContent';
+                        eventYS.oldPath = null;
+                        eventYS.parent = contentTO.item.path === '/site/website' ? null : false;
+                        document.dispatchEvent(eventYS);
+                        if (contentTO.item.isPage) {
+                          CStudioAuthoring.Operations.refreshPreview(contentTO.item);
+                          if (page === contentTO.item.browserUri && acnDraftContent) {
+                            CStudioAuthoring.SelectedContent.setContent(contentTO.item);
+                          }
+                        } else {
+                          CStudioAuthoring.Operations.refreshPreview();
+                        }
+                      },
+                      failure: function () {},
+                      callingWindow: window
+                    },
                     null
                   );
                 });
