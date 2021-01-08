@@ -158,8 +158,6 @@ YAHOO.extend(
       YDom.addClass(inputEl, 'cstudio-form-control-input');
       richTextDialogEl.inputEl = inputEl;
 
-      inputEl.value = CStudioForms.Util.unEscapeXml(value);
-
       tinymce.init({
         selector: '.' + rteUniqueInitClass,
         height: 200,
@@ -176,6 +174,7 @@ YAHOO.extend(
         setup: function (editor) {
           editor.on('init', function (e) {
             _self.editor = editor;
+            editor.setContent(value);
           });
         }
       });
@@ -194,7 +193,6 @@ YAHOO.extend(
       if (this.editor) {
         richTextDialogEl.value = this.editor.getContent();
       }
-
       this.value = richTextDialogEl.value;
       this.valueEl.value = this.valueToString(this.value);
       richTextDialogEl.parentNode.removeChild(keyValueDialogMaskEl);

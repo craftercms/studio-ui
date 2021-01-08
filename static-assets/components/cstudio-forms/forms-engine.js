@@ -388,7 +388,7 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(helpDialogContainerEl, 'dialog-body');
               helpDialogEl.appendChild(helpDialogContainerEl);
 
-              helpDialogContainerEl.innerHTML = CStudioForms.Util.unEscapeXml(config.help);
+              helpDialogContainerEl.innerHTML = config.help;
 
               var buttonContainerEl = document.createElement('div');
               YAHOO.util.Dom.addClass(buttonContainerEl, 'dialog-button-bar');
