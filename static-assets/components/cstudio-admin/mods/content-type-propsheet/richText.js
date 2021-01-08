@@ -171,6 +171,8 @@ YAHOO.extend(
         plugins: ['paste noneditable'],
         toolbar1:
           'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat',
+        valid_elements:
+          'ul[class,style],li[class,style],img[src,style,class],p[class,style],br,strong/b,a[href|target=_blank]',
         setup: function (editor) {
           editor.on('init', function (e) {
             _self.editor = editor;
