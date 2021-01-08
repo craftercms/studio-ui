@@ -363,8 +363,8 @@
                       errorMessage +=
                         validation.idError.length > 0
                           ? `<li>${formatMessage(contentTypesMessages.idError)} ${validation.idError
-                              .toString()
-                              .replace(/,/g, ', ')}</li>`
+                              .map((s) => CrafterCMSNext.util.string.escapeHTML(s))
+                              .join(', ')}</li>`
                           : '';
 
                       errorMessage +=
@@ -1135,7 +1135,7 @@
 
         var datasourcesNameEl = document.createElement('span');
         YDom.addClass(datasourcesNameEl, 'content-section-name');
-        datasourcesNameEl.innerHTML = CMgs.format(langBundle, 'datasources');
+        datasourcesNameEl.textContent = CMgs.format(langBundle, 'datasources');
         datasourcesContainerEl.appendChild(datasourcesNameEl);
         var tar = new YAHOO.util.DDTarget(datasourcesContainerEl);
 
@@ -1246,7 +1246,7 @@
 
           var sectionNameEl = document.createElement('span');
           YDom.addClass(sectionNameEl, 'content-section-name');
-          sectionNameEl.innerHTML = section.title;
+          sectionNameEl.textContent = section.title;
           sectionContainerEl.appendChild(sectionNameEl);
 
           section.sectionContainerEl = sectionContainerEl;
@@ -1429,12 +1429,12 @@
 
         var fieldTypeEl = document.createElement('span');
         YDom.addClass(fieldTypeEl, 'content-field-type');
-        fieldTypeEl.innerHTML = field.type;
+        fieldTypeEl.textContent = field.type;
         fieldContainerEl.appendChild(fieldTypeEl);
 
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-variable');
-        fieldNameEl.innerHTML = field.id;
+        fieldNameEl.textContent = field.id;
         fieldContainerEl.appendChild(fieldNameEl);
 
         var dd = new DragAndDropDecorator(fieldContainerEl);

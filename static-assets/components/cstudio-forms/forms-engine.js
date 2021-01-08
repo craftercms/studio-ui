@@ -2435,11 +2435,11 @@ var CStudioForms =
         var locationEl = document.getElementById('page-location');
 
         if (pageEl) {
-          pageEl.innerHTML = formDef.pageName;
+          pageEl.textContent = formDef.pageName;
         }
 
         if (locationEl) {
-          locationEl.innerHTML = formDef.pageLocation;
+          locationEl.textContent = formDef.pageLocation;
         }
       },
 
@@ -2481,22 +2481,22 @@ var CStudioForms =
 
           html +=
             "<div id='" +
-            section.id +
+            encodeURIComponent(section.id) +
             "-heading' class='panel-heading'>" +
             '<div class="cstudio-form-section-widget"></div>' +
             '<div class="cstudio-form-section-indicator fa f18"></div>' +
             '<h2 class="panel-title">' +
-            section.title +
+            CrafterCMSNext.util.string.escapeHTML(section.title) +
             '</h2>' +
             '<span class="cstudio-form-section-validation"></span>' +
             '</div>';
 
           html +=
             '<div id="' +
-            section.id +
+            encodeURIComponent(section.id) +
             '-body" class="panel-collapse collapse in">' +
             '<div class="panel-body">' +
-            (section.description ? '<p>' + section.description + '</p>' : '') +
+            (section.description ? '<p>' + CrafterCMSNext.util.string.escapeHTML(section.description) + '</p>' : '') +
             '<div id="' +
             section.id +
             '-body-controls"></div>' +
