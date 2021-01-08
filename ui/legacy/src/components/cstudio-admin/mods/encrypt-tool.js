@@ -27,7 +27,6 @@
     }
 
     renderWorkarea() {
-
       const workarea = document.querySelector('#cstudio-admin-console-workarea');
       const el = document.createElement('div');
 
@@ -37,10 +36,8 @@
       CrafterCMSNext.render(el, 'EncryptTool', {
         site: CStudioAuthoringContext.site
       });
-
     }
   }
 
   CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-encrypt-tool', EncryptTool);
-
 })();

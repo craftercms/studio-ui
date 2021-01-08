@@ -72,11 +72,7 @@
           if (this.initialized == false) {
             this.initialized = true;
 
-            this.ajaxOverlay = this.createAjaxOverlay(
-              'ajax-overlay',
-              'preview-tools-panel-container_c',
-              -5
-            );
+            this.ajaxOverlay = this.createAjaxOverlay('ajax-overlay', 'preview-tools-panel-container_c', -5);
 
             amplify.subscribe('/operation/started', function () {
               self.ajaxOverlay.show();
@@ -92,8 +88,7 @@
 
             amplify.subscribe('/page-model/loaded', function (data) {
               try {
-                var dom = new window.DOMParser().parseFromString(data.model, 'text/xml')
-                  .documentElement;
+                var dom = new window.DOMParser().parseFromString(data.model, 'text/xml').documentElement;
 
                 var contentMap = CStudioForms.Util.xmlModelToMap(dom);
 
@@ -216,17 +211,7 @@
           }
         },
 
-        ondrop: function (
-          type,
-          path,
-          isNew,
-          tracking,
-          zones,
-          compPath,
-          conComp,
-          modelP,
-          datasource
-        ) {
+        ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, datasource) {
           var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
             CStudioAuthoringContext.previewCurrentPath
           );
@@ -258,14 +243,7 @@
               if (!path) {
                 var selectorId = Object.keys(zones)[0];
                 var order = zones[selectorId].findIndex((item) => item === tracking);
-                ComponentsPanel.onDropEmbedded(
-                  previewPath,
-                  compPath,
-                  type,
-                  selectorId,
-                  datasource,
-                  order
-                );
+                ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, datasource, order);
               } else {
                 var subscribeCallback = function (_message) {
                   switch (_message.type) {
@@ -290,9 +268,7 @@
                       amplify.publish('/operation/started');
                       // Use the information from the newly created component entry and use it to load the model data for the
                       // component placeholder in the UI. After this update, we can then proceed to save all the components
-                      var value = !!contentTO.item.internalName
-                        ? contentTO.item.internalName
-                        : contentTO.item.uri;
+                      var value = !!contentTO.item.internalName ? contentTO.item.internalName : contentTO.item.uri;
                       isNewEvent(value, contentTO.item.uri);
                     }
                   },
@@ -378,9 +354,7 @@
             );
           } else {
             CStudioAuthoring.ComponentsPanel.getPageModel(
-              CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
-                CStudioAuthoringContext.previewCurrentPath
-              ),
+              CStudioAuthoring.ComponentsPanel.getPreviewPagePath(CStudioAuthoringContext.previewCurrentPath),
               isNew ? 'save-components-new' : 'save-components',
               true,
               false,
@@ -560,19 +534,14 @@
           var self = this,
             componentPanelElem = document.getElementById('component-panel-elem');
 
-          var cacheCompConfKey =
-              CStudioAuthoringContext.site + '_cacheCompConfKey_' + CStudioAuthoringContext.user,
+          var cacheCompConfKey = CStudioAuthoringContext.site + '_cacheCompConfKey_' + CStudioAuthoringContext.user,
             compConfCached;
 
           var serviceCallback = {
             failure: CStudioAuthoring.Utils.noop,
             success: function (config) {
               if (!compConfCached) {
-                cache.set(
-                  cacheCompConfKey,
-                  config,
-                  CStudioAuthoring.Constants.CACHE_TIME_CONFIGURATION
-                );
+                cache.set(cacheCompConfKey, config, CStudioAuthoring.Constants.CACHE_TIME_CONFIGURATION);
                 CStudioAuthoring.compConfProcessing = false;
               }
 
@@ -642,9 +611,7 @@
 
           YDom.addClass(deleteEl, className);
 
-          btnEl.src =
-            CStudioAuthoringContext.authoringAppBaseUri +
-            '/themes/cstudioTheme/images/icons/delete.png';
+          btnEl.src = CStudioAuthoringContext.authoringAppBaseUri + '/themes/cstudioTheme/images/icons/delete.png';
           btnEl.style.width = '16px';
           btnEl.style.height = '16px';
 
@@ -795,21 +762,9 @@
          * @param -same as createOverlay function
          * @return -reference to the newly created overlay
          */
-        createAjaxOverlay: function (
-          overlayId,
-          refElementId,
-          zIndexDiff,
-          showCallback,
-          hideCallback
-        ) {
+        createAjaxOverlay: function (overlayId, refElementId, zIndexDiff, showCallback, hideCallback) {
           var loaderImg = document.createElement('div'),
-            overlayObj = this.createOverlay(
-              overlayId,
-              refElementId,
-              zIndexDiff,
-              showCallback,
-              hideCallback
-            );
+            overlayObj = this.createOverlay(overlayId, refElementId, zIndexDiff, showCallback, hideCallback);
 
           YDom.addClass(loaderImg, 'ajax-loader');
           overlayObj.getOverlayElement().appendChild(loaderImg);
@@ -832,11 +787,7 @@
             return '#FFFFFF';
           }
 
-          stylesArr = window.getComputedStyle
-            ? window.getComputedStyle(el)
-            : el.currentStyle
-            ? el.currentStyle
-            : null;
+          stylesArr = window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle ? el.currentStyle : null;
           // el.currentStyle applies to IE v9 and below
 
           if (stylesArr) {
@@ -880,18 +831,11 @@
             return zIndex;
           }
 
-          stylesArr = window.getComputedStyle
-            ? window.getComputedStyle(el)
-            : el.currentStyle
-            ? el.currentStyle
-            : null;
+          stylesArr = window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle ? el.currentStyle : null;
           // el.currentStyle applies to IE v9 and below
 
           if (stylesArr) {
-            if (
-              stylesArr.getPropertyValue('z-index') != 'auto' &&
-              +stylesArr.getPropertyValue('z-index') > zIndex
-            ) {
+            if (stylesArr.getPropertyValue('z-index') != 'auto' && +stylesArr.getPropertyValue('z-index') > zIndex) {
               // save the zIndex value if it's greater than what we already have
               return this.getMaxzIndex(el.parentNode, +stylesArr.getPropertyValue('z-index'));
             } else {
@@ -973,9 +917,7 @@
           zIndex = zIndex || 'auto';
 
           el.style.width =
-            el.clientWidth -
-            (+el.style.paddingLeft.split('px')[0] - el.style.paddingRight.split('px')[0]) +
-            'px';
+            el.clientWidth - (+el.style.paddingLeft.split('px')[0] - el.style.paddingRight.split('px')[0]) + 'px';
           el.style.left = YDom.getX(el) + 'px';
           el.style.top = YDom.getY(el) + 'px';
           el.style.position = 'absolute';
@@ -1256,9 +1198,7 @@
                 zIndexRef = CStudioAuthoring.ComponentsPanel.getMaxzIndex(srcEl, 1);
 
                 YDom.setStyle(proxy, 'z-index', zIndexRef + 2);
-                proxy.style.background = CStudioAuthoring.ComponentsPanel.getInheritedBackground(
-                  srcEl
-                );
+                proxy.style.background = CStudioAuthoring.ComponentsPanel.getInheritedBackground(srcEl);
                 proxy.style.borderColor = '#86BBEA';
                 proxy.style.borderRadius = '5px';
                 proxy.innerHTML = srcEl.parentNode.innerHTML;
@@ -1271,9 +1211,7 @@
                   : 0;
                 YDom.setStyle(proxy, 'z-index', zIndexRef + 2);
                 Utility.resizeProxy(srcEl, proxy);
-                proxy.style.background = CStudioAuthoring.ComponentsPanel.getInheritedBackground(
-                  srcEl
-                );
+                proxy.style.background = CStudioAuthoring.ComponentsPanel.getInheritedBackground(srcEl);
                 proxy.innerHTML = srcEl.innerHTML;
               }
             }
@@ -1321,9 +1259,7 @@
             if (componentsUpdated) {
               componentsUpdated = false; // reset flag
               CStudioAuthoring.ComponentsPanel.getPageModel(
-                CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
-                  CStudioAuthoringContext.previewCurrentPath
-                ),
+                CStudioAuthoring.ComponentsPanel.getPreviewPagePath(CStudioAuthoringContext.previewCurrentPath),
                 'save-components',
                 true,
                 false
@@ -1352,11 +1288,7 @@
 
                 // The component placeholder includes the component wrapper; however, the model needs to be attached to the component
                 // element (the one with the dcNewComponentClass) so we look for it inside the component placeholder.
-                cpl = YAHOO.util.Selector.query(
-                  '.' + dcNewComponentClass,
-                  srcEl.componentPlaceholder,
-                  true
-                );
+                cpl = YAHOO.util.Selector.query('.' + dcNewComponentClass, srcEl.componentPlaceholder, true);
 
                 CStudioAuthoring.Operations.performSimpleIceEdit(
                   { contentType: componentType, uri: componentPath },
@@ -1366,9 +1298,7 @@
                     success: function (contentTO) {
                       // Use the information from the newly created component entry and use it to load the model data for the
                       // component placeholder in the UI. After this update, we can then proceed to save all the components
-                      var value = !!contentTO.item.internalName
-                        ? contentTO.item.internalName
-                        : contentTO.item.uri;
+                      var value = !!contentTO.item.internalName ? contentTO.item.internalName : contentTO.item.uri;
 
                       // TO-DO: Create a process for storing the model data instead of doing it manually. We should not need
                       // to know what properties a new component has.
@@ -1383,9 +1313,7 @@
                         include: contentTO.item.uri
                       };
                       CStudioAuthoring.ComponentsPanel.getPageModel(
-                        CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
-                          CStudioAuthoringContext.previewCurrentPath
-                        ),
+                        CStudioAuthoring.ComponentsPanel.getPreviewPagePath(CStudioAuthoringContext.previewCurrentPath),
                         'save-components-new',
                         true,
                         false
@@ -1396,9 +1324,7 @@
                 );
               } else {
                 CStudioAuthoring.ComponentsPanel.getPageModel(
-                  CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
-                    CStudioAuthoringContext.previewCurrentPath
-                  ),
+                  CStudioAuthoring.ComponentsPanel.getPreviewPagePath(CStudioAuthoringContext.previewCurrentPath),
                   'save-components',
                   true,
                   false
@@ -1452,9 +1378,7 @@
               if (destContainer) {
                 // console.log("Moving a new component to a container with elements");
 
-                srcEl.componentPlaceholder = CStudioAuthoring.ComponentsPanel.createNewComponentPlaceholder(
-                  srcEl
-                );
+                srcEl.componentPlaceholder = CStudioAuthoring.ComponentsPanel.createNewComponentPlaceholder(srcEl);
                 destEl = YDom.hasClass(destEl, dcWrapperClass)
                   ? destEl
                   : YDom.getAncestorByClassName(destEl, dcWrapperClass);
@@ -1464,27 +1388,18 @@
 
                 if (YDom.hasClass(destEl, dcContainerClass) && !YDom.getFirstChild(destTemp)) {
                   // console.log("Adding a new component to an empty container");
-                  srcEl.componentPlaceholder = CStudioAuthoring.ComponentsPanel.createNewComponentPlaceholder(
-                    srcEl
-                  );
+                  srcEl.componentPlaceholder = CStudioAuthoring.ComponentsPanel.createNewComponentPlaceholder(srcEl);
                   Utility.addComponent(srcEl.componentPlaceholder, destTemp);
                 }
               }
-            } else if (
-              srcContainer &&
-              destContainer &&
-              !YDom.isAncestor(destEl, srcEl) &&
-              srcEl !== destEl
-            ) {
+            } else if (srcContainer && destContainer && !YDom.isAncestor(destEl, srcEl) && srcEl !== destEl) {
               // console.log("Moving an existing component to a container with elements");
 
               // Only process enter events for elements that are within elements with the 'dcContainerClass', the destination element is not
               // an ancestor of the source element nor are the destination and source elements the same.
 
               // Make sure to move around the draggable component wrappers (which include the components' controls) and not just the draggable components
-              srcEl = YDom.hasClass(srcEl, dcWrapperClass)
-                ? srcEl
-                : YDom.getAncestorByClassName(srcEl, dcWrapperClass);
+              srcEl = YDom.hasClass(srcEl, dcWrapperClass) ? srcEl : YDom.getAncestorByClassName(srcEl, dcWrapperClass);
               destEl = YDom.hasClass(destEl, dcWrapperClass)
                 ? destEl
                 : YDom.getAncestorByClassName(destEl, dcWrapperClass);
@@ -1529,13 +1444,9 @@
                   failure: CStudioAuthoring.Utils.noop,
                   success: function (response) {
                     amplify.subscribe('/page-model/loaded', function (data) {
-                      var dom = new window.DOMParser().parseFromString(data.model, 'text/xml')
-                        .documentElement;
+                      var dom = new window.DOMParser().parseFromString(data.model, 'text/xml').documentElement;
                       var contentMap = CStudioForms.Util.xmlModelToMap(dom);
-                      initialContentModel = amplify.publish(
-                        cstopic('DND_COMPONENTS_MODEL_LOAD'),
-                        contentMap
-                      );
+                      initialContentModel = amplify.publish(cstopic('DND_COMPONENTS_MODEL_LOAD'), contentMap);
                       amplify.publish('/operation/completed');
 
                       var data = response.category;

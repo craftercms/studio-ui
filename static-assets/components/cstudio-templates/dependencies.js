@@ -39,8 +39,5 @@
     ].join('')
   });
 
-  CStudioAuthoring.Env.ModuleMap.map(
-    'template-dependencies',
-    CStudioAuthoring.TemplateHolder.Dependencies
-  );
+  CStudioAuthoring.Env.ModuleMap.map('template-dependencies', CStudioAuthoring.TemplateHolder.Dependencies);
 })();

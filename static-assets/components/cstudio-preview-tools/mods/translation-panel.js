@@ -139,11 +139,7 @@ CStudioAuthoring.TranslationPanel = CStudioAuthoring.TranslationPanel || {
       control: this
     };
 
-    CStudioAuthoring.Service.lookupConfigurtion(
-      CStudioAuthoringContext.site,
-      '/site-config.xml',
-      configCb
-    );
+    CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', configCb);
   }
 };
 

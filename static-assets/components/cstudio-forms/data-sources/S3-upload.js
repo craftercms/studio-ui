@@ -115,9 +115,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
 
       var createEl = document.createElement('div');
       YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(
-        me.messages.words.upload
-      )} - ${newElTitle}`;
+      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(me.messages.words.upload)} - ${newElTitle}`;
       control.addContainerEl.create.appendChild(createEl);
 
       (function (control, me) {
@@ -162,7 +160,4 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-S3-upload',
-  CStudioForms.Datasources.S3Upload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-S3-upload', CStudioForms.Datasources.S3Upload);

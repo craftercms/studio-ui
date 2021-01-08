@@ -172,17 +172,14 @@
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-basedelete',
-    path:
-      'components/cstudio-view-controllers/base-delete.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/base-delete.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base']
   });
 
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-submitfordelete',
-    path:
-      'components/cstudio-view-controllers/submit-for-delete.js?version=' +
-      CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/submit-for-delete.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-basedelete', 'component-templateagent', 'template-submitfordelete']
   });
 
@@ -196,9 +193,7 @@
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-in-context-edit',
-    path:
-      'components/cstudio-view-controllers/in-context-edit.js?version=' +
-      CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'component-templateagent', 'template-incontextedit']
   });
 
@@ -212,8 +207,7 @@
   Loader.addModule({
     type: 'js',
     name: 'publish-util',
-    path:
-      'components/cstudio-view-controllers/publish-util.js?version=' + CStudioAuthoring.UIBuildId
+    path: 'components/cstudio-view-controllers/publish-util.js?version=' + CStudioAuthoring.UIBuildId
   });
 
   Loader.addModule({
@@ -232,8 +226,7 @@
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-dependencies',
-    path:
-      'components/cstudio-view-controllers/dependencies.js?version=' + CStudioAuthoring.UIBuildIds,
+    path: 'components/cstudio-view-controllers/dependencies.js?version=' + CStudioAuthoring.UIBuildIds,
     requires: [
       'viewcontroller-base',
       'component-templateagent',
@@ -261,26 +254,21 @@
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-cancel-workflow',
-    path:
-      'components/cstudio-view-controllers/cancel-workflow.js?version=' +
-      CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/cancel-workflow.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'template-cancel-workflow']
   });
 
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-requestpublish',
-    path:
-      'components/cstudio-view-controllers/request-publish.js?version=' +
-      CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/request-publish.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'publish-util', 'jquery-datetimepicker', 'jquery-momentjs']
   });
 
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-requestdelete',
-    path:
-      'components/cstudio-view-controllers/request-delete.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/request-delete.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base']
   });
 

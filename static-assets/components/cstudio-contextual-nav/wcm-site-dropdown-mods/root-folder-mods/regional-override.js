@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring.ContextualNav
-  .WcmRootFolder.RegionalOverride || {
+CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring.ContextualNav.WcmRootFolder
+  .RegionalOverride || {
   Self: this,
   region: '',
 
@@ -24,15 +24,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
     Self.filterFolders = this.filterFolders;
   },
 
-  _renderContextMenu: function (
-    tree,
-    target,
-    p_aArgs,
-    component,
-    menuItems,
-    oCurrentTextNode,
-    isWrite
-  ) {
+  _renderContextMenu: function (tree, target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
     var data = {
       tree: tree,
       currentTextNode: oCurrentTextNode,
@@ -64,12 +56,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
     if (path.indexOf('/' + data.region) == -1) {
       path += '/' + data.region;
     }
-    CStudioAuthoring.Operations.createNewContent(
-      CStudioAuthoringContext.site,
-      path,
-      false,
-      createCb
-    );
+    CStudioAuthoring.Operations.createNewContent(CStudioAuthoringContext.site, path, false, createCb);
   },
 
   filterItem: function (treeItem) {
@@ -90,11 +77,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
 
   drawTreeItem: function (treeNodeTO, root, treeNode) {
     if (treeNodeTO.fileName == Self.region) {
-      treeNode.label =
-        Self.region.toUpperCase() +
-        ' ' +
-        treeNode.parent.label.replace('*', '') +
-        'Regional Content';
+      treeNode.label = Self.region.toUpperCase() + ' ' + treeNode.parent.label.replace('*', '') + 'Regional Content';
     }
     return treeNode;
   }

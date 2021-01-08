@@ -202,12 +202,7 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
       CStudioAuthoringContext.xsrfHeaderName,
       CrafterCMSNext.util.auth.getRequestForgeryToken()
     );
-    YAHOO.util.Connect.asyncRequest(
-      'POST',
-      CStudioAuthoring.Service.createServiceUri(writeServiceUrl),
-      saveSvcCb,
-      ''
-    );
+    YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, '');
   },
 
   /**

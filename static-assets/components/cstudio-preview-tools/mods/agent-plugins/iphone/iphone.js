@@ -171,7 +171,4 @@ CStudioAuthoring.MediumPanel.IPhoneVert = CStudioAuthoring.MediumPanel.IPhoneVer
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'medium-panel-iphone',
-  CStudioAuthoring.MediumPanel.IPhoneVert
-);
+CStudioAuthoring.Module.moduleLoaded('medium-panel-iphone', CStudioAuthoring.MediumPanel.IPhoneVert);

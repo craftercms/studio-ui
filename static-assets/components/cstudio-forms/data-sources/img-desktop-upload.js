@@ -54,18 +54,9 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
       success: function (imageData) {
         var topWin = window.parent.CStudioAuthoring.ContextualNav.WcmRootFolder;
         if (topWin.currentTextNode && topWin.myTreeAssets) {
-          topWin.refreshNodes(
-            topWin.currentTextNode,
-            false,
-            false,
-            topWin.myTreeAssets,
-            null,
-            true
-          );
+          topWin.refreshNodes(topWin.currentTextNode, false, false, topWin.myTreeAssets, null, true);
         }
-        var relativeUrl = path.endsWith('/')
-          ? path + imageData.fileName
-          : path + '/' + imageData.fileName;
+        var relativeUrl = path.endsWith('/') ? path + imageData.fileName : path + '/' + imageData.fileName;
         var url = this.context.createPreviewUrl(relativeUrl);
         imageData.previewUrl = url + '?' + new Date().getTime();
         imageData.relativeUrl = relativeUrl;

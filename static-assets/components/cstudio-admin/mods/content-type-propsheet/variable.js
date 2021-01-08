@@ -80,9 +80,7 @@ YAHOO.extend(
             if (idDatasource) {
               idDatasource.value = this.value.replace(/[^A-Za-z0-9-_]/g, '');
               idDatasource.value =
-                idDatasource.value.substr(0, 1).toLowerCase() +
-                idDatasource.value.substr(1) +
-                addPostfixes;
+                idDatasource.value.substr(0, 1).toLowerCase() + idDatasource.value.substr(1) + addPostfixes;
 
               updateFn(event, idDatasource);
             }

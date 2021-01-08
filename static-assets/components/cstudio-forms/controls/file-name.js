@@ -56,9 +56,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   },
 
   getCurrentPath: function () {
-    return this.form.path
-      ? this.form.path
-      : CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+    return this.form.path ? this.form.path : CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   },
 
   isRootPath: function () {
@@ -236,7 +234,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-file-name-container');
@@ -329,8 +327,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
-    //controlWidgetContainerEl.appendChild(descriptionEl);
+    descriptionEl.textContent = config.description;
 
     containerEl.appendChild(titleEl);
     containerEl.appendChild(controlWidgetContainerEl);
@@ -339,10 +336,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
   _renderEdit: function (containerEl) {
     var _self = this;
-    if (
-      CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit') &&
-      this.readonly == false
-    ) {
+    if (CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit') && this.readonly == false) {
       var editFileNameEl = document.createElement('div');
       YAHOO.util.Dom.addClass(editFileNameEl, 'cstudio-form-control-filename-edit');
       var editFileNameBtn = document.createElement('input');
@@ -379,13 +373,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
         dialog.setHeader('Warning');
         dialog.setBody(
-          CrafterCMSNext.i18n.intl.formatMessage(
-            _self.messages.fileNameControlMessages.urlChangeWaring
-          ) +
+          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring) +
             '</br></br>' +
-            CrafterCMSNext.i18n.intl.formatMessage(
-              _self.messages.fileNameControlMessages.viewReferences
-            )
+            CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.viewReferences)
         );
         dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
 
@@ -522,7 +512,4 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-file-name',
-  CStudioForms.Controls.FileName
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-file-name', CStudioForms.Controls.FileName);

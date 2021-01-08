@@ -22,9 +22,7 @@
   var Base = CStudioAuthoring.ViewController.Base,
     Dom = YAHOO.util.Dom,
     Event = YAHOO.util.Event,
-    agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(
-      CStudioAuthoring.TemplateHolder.Dependencies
-    ),
+    agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Dependencies),
     each = CStudioAuthoring.Utils.each,
     itemsData,
     depController;
@@ -244,9 +242,7 @@
                         contentTO.uri,
                         false,
                         {},
-                        isWrite
-                          ? [{ ontop: true }]
-                          : [{ ontop: true }, { name: 'readonly', value: true }]
+                        isWrite ? [{ ontop: true }] : [{ ontop: true }, { name: 'readonly', value: true }]
                       );
                     },
 
@@ -274,17 +270,9 @@
     };
 
     if (optionSelected !== 'depends-on') {
-      CStudioAuthoring.Service.loadDependencies(
-        CStudioAuthoringContext.site,
-        item.uri,
-        depsCallback
-      );
+      CStudioAuthoring.Service.loadDependencies(CStudioAuthoringContext.site, item.uri, depsCallback);
     } else {
-      CStudioAuthoring.Service.loadDependantItems(
-        CStudioAuthoringContext.site,
-        item.uri,
-        depsCallback
-      );
+      CStudioAuthoring.Service.loadDependantItems(CStudioAuthoringContext.site, item.uri, depsCallback);
     }
 
     $('.toggleDependencies').on('click', function () {
@@ -306,13 +294,7 @@
     var dateTimeTokens = dateTimeStr.split('T');
     var dateTokens = dateTimeTokens[0].split('-');
     var timeTokens = dateTimeTokens[1].split(':');
-    var dateTime = new Date(
-      dateTokens[0],
-      dateTokens[1] - 1,
-      dateTokens[2],
-      timeTokens[0],
-      timeTokens[1]
-    );
+    var dateTime = new Date(dateTokens[0], dateTokens[1] - 1, dateTokens[2], timeTokens[0], timeTokens[1]);
 
     var hrs = dateTime.getHours() % 12 ? dateTime.getHours() % 12 : 12;
     var mnts = dateTime.getMinutes();

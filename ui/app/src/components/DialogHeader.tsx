@@ -47,12 +47,12 @@ export interface DialogTitleProps {
     variant?: any;
     component?: string;
     classes?: any;
-  },
+  };
   subtitleTypographyProps?: {
     variant?: any;
     component?: string;
     classes?: any;
-  }
+  };
   subtitle?: string;
   icon?: any;
 
@@ -90,12 +90,11 @@ export default function DialogHeader(props: DialogTitleProps) {
         </Typography>
         {onClose ? (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <Icon/>
+            <Icon />
           </IconButton>
         ) : null}
       </div>
-      {
-        subtitle &&
+      {subtitle && (
         <Typography
           variant={subtitleTypographyProps.variant}
           // @ts-ignore
@@ -105,7 +104,7 @@ export default function DialogHeader(props: DialogTitleProps) {
         >
           {subtitle}
         </Typography>
-      }
+      )}
     </MuiDialogTitle>
   );
 }

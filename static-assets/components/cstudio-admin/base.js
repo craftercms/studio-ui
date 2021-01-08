@@ -34,8 +34,7 @@
             <img src="/studio/static-assets/images/choose_option.svg" alt="">
             <div>${formatMessage(contentTypesMessages.siteConfigLandingMessage)}</div>
           </div>
-        </div>
-    `;
+        </div>`;
 
       CStudioAuthoring.Service.lookupConfigurtion(
         CStudioAuthoringContext.site,
@@ -152,8 +151,11 @@
         }
       }
 
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = label;
+
       toolContainerEl.appendChild(span);
-      toolContainerEl.innerHTML += label;
+      toolContainerEl.appendChild(labelSpan);
       YDom.addClass(toolContainerEl, 'cstudio-admin-console-item');
 
       var elId = label.replace(/\s+/g, '-').toLowerCase();

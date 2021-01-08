@@ -172,10 +172,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
 
     YAHOO.util.Connect.setForm('upload_form_' + obj.id, true);
     serviceUri +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
     YAHOO.util.Connect.asyncRequest('POST', serviceUri, callback);
     document.getElementById('cstudioSaveAndClose').disabled = 'disabled';
     document.getElementById('cstudioSaveAndCloseDraft').disabled = 'disabled';
@@ -187,7 +184,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   render: function (config, containerEl, lastTwo) {
     var titleEl = document.createElement('span');
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
     containerEl.appendChild(titleEl);
 
     var controlWidgetContainerEl = document.createElement('div');
@@ -240,7 +237,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
+    descriptionEl.textContent = config.description;
 
     controlWidgetContainerEl.appendChild(descriptionEl);
 
@@ -248,7 +245,4 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-aws-video-upload',
-  CStudioForms.Controls.AWSVideoUpload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-aws-video-upload', CStudioForms.Controls.AWSVideoUpload);

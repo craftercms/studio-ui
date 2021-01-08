@@ -159,7 +159,7 @@
           var titleEl = document.createElement('span');
 
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-          titleEl.innerHTML = config.title;
+          titleEl.textContent = config.title;
 
           var controlWidgetContainerEl = document.createElement('div');
           YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
@@ -221,9 +221,7 @@
             // index item and index + iterationLength item on each iteration
             listLengthOdd = keyValueList.length % 2 === 1;
             // if list length is odd then add 1 before calculating half
-            iterationLength = listLengthOdd
-              ? (keyValueList.length + 1) / 2
-              : keyValueList.length / 2;
+            iterationLength = listLengthOdd ? (keyValueList.length + 1) / 2 : keyValueList.length / 2;
           }
 
           for (var j = 0; j < iterationLength; j++) {
@@ -247,7 +245,7 @@
           var descriptionEl = document.createElement('span');
           YAHOO.util.Dom.addClass(descriptionEl, 'description');
           YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-          descriptionEl.innerHTML = config.description;
+          descriptionEl.textContent = config.description;
 
           containerEl.appendChild(titleEl);
           containerEl.appendChild(controlWidgetContainerEl);
@@ -293,7 +291,7 @@
       // we might need to create something on the datasource
       // to get the value based on the list of possible value holding properties
       // using datasource.getSupportedProperties
-      textEl.innerHTML =
+      textEl.textContent =
         item.value ||
         item.value_f ||
         item.value_smv ||
@@ -373,10 +371,7 @@
         checkboxes = YAHOO.util.Selector.query('.checkbox input[type="checkbox"]', ancestor),
         state = el.checked,
         allSameState = true,
-        checkAllEl = YAHOO.util.Selector.query(
-          '.checkbox.select-all input[type="checkbox"]',
-          ancestor
-        )[0];
+        checkAllEl = YAHOO.util.Selector.query('.checkbox.select-all input[type="checkbox"]', ancestor)[0];
 
       if (checkAllEl) {
         checkboxes.forEach(function (el) {
@@ -472,9 +467,7 @@
         }
         return valObj;
       } else {
-        throw new TypeError(
-          'Function updateDataType (checkbox-group.js) : module variable dataType is undefined'
-        );
+        throw new TypeError('Function updateDataType (checkbox-group.js) : module variable dataType is undefined');
       }
     },
 
@@ -503,8 +496,7 @@
 
       for (var i = 0; i < values.length; i++) {
         item = values[i];
-        strValue +=
-          '{ "key": "' + item.key + '", "' + this.dataType + '":"' + item[this.dataType] + '"}';
+        strValue += '{ "key": "' + item.key + '", "' + this.dataType + '":"' + item[this.dataType] + '"}';
         if (i != values.length - 1) {
           strValue += ',';
         }
@@ -564,8 +556,5 @@
     }
   });
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-forms-controls-checkbox-group',
-    CStudioForms.Controls.CheckBoxGroup
-  );
+  CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-checkbox-group', CStudioForms.Controls.CheckBoxGroup);
 })();

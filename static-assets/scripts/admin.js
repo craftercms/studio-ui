@@ -88,14 +88,7 @@
         return $http.get(
           usersActions(
             id + '/sites',
-            'id=' +
-              params.id +
-              '&offset=' +
-              params.offset +
-              '&limit=' +
-              params.limit +
-              '&sort=' +
-              params.sort
+            'id=' + params.id + '&offset=' + params.offset + '&limit=' + params.limit + '&sort=' + params.sort
           )
         );
       };
@@ -135,9 +128,7 @@
       };
 
       this.getGroup = function (group) {
-        return $http.get(
-          groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id)
-        );
+        return $http.get(groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id));
       };
 
       this.getUsersFromGroup = function (group, params) {
@@ -281,14 +272,7 @@
         return $http.post(
           bulkPublish(
             'bulk-golive',
-            'site_id=' +
-              site +
-              '&path=' +
-              path +
-              '&environment=' +
-              environmet +
-              '&comment=' +
-              submissionComment
+            'site_id=' + site + '&path=' + path + '&environment=' + environmet + '&comment=' + submissionComment
           )
         );
       };
@@ -632,9 +616,7 @@
               html += '</div>';
             } else {
               html =
-                "<div class='mt10 has-children'><span>" +
-                $translate.instant('admin.audit.NO_PARAM') +
-                '</span></div>';
+                "<div class='mt10 has-children'><span>" + $translate.instant('admin.audit.NO_PARAM') + '</span></div>';
             }
 
             collapseContainer.append(html);
@@ -642,9 +624,7 @@
           })
           .error(function (err) {
             html =
-              "<div class='mt10 has-children'><span>" +
-              $translate.instant('admin.audit.ERROR_PARAM') +
-              '</span></div>';
+              "<div class='mt10 has-children'><span>" + $translate.instant('admin.audit.ERROR_PARAM') + '</span></div>';
             collapseContainer.append(html);
             collapseMethod(id);
           });
@@ -703,7 +683,7 @@
           }
         }
 
-        var replaceChars = { ',': ', ', '_': ' ' };
+        var replaceChars = { ',': ', ', _: ' ' };
         audit.actionsInputVal = audit.actions.toString().replace(/,|_/g, function (match) {
           return replaceChars[match];
         });
@@ -794,18 +774,7 @@
     '$location',
     'logType',
     '$uibModal',
-    function (
-      $scope,
-      $state,
-      $window,
-      adminService,
-      $translate,
-      $interval,
-      $timeout,
-      $location,
-      logType,
-      $uibModal
-    ) {
+    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType, $uibModal) {
       $scope.logs = {
         entries: [],
         running: true,
@@ -912,17 +881,7 @@
     '$timeout',
     '$location',
     '$controller',
-    function (
-      $scope,
-      $state,
-      $window,
-      adminService,
-      $translate,
-      $interval,
-      $timeout,
-      $location,
-      $controller
-    ) {
+    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, $controller) {
       $controller('LogConsoleCtrl', {
         $scope,
         $state,
@@ -947,17 +906,7 @@
     '$timeout',
     '$location',
     '$controller',
-    function (
-      $scope,
-      $state,
-      $window,
-      adminService,
-      $translate,
-      $interval,
-      $timeout,
-      $location,
-      $controller
-    ) {
+    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, $controller) {
       $controller('LogConsoleCtrl', {
         $scope,
         $state,
@@ -1007,18 +956,15 @@
       publish.error = '';
 
       publish.initQueque = function () {
-        CrafterCMSNext.render(
-          document.getElementsByClassName('publishingQueue')[0],
-          'PublishingQueue',
-          { siteId: $location.search().site }
-        );
+        CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
+          siteId: $location.search().site
+        });
       };
 
       publish.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
-          windowClass:
-            (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
           backdrop: 'static',
           keyboard: true,
           //controller: 'PublishingCtrl',
@@ -1107,9 +1053,7 @@
                 currentIconColor = 'blue';
                 publish.startDisabled = true;
             }
-            var stringDate = data.message.match(
-              /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/
-            );
+            var stringDate = data.message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
             var date = null;
             if (stringDate && stringDate.length) {
               publish.date = stringDate[0];
@@ -1208,12 +1152,7 @@
         spinnerOverlay = $scope.spinnerOverlay();
 
         adminService
-          .bulkGoLive(
-            publish.site,
-            publish.pathPublish,
-            publish.selectedChannel,
-            publish.submissionComment
-          )
+          .bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
           .success(function (data) {
             publish.disable = false;
             spinnerOverlay.close();
@@ -1238,9 +1177,7 @@
           selectedChannelCommit = publish.commitIds.replace(/ /g, '').split(',');
         data['site_id'] = publish.site;
         data['commit_ids'] = selectedChannelCommit;
-        data.environment = publish.selectedChannelCommit
-          ? publish.selectedChannelCommit
-          : Constants.BULK_ENVIRONMENT;
+        data.environment = publish.selectedChannelCommit ? publish.selectedChannelCommit : Constants.BULK_ENVIRONMENT;
         data.comment = publish.publishComment;
         publish.commitIdsDisable = true;
         spinnerOverlay = $scope.spinnerOverlay();
@@ -1311,9 +1248,7 @@
             field: formatMessage(usersAdminMessages.lastName),
             size: maxInputLength
           }),
-          fulfillAllReqErrorMessage: formatMessage(
-            passwordRequirementMessages.fulfillAllReqErrorMessage
-          )
+          fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage)
         }
       };
       $scope.validPass = false;
@@ -1329,8 +1264,7 @@
 
           var modalInstance = $uibModal.open({
             templateUrl: template,
-            windowClass:
-              (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+            windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
             backdrop: 'static',
             keyboard: true,
             controller: 'UsersCtrl',
@@ -1340,10 +1274,7 @@
           modalInstance.opened.then(function () {
             $timeout(function () {
               $('input, a').attr('tabindex', '-1');
-              $('#user-form input, #user-form select, #user-form textarea').each(function (
-                index,
-                input
-              ) {
+              $('#user-form input, #user-form select, #user-form textarea').each(function (index, input) {
                 input.tabIndex = index + 1;
               });
               $('#user-form').find('input select textarea').first().focus();
@@ -1484,12 +1415,7 @@
         $scope.user = {};
         $scope.okModalFunction = users.editPassword;
 
-        $scope.adminModal = $scope.showModal(
-          'resetPassword.html',
-          null,
-          null,
-          'modal-top-override modal-reset-pass'
-        );
+        $scope.adminModal = $scope.showModal('resetPassword.html', null, null, 'modal-top-override modal-reset-pass');
 
         adminService
           .getUser(encodeURIComponent(user.username) + '.json')
@@ -1617,9 +1543,7 @@
         };
 
         $scope.confirmationAction = deleteUser;
-        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${
-          user.username
-        }?`;
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${user.username}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, 'studioMedium');
       };
@@ -1637,18 +1561,7 @@
     '$stateParams',
     '$translate',
     '$location',
-    function (
-      $scope,
-      $state,
-      $window,
-      $sce,
-      adminService,
-      $uibModal,
-      $timeout,
-      $stateParams,
-      $translate,
-      $location
-    ) {
+    function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout, $stateParams, $translate, $location) {
       $scope.clusters = {};
       var clusters = $scope.clusters;
 
@@ -1660,8 +1573,7 @@
 
           var modalInstance = $uibModal.open({
             templateUrl: template,
-            windowClass:
-              (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+            windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
             backdrop: 'static',
             keyboard: true,
             controller: 'clusterCtrl',
@@ -1732,9 +1644,7 @@
         };
 
         $scope.confirmationAction = deleteClusterMember;
-        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${
-          clusterMember.gitUrl
-        }?`;
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${clusterMember.gitUrl}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, 'studioMedium');
       };
@@ -1785,8 +1695,7 @@
           $scope.groupsError = null;
           var modalInstance = $uibModal.open({
             templateUrl: template,
-            windowClass:
-              (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+            windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
             backdrop: 'static',
             keyboard: true,
             controller: 'GroupsCtrl',
@@ -1905,13 +1814,7 @@
             $scope.groupsCollection.push(data.group);
             $scope.groups.totalLogs++;
             $scope.groups.pagination.goToLast();
-            $scope.notification(
-              "'" + group.name + "' created.",
-              '',
-              null,
-              'studioMedium green',
-              'check-circle'
-            );
+            $scope.notification("'" + group.name + "' created.", '', null, 'studioMedium green', 'check-circle');
           })
           .error(function (error) {
             $scope.groupsError = `${error.response.message}. ${error.response.remedialAction}`;
@@ -1941,22 +1844,11 @@
         adminService
           .editGroup(group)
           .success(function (data) {
-            $scope.notification(
-              "'" + group.name + "' edited.",
-              '',
-              null,
-              'studioMedium green',
-              'check-circle'
-            );
+            $scope.notification("'" + group.name + "' edited.", '', null, 'studioMedium green', 'check-circle');
           })
           .error(function (error) {
             if ('Unauthorized' === error.response.message) {
-              $scope.notification(
-                $translate.instant('admin.groups.UNAUTHORIZED'),
-                false,
-                2000,
-                'studioMedium'
-              );
+              $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, 'studioMedium');
             } else {
               $scope.notification(error.response.message, false, 3000, 'studioMedium');
             }
@@ -1988,12 +1880,7 @@
             })
             .error(function (error) {
               if ('Unauthorized' === error.response.message) {
-                $scope.notification(
-                  $translate.instant('admin.groups.UNAUTHORIZED'),
-                  false,
-                  2000,
-                  'studioMedium'
-                );
+                $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, 'studioMedium');
               } else {
                 $scope.notification(error.response.message, false, 3000, 'studioMedium');
               }
@@ -2055,13 +1942,7 @@
         });
 
         $q.all(calls).then(function () {
-          $scope.notification(
-            'Users successfully added.',
-            false,
-            null,
-            'studioMedium green',
-            'check-circle'
-          );
+          $scope.notification('Users successfully added.', false, null, 'studioMedium green', 'check-circle');
         });
 
         groups.usersToAdd = [];
@@ -2124,8 +2005,7 @@
               groups.getUsersAutocomplete();
             })
             .error(function (e) {
-              groups.members.getMembersError =
-                e.response.message + '. ' + e.response.remedialAction;
+              groups.members.getMembersError = e.response.message + '. ' + e.response.remedialAction;
             });
         }
 
@@ -2263,7 +2143,8 @@
       };
 
       function repositoriesReceived(data) {
-        const reachable = [], unreachable = [];
+        const reachable = [],
+          unreachable = [];
         data.remotes.forEach((remote) => {
           if (remote.reachable) {
             reachable.push(remote);
@@ -2277,12 +2158,10 @@
 
       this.init = function () {
         $scope.showError = function (error) {
-          $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant(
-            'common.CODE'
-          )}: ${error.code}`;
-          $scope.messageText = error.remedialAction
-            ? `${error.message}. ${error.remedialAction}`
-            : error.message + '.';
+          $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${
+            error.code
+          }`;
+          $scope.messageText = error.remedialAction ? `${error.message}. ${error.remedialAction}` : error.message + '.';
           $scope.messageLink = error.documentationUrl;
           $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, 'studioMedium');
         };
@@ -2291,8 +2170,7 @@
           $scope.groupsError = null;
           var modalInstance = $uibModal.open({
             templateUrl: template,
-            windowClass:
-              (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+            windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
             backdrop: 'static',
             keyboard: true,
             scope: $scope,
@@ -2378,18 +2256,10 @@
           adminService
             .deleteRepository(currentRepo)
             .success(function (data) {
-              repositories.repositories.reachable = repositories.repositories.reachable.filter(
-                r => r !== repo
-              );
-              repositories.repositories.unreachable = repositories.repositories.unreachable.filter(
-                r => r !== repo
-              );
+              repositories.repositories.reachable = repositories.repositories.reachable.filter((r) => r !== repo);
+              repositories.repositories.unreachable = repositories.repositories.unreachable.filter((r) => r !== repo);
               $scope.notification(
-                "'" +
-                  repo.name +
-                  "' " +
-                  $translate.instant('admin.repositories.REPO_DELETED') +
-                  '.',
+                "'" + repo.name + "' " + $translate.instant('admin.repositories.REPO_DELETED') + '.',
                 '',
                 'green'
               );
@@ -2420,11 +2290,7 @@
             .success(function (data) {
               repositories.spinnerOverlay.close();
               repositories.getRepositoryStatus();
-              $scope.notification(
-                $translate.instant('admin.repositories.SUCCESSFULLY_PULLED'),
-                '',
-                'green'
-              );
+              $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', 'green');
             })
             .error(function (error) {
               repositories.getRepositoryStatus();
@@ -2455,11 +2321,7 @@
             .pushRepository(currentRepo)
             .success(function (data) {
               repositories.spinnerOverlay.close();
-              $scope.notification(
-                $translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'),
-                '',
-                'green'
-              );
+              $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '', 'green');
             })
             .error(function (error) {
               repositories.spinnerOverlay.close();
@@ -2469,8 +2331,7 @@
 
         repositories.repoAction = 'push';
         $scope.confirmationAction = pushRepo;
-        $scope.confirmationText =
-          $translate.instant('admin.repositories.REMOTE_BRANCH_PUSH') + repo.name + ':';
+        $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PUSH') + repo.name + ':';
         $scope.dialogTitle = $translate.instant('admin.repositories.PUSH');
 
         $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, 'studioMedium');

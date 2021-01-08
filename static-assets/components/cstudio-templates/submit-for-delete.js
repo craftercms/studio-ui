@@ -61,8 +61,5 @@
     ].join('')
   });
 
-  CStudioAuthoring.Env.ModuleMap.map(
-    'template-submitfordelete',
-    CStudioAuthoring.TemplateHolder.SubmitForDelete
-  );
+  CStudioAuthoring.Env.ModuleMap.map('template-submitfordelete', CStudioAuthoring.TemplateHolder.SubmitForDelete);
 })();

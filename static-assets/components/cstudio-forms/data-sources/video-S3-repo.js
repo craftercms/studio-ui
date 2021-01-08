@@ -93,7 +93,4 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Repo, CStudioForms.CStudioFormDatas
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-video-S3-repo',
-  CStudioForms.Datasources.VideoS3Repo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-video-S3-repo', CStudioForms.Datasources.VideoS3Repo);

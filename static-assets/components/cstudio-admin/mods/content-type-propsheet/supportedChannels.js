@@ -75,14 +75,7 @@ YAHOO.extend(
 
       for (var i = 0; i < value.length; i++) {
         if (i != 0) strValue += ',';
-        strValue +=
-          '{ value: "' +
-          value[i].value +
-          '", key: "' +
-          value[i].key +
-          '", size: "' +
-          value[i].size +
-          '" }';
+        strValue += '{ value: "' + value[i].value + '", key: "' + value[i].key + '", size: "' + value[i].size + '" }';
       }
 
       strValue += ']';
@@ -213,8 +206,7 @@ YAHOO.extend(
         if (i != 0) {
           delEl = document.createElement('img');
           delEl.src =
-            CStudioAuthoringContext.authoringAppBaseUri +
-            '/static-assets/themes/cstudioTheme/images/icons/delete.png';
+            CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/icons/delete.png';
           YAHOO.util.Dom.addClass(delEl, 'deleteControl');
           delEl.index = i;
           YAHOO.util.Event.on(

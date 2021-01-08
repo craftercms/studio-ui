@@ -89,7 +89,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
             state.path +
             "' /></td>" +
             "<td class='cs-statelist-detail-id'>" +
-            state.path +
+            CrafterCMSNext.util.string.escapeHTML(state.path) +
             '</td>' +
             "<td class='cs-statelist-detail'>" +
             state.state +
@@ -106,9 +106,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
     };
 
     var serviceUri =
-      '/api/1/services/api/1/content/get-item-states.json?site=' +
-      CStudioAuthoringContext.site +
-      '&state=ALL';
+      '/api/1/services/api/1/content/get-item-states.json?site=' + CStudioAuthoringContext.site + '&state=ALL';
 
     YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
   },
@@ -182,15 +180,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
             failure: function () {}
           };
         }
-        YConnect.initHeader(
-          CStudioAuthoringContext.xsrfHeaderName,
-          CrafterCMSNext.util.auth.getRequestForgeryToken()
-        );
-        YConnect.asyncRequest(
-          'POST',
-          CStudioAuthoring.Service.createServiceUri(serviceUri),
-          callback
-        );
+        YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
+        YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), callback);
       }
 
       this.destroy();
@@ -226,7 +217,4 @@ CStudioAdminConsole.Tool.WorkflowStates.selectAll = function () {
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-workflow-states',
-  CStudioAdminConsole.Tool.WorkflowStates
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-workflow-states', CStudioAdminConsole.Tool.WorkflowStates);

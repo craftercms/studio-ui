@@ -245,12 +245,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     if (!toUTC) {
       newDate = CStudioAuthoring.Utils.formatDateFromUTC(convertString, newTimeZone, 'large');
     } else {
-      newDate = CStudioAuthoring.Utils.parseDateToUTC(
-        convertString,
-        newTimeZone,
-        'large',
-        'MM/DD/YYYY hh:mm:ss a'
-      );
+      newDate = CStudioAuthoring.Utils.parseDateToUTC(convertString, newTimeZone, 'large', 'MM/DD/YYYY hh:mm:ss a');
     }
 
     if (callback) {
@@ -425,11 +420,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       }
     } else {
       var finalTimeFormat = inputTime.split('~');
-      var timeStamp = this.setTimeStamp.call(
-        this,
-        new Date(finalTimeFormat[0]),
-        finalTimeFormat[1]
-      );
+      var timeStamp = this.setTimeStamp.call(this, new Date(finalTimeFormat[0]), finalTimeFormat[1]);
       //Check for 12 hours format time
       var timeSplit = timeStamp.split(':');
       if (timeSplit.length == 3) {
@@ -709,9 +700,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 
       if (
         (prop.name == 'readonly' && prop.value == 'true') ||
-        (prop.name == 'readonlyEdit' &&
-          prop.value == 'true' &&
-          window.location.search.indexOf('edit=true') >= 1)
+        (prop.name == 'readonlyEdit' && prop.value == 'true' && window.location.search.indexOf('edit=true') >= 1)
       ) {
         this.readonly = true;
       }
@@ -733,7 +722,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'date-time-container');
@@ -898,7 +887,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
+    descriptionEl.textContent = config.description;
 
     var calEl = document.createElement('div');
     calEl.id = divPrefix + 'calendarContainer';
@@ -941,8 +930,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
 
     // Firefox/Chrome support
-    else if (inputEl.selectionStart || inputEl.selectionStart == '0')
-      iCaretPos = inputEl.selectionStart;
+    else if (inputEl.selectionStart || inputEl.selectionStart == '0') iCaretPos = inputEl.selectionStart;
 
     return iCaretPos;
   },
@@ -1198,11 +1186,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
           }
         };
 
-        CStudioAuthoring.Service.lookupConfigurtion(
-          CStudioAuthoringContext.site,
-          '/site-config.xml',
-          timezoneCb
-        );
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', timezoneCb);
       } else {
         this.setStaticTimezone(value, this.timezone);
       }
@@ -1243,9 +1227,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       date = mm + '/' + dd + '/' + yyyy;
 
     if (this.getDescendantProp(dateTimePath, this.id) && value != '') {
-      studioFormat = CStudioAuthoring.Utils.formatDateToStudio(
-        this.getDescendantProp(dateTimePath, this.id)
-      );
+      studioFormat = CStudioAuthoring.Utils.formatDateToStudio(this.getDescendantProp(dateTimePath, this.id));
       dateTime = [date, studioFormat];
     } else {
       if (dd < 10) {

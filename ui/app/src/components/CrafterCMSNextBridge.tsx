@@ -37,19 +37,26 @@ const Locales: any = {
 export let intl = getIntl(getCurrentLocale());
 
 // @ts-ignore
-document.addEventListener('setlocale', (e: CustomEvent<string>) => {
-  if (e.detail && e.detail !== intl.locale) {
-    intl = getIntl(e.detail);
-    updateIntl(intl);
-    document.documentElement.setAttribute('lang', e.detail);
-  }
-}, false);
+document.addEventListener(
+  'setlocale',
+  (e: CustomEvent<string>) => {
+    if (e.detail && e.detail !== intl.locale) {
+      intl = getIntl(e.detail);
+      updateIntl(intl);
+      document.documentElement.setAttribute('lang', e.detail);
+    }
+  },
+  false
+);
 
 function getIntl(locale: string): IntlShape {
-  return createIntl({
-    locale: locale,
-    messages: Locales[locale] || en
-  }, createIntlCache());
+  return createIntl(
+    {
+      locale: locale,
+      messages: Locales[locale] || en
+    },
+    createIntlCache()
+  );
 }
 
 export function getCurrentLocale() {
@@ -61,7 +68,6 @@ export function getCurrentLocale() {
 }
 
 function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
-
   const [, update] = useState();
 
   useEffect(() => setUpLocaleChangeListener(update, intl), [update]);
@@ -69,13 +75,10 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
   return (
     <RawIntlProvider value={intl}>
       <ThemeProvider theme={theme}>
-        <Suspense fallback="">
-          {props.children}
-        </Suspense>
+        <Suspense fallback="">{props.children}</Suspense>
       </ThemeProvider>
     </RawIntlProvider>
   );
-
 }
 
 function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {

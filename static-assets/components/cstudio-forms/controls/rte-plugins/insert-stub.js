@@ -74,7 +74,4 @@ tinymce2.create('tinymce2.plugins.CStudioInsertStubPlugin', CStudioForms.Control
 // Register plugin with a short name
 tinymce2.PluginManager.add('insertstub', tinymce2.plugins.CStudioInsertStubPlugin);
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-rte-insert-stub',
-  CStudioForms.Controls.RTE.InsertStub
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-insert-stub', CStudioForms.Controls.RTE.InsertStub);

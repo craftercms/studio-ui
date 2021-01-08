@@ -36,11 +36,7 @@ YAHOO.extend(
           value.forEach(function (optObj) {
             var optEl = document.createElement('option');
 
-            if (
-              optObj.hasOwnProperty('value') &&
-              optObj.hasOwnProperty('label') &&
-              optObj.hasOwnProperty('selected')
-            ) {
+            if (optObj.hasOwnProperty('value') && optObj.hasOwnProperty('label') && optObj.hasOwnProperty('selected')) {
               optEl.value = optObj.value;
               optEl.innerHTML = optObj.label;
               optEl.selected = optObj.selected;
@@ -53,9 +49,7 @@ YAHOO.extend(
           });
           return ddEl;
         } else {
-          throw new TypeError(
-            'Function getOptions (dropdown.js) : expected value must be an array of objects'
-          );
+          throw new TypeError('Function getOptions (dropdown.js) : expected value must be an array of objects');
         }
         // value must be an array of objects
       }

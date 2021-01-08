@@ -201,22 +201,11 @@ export default function FilterDropdown(props: FilterDropdownProps) {
               value={currentFilters.environment}
               onChange={handleFilterChange}
             >
-              <FormControlLabel
-                value=""
-                control={<Radio color="primary" />}
-                label={formatMessage(messages.all)}
-              />
-              {
-                filters.environments &&
-                filters.environments.map((filter: string, index: number) =>
-                  <FormControlLabel
-                    key={index}
-                    value={filter}
-                    control={<Radio color="primary" />}
-                    label={filter}
-                  />
-                )
-              }
+              <FormControlLabel value="" control={<Radio color="primary" />} label={formatMessage(messages.all)} />
+              {filters.environments &&
+                filters.environments.map((filter: string, index: number) => (
+                  <FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
+                ))}
             </RadioGroup>
           </div>
         </section>
@@ -240,9 +229,9 @@ export default function FilterDropdown(props: FilterDropdownProps) {
                   />
                 }
               />
-              {
-                filters.states.map((filter: string, index: number) => {
-                  return <FormControlLabel
+              {filters.states.map((filter: string, index: number) => {
+                return (
+                  <FormControlLabel
                     key={index}
                     value={filter}
                     control={
@@ -253,13 +242,14 @@ export default function FilterDropdown(props: FilterDropdownProps) {
                         onChange={handleFilterChange}
                       />
                     }
-                    label={formatMessage(messages[filter])} />
-                })
-              }
+                    label={formatMessage(messages[filter])}
+                  />
+                );
+              })}
             </FormGroup>
           </div>
         </section>
       </Popover>
     </div>
-  )
+  );
 }

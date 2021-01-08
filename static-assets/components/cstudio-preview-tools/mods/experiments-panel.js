@@ -52,19 +52,11 @@ CStudioAuthoring.ExperimentsPanel = CStudioAuthoring.ExperimentsPanel || {
         ? experiment.variations.variation
         : [experiment.variations.variation];
 
-      var parentNode = new YAHOO.widget.TextNode(
-        CMgs.format(previewLangBundle, experiment.title),
-        rootNode,
-        false
-      );
+      var parentNode = new YAHOO.widget.TextNode(CMgs.format(previewLangBundle, experiment.title), rootNode, false);
 
       for (var j = 0, jl = experiment.variations.length; j < jl; j++) {
         var variation = experiment.variations[j];
-        var childNode = new YAHOO.widget.TextNode(
-          CMgs.format(previewLangBundle, variation.title),
-          parentNode,
-          false
-        );
+        var childNode = new YAHOO.widget.TextNode(CMgs.format(previewLangBundle, variation.title), parentNode, false);
         childNode.variation = { url: variation.url };
         tree.draw();
       }

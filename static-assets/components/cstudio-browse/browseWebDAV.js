@@ -310,9 +310,7 @@
     var me = this,
       type = type ? type : 'browse',
       $resultsContainer =
-        'browse' === type
-          ? $('#cstudio-wcm-browse-result .results')
-          : $('#cstudio-wcm-search-result .results'),
+        'browse' === type ? $('#cstudio-wcm-browse-result .results') : $('#cstudio-wcm-search-result .results'),
       $resultsActions =
         'browse' === type
           ? $('#cstudio-wcm-browse-result .cstudio-results-actions')
@@ -321,9 +319,7 @@
     $resultsContainer.empty();
     $resultsActions.empty();
 
-    $resultsContainer.html(
-      '<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...'
-    );
+    $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
     if ('webdav-root' === path && this.rootItems) {
       //root - we already have the items
@@ -398,9 +394,7 @@
       msj = CMgs.format(browseLangBundle, 'noBrowseResults');
     }
 
-    $resultsContainer.append(
-      '<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>'
-    );
+    $resultsContainer.append('<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>');
   };
 
   CStudioBrowseWebDAV.refreshContent = function (path) {
@@ -430,11 +424,7 @@
 
   CStudioBrowseWebDAV.getContent = function (type, cb, cPath) {
     var pathURL = CStudioAuthoring.Utils.getQueryParameterByName('path'),
-      path = cPath
-        ? cPath
-        : pathURL.slice(-1) == '/'
-        ? pathURL.substring(0, pathURL.length - 1)
-        : pathURL,
+      path = cPath ? cPath : pathURL.slice(-1) == '/' ? pathURL.substring(0, pathURL.length - 1) : pathURL,
       profileId = CStudioAuthoring.Utils.getQueryParameterByName('profileId'),
       site = CStudioAuthoring.Utils.getQueryParameterByName('site'),
       filter = CStudioAuthoring.Utils.getQueryParameterByName('filter');
@@ -490,13 +480,7 @@
       }
     };
 
-    CStudioAuthoring.Service.getWebDAVContentByBrowser(
-      site,
-      profileId,
-      path,
-      callbackContent,
-      filter
-    );
+    CStudioAuthoring.Service.getWebDAVContentByBrowser(site, profileId, path, callbackContent, filter);
   };
 
   CStudioBrowseWebDAV.uploadContent = function (site, path) {

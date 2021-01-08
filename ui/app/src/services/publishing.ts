@@ -14,25 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
+import { get, post } from '../utils/ajax';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
-  return get(`/studio/api/2/publish/packages?siteId=${siteId}&${queryS}`)
+  return get(`/studio/api/2/publish/packages?siteId=${siteId}&${queryS}`);
 }
 
 export function fetchPackage(siteId: string, packageId: string) {
-  return get(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`)
+  return get(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`);
 }
 
 export function cancelPackage(siteId: string, packageIds: any) {
-  return post('/studio/api/2/publish/cancel', {siteId, packageIds}, {
-    'Content-Type': 'application/json'
-  })
+  return post(
+    '/studio/api/2/publish/cancel',
+    { siteId, packageIds },
+    {
+      'Content-Type': 'application/json'
+    }
+  );
 }
 
 export function fetchEnvironments(siteId: string) {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`)
+  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`);
 }
 
 export default {
@@ -40,4 +44,4 @@ export default {
   fetchPackage,
   cancelPackage,
   fetchEnvironments
-}
+};

@@ -67,7 +67,7 @@ interface CodebaseBridge {
     intl: IntlShape;
     messages: object;
     translateElements: Function;
-  }
+  };
   services: object;
   mui: object;
 }
@@ -81,9 +81,7 @@ export function updateIntl(nextIntl: IntlShape) {
 }
 
 export function createCodebaseBridge() {
-
   const Bridge: CodebaseBridge = {
-
     // React
     React,
     ReactDOM,
@@ -102,12 +100,11 @@ export function createCodebaseBridge() {
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
       DependencySelection: lazy(() => import('../components/DependencySelection')),
-      DependencySelectionDelete: lazy(() => (
-        import('../components/DependencySelection')
-          .then(module => ({
-            default: module.DependencySelectionDelete
-          }))
-      )),
+      DependencySelectionDelete: lazy(() =>
+        import('../components/DependencySelection').then((module) => ({
+          default: module.DependencySelectionDelete
+        }))
+      ),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../components/PublishingQueue')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
@@ -152,14 +149,11 @@ export function createCodebaseBridge() {
 
     // Mechanics
     render(
-      container: (string | Element),
+      container: string | Element,
       component: string | JSXElementConstructor<any>,
-      props: object = {}): Promise<any> {
-
-      if (
-        typeof component !== 'string' &&
-        !Object.values(Bridge.components).includes(component)
-      ) {
+      props: object = {}
+    ): Promise<any> {
+      if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         throw new Error('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
         throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
@@ -171,49 +165,47 @@ export function createCodebaseBridge() {
 
       const element = container as Element;
 
-      const Component: JSXElementConstructor<any> = (typeof component === 'string')
-        ? Bridge.components[component]
-        : component;
+      const Component: JSXElementConstructor<any> =
+        typeof component === 'string' ? Bridge.components[component] : component;
 
-      return (
-        new Promise((resolve, reject) => {
-          try {
-            const unmount = (options: any) => {
-              ReactDOM.unmountComponentAtNode(element);
-              options.removeContainer && element.parentNode.removeChild(element);
-            };
+      return new Promise((resolve, reject) => {
+        try {
+          const unmount = (options: any) => {
+            ReactDOM.unmountComponentAtNode(element);
+            options.removeContainer && element.parentNode.removeChild(element);
+          };
+          // @ts-ignore
+          ReactDOM.render(
             // @ts-ignore
-            ReactDOM
-              .render(
-                // @ts-ignore
-                <CrafterCMSNextBridge>
-                  <Component {...props} />
-                </CrafterCMSNextBridge>,
-                container,
-                () => resolve({
-                  unmount: (options: any) => {
-                    options = Object.assign({
+            <CrafterCMSNextBridge>
+              <Component {...props} />
+            </CrafterCMSNextBridge>,
+            container,
+            () =>
+              resolve({
+                unmount: (options: any) => {
+                  options = Object.assign(
+                    {
                       delay: false,
                       removeContainer: false
-                    }, options || {});
-                    if (options.delay) {
-                      setTimeout(() => unmount(options), options.delay);
-                    } else {
-                      unmount(options);
-                    }
+                    },
+                    options || {}
+                  );
+                  if (options.delay) {
+                    setTimeout(() => unmount(options), options.delay);
+                  } else {
+                    unmount(options);
                   }
-                })
-              );
-          } catch (e) {
-            reject(e);
-          }
-        })
-      );
+                }
+              })
+          );
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
-
   };
 
   // @ts-ignore
   window.CrafterCMSNext = Bridge;
-
 }

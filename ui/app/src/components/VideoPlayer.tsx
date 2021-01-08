@@ -20,27 +20,26 @@ import 'video.js/dist/video-js.css';
 import '@videojs/http-streaming';
 
 export interface VideoPlayerProps {
-  src: string,
-  autoplay?: boolean,
-  controls?: boolean,
-  height?: number,
-  width?: number,
-  muted?: boolean,
-  poster?: string
+  src: string;
+  autoplay?: boolean;
+  controls?: boolean;
+  height?: number;
+  width?: number;
+  muted?: boolean;
+  poster?: string;
 }
 
 enum SourceTypes {
   'mp4' = 'video/mp4',
   'm3u8' = 'application/x-mpegURL',
   'mpd' = 'application/dash+xml'
-};
+}
 
 function VideoPlayer(props: VideoPlayerProps) {
-  const
-    videoNode = useRef(null),
+  const videoNode = useRef(null),
     player = useRef(null),
     extensionRegex = /(?:\.([^.]+))?$/,
-    extension = (extensionRegex.exec(props.src))[1],
+    extension = extensionRegex.exec(props.src)[1],
     type = Object(SourceTypes)[extension],
     videoJsOptions: videojs.PlayerOptions = {
       autoplay: props.autoplay,
@@ -63,7 +62,7 @@ function VideoPlayer(props: VideoPlayerProps) {
 
       return () => {
         player.current.dispose();
-      }
+      };
     },
     // eslint-disable-next-line
     []
@@ -71,9 +70,9 @@ function VideoPlayer(props: VideoPlayerProps) {
 
   return (
     <div data-vjs-player>
-      <video ref={ videoNode } className="video-js"></video>
+      <video ref={videoNode} className="video-js"></video>
     </div>
-  )
+  );
 }
 
 export default VideoPlayer;

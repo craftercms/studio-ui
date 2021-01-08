@@ -115,9 +115,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 
       var createEl = document.createElement('div');
       YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(
-        me.messages.words.upload
-      )} - ${newElTitle}`;
+      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(me.messages.words.upload)} - ${newElTitle}`;
       control.addContainerEl.create.appendChild(createEl);
 
       (function (control, me) {
@@ -162,7 +160,4 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-CMIS-upload',
-  CStudioForms.Datasources.CMISUpload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-CMIS-upload', CStudioForms.Datasources.CMISUpload);

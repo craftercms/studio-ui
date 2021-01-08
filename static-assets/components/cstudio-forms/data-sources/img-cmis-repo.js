@@ -82,13 +82,9 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
               var fileName = item.internalName;
               var fileExtension = fileName.split('.').pop();
               if (!selectedTOs[i].clone) {
-                uri =
-                  repo['download-url-regex'].replace('{item_id}', item.itemId) +
-                  '?crafterCMIS=true';
+                uri = repo['download-url-regex'].replace('{item_id}', item.itemId) + '?crafterCMIS=true';
               } else {
-                uri = _self.studioPath.endsWith('/')
-                  ? _self.studioPath + fileName
-                  : _self.studioPath + '/' + fileName;
+                uri = _self.studioPath.endsWith('/') ? _self.studioPath + fileName : _self.studioPath + '/' + fileName;
               }
 
               var imageData = {
@@ -110,15 +106,11 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
   },
 
   getConfig: function (callback) {
-    CStudioAuthoring.Service.getConfiguration(
-      CStudioAuthoringContext.site,
-      '/data-sources/cmis-config.xml',
-      {
-        success: function (config) {
-          callback(config.repositories.repository);
-        }
+    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
+      success: function (config) {
+        callback(config.repositories.repository);
       }
-    );
+    });
   },
 
   /**
@@ -190,7 +182,4 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-img-cmis-repo',
-  CStudioForms.Datasources.ImgCMISRepo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-img-cmis-repo', CStudioForms.Datasources.ImgCMISRepo);

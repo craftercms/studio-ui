@@ -341,10 +341,7 @@ if (typeof HTMLElement != 'undefined' && !HTMLElement.prototype.insertAdjacentEl
             // Render thumbnail template with the file info (data object).
             document
               .querySelector(cfg.display)
-              .insertAdjacentHTML(
-                cfg.newOnTop ? 'afterBegin' : 'beforeEnd',
-                tmpl(cfg.templateError, data)
-              );
+              .insertAdjacentHTML(cfg.newOnTop ? 'afterBegin' : 'beforeEnd', tmpl(cfg.templateError, data));
           };
         })(file);
 
@@ -375,13 +372,7 @@ if (typeof HTMLElement != 'undefined' && !HTMLElement.prototype.insertAdjacentEl
             // Render thumbnail template with the file info (data object).
             container.insertAdjacentHTML(
               cfg.newOnTop ? 'afterBegin' : 'beforeEnd',
-              join([
-                '<div data-dropbox-file-id="',
-                fileID,
-                '">',
-                tmpl(cfg.template, data),
-                '</div>'
-              ])
+              join(['<div data-dropbox-file-id="', fileID, '">', tmpl(cfg.template, data), '</div>'])
             );
 
             // Store the file in this instance's file manager
@@ -426,10 +417,7 @@ if (typeof HTMLElement != 'undefined' && !HTMLElement.prototype.insertAdjacentEl
               item.name
           );
           serviceUri +=
-            '&' +
-            CStudioAuthoringContext.xsrfParameterName +
-            '=' +
-            CrafterCMSNext.util.auth.getRequestForgeryToken();
+            '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
           if (!document.getElementById('folder' + cfg.path + '/' + item.name)) {
             display.insertAdjacentHTML(
@@ -610,10 +598,7 @@ if (typeof HTMLElement != 'undefined' && !HTMLElement.prototype.insertAdjacentEl
         file: file,
         theme: cfg.theme,
         statusCode: xhr.status,
-        responseText:
-          response !== '' && isJSON(response)
-            ? eval('(' + xhr.responseText + ')')
-            : xhr.responseText
+        responseText: response !== '' && isJSON(response) ? eval('(' + xhr.responseText + ')') : xhr.responseText
       });
     };
 
@@ -637,9 +622,7 @@ if (typeof HTMLElement != 'undefined' && !HTMLElement.prototype.insertAdjacentEl
           document.querySelector('.bulk-upload .buttons-container .close') &&
           Object.keys(me.manager.files).length === Object.keys(me.manager.complete).length
         ) {
-          document
-            .querySelector('.bulk-upload .buttons-container .close')
-            .classList.remove('disabled');
+          document.querySelector('.bulk-upload .buttons-container .close').classList.remove('disabled');
           document.querySelector('.bulk-upload .buttons-container .close').disabled = false;
         }
       } else {

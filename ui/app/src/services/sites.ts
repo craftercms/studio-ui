@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { Site } from "../models/Site";
+import { get, post } from '../utils/ajax';
+import { Site } from '../models/Site';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PaginationOptions } from '../models/Search';
@@ -26,34 +26,39 @@ export function fetchBlueprints() {
 }
 
 export function fetchSites(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
-  const options: PaginationOptions = Object.assign({
-    limit: 100,
-    offset: 0
-  }, paginationOptions || {});
+  const options: PaginationOptions = Object.assign(
+    {
+      limit: 100,
+      offset: 0
+    },
+    paginationOptions || {}
+  );
   return get(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`).pipe(
-    map(({ response }) => Object.assign(
-      response.sites.map((site: any) => ({
-        id: site.siteId,
-        name: site.siteId,
-        description: site.desc
-      })),
-      {
-        limit: response.limit,
-        offset: response.offset,
-        total: response.total
-      }
-    ))
+    map(({ response }) =>
+      Object.assign(
+        response.sites.map((site: any) => ({
+          id: site.siteId,
+          name: site.siteId,
+          description: site.desc
+        })),
+        {
+          limit: response.limit,
+          offset: response.offset,
+          total: response.total
+        }
+      )
+    )
   );
 }
 
 export function createSite(site: Site) {
   return post('/studio/api/1/services/api/1/site/create.json', site, {
     'Content-Type': 'application/json'
-  })
+  });
 }
 
 export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
+  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`);
 }
 
 export default {
@@ -61,4 +66,4 @@ export default {
   fetchSites,
   createSite,
   checkHandleAvailability
-}
+};

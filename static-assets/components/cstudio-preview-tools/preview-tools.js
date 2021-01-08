@@ -81,23 +81,19 @@
         panel.setHeader('<span data-translation="previewToolsTitle">Preview Tools</span>');
         panel.render();
 
-        CStudioAuthoring.Service.lookupConfigurtion(
-          CStudioAuthoringContext.site,
-          '/preview-tools/panel.xml',
-          {
-            success: function (config) {
-              this.context.buildModules(config);
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/panel.xml', {
+          success: function (config) {
+            this.context.buildModules(config);
 
-              if (ptoOn) {
-                this.context.turnToolsOn();
-              } else {
-                this.context.turnToolsOff();
-              }
-            },
-            failure: CStudioAuthoring.Utils.noop,
-            context: this
-          }
-        );
+            if (ptoOn) {
+              this.context.turnToolsOn();
+            } else {
+              this.context.turnToolsOff();
+            }
+          },
+          failure: CStudioAuthoring.Utils.noop,
+          context: this
+        });
 
         this.panel = panel;
         this.initialized = true;
@@ -139,10 +135,7 @@
     updateLocationPrefs: function () {
       var panelXYvalues = this.panel.cfg.config.xy.value;
       sessionStorage.setItem('pto-left', panelXYvalues[0]);
-      sessionStorage.setItem(
-        'pto-top',
-        panelXYvalues[1] < STUDIO_BAR_HEIGHT ? STUDIO_BAR_HEIGHT : panelXYvalues[1]
-      );
+      sessionStorage.setItem('pto-top', panelXYvalues[1] < STUDIO_BAR_HEIGHT ? STUDIO_BAR_HEIGHT : panelXYvalues[1]);
     },
 
     /*
@@ -252,13 +245,11 @@
       YDom.addClass(toggleEl, 'acn-accordion-toggle');
       YDom.addClass(panelEl, 'acn-accordion-panel');
 
+      const span = document.createElement('span');
+      span.textContent = CMgs.format(previewLangBundle, moduleConfig.config.title);
+
       toggleEl.href = '#';
-      toggleEl.innerHTML =
-        '<span data-translation="' +
-        moduleConfig.config.title +
-        '">' +
-        CMgs.format(previewLangBundle, moduleConfig.config.title) +
-        '</span>';
+      toggleEl.appendChild(span);
       moduleEl.id = moduleConfig.config.moduleName + '-elem';
       headerEl.appendChild(toggleEl);
 

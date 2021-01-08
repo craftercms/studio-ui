@@ -37,4 +37,4 @@ export function getProductLanguages(): Observable<{ id: string; label: string }[
 export default {
   getRawContent,
   getDOM
-}
+};

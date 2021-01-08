@@ -80,7 +80,8 @@ const messages = defineMessages({
   },
   filteredBy: {
     id: 'publishingDashboard.filteredBy',
-    defaultMessage: 'Showing: {state, select, all {} other {Status: {state}.}} {environment, select, all {} other {{environment} target.}} {path, select, none {} other {Filtered by {path}}}'
+    defaultMessage:
+      'Showing: {state, select, all {} other {Status: {state}.}} {environment, select, all {} other {{environment} target.}} {path, select, none {} other {Filtered by {path}}}'
   },
   packagesSelected: {
     id: 'publishingDashboard.packagesSelected',
@@ -161,7 +162,7 @@ const currentFiltersInitialState: CurrentFilters = {
 const selectedInitialState: Selected = {};
 
 interface PublishingQueueProps {
-  siteId: string
+  siteId: string;
 }
 
 function PublishingQueue(props: PublishingQueueProps) {
@@ -183,7 +184,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const { formatMessage } = useIntl();
   const { siteId } = props;
-  const hasReadyForLivePackages = ((packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0);
+  const hasReadyForLivePackages = (packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0;
 
   setRequestForgeryToken();
 
@@ -212,7 +213,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   );
 
   function renderPackages() {
-    return packages.map((item: Package, index: number) =>
+    return packages.map((item: Package, index: number) => (
       <PublishingPackage
         id={item.id}
         approver={item.approver}
@@ -232,23 +233,22 @@ function PublishingQueue(props: PublishingQueueProps) {
         filesPerPackage={filesPerPackage}
         setFilesPerPackage={setFilesPerPackage}
       />
-    )
+    ));
   }
 
   function getEnvironments(siteId: string) {
-    fetchEnvironments(siteId)
-      .subscribe(
-        ({ response }) => {
-          let channels: string[] = [];
-          response.availablePublishChannels.forEach((channel: any) => {
-            channels.push(channel.name);
-          });
-          setFilters({ ...filters, environments: channels });
-        },
-        ({ response }) => {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
-      );
+    fetchEnvironments(siteId).subscribe(
+      ({ response }) => {
+        let channels: string[] = [];
+        response.availablePublishChannels.forEach((channel: any) => {
+          channels.push(channel.name);
+        });
+        setFilters({ ...filters, environments: channels });
+      },
+      ({ response }) => {
+        setApiState({ ...apiState, error: true, errorResponse: response });
+      }
+    );
   }
 
   function getFilters(currentFilters: CurrentFilters) {
@@ -262,16 +262,15 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function getPackages(siteId: string) {
-    fetchPackages(siteId, getFilters(currentFilters))
-      .subscribe(
-        ({ response }) => {
-          setTotal(response.total);
-          setPackages(response.packages);
-        },
-        ({ response }) => {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
-      );
+    fetchPackages(siteId, getFilters(currentFilters)).subscribe(
+      ({ response }) => {
+        setTotal(response.total);
+        setPackages(response.packages);
+      },
+      ({ response }) => {
+        setApiState({ ...apiState, error: true, errorResponse: response });
+      }
+    );
   }
 
   function handleCancelAll() {
@@ -283,20 +282,19 @@ function PublishingQueue(props: PublishingQueueProps) {
       }
     });
     setPending(_pending);
-    cancelPackage(siteId, Object.keys(_pending))
-      .subscribe(
-        () => {
-          Object.keys(selected).forEach((key: string) => {
-            _pending[key] = false;
-          });
-          setPending({ ...pending, ..._pending });
-          clearSelected();
-          getPackages(siteId);
-        },
-        ({ response }) => {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
-      );
+    cancelPackage(siteId, Object.keys(_pending)).subscribe(
+      () => {
+        Object.keys(selected).forEach((key: string) => {
+          _pending[key] = false;
+        });
+        setPending({ ...pending, ..._pending });
+        clearSelected();
+        getPackages(siteId);
+      },
+      ({ response }) => {
+        setApiState({ ...apiState, error: true, errorResponse: response });
+      }
+    );
   }
 
   function clearSelected() {
@@ -323,11 +321,10 @@ function PublishingQueue(props: PublishingQueueProps) {
     if (packages?.length === 0 || !hasReadyForLivePackages) {
       return false;
     } else {
-      return !(
-        packages.some((item: Package) =>
+      return !packages.some(
+        (item: Package) =>
           // There is at least one that is not selected
           item.state === READY_FOR_LIVE && !selected[item.id]
-        )
       );
     }
   }
@@ -380,8 +377,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   return (
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
-        {
-          currentFilters.state.includes(READY_FOR_LIVE) &&
+        {currentFilters.state.includes(READY_FOR_LIVE) && (
           <FormGroup className={classes.selectAll}>
             <FormControlLabel
               control={
@@ -395,23 +391,17 @@ function PublishingQueue(props: PublishingQueueProps) {
               label={formatMessage(messages.selectAll)}
             />
           </FormGroup>
-        }
-        {
-          (count > 0 && currentFilters.state.includes(READY_FOR_LIVE)) &&
+        )}
+        {count > 0 && currentFilters.state.includes(READY_FOR_LIVE) && (
           <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
             {formatMessage(messages.packagesSelected, { count: count })}
             <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected} />
           </Typography>
-        }
-        <Button
-          variant="outlined"
-          className={classes.button}
-          onClick={() => getPackages(siteId)}
-        >
+        )}
+        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)}>
           <RefreshIcon />
         </Button>
-        {
-          currentFilters.state.includes(READY_FOR_LIVE) &&
+        {currentFilters.state.includes(READY_FOR_LIVE) && (
           <ConfirmDropdown
             text={formatMessage(messages.cancelSelected)}
             cancelText={formatMessage(messages.cancel)}
@@ -420,7 +410,7 @@ function PublishingQueue(props: PublishingQueueProps) {
             onConfirm={handleCancelAll}
             disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0)}
           />
-        }
+        )}
         <FilterDropdown
           className={classes.button}
           text={formatMessage(messages.filters)}
@@ -430,54 +420,37 @@ function PublishingQueue(props: PublishingQueueProps) {
           filters={filters}
         />
       </div>
-      {
-        (currentFilters.state.length || currentFilters.path || currentFilters.environment) &&
+      {(currentFilters.state.length || currentFilters.path || currentFilters.environment) && (
         <div className={classes.secondBar}>
           <Typography variant="body2">
-            {
-              formatMessage(
-                messages.filteredBy,
-                {
-                  state: (
-                    currentFilters.state
-                      ? <strong key="state">{currentFilters.state.join(', ')}</strong>
-                      : 'all'
-                  ),
-                  path: (
-                    currentFilters.path
-                      ? <strong key="path">{currentFilters.path}</strong>
-                      : 'none'
-                  ),
-                  environment: (
-                    currentFilters.environment
-                      ? <strong key="environment">{currentFilters.environment}</strong>
-                      : 'all'
-                  )
-                }
+            {formatMessage(messages.filteredBy, {
+              state: currentFilters.state ? <strong key="state">{currentFilters.state.join(', ')}</strong> : 'all',
+              path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
+              environment: currentFilters.environment ? (
+                <strong key="environment">{currentFilters.environment}</strong>
+              ) : (
+                'all'
               )
-            }
+            })}
           </Typography>
         </div>
-      }
-      {
-        (apiState.error && apiState.errorResponse)
-          ? <ErrorState error={apiState.errorResponse} />
-          : (
-            <div className={classes.queueList}>
-              {packages === null && <Spinner />}
-              {packages && renderPackages()}
-              {
-                packages !== null && packages.length === 0 &&
-                <div className={classes.empty}>
-                  <EmptyState
-                    title={formatMessage(messages.noPackagesTitle)}
-                    subtitle={formatMessage(messages.noPackagesSubtitle)}
-                  />
-                </div>
-              }
+      )}
+      {apiState.error && apiState.errorResponse ? (
+        <ErrorState error={apiState.errorResponse} />
+      ) : (
+        <div className={classes.queueList}>
+          {packages === null && <Spinner />}
+          {packages && renderPackages()}
+          {packages !== null && packages.length === 0 && (
+            <div className={classes.empty}>
+              <EmptyState
+                title={formatMessage(messages.noPackagesTitle)}
+                subtitle={formatMessage(messages.noPackagesSubtitle)}
+              />
             </div>
-          )
-      }
+          )}
+        </div>
+      )}
       <TablePagination
         rowsPerPageOptions={[3, 5, 10]}
         component="div"

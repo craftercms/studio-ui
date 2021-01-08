@@ -112,14 +112,11 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
         var titleEl = document.createElement('span');
 
         YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-        titleEl.innerHTML = config.title;
+        titleEl.textContent = config.title;
 
         if (!_self.controlWidgetContainerEl) {
           var controlWidgetContainerEl = document.createElement('div');
-          YAHOO.util.Dom.addClass(
-            controlWidgetContainerEl,
-            'cstudio-form-control-dropdown-container'
-          );
+          YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-dropdown-container');
 
           var validEl = document.createElement('span');
           YAHOO.util.Dom.addClass(validEl, 'validation-hint');
@@ -158,7 +155,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
           var descriptionEl = document.createElement('span');
           YAHOO.util.Dom.addClass(descriptionEl, 'description');
           YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-          descriptionEl.innerHTML = config.description;
+          descriptionEl.textContent = config.description;
 
           containerEl.appendChild(titleEl);
           containerEl.appendChild(_self.controlWidgetContainerEl);
@@ -259,7 +256,4 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-dropdown',
-  CStudioForms.Controls.Dropdown
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-dropdown', CStudioForms.Controls.Dropdown);

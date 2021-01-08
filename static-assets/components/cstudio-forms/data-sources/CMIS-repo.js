@@ -124,9 +124,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
       var createEl = document.createElement('div');
       YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(
-        _self.messages.words.browse
-      )} - ${newElTitle}`;
+      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.browse)} - ${newElTitle}`;
       control.addContainerEl.create.appendChild(createEl);
 
       var addContainerEl = control.addContainerEl;
@@ -162,15 +160,11 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
   },
 
   getConfig: function (callback) {
-    CStudioAuthoring.Service.getConfiguration(
-      CStudioAuthoringContext.site,
-      '/data-sources/cmis-config.xml',
-      {
-        success: function (config) {
-          callback(config.repositories.repository);
-        }
+    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
+      success: function (config) {
+        callback(config.repositories.repository);
       }
-    );
+    });
   },
 
   getLabel: function () {
@@ -220,7 +214,4 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-CMIS-repo',
-  CStudioForms.Datasources.CMISRepo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-CMIS-repo', CStudioForms.Datasources.CMISRepo);

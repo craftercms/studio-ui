@@ -16,9 +16,9 @@
 
 import React, { ReactNode } from 'react';
 import clsx from 'clsx';
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import Paper from "@material-ui/core/Paper";
-import LinearProgress from "@material-ui/core/LinearProgress";
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Paper from '@material-ui/core/Paper';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { withStyles } from '@material-ui/core/styles';
 import { RedColor } from '../styles/theme';
 import { capitalize } from '../utils/string';
@@ -40,7 +40,7 @@ export const styles = (theme: Theme) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: theme.zIndex.mobileStepper,
+    zIndex: theme.zIndex.mobileStepper
   },
   /* Styles applied to the root element if `position="top"`. */
   positionTop: {
@@ -48,7 +48,7 @@ export const styles = (theme: Theme) => ({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: theme.zIndex.mobileStepper,
+    zIndex: theme.zIndex.mobileStepper
   },
   /* Styles applied to the root element if `position="static"`. */
   positionStatic: {},
@@ -68,15 +68,15 @@ export const styles = (theme: Theme) => ({
   },
   /* Styles applied to a dot if `variant="dots"` and this is the active step. */
   dotActive: {
-    backgroundColor: RedColor,
+    backgroundColor: RedColor
   },
   /* Styles applied to the Linear Progress component if `variant="progress"`. */
   progress: {
-    width: '50%',
-  },
+    width: '50%'
+  }
 });
 
-const MobileStepper = React.forwardRef(function MobileStepper(props:MobileStepperProps, ref) {
+const MobileStepper = React.forwardRef(function MobileStepper(props: MobileStepperProps, ref) {
   const {
     activeStep = 0,
     backButton,
@@ -96,7 +96,7 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
       square
       elevation={0}
       className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
-      onClick={(e)=> e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
       ref={ref}
       {...other}
     >
@@ -111,9 +111,9 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
           {[...new Array(steps)].map((_, index) => (
             <div
               key={index}
-              onClick={onDotClick? (e) => onDotClick(e, index) : null}
+              onClick={onDotClick ? (e) => onDotClick(e, index) : null}
               className={clsx(classes.dot, {
-                [classes.dotActive]: index === activeStep,
+                [classes.dotActive]: index === activeStep
               })}
             />
           ))}
@@ -132,17 +132,17 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
   );
 });
 
-interface  MobileStepperProps {
-  activeStep?: number,
-  backButton?: ReactNode,
-  onDotClick?: Function,
-  classes: any,
-  className?: string,
-  LinearProgressProps?: any,
-  nextButton?: ReactNode,
-  position?: 'bottom' | 'top' | 'static',
-  steps: number,
-  variant: 'text' |'dots' | 'progress'
+interface MobileStepperProps {
+  activeStep?: number;
+  backButton?: ReactNode;
+  onDotClick?: Function;
+  classes: any;
+  className?: string;
+  LinearProgressProps?: any;
+  nextButton?: ReactNode;
+  position?: 'bottom' | 'top' | 'static';
+  steps: number;
+  variant: 'text' | 'dots' | 'progress';
 }
 
 // @ts-ignore

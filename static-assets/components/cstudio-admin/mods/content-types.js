@@ -110,11 +110,7 @@
             if (!currentField.title || currentField.title == '') {
               flagTitleError = true;
             }
-            if (
-              (!currentField.id || currentField.id == '') &&
-              currentField.title &&
-              currentField.title != ''
-            ) {
+            if ((!currentField.id || currentField.id == '') && currentField.title && currentField.title != '') {
               idError.push(currentField.title);
             }
 
@@ -164,10 +160,7 @@
               fileNameError = false;
             }
 
-            if (
-              currentField.id === 'internal-name' ||
-              formDef.contentType === '/component/level-descriptor'
-            ) {
+            if (currentField.id === 'internal-name' || formDef.contentType === '/component/level-descriptor') {
               internalNameError = false;
             }
           }
@@ -177,11 +170,7 @@
           if (!datasources[i].title || datasources[i].title == '') {
             flagTitleError = true;
           }
-          if (
-            (!datasources[i].id || datasources[i].id == '') &&
-            datasources[i].title &&
-            datasources[i].title != ''
-          ) {
+          if ((!datasources[i].id || datasources[i].id == '') && datasources[i].title && datasources[i].title != '') {
             idError.push(datasources[i].title);
           }
         }
@@ -287,11 +276,7 @@
                                   langBundle: langBundle
                                 };
 
-                                var confPath =
-                                  configFilesPath +
-                                  '/content-types' +
-                                  formDef.contentType +
-                                  '/config.xml';
+                                var confPath = configFilesPath + '/content-types' + formDef.contentType + '/config.xml';
 
                                 var url =
                                   '/api/1/services/api/1/site/write-configuration.json' +
@@ -302,10 +287,7 @@
 
                                 YAHOO.util.Connect.resetFormState();
                                 YAHOO.util.Connect.setDefaultPostHeader(false);
-                                YAHOO.util.Connect.initHeader(
-                                  'Content-Type',
-                                  'application/xml; charset=utf-8'
-                                );
+                                YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
                                 YAHOO.util.Connect.initHeader(
                                   CStudioAuthoringContext.xsrfHeaderName,
                                   CrafterCMSNext.util.auth.getRequestForgeryToken()
@@ -333,10 +315,7 @@
                             };
 
                             var defPath =
-                              configFilesPath +
-                              '/content-types' +
-                              formDef.contentType +
-                              '/form-definition.xml';
+                              configFilesPath + '/content-types' + formDef.contentType + '/form-definition.xml';
 
                             var url =
                               '/api/1/services/api/1/site/write-configuration.json' +
@@ -347,10 +326,7 @@
 
                             YAHOO.util.Connect.resetFormState();
                             YAHOO.util.Connect.setDefaultPostHeader(false);
-                            YAHOO.util.Connect.initHeader(
-                              'Content-Type',
-                              'application/xml; charset=utf-8'
-                            );
+                            YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
                             YAHOO.util.Connect.initHeader(
                               CStudioAuthoringContext.xsrfHeaderName,
                               CrafterCMSNext.util.auth.getRequestForgeryToken()
@@ -386,9 +362,9 @@
 
                       errorMessage +=
                         validation.idError.length > 0
-                          ? `<li>${formatMessage(
-                              contentTypesMessages.idError
-                            )} ${validation.idError.toString().replace(/,/g, ', ')}</li>`
+                          ? `<li>${formatMessage(contentTypesMessages.idError)} ${validation.idError
+                              .map((s) => CrafterCMSNext.util.string.escapeHTML(s))
+                              .join(', ')}</li>`
                           : '';
 
                       errorMessage +=
@@ -397,9 +373,7 @@
                           : '';
 
                       if (errorMessage !== '') {
-                        errorMessage = `${formatMessage(
-                          contentTypesMessages.saveFailed
-                        )}</br><ul>${errorMessage}</ul>`;
+                        errorMessage = `${formatMessage(contentTypesMessages.saveFailed)}</br><ul>${errorMessage}</ul>`;
 
                         CStudioAuthoring.Operations.showSimpleDialog(
                           'errorTitle-dialog',
@@ -517,10 +491,7 @@
       },
 
       postfixErrorMessage: (postfixArray) => {
-        let html =
-            '<div class="postfixErrorContainer">' +
-            CMgs.format(langBundle, 'postfixError') +
-            '</br>',
+        let html = '<div class="postfixErrorContainer">' + CMgs.format(langBundle, 'postfixError') + '</br>',
           controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control;
 
         html += '<ul>';
@@ -550,18 +521,13 @@
 
       clearCache: function () {
         var serviceUri =
-          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' +
-          CStudioAuthoringContext.site;
+          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' + CStudioAuthoringContext.site;
 
         var clearCacheCb = {
           success: function () {}
         };
 
-        YConnect.asyncRequest(
-          'GET',
-          CStudioAuthoring.Service.createServiceUri(serviceUri),
-          clearCacheCb
-        );
+        YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), clearCacheCb);
       },
 
       /**
@@ -664,21 +630,9 @@
           </div>
         `;
 
-        YAHOO.util.Event.addListener(
-          'properties-tools-panel',
-          'click',
-          this.togglePanel,
-          this,
-          true
-        );
+        YAHOO.util.Event.addListener('properties-tools-panel', 'click', this.togglePanel, this, true);
         YAHOO.util.Event.addListener('control-tools-panel', 'click', this.togglePanel, this, true);
-        YAHOO.util.Event.addListener(
-          'datasources-tools-panel',
-          'click',
-          this.togglePanel,
-          this,
-          true
-        );
+        YAHOO.util.Event.addListener('datasources-tools-panel', 'click', this.togglePanel, this, true);
 
         let $controls = null;
         let $dataSources = null;
@@ -732,10 +686,7 @@
         controlsPanelEl.appendChild(formContainerEl);
         YDom.addClass(formContainerEl, 'control');
         formContainerEl.innerHTML = CMgs.format(langBundle, 'formSection');
-        formContainerEl.setAttribute(
-          'data-label',
-          CMgs.format(langBundle, 'formSection').toLowerCase()
-        );
+        formContainerEl.setAttribute('data-label', CMgs.format(langBundle, 'formSection').toLowerCase());
         var dd = new DragAndDropDecorator(formContainerEl);
         YDom.addClass(formContainerEl, 'control-section');
         var iconEltFormSection = CStudioAuthoring.Utils.createIcon(formSection, 'fa-cube');
@@ -746,10 +697,7 @@
         controlsPanelEl.appendChild(repeatContainerEl);
         YDom.addClass(repeatContainerEl, 'control');
         repeatContainerEl.innerHTML = CMgs.format(langBundle, 'repeatingGroup');
-        repeatContainerEl.setAttribute(
-          'data-label',
-          CMgs.format(langBundle, 'repeatingGroup').toLowerCase()
-        );
+        repeatContainerEl.setAttribute('data-label', CMgs.format(langBundle, 'repeatingGroup').toLowerCase());
         var dd = new DragAndDropDecorator(repeatContainerEl);
         YDom.addClass(repeatContainerEl, 'new-control-type');
         YDom.addClass(repeatContainerEl, 'repeating-group');
@@ -833,15 +781,12 @@
                     var dd = new DragAndDropDecorator(controlEl);
                     tool.id = tool.getFixedId();
                     controlEl.prototypeField = tool;
-                    controls[idx].supportedPostFixes = tool.getSupportedPostFixes
-                      ? tool.getSupportedPostFixes()
-                      : [];
+                    controls[idx].supportedPostFixes = tool.getSupportedPostFixes ? tool.getSupportedPostFixes() : [];
 
                     YDom.addClass(controlEl, 'new-control-type');
                     YDom.addClass(
                       controlEl,
-                      tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase() +
-                        '-control'
+                      tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase() + '-control'
                     );
 
                     var iconElt = CStudioAuthoring.Utils.createIcon(controls[idx], 'fa-cube');
@@ -890,21 +835,14 @@
                   try {
                     var datasource = new moduleClass('', {}, [], []),
                       plugin = datasources[idx].plugin ? datasources[idx].plugin : null;
-                    CStudioAdminConsole.Tool.ContentTypes.datasources[
-                      datasource.getName()
-                    ] = datasource;
+                    CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
                     if (plugin) {
-                      CStudioAdminConsole.Tool.ContentTypes.datasources[
-                        datasource.getName()
-                      ].plugin = plugin;
+                      CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()].plugin = plugin;
                     }
                     YDom.addClass(this.dsourceContainerEl, 'datasource');
                     YDom.addClass(this.dsourceContainerEl, 'new-datasource-type');
                     this.dsourceContainerEl.innerHTML = datasource.getLabel();
-                    this.dsourceContainerEl.setAttribute(
-                      'data-label',
-                      datasource.getLabel().toLowerCase()
-                    );
+                    this.dsourceContainerEl.setAttribute('data-label', datasource.getLabel().toLowerCase());
                     YDom.addClass(
                       this.dsourceContainerEl,
                       datasource.getLabel().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase()
@@ -913,14 +851,8 @@
 
                     var dd = new DragAndDropDecorator(this.dsourceContainerEl);
                     this.dsourceContainerEl.prototypeDatasource = datasource;
-                    var iconElt = CStudioAuthoring.Utils.createIcon(
-                      datasources[idx],
-                      'fa-database'
-                    );
-                    this.dsourceContainerEl.insertBefore(
-                      iconElt,
-                      this.dsourceContainerEl.firstChild
-                    );
+                    var iconElt = CStudioAuthoring.Utils.createIcon(datasources[idx], 'fa-database');
+                    this.dsourceContainerEl.insertBefore(iconElt, this.dsourceContainerEl.firstChild);
                   } catch (e) {}
                 },
 
@@ -978,13 +910,7 @@
                     document.querySelector('#openExistingInlineTarget > div')
                   );
                 } else {
-                  dialogClass.showDialog(
-                    moduleConfig.contentTypes,
-                    path,
-                    false,
-                    moduleConfig.selectTemplateCb,
-                    false
-                  );
+                  dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
                 }
               }
             };
@@ -1031,10 +957,7 @@
                 text: CMgs.format(formsLangBundle, 'yes'),
                 handler: function () {
                   CStudioAdminConsole.isDirty = false;
-                  CStudioAuthoring.Service.getAllContentTypesForSite(
-                    CStudioAuthoringContext.site,
-                    chooseTemplateCb
-                  );
+                  CStudioAuthoring.Service.getAllContentTypesForSite(CStudioAuthoringContext.site, chooseTemplateCb);
                   this.destroy();
                 },
                 isDefault: false
@@ -1052,10 +975,7 @@
           );
         } else {
           CStudioAdminConsole.isDirty = false;
-          CStudioAuthoring.Service.getAllContentTypesForSite(
-            CStudioAuthoringContext.site,
-            chooseTemplateCb
-          );
+          CStudioAuthoring.Service.getAllContentTypesForSite(CStudioAuthoringContext.site, chooseTemplateCb);
         }
       },
 
@@ -1172,7 +1092,7 @@
 
         var formNameEl = document.createElement('div');
         YDom.addClass(formNameEl, 'content-form-name');
-        formNameEl.innerHTML = this.definition.title;
+        formNameEl.textContent = this.definition.title;
         formVisualContainerEl.appendChild(formNameEl);
 
         var divPropertiesEl = document.createElement('div');
@@ -1215,7 +1135,7 @@
 
         var datasourcesNameEl = document.createElement('span');
         YDom.addClass(datasourcesNameEl, 'content-section-name');
-        datasourcesNameEl.innerHTML = CMgs.format(langBundle, 'datasources');
+        datasourcesNameEl.textContent = CMgs.format(langBundle, 'datasources');
         datasourcesContainerEl.appendChild(datasourcesNameEl);
         var tar = new YAHOO.util.DDTarget(datasourcesContainerEl);
 
@@ -1240,7 +1160,7 @@
 
           var datasourceNameEl = document.createElement('span');
           YDom.addClass(datasourceNameEl, 'content-datasource-name');
-          datasourceNameEl.innerHTML = datasource.title;
+          datasourceNameEl.textContent = datasource.title;
           datasourceEl.appendChild(datasourceNameEl);
 
           var datasourceTypeEl = document.createElement('span');
@@ -1289,9 +1209,7 @@
                 listeningEl.appendChild(deleteEl);
 
                 var deleteFieldFn = function (evt) {
-                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteDatasource(
-                    this.parentNode.datasource
-                  );
+                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteDatasource(this.parentNode.datasource);
                   CStudioAdminConsole.Tool.ContentTypes.visualization.render();
                   CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderEmpty();
                   YAHOO.util.Event.stopEvent(evt);
@@ -1328,7 +1246,7 @@
 
           var sectionNameEl = document.createElement('span');
           YDom.addClass(sectionNameEl, 'content-section-name');
-          sectionNameEl.innerHTML = section.title;
+          sectionNameEl.textContent = section.title;
           sectionContainerEl.appendChild(sectionNameEl);
 
           section.sectionContainerEl = sectionContainerEl;
@@ -1353,11 +1271,7 @@
 
               // remove delete control
               // Adding the class delete-control-section to prevent get the delete control of its children
-              var deleteEl = YDom.getElementsByClassName(
-                'delete-control-section',
-                null,
-                listeningEl
-              )[0];
+              var deleteEl = YDom.getElementsByClassName('delete-control-section', null, listeningEl)[0];
 
               if (deleteEl) {
                 deleteEl.parentNode.removeChild(deleteEl);
@@ -1367,11 +1281,7 @@
               CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(listeningEl.section);
 
               // add delete control
-              var deleteEl = YDom.getElementsByClassName(
-                'delete-control-section',
-                null,
-                listeningEl
-              )[0];
+              var deleteEl = YDom.getElementsByClassName('delete-control-section', null, listeningEl)[0];
 
               if (!deleteEl) {
                 deleteEl = document.createElement('i');
@@ -1381,9 +1291,7 @@
 
                 var deleteFieldFn = function (evt) {
                   CStudioAdminConsole.isDirty = true;
-                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteSection(
-                    this.parentNode.section
-                  );
+                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteSection(this.parentNode.section);
                   CStudioAdminConsole.Tool.ContentTypes.visualization.render();
                   CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderEmpty();
                   YAHOO.util.Event.stopEvent(evt);
@@ -1438,20 +1346,11 @@
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-name');
 
-        var minValue =
-          field.properties[0] && field.properties[0].value != '' ? field.properties[0].value : '0';
-        var maxValue =
-          field.properties[0] && field.properties[1].value != '' ? field.properties[1].value : '*';
+        var minValue = field.properties[0] && field.properties[0].value != '' ? field.properties[0].value : '0';
+        var maxValue = field.properties[0] && field.properties[1].value != '' ? field.properties[1].value : '*';
 
-        fieldNameEl.innerHTML =
-          field.title +
-          ' ' +
-          CMgs.format(langBundle, 'repeatingGroup') +
-          ' [' +
-          minValue +
-          ' ... ' +
-          maxValue +
-          ']';
+        fieldNameEl.textContent =
+          field.title + ' ' + CMgs.format(langBundle, 'repeatingGroup') + ' [' + minValue + ' ... ' + maxValue + ']';
         fieldContainerEl.appendChild(fieldNameEl);
 
         var fieldClickFn = function (evt) {
@@ -1470,11 +1369,7 @@
 
             // remove delete control
             // Adding the class delete-control-repeat to prevent get the delete control of its children
-            var deleteEl = YDom.getElementsByClassName(
-              'delete-control-repeat',
-              null,
-              listeningEl
-            )[0];
+            var deleteEl = YDom.getElementsByClassName('delete-control-repeat', null, listeningEl)[0];
 
             if (deleteEl) {
               deleteEl.parentNode.removeChild(deleteEl);
@@ -1484,11 +1379,7 @@
             CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(listeningEl.field);
 
             // add delete control
-            var deleteEl = YDom.getElementsByClassName(
-              'delete-control-repeat',
-              null,
-              listeningEl
-            )[0];
+            var deleteEl = YDom.getElementsByClassName('delete-control-repeat', null, listeningEl)[0];
 
             if (!deleteEl) {
               deleteEl = document.createElement('i');
@@ -1498,9 +1389,7 @@
 
               var deleteFieldFn = function (evt) {
                 CStudioAdminConsole.isDirty = true;
-                CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteField(
-                  this.parentNode.field
-                );
+                CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteField(this.parentNode.field);
                 CStudioAdminConsole.Tool.ContentTypes.visualization.render();
                 CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderEmpty();
                 YAHOO.util.Event.stopEvent(evt);
@@ -1535,30 +1424,33 @@
 
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-name');
-        fieldNameEl.innerHTML = field.title;
+        fieldNameEl.textContent = field.title;
         fieldContainerEl.appendChild(fieldNameEl);
 
         var fieldTypeEl = document.createElement('span');
         YDom.addClass(fieldTypeEl, 'content-field-type');
-        fieldTypeEl.innerHTML = field.type;
+        fieldTypeEl.textContent = field.type;
         fieldContainerEl.appendChild(fieldTypeEl);
 
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-variable');
-        fieldNameEl.innerHTML = field.id;
+        fieldNameEl.textContent = field.id;
         fieldContainerEl.appendChild(fieldNameEl);
 
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
-        const controlExists = (this.config.controls.control.filter(control => {
-          const controlName = control.plugin ? control.plugin.name : control.name;
-          return (controlName === field.type);
-        }).length) > 0;
+        const controlExists =
+          this.config.controls.control.filter((control) => {
+            const controlName = control.plugin ? control.plugin.name : control.name;
+            return controlName === field.type;
+          }).length > 0;
         if (!controlExists) {
           $(fieldContainerEl)
             .addClass('disabled')
-            .append(`<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`);
+            .append(
+              `<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`
+            );
         }
 
         var fieldClickFn = function (evt) {
@@ -1581,11 +1473,7 @@
             }
 
             // remove switchFileName
-            var switchFileNameEl = YDom.getElementsByClassName(
-              'switch-filename',
-              null,
-              listeningEl
-            )[0];
+            var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
 
             if (switchFileNameEl) {
               switchFileNameEl.parentNode.removeChild(switchFileNameEl);
@@ -1605,9 +1493,7 @@
 
               var deleteFieldFn = function (evt) {
                 CStudioAdminConsole.isDirty = true;
-                CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteField(
-                  this.parentNode.field
-                );
+                CStudioAdminConsole.Tool.ContentTypes.FormDefMain.deleteField(this.parentNode.field);
                 CStudioAdminConsole.Tool.ContentTypes.visualization.render();
                 CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderEmpty();
                 YAHOO.util.Event.stopEvent(evt);
@@ -1618,11 +1504,7 @@
             }
 
             if (field.id === 'file-name') {
-              var switchFileNameEl = YDom.getElementsByClassName(
-                'switch-filename',
-                null,
-                listeningEl
-              )[0];
+              var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
 
               if (!switchFileNameEl) {
                 switchFileNameEl = document.createElement('i');
@@ -1630,20 +1512,16 @@
 
                 listeningEl.appendChild(switchFileNameEl);
 
-                const newType =
-                  listeningEl.field.type === 'file-name' ? 'auto-filename' : 'file-name';
+                const newType = listeningEl.field.type === 'file-name' ? 'auto-filename' : 'file-name';
 
                 $(switchFileNameEl).tooltip({
                   title: formatMessage(contentTypesMessages.switchToMessage, { type: newType })
                 });
 
                 var switchFileNameFn = function () {
-                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.editField(
-                    this.parentNode.field,
-                    {
-                      type: newType
-                    }
-                  );
+                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.editField(this.parentNode.field, {
+                    type: newType
+                  });
 
                   CStudioAdminConsole.Tool.ContentTypes.visualization.render();
                 };
@@ -1663,9 +1541,7 @@
       CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
         success: function (config) {
           CStudioAdminConsole.isPostfixAvailable =
-            config['form-engine'] && config['form-engine']['field-name-postfix'] === 'true'
-              ? true
-              : false;
+            config['form-engine'] && config['form-engine']['field-name-postfix'] === 'true' ? true : false;
           CStudioAdminConsole.ignorePostfixFields =
             config['form-engine'] && config['form-engine']['ignore-postfix-fields']
               ? config['form-engine']['ignore-postfix-fields'].field
@@ -1729,8 +1605,7 @@
 
         if (YAHOO.util.DDM.interactionInfo.drop.length > 0) {
           //processDrop = true;
-          id =
-            YAHOO.util.DDM.interactionInfo.drop[YAHOO.util.DDM.interactionInfo.drop.length - 1].id;
+          id = YAHOO.util.DDM.interactionInfo.drop[YAHOO.util.DDM.interactionInfo.drop.length - 1].id;
         }
 
         // The position of the cursor at the time of the drop (YAHOO.util.Point)
@@ -1773,10 +1648,7 @@
                 }
 
                 if (form != null) {
-                  item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewField(
-                    form,
-                    srcEl.prototypeField
-                  );
+                  item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewField(form, srcEl.prototypeField);
                   handled = true;
                 }
               } else if (YAHOO.util.Dom.hasClass(srcEl, 'new-datasource-type')) {
@@ -1813,10 +1685,7 @@
               }
 
               if (handled == true) {
-                if (
-                  srcEl.prototypeDatasource &&
-                  srcEl.prototypeDatasource.getName() === 'child-content'
-                ) {
+                if (srcEl.prototypeDatasource && srcEl.prototypeDatasource.getName() === 'child-content') {
                   CStudioAdminConsole.Tool.ContentTypes.visualization.render();
                   CStudioAuthoring.Operations.showSimpleDialog(
                     'child-content-deprecated-dialog',
@@ -1955,12 +1824,7 @@
               } else {
                 // reset drag action timer that was previosly set
                 clearTimeout(formDef.dragActionTimer);
-                formDef.dragActionTimer = formDef.createDragAction(
-                  func,
-                  srcEl,
-                  destEl,
-                  this.goingUp
-                );
+                formDef.dragActionTimer = formDef.createDragAction(func, srcEl, destEl, this.goingUp);
               }
             }
           }
@@ -2003,12 +1867,7 @@
               } else {
                 // reset drag action timer that was previosly set
                 clearTimeout(formDef.dragActionTimer);
-                formDef.dragActionTimer = formDef.createDragAction(
-                  func,
-                  srcEl,
-                  destEl,
-                  this.goingUp
-                );
+                formDef.dragActionTimer = formDef.createDragAction(func, srcEl, destEl, this.goingUp);
               }
             }
           }
@@ -2016,8 +1875,7 @@
       },
 
       contentChildDeprecatedMessage: () => {
-        let html =
-          ' <div>' + formatMessage(contentTypesMessages.contenTypeWarningMessage) + '</div>';
+        let html = ' <div>' + formatMessage(contentTypesMessages.contenTypeWarningMessage) + '</div>';
         return html;
       }
     });
@@ -2092,9 +1950,7 @@
           xml = '<table class="quick-create-help">';
 
         for (var i = 0; i < renderPostfixes.length; i++) {
-          let postfixDescription = CStudioAdminConsole.renderPostfixDescriptions()[
-            renderPostfixes[i]
-          ]
+          let postfixDescription = CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]]
             ? CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]]
             : '';
 
@@ -2108,9 +1964,7 @@
             /******/ `data-insert="${renderPostfixes[i]}" ` +
             /******/ `class="btn btn-default quick-create-help__insert-btn" ` +
             /******/ `type="button" ` +
-            /******/ `aria-label="${formatMessage(
-              contentTypesMessages.insertExpressionMessage
-            )}" ` +
+            /******/ `aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" ` +
             /******/ `title="${formatMessage(contentTypesMessages.insertExpressionMessage)}"` +
             /****/ `>` +
             /******/ `<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
@@ -2200,18 +2054,13 @@
 
       renderFormPropertySheet: function (item, sheetEl) {
         this.createRowHeading(CMgs.format(langBundle, 'formBasics'), sheetEl);
-        this.createRowFn(
-          CMgs.format(langBundle, 'formTitle'),
-          'title',
-          item.title,
-          '',
-          'string',
-          sheetEl,
-          function (e, el) {
-            item.title = el.value;
-            CStudioAdminConsole.isDirty = true;
-          }
-        );
+        this.createRowFn(CMgs.format(langBundle, 'formTitle'), 'title', item.title, '', 'string', sheetEl, function (
+          e,
+          el
+        ) {
+          item.title = el.value;
+          CStudioAdminConsole.isDirty = true;
+        });
         this.createRowFn(
           CMgs.format(langBundle, 'description'),
           'description',
@@ -2417,34 +2266,21 @@
         var valueSelected, defaultSelected;
 
         this.createRowHeading(CMgs.format(langBundle, 'datasourceBasics'), sheetEl);
-        this.createRowFn(
-          CMgs.format(langBundle, 'title'),
-          'title',
-          item.title,
-          '',
-          'variable',
-          sheetEl,
-          function (e, el) {
-            CStudioAdminConsole.isDirty = true;
-            if (YDom.hasClass(el, 'property-input-title')) {
-              item.title = el.value;
-            } else {
-              item.id = el.value;
-            }
-          }
-        );
-        this.createRowFn(
-          CMgs.format(langBundle, 'name'),
-          'name',
-          item.id,
-          '',
-          'variable',
-          sheetEl,
-          function (e, el) {
+        this.createRowFn(CMgs.format(langBundle, 'title'), 'title', item.title, '', 'variable', sheetEl, function (
+          e,
+          el
+        ) {
+          CStudioAdminConsole.isDirty = true;
+          if (YDom.hasClass(el, 'property-input-title')) {
+            item.title = el.value;
+          } else {
             item.id = el.value;
-            CStudioAdminConsole.isDirty = true;
           }
-        );
+        });
+        this.createRowFn(CMgs.format(langBundle, 'name'), 'name', item.id, '', 'variable', sheetEl, function (e, el) {
+          item.id = el.value;
+          CStudioAdminConsole.isDirty = true;
+        });
 
         this.createRowHeading(CMgs.format(langBundle, 'properties'), sheetEl);
         var type = CStudioAdminConsole.Tool.ContentTypes.datasources[item.type];
@@ -2523,18 +2359,13 @@
         }
 
         this.createRowHeading(CMgs.format(langBundle, 'sectionBasics'), sheetEl);
-        this.createRowFn(
-          CMgs.format(langBundle, 'title'),
-          'title',
-          item.title,
-          '',
-          'string',
-          sheetEl,
-          function (e, el) {
-            item.title = el.value;
-            CStudioAdminConsole.isDirty = true;
-          }
-        );
+        this.createRowFn(CMgs.format(langBundle, 'title'), 'title', item.title, '', 'string', sheetEl, function (
+          e,
+          el
+        ) {
+          item.title = el.value;
+          CStudioAdminConsole.isDirty = true;
+        });
         this.createRowFn(
           CMgs.format(langBundle, 'description'),
           'description',
@@ -2568,9 +2399,7 @@
 
         const itemPostFixes = CStudioAdminConsole.getPostfixes(item.type),
           showPostFixes =
-            itemPostFixes &&
-            itemPostFixes.length > 0 &&
-            !CStudioAdminConsole.ignorePostfixFields.includes(item.id);
+            itemPostFixes && itemPostFixes.length > 0 && !CStudioAdminConsole.ignorePostfixFields.includes(item.id);
 
         this.createRowHeading('Repeat Group Basics', sheetEl);
         this.createRowFn(
@@ -2609,18 +2438,13 @@
           this.renderPostfixesVariable(item.type)
         );
 
-        this.createRowFn(
-          CMgs.format(langBundle, 'iceGroup'),
-          'iceGroup',
-          item.iceId,
-          '',
-          'string',
-          sheetEl,
-          function (e, el) {
-            item.iceId = el.value;
-            CStudioAdminConsole.isDirty = true;
-          }
-        );
+        this.createRowFn(CMgs.format(langBundle, 'iceGroup'), 'iceGroup', item.iceId, '', 'string', sheetEl, function (
+          e,
+          el
+        ) {
+          item.iceId = el.value;
+          CStudioAdminConsole.isDirty = true;
+        });
         this.createRowFn(
           CMgs.format(langBundle, 'description'),
           'description',
@@ -2661,13 +2485,10 @@
 
       renderFieldPropertySheet: function (item, sheetEl) {
         const defaultField = defaultFields.includes(item.id);
-        const controls =
-            CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
+        const controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
           itemPostFixes = CStudioAdminConsole.getPostfixes(item.type, controls),
           showPostFixes =
-            itemPostFixes &&
-            itemPostFixes.length > 0 &&
-            !CStudioAdminConsole.ignorePostfixFields.includes(item.id);
+            itemPostFixes && itemPostFixes.length > 0 && !CStudioAdminConsole.ignorePostfixFields.includes(item.id);
 
         this.itemId = item.id;
         this.createRowHeading(CMgs.format(langBundle, 'fieldBasics'), sheetEl);
@@ -2708,18 +2529,13 @@
           null,
           defaultField
         );
-        this.createRowFn(
-          CMgs.format(langBundle, 'iceGroup'),
-          'iceGroup',
-          item.iceId,
-          '',
-          'string',
-          sheetEl,
-          function (e, el) {
-            item.iceId = el.value;
-            CStudioAdminConsole.isDirty = true;
-          }
-        );
+        this.createRowFn(CMgs.format(langBundle, 'iceGroup'), 'iceGroup', item.iceId, '', 'string', sheetEl, function (
+          e,
+          el
+        ) {
+          item.iceId = el.value;
+          CStudioAdminConsole.isDirty = true;
+        });
         this.createRowFn(
           CMgs.format(langBundle, 'description'),
           'description',
@@ -2744,18 +2560,10 @@
             CStudioAdminConsole.isDirty = true;
           }
         );
-        this.createRowFn(
-          CMgs.format(langBundle, 'help'),
-          'help',
-          item.help,
-          '',
-          'richText',
-          sheetEl,
-          function (e, el) {
-            item.help = el.value;
-            CStudioAdminConsole.isDirty = true;
-          }
-        );
+        this.createRowFn(CMgs.format(langBundle, 'help'), 'help', item.help, '', 'richText', sheetEl, function (e, el) {
+          item.help = el.value;
+          CStudioAdminConsole.isDirty = true;
+        });
 
         //////////////////////
         this.createRowHeading(CMgs.format(langBundle, 'properties'), sheetEl);
@@ -2909,10 +2717,7 @@
 
         var labelEl = document.createElement('div');
         YAHOO.util.Dom.addClass(labelEl, 'property-label');
-        YAHOO.util.Dom.addClass(
-          labelEl,
-          'label-' + label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase()
-        );
+        YAHOO.util.Dom.addClass(labelEl, 'label-' + label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
         labelEl.innerHTML = label;
 
         if (help) {
@@ -2927,13 +2732,15 @@
           )
             .popover({
               container: 'body',
-              title: `<span>${helpTitle}</span>` +
+              title:
+                `<span>${helpTitle}</span>` +
                 `<button type="button" class="close fa fa-times" onclick="$(\'#help-${fName}\').popover('hide');"/>`,
               html: true,
               content: helpHTML,
               placement: 'left',
               trigger: 'manual',
-              template: '<div class="popover properties-help" role="tooltip"><div class="arrow">' +
+              template:
+                '<div class="popover properties-help" role="tooltip"><div class="arrow">' +
                 '</div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
             })
             .appendTo(labelEl)
@@ -2984,10 +2791,7 @@
        * render a property sheet heading
        */
       renderNewItem: function (form, prototypeDatasource) {
-        var item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewDatasource(
-          form,
-          prototypeDatasource
-        );
+        var item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewDatasource(form, prototypeDatasource);
         CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(item);
       }
@@ -3467,11 +3271,7 @@
           CStudioForms.Util.escapeXml(formDef.quickCreatePath) +
           '</quickCreatePath>\r\n';
 
-        if (
-          formDef.imageThumbnail &&
-          formDef.imageThumbnail != '' &&
-          formDef.imageThumbnail != 'undefined'
-        ) {
+        if (formDef.imageThumbnail && formDef.imageThumbnail != '' && formDef.imageThumbnail != 'undefined') {
           xml +=
             '\t<noThumbnail>' +
             CStudioForms.Util.escapeXml('false') +
@@ -3480,8 +3280,7 @@
             formDef.imageThumbnail +
             '</image-thumbnail>\r\n';
         } else {
-          xml +=
-            '\t<noThumbnail>true</noThumbnail>\r\n' + '\t<image-thumbnail></image-thumbnail>\r\n';
+          xml += '\t<noThumbnail>true</noThumbnail>\r\n' + '\t<image-thumbnail></image-thumbnail>\r\n';
         }
 
         if (config.paths) {
@@ -3493,15 +3292,10 @@
             if (config.paths.excludes.pattern instanceof Array) {
               for (var x = 0; x < config.paths.excludes.pattern.length; x++) {
                 xml +=
-                  '\t\t\t<pattern>' +
-                  CStudioForms.Util.escapeXml(config.paths.excludes.pattern[x]) +
-                  '</pattern>\r\n';
+                  '\t\t\t<pattern>' + CStudioForms.Util.escapeXml(config.paths.excludes.pattern[x]) + '</pattern>\r\n';
               }
             } else {
-              xml +=
-                '\t\t\t<pattern>' +
-                CStudioForms.Util.escapeXml(config.paths.excludes.pattern) +
-                '</pattern>\r\n';
+              xml += '\t\t\t<pattern>' + CStudioForms.Util.escapeXml(config.paths.excludes.pattern) + '</pattern>\r\n';
             }
 
             xml += '\t\t</excludes>\r\n';
@@ -3512,15 +3306,10 @@
             if (config.paths.includes.pattern instanceof Array) {
               for (var x = 0; x < config.paths.includes.pattern.length; x++) {
                 xml +=
-                  '\t\t\t<pattern>' +
-                  CStudioForms.Util.escapeXml(config.paths.includes.pattern[x]) +
-                  '</pattern>\r\n';
+                  '\t\t\t<pattern>' + CStudioForms.Util.escapeXml(config.paths.includes.pattern[x]) + '</pattern>\r\n';
               }
             } else {
-              xml +=
-                '\t\t\t<pattern>' +
-                CStudioForms.Util.escapeXml(config.paths.includes.pattern) +
-                '</pattern>\r\n';
+              xml += '\t\t\t<pattern>' + CStudioForms.Util.escapeXml(config.paths.includes.pattern) + '</pattern>\r\n';
             }
 
             xml += '\t\t</includes>\r\n';
@@ -3540,9 +3329,7 @@
                 if (config['delete-dependencies']['delete-dependency'][x]['pattern']) {
                   xml +=
                     '\t\t\t<pattern>' +
-                    CStudioForms.Util.escapeXml(
-                      config['delete-dependencies']['delete-dependency'][x]['pattern']
-                    ) +
+                    CStudioForms.Util.escapeXml(config['delete-dependencies']['delete-dependency'][x]['pattern']) +
                     '</pattern>\r\n';
                 }
                 if (config['delete-dependencies']['delete-dependency'][x]['remove-empty-folder']) {
@@ -3560,9 +3347,7 @@
               if (config['delete-dependencies']['delete-dependency']['pattern']) {
                 xml +=
                   '\t\t\t<pattern>' +
-                  CStudioForms.Util.escapeXml(
-                    config['delete-dependencies']['delete-dependency']['pattern']
-                  ) +
+                  CStudioForms.Util.escapeXml(config['delete-dependencies']['delete-dependency']['pattern']) +
                   '</pattern>\r\n';
               }
               if (config['delete-dependencies']['delete-dependency']['remove-empty-folder']) {
@@ -3590,17 +3375,13 @@
                 if (config['copy-dependencies']['copy-dependency'][x]['pattern']) {
                   xml +=
                     '\t\t\t<pattern>' +
-                    CStudioForms.Util.escapeXml(
-                      config['copy-dependencies']['copy-dependency'][x]['pattern']
-                    ) +
+                    CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency'][x]['pattern']) +
                     '</pattern>\r\n';
                 }
                 if (config['copy-dependencies']['copy-dependency'][x]['target']) {
                   xml +=
                     '\t\t\t<target>' +
-                    CStudioForms.Util.escapeXml(
-                      config['copy-dependencies']['copy-dependency'][x]['target']
-                    ) +
+                    CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency'][x]['target']) +
                     '</target>\r\n';
                 }
                 xml += '\t\t</copy-dependency>\r\n';
@@ -3610,17 +3391,13 @@
               if (config['copy-dependencies']['copy-dependency']['pattern']) {
                 xml +=
                   '\t\t\t<pattern>' +
-                  CStudioForms.Util.escapeXml(
-                    config['copy-dependencies']['copy-dependency']['pattern']
-                  ) +
+                  CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency']['pattern']) +
                   '</pattern>\r\n';
               }
               if (config['copy-dependencies']['copy-dependency']['target']) {
                 xml +=
                   '\t\t\t<target>' +
-                  CStudioForms.Util.escapeXml(
-                    config['copy-dependencies']['copy-dependency']['target']
-                  ) +
+                  CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency']['target']) +
                   '</target>\r\n';
               }
               xml += '\t\t</copy-dependency>\r\n';
@@ -3768,14 +3545,8 @@
         var xml = '';
 
         if (repeat) {
-          var minValue =
-            repeat.properties[0] && repeat.properties[0].value != ''
-              ? repeat.properties[0].value
-              : '0';
-          var maxValue =
-            repeat.properties[0] && repeat.properties[1].value != ''
-              ? repeat.properties[1].value
-              : '*';
+          var minValue = repeat.properties[0] && repeat.properties[0].value != '' ? repeat.properties[0].value : '0';
+          var maxValue = repeat.properties[0] && repeat.properties[1].value != '' ? repeat.properties[1].value : '*';
 
           xml +=
             '\t\t\t\t<field>\r\n' +
@@ -3906,10 +3677,10 @@
       const $input = $(identifier).siblings('input'),
         controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
         postfixes = CStudioAdminConsole.getPostfixes(type, controls),
-        currentPostfix = postfixes.filter(postfix => $input.val().endsWith(postfix)),
+        currentPostfix = postfixes.filter((postfix) => $input.val().endsWith(postfix)),
         hasPostfix = currentPostfix.length > 0;
 
-      if(hasPostfix) {
+      if (hasPostfix) {
         const replace = currentPostfix + '([^' + currentPostfix + ']*)$',
           re = new RegExp(replace, 'i');
 
@@ -3956,10 +3727,7 @@
       return renderPostfixDescriptions;
     };
 
-    CStudioAuthoring.Module.moduleLoaded(
-      'cstudio-console-tools-content-types',
-      CStudioAdminConsole.Tool.ContentTypes
-    );
+    CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-content-types', CStudioAdminConsole.Tool.ContentTypes);
   }
 
   CStudioAuthoring.Module.requireModule(

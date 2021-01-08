@@ -151,9 +151,7 @@ YAHOO.extend(
       showEl.fieldName = this.fieldName;
 
       wrapperEl.appendChild(showEl);
-      wrapperEl.appendChild(
-        populateOptions(optionsEl, this.options, this.getValue().option, this.isShown())
-      );
+      wrapperEl.appendChild(populateOptions(optionsEl, this.options, this.getValue().option, this.isShown()));
       this.containerEl.appendChild(wrapperEl);
 
       this.dom = wrapperEl;
