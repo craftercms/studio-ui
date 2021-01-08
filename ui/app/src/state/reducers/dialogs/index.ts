@@ -38,6 +38,7 @@ import editSite from './editSite';
 import pathSelection from './pathSelection';
 import changeContentType from './changeContentType';
 import itemMenu from './itemMenu';
+import createToken from './createToken';
 
 export default combineReducers({
   confirm,
@@ -62,5 +63,6 @@ export default combineReducers({
   preview,
   pathSelection,
   changeContentType,
-  itemMenu
+  itemMenu,
+  createToken
 });

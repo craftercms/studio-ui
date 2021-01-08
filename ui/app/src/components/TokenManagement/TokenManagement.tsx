@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -38,6 +38,9 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
 import moment from 'moment-timezone';
+import { getTokens } from '../../services/token';
+import { useDispatch } from 'react-redux';
+import { showCreateTokenDialog } from '../../state/actions/dialogs';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -89,13 +92,27 @@ const rows = [
 
 export default function TokenManagement() {
   const classes = styles();
+  // TODO: Should the tokens be on the store??
+  const [tokens, setTokens] = useState();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    getTokens().subscribe((tokens) => {
+      setTokens(tokens);
+    });
+  }, []);
+
+  const createToken = () => {
+    dispatch(showCreateTokenDialog({}));
+  };
+
   return (
     <section>
       <Typography variant="h4" component="h1" className={classes.title}>
         <FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />
       </Typography>
       <Divider />
-      <Button variant="outlined" startIcon={<AddIcon />} className={classes.createToken}>
+      <Button variant="outlined" startIcon={<AddIcon />} className={classes.createToken} onClick={createToken}>
         <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
       </Button>
       <Divider />

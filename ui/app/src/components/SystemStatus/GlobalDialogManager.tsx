@@ -51,6 +51,7 @@ const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/BulkUploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
+const CreateTokenDialog = lazy(() => import('../Dialogs/CreateTokenDialog'));
 const ItemMenu = lazy(() => import('../ItemMenu/ItemMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
 
@@ -341,6 +342,15 @@ function GlobalDialogManager() {
         onClose={createCallback(state.createFile.onClose, dispatch)}
         onClosed={createCallback(state.createFile.onClosed, dispatch)}
         onCreated={createCallback(state.createFile.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create Token */}
+      <CreateTokenDialog
+        open={state.createToken.open}
+        onClose={createCallback(state.createToken.onClose, dispatch)}
+        onClosed={createCallback(state.createToken.onClosed, dispatch)}
+        onCreated={createCallback(state.createToken.onCreated, dispatch)}
       />
       {/* endregion */}
 

@@ -53,6 +53,7 @@ import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemMenu/ItemMenu';
 import { MessageDescriptor } from 'react-intl';
+import { CreateTokenStateProps } from '../components/Dialogs/CreateTokenDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -162,6 +163,7 @@ export interface GlobalState {
     reject: RejectDialogStateProps;
     createFolder: CreateFolderStateProps;
     createFile: CreateFileStateProps;
+    createToken: CreateTokenStateProps;
     copy: CopyDialogStateProps;
     upload: BulkUploadStateProps;
     preview: PreviewDialogStateProps;
