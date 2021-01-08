@@ -1135,7 +1135,7 @@
 
         var datasourcesNameEl = document.createElement('span');
         YDom.addClass(datasourcesNameEl, 'content-section-name');
-        datasourcesNameEl.innerHTML = CMgs.format(langBundle, 'datasources');
+        datasourcesNameEl.textContent = CMgs.format(langBundle, 'datasources');
         datasourcesContainerEl.appendChild(datasourcesNameEl);
         var tar = new YAHOO.util.DDTarget(datasourcesContainerEl);
 
@@ -1246,7 +1246,7 @@
 
           var sectionNameEl = document.createElement('span');
           YDom.addClass(sectionNameEl, 'content-section-name');
-          sectionNameEl.innerHTML = section.title;
+          sectionNameEl.textContent = section.title;
           sectionContainerEl.appendChild(sectionNameEl);
 
           section.sectionContainerEl = sectionContainerEl;
