@@ -15,7 +15,38 @@
  */
 
 import React from 'react';
+import { Button, Divider, Typography } from '@material-ui/core';
+import { FormattedMessage } from 'react-intl';
+import AddIcon from '@material-ui/icons/Add';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+const styles = makeStyles((theme) =>
+  createStyles({
+    title: {
+      marginBottom: '25px'
+    },
+    createToken: {
+      margin: '10px 0',
+      borderRadius: '50px',
+      border: 0,
+      boxShadow: '0 3px 1px -2px rgba(0,0,0,0.2), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12)',
+      padding: '5px 25px'
+    }
+  })
+);
 
 export default function TokenManagement() {
-  return <div>WIP</div>;
+  const classes = styles();
+  return (
+    <section>
+      <Typography variant="h4" component="h1" className={classes.title}>
+        <FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />
+      </Typography>
+      <Divider />
+      <Button variant="outlined" startIcon={<AddIcon />} className={classes.createToken}>
+        <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
+      </Button>
+      <Divider />
+    </section>
+  );
 }

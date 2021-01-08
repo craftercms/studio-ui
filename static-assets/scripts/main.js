@@ -296,6 +296,15 @@
             }
           }
         })
+        .state('home.globalMenu.tokenManagement', {
+          url: '/token-management',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/tokenManagement.html',
+              controller: 'TokenManagementCtrl'
+            }
+          }
+        })
         .state('home.sites', {
           url: 'sites',
           views: {
@@ -1676,6 +1685,19 @@
       workarea.appendChild(el);
 
       CrafterCMSNext.render(el, 'EncryptTool');
+    }
+  ]);
+
+  app.controller('TokenManagementCtrl', [
+    '$scope',
+    function($scope) {
+      const workarea = document.querySelector('#token-management-view');
+      const el = document.createElement('div');
+
+      $(workarea).html('');
+      workarea.appendChild(el);
+
+      CrafterCMSNext.render(el, 'TokenManagement');
     }
   ]);
 
