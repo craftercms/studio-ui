@@ -95,6 +95,10 @@ export const usersAdminMessages = defineMessages({
   userDeleted: {
     id: 'usersAdmin.userDeleted',
     defaultMessage: '{username} deleted.'
+  },
+  passwordChangeSuccess: {
+    id: 'usersAdmin.passwordChangeSuccessMessage',
+    defaultMessage: 'Password changed successfully'
   }
 });
 

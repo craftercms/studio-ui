@@ -17,39 +17,31 @@
 import { createAction } from '@reduxjs/toolkit';
 import { User } from '../../models/User';
 import { Credentials } from '../../models/Credentials';
+import { RefreshSessionResponse } from '../../services/auth';
 
 // region Login
 
-export const LOG_IN = 'LOG_IN';
-export const LOG_IN_COMPLETE = 'LOG_IN_COMPLETE';
-export const LOG_IN_FAILED = 'LOG_IN_FAILED';
-
-export const login = createAction<Credentials>(LOG_IN);
-export const loginComplete = createAction<User>(LOG_IN_COMPLETE);
-export const loginFailed = createAction(LOG_IN_FAILED);
+export const login = createAction<Credentials>('LOG_IN');
+export const loginComplete = createAction<{ user: User; auth: RefreshSessionResponse }>('LOG_IN_COMPLETE');
+export const loginFailed = createAction('LOG_IN_FAILED');
 
 // endregion
 
 // region Log Out
 
-export const LOG_OUT = 'LOG_OUT';
-export const LOG_OUT_COMPLETE = 'LOG_OUT_COMPLETE';
-export const LOG_OUT_FAILED = 'LOG_OUT_FAILED';
-
-export const logout = createAction(LOG_OUT);
-export const logoutComplete = createAction<boolean>(LOG_OUT_COMPLETE);
-export const logoutFailed = createAction(LOG_OUT_FAILED);
+export const logout = createAction('LOG_OUT');
+export const logoutComplete = createAction<boolean>('LOG_OUT_COMPLETE');
+export const logoutFailed = createAction('LOG_OUT_FAILED');
 
 // endregion
 
-// region Validate Session
+// region User Session control
 
-export const VALIDATE_SESSION = 'VALIDATE_SESSION';
-export const VALIDATE_SESSION_COMPLETE = 'VALIDATE_SESSION_COMPLETE';
-export const VALIDATE_SESSION_FAILED = 'VALIDATE_SESSION_FAILED';
-
-export const validateSession = createAction(VALIDATE_SESSION);
-export const validateSessionComplete = createAction<boolean>(VALIDATE_SESSION_COMPLETE);
-export const validateSessionFailed = createAction(VALIDATE_SESSION_FAILED);
+export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
+export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
+export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
+export const authTokenRefreshedFromAnotherTab = createAction<RefreshSessionResponse>(
+  'AUTH_TOKEN_REFRESHED_FROM_ANOTHER_TAB'
+);
 
 // endregion

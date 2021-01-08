@@ -15,7 +15,7 @@
  */
 
 import { LookupTable } from './LookupTable';
-import { User } from './User';
+import { EnhancedUser } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
@@ -88,10 +88,11 @@ export interface Clipboard {
 export interface GlobalState {
   auth: {
     error: ApiResponse;
-    isFetching: boolean;
     active: boolean;
+    expiresAt: number;
+    isFetching: boolean;
   };
-  user: User;
+  user: EnhancedUser;
   sites: {
     active: string;
     isFetching: boolean;

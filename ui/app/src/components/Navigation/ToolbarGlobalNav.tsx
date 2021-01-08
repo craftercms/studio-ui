@@ -20,7 +20,7 @@ import CrafterChevron from '../Icons/CrafterChevron';
 import GlobalNav from './GlobalNav';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
-import { getLogoutInfoURL } from '../../services/auth';
+import { getSSOLogoutURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
 import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList, useSystemVersion } from '../../utils/hooks';
 import palette from '../../styles/palette';
@@ -89,15 +89,15 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
-  const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
+  const [logoutUrl, setLogoutUrl] = useState<string>('/studio/logout');
   const { authoringBase } = useEnv();
   const version = useSystemVersion();
   const sites = useSiteList();
   const dispatch = useDispatch();
 
   useMount(() => {
-    if (user.authType === authHeaders || user.authType === authSaml) {
-      getLogoutInfoURL().subscribe((response) => {
+    if (user.authenticationType === authHeaders || user.authenticationType === authSaml) {
+      getSSOLogoutURL().subscribe((response) => {
         setLogoutUrl(response.logoutUrl ?? null);
       });
     }

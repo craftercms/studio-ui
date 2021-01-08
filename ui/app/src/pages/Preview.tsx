@@ -16,12 +16,10 @@
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import PreviewComponent from '../modules/Preview/Preview';
-import AuthMonitor from '../components/SystemStatus/AuthMonitor';
 
 export default function Preview(topProps: any) {
   return (
     <>
-      <AuthMonitor />
       <HashRouter>
         <Route path="/" render={(routeProps: any) => <PreviewComponent {...topProps} {...routeProps} />} />
       </HashRouter>

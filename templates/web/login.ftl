@@ -39,9 +39,23 @@
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
-  CrafterCMSNext.render('#root', 'Login', {
-    passwordRequirementsRegex: '${passwordRequirementsRegex}'
-  });
+  (function(ui) {
+    const ReactDOM = ui.ReactDOM;
+    const createElement = ui.React.createElement;
+    ReactDOM.render(
+      createElement(
+        ui.React.Suspense,
+        { fallback: '' },
+        createElement(CrafterCMSNext.components.Login, {
+          xsrfToken: '${_csrf.token}',
+          xsrfParamName: '${_csrf.parameterName}',
+          xsrfHeaderName: '${_csrf.headerName}',
+          passwordRequirementsRegex: '${passwordRequirementsRegex}'
+        })
+      ),
+      document.querySelector('#root')
+    );
+  })(CrafterCMSNext);
 </script>
 </body>
 </html>

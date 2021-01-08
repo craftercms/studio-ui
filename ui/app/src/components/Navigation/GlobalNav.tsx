@@ -35,7 +35,6 @@ import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
-import { logout } from '../../services/auth';
 import Cookies from 'js-cookie';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
@@ -404,8 +403,8 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   useMount(() => {
     getGlobalMenuItems().subscribe(
-      ({ response }) => {
-        setMenuItems(response.menuItems);
+      (menuItems) => {
+        setMenuItems(menuItems);
       },
       (error) => {
         if (error.response) {
@@ -557,8 +556,9 @@ export default function GlobalNav(props: GlobalNavProps) {
                     />
                   }
                   action={
+                    // TODO: what will happen with logoutUrl now that we're always just posting back to /studio/logout?
                     logoutUrl && (
-                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => onLogout(logoutUrl)}>
+                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
                         <ExitToAppRoundedIcon />
                       </IconButton>
                     )
@@ -595,10 +595,8 @@ function navigateTo(link: string): void {
 }
 
 function onLogout(url) {
-  logout().subscribe(() => {
-    Cookies.set('userSession', null);
-    window.location.href = url;
-  });
+  Cookies.set('userSession', null);
+  window.location.href = url;
 }
 
 const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
