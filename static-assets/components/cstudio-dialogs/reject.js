@@ -24,10 +24,6 @@ CStudioAuthoring.Dialogs.DialogReject = function () {
   this.moduleName = 'reject';
   this.reasonHash = [];
   this.uncheckedItemsArrayNew = [];
-
-  const i18n = CrafterCMSNext.i18n;
-  this.formatMessage = i18n.intl.formatMessage,
-  this.words = i18n.messages.words;
 };
 
 CStudioAuthoring.Module.requireModule(
