@@ -793,13 +793,21 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       if (category.components) {
         if (category.components.length) {
           $.each(category.components, function (j, component) {
-            html.push(crafter.String(COMPONENT_TPL).fmt(component.path || '', component.type, component.label));
+            html.push(
+              crafter
+                .String(COMPONENT_TPL)
+                .fmt(component.path || '', component.type, CrafterCMSNext.util.string.escapeHTML(component.label))
+            );
           });
         } else {
           html.push(
             crafter
               .String(COMPONENT_TPL)
-              .fmt(category.components.path || '', category.components.type, category.components.label)
+              .fmt(
+                category.components.path || '',
+                category.components.type,
+                CrafterCMSNext.util.string.escapeHTML(category.components.label)
+              )
           );
         }
       }
