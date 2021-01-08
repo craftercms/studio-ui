@@ -24,6 +24,10 @@ CStudioAuthoring.Dialogs.DialogReject = function () {
   this.moduleName = 'reject';
   this.reasonHash = [];
   this.uncheckedItemsArrayNew = [];
+
+  const i18n = CrafterCMSNext.i18n;
+  this.formatMessage = i18n.intl.formatMessage,
+  this.words = i18n.messages.words;
 };
 
 CStudioAuthoring.Module.requireModule(
@@ -113,7 +117,9 @@ CStudioAuthoring.Module.requireModule(
               }
             ],
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            'studioDialog',
+            null,
+            1043
           );
         }
 
@@ -159,7 +165,9 @@ CStudioAuthoring.Module.requireModule(
                       }
                     ],
                     YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    'studioDialog'
+                    'studioDialog',
+                    null,
+                    1043
                   );
                 } else {
                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -178,7 +186,9 @@ CStudioAuthoring.Module.requireModule(
                       }
                     ],
                     YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    'studioDialog'
+                    'studioDialog',
+                    null,
+                    1043
                   );
                 }
               },
@@ -219,7 +229,9 @@ CStudioAuthoring.Module.requireModule(
             'No items selected.',
             null,
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            'studioDialog',
+            null,
+            1043
           );
         }
       };
@@ -273,32 +285,40 @@ CStudioAuthoring.Module.requireModule(
           }
         }
 
-        var items = dependencyList.items;
+        var dependencies = dependencyList.items;
 
         var html = [];
 
-        CStudioAuthoring.Utils.each(items, function (index, item) {
-          html.push(
-            '<tr>',
-            /**/ '<td class="text-center">',
-            /**/ /**/ `<input type="checkbox" class="item-checkbox" data-item-id="${encodeURIComponent(
-              item.uri
-            )}" checked />`,
-            /**/ '</td>',
-            /**/ '<td class="name">',
-            /**/ /**/ '<div class="in">',
-            /**/ /**/ /**/ CrafterCMSNext.util.string.escapeHTML(`${item.internalName} ${item.uri}`),
-            /**/ /**/ '</div>',
-            /**/ /**/ '</div>',
-            /**/ '</td>'
-          );
+        const renderItems = (items) => {
+          CStudioAuthoring.Utils.each(items, function (index, item) {
+            html.push(
+              '<tr>',
+              /**/ '<td class="text-center">',
+              /**/ /**/ `<input type="checkbox" class="item-checkbox" data-item-id="${encodeURIComponent(
+                item.uri
+              )}" checked />`,
+              /**/ '</td>',
+              /**/ '<td class="name">',
+              /**/ /**/ '<div class="in">',
+              /**/ /**/ /**/ CrafterCMSNext.util.string.escapeHTML(`${item.internalName} ${item.uri}`),
+              /**/ /**/ '</div>',
+              /**/ /**/ '</div>',
+              /**/ '</td>'
+            );
 
-          if (item.userFirstName) {
-            html.push('<td class="schedule">' + item.userFirstName + '</td>', '</tr>');
-          } else {
-            html.push('<td class="text-right schedule"></td>', '</tr>');
-          }
-        });
+            if (item.userFirstName) {
+              html.push('<td class="schedule">' + item.userFirstName + '</td>', '</tr>');
+            } else {
+              html.push('<td class="text-right schedule"></td>', '</tr>');
+            }
+          });
+        };
+
+        renderItems(this.selectedContent);
+
+        html.push(`<tr><td class="dependencies-label">${this.formatMessage(this.words.dependencies)}</td>`);
+
+        renderItems(dependencies);
 
         YDom.get('tbodyDepend').innerHTML = html.join('');
 
@@ -434,9 +454,11 @@ CStudioAuthoring.Module.requireModule(
                 var timeZoneText = o.getResponseHeader.Timezone;
 
                 self.dependencyJsonObj = eval('(' + respText + ')');
+                self.dependencyJsonObj.items = self.dependencyJsonObj.items.concat(self.selectedContent);
+
                 self.flatMap = self.createItemMap();
                 self.uncheckedItemsArray = [];
-                self.displayItemListWithDependencies(self.dependencyJsonObj);
+                self.displayItemListWithDependencies(eval('(' + respText + ')'));
 
                 // get reject reason from hidden div
                 var reasonJsonArray = [];
@@ -455,7 +477,9 @@ CStudioAuthoring.Module.requireModule(
                   o.statusText,
                   null,
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
+                  'studioDialog',
+                  null,
+                  1043
                 );
               }
             },
@@ -469,7 +493,9 @@ CStudioAuthoring.Module.requireModule(
             'No items selected',
             null,
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            'studioDialog',
+            null,
+            1043
           );
         }
       };
@@ -495,6 +521,7 @@ CStudioAuthoring.Module.requireModule(
           this.itemArray.push(selectedContent[i].uri);
         }
 
+        this.selectedContent = selectedContent;
         this.getDependenciesForGoLiveItemList(contentItems);
       };
 
@@ -573,8 +600,9 @@ CStudioAuthoring.Module.requireModule(
           uncheckedItemsArrayLen = uncheckedItems.length;
 
         for (var i = 0; i < uncheckedItemsArrayLen; ++i) {
-          this.removeItemNew(this.selectedJsonObj.items, uncheckedItems[i]);
+          this.removeItemNew(this.dependencyJsonObj.items, uncheckedItems[i]);
         }
+        this.selectedJsonObj = this.clone_obj_uri(this.dependencyJsonObj);
 
         return uncheckedItemsArrayLen;
       };
