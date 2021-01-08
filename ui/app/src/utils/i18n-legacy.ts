@@ -439,10 +439,6 @@ const words = defineMessages({
   reason: {
     id: 'words.reason',
     defaultMessage: 'Reason'
-  },
-  dependencies: {
-    id: 'words.dependencies',
-    defaultMessage: 'Dependencies'
   }
 });
 

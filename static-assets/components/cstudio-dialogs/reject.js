@@ -315,7 +315,7 @@ CStudioAuthoring.Module.requireModule(
         renderItems(this.selectedContent);
 
         html.push(
-          `<tr><td></td><td class="dependencies-label">${this.formatMessage(this.words.dependencies)}</td>`
+          `<tr><td></td><td class="dependencies-label">${CMgs.format(langBundle, 'dependenciesLabel')}</td>`
         );
 
         renderItems(dependencies);
