@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.ContextualNav
-  .WcmRootFolder.RegionalTree || {
+CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.ContextualNav.WcmRootFolder
+  .RegionalTree || {
   Self: this,
   readyToLoad: false,
   region: '',
@@ -62,15 +62,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.Con
     );
   },
 
-  _renderContextMenu: function (
-    tree,
-    target,
-    p_aArgs,
-    component,
-    menuItems,
-    oCurrentTextNode,
-    isWrite
-  ) {},
+  _renderContextMenu: function (tree, target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {},
 
   sortTreeItems: function (treeItems) {
     treeItems.sort(function (a, b) {

@@ -58,8 +58,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         },
         true,
         true,
-        (contentType) =>
-          contentType.type === 'component' && contentType.name !== '/component/level-descriptor'
+        (contentType) => contentType.type === 'component' && contentType.name !== '/component/level-descriptor'
       );
     } else {
       CStudioAuthoring.Operations.openContentWebForm(
@@ -134,9 +133,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
   edit: function (key, control) {
     var _self = this;
     CStudioForms.communication.sendAndAwait(key, (message) => {
-      const contentType = CStudioForms.communication
-        .parseDOM(message.payload)
-        .querySelector('content-type').innerHTML;
+      const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type').innerHTML;
       CStudioAuthoring.Operations.performSimpleIceEdit(
         { contentType: contentType, uri: key },
         null, // field

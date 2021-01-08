@@ -203,7 +203,4 @@ YAHOO.extend(CStudioForms.Datasources.ConfiguredList, CStudioForms.CStudioFormDa
   SORT_ASC: 'ascending'
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-configured-list',
-  CStudioForms.Datasources.ConfiguredList
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-configured-list', CStudioForms.Datasources.ConfiguredList);

@@ -113,9 +113,7 @@
     },
     text: function (F) {
       if (typeof F !== 'object' && F != null) {
-        return this.empty().append(
-          ((this[0] && this[0].ownerDocument) || document).createTextNode(F)
-        );
+        return this.empty().append(((this[0] && this[0].ownerDocument) || document).createTextNode(F));
       }
       var E = '';
       o.each(F || this, function () {
@@ -280,9 +278,7 @@
       });
     },
     add: function (E) {
-      return this.pushStack(
-        o.unique(o.merge(this.get(), typeof E === 'string' ? o(E) : o.makeArray(E)))
-      );
+      return this.pushStack(o.unique(o.merge(this.get(), typeof E === 'string' ? o(E) : o.makeArray(E))));
     },
     is: function (E) {
       return !!E && o.multiFilter(E, this).length > 0;
@@ -392,8 +388,7 @@
       return this;
       function K(N, O) {
         return M && o.nodeName(N, 'table') && o.nodeName(O, 'tr')
-          ? N.getElementsByTagName('tbody')[0] ||
-              N.appendChild(N.ownerDocument.createElement('tbody'))
+          ? N.getElementsByTagName('tbody')[0] || N.appendChild(N.ownerDocument.createElement('tbody'))
           : N;
       }
     }
@@ -660,25 +655,15 @@
         }
         if (typeof S === 'string') {
           S = S.replace(/(<(\w+)[^>]*?)\/>/g, function (U, V, T) {
-            return T.match(/^(abbr|br|col|img|input|link|meta|param|hr|area|embed)$/i)
-              ? U
-              : V + '></' + T + '>';
+            return T.match(/^(abbr|br|col|img|input|link|meta|param|hr|area|embed)$/i) ? U : V + '></' + T + '>';
           });
           var O = S.replace(/^\s+/, '').substring(0, 10).toLowerCase();
           var Q = (!O.indexOf('<opt') && [1, "<select multiple='multiple'>", '</select>']) ||
             (!O.indexOf('<leg') && [1, '<fieldset>', '</fieldset>']) ||
             (O.match(/^<(thead|tbody|tfoot|colg|cap)/) && [1, '<table>', '</table>']) ||
             (!O.indexOf('<tr') && [2, '<table><tbody>', '</tbody></table>']) ||
-            ((!O.indexOf('<td') || !O.indexOf('<th')) && [
-              3,
-              '<table><tbody><tr>',
-              '</tr></tbody></table>'
-            ]) ||
-            (!O.indexOf('<col') && [
-              2,
-              '<table><tbody></tbody><colgroup>',
-              '</colgroup></table>'
-            ]) ||
+            ((!O.indexOf('<td') || !O.indexOf('<th')) && [3, '<table><tbody><tr>', '</tr></tbody></table>']) ||
+            (!O.indexOf('<col') && [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>']) ||
             (!o.support.htmlSerialize && [1, 'div<div>', '</div>']) || [0, '', ''];
           L.innerHTML = Q[1] + S + Q[2];
           while (Q[0]--) {
@@ -711,17 +696,11 @@
       });
       if (I) {
         for (var J = 0; G[J]; J++) {
-          if (
-            o.nodeName(G[J], 'script') &&
-            (!G[J].type || G[J].type.toLowerCase() === 'text/javascript')
-          ) {
+          if (o.nodeName(G[J], 'script') && (!G[J].type || G[J].type.toLowerCase() === 'text/javascript')) {
             E.push(G[J].parentNode ? G[J].parentNode.removeChild(G[J]) : G[J]);
           } else {
             if (G[J].nodeType === 1) {
-              G.splice.apply(
-                G,
-                [J + 1, 0].concat(o.makeArray(G[J].getElementsByTagName('script')))
-              );
+              G.splice.apply(G, [J + 1, 0].concat(o.makeArray(G[J].getElementsByTagName('script'))));
             }
             I.appendChild(G[J]);
           }
@@ -905,9 +884,7 @@
         return o.sibling(E.firstChild);
       },
       contents: function (E) {
-        return o.nodeName(E, 'iframe')
-          ? E.contentDocument || E.contentWindow.document
-          : o.makeArray(E.childNodes);
+        return o.nodeName(E, 'iframe') ? E.contentDocument || E.contentWindow.document : o.makeArray(E.childNodes);
       }
     },
     function (E, F) {
@@ -1446,10 +1423,7 @@
         CHILD: function (T) {
           if (T[1] == 'nth') {
             var U = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(
-              (T[2] == 'even' && '2n') ||
-                (T[2] == 'odd' && '2n+1') ||
-                (!/\D/.test(T[2]) && '0n+' + T[2]) ||
-                T[2]
+              (T[2] == 'even' && '2n') || (T[2] == 'odd' && '2n+1') || (!/\D/.test(T[2]) && '0n+' + T[2]) || T[2]
             );
             T[2] = U[1] + (U[2] || 1) - 0;
             T[3] = U[3] - 0;
@@ -1767,8 +1741,7 @@
             var W = Y.getElementById(X[1]);
             return W
               ? W.id === X[1] ||
-                (typeof W.getAttributeNode !== 'undefined' &&
-                  W.getAttributeNode('id').nodeValue === X[1])
+                (typeof W.getAttributeNode !== 'undefined' && W.getAttributeNode('id').nodeValue === X[1])
                 ? [W]
                 : g
               : [];
@@ -1929,10 +1902,7 @@
           return U !== T && (U.contains ? U.contains(T) : true);
         };
     var Q = function (T) {
-      return (
-        (T.nodeType === 9 && T.documentElement.nodeName !== 'HTML') ||
-        (!!T.ownerDocument && Q(T.ownerDocument))
-      );
+      return (T.nodeType === 9 && T.documentElement.nodeName !== 'HTML') || (!!T.ownerDocument && Q(T.ownerDocument));
     };
     var J = function (T, aa) {
       var W = [],
@@ -2152,11 +2122,7 @@
       if (J) {
         J.apply(H, K);
       }
-      if (
-        (!H[G] || (o.nodeName(H, 'a') && G == 'click')) &&
-        H['on' + G] &&
-        H['on' + G].apply(H, K) === false
-      ) {
+      if ((!H[G] || (o.nodeName(H, 'a') && G == 'click')) && H['on' + G] && H['on' + G].apply(H, K) === false) {
         I.result = false;
       }
       if (!E && H[G] && !I.isDefaultPrevented() && !(o.nodeName(H, 'a') && G == 'click')) {
@@ -2226,8 +2192,7 @@
       if (H.pageX == null && H.clientX != null) {
         var I = document.documentElement,
           E = document.body;
-        H.pageX =
-          H.clientX + ((I && I.scrollLeft) || (E && E.scrollLeft) || 0) - (I.clientLeft || 0);
+        H.pageX = H.clientX + ((I && I.scrollLeft) || (E && E.scrollLeft) || 0) - (I.clientLeft || 0);
         H.pageY = H.clientY + ((I && I.scrollTop) || (E && E.scrollTop) || 0) - (I.clientTop || 0);
       }
       if (!H.which && (H.charCode || H.charCode === 0 ? H.charCode : H.keyCode)) {
@@ -2641,9 +2606,7 @@
           return (
             this.name &&
             !this.disabled &&
-            (this.checked ||
-              /select|textarea/i.test(this.nodeName) ||
-              /text|hidden|password|search/i.test(this.type))
+            (this.checked || /select|textarea/i.test(this.nodeName) || /text|hidden|password|search/i.test(this.type))
           );
         })
         .map(function (E, F) {
@@ -2659,10 +2622,7 @@
         .get();
     }
   });
-  o.each('ajaxStart,ajaxStop,ajaxComplete,ajaxError,ajaxSuccess,ajaxSend'.split(','), function (
-    E,
-    F
-  ) {
+  o.each('ajaxStart,ajaxStop,ajaxComplete,ajaxError,ajaxSuccess,ajaxSend'.split(','), function (E, F) {
     o.fn[F] = function (G) {
       return this.bind(F, G);
     };
@@ -2770,12 +2730,7 @@
         o.event.trigger('ajaxStart');
       }
       var Q = /^(\w+:)?\/\/([^\/?#]+)/.exec(M.url);
-      if (
-        M.dataType == 'script' &&
-        G == 'GET' &&
-        Q &&
-        ((Q[1] && Q[1] != location.protocol) || Q[2] != location.host)
-      ) {
+      if (M.dataType == 'script' && G == 'GET' && Q && ((Q[1] && Q[1] != location.protocol) || Q[2] != location.host)) {
         var H = document.getElementsByTagName('head')[0];
         var T = document.createElement('script');
         T.src = M.url;
@@ -2785,10 +2740,7 @@
         if (!W) {
           var O = false;
           T.onload = T.onreadystatechange = function () {
-            if (
-              !O &&
-              (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')
-            ) {
+            if (!O && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
               O = true;
               I();
               L();
@@ -2812,10 +2764,7 @@
           J.setRequestHeader('Content-Type', M.contentType);
         }
         if (M.ifModified) {
-          J.setRequestHeader(
-            'If-Modified-Since',
-            o.lastModified[M.url] || 'Thu, 01 Jan 1970 00:00:00 GMT'
-          );
+          J.setRequestHeader('If-Modified-Since', o.lastModified[M.url] || 'Thu, 01 Jan 1970 00:00:00 GMT');
         }
         J.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         J.setRequestHeader(
@@ -3210,10 +3159,7 @@
       }
     },
     cur: function (F) {
-      if (
-        this.elem[this.prop] != null &&
-        (!this.elem.style || this.elem.style[this.prop] == null)
-      ) {
+      if (this.elem[this.prop] != null && (!this.elem.style || this.elem.style[this.prop] == null)) {
         return this.elem[this.prop];
       }
       var E = parseFloat(o.css(this.elem, this.prop, F));
@@ -3476,9 +3422,7 @@
               : (this[G] = H);
           })
         : this[0] == l || this[0] == document
-        ? self[F ? 'pageYOffset' : 'pageXOffset'] ||
-          (o.boxModel && document.documentElement[G]) ||
-          document.body[G]
+        ? self[F ? 'pageYOffset' : 'pageXOffset'] || (o.boxModel && document.documentElement[G]) || document.body[G]
         : this[0][G];
     };
   });
@@ -3495,8 +3439,7 @@
     var J = G.toLowerCase();
     o.fn[J] = function (K) {
       return this[0] == l
-        ? (document.compatMode == 'CSS1Compat' && document.documentElement['client' + G]) ||
-            document.body['client' + G]
+        ? (document.compatMode == 'CSS1Compat' && document.documentElement['client' + G]) || document.body['client' + G]
         : this[0] == document
         ? Math.max(
             document.documentElement['client' + G],

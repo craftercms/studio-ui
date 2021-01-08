@@ -367,7 +367,6 @@ var CStudioForms =
                 helpDialogEl = document.createElement('div');
                 helpDialogEl.id = 'help-dialog';
                 YAHOO.util.Dom.addClass(helpDialogEl, 'seethrough');
-
                 document.body.appendChild(helpDialogEl);
               }
 
@@ -375,7 +374,6 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(maskEl, 'dialog-dialog-mask');
               maskEl.style.display = 'block';
               maskEl.id = 'dialogMask';
-              //window.parent.document.body.appendChild(maskEl);
               document.body.appendChild(maskEl);
 
               helpDialogEl.style.display = 'block';
@@ -390,7 +388,7 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(helpDialogContainerEl, 'dialog-body');
               helpDialogEl.appendChild(helpDialogContainerEl);
 
-              helpDialogContainerEl.innerHTML = CStudioForms.Util.unEscapeXml(config.help);
+              helpDialogContainerEl.innerHTML = config.help;
 
               var buttonContainerEl = document.createElement('div');
               YAHOO.util.Dom.addClass(buttonContainerEl, 'dialog-button-bar');
@@ -623,8 +621,7 @@ var CStudioForms =
 
           if (
             this.model[repeatGroup].length > 0 &&
-            (this.model[repeatGroup][repeatIndex] != null ||
-              this.model[repeatGroup][repeatIndex] != undefined)
+            (this.model[repeatGroup][repeatIndex] != null || this.model[repeatGroup][repeatIndex] != undefined)
           ) {
             value = this.model[repeatGroup][repeatIndex][repeatField];
           } else {
@@ -830,9 +827,7 @@ var CStudioForms =
 
         if (style !== 'default') {
           // forms-default.css is loaded on the FTL.
-          CStudioAuthoring.Utils.addCss(
-            '/static-assets/themes/cstudioTheme/css/forms-' + style + '.css'
-          );
+          CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/forms-' + style + '.css');
         }
 
         let { formId, path, isInclude, readonly, isEdit } = this.config;
@@ -851,9 +846,7 @@ var CStudioForms =
                       payload: FlattenerState[message.key]
                     });
                   } else {
-                    console.warn(
-                      `FormEngine Flattener: The include \`component[key="${message.key}"]\` wasn't found.`
-                    );
+                    console.warn(`FormEngine Flattener: The include \`component[key="${message.key}"]\` wasn't found.`);
                   }
                 }
                 break;
@@ -972,11 +965,7 @@ var CStudioForms =
               contentAsFolder: contentType.contentAsFolder
             };
 
-            if (
-              model &&
-              model.item.lockOwner !== '' &&
-              model.item.lockOwner !== CStudioAuthoringContext.user
-            ) {
+            if (model && model.item.lockOwner !== '' && model.item.lockOwner !== CStudioAuthoringContext.user) {
               readonly = true;
             }
 
@@ -1055,27 +1044,13 @@ var CStudioForms =
         return '';
       },
 
-      _renderFormWithContent: function (
-        content,
-        formId,
-        formDef,
-        style,
-        customControllerClass,
-        readOnly
-      ) {
+      _renderFormWithContent: function (content, formId, formDef, style, customControllerClass, readOnly) {
         var me = this;
 
         function getDateTimeObject(timeObj) {
           return {
-            date:
-              timeObj.getUTCMonth() +
-              1 +
-              '/' +
-              timeObj.getUTCDate() +
-              '/' +
-              timeObj.getUTCFullYear(),
-            time:
-              timeObj.getUTCHours() + ':' + timeObj.getUTCMinutes() + ':' + timeObj.getUTCSeconds()
+            date: timeObj.getUTCMonth() + 1 + '/' + timeObj.getUTCDate() + '/' + timeObj.getUTCFullYear(),
+            time: timeObj.getUTCHours() + ':' + timeObj.getUTCMinutes() + ':' + timeObj.getUTCSeconds()
           };
         }
 
@@ -1087,9 +1062,7 @@ var CStudioForms =
           }
         };
         var readonly =
-          readOnly || CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') == 'true'
-            ? true
-            : false;
+          readOnly || CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') == 'true' ? true : false;
         var contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, 'form');
         var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
         var edit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit');
@@ -1126,16 +1099,12 @@ var CStudioForms =
 
         var timezone = 'GMT';
 
-        CStudioAuthoring.Service.lookupConfigurtion(
-          CStudioAuthoringContext.site,
-          '/site-config.xml',
-          {
-            failure: crafter.noop,
-            success: function (config) {
-              timezone = config['default-timezone'];
-            }
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
+          failure: crafter.noop,
+          success: function (config) {
+            timezone = config['default-timezone'];
           }
-        );
+        });
 
         // Timestamp in UTC
         var nowTimestamp = new Date().toISOString();
@@ -1148,11 +1117,7 @@ var CStudioForms =
           beforeSave: function () {
             var oModel = form.model;
 
-            if (
-              oModel.createdDate === undefined ||
-              oModel.createdDate === 'undefined' ||
-              oModel.createdDate === ''
-            ) {
+            if (oModel.createdDate === undefined || oModel.createdDate === 'undefined' || oModel.createdDate === '') {
               oModel.createdDate = nowTimestamp;
               oModel.createdDate_dt = nowTimestamp;
             }
@@ -1172,10 +1137,7 @@ var CStudioForms =
 
         this._loadDatasources(form, function (loaded, notLoaded) {
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
-          var iceComponent = CStudioAuthoring.Utils.getQueryVariable(
-            location.search,
-            'iceComponent'
-          );
+          var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
 
           if (iceId && iceId != '') {
             var html = me._renderIceLayout(form);
@@ -1207,10 +1169,7 @@ var CStudioForms =
                 var sectionOpenCloseWidgetEl = section.sectionOpenCloseWidgetEl;
 
                 sectionBodyEl.style.display = 'block';
-                YAHOO.util.Dom.removeClass(
-                  sectionOpenCloseWidgetEl,
-                  'cstudio-form-section-widget-closed'
-                );
+                YAHOO.util.Dom.removeClass(sectionOpenCloseWidgetEl, 'cstudio-form-section-widget-closed');
               }
             };
 
@@ -1222,10 +1181,7 @@ var CStudioForms =
                 var sectionOpenCloseWidgetEl = section.sectionOpenCloseWidgetEl;
 
                 sectionBodyEl.style.display = 'none';
-                YAHOO.util.Dom.addClass(
-                  sectionOpenCloseWidgetEl,
-                  'cstudio-form-section-widget-closed'
-                );
+                YAHOO.util.Dom.addClass(sectionOpenCloseWidgetEl, 'cstudio-form-section-widget-closed');
               }
             };
 
@@ -1238,10 +1194,7 @@ var CStudioForms =
 
           var buildEntityIdFn = function (draft) {
             var entityId = path.replace('.html', '.xml');
-            var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(
-              location.search,
-              'changeTemplate'
-            );
+            var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
             var length = entityId.length;
             var index_html = '';
             var fileName = form.model['file-name'];
@@ -1284,8 +1237,7 @@ var CStudioForms =
                   'studioDialog'
                 );
               }
-              if (entityId.indexOf(index_html) == length - 10)
-                entityId = entityId.substring(0, length - 10);
+              if (entityId.indexOf(index_html) == length - 10) entityId = entityId.substring(0, length - 10);
             } else if (fileName.indexOf('.xml') != fileName.length - 4) {
               form.model['file-name'] = fileName += '.xml';
             }
@@ -1299,10 +1251,7 @@ var CStudioForms =
             } else {
               entityId += '/' + fileName;
             }
-            if (
-              !(form.isInError() && draft == false) &&
-              !(form.isInErrorDraft() && draft == true)
-            ) {
+            if (!(form.isInError() && draft == false) && !(form.isInErrorDraft() && draft == true)) {
               saveDraft = true;
             }
             lastDraft = draft;
@@ -1420,27 +1369,16 @@ var CStudioForms =
                   success: function () {
                     var getContentItemCb = {
                       success: function (contentTO) {
-                        var previewUrl =
-                          CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
+                        var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
                         path = entityId;
-                        var formId = CStudioAuthoring.Utils.getQueryVariable(
-                          location.search.substring(1),
-                          'wid'
-                        );
-                        var editorId = CStudioAuthoring.Utils.getQueryVariable(
-                          location.search,
-                          'editorId'
-                        );
+                        var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
+                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
                         setButtonsEnabled(true);
                         sendMessage({ type: CHILD_FORM_DRAFT_COMPLETE });
 
                         if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
-                          for (
-                            var x = 0;
-                            x < window.parent.CStudioAuthoring.editDisabled.length;
-                            x++
-                          ) {
+                          for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
                             window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = '';
                           }
                           window.parent.CStudioAuthoring.editDisabled = [];
@@ -1455,10 +1393,7 @@ var CStudioForms =
 
                           iceWindowCallback.success(contentTO, editorId, name, value, draft);
                           if (draft) {
-                            CStudioAuthoring.Utils.Cookies.createCookie(
-                              'cstudio-save-draft',
-                              'true'
-                            );
+                            CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             saveDraftDialog();
                           } else {
                             CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
@@ -1467,10 +1402,7 @@ var CStudioForms =
                           }
                         } else {
                           if (draft) {
-                            CStudioAuthoring.Utils.Cookies.createCookie(
-                              'cstudio-save-draft',
-                              'true'
-                            );
+                            CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             CStudioAuthoring.Operations.refreshPreview();
                             saveDraftDialog();
                           } else {
@@ -1481,24 +1413,15 @@ var CStudioForms =
                         }
                         var page = CStudioAuthoring.Utils.getQueryParameterURLParentWindow('page');
                         var currentPage = page.split('/')[page.split('/').length - 1];
-                        var acnDraftContent = YDom.getElementsByClassName(
-                          'acnDraftContent',
-                          null,
-                          parent.document
-                        )[0];
+                        var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
                         if (acnDraftContent && !saveDraft) {
                           acnDraftContent.parentNode.removeChild(acnDraftContent);
                         }
                         if (!acnDraftContent && saveDraft && contentTO.item.browserUri == page) {
                           var noticeEl = document.createElement('div');
-                          parent.document
-                            .querySelector('#studioBar nav .container-fluid')
-                            .appendChild(noticeEl);
+                          parent.document.querySelector('#studioBar nav .container-fluid').appendChild(noticeEl);
                           YDom.addClass(noticeEl, 'acnDraftContent');
-                          noticeEl.innerHTML = CMgs.format(
-                            formsLangBundle,
-                            'wcmContentSavedAsDraft'
-                          );
+                          noticeEl.innerHTML = CMgs.format(formsLangBundle, 'wcmContentSavedAsDraft');
                         }
 
                         if (embeddedIceDraft) {
@@ -1562,9 +1485,7 @@ var CStudioForms =
                       );
                     } catch (e) {
                       var error = eval('(' + err.responseText + ')'),
-                        errorMessage = error.message
-                          ? error.message
-                          : CMgs.format(formsLangBundle, 'errSaveFailed');
+                        errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, 'errSaveFailed');
 
                       CStudioAuthoring.Operations.showSimpleDialog(
                         'error-dialog',
@@ -1613,10 +1534,7 @@ var CStudioForms =
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
                 var entityId = buildEntityIdFn(null);
-                CStudioAuthoring.Service.unlockContentItemSync(
-                  CStudioAuthoringContext.site,
-                  entityId
-                );
+                CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
               }
             }
           };
@@ -1633,20 +1551,14 @@ var CStudioForms =
                       eventNS.typeAction = '';
                       eventNS.oldPath = null;
                       window.top.document.dispatchEvent(eventNS);
-                      var editorId = CStudioAuthoring.Utils.getQueryVariable(
-                        location.search,
-                        'editorId'
-                      );
+                      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                       CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                     },
                     failure: function () {}
                   });
                 } else {
                   _notifyServer = false;
-                  var editorId = CStudioAuthoring.Utils.getQueryVariable(
-                    location.search,
-                    'editorId'
-                  );
+                  var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                   CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               },
@@ -1711,10 +1623,7 @@ var CStudioForms =
                           unlockBeforeCancel(path);
                         } else {
                           _notifyServer = false;
-                          var editorId = CStudioAuthoring.Utils.getQueryVariable(
-                            location.search,
-                            'editorId'
-                          );
+                          var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                           CStudioAuthoring.InContextEdit.unstackDialog(editorId);
 
                           if (path == '/site/components/page') {
@@ -1749,26 +1658,16 @@ var CStudioForms =
               }
               //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
               sendMessage({ type: FORM_CANCEL });
-              var acnDraftContent = YDom.getElementsByClassName(
-                'acnDraftContent',
-                null,
-                parent.document
-              )[0];
+              var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
               if (acnDraftContent) {
                 unlockBeforeCancel(path);
               } else {
                 if (path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
-                  CStudioAuthoring.Service.unlockContentItemSync(
-                    CStudioAuthoringContext.site,
-                    entityId
-                  );
+                  CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
                 }
                 if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
-                  var editorId = CStudioAuthoring.Utils.getQueryVariable(
-                    location.search,
-                    'editorId'
-                  );
+                  var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                   CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                   var componentsOn = !!sessionStorage.getItem('components-on');
                   if (componentsOn) {
@@ -1883,8 +1782,7 @@ var CStudioForms =
             me
           );
 
-          var overlayContainer = parent.document.getElementById(window.frameElement.id)
-            .parentElement;
+          var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
           YDom.addClass(overlayContainer, 'overlay');
 
           $(document).on('keyup', function (e) {
@@ -2007,11 +1905,7 @@ var CStudioForms =
 
             if (pluginInfo.path != '') {
               script = CStudioAuthoringContext.baseUri + pluginInfo.path;
-              script = CStudioAuthoring.Utils.addURLParameter(
-                script,
-                'version',
-                CStudioAuthoring.UIBuildId
-              );
+              script = CStudioAuthoring.Utils.addURLParameter(script, 'version', CStudioAuthoring.UIBuildId);
 
               var onDone = (function (datasourceDef, pluginInfo) {
                 return function (script, textStatus) {
@@ -2020,11 +1914,7 @@ var CStudioForms =
                       notLoaded.push(datasourceDef.type);
                     } else {
                       var moduleClass = CStudioAuthoring.Module.loadedModules[pluginInfo.prefix];
-                      var datasource = new moduleClass(
-                        datasourceDef.id,
-                        form,
-                        datasourceDef.properties
-                      );
+                      var datasource = new moduleClass(datasourceDef.id, form, datasourceDef.properties);
                       form.datasourceMap[datasource.id] = datasource;
                       amplify.publish('/datasource/loaded', { name: datasource.id });
 
@@ -2087,17 +1977,9 @@ var CStudioForms =
             null,
             sectionContainerEl
           )[0];
-          var sectionBodyEl = YDom.getElementsByClassName(
-            'panel-body',
-            null,
-            sectionContainerEl
-          )[0];
+          var sectionBodyEl = YDom.getElementsByClassName('panel-body', null, sectionContainerEl)[0];
 
-          if (
-            section.defaultOpen == 'false' ||
-            section.defaultOpen == '' ||
-            section.defaultOpen == false
-          ) {
+          if (section.defaultOpen == 'false' || section.defaultOpen == '' || section.defaultOpen == false) {
             sectionBodyEl.style.display = 'none';
             YAHOO.util.Dom.addClass(sectionOpenCloseWidgetEl, 'cstudio-form-section-widget-closed');
           }
@@ -2222,7 +2104,7 @@ var CStudioForms =
           var titleEl = document.createElement('span');
           repeatInstanceContainerEl.appendChild(titleEl);
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.innerHTML = repeat.title;
+          titleEl.textContent = repeat.title;
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
@@ -2259,7 +2141,7 @@ var CStudioForms =
           var titleEl = document.createElement('span');
           repeatInstanceContainerEl.appendChild(titleEl);
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.innerHTML = repeat.title;
+          titleEl.textContent = repeat.title;
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
@@ -2353,8 +2235,7 @@ var CStudioForms =
 
               if (repeatArrayIndex) {
                 var containerElNodes = $(containerEl.childNodes);
-                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset()
-                  .top;
+                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
                 $('html').scrollTop(containerElLastChildTop);
               }
 
@@ -2368,15 +2249,7 @@ var CStudioForms =
           for (var j = 0; j < repeat.fields.length; j++) {
             var field = repeat.fields[j];
 
-            this._renderField(
-              formDef,
-              field,
-              form,
-              formSection,
-              repeatInstanceContainerEl,
-              repeat,
-              i
-            );
+            this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
           }
         }
       },
@@ -2528,11 +2401,7 @@ var CStudioForms =
         form.sectionsMap = [];
         var sectionContainerEl = document.getElementById('ice-container');
         var sectionEl = document.getElementById('ice-body-controls');
-        var sectionBodyEl = YDom.getElementsByClassName(
-          'cstudio-form-section-body',
-          null,
-          sectionContainerEl
-        )[0];
+        var sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];
         var formSection = new CStudioFormSection(form, sectionContainerEl);
         form.sectionsMap['ice'] = formSection;
         form.sections[0] = formSection;
@@ -2546,16 +2415,7 @@ var CStudioForms =
             if (field) {
               if (field.iceId == iceId) {
                 if (field.type != 'repeat') {
-                  this._renderField(
-                    formDef,
-                    field,
-                    form,
-                    formSection,
-                    sectionBodyEl,
-                    null,
-                    null,
-                    true
-                  );
+                  this._renderField(formDef, field, form, formSection, sectionBodyEl, null, null, true);
                   CStudioAuthoring.InContextEdit.autoSizeIceDialog();
                 } else {
                   this._renderRepeat(formDef, field, form, formSection, sectionBodyEl);
@@ -2575,11 +2435,11 @@ var CStudioForms =
         var locationEl = document.getElementById('page-location');
 
         if (pageEl) {
-          pageEl.innerHTML = formDef.pageName;
+          pageEl.textContent = formDef.pageName;
         }
 
         if (locationEl) {
-          locationEl.innerHTML = formDef.pageLocation;
+          locationEl.textContent = formDef.pageLocation;
         }
       },
 
@@ -2593,15 +2453,11 @@ var CStudioForms =
         var html = '';
 
         // Update the window title
-        window.document.title = formDef.pageName
-          ? formDef.title + ' | ' + formDef.pageName
-          : formDef.title;
+        window.document.title = formDef.pageName ? formDef.title + ' | ' + formDef.pageName : formDef.title;
 
         $('header').show();
         $('.page-header h1 .header').text(
-          formDef.pageName
-            ? formDef.pageName
-            : CMgs.format(formsLangBundle, 'new') + ' ' + formDef.title
+          formDef.pageName ? formDef.pageName : CMgs.format(formsLangBundle, 'new') + ' ' + formDef.title
         );
         if (formDef.title) {
           $('.page-header h1 .name').addClass('has-page-name').text(formDef.title);
@@ -2625,22 +2481,22 @@ var CStudioForms =
 
           html +=
             "<div id='" +
-            section.id +
+            encodeURIComponent(section.id) +
             "-heading' class='panel-heading'>" +
             '<div class="cstudio-form-section-widget"></div>' +
             '<div class="cstudio-form-section-indicator fa f18"></div>' +
             '<h2 class="panel-title">' +
-            section.title +
+            CrafterCMSNext.util.string.escapeHTML(section.title) +
             '</h2>' +
             '<span class="cstudio-form-section-validation"></span>' +
             '</div>';
 
           html +=
             '<div id="' +
-            section.id +
+            encodeURIComponent(section.id) +
             '-body" class="panel-collapse collapse in">' +
             '<div class="panel-body">' +
-            (section.description ? '<p>' + section.description + '</p>' : '') +
+            (section.description ? '<p>' + CrafterCMSNext.util.string.escapeHTML(section.description) + '</p>' : '') +
             '<div id="' +
             section.id +
             '-body-controls"></div>' +
@@ -2679,8 +2535,7 @@ var CStudioForms =
         html += '</div>';
         html += '</div>'; // end form
 
-        html +=
-          "<div class='cstudio-form-controls-container'>" + '</div>'; // command bar
+        html += "<div class='cstudio-form-controls-container'>" + '</div>'; // command bar
         html += '</div>';
 
         return html;
@@ -2987,9 +2842,7 @@ var CStudioForms =
                     datasource: repeatChild.getAttribute('datasource')
                   }
                 : {};
-              var repeatChildChildren = repeatChild.children
-                ? repeatChild.children
-                : repeatChild.childNodes;
+              var repeatChildChildren = repeatChild.children ? repeatChild.children : repeatChild.childNodes;
 
               for (var k = 0; k < repeatChildChildren.length; k++) {
                 var repeatField = repeatChildChildren[k];
@@ -3006,9 +2859,7 @@ var CStudioForms =
                       value = this.getModelItemValue(repeatField);
                     } catch (noValue) {}
 
-                    node[child.nodeName][repeatCount][repeatField.nodeName] = this.unEscapeXml(
-                      value
-                    );
+                    node[child.nodeName][repeatCount][repeatField.nodeName] = this.unEscapeXml(value);
                   }
                 }
               }
@@ -3066,12 +2917,7 @@ var CStudioForms =
           }
         }
 
-        xml += this.printFieldsToXml(
-          form.model,
-          form.dynamicFields,
-          form.definition.sections,
-          form.definition.config
-        );
+        xml += this.printFieldsToXml(form.model, form.dynamicFields, form.definition.sections, form.definition.config);
 
         xml += '</' + form.definition.objectType + '>';
 
@@ -3112,15 +2958,15 @@ var CStudioForms =
 
         // Add valid fields from form sections
         function getValidFields(section, isRepeat) {
-          section.fields.forEach(field => {
-            let fieldId = isRepeat? `${section.id}.${field.id}` : field.id;
+          section.fields.forEach((field) => {
+            let fieldId = isRepeat ? `${section.id}.${field.id}` : field.id;
             validFields.push(fieldId);
             let fieldInstruction = { tokenize: false };
             fieldInstructions[fieldId] = fieldInstruction;
             let fieldList = { list: false };
             fieldLists[fieldId] = fieldList;
 
-            field.properties.forEach(property => {
+            field.properties.forEach((property) => {
               try {
                 if (property.name == 'tokenize' && property.value == 'true') {
                   fieldInstruction.tokenize = true;
@@ -3136,20 +2982,20 @@ var CStudioForms =
                   'studioDialog'
                 );
               }
-            })
+            });
 
             if (field.type === 'repeat' || field.type === 'node-selector') {
               fieldList.list = true;
-              if(field.fields){
+              if (field.fields) {
                 getValidFields(field, true);
               }
             }
-          })
+          });
         }
 
-        formSections.forEach( section => {
-          getValidFields(section)
-        })
+        formSections.forEach((section) => {
+          getValidFields(section);
+        });
 
         // Add valid fields from form config
         if (formConfig && formConfig.customFields) {
@@ -3234,8 +3080,8 @@ var CStudioForms =
         return output;
       },
 
-      recursiveRetrieveItemValues: function(item, output, key, fieldInstructions) {
-        item.forEach(repeatItem => {
+      recursiveRetrieveItemValues: function (item, output, key, fieldInstructions) {
+        item.forEach((repeatItem) => {
           let attributes;
           attributes = repeatItem.datasource ? `datasource=\"${repeatItem.datasource}\"` : '';
           if (repeatItem.inline) {
@@ -3247,8 +3093,12 @@ var CStudioForms =
               var repeatValue = repeatItem[fieldName],
                 isRemote = CStudioRemote[key] && fieldName === 'url' ? true : false,
                 isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
-                isTokenized = (!!fieldInstructions[`${key}.${fieldName}`]) && fieldInstructions[`${key}.${fieldName}`].tokenize === true,
-                repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${isTokenized ? 'tokenized="true"' : ''}`;
+                isTokenized =
+                  !!fieldInstructions[`${key}.${fieldName}`] &&
+                  fieldInstructions[`${key}.${fieldName}`].tokenize === true,
+                repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${
+                  isTokenized ? 'tokenized="true"' : ''
+                }`;
               output += '\t<' + fieldName + repeatAttr + '>';
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
@@ -3262,17 +3112,13 @@ var CStudioForms =
             }
           }
           output += '\t</item>';
-        })
+        });
         return output;
       },
 
       escapeXml: function (value) {
         if (value && typeof value === 'string') {
-          value = value
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+          value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         return value;

@@ -104,11 +104,7 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy = CStudioAuthoring.Dialogs.DialogOr
 
     // for(var j=0; j<changeSet.length; j++) {
 
-    CStudioAuthoring.Service.updateTaxonomies(
-      CStudioAuthoringContext.site,
-      { taxonomies: changeSet },
-      updateCb
-    );
+    CStudioAuthoring.Service.updateTaxonomies(CStudioAuthoringContext.site, { taxonomies: changeSet }, updateCb);
     //}
   },
 
@@ -184,8 +180,7 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy = CStudioAuthoring.Dialogs.DialogOr
         oPropertyValue = aProperty[1];
       if (sPropertyName == 'zindex') {
         var siteContextNavZIndex = 100;
-        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex =
-          oPropertyValue + siteContextNavZIndex;
+        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
     });
 
@@ -213,9 +208,7 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy = CStudioAuthoring.Dialogs.DialogOr
           liEl.data = dataItem;
 
           ulEl.appendChild(liEl);
-          var ddItem = new CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDList(
-            'otl-' + dataItem.id
-          );
+          var ddItem = new CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDList('otl-' + dataItem.id);
         }
       },
 
@@ -226,17 +219,9 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy = CStudioAuthoring.Dialogs.DialogOr
 
     CStudioAuthoring.Service.getTaxonomy(site, modelName, level, false, 'item', dataCb);
 
-    YEvent.addListener(
-      'otCancelButton',
-      'click',
-      CStudioAuthoring.Dialogs.DialogOrderTaxonomy.cancelDialogClick
-    );
+    YEvent.addListener('otCancelButton', 'click', CStudioAuthoring.Dialogs.DialogOrderTaxonomy.cancelDialogClick);
 
-    YEvent.addListener(
-      'otOkButton',
-      'click',
-      CStudioAuthoring.Dialogs.DialogOrderTaxonomy.okDialogClick
-    );
+    YEvent.addListener('otOkButton', 'click', CStudioAuthoring.Dialogs.DialogOrderTaxonomy.okDialogClick);
 
     return dialog;
   }
@@ -344,12 +329,7 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDListClass = {
 };
 
 CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDList = function (id, sGroup, config) {
-  CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDList.superclass.constructor.call(
-    this,
-    id,
-    sGroup,
-    config
-  );
+  CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDList.superclass.constructor.call(this, id, sGroup, config);
 
   var el = this.getDragEl();
   YDom.setStyle(el, 'opacity', 0.67); // The proxy is slightly transparent
@@ -364,7 +344,4 @@ YAHOO.extend(
   CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDListClass
 );
 
-CStudioAuthoring.Module.moduleLoaded(
-  'dialog-order-taxonomy',
-  CStudioAuthoring.Dialogs.DialogOrderTaxonomy
-);
+CStudioAuthoring.Module.moduleLoaded('dialog-order-taxonomy', CStudioAuthoring.Dialogs.DialogOrderTaxonomy);

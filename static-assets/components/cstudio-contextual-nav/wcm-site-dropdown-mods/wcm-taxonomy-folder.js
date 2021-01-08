@@ -22,8 +22,7 @@ var YEvent = YAHOO.util.Event;
  * A root level folder is a configurable folder element that can be based at any
  * point along a wcm path.
  */
-CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder = CStudioAuthoring.ContextualNav
-  .WcmTaxonomiesFolder || {
+CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder = CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder || {
   ROOT_OPEN: 'open',
   ROOT_CLOSED: 'closed',
   ROOT_TOGGLE: 'toggle',
@@ -52,8 +51,7 @@ CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder = CStudioAuthoring.Contextual
     var parentFolderLinkEl = document.createElement('a');
     parentFolderLinkEl.id = instance.label.toLowerCase() + '-tree'; // should be part of class no?
     parentFolderLinkEl.innerHTML = instance.label;
-    parentFolderLinkEl.onclick =
-      CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder.onRootFolderClick;
+    parentFolderLinkEl.onclick = CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder.onRootFolderClick;
     parentFolderLinkEl.componentInstance = instance;
 
     var treeEl = document.createElement('div');
@@ -220,10 +218,7 @@ CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder = CStudioAuthoring.Contextual
 
         if (treeItems) {
           for (var i = 0; i < treeItems.length; i++) {
-            var treeNodeTO = WcmTaxonomiesFolder.createTreeNodeTransferObjectFromCategory(
-              treeItems[i],
-              taxonomyName
-            );
+            var treeNodeTO = WcmTaxonomiesFolder.createTreeNodeTransferObjectFromCategory(treeItems[i], taxonomyName);
             var treeNode = WcmTaxonomiesFolder.drawCategoryTreeItem(treeNodeTO, this.argument.node);
             treeNode.instance = instance;
           }
@@ -433,7 +428,4 @@ CStudioAuthoring.ContextualNav.WcmTaxonomyFolderInstance = function (config) {
   this.config = config;
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'wcm-taxonomy-folder',
-  CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder
-);
+CStudioAuthoring.Module.moduleLoaded('wcm-taxonomy-folder', CStudioAuthoring.ContextualNav.WcmTaxonomiesFolder);

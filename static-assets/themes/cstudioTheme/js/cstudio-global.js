@@ -91,9 +91,9 @@ $(document).ready(function () {
 
     var disableLogin = function (loginInfo) {
       if ($('#verticalContainer')) {
-        $(
-          '<div id="loginInfoContainer"><p id="loginInfo">' + loginInfo + '</p></div>'
-        ).insertBefore('#verticalContainer');
+        $('<div id="loginInfoContainer"><p id="loginInfo">' + loginInfo + '</p></div>').insertBefore(
+          '#verticalContainer'
+        );
       } else {
         alert(loginInfo);
       }

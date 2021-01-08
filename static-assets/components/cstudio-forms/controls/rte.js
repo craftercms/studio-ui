@@ -221,9 +221,7 @@ CStudioAuthoring.Module.requireModule(
          * get the supported constraints
          */
         getSupportedConstraints: function () {
-          return [
-            { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }
-          ];
+          return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
         },
 
         getSupportedPostFixes: function () {
@@ -296,9 +294,7 @@ CStudioAuthoring.Module.requireModule(
 
           if (YDom.hasClass(this.containerEl, 'text-mode')) {
             // The RTE is in text mode
-            sizeCookie = tinymce2.util.Cookie.getHash(
-              'tinymce2_' + this.editor.id + '_size' + window.name
-            );
+            sizeCookie = tinymce2.util.Cookie.getHash('tinymce2_' + this.editor.id + '_size' + window.name);
             cookieHeight = sizeCookie ? sizeCookie.ch : 0;
 
             // Give priority to the height value stored in the cookie (if there's one)
@@ -331,9 +327,7 @@ CStudioAuthoring.Module.requireModule(
         },
 
         resizeEditor: function (editor, onInit, isPaste) {
-          var sizeCookie = tinymce2.util.Cookie.getHash(
-            'tinymce2_' + editor.id + '_size' + window.name
-          );
+          var sizeCookie = tinymce2.util.Cookie.getHash('tinymce2_' + editor.id + '_size' + window.name);
           var cookieHeight = sizeCookie ? sizeCookie.ch : 0;
           /* BEGIN: resizing editor treatment */
           var formBody = document.querySelectorAll('html, body');
@@ -344,15 +338,11 @@ CStudioAuthoring.Module.requireModule(
           tinymce2.DOM.setStyle(editor.editorId + '_ifr', 'height', cookieHeight + 'px');
 
           var heightVal = Math.max(editor.settings.height, cookieHeight),
-            currentHeight = +tinymce2.DOM.getStyle(this.editor.editorId + '_ifr', 'height').split(
-              'px'
-            )[0];
+            currentHeight = +tinymce2.DOM.getStyle(this.editor.editorId + '_ifr', 'height').split('px')[0];
 
           heightVal = !onInit ? Math.max(heightVal, editor.getDoc().body.scrollHeight) : heightVal;
           tinymce2MaxHeight =
-            formBody.offsetHeight - 130 > this.rteControlHeight
-              ? formBody.offsetHeight - 130
-              : this.rteControlHeight;
+            formBody.offsetHeight - 130 > this.rteControlHeight ? formBody.offsetHeight - 130 : this.rteControlHeight;
 
           heightVal = heightVal > tinymce2MaxHeight ? tinymce2MaxHeight : heightVal;
 
@@ -430,9 +420,7 @@ CStudioAuthoring.Module.requireModule(
                 YDom.setStyle(
                   elements['rte-container'],
                   'max-width',
-                  (rteContainerWidth > fieldContainerWidth
-                    ? fieldContainerWidth
-                    : rteContainerWidth) + 'px'
+                  (rteContainerWidth > fieldContainerWidth ? fieldContainerWidth : rteContainerWidth) + 'px'
                 ); // If the RTEs width exceeds that of its container, then use the container's width instead
                 YDom.setStyle(elements['rte-container'], 'width', '100%');
                 rteWidth = '96%';
@@ -470,7 +458,7 @@ CStudioAuthoring.Module.requireModule(
           var titleEl = document.createElement('span');
 
           YDom.addClass(titleEl, 'cstudio-form-field-title');
-          titleEl.innerHTML = config.title;
+          titleEl.textContent = config.title;
 
           var controlWidgetContainerEl = document.createElement('div');
           YDom.addClass(controlWidgetContainerEl, 'cstudio-form-control-rte-container');
@@ -524,12 +512,7 @@ CStudioAuthoring.Module.requireModule(
               case 'height':
                 var height;
                 if (!this.pencilMode) {
-                  height =
-                    prop.value === undefined
-                      ? 140
-                      : Array.isArray(prop.value)
-                      ? 140
-                      : Math.max(+prop.value, 50);
+                  height = prop.value === undefined ? 140 : Array.isArray(prop.value) ? 140 : Math.max(+prop.value, 50);
                   if (isNaN(height)) {
                     height = 140;
                   }
@@ -575,22 +558,14 @@ CStudioAuthoring.Module.requireModule(
               : 'bold,italic,|,bullist,numlist';
 
           var toolbarConfig2 =
-            rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0
-              ? rteConfig.toolbarItems2
-              : '';
+            rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0 ? rteConfig.toolbarItems2 : '';
           var toolbarConfig3 =
-            rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0
-              ? rteConfig.toolbarItems3
-              : '';
+            rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0 ? rteConfig.toolbarItems3 : '';
           var toolbarConfig4 =
-            rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0
-              ? rteConfig.toolbarItems4
-              : '';
+            rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0 ? rteConfig.toolbarItems4 : '';
 
           var styleFormats =
-            rteConfig.styleFormats && rteConfig.styleFormats.length != 0
-              ? eval(rteConfig.styleFormats)
-              : [];
+            rteConfig.styleFormats && rteConfig.styleFormats.length != 0 ? eval(rteConfig.styleFormats) : [];
 
           var editor = tinymce2.init({
             // General options
@@ -713,16 +688,11 @@ CStudioAuthoring.Module.requireModule(
                   ed.contextControl.resizeEditor(ed, true);
 
                   if (_thisControl.containerEl.querySelector('.mceLayout')) {
-                    _thisControl.containerEl.querySelector('.mceLayout').style.maxWidth =
-                      width + 'px'; // Why? Field width should be flexible, because of responsiveness, should resize based on the screen size
+                    _thisControl.containerEl.querySelector('.mceLayout').style.maxWidth = width + 'px'; // Why? Field width should be flexible, because of responsiveness, should resize based on the screen size
                   }
 
                   // Add counter element
-                  var refEl = YSelector.query(
-                      'table.mceLayout tbody',
-                      _thisControl.containerEl,
-                      true
-                    ),
+                  var refEl = YSelector.query('table.mceLayout tbody', _thisControl.containerEl, true),
                     theadEl = document.createElement('thead'),
                     trEl = document.createElement('tr'),
                     tdEl = document.createElement('td'),
@@ -843,9 +813,7 @@ CStudioAuthoring.Module.requireModule(
             tt = dom.doc.createTextNode(styleOverrides);
 
           //First add the currentStyleSheets
-          var styleSheets = tinymce2.explode(
-            this._getContentCSS(editor) + ',' + this._getCurrentStyleSheets()
-          );
+          var styleSheets = tinymce2.explode(this._getContentCSS(editor) + ',' + this._getCurrentStyleSheets());
 
           tinymce2.each(styleSheets, function (u) {
             dom.loadCSS(u);
@@ -871,9 +839,7 @@ CStudioAuthoring.Module.requireModule(
          * Load the default theme style sheet
          */
         _getContentCSS: function (editor) {
-          var url =
-            tinymce2.ThemeManager.urls[editor.settings.theme] ||
-            tinymce2.documentBaseURL.replace(/\/$/, '');
+          var url = tinymce2.ThemeManager.urls[editor.settings.theme] || tinymce2.documentBaseURL.replace(/\/$/, '');
           return editor.baseURI.toAbsolute(url + '/skins/' + editor.settings.skin + '/content.css');
         },
 
@@ -885,10 +851,7 @@ CStudioAuthoring.Module.requireModule(
           var rteConfig = this.rteConfig;
 
           // if rteStylesheets xml tag is not defined, use only default css
-          if (
-            typeof rteConfig.rteStylesheets === 'undefined' ||
-            typeof rteConfig.rteStylesheets.link !== 'object'
-          ) {
+          if (typeof rteConfig.rteStylesheets === 'undefined' || typeof rteConfig.rteStylesheets.link !== 'object') {
             return stylesheets;
           }
 
@@ -960,13 +923,10 @@ CStudioAuthoring.Module.requireModule(
           // define the callback that will fire the RTE init when all plugins are loaded
           var loadedCb = {
             moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-              moduleConfig.context.registeredPlugins[
-                moduleConfig.context.registeredPlugins.length
-              ] = moduleClass;
+              moduleConfig.context.registeredPlugins[moduleConfig.context.registeredPlugins.length] = moduleClass;
 
               for (var j = 0; j < moduleConfig.context.waitingForPlugins.length; j++) {
-                var pluginName =
-                  'cstudio-forms-controls-rte-' + moduleConfig.context.waitingForPlugins[j];
+                var pluginName = 'cstudio-forms-controls-rte-' + moduleConfig.context.waitingForPlugins[j];
 
                 if (pluginName == moduleName) {
                   moduleConfig.context.waitingForPlugins.splice(j, 1);
@@ -1115,16 +1075,12 @@ CStudioAuthoring.Module.requireModule(
           l,
           o,
           f;
-        o = c.add(
-          document.getElementById(tinymce2.activeEditor.editorId + '_toolbargroup'),
-          'div',
-          {
-            role: 'listbox',
-            id: p.id + '_menu',
-            class: q.menu_class + ' ' + q['class'],
-            style: 'position:absolute;left:0;top:-1000px;'
-          }
-        );
+        o = c.add(document.getElementById(tinymce2.activeEditor.editorId + '_toolbargroup'), 'div', {
+          role: 'listbox',
+          id: p.id + '_menu',
+          class: q.menu_class + ' ' + q['class'],
+          style: 'position:absolute;left:0;top:-1000px;'
+        });
         h = c.add(o, 'div', { class: q['class'] + ' mceSplitButtonMenu' });
         c.add(h, 'span', { class: 'mceMenuLine' });
         g = c.add(h, 'table', { role: 'presentation', class: 'mceColorSplitMenu' });

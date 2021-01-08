@@ -30,8 +30,7 @@ CStudioAuthoring.ContextualNav.WcmLogo = CStudioAuthoring.ContextualNav.WcmLogo 
 
     YDom.get('cstudio-logo').src = LOGO;
     YDom.get('acn-wcm-logo-image').src = LOGO;
-    YDom.get('acn-wcm-logo-link').href =
-      CStudioAuthoringContext.authoringAppBaseUri + CStudioAuthoringContext.homeUri;
+    YDom.get('acn-wcm-logo-link').href = CStudioAuthoringContext.authoringAppBaseUri + CStudioAuthoringContext.homeUri;
   }
 };
 

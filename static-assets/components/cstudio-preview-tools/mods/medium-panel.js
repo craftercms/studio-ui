@@ -51,9 +51,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
       .append(
         [
           '<div class="form-group">',
-          '<label class="display-block">' +
-            CMgs.format(previewLangBundle, 'viewPortSize') +
-            '</label> ',
+          '<label class="display-block">' + CMgs.format(previewLangBundle, 'viewPortSize') + '</label> ',
           '<input class="form-control channel-width" data-axis="x" placeholder="auto">',
           ' &times; ',
           '<input class="form-control channel-height" data-axis="y" placeholder="auto"> ',
@@ -68,12 +66,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
 
     $select = $container.find('select');
 
-    $select[0].options[0] = new Option(
-      CMgs.format(previewLangBundle, 'custom'),
-      'custom',
-      false,
-      false
-    );
+    $select[0].options[0] = new Option(CMgs.format(previewLangBundle, 'custom'), 'custom', false, false);
 
     for (var i = 0, label; i < channels.length; i++) {
       label = CMgs.format(previewLangBundle, channels[i].title);
@@ -94,9 +87,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
         value = $el.val(),
         number = parseInt(value);
 
-      currentValue = $el.hasClass('channel-height')
-        ? $('#engineWindow').height()
-        : $('#engineWindow').width();
+      currentValue = $el.hasClass('channel-height') ? $('#engineWindow').height() : $('#engineWindow').width();
 
       if (currentValue != value) {
         clearTimeout(timeout);
@@ -162,10 +153,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
       location += t + 'cstudio-useragent=' + CStudioAuthoringContext.channel;
     } else {
       var re = new RegExp('[\\?&]cstudio-useragent=([^&#]*)');
-      location = location.replace(
-        re,
-        t + 'cstudio-useragent' + '=' + CStudioAuthoringContext.channel
-      );
+      location = location.replace(re, t + 'cstudio-useragent' + '=' + CStudioAuthoringContext.channel);
     }
 
     $engine[0].src = location;

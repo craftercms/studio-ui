@@ -24,48 +24,47 @@ interface AsyncVideoPlayerProps {
 }
 
 function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
-
-  const
-    {
-      playerOptions,
-      nonPlayableMessage
-    } = props,
+  const { playerOptions, nonPlayableMessage } = props,
     [playable, setPlayable] = useState(null),
     errMessageStyle = {
       height: playerOptions.height ? playerOptions.height : 150,
       width: playerOptions.width ? playerOptions.width : 300
     };
 
-  useEffect(
-    () => {
-      // async request to check for 404
-      // if response is 200 setPlayable(true)
-      fetch(playerOptions.src)
-        .then(function(response) {
-          if ( response.status === 200 ) {
-            setPlayable(true);
-          } else {
-            setPlayable(false);
-          }
-        }).catch(function(){
+  useEffect(() => {
+    // async request to check for 404
+    // if response is 200 setPlayable(true)
+    fetch(playerOptions.src)
+      .then(function (response) {
+        if (response.status === 200) {
+          setPlayable(true);
+        } else {
           setPlayable(false);
-        });
-    },
-    [playerOptions.src]
-  );
+        }
+      })
+      .catch(function () {
+        setPlayable(false);
+      });
+  }, [playerOptions.src]);
 
-  if ( playable ) {
+  if (playable) {
     return (
-      <section className="async-video-player"><VideoPlayer {...playerOptions}/></section>
+      <section className="async-video-player">
+        <VideoPlayer {...playerOptions} />
+      </section>
     );
   } else {
-    if ( playable === null ) {
+    if (playable === null) {
       return (
-        <div className="async-video-player--loading" style={ errMessageStyle }>Loading...</div>
+        <div className="async-video-player--loading" style={errMessageStyle}>
+          Loading...
+        </div>
       );
     } else {
       return (
-        <div className="async-video-player--unavailable-message" style={ errMessageStyle }>{ nonPlayableMessage }</div>
+        <div className="async-video-player--unavailable-message" style={errMessageStyle}>
+          {nonPlayableMessage}
+        </div>
       );
     }
   }

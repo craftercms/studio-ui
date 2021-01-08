@@ -154,10 +154,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 
     var serviceUri = CStudioAuthoring.Service.createServiceUri('/asset-upload'),
       url = (serviceUri +=
-        '&' +
-        CStudioAuthoringContext.xsrfParameterName +
-        '=' +
-        CrafterCMSNext.util.auth.getRequestForgeryToken());
+        '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken());
 
     var checkPermissionsCb = {
       success: function (results) {
@@ -222,11 +219,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
         }
       }
     };
-    CStudioAuthoring.Service.getUserPermissions(
-      CStudioAuthoringContext.site,
-      path,
-      checkPermissionsCb
-    );
+    CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, checkPermissionsCb);
 
     return upload_dialog;
   },

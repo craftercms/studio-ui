@@ -18,16 +18,16 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   progress: {
-    margin: theme.spacing(2),
+    margin: theme.spacing(2)
   },
   center: {
     position: 'absolute',
     top: '50%',
     left: '50%',
     background: '#fff',
-    transform: 'translate(-50%, -50%)',
+    transform: 'translate(-50%, -50%)'
   }
 }));
 

@@ -140,9 +140,7 @@
      */
     _getFn: function (selector) {
       var suffix = 'ActionClicked',
-        camelizedName = CStudioAuthoring.StringUtils.toCamelcase(
-          selector.substr(selector.indexOf('.') + 1)
-        ),
+        camelizedName = CStudioAuthoring.StringUtils.toCamelcase(selector.substr(selector.indexOf('.') + 1)),
         fn = this[camelizedName + suffix];
       return fn;
     },
@@ -245,11 +243,7 @@
   Base.extend = function (className, classBody) {
     CStudioAuthoring.register(
       'ViewController.' + className,
-      new Function(
-        'CStudioAuthoring.ViewController.' +
-          className +
-          '.superclass.constructor.apply(this, arguments)'
-      )
+      new Function('CStudioAuthoring.ViewController.' + className + '.superclass.constructor.apply(this, arguments)')
     );
 
     var Controller = CStudioAuthoring.ViewController[className];

@@ -227,9 +227,7 @@
               searchFilters[filterName].id = $(this).attr('id');
             }
           } else {
-            searchFilters[filterName] = isNaN(parseInt(filterValue))
-              ? filterValue
-              : parseInt(filterValue);
+            searchFilters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue);
           }
 
           CStudioSearch.toggleFilterActionsState(filterName);
@@ -254,7 +252,7 @@
 
       let value = $('#filterPath').val();
 
-      if( value !== '') {
+      if (value !== '') {
         value = `${value}${value.endsWith('/') ? '.+' : '/.+'}`;
         $selectedIndicator.removeClass('hide');
       } else {
@@ -506,11 +504,7 @@
       permissionsKey = CStudioAuthoringContext.user,
       isInSelectMode = this.searchContext.mode == 'select';
 
-    if (
-      (result.type === 'Page' && !isInSelectMode) ||
-      result.type === 'Image' ||
-      result.type === 'Video'
-    ) {
+    if ((result.type === 'Page' && !isInSelectMode) || result.type === 'Image' || result.type === 'Video') {
       result.previewable = true;
     }
 
@@ -530,14 +524,8 @@
 
     var permissionsCached = cache.get(permissionsKey),
       validateAndRender = function (results) {
-        var isWriteAllowed = CStudioAuthoring.Service.validatePermission(
-            results.permissions,
-            'write'
-          ),
-          isDeleteAllowed = CStudioAuthoring.Service.validatePermission(
-            results.permissions,
-            'delete'
-          );
+        var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, 'write'),
+          isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, 'delete');
         result.editable = isWriteAllowed;
         // set permissions for edit/delete actions to be (or not) rendered
         // when in select mode, dont give option to delete
@@ -629,12 +617,8 @@
     var $sortOrderDropdown = $('select[name="sortOrder"]');
     $sortOrderDropdown.empty();
     if (sortByValue === '_score') {
-      $sortOrderDropdown.append(
-        `<option value="desc">${CMgs.format(langBundle, 'moreRelevance')}</option>`
-      );
-      $sortOrderDropdown.append(
-        `<option value="asc">${CMgs.format(langBundle, 'lessRelevance')}</option>`
-      );
+      $sortOrderDropdown.append(`<option value="desc">${CMgs.format(langBundle, 'moreRelevance')}</option>`);
+      $sortOrderDropdown.append(`<option value="asc">${CMgs.format(langBundle, 'lessRelevance')}</option>`);
     } else {
       $sortOrderDropdown.append(`<option value="asc">${CMgs.format(langBundle, 'asc')}</option>`);
       $sortOrderDropdown.append(`<option value="desc">${CMgs.format(langBundle, 'desc')}</option>`);
@@ -659,9 +643,7 @@
 
     // add filters
     $.each(searchContext.facets, function (index, facet) {
-      var groupedFacetsName = CStudioSearch.facetsMap[facet.name]
-          ? CStudioSearch.facetsMap[facet.name]
-          : null,
+      var groupedFacetsName = CStudioSearch.facetsMap[facet.name] ? CStudioSearch.facetsMap[facet.name] : null,
         $container = $('#searchFilters .dropdown-menu .panel-group'),
         multipleSelection = facet.multiple,
         headerExists = $container.find('.dropdown-header').length > 0,
@@ -717,8 +699,7 @@
               to = isNaN(parseInt(value.to)) ? aboveLabel : value.to;
 
             if (facet.name === 'size') {
-              from =
-                from === underLabel ? from : CStudioAuthoring.Utils.formatFileSize(parseInt(from));
+              from = from === underLabel ? from : CStudioAuthoring.Utils.formatFileSize(parseInt(from));
               to = to === aboveLabel ? to : CStudioAuthoring.Utils.formatFileSize(parseInt(to));
             }
 
@@ -848,11 +829,7 @@
     // If more than 10 items -> add see more
     if ($container.children().length > 10) {
       $(
-        '<div class="filters-toggle" id="toggleShowItems' +
-          id +
-          '" data-state="see-more">' +
-          seeMoreLabel +
-          '</div>'
+        '<div class="filters-toggle" id="toggleShowItems' + id + '" data-state="see-more">' + seeMoreLabel + '</div>'
       ).appendTo($container);
 
       $('#toggleShowItems' + id).click(function () {
@@ -880,7 +857,7 @@
 
   CStudioSearch.updateNumFilters = function (filterName) {
     let numFilters = Object.keys(CStudioSearch.searchContext.filters).length;
-    (CStudioSearch.searchContext.path && CStudioSearch.searchContext.path !== '') && numFilters++;
+    CStudioSearch.searchContext.path && CStudioSearch.searchContext.path !== '' && numFilters++;
 
     this.searchContext.numFilters = numFilters;
     $('#numFilters').text('(' + this.searchContext.numFilters + ')');
@@ -921,13 +898,7 @@
       }
     };
 
-    CStudioAuthoring.Service.lookupContentItem(
-      CStudioAuthoringContext.site,
-      path,
-      callback,
-      false,
-      false
-    );
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
   };
 
   CStudioSearch.saveContent = function () {
@@ -975,10 +946,7 @@
                   handler: function () {
                     this.hide();
                     window.close();
-                    $(window.frameElement.parentElement)
-                      .closest('.studio-ice-dialog')
-                      .parent()
-                      .remove(); //TODO: find a better way
+                    $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
                   },
                   isDefault: false
                 }
@@ -999,10 +967,7 @@
                 handler: function () {
                   this.hide();
                   window.close();
-                  $(window.frameElement.parentElement)
-                    .closest('.studio-ice-dialog')
-                    .parent()
-                    .remove(); //TODO: find a better way
+                  $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
                 },
                 isDefault: false
               }
@@ -1044,13 +1009,7 @@
         }
       };
 
-    CStudioAuthoring.Service.lookupContentItem(
-      CStudioAuthoringContext.site,
-      path,
-      callback,
-      false,
-      false
-    );
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
   };
 
   CStudioSearch.deleteElement = function (path) {
@@ -1066,13 +1025,7 @@
       }
     };
 
-    CStudioAuthoring.Service.lookupContentItem(
-      CStudioAuthoringContext.site,
-      path,
-      callback,
-      false,
-      false
-    );
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
   };
 
   CStudioSearch.previewElement = function (url) {
@@ -1150,9 +1103,7 @@
 
     console.error(error);
 
-    $resultsContainer.html(
-      '<p class="bg-danger search-error">' + CMgs.format(langBundle, 'errorMessage') + '</p>'
-    );
+    $resultsContainer.html('<p class="bg-danger search-error">' + CMgs.format(langBundle, 'errorMessage') + '</p>');
 
     $selectAllContainer.hide();
     $filtersSection.hide();

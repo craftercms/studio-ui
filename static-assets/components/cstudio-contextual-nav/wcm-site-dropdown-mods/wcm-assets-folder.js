@@ -29,8 +29,7 @@ var storage = CStudioAuthoring.Storage;
    * point along a wcm path.
    */
 
-  CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav
-    .WcmAssetsFolder || {
+  CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder || {
     ROOT_OPEN: 'open',
     ROOT_CLOSED: 'closed',
     ROOT_TOGGLE: 'toggle',
@@ -57,11 +56,7 @@ var storage = CStudioAuthoring.Storage;
         var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
         //check if selected content is type asset
         if (selectedContent != null && selectedContent.isAsset) {
-          CStudioAuthoring.Operations.updateTreeCookiePath(
-            'staticassets',
-            'static-assets',
-            selectedContent.uri
-          );
+          CStudioAuthoring.Operations.updateTreeCookiePath('staticassets', 'static-assets', selectedContent.uri);
         }
       }
 
@@ -72,15 +67,9 @@ var storage = CStudioAuthoring.Storage;
 
         instance.openArray = {};
 
-        var latestStored = CStudioAuthoring.ContextualNav.WcmAssetsFolder.storage.read(
-          this.getStoredPathKey(instance)
-        );
+        var latestStored = CStudioAuthoring.ContextualNav.WcmAssetsFolder.storage.read(this.getStoredPathKey(instance));
         if (latestStored) {
-          if (
-            latestStored.indexOf(',') != -1 ||
-            latestStored.indexOf('[') != -1 ||
-            latestStored.indexOf('{') != -1
-          ) {
+          if (latestStored.indexOf(',') != -1 || latestStored.indexOf('[') != -1 || latestStored.indexOf('{') != -1) {
             instance.openArray = JSON.parse(latestStored);
           } else {
             instance.openArray = [];
@@ -105,60 +94,48 @@ var storage = CStudioAuthoring.Storage;
 
         //Setup child folders icon configuration
         if (config.params['child-icon-open'] && config.params['child-icon-open'].class) {
-          WcmAssets.customIcons[key].childIcons.open.icon.class =
-            config.params['child-icon-open'].class;
+          WcmAssets.customIcons[key].childIcons.open.icon.class = config.params['child-icon-open'].class;
         } else {
           WcmAssets.customIcons[key].childIcons.open.icon.class = WcmAssets.defaultIcons.childOpen;
         }
         if (config.params['child-icon-open'] && config.params['child-icon-open'].styles) {
-          WcmAssets.customIcons[key].childIcons.open.icon.styles =
-            config.params['child-icon-open'].styles;
+          WcmAssets.customIcons[key].childIcons.open.icon.styles = config.params['child-icon-open'].styles;
         }
         if (config.params['child-icon-closed'] && config.params['child-icon-closed'].class) {
-          WcmAssets.customIcons[key].childIcons.closed.icon.class =
-            config.params['child-icon-closed'].class;
+          WcmAssets.customIcons[key].childIcons.closed.icon.class = config.params['child-icon-closed'].class;
         } else {
-          WcmAssets.customIcons[key].childIcons.closed.icon.class =
-            WcmAssets.defaultIcons.childClosed;
+          WcmAssets.customIcons[key].childIcons.closed.icon.class = WcmAssets.defaultIcons.childClosed;
         }
         if (config.params['child-icon-closed'] && config.params['child-icon-closed'].styles) {
-          WcmAssets.customIcons[key].childIcons.closed.icon.styles =
-            config.params['child-icon-closed'].styles;
+          WcmAssets.customIcons[key].childIcons.closed.icon.styles = config.params['child-icon-closed'].styles;
         }
 
         var module = key.toLowerCase();
 
         //setup root folder icon configuration
         if (config.params['module-icon-open'] && config.params['module-icon-open'].class) {
-          WcmAssets.customIcons[key].moduleIcons.open.icon.class =
-            config.params['module-icon-open'].class;
+          WcmAssets.customIcons[key].moduleIcons.open.icon.class = config.params['module-icon-open'].class;
         } else {
           if (WcmAssets.defaultIcons[module]) {
             WcmAssets.customIcons[key].moduleIcons.open.icon.class = WcmAssets.defaultIcons[module];
           } else {
-            WcmAssets.customIcons[key].moduleIcons.open.icon.class =
-              WcmAssets.defaultIcons.defaultIcon;
+            WcmAssets.customIcons[key].moduleIcons.open.icon.class = WcmAssets.defaultIcons.defaultIcon;
           }
         }
         if (config.params['module-icon-open'] && config.params['module-icon-open'].styles) {
-          WcmAssets.customIcons[key].moduleIcons.open.icon.styles =
-            config.params['module-icon-open'].styles;
+          WcmAssets.customIcons[key].moduleIcons.open.icon.styles = config.params['module-icon-open'].styles;
         }
         if (config.params['module-icon-closed'] && config.params['module-icon-closed'].class) {
-          WcmAssets.customIcons[key].moduleIcons.closed.icon.class =
-            config.params['module-icon-closed'].class;
+          WcmAssets.customIcons[key].moduleIcons.closed.icon.class = config.params['module-icon-closed'].class;
         } else {
           if (WcmAssets.defaultIcons[module]) {
-            WcmAssets.customIcons[key].moduleIcons.closed.icon.class =
-              WcmAssets.defaultIcons[module];
+            WcmAssets.customIcons[key].moduleIcons.closed.icon.class = WcmAssets.defaultIcons[module];
           } else {
-            WcmAssets.customIcons[key].moduleIcons.closed.icon.class =
-              WcmAssets.defaultIcons.defaultIcon;
+            WcmAssets.customIcons[key].moduleIcons.closed.icon.class = WcmAssets.defaultIcons.defaultIcon;
           }
         }
         if (config.params['module-icon-closed'] && config.params['module-icon-closed'].styles) {
-          WcmAssets.customIcons[key].moduleIcons.closed.icon.styles =
-            config.params['module-icon-closed'].styles;
+          WcmAssets.customIcons[key].moduleIcons.closed.icon.styles = config.params['module-icon-closed'].styles;
         }
 
         this.addContentTreeRootFolder(instance);
@@ -197,8 +174,8 @@ var storage = CStudioAuthoring.Storage;
 
       parentFolderLinkEl.appendChild(moduleClosed);
       parentFolderLinkEl.appendChild(moduleOpen);
+      parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
-      parentFolderLinkEl.innerHTML += label;
       parentFolderLinkEl.onclick = CStudioAuthoring.ContextualNav.WcmAssetsFolder.onRootFolderClick;
       parentFolderLinkEl.componentInstance = instance;
 
@@ -258,12 +235,7 @@ var storage = CStudioAuthoring.Storage;
     },
 
     getStoredPathKey: function (instance) {
-      return (
-        CStudioAuthoringContext.site +
-        '-' +
-        instance.label.replace(' ', '').toLowerCase() +
-        '-opened'
-      );
+      return CStudioAuthoringContext.site + '-' + instance.label.replace(' ', '').toLowerCase() + '-opened';
     },
 
     /**
@@ -340,16 +312,12 @@ var storage = CStudioAuthoring.Storage;
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.expandTree(node);
 
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-          var treeChild = tree
-            .getEl()
-            .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+          var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
           for (var i = 0; i < treeChild.length; i++) {
             treeChild[i].setAttribute('num', instance.path[i].replace(/\//g, '').toLowerCase());
           }
         } else {
-          var treeChild = tree
-            .getEl()
-            .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+          var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
           treeChild[0].setAttribute('num', instance.path.replace(/\//g, '').toLowerCase());
         }
 
@@ -366,16 +334,12 @@ var storage = CStudioAuthoring.Storage;
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.collapseTree(node);
 
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-          var treeChild = tree
-            .getEl()
-            .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+          var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
           for (var i = 0; i < treeChild.length; i++) {
             treeChild[i].setAttribute('num', instance.path[i].replace(/\//g, '').toLowerCase());
           }
         } else {
-          var treeChild = tree
-            .getEl()
-            .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+          var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
           treeChild[0].setAttribute('num', instance.path.replace(/\//g, '').toLowerCase());
         }
 
@@ -395,11 +359,7 @@ var storage = CStudioAuthoring.Storage;
         contextMenu.subscribe(
           'beforeShow',
           function () {
-            CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
-              tree,
-              this,
-              contextMenuId
-            );
+            CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(tree, this, contextMenuId);
           },
           tree,
           false
@@ -486,16 +446,12 @@ var storage = CStudioAuthoring.Storage;
       tree.draw();
 
       if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-        var treeChild = tree
-          .getEl()
-          .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+        var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
         for (var i = 0; i < treeChild.length; i++) {
           treeChild[i].setAttribute('num', instance.path[i].replace(/\//g, '').toLowerCase());
         }
       } else {
-        var treeChild = tree
-          .getEl()
-          .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+        var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
         treeChild[0].setAttribute('num', instance.path.replace(/\//g, '').toLowerCase());
       }
 
@@ -583,11 +539,7 @@ var storage = CStudioAuthoring.Storage;
         currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
         highlight = false;
 
-      if (
-        isPreview &&
-        (currentPreviewed[0] || {}).browserUri === treeNodeTO.browserUri &&
-        !isLevelDescriptor
-      ) {
+      if (isPreview && (currentPreviewed[0] || {}).browserUri === treeNodeTO.browserUri && !isLevelDescriptor) {
         highlight = true;
       }
 
@@ -610,7 +562,7 @@ var storage = CStudioAuthoring.Storage;
           nodeSpan.appendChild(icon);
         }
 
-        nodeSpan.innerHTML += treeNodeTO.label;
+        nodeSpan.innerHTML += CrafterCMSNext.util.string.escapeHTML(treeNodeTO.label);
         nodeSpan.setAttribute('title', treeNodeTO.title);
         nodeSpan.className = treeNodeTO.style + ' yui-resize-label treenode-label';
 
@@ -850,8 +802,7 @@ var storage = CStudioAuthoring.Storage;
             continue;
           }
           if (instance.openArray[num].length > 0 && instance.openArray[num][i]) {
-            if (instance.openArray[num][i] && instance.openArray[num][i].indexOf(path) > -1)
-              flag = false;
+            if (instance.openArray[num][i] && instance.openArray[num][i].indexOf(path) > -1) flag = false;
           }
         }
       }
@@ -958,14 +909,9 @@ var storage = CStudioAuthoring.Storage;
                 (function () {
                   tmp[key][k[key]] = latestStored[key][k[key]].replace(rooth[key], '');
                   paths[key][k[key]] = tmp[key][k[key]].length
-                    ? (tmp[key][k[key]].charAt(0) == '/'
-                        ? tmp[key][k[key]].substr(1)
-                        : tmp[key][k[key]]
-                      ).split('/')
+                    ? (tmp[key][k[key]].charAt(0) == '/' ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split('/')
                     : null;
-                  recursiveCalls[key][k[key]] = tmp[key][k[key]].length
-                    ? paths[key][k[key]].length
-                    : 0;
+                  recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
                 })();
                 var node, loadEl;
                 for (var i = 0; recursiveCalls[key][k[key]] > i; i++) {
@@ -1003,13 +949,7 @@ var storage = CStudioAuthoring.Storage;
           dummy.path = rootPath;
           var items = new Array();
           items.push(dummy);
-          CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(
-            items,
-            tree,
-            null,
-            instance,
-            pathFlag
-          );
+          CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, null, instance, pathFlag);
           YDom.removeClass(label, 'loading');
           RootFolder().firePathLoaded(instance);
         } else {
@@ -1026,10 +966,7 @@ var storage = CStudioAuthoring.Storage;
               CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, 'default', {
                 success: function (treeData) {
                   var key = treeData.item.path.replace(/\//g, '').toLowerCase();
-                  (paths[key] = []),
-                    (counter[key] = []),
-                    (recursiveCalls[key] = []),
-                    (tmp[key] = {});
+                  (paths[key] = []), (counter[key] = []), (recursiveCalls[key] = []), (tmp[key] = {});
                   (k[key] = 0), (pathTrace[key] = []), (rooth[key] = treeData.item.path);
 
                   //if(servPath == "/site/website")
@@ -1051,13 +988,7 @@ var storage = CStudioAuthoring.Storage;
                     $el.addClass('open');
                   }
                   instance.state = RootFolder().ROOT_OPEN;
-                  CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(
-                    items,
-                    tree,
-                    null,
-                    instance,
-                    pathFlag
-                  );
+                  CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, null, instance, pathFlag);
                   pathFlag = false;
 
                   if (latestStored[key] && latestStored[key][[key]] != RootFolder().ROOT_OPENED) {
@@ -1066,14 +997,9 @@ var storage = CStudioAuthoring.Storage;
                     (function () {
                       tmp[key][k[key]] = latestStored[key][k[key]].replace(treeData.item.path, '');
                       paths[key][k[key]] = tmp[key][k[key]].length
-                        ? (tmp[key][k[key]].charAt(0) == '/'
-                            ? tmp[key][k[key]].substr(1)
-                            : tmp[key][k[key]]
-                          ).split('/')
+                        ? (tmp[key][k[key]].charAt(0) == '/' ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split('/')
                         : null;
-                      recursiveCalls[key][k[key]] = tmp[key][k[key]].length
-                        ? paths[key][k[key]].length
-                        : 0;
+                      recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
                     })();
                     var nodes, node, loadEl;
                     nodes = tree.getNodesByProperty('path', treeData.item.path);
@@ -1216,37 +1142,22 @@ var storage = CStudioAuthoring.Storage;
 
       var ttFormattedEditDate = '';
       if (treeItem.eventDate != '' && treeItem.eventDate != undefined) {
-        var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(
-          treeItem.eventDate,
-          studioTimeZone
-        );
+        var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
         retTransferObj.editedDate = formattedEditDate;
-        ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(
-          treeItem.eventDate,
-          studioTimeZone
-        );
+        ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
       }
 
       var icon = treeItem.folder
           ? CStudioAuthoring.Utils.createIcon('', RootFolder().defaultIcons.childClosed)
           : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
-        contentType =
-          'unknown' != retTransferObj.contentType
-            ? retTransferObj.contentType
-            : retTransferObj.mimeType;
+        contentType = 'unknown' != retTransferObj.contentType ? retTransferObj.contentType : retTransferObj.mimeType;
 
       if (treeItem.scheduled == true) {
         retTransferObj.scheduledDate = treeItem.scheduledDate;
 
-        formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(
-          treeItem.scheduledDate,
-          studioTimeZone
-        );
+        formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
         retTransferObj.formattedScheduledDate = formattedSchedDate;
-        var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(
-          treeItem.scheduledDate,
-          studioTimeZone
-        );
+        var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
 
         retTransferObj.title = this.buildToolTipScheduled(
           retTransferObj.label,
@@ -1297,6 +1208,7 @@ var storage = CStudioAuthoring.Storage;
         itemNameLabel = 'Page';
       }
 
+      label = CrafterCMSNext.util.string.escapeHTML(label);
       label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
       return CStudioAuthoring.Utils.buildToolTip(
@@ -1334,6 +1246,7 @@ var storage = CStudioAuthoring.Storage;
         itemNameLabel = 'Page';
       }
 
+      label = CrafterCMSNext.util.string.escapeHTML(label);
       label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
       try {
@@ -1350,7 +1263,7 @@ var storage = CStudioAuthoring.Storage;
           icon
         );
       } catch (err) {
-        //console.log(err);
+        console.log(err);
       }
       return toolTip;
     },
@@ -1535,9 +1448,7 @@ var storage = CStudioAuthoring.Storage;
                   if (isCreateFolder) {
                     this.aMenuItems = this.menuItems['assetsFolderMenuNoDelete'].slice();
                   } else {
-                    this.aMenuItems = this.menuItems[
-                      'assetsFolderMenuNoDeleteNoCreateFolder'
-                    ].slice();
+                    this.aMenuItems = this.menuItems['assetsFolderMenuNoDeleteNoCreateFolder'].slice();
                   }
                 }
               } else {
@@ -1588,10 +1499,7 @@ var storage = CStudioAuthoring.Storage;
               }
             }
 
-            if (
-              CSA.Utils.hasPerm(CSA.Constants.PERMISSION_WRITE, perms) &&
-              oCurrentTextNode.data.isContainer
-            ) {
+            if (CSA.Utils.hasPerm(CSA.Constants.PERMISSION_WRITE, perms) && oCurrentTextNode.data.isContainer) {
               this.aMenuItems.push({
                 text: CMgs.format(siteDropdownLangBundle, 'bulkUploadAssets'),
                 onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.bulkUpload }
@@ -1641,10 +1549,7 @@ var storage = CStudioAuthoring.Storage;
                           var selectedContent = [];
                           selectedContent.push(contentTO.item);
 
-                          CStudioAuthoring.Operations.submitContent(
-                            CStudioAuthoringContext.site,
-                            selectedContent
-                          );
+                          CStudioAuthoring.Operations.submitContent(CStudioAuthoringContext.site, selectedContent);
                         },
                         failure: function () {}
                       };
@@ -1777,11 +1682,7 @@ var storage = CStudioAuthoring.Storage;
         checkPermissionsCb.p_aArgs = p_aArgs;
         checkPermissionsCb.oCurrentTextNode = oCurrentTextNode;
         checkPermissionsCb.isContainer = isContainer;
-        CSA.Service.getUserPermissions(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.uri,
-          checkPermissionsCb
-        );
+        CSA.Service.getUserPermissions(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, checkPermissionsCb);
       }
     },
 
@@ -2105,11 +2006,7 @@ var storage = CStudioAuthoring.Storage;
             : el.parentNode
           ).style.backgroundColor = '';
         };
-      for (
-        var i = 0, l = spanNodes.length, span = spanNodes[0], barItem;
-        i < l;
-        i++, span = spanNodes[i]
-      ) {
+      for (var i = 0, l = spanNodes.length, span = spanNodes[0], barItem; i < l; i++, span = spanNodes[i]) {
         // span -> td -> tr -> tbody -> table
         barItem = span.parentNode.parentNode.parentNode.parentNode;
         if (barItem) {
@@ -2138,8 +2035,5 @@ var storage = CStudioAuthoring.Storage;
     this.config = config;
   };
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'wcm-assets-folder',
-    CStudioAuthoring.ContextualNav.WcmAssetsFolder
-  );
+  CStudioAuthoring.Module.moduleLoaded('wcm-assets-folder', CStudioAuthoring.ContextualNav.WcmAssetsFolder);
 })();

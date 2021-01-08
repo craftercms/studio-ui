@@ -1,8 +1,5 @@
-const
-
-  fs = require('fs'),
+const fs = require('fs'),
   sass = require('node-sass'),
-
   OUT_DIR = '../../static-assets/styles',
   FILES = [
     'temp',
@@ -27,16 +24,19 @@ function processFile(data) {
     input = data.input;
     output = data.output;
   }
-  sass.render({
-    file: `./${input}.scss`,
-    outputStyle: 'compressed'
-  }, function (error, result) {
-    if (!error) {
-      write({ file: output, content: result.css.toString() });
-    } else {
-      console.log(`Error compiling ${input}.scss`, error);
+  sass.render(
+    {
+      file: `./${input}.scss`,
+      outputStyle: 'compressed'
+    },
+    function (error, result) {
+      if (!error) {
+        write({ file: output, content: result.css.toString() });
+      } else {
+        console.log(`Error compiling ${input}.scss`, error);
+      }
     }
-  });
+  );
 }
 
 function write({ file, content }) {
@@ -44,12 +44,9 @@ function write({ file, content }) {
     fs.mkdirSync(OUT_DIR);
   }
 
-  const
-    regExp = /\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g,
+  const regExp = /\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g,
     copyright = content.match(regExp),
-    withoutCopyrights = content
-      .replace(regExp, '')
-      .replace(String.fromCharCode(65279), ''),
+    withoutCopyrights = content.replace(regExp, '').replace(String.fromCharCode(65279), ''),
     css = copyright ? `${copyright[0]}\n\n${withoutCopyrights}` : content;
 
   fs.writeFile(`${OUT_DIR}/${file}.css`, css, function (error) {

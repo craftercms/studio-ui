@@ -91,10 +91,11 @@
             break;
           }
 
-          const numType = obj.id.substring(obj.id.indexOf("_"));
+          const numType = obj.id.substring(obj.id.indexOf('_'));
           let numTypeRegex;
           let numTypeErrMessage;
-          if (numType === '_f' || numType === '_d') {   // with decimals
+          if (numType === '_f' || numType === '_d') {
+            // with decimals
             numTypeRegex = /^(\d|-)?(\d|,)*\.?\d*$/;
           } else {
             numTypeRegex = /^([+-]?[1-9]\d*|0)$/;
@@ -115,7 +116,6 @@
             validationExist = true;
             validationResult = false;
           }
-
         }
       }
       // actual validation is checked by # of errors
@@ -163,7 +163,7 @@
       var titleEl = document.createElement('span');
 
       YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-      titleEl.innerHTML = config.title;
+      titleEl.textContent = config.title;
 
       var controlWidgetContainerEl = document.createElement('div');
       YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
@@ -237,7 +237,7 @@
       controlWidgetContainerEl.appendChild(numTypeErrEl);
       this.numTypeErrEl = numTypeErrEl;
 
-      $(inputEl).on('keyup keypress mouseup', function(e) {
+      $(inputEl).on('keyup keypress mouseup', function (e) {
         self.count(e, countEl, this);
       });
 
@@ -246,7 +246,7 @@
       var descriptionEl = document.createElement('span');
       YAHOO.util.Dom.addClass(descriptionEl, 'description');
       YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-      descriptionEl.innerHTML = config.description;
+      descriptionEl.textContent = config.description;
 
       containerEl.appendChild(titleEl);
       containerEl.appendChild(controlWidgetContainerEl);
@@ -305,8 +305,5 @@
     }
   });
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-forms-controls-numeric-input',
-    CStudioForms.Controls.numericInput
-  );
+  CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-numeric-input', CStudioForms.Controls.numericInput);
 })();

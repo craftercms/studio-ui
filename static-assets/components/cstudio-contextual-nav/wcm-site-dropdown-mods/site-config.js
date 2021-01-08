@@ -56,10 +56,7 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
 
       parentFolderLinkEl.onclick = function () {
         document.location =
-          CStudioAuthoringContext.authoringAppBaseUri +
-          moduleConfig.path +
-          '?site=' +
-          CStudioAuthoringContext.site;
+          CStudioAuthoringContext.authoringAppBaseUri + moduleConfig.path + '?site=' + CStudioAuthoringContext.site;
       };
 
       dropdownInnerEl.appendChild(parentFolderEl);

@@ -30,44 +30,46 @@ export default function App() {
   );
 }
 
-const useStyles = makeStyles((theme) => createStyles({
-  '@global': {
-    'body, html, #studioSPARoot': {
-      display: 'flex',
-      height: '100%',
-      textAlign: 'center',
-      placeContent: 'center',
-      fontFamily: 'sans-serif'
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    '@global': {
+      'body, html, #studioSPARoot': {
+        display: 'flex',
+        height: '100%',
+        textAlign: 'center',
+        placeContent: 'center',
+        fontFamily: 'sans-serif'
+      },
+      em: {
+        border: `1px solid ${palette.gray.light4}`,
+        backgroundColor: palette.gray.light1,
+        padding: '0 5px',
+        borderRadius: 4,
+        display: 'inline-block'
+      }
     },
-    em: {
+    container: {
+      display: 'flex',
+      textAlign: 'center',
+      flexDirection: 'column',
+      placeContent: 'center',
+      alignItems: 'center',
+      maxWidth: 500,
+      margin: 'auto'
+    },
+    logo: {
+      width: 100
+    },
+    code: {
       border: `1px solid ${palette.gray.light4}`,
       backgroundColor: palette.gray.light1,
-      padding: '0 5px',
+      padding: theme.spacing(1),
       borderRadius: 4,
-      display: 'inline-block'
-    }
-  },
-  container: {
-    display: 'flex',
-    textAlign: 'center',
-    flexDirection: 'column',
-    placeContent: 'center',
-    alignItems: 'center',
-    maxWidth: 500,
-    margin: 'auto'
-  },
-  logo: {
-    width: 100
-  },
-  code: {
-    border: `1px solid ${palette.gray.light4}`,
-    backgroundColor: palette.gray.light1,
-    padding: theme.spacing(1),
-    borderRadius: 4,
-    textAlign: 'left'
-  },
-  hint: {}
-}));
+      textAlign: 'left'
+    },
+    hint: {}
+  })
+);
 
 function Intro() {
   const classes = useStyles({});
@@ -80,11 +82,16 @@ function Intro() {
         the component you'd like to see in your local dev server.
       </p>
       <code className={classes.code}>
-        HOST=authoring.sample.com<br />
-        INLINE_RUNTIME_CHUNK=false<br />
-        PUBLIC_URL=/studio/static-assets/next/<br />
-        BROWSER=chrome<br />
-        REACT_APP_COMPONENT=../pages/Preview<br />
+        HOST=authoring.sample.com
+        <br />
+        INLINE_RUNTIME_CHUNK=false
+        <br />
+        PUBLIC_URL=/studio/static-assets/next/
+        <br />
+        BROWSER=chrome
+        <br />
+        REACT_APP_COMPONENT=../pages/Preview
+        <br />
       </code>
     </section>
   );

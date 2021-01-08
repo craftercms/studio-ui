@@ -54,19 +54,18 @@ CStudioAuthoring.Dialogs.DialogCopy =
         html =
           '<ul>' +
           '<input type="checkbox" id="' +
-          item.uri +
+          encodeURIComponent(item.uri) +
           '" checked="true"/>' +
           '<div class="' +
           itemIconClass +
           '" >' +
           '<div>' +
           icon +
-          item.internalName +
+          CrafterCMSNext.util.string.escapeHTML(item.internalName) +
           '</div> ' +
           '</div>';
 
-      Array.isArray(aURIs) &&
-        aURIs.push('<div style="margin:0 0 5px 0">' + item.browserUri + '</div>');
+      Array.isArray(aURIs) && aURIs.push('<div style="margin:0 0 5px 0">' + item.browserUri + '</div>');
       flatMap[item.uri] = item;
 
       if (children) {
@@ -86,19 +85,14 @@ CStudioAuthoring.Dialogs.DialogCopy =
           heading: CMgs.format(formsLangBundle, 'cut'),
           description: CMgs.format(formsLangBundle, 'copyDescription'),
           actionButton: CMgs.format(formsLangBundle, 'cut'),
-          request:
-            CStudioAuthoringContext.baseUri + '/service/cstudio/services/clipboard/cut?site=' + site
+          request: CStudioAuthoringContext.baseUri + '/service/cstudio/services/clipboard/cut?site=' + site
         };
       } else {
         context = {
           heading: CMgs.format(formsLangBundle, 'copy'),
           description: CMgs.format(formsLangBundle, 'copyDescription'),
           actionButton: CMgs.format(formsLangBundle, 'copy'),
-          request:
-            CStudioAuthoringContext.baseUri +
-            CStudioAuthoring.Service.copyServiceUrl +
-            '?site=' +
-            site
+          request: CStudioAuthoringContext.baseUri + CStudioAuthoring.Service.copyServiceUrl + '?site=' + site
         };
       }
       return context;
@@ -117,7 +111,9 @@ CStudioAuthoring.Dialogs.DialogCopy =
     }
 
     function onCopyCheckBoxSubmittedItemClick(event, matchedEl) {
-      var selectedItemURI, selectedItem;
+      var selectedItemURI,
+        selectedItem,
+        id = decodeURIComponent(matchedEl.id);
 
       function selectParents(selectedItem, checked) {
         var inputElement;
@@ -147,12 +143,12 @@ CStudioAuthoring.Dialogs.DialogCopy =
         }
       }
 
-      if (matchedEl.id == item.uri) {
+      if (id === item.uri) {
         matchedEl.checked = true;
         return;
       }
 
-      selectedItemURI = matchedEl.id;
+      selectedItemURI = id;
       selectedItem = flatMap[selectedItemURI];
       if (matchedEl.checked) {
         selectParents(selectedItem, true);
@@ -203,7 +199,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
       for (var i = 0; i < inputItems.length; i++) {
         if (inputItems[i].checked) {
-          selectedURI = inputItems[i].id;
+          selectedURI = decodeURIComponent(inputItems[i].id);
           selectedIds[selectedURI] = 'selected';
         }
       }
@@ -312,11 +308,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
     function updateDialog(content, cut) {
       var dialogContent = getDialogContent(content),
-        contentContainer = YAHOO.util.Selector.query(
-          '#cstudio-wcm-popup-div .scrollBox',
-          null,
-          true
-        );
+        contentContainer = YAHOO.util.Selector.query('#cstudio-wcm-popup-div .scrollBox', null, true);
 
       item = content.item;
 

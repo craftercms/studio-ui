@@ -37,11 +37,7 @@ CStudioAuthoring.Module.requireModule(
       YAHOO.lang.extend(CStudioAuthoring.Dialogs.DialogSimpleSubmit, dialogClass);
 
       // Extend GoLive's prototype with its own class functions
-      CStudioAuthoring.Dialogs.DialogSimpleSubmit.prototype.createPanel = function (
-        panelName,
-        modalState,
-        zIdx
-      ) {
+      CStudioAuthoring.Dialogs.DialogSimpleSubmit.prototype.createPanel = function (panelName, modalState, zIdx) {
         return new YAHOO.widget.Panel(panelName, {
           fixedcenter: true,
           visible: false,
@@ -136,9 +132,7 @@ CStudioAuthoring.Module.requireModule(
             this.selectedJsonObj.sendEmail = 'false';
           }
 
-          this.selectedJsonObj.submissionComment = document.getElementById(
-            'acn-submission-comment'
-          ).value;
+          this.selectedJsonObj.submissionComment = document.getElementById('acn-submission-comment').value;
           var jsonSubmitString = YAHOO.lang.JSON.stringify(this.selectedJsonObj),
             self = this,
             serviceCallback = {
@@ -292,11 +286,7 @@ CStudioAuthoring.Module.requireModule(
           var serviceCallback = {
             success: function (oResponse) {
               if (!self.schedulePolicyPanel) {
-                self.schedulePolicyPanel = self.createSchedulePolicyPanel(
-                  'schedulePolicyPanel',
-                  true,
-                  1000
-                );
+                self.schedulePolicyPanel = self.createSchedulePolicyPanel('schedulePolicyPanel', true, 1000);
                 self.schedulePolicyPanel.setBody(oResponse.responseText);
                 // Render the Submit panel
                 self.schedulePolicyPanel.render(document.body);
@@ -408,13 +398,7 @@ CStudioAuthoring.Module.requireModule(
 
         this.publishingChannelsInit();
 
-        YEvent.addListener(
-          'golivesubmitButton',
-          'click',
-          this.invokeSubmitToGoLiveService,
-          this,
-          true
-        );
+        YEvent.addListener('golivesubmitButton', 'click', this.invokeSubmitToGoLiveService, this, true);
         YEvent.addListener('golivecancelButton', 'click', this.closeDialog, this, true);
 
         // hide dependency line if only 1 item
@@ -440,9 +424,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogSimpleSubmit.prototype.getDependenciesForGoLiveItemList = function (
-        contentItems
-      ) {
+      CStudioAuthoring.Dialogs.DialogSimpleSubmit.prototype.getDependenciesForGoLiveItemList = function (contentItems) {
         var self = this;
 
         if (this.itemArray.length) {
@@ -471,20 +453,13 @@ CStudioAuthoring.Module.requireModule(
                   afterRenderFn.firecount++;
                   var today = new Date();
                   today.setDate(today.getDate() + 1);
-                  YDom.get(sourceElementId).value = [
-                    today.getMonth() + 1,
-                    today.getDate(),
-                    today.getFullYear()
-                  ].join('/');
+                  YDom.get(sourceElementId).value = [today.getMonth() + 1, today.getDate(), today.getFullYear()].join(
+                    '/'
+                  );
                 }
               };
               afterRenderFn.firecount = 0;
-              var initCalendar = CStudioAuthoring.Utils.yuiCalendar(
-                  'datepicker',
-                  'focus',
-                  'datepicker',
-                  afterRenderFn
-                ),
+              var initCalendar = CStudioAuthoring.Utils.yuiCalendar('datepicker', 'focus', 'datepicker', afterRenderFn),
                 status = CStudioAuthoring.Utils.initCursorPosition('timepicker', [
                   'click',
                   'keydown',
@@ -493,11 +468,7 @@ CStudioAuthoring.Module.requireModule(
                   'mouseup',
                   'mousedown'
                 ]),
-                initTimeFormat = CStudioAuthoring.Utils.textFieldTimeHelper(
-                  'timepicker',
-                  'blur',
-                  'timepicker'
-                ),
+                initTimeFormat = CStudioAuthoring.Utils.textFieldTimeHelper('timepicker', 'blur', 'timepicker'),
                 initTimeIncrementButton = CStudioAuthoring.Utils.textFieldTimeIncrementHelper(
                   'timeIncrementButton',
                   'timepicker',
@@ -569,10 +540,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      CStudioAuthoring.Dialogs.DialogSimpleSubmit.prototype.showDialog = function (
-        site,
-        contentItems
-      ) {
+      CStudioAuthoring.Dialogs.DialogSimpleSubmit.prototype.showDialog = function (site, contentItems) {
         var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
         this.init();
 

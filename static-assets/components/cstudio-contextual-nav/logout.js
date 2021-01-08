@@ -66,10 +66,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
 
         YConnect.setDefaultPostHeader(false);
         YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
-        YConnect.initHeader(
-          CStudioAuthoringContext.xsrfHeaderName,
-          CrafterCMSNext.util.auth.getRequestForgeryToken()
-        );
+        YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), {
           success: function () {
             CStudioAuthoring.Storage.eliminate('userSession');

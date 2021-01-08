@@ -145,9 +145,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
       self: this
     };
 
-    var serviceUri =
-      '/api/1/services/api/1/deployment/get-deployment-queue.json?site=' +
-      CStudioAuthoringContext.site;
+    var serviceUri = '/api/1/services/api/1/deployment/get-deployment-queue.json?site=' + CStudioAuthoringContext.site;
 
     YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
   },
@@ -211,14 +209,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
     };
 
     var serviceUri =
-      '/api/1/services/api/1/deployment/get-deployment-endpoints.json?site=' +
-      CStudioAuthoringContext.site;
+      '/api/1/services/api/1/deployment/get-deployment-endpoints.json?site=' + CStudioAuthoringContext.site;
 
-    YConnect.asyncRequest(
-      'GET',
-      CStudioAuthoring.Service.createServiceUri(serviceUri),
-      loadEndpointsCb
-    );
+    YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), loadEndpointsCb);
 
     // add onchange behavior to display selected
     itemSelectEl.onchange = function () {
@@ -282,10 +275,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
         var trEl = document.createElement('tr');
 
         var rowHTML =
-          "<td class='cs-statelist-detail'>Name</td>" +
-          "<td class='cs-statelist-detail'>" +
-          endpoint.name +
-          '</td>';
+          "<td class='cs-statelist-detail'>Name</td>" + "<td class='cs-statelist-detail'>" + endpoint.name + '</td>';
         trEl.innerHTML = rowHTML;
         endpointTableEl.appendChild(trEl);
         trEl = document.createElement('tr');
@@ -298,14 +288,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
         endpointTableEl.appendChild(trEl);
         trEl = document.createElement('tr');
         rowHTML =
-          "<td class='cs-statelist-detail'>Status</td>" +
-          "<td class='cs-statelist-detail' id='endpointStatus'></td>";
+          "<td class='cs-statelist-detail'>Status</td>" + "<td class='cs-statelist-detail' id='endpointStatus'></td>";
         trEl.innerHTML = rowHTML;
         endpointTableEl.appendChild(trEl);
         trEl = document.createElement('tr');
         rowHTML =
-          "<td class='cs-statelist-detail'>Version</td>" +
-          "<td class='cs-statelist-detail' id='endpointVersion'></td>";
+          "<td class='cs-statelist-detail'>Version</td>" + "<td class='cs-statelist-detail' id='endpointVersion'></td>";
         trEl.innerHTML = rowHTML;
         endpointTableEl.appendChild(trEl);
 
@@ -391,11 +379,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
             versionEl.innerHTML = 'FAILED';
           }
         };
-        YAHOO.util.Connect.asyncRequest(
-          'GET',
-          endpoint.versionUrl + '?target=' + endpoint.target,
-          getVersionCb
-        );
+        YAHOO.util.Connect.asyncRequest('GET', endpoint.versionUrl + '?target=' + endpoint.target, getVersionCb);
       }
     };
   },
@@ -490,9 +474,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
       self: this
     };
 
-    var serviceUri =
-      '/api/1/services/api/1/deployment/get-deployment-queue.json?site=' +
-      CStudioAuthoringContext.site;
+    var serviceUri = '/api/1/services/api/1/deployment/get-deployment-queue.json?site=' + CStudioAuthoringContext.site;
 
     YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
   },
@@ -561,10 +543,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
         }
       };
 
-      YConnect.initHeader(
-        CStudioAuthoringContext.xsrfHeaderName,
-        CrafterCMSNext.util.auth.getRequestForgeryToken()
-      );
+      YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
       YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
     }
   },
@@ -641,9 +620,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
       self: this
     };
 
-    var serviceUri =
-      '/api/1/services/api/1/deployment/get-deployment-jobs.json?site=' +
-      CStudioAuthoringContext.site;
+    var serviceUri = '/api/1/services/api/1/deployment/get-deployment-jobs.json?site=' + CStudioAuthoringContext.site;
 
     YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), loadJobsCb);
   },

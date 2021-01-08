@@ -94,24 +94,12 @@
     }
     var isWrite = false;
     var par = [];
-    var currentPath = message.itemId
-      ? message.itemId
-      : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
+    var currentPath = message.itemId ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
     var cachePermissionsKey =
-        CStudioAuthoringContext.site +
-        '_' +
-        currentPath +
-        '_' +
-        CStudioAuthoringContext.user +
-        '_permissions',
+        CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
       isPermissionCached = cache.get(cachePermissionsKey),
       cacheContentKey =
-        CStudioAuthoringContext.site +
-        '_' +
-        currentPath +
-        '_' +
-        CStudioAuthoringContext.user +
-        '_content',
+        CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
       isContentCached = cache.get(cacheContentKey);
     var isLockOwner = function (lockOwner) {
       if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
@@ -142,11 +130,7 @@
     var editPermsCallback = {
       success: function (response) {
         if (!isPermissionCached) {
-          cache.set(
-            cachePermissionsKey,
-            response.permissions,
-            CStudioAuthoring.Constants.CACHE_TIME_PERMISSION
-          );
+          cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
         }
         isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
         if (!isWrite) {
@@ -166,11 +150,7 @@
           var getContentItemsCb = {
             success: function (contentTO) {
               if (!isContentCached) {
-                cache.set(
-                  cacheContentKey,
-                  contentTO.item,
-                  CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM
-                );
+                cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
               }
               isLockOwner(contentTO.item.lockOwner);
               CStudioAuthoring.Operations.performSimpleIceEdit(
@@ -213,11 +193,7 @@
       response.permissions = isPermissionCached;
       editPermsCallback.success(response);
     } else {
-      CStudioAuthoring.Service.getUserPermissions(
-        CStudioAuthoringContext.site,
-        currentPath,
-        editPermsCallback
-      );
+      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, currentPath, editPermsCallback);
     }
   });
 
@@ -254,12 +230,7 @@
       selectStudioContent(site, studioPath);
 
       setHash({ page: message.url, site });
-      CStudioAuthoring.ComponentsPanel.getPageModel(
-        studioPath,
-        'init-components',
-        true,
-        false
-      );
+      CStudioAuthoring.ComponentsPanel.getPageModel(studioPath, 'init-components', true, false);
 
       communicator.publish(Topics.DND_PANEL_OFF);
     }
@@ -412,13 +383,7 @@
   });
 
   communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function (message) {
-    amplify.publish(
-      cstopic('SAVE_DRAG_AND_DROP'),
-      message.isNew,
-      message.zones,
-      message.compPath,
-      message.conComp
-    );
+    amplify.publish(cstopic('SAVE_DRAG_AND_DROP'), message.isNew, message.zones, message.compPath, message.conComp);
   });
 
   communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function (message) {
@@ -515,16 +480,14 @@
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
     $('#acn-ice-tools-container img').attr(
       'src',
-      CStudioAuthoringContext.authoringAppBaseUri +
-        '/static-assets/themes/cstudioTheme/images/edit_off.png'
+      CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png'
     );
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
     $('#acn-ice-tools-container img').attr(
       'src',
-      CStudioAuthoringContext.authoringAppBaseUri +
-        '/static-assets/themes/cstudioTheme/images/edit.png'
+      CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png'
     );
   });
 

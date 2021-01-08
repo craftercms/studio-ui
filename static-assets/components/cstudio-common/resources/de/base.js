@@ -116,7 +116,9 @@ CStudioAuthoring.Messages.registerBundle('siteDashboard', 'de', {
   dashletIconGuideExcel: 'MS Excel',
   dashletIconGuideZip: 'ZIP',
   dashletIconGuideGroovy: 'Groovy',
-  dashletIconGuideOtherFiles: 'sonstige Datei'
+  dashletIconGuideOtherFiles: 'sonstige Datei',
+
+  dependenciesLabel: 'Abhängigkeiten'
 });
 
 CStudioAuthoring.Messages.registerBundle('contextnav', 'de', {
@@ -343,8 +345,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
   repeatMoveUp: 'Nach oben',
   repeatMoveDown: 'Nach unten',
   repeatDelete: 'Löschen',
-  errMissingRequirements:
-    'Es kann erst gespeichert werden, wenn alle erforderlichen Felder ausgefüllt sind.',
+  errMissingRequirements: 'Es kann erst gespeichert werden, wenn alle erforderlichen Felder ausgefüllt sind.',
   errSaveFailed: 'Fehler beim Speichern - bitte kontaktieren Sie Ihren Systemadministrator.',
   errOnRepeat: 'Fehler im Repeater: {0}',
   errFailedToLoadContent: 'Fehler beim Laden: {0}',
@@ -425,8 +426,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
   deleteDialogPage: 'Seite',
   deleteDialogDelete: 'Löschen',
   deleteDialogNow: 'Jetzt',
-  deleteDialogFeedBack:
-    'Abhängigkeiten müssen ebenfalls ausgewählt werden, um fortfahren zu können.',
+  deleteDialogFeedBack: 'Abhängigkeiten müssen ebenfalls ausgewählt werden, um fortfahren zu können.',
   deleteDialogNoItemsSelected: 'Es sind keine Elemente ausgewählt.',
   deletedTitle: 'Auswahl gelöscht',
   deletedMessage: 'Die gewählten Elemente wurden gelöscht und werden in Kürze entfernt.',
@@ -487,8 +487,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
   newContTypeDialogType: 'Typ',
   component: 'Komponente',
   newContTypeDialogLabelMsg: 'Vergeben Sie ein Label für den neuen Content-Typ',
-  newContTypeDialogContentTypeNamelMsg:
-    'Vergeben Sie einen System-internen Namen für den neuen Content-Typ',
+  newContTypeDialogContentTypeNamelMsg: 'Vergeben Sie einen System-internen Namen für den neuen Content-Typ',
   newContTypeDialogTypeMsg: 'Wählen Sie den Typ für den neuen Content-Typ',
 
   adminHelpDialogTitle: 'Feld Inhalt',
@@ -559,11 +558,9 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
   numberPerPage: 'Bitte geben Sie eine Anzahl für Einträge pro Seite an.',
   revertError: 'Zurücksetzen ist fehlgeschlagen.',
   legacyError: 'Der alte Formular Server wird nicht mehr unterstützt.',
-  contentTypesEmpty:
-    'Es gibt keine Content-Typen, die unter dem konfigurierten Pfad angelegt werden können.',
+  contentTypesEmpty: 'Es gibt keine Content-Typen, die unter dem konfigurierten Pfad angelegt werden können.',
   componentCategoriesError: 'Es sind keine Kategorien zum Anlegen verfügbar.',
-  pluginError:
-    'Es wurden Probleme mit Ihrer Plugin-Konfiguration gefunden. Die folgenden Eigenschaften fehlen:',
+  pluginError: 'Es wurden Probleme mit Ihrer Plugin-Konfiguration gefunden. Die folgenden Eigenschaften fehlen:',
   pluginErrorSolution:
     "<a id='siteConfigURL'>Gehen Sie zu <a id='siteConfigURL'> [Site-Konfigurationsseite] </a> und wählen Sie in der Dropdown-Liste die Option 'Site-Konfigurations-Tools' aus, um die Datei zu bearbeiten.",
   control: 'Steuerung: ',
@@ -910,8 +907,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabConfigurations: 'Konfigurationen',
   confTabConfDesc: 'Liste aller Konfigurationsdateien',
   confTabContextualNavigationConf: 'Kontextbezogene Navigation',
-  confTabContextualNavigationConfDesc:
-    'Definiert alle Einträge in kontextbezogenen Navigationsleisten',
+  confTabContextualNavigationConfDesc: 'Definiert alle Einträge in kontextbezogenen Navigationsleisten',
   confTabSidebarConf: 'Seitenleiste',
   confTabSidebarConfDesc: 'Definiert alle Einträge in der Seitenleiste',
   confTabEndpointsConf: 'Endpunkte',
@@ -934,11 +930,9 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabPreviewPanelConf: 'Vorschau Werkzeuge',
   confTabconfTabPreviewPanelConfDesc: 'Definiert die Werkzeugleiste für die Vorschau',
   confTabPersonasConf: 'Personas',
-  confTabPersonasConfDesc:
-    'Definiert eine Liste von Personas, die in der Vorschau zur Verfügung stehen',
+  confTabPersonasConfDesc: 'Definiert eine Liste von Personas, die in der Vorschau zur Verfügung stehen',
   confTabNotificationConf: 'Benachrichtigungen',
-  confTabNotificationConfDesc:
-    'Konfiguriert alle automatischen Benachrichtigungen für den Workflow ',
+  confTabNotificationConfDesc: 'Konfiguriert alle automatischen Benachrichtigungen für den Workflow ',
   confTabPermissionsMappings: 'Berechtigungen',
   confTabPermissionsMappingsDesc: 'Definiert Berechtigungen jeder Rolle auf den jeweiligen Pfad',
   confTabRoleMappings: 'Rollen',
@@ -953,11 +947,9 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabTargetingConfiguration: 'Targeting',
   confTabTargetingConfigurationDesc: 'Konfiguriert Targeting Profile in Crafter Studio',
   confTabEnvironmentConfiguration: 'Umgebungen',
-  confTabEnvironmentConfigurationDesc:
-    'Konfiguriert alle Umgebungen, in die publiziert werden kann',
+  confTabEnvironmentConfigurationDesc: 'Konfiguriert alle Umgebungen, in die publiziert werden kann',
   confTabCMISConfiguration: 'CMIS-Schnittstellen',
-  confTabCMISConfigurationDesc:
-    'In dieser Datei werden alle im Projekt verwendeten CMIS-Schnittstellen konfiguriert',
+  confTabCMISConfigurationDesc: 'In dieser Datei werden alle im Projekt verwendeten CMIS-Schnittstellen konfiguriert',
   confTabEngineSiteConfiguration: 'Crafter Engine',
   confTabEngineSiteConfigurationDesc: 'Konfigurationsdatei für Crafter Engine',
   confTabEngineSiteAppContextConfiguration: 'Crafter Engine Application Context',
@@ -966,10 +958,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   /* Image */
   constraintsError: 'Das Bild entspricht nicht den geforderten Maßen',
   sizeError: 'Das Bild ist kleiner als die geforderte Mindestgröße',
-  fileNotImage:
-    'Die hochgeladene Datei ist fehlerhaft oder entspricht keinem der unterstützten Bildformate',
-  loadImageError:
-    'Fehler beim Laden des Bildes. Bitte versuchen Sie es erneut oder wählen ein anderes Bild',
+  fileNotImage: 'Die hochgeladene Datei ist fehlerhaft oder entspricht keinem der unterstützten Bildformate',
+  loadImageError: 'Fehler beim Laden des Bildes. Bitte versuchen Sie es erneut oder wählen ein anderes Bild',
 
   /*Postfixes*/
   iDescription: 'Für eine Ganzzahl',
@@ -1001,8 +991,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   endpointsError: 'Fehler beim Laden der Endpunkte.',
   jobsError: 'Fehler beim Laden der Jobs.',
   cancelDeploymentError: 'Fehler beim Versuch, das Deployment abzubrechen.',
-  saveDateError:
-    'Das Datumsfeld konnte nicht gespeichert werden. Bitte kontaktieren Sie Ihren Systemadministrator.',
+  saveDateError: 'Das Datumsfeld konnte nicht gespeichert werden. Bitte kontaktieren Sie Ihren Systemadministrator.',
   contentTypeModifiedWarn:
     'Der Content-Typ wurde bearbeitet. Sind Sie sicher, dass Sie Ihre Änderungen verwerfen möchten?',
   noPathSetError:

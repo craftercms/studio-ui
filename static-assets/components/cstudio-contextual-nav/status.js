@@ -68,20 +68,17 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 case 'busy':
                   iconColor = '#FF8C00';
                   iconClass = 'icon-orange';
-                  if (dialogEl && !dialogEl.classList.contains('fa-spin'))
-                    dialogEl.classList.add('fa-spin');
+                  if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                   break;
                 case 'stopped':
                   iconColor = '#FF0000';
                   iconClass = 'icon-red';
-                  if (dialogEl && dialogEl.classList.contains('fa-spin'))
-                    dialogEl.classList.remove('fa-spin');
+                  if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                   break;
                 default:
                   iconColor = '#7e9dbb';
                   iconClass = 'icon-default';
-                  if (dialogEl && !dialogEl.classList.contains('fa-spin'))
-                    dialogEl.classList.add('fa-spin');
+                  if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
               }
 
               YDom.setStyle(el.children[0], 'color', iconColor);
@@ -124,20 +121,17 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   case 'busy':
                     iconColor = '#FF8C00';
                     iconClass = 'icon-orange';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
-                      dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                     break;
                   case 'stopped':
                     iconColor = '#FF0000';
                     iconClass = 'icon-red';
-                    if (dialogEl && dialogEl.classList.contains('fa-spin'))
-                      dialogEl.classList.remove('fa-spin');
+                    if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                     break;
                   default:
                     iconColor = '#7e9dbb';
                     iconClass = 'icon-default';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
-                      dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                 }
 
                 YDom.setStyle(el.children[0], 'color', iconColor);
@@ -215,20 +209,17 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   case 'busy':
                     iconColor = '#FF8C00';
                     iconClass = 'icon-orange';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
-                      dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                     break;
                   case 'stopped':
                     iconColor = '#FF0000';
                     iconClass = 'icon-red';
-                    if (dialogEl && dialogEl.classList.contains('fa-spin'))
-                      dialogEl.classList.remove('fa-spin');
+                    if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                     break;
                   default:
                     iconColor = '#7e9dbb';
                     iconClass = 'icon-default';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
-                      dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                 }
 
                 YDom.setStyle(el.children[0], 'color', iconColor);
@@ -242,10 +233,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 try {
                   message = JSON.parse(response.responseText).message;
                 } catch (e) {
-                  message = CMgs.format(
-                    CMgs.getBundle('contextnav', CStudioAuthoringContext.lang),
-                    'networkError'
-                  );
+                  message = CMgs.format(CMgs.getBundle('contextnav', CStudioAuthoringContext.lang), 'networkError');
                 }
 
                 CStudioAuthoring.Operations.showSimpleDialog(

@@ -43,7 +43,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.statusView, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-status-view',
-  CStudioAdminConsole.Tool.statusView
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-status-view', CStudioAdminConsole.Tool.statusView);

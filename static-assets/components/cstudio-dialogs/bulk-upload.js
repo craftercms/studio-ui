@@ -48,14 +48,7 @@
         if (e.which === 27) {
           me.close();
           window.removeEventListener('keydown', escKeyListener, false);
-          CStudioAuthoring.ContextualNav.WcmRootFolder.refreshNodes(
-            oCurrentTextNode,
-            false,
-            false,
-            null,
-            null,
-            true
-          );
+          CStudioAuthoring.ContextualNav.WcmRootFolder.refreshNodes(oCurrentTextNode, false, false, null, null, true);
         }
       };
 
@@ -73,14 +66,7 @@
         'click',
         function (e) {
           me.close();
-          CStudioAuthoring.ContextualNav.WcmRootFolder.refreshNodes(
-            oCurrentTextNode,
-            false,
-            false,
-            null,
-            null,
-            true
-          );
+          CStudioAuthoring.ContextualNav.WcmRootFolder.refreshNodes(oCurrentTextNode, false, false, null, null, true);
         },
         false
       );

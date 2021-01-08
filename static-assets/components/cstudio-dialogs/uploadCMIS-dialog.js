@@ -146,11 +146,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url +=
-      '&' +
-      CStudioAuthoringContext.xsrfParameterName +
-      '=' +
-      CrafterCMSNext.util.auth.getRequestForgeryToken();
+    url += '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
       formTarget: '#asset_upload_form',
@@ -220,7 +216,4 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'upload-cmis-dialog',
-  CStudioAuthoring.Dialogs.UploadCMISDialog
-);
+CStudioAuthoring.Module.moduleLoaded('upload-cmis-dialog', CStudioAuthoring.Dialogs.UploadCMISDialog);

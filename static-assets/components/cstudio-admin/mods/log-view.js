@@ -43,7 +43,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-log-view',
-  CStudioAdminConsole.Tool.LogView
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-log-view', CStudioAdminConsole.Tool.LogView);

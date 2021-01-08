@@ -106,7 +106,4 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-video-S3-upload',
-  CStudioForms.Datasources.VideoS3Upload
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-video-S3-upload', CStudioForms.Datasources.VideoS3Upload);

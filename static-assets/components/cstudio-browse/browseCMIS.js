@@ -24,7 +24,8 @@
 
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
-    browseCMISMessages = i18n.messages.browseCMISMessages;
+    browseCMISMessages = i18n.messages.browseCMISMessages,
+    words = i18n.messages.words;
 
   CStudioBrowseCMIS.init = function () {
     var me = this;
@@ -106,6 +107,8 @@
           event: event
         });
       }
+
+      me.renderContextMenu('.jstree-anchor');
     });
 
     $tree.on('select_node.jstree', function (event, data) {
@@ -412,9 +415,7 @@
     var me = this,
       type = type ? type : 'browse',
       $resultsContainer =
-        'browse' === type
-          ? $('#cstudio-wcm-browse-result .results')
-          : $('#cstudio-wcm-search-result .results'),
+        'browse' === type ? $('#cstudio-wcm-browse-result .results') : $('#cstudio-wcm-search-result .results'),
       $resultsActions =
         'browse' === type
           ? $('#cstudio-wcm-browse-result .cstudio-results-actions')
@@ -423,9 +424,7 @@
     $resultsContainer.empty();
     $resultsActions.empty();
 
-    $resultsContainer.html(
-      '<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...'
-    );
+    $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
     if ('cmis-root' === path && this.rootItems) {
       //root - we already have the items
@@ -501,18 +500,12 @@
       msj = CMgs.format(browseLangBundle, 'noBrowseResults');
     }
 
-    $resultsContainer.append(
-      '<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>'
-    );
+    $resultsContainer.append('<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>');
   };
 
   CStudioBrowseCMIS.getContent = function (type, cb, cPath, searchTerm) {
     var pathURL = CStudioAuthoring.Utils.getQueryParameterByName('path'),
-      path = cPath
-        ? cPath
-        : pathURL.slice(-1) == '/'
-        ? pathURL.substring(0, pathURL.length - 1)
-        : pathURL,
+      path = cPath ? cPath : pathURL.slice(-1) == '/' ? pathURL.substring(0, pathURL.length - 1) : pathURL,
       repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId'),
       site = CStudioAuthoring.Utils.getQueryParameterByName('site');
 
@@ -574,26 +567,51 @@
         searchTerm = '*';
       }
 
-      CStudioAuthoring.Service.getCMISContentBySearch(
-        site,
-        repoId,
-        path,
-        searchTerm,
-        callbackContent
-      );
+      CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, searchTerm, callbackContent);
     }
   };
 
-  (CStudioBrowseCMIS.getConfig = function (callback) {
-    CStudioAuthoring.Service.getConfiguration(
-      CStudioAuthoringContext.site,
-      '/data-sources/cmis-config.xml',
-      {
-        success: function (config) {
-          callback(config.repositories.repository);
-        }
+  CStudioBrowseCMIS.renderContextMenu = function(selector) {
+    var me = this;
+
+    $.contextMenu({
+      selector: selector,
+      callback: function(key, options) {
+        var pathToUpload = options.$trigger.attr('data-path'),
+          basePath = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        pathToUpload = pathToUpload === 'cmis-root' ? basePath : pathToUpload;
+
+        me.uploadContent(CStudioAuthoringContext.site, pathToUpload)
+          .then(function() {
+            me.renderSiteContent(pathToUpload);
+          })
+      },
+      items: {
+        upload: { name: formatMessage(words.upload)}
       }
-    );
+    })
+  };
+
+  CStudioBrowseCMIS.uploadContent = function (site, path) {
+    var d = new $.Deferred(),
+      repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId');
+
+    CStudioAuthoring.Operations.uploadCMISAsset(site, path, repoId, {
+      success: function (results) {
+        d.resolve(results);
+      },
+      failure: function () {}
+    });
+
+    return d.promise();
+  };
+
+  (CStudioBrowseCMIS.getConfig = function (callback) {
+    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
+      success: function (config) {
+        callback(config.repositories.repository);
+      }
+    });
   }),
     (window.CStudioBrowseCMIS = CStudioBrowseCMIS);
 })(window, jQuery, Handlebars);

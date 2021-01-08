@@ -56,17 +56,13 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
       this.control.toggle();
     };
 
-    CStudioAuthoring.Service.lookupConfigurtion(
-      CStudioAuthoringContext.site,
-      '/context-nav/quick-content.xml',
-      {
-        success: function (config) {
-          this.context.buildModules(config);
-        },
-        failure: CStudioAuthoring.Utils.noop,
-        context: this
-      }
-    );
+    CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/context-nav/quick-content.xml', {
+      success: function (config) {
+        this.context.buildModules(config);
+      },
+      failure: CStudioAuthoring.Utils.noop,
+      context: this
+    });
   },
 
   buildModules: function (config) {
@@ -131,7 +127,4 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded(
-  'quick-content',
-  CStudioAuthoring.ContextualNav.QuickContentMod
-);
+CStudioAuthoring.Module.moduleLoaded('quick-content', CStudioAuthoring.ContextualNav.QuickContentMod);

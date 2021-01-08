@@ -90,9 +90,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
 
       var createEl = document.createElement('div');
       YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(
-        _self.messages.words.browse
-      )} - ${newElTitle}`;
+      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.browse)} - ${newElTitle}`;
       control.addContainerEl.create.appendChild(createEl);
 
       var addContainerEl = control.addContainerEl;
@@ -155,7 +153,4 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-WebDAV-repo',
-  CStudioForms.Datasources.WebDAVRepo
-);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-WebDAV-repo', CStudioForms.Datasources.WebDAVRepo);

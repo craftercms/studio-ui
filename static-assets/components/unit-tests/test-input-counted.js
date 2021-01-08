@@ -28,11 +28,7 @@ YAHOO.tool.TestRunner.add(
           this.company1.focus();
         },
         function () {
-          YAHOO.util.Assert.areEqual(
-            'foo',
-            this.company1.value,
-            "Value doesn't match, 'foo' Expected"
-          );
+          YAHOO.util.Assert.areEqual('foo', this.company1.value, "Value doesn't match, 'foo' Expected");
         }
       );
     },
@@ -44,11 +40,7 @@ YAHOO.tool.TestRunner.add(
           this.company1.focus();
         },
         function () {
-          YAHOO.util.Assert.areEqual(
-            'bar',
-            this.company1.value,
-            "Value doesn't match, 'foo' Expected"
-          );
+          YAHOO.util.Assert.areEqual('bar', this.company1.value, "Value doesn't match, 'foo' Expected");
         }
       );
     },
