@@ -195,8 +195,6 @@ CStudioAuthoring.Module.requireModule(
               timeout: CStudioAuthoring.Request.Timeout.GoLiveTimeout
             };
 
-          //show loading image when submit is clicked.
-          this.showLoadingImage('reject');
           //disable submit button to protect multiple submit at the same time.
           YDom.get('golivesubmitButton').disabled = true;
           YDom.get('golivecancelButton').disabled = true;
@@ -316,7 +314,9 @@ CStudioAuthoring.Module.requireModule(
 
         renderItems(this.selectedContent);
 
-        html.push(`<tr><td class="dependencies-label">${this.formatMessage(this.words.dependencies)}</td>`);
+        html.push(
+          `<tr><td></td><td class="dependencies-label">${this.formatMessage(this.words.dependencies)}</td>`
+        );
 
         renderItems(dependencies);
 
