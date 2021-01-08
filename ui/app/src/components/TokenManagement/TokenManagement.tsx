@@ -37,10 +37,10 @@ import palette from '../../styles/palette';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import moment from 'moment-timezone';
-import { getTokens } from '../../services/token';
+import { deleteToken, getTokens, updateToken } from '../../services/token';
 import { useDispatch } from 'react-redux';
 import { showCreateTokenDialog } from '../../state/actions/dialogs';
+import { Token } from '../../models/Token';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -80,20 +80,10 @@ const StyledTableCell = withStyles((theme: Theme) =>
   })
 )(TableCell);
 
-function createData(status: boolean, label: string, expiration: string, created: string, id: string) {
-  return { status, label, expiration, created, id };
-}
-
-const rows = [
-  createData(true, 'Command line token', moment(), moment(), '1'),
-  createData(true, 'Command line token', moment(), moment(), '2'),
-  createData(true, 'Command line token', moment(), moment(), '3')
-];
-
 export default function TokenManagement() {
   const classes = styles();
   // TODO: Should the tokens be on the store??
-  const [tokens, setTokens] = useState();
+  const [tokens, setTokens] = useState<Token[]>([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -102,8 +92,24 @@ export default function TokenManagement() {
     });
   }, []);
 
-  const createToken = () => {
+  const onCreateToken = () => {
     dispatch(showCreateTokenDialog({}));
+  };
+
+  const onSetEnabled = (id: number, checked: boolean) => {
+    // TODO: Move to reducer/epics??;
+    updateToken(id, {
+      enabled: checked
+    }).subscribe((token) => {
+      console.log(token);
+    });
+  };
+
+  const onDeleteToken = (id: number) => {
+    // TODO: Move to reducer/epics??;
+    deleteToken(id).subscribe((token) => {
+      console.log(token);
+    });
   };
 
   return (
@@ -112,7 +118,7 @@ export default function TokenManagement() {
         <FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />
       </Typography>
       <Divider />
-      <Button variant="outlined" startIcon={<AddIcon />} className={classes.createToken} onClick={createToken}>
+      <Button variant="outlined" startIcon={<AddIcon />} className={classes.createToken} onClick={onCreateToken}>
         <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
       </Button>
       <Divider />
@@ -152,31 +158,44 @@ export default function TokenManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id}>
+            {tokens.map((token) => (
+              <TableRow key={token.id}>
                 <TableCell padding="checkbox">
-                  <Checkbox color="primary" defaultChecked inputProps={{ 'aria-label': 'select checkbox' }} />
+                  <Checkbox
+                    checked={token.enabled}
+                    color="primary"
+                    inputProps={{ 'aria-label': 'select checkbox' }}
+                    onChange={(event, checked) => {
+                      onSetEnabled(token.id, checked);
+                    }}
+                  />
                 </TableCell>
-                <TableCell component="th" id={row.id} scope="row" padding="none">
-                  <Chip label={row.status ? 'Enabled' : 'Disabled'} className={classes.chip} />
+                <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
+                  <Chip label={token.enabled ? 'Enabled' : 'Disabled'} className={classes.chip} />
                 </TableCell>
-                <StyledTableCell align="left">{row.label}</StyledTableCell>
+                <StyledTableCell align="left">{token.label}</StyledTableCell>
                 <StyledTableCell align="left">
-                  <AsDayMonthDateTime date={row.expiration} />
+                  <AsDayMonthDateTime date={token.expiresAt} />
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  <AsDayMonthDateTime date={row.created} />
+                  <AsDayMonthDateTime date={token.createdOn} />
                 </StyledTableCell>
                 <TableCell align="center" className={classes.actions}>
                   <Switch
-                    checked={row.status}
-                    onChange={() => {}}
+                    checked={token.enabled}
+                    onChange={(e, checked) => {
+                      onSetEnabled(token.id, checked);
+                    }}
                     color="primary"
                     name="status"
                     inputProps={{ 'aria-label': 'status checkbox' }}
                   />
-                  <IconButton>
-                    <DeleteIcon />
+                  <IconButton
+                    onClick={() => {
+                      onDeleteToken(token.id);
+                    }}
+                  >
+                    <DeleteIcon color="primary" />
                   </IconButton>
                 </TableCell>
               </TableRow>

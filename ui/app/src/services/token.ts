@@ -15,24 +15,27 @@
  */
 
 import { Observable } from 'rxjs';
-import { del, get, post } from '../utils/ajax';
+import { del, get, postJSON } from '../utils/ajax';
 import { pluck } from 'rxjs/operators';
+import { Token } from '../models/Token';
 
-export function getTokens(): Observable<any> {
+export function getTokens(): Observable<Token[]> {
   return get('/studio/api/2/security/tokens').pipe(pluck('response', 'tokens'));
 }
 
-export function createToken(label: string, expiresAt?: string): Observable<any> {
-  return post('/studio/api/2/security/tokens', {
+export function createToken(label: string, expiresAt?: string): Observable<Token> {
+  return postJSON('/studio/api/2/security/tokens', {
     label,
     ...(expiresAt && { expiresAt })
-  }).pipe(pluck('response'));
+    // TODO: change tokens to token when BE fix the issue
+  }).pipe(pluck('response', 'tokens'));
 }
 
-export function updateToken(id: string, properties: Object): Observable<any> {
-  return post(`/studio/api/2/security/tokens/${id}`, properties).pipe(pluck('response'));
+export function updateToken(id: number, properties: Object): Observable<Token> {
+  // TODO: change tokens to token when BE fix the issue
+  return postJSON(`/studio/api/2/security/tokens/${id}`, properties).pipe(pluck('response', 'tokens'));
 }
 
-export function deleteToken(id: string): Observable<any> {
+export function deleteToken(id: number): Observable<any> {
   return del(`/studio/api/2/security/tokens/${id}`).pipe(pluck('response'));
 }
