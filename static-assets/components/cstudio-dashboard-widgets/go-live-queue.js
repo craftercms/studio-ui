@@ -250,26 +250,25 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
         html = html.concat([
           '<td colspan=2>',
           '<div class="dashlet-ident">',
-          '<input type="checkbox" class="dashlet-item-check" id="',
-          encodeURIComponent(uri),
-          '"',
-          this.widgetId == currentDashboard &&
-          currentCheckItem &&
-          CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
-          item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
-            ? ' checked'
-            : '',
-          item.deleted || item.inFlight ? ' disabled' : '',
-          '  />',
+          `<input type="checkbox" class="dashlet-item-check" id="${encodeURIComponent(uri)}" ${
+            this.widgetId == currentDashboard &&
+            currentCheckItem &&
+            CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+              ? ' checked'
+              : ''
+          } ${item.deleted || item.inFlight ? ' disabled' : ''}  />`,
           CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-          '<a class="anchorRow" ',
-          item.previewable == true
-            ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
-            : '',
-          ' class="itemNameCol "',
-          item.previewable == true ? 'previewLink' : 'non-previewable-link',
-          item.disabled == true ? ' dashboard-item disabled' : '',
-          '">',
+          `<a class="anchorRow"
+           ${
+             item.previewable
+               ? `href="/studio/preview/#/?page=${currentBrowserUri}&site=${CStudioAuthoringContext.site}"`
+               : ''
+           }
+           class="itemNameCol ${item.previewable ? 'previewLink' : 'non-previewable-link'} ${
+            item.disabled ? ' dashboard-item disabled' : ''
+          }"
+          >`,
           displayName,
           '</a>',
           '</span>',
@@ -279,9 +278,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
           '</td>',
           '<td id="' + viewLinkId + '"></td>',
           '<td id="' + editLinkId + '"></td>',
-          "<td class='urlCol' title='",
-          browserUri,
-          "'>",
+          `<td class='urlCol' title="${browserUri}">`,
           displayBrowserUri,
           '</td>',
           "<td title='fullUri' class='width0'>",
@@ -326,7 +323,6 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
     var selectedElementURI = decodeURIComponent(matchedEl.id);
     var item = CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap[selectedElementURI];
     WcmDashboardWidgetCommon.selectItem(matchedEl, matchedEl.checked);
-    //CStudioAuthoring.SelectedContent.selectContent({"item":item});
 
     if (isChecked) {
       //check all parents

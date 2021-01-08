@@ -1092,7 +1092,7 @@
 
         var formNameEl = document.createElement('div');
         YDom.addClass(formNameEl, 'content-form-name');
-        formNameEl.innerHTML = this.definition.title;
+        formNameEl.textContent = this.definition.title;
         formVisualContainerEl.appendChild(formNameEl);
 
         var divPropertiesEl = document.createElement('div');
@@ -1160,7 +1160,7 @@
 
           var datasourceNameEl = document.createElement('span');
           YDom.addClass(datasourceNameEl, 'content-datasource-name');
-          datasourceNameEl.innerHTML = datasource.title;
+          datasourceNameEl.textContent = datasource.title;
           datasourceEl.appendChild(datasourceNameEl);
 
           var datasourceTypeEl = document.createElement('span');
@@ -1349,7 +1349,7 @@
         var minValue = field.properties[0] && field.properties[0].value != '' ? field.properties[0].value : '0';
         var maxValue = field.properties[0] && field.properties[1].value != '' ? field.properties[1].value : '*';
 
-        fieldNameEl.innerHTML =
+        fieldNameEl.textContent =
           field.title + ' ' + CMgs.format(langBundle, 'repeatingGroup') + ' [' + minValue + ' ... ' + maxValue + ']';
         fieldContainerEl.appendChild(fieldNameEl);
 
@@ -1424,7 +1424,7 @@
 
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-name');
-        fieldNameEl.innerHTML = field.title;
+        fieldNameEl.textContent = field.title;
         fieldContainerEl.appendChild(fieldNameEl);
 
         var fieldTypeEl = document.createElement('span');

@@ -53,11 +53,7 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
       for (var i = 0; i < list.length; i++) {
         var itemEl = document.createElement('div');
         YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-add-container-item');
-        if (showKeys) {
-          itemEl.innerHTML = list[i].key;
-        } else {
-          itemEl.innerHTML = list[i].value;
-        }
+        itemEl.textContent = showKeys ? list[i].key : list[i].value;
         addContainerEl.appendChild(itemEl);
         itemEl._value = list[i].value;
         itemEl._key = list[i].key;

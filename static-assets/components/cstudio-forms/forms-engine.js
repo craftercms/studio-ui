@@ -367,7 +367,6 @@ var CStudioForms =
                 helpDialogEl = document.createElement('div');
                 helpDialogEl.id = 'help-dialog';
                 YAHOO.util.Dom.addClass(helpDialogEl, 'seethrough');
-
                 document.body.appendChild(helpDialogEl);
               }
 
@@ -375,7 +374,6 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(maskEl, 'dialog-dialog-mask');
               maskEl.style.display = 'block';
               maskEl.id = 'dialogMask';
-              //window.parent.document.body.appendChild(maskEl);
               document.body.appendChild(maskEl);
 
               helpDialogEl.style.display = 'block';
@@ -390,7 +388,7 @@ var CStudioForms =
               YAHOO.util.Dom.addClass(helpDialogContainerEl, 'dialog-body');
               helpDialogEl.appendChild(helpDialogContainerEl);
 
-              helpDialogContainerEl.innerHTML = CStudioForms.Util.unEscapeXml(config.help);
+              helpDialogContainerEl.innerHTML = config.help;
 
               var buttonContainerEl = document.createElement('div');
               YAHOO.util.Dom.addClass(buttonContainerEl, 'dialog-button-bar');
@@ -2106,7 +2104,7 @@ var CStudioForms =
           var titleEl = document.createElement('span');
           repeatInstanceContainerEl.appendChild(titleEl);
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.innerHTML = repeat.title;
+          titleEl.textContent = repeat.title;
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
@@ -2143,7 +2141,7 @@ var CStudioForms =
           var titleEl = document.createElement('span');
           repeatInstanceContainerEl.appendChild(titleEl);
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.innerHTML = repeat.title;
+          titleEl.textContent = repeat.title;
 
           var addEl = document.createElement('a');
           repeatInstanceContainerEl.appendChild(addEl);
