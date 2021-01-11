@@ -856,6 +856,9 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
                       payload: {
                         path
                       }
+                    },
+                    {
+                      type: 'CLOSE_EDIT_DIALOG'
                     }
                   ]
                 },
@@ -907,6 +910,9 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
                   payload: {
                     path
                   }
+                },
+                {
+                  type: 'CLOSE_EDIT_DIALOG'
                 }
               ]
             },

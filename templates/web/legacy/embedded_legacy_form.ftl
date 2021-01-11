@@ -78,12 +78,13 @@
 <script>
   const { formatMessage } = CrafterCMSNext.i18n.intl;
   const { embeddedLegacyFormMessages } = CrafterCMSNext.i18n.messages;
-  var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
-  var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
-  var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
-  var readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly');
-  var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
-  var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
+  const path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+  const site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
+  const type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
+  const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
+  const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
+  const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
+  const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -91,7 +92,7 @@
     switch (type) {
       case 'form': {
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
-        var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
+        var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden') === 'true';
         var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
 
         const aux = [];
@@ -106,7 +107,7 @@
                     success: (contentTO) => {
                       CStudioAuthoring.Operations.performSimpleIceEdit(
                               contentTO.item,
-                              '',
+                              iceId,
                               true,
                               {
                                 success: (response, editorId, name, value, draft, action) => {
