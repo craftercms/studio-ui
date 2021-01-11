@@ -24,7 +24,7 @@ const palette = {
     highlight: 'rgba(0, 122, 255, .1)',
     highlightHex: '#E6F2FF'
   },
-  green: { tint: '#30DB5B', main: '#34C759', shade: '#248A3D', highlight: '#EBFAEF', light: '#edf7ed' },
+  green: { tint: '#30DB5B', main: '#34C759', shade: '#248A3D', highlight: '#EBFAEF' },
   indigo: { tint: '#7D7AFF', main: '#5856D6', shade: '#3634A3' },
   orange: { tint: '#FFB340', main: '#FF9500', shade: '#C93400' },
   pink: { tint: '#FF6482', main: '#FF2D55', shade: '#D30F45' },

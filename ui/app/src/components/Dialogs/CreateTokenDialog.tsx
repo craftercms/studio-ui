@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useState } from 'react';
+import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -24,34 +24,43 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useUnmount } from '../../utils/hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import StandardAction from '../../models/StandardAction';
-import { FormHelperText } from '@material-ui/core';
 import { createToken } from '../../services/token';
+import { Token } from '../../models/Token';
+import DateTimePicker from '../Controls/DateTimePicker';
+import moment from 'moment-timezone';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Collapse from '@material-ui/core/Collapse';
 
-interface CreateTokenBaseProps {
+interface CreateTokenProps {
   open: boolean;
-}
-
-export type CreateTokenProps = PropsWithChildren<
-  CreateTokenBaseProps & {
-    onClose?(): void;
-    onClosed?(): void;
-    onCreated?(response: any): void;
-  }
->;
-
-export interface CreateTokenStateProps extends CreateTokenBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onCreated?: StandardAction;
+  onCreated?(response: Token): void;
+  onClose?(): void;
+  onClosed?(): void;
 }
 
 export const translations = defineMessages({
   placeholder: {
     id: 'words.label',
     defaultMessage: 'Label'
+  },
+  expiresLabel: {
+    id: 'createTokenDialog.expiresLabel',
+    defaultMessage: 'Expire Token'
   }
 });
+
+const styles = makeStyles((theme) =>
+  createStyles({
+    expiresWrapper: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }
+  })
+);
 
 export default function CreateTokenDialog(props: CreateTokenProps) {
   const { open, onClose } = props;
@@ -65,20 +74,22 @@ export default function CreateTokenDialog(props: CreateTokenProps) {
 function CreateTokenUI(props: CreateTokenProps) {
   const { onClosed, onClose, onCreated } = props;
   const [inProgress, setInProgress] = useState(false);
+  const [expires, setExpires] = useState(false);
+  const [expiresAt, setExpiresAt] = useState(null);
+  const classes = styles();
   const [label, setLabel] = useState('');
-  // const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
   useUnmount(onClosed);
 
   const onOk = () => {
     setInProgress(true);
-    createToken(label).subscribe((resp) => {
+    createToken(label, expires ? expiresAt : null).subscribe((token) => {
       setInProgress(false);
-      console.log(resp);
+      onCreated && onCreated(token);
     });
-    onCreated && onCreated({});
   };
+
   return (
     <>
       <DialogHeader
@@ -102,6 +113,44 @@ function CreateTokenUI(props: CreateTokenProps) {
             setLabel(e.target.value);
           }}
         />
+        <section className={classes.expiresWrapper}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={expires}
+                color="primary"
+                onChange={(e, checked) => {
+                  setExpires(checked);
+                }}
+              />
+            }
+            label={formatMessage(translations.expiresLabel)}
+          />
+          <FormHelperText>
+            {expires ? (
+              <FormattedMessage
+                id="createTokenDialog.expiresHelperNeverText"
+                defaultMessage="Switch off to set expiration as never."
+              />
+            ) : (
+              <FormattedMessage
+                id="createTokenDialog.expiresHelperText"
+                defaultMessage="Switch on to set an expiration."
+              />
+            )}
+          </FormHelperText>
+        </section>
+        <Collapse in={expires}>
+          <DateTimePicker
+            onChange={(time) => {
+              setExpiresAt(time);
+            }}
+            date={moment()}
+            datePickerProps={{
+              disablePast: true
+            }}
+          />
+        </Collapse>
       </DialogBody>
       <DialogFooter>
         <Button onClick={onClose} variant="contained">

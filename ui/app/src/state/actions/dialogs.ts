@@ -146,12 +146,6 @@ export const closeCreateFileDialog = createAction<StandardAction>('CLOSE_CREATE_
 export const createFileDialogClosed = createAction('CREATE_FILE_DIALOG_CLOSED');
 // endregion
 
-// region Create Token Dialog
-export const showCreateTokenDialog = createAction<Partial<CreateFileStateProps>>('SHOW_CREATE_TOKEN_DIALOG');
-export const closeCreateTokenDialog = createAction<StandardAction>('CLOSE_CREATE_TOKEN_DIALOG');
-export const createTokenDialogClosed = createAction('CREATE_TOKEN_DIALOG_CLOSED');
-// endregion
-
 // region Copy Dialog
 export const showCopyDialog = createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
 export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');

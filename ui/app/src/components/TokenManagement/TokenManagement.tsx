@@ -20,7 +20,6 @@ import {
   Checkbox,
   Chip,
   Divider,
-  IconButton,
   Switch,
   Table,
   TableBody,
@@ -31,16 +30,18 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
 import { deleteToken, getTokens, updateToken } from '../../services/token';
 import { useDispatch } from 'react-redux';
-import { showCreateTokenDialog } from '../../state/actions/dialogs';
 import { Token } from '../../models/Token';
+import CreateTokenDialog from '../Dialogs/CreateTokenDialog';
+import clsx from 'clsx';
+import { showSystemNotification } from '../../state/actions/system';
+import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -65,9 +66,12 @@ const styles = makeStyles((theme) =>
       padding: '5px 20px'
     },
     chip: {
-      backgroundColor: palette.green.light,
+      backgroundColor: theme.palette.success.light,
       height: 'auto',
-      padding: '4px 6.5px'
+      padding: '4px 6.5px',
+      '&.disabled': {
+        backgroundColor: theme.palette.warning.light
+      }
     }
   })
 );
@@ -80,35 +84,99 @@ const StyledTableCell = withStyles((theme: Theme) =>
   })
 )(TableCell);
 
+const translations = defineMessages({
+  tokenCreated: {
+    id: 'tokenManagement.created',
+    defaultMessage: 'Token created'
+  },
+  tokenDeleted: {
+    id: 'tokenManagement.deleted',
+    defaultMessage: 'Token deleted'
+  },
+  tokenUpdated: {
+    id: 'tokenManagement.updated',
+    defaultMessage: 'Token updated'
+  },
+  confirmHelperText: {
+    id: 'words.helperText',
+    defaultMessage: 'Delete "{label}" token?'
+  },
+  confirmOk: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmCancel: {
+    id: 'words.no',
+    defaultMessage: 'No'
+  }
+});
+
 export default function TokenManagement() {
   const classes = styles();
-  // TODO: Should the tokens be on the store??
   const [tokens, setTokens] = useState<Token[]>([]);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    fetchTokens();
+  }, []);
+
+  const fetchTokens = () => {
     getTokens().subscribe((tokens) => {
       setTokens(tokens);
     });
-  }, []);
+  };
 
   const onCreateToken = () => {
-    dispatch(showCreateTokenDialog({}));
+    setOpenCreateDialog(true);
+  };
+
+  const onCreateTokenDialogClose = () => {
+    setOpenCreateDialog(false);
+  };
+
+  const onCreateTokenSuccess = (token: Token) => {
+    fetchTokens();
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.tokenCreated)
+      })
+    );
+    setOpenCreateDialog(false);
   };
 
   const onSetEnabled = (id: number, checked: boolean) => {
-    // TODO: Move to reducer/epics??;
+    setTokens(
+      tokens.map((token) => {
+        if (token.id === id) {
+          return { ...token, enabled: checked };
+        } else {
+          return token;
+        }
+      })
+    );
     updateToken(id, {
       enabled: checked
     }).subscribe((token) => {
-      console.log(token);
+      fetchTokens();
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(translations.tokenUpdated)
+        })
+      );
     });
   };
 
   const onDeleteToken = (id: number) => {
-    // TODO: Move to reducer/epics??;
+    setTokens(tokens.filter((token) => token.id !== id));
     deleteToken(id).subscribe((token) => {
-      console.log(token);
+      fetchTokens();
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(translations.tokenDeleted)
+        })
+      );
     });
   };
 
@@ -127,12 +195,7 @@ export default function TokenManagement() {
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox">
-                <Checkbox
-                  defaultChecked
-                  indeterminate
-                  color="primary"
-                  inputProps={{ 'aria-label': 'select all checkbox' }}
-                />
+                <Checkbox defaultChecked indeterminate color="primary" />
               </TableCell>
               <TableCell align="left" padding="none">
                 <Typography variant="subtitle2">
@@ -162,20 +225,34 @@ export default function TokenManagement() {
               <TableRow key={token.id}>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={token.enabled}
+                    // checked={token.enabled}
                     color="primary"
-                    inputProps={{ 'aria-label': 'select checkbox' }}
-                    onChange={(event, checked) => {
-                      onSetEnabled(token.id, checked);
-                    }}
+                    // onChange={(event, checked) => {
+                    //   onSetEnabled(token.id, checked);
+                    // }}
                   />
                 </TableCell>
                 <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
-                  <Chip label={token.enabled ? 'Enabled' : 'Disabled'} className={classes.chip} />
+                  <Chip
+                    label={
+                      token.enabled ? (
+                        <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
+                      ) : (
+                        <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
+                      )
+                    }
+                    className={clsx(classes.chip, !token.enabled && 'disabled')}
+                  />
                 </TableCell>
                 <StyledTableCell align="left">{token.label}</StyledTableCell>
                 <StyledTableCell align="left">
-                  <AsDayMonthDateTime date={token.expiresAt} />
+                  {token.expiresAt ? (
+                    <AsDayMonthDateTime date={token.expiresAt} />
+                  ) : (
+                    <Typography color="textSecondary" variant="body2">
+                      (<FormattedMessage id="words.never" defaultMessage="Never" />)
+                    </Typography>
+                  )}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <AsDayMonthDateTime date={token.createdOn} />
@@ -187,22 +264,25 @@ export default function TokenManagement() {
                       onSetEnabled(token.id, checked);
                     }}
                     color="primary"
-                    name="status"
-                    inputProps={{ 'aria-label': 'status checkbox' }}
                   />
-                  <IconButton
-                    onClick={() => {
+                  <ConfirmDropdown
+                    cancelText={formatMessage(translations.confirmCancel)}
+                    confirmText={formatMessage(translations.confirmOk)}
+                    confirmHelperText={formatMessage(translations.confirmHelperText, {
+                      label: token.label
+                    })}
+                    icon={DeleteIcon}
+                    onConfirm={() => {
                       onDeleteToken(token.id);
                     }}
-                  >
-                    <DeleteIcon color="primary" />
-                  </IconButton>
+                  />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <CreateTokenDialog open={openCreateDialog} onCreated={onCreateTokenSuccess} onClose={onCreateTokenDialogClose} />
     </section>
   );
 }
