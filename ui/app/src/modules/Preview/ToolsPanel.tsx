@@ -46,10 +46,11 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import Asset from '@material-ui/icons/ImageOutlined';
 import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
 import Audiences from '@material-ui/icons/EmojiPeopleRounded';
-import Settings from '@material-ui/icons/Settings';
 import PageExplorer from '../../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../../components/Icons/SiteExplorerRounded';
 import Simulator from '@material-ui/icons/DevicesRounded';
+import BrushOutlinedIcon from '@material-ui/icons/BrushOutlined';
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 
 defineMessages({
@@ -151,9 +152,10 @@ Object.entries({
   '@material-ui/icons/ImageOutlined': Asset,
   '@material-ui/icons/EmojiPeopleRounded': Audiences,
   '@material-ui/icons/DevicesRounded': Simulator,
+  '@material-ui/icons/BrushOutlined': BrushOutlinedIcon,
+  '@material-ui/icons/SettingsOutlined': SettingsOutlinedIcon,
   'craftercms.icons.PageExplorer': PageExplorer,
   'craftercms.icons.SiteExplorer': SiteExplorer,
-  '@material-ui/icons/Settings': Settings,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,

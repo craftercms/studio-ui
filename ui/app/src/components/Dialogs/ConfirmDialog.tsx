@@ -158,7 +158,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
           </Button>
         )}
         {onCancel && (
-          <Button onClick={onCancel} variant="outlined" fullWidth size="large">
+          <Button onClick={onCancel} variant="outlined" color="default" fullWidth size="large">
             {formatMessage(messages.cancel)}
           </Button>
         )}

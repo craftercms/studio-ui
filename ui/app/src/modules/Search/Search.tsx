@@ -43,7 +43,7 @@ import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
 import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
-import ActionsBar from '../../components/ActionsBar';
+import ItemActionsSnackBar from '../../components/ItemActionsSnackBar';
 import { dispatchDOMEvent } from '../../state/actions/misc';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { DetailedItem } from '../../models/Item';
@@ -830,7 +830,7 @@ export default function Search(props: SearchProps) {
         </section>
       </section>
       {mode === 'default' && (
-        <ActionsBar
+        <ItemActionsSnackBar
           open={selected.length > 0}
           mode={mode}
           selectedItems={selected}

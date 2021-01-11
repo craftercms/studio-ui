@@ -979,7 +979,9 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
+          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted
+            ? treeNodeTO.path
+            : CrafterCMSNext.util.string.escapeHTML(treeNodeTO.label);
           const tooltip = treeNodeTO.statusObj.deleted
             ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(
                 CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
@@ -2222,6 +2224,7 @@
           itemNameLabel = 'Page';
         }
 
+        label = CrafterCMSNext.util.string.escapeHTML(label);
         label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
         return CStudioAuthoring.Utils.buildToolTip(
@@ -2259,6 +2262,7 @@
           itemNameLabel = 'Page';
         }
 
+        label = CrafterCMSNext.util.string.escapeHTML(label);
         label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
         try {

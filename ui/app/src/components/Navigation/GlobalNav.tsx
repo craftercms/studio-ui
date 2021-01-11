@@ -513,7 +513,6 @@ export default function GlobalNav(props: GlobalNavProps) {
                   title={formatMessage(messages.settings)}
                   icon={{ id: '@material-ui/icons/SettingsRounded' }}
                   link={getLink('settings', authoringUrl)}
-                  disabled={!site}
                 />
                 <Tile
                   icon={{ id: 'craftercms.icons.CrafterIcon' }}

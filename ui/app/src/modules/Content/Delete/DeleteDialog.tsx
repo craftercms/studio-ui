@@ -188,7 +188,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
-
   return (
     <>
       <DialogHeader
@@ -210,7 +209,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
       </DialogBody>
       <DialogFooter>
         <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
-          <FormattedMessage id="deleteDialog.cancel" defaultMessage={'Cancel'} />
+          <FormattedMessage id="deleteDialog.cancel" defaultMessage="Cancel" />
         </Button>
         <Button
           variant="contained"
@@ -246,10 +245,9 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     submitting: false
   });
   const siteId = useActiveSiteId();
-  const deleteDependencies = useSelector<GlobalState, { childItems: string[]; dependentItems: string[] }>((state) => ({
-    childItems: state.dialogs.delete.childItems,
-    dependentItems: state.dialogs.delete.dependentItems
-  }));
+  const deleteDependencies = useSelector<GlobalState, { childItems: string[]; dependentItems: string[] }>(
+    (state) => state.dialogs.delete
+  );
 
   const [selectedItems, setSelectedItems] = useState(null);
   const dispatch = useDispatch();
