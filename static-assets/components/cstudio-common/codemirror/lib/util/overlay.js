@@ -7,26 +7,30 @@
 // the styles are combined.
 
 // overlayParser is the old, deprecated name
-CodeMirror.overlayMode = CodeMirror.overlayParser = function(base, overlay, combine) {
+CodeMirror.overlayMode = CodeMirror.overlayParser = function (base, overlay, combine) {
   return {
-    startState: function() {
+    startState: function () {
       return {
         base: CodeMirror.startState(base),
         overlay: CodeMirror.startState(overlay),
-        basePos: 0, baseCur: null,
-        overlayPos: 0, overlayCur: null
+        basePos: 0,
+        baseCur: null,
+        overlayPos: 0,
+        overlayCur: null
       };
     },
-    copyState: function(state) {
+    copyState: function (state) {
       return {
         base: CodeMirror.copyState(base, state.base),
         overlay: CodeMirror.copyState(overlay, state.overlay),
-        basePos: state.basePos, baseCur: null,
-        overlayPos: state.overlayPos, overlayCur: null
+        basePos: state.basePos,
+        baseCur: null,
+        overlayPos: state.overlayPos,
+        overlayCur: null
       };
     },
 
-    token: function(stream, state) {
+    token: function (stream, state) {
       if (stream.start == state.basePos) {
         state.baseCur = base.token(stream, state.base);
         state.basePos = stream.pos;
@@ -40,15 +44,19 @@ CodeMirror.overlayMode = CodeMirror.overlayParser = function(base, overlay, comb
       if (stream.eol()) state.basePos = state.overlayPos = 0;
 
       if (state.overlayCur == null) return state.baseCur;
-      if (state.baseCur != null && combine) return state.baseCur + " " + state.overlayCur;
+      if (state.baseCur != null && combine) return state.baseCur + ' ' + state.overlayCur;
       else return state.overlayCur;
     },
-    
-    indent: base.indent && function(state, textAfter) {
-      return base.indent(state.base, textAfter);
-    },
+
+    indent:
+      base.indent &&
+      function (state, textAfter) {
+        return base.indent(state.base, textAfter);
+      },
     electricChars: base.electricChars,
 
-    innerMode: function(state) { return {state: state.base, mode: base}; }
+    innerMode: function (state) {
+      return { state: state.base, mode: base };
+    }
   };
 };

@@ -15,271 +15,281 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.PageNavOrder = CStudioForms.Controls.PageNavOrder ||
-function(id, form, owner, properties, constraints, readonly)  {
-	this.owner = owner;
-	this.owner.registerField(this);
-	this.errors = []; 
-	this.properties = properties;
-	this.constraints = constraints;
-	this.dropdownEl = null; // Must Reference the select element
-	this.required = false;
-	this.value = "_not-set"; // Must Be True or False
-	this.form = form;
-	this.id = id;
-	this.readonly = readonly;
-	
-	this.orderDefault = "orderDefault_f";
-	this.orderValue = null;
-	this.placeInNav = "placeInNav";
-	
-	return this;
-}
+CStudioForms.Controls.PageNavOrder =
+  CStudioForms.Controls.PageNavOrder ||
+  function (id, form, owner, properties, constraints, readonly) {
+    this.owner = owner;
+    this.owner.registerField(this);
+    this.errors = [];
+    this.properties = properties;
+    this.constraints = constraints;
+    this.dropdownEl = null; // Must Reference the select element
+    this.required = false;
+    this.value = '_not-set'; // Must Be True or False
+    this.form = form;
+    this.id = id;
+    this.readonly = readonly;
+
+    this.orderDefault = 'orderDefault_f';
+    this.orderValue = null;
+    this.placeInNav = 'placeInNav';
+
+    return this;
+  };
 
 YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, {
+  getFixedId: function () {
+    return 'pageNavOrder';
+  },
 
-    getFixedId: function() {
-        return "pageNavOrder";
-    },
+  getLabel: function () {
+    return CMgs.format(langBundle, 'pageOrder');
+  },
 
-    getLabel: function() {
-        return CMgs.format(langBundle, "pageOrder");
-    },
+  _onChange: function (evt, obj) {
+    obj.value = obj.dropdownEl.value; //value from the dropdown
 
-	_onChange: function(evt, obj) {
-		obj.value = obj.dropdownEl.value;//value from the dropdown
-		
-		obj.owner.notifyValidation();
-		obj.form.updateModel(obj.id, obj.getValue(), true);
-		obj.form.updateModel(obj.placeInNav, obj.getValue());
+    obj.owner.notifyValidation();
+    obj.form.updateModel(obj.id, obj.getValue(), true);
+    obj.form.updateModel(obj.placeInNav, obj.getValue());
 
-		if (obj.getValue() === "true") {
-			obj.form.updateModel(obj.orderDefault, obj.orderValue);
-		}else{
-			obj.form.updateModel(obj.orderDefault, -1);
-		}
-	},
+    if (obj.getValue() === 'true') {
+      obj.form.updateModel(obj.orderDefault, obj.orderValue);
+    } else {
+      obj.form.updateModel(obj.orderDefault, -1);
+    }
+  },
 
-    _onChangeVal: function(evt, obj, changeEvt) {
-        obj.edited = true;
-        if(changeEvt){
-            this._onChange(evt,obj);
+  _onChangeVal: function (evt, obj, changeEvt) {
+    obj.edited = true;
+    if (changeEvt) {
+      this._onChange(evt, obj);
+    }
+  },
+
+  showEditPosition: function () {
+    if (this.dropdownEl.value == 'true') {
+      this.editPositionEl.style.display = 'inline';
+      if (!this.orderValue || this.orderValue === -1) {
+        this.setOrderValue();
+        this._onChangeVal(null, this, false);
+      } else {
+        this._onChangeVal(null, this, true);
+      }
+    } else {
+      this.editPositionEl.style.display = 'none';
+      this._onChangeVal(null, this, true);
+    }
+  },
+
+  showEditPositionDialog: function () {
+    var CMgs = CStudioAuthoring.Messages;
+    var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
+    //Disable Edit Position button to not allow double clicks
+    this.editPositionEl.disabled = true;
+
+    var query = location.search.substring(1);
+    var thisPage = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
+    var order = 'default';
+
+    var callback = {
+      success: function (contentTypes) {
+        var query = location.search.substring(1);
+        var currentPath = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
+        var contentTypeSize = contentTypes.order.length;
+
+        var pageFound = 'false';
+        for (var i = 0; i < contentTypeSize; i++) {
+          var orderId = contentTypes.order[i].id;
+
+          if (orderId == currentPath) {
+            contentTypes.order[i].internalName = CMgs.format(langBundle, 'currentPage');
+            contentTypes.order[i].order = this.parentControl.orderValue;
+            pageFound = 'true';
+            break;
+          }
         }
-    },
 
-	showEditPosition: function() {
-		if (this.dropdownEl.value == 'true') {
-			this.editPositionEl.style.display = "inline";
-			if(!this.orderValue || this.orderValue === -1){
-				this.setOrderValue();
-                this._onChangeVal(null, this, false);
-			}else{
-				this._onChangeVal(null, this, true);
-			}
-		} else {
-			this.editPositionEl.style.display = "none";
-			this._onChangeVal(null, this, true);
-		}
-	},
+        if (pageFound == 'false') {
+          contentTypes.order.push({
+            id: currentPath,
+            order: this.parentControl.orderValue,
+            internalName: CMgs.format(langBundle, 'currentPage'),
+            name: CMgs.format(langBundle, 'currentPage')
+          });
+        }
 
-	showEditPositionDialog: function() {
-        var CMgs = CStudioAuthoring.Messages;
-        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-	    //Disable Edit Position button to not allow double clicks
-	    this.editPositionEl.disabled = true;
+        panelId = 'panel1';
+        CStudioAuthoring.Service.reorderServiceCreatePanel(
+          panelId,
+          contentTypes,
+          CStudioAuthoringContext.site,
+          this.parentControl
+        );
+        //Enable Edit Position button
+        this.parentControl.editPositionEl.disabled = false;
+      },
 
-	    var query = location.search.substring(1); 
-	    var thisPage = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
-	    var order = 'default';
+      failure: function () {
+        //Enable Edit Position button
+        this.parentControl.editPositionEl.disabled = false;
+      }
+    };
+    callback.parentControl = this;
 
-	    var callback = {
-		    success: function(contentTypes) {                    
-				    var query = location.search.substring(1);
-				    var currentPath = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
-				    var contentTypeSize = contentTypes.order.length;
+    CStudioAuthoring.Service.getOrderServiceRequest(CStudioAuthoringContext.site, thisPage, order, callback);
+    this.editPositionEl.disabled = false;
+  },
 
-			    	var pageFound = 'false';
-					for (var i = 0; i < contentTypeSize; i++) {
-					    var orderId = contentTypes.order[i].id;
+  render: function (config, containerEl) {
+    containerEl.id = this.id;
 
-					    if (orderId == currentPath) {
-							contentTypes.order[i].internalName = CMgs.format(langBundle, "currentPage");
-							contentTypes.order[i].order = this.parentControl.orderValue;
-							pageFound = 'true';
-							break;
-					    }
-					}
+    var currentValue = this.value == '_not-set' ? this.defaultValue : this.value;
 
-					if (pageFound == 'false') {
-						contentTypes.order.push({id:currentPath, order:this.parentControl.orderValue, internalName:CMgs.format(langBundle, "currentPage"), name:CMgs.format(langBundle, "currentPage")});
-					}
+    for (var i = 0; i < config.properties.length; i++) {
+      var prop = config.properties[i];
 
-				    panelId = 'panel1';
-				    CStudioAuthoring.Service.reorderServiceCreatePanel(panelId, contentTypes, CStudioAuthoringContext.site, this.parentControl);			
-			    //Enable Edit Position button
-			    this.parentControl.editPositionEl.disabled = false;
-		    },
+      if (prop.name == 'readonly' && prop.value == 'true') {
+        this.readonly = true;
+      }
+    }
 
-		    failure: function() {
-				//Enable Edit Position button
-				this.parentControl.editPositionEl.disabled = false;
-			}
-	    };
-	    callback.parentControl = this;
+    var titleEl = document.createElement('span');
 
-	    CStudioAuthoring.Service.getOrderServiceRequest(CStudioAuthoringContext.site, thisPage, order, callback);
-		this.editPositionEl.disabled = false;
-	},
+    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
+    titleEl.innerHTML = config.title;
 
-	render: function(config, containerEl) {
-		containerEl.id = this.id;
+    var controlWidgetContainerEl = document.createElement('div');
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-page-nav-order-container');
 
-		var	currentValue = (this.value == "_not-set")?this.defaultValue:this.value;
+    var validEl = document.createElement('span');
+    YAHOO.util.Dom.addClass(validEl, 'validation-hint');
+    YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
+    controlWidgetContainerEl.appendChild(validEl);
 
-		for(var i=0; i<config.properties.length; i++){
-			var prop =  config.properties[i];
-			
-			if(prop.name == "readonly" && prop.value == "true"){
-				this.readonly = true;
-			}
-		}
-		
-		var titleEl = document.createElement("span");
+    var dropdownEl = document.createElement('select');
+    YAHOO.util.Dom.addClass(dropdownEl, 'datum');
+    YAHOO.util.Dom.addClass(dropdownEl, 'cstudio-form-control-dropdown');
+    this.dropdownEl = dropdownEl;
 
-  		    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-			titleEl.innerHTML = config.title;
+    var option1El = document.createElement('option');
+    option1El.value = 'true';
+    option1El.text = 'Yes';
+    dropdownEl.add(option1El);
 
-		var controlWidgetContainerEl = document.createElement("div");
-		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-page-nav-order-container');
+    var option2El = document.createElement('option');
+    option2El.value = 'false';
+    option2El.text = 'No';
+    dropdownEl.add(option2El);
 
-		var validEl = document.createElement("span");
-			YAHOO.util.Dom.addClass(validEl, 'validation-hint');
-			YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-			controlWidgetContainerEl.appendChild(validEl);
+    controlWidgetContainerEl.appendChild(dropdownEl);
 
-		var dropdownEl = document.createElement("select");
-			YAHOO.util.Dom.addClass(dropdownEl, 'datum');
-			YAHOO.util.Dom.addClass(dropdownEl, 'cstudio-form-control-dropdown');
-			this.dropdownEl = dropdownEl;
+    var editPositionEl = document.createElement('input');
+    this.editPositionEl = editPositionEl;
+    YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-primary');
+    editPositionEl.type = 'button';
+    editPositionEl.value = 'Edit Position';
+    editPositionEl.style.padding = '1px 5px';
+    editPositionEl.style.marginLeft = '5px';
+    editPositionEl.style.display = 'none';
+    controlWidgetContainerEl.appendChild(editPositionEl);
 
-		    var option1El = document.createElement('option');
-		    option1El.value = "true";
-		    option1El.text = "Yes";
-		    dropdownEl.add(option1El);
+    this.renderHelp(config, controlWidgetContainerEl);
 
-		    var option2El = document.createElement('option');
-		    option2El.value = "false";
-		    option2El.text = "No";
-		    dropdownEl.add(option2El);
+    var descriptionEl = document.createElement('span');
+    YAHOO.util.Dom.addClass(descriptionEl, 'description');
+    YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
+    descriptionEl.innerHTML = config.description;
 
-			controlWidgetContainerEl.appendChild(dropdownEl);
+    containerEl.appendChild(titleEl);
+    containerEl.appendChild(controlWidgetContainerEl);
+    containerEl.appendChild(descriptionEl);
 
-		var editPositionEl = document.createElement("input");
-			this.editPositionEl = editPositionEl;
-			YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-primary');
-			editPositionEl.type = "button";
-			editPositionEl.value = "Edit Position";
-			editPositionEl.style.padding = "1px 5px";
-            editPositionEl.style.marginLeft = "5px";
-			editPositionEl.style.display = "none";
-			controlWidgetContainerEl.appendChild(editPositionEl);
+    if (this.required == 'true') {
+      this.dropdownEl.value = 'true';
+      this.dropdownEl.disabled = 'true';
+      this.editPositionEl.style.display = 'inline';
+      this._onChange(null, this);
+    }
 
-        this.renderHelp(config, controlWidgetContainerEl);
+    if (currentValue === 'true' || currentValue == true) {
+      this.dropdownEl.value = 'true';
+    } else {
+      this.dropdownEl.value = 'false';
+    }
 
-		var descriptionEl = document.createElement("span");
-			YAHOO.util.Dom.addClass(descriptionEl, 'description');
-			YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-			descriptionEl.innerHTML = config.description;
+    if (this.readonly == true) {
+      dropdownEl.disabled = true;
+      editPositionEl.value = 'View Order';
+    }
 
-		containerEl.appendChild(titleEl);
-		containerEl.appendChild(controlWidgetContainerEl);
-		containerEl.appendChild(descriptionEl);
+    YAHOO.util.Event.addListener(dropdownEl, 'change', this.showEditPosition, this, true);
+    YAHOO.util.Event.on(
+      dropdownEl,
+      'click',
+      function (evt, context) {
+        context.form.setFocusedField(context);
+      },
+      this
+    );
+    YAHOO.util.Event.addListener(editPositionEl, 'click', this.showEditPositionDialog, this, true);
+  },
 
-		if (this.required == "true") {
-			this.dropdownEl.value = "true";
-			this.dropdownEl.disabled = "true";
-			this.editPositionEl.style.display = "inline";
-			this._onChange(null,this);
-		}
-		
-		if (currentValue === "true" || currentValue == true) {
-			this.dropdownEl.value = "true";
-		} else {
-			this.dropdownEl.value = "false";
-		}
+  getValue: function () {
+    return this.value;
+  },
 
-		if(this.readonly == true) {
-			dropdownEl.disabled =  true;
-			editPositionEl.value = "View Order";
-		}
+  setOrderValue: function () {
+    var submitCallback = {
+      success: function (orderValue) {
+        this.parentControl.orderValue = orderValue;
+        this.parentControl._onChange(null, this.parentControl);
+      },
 
-		YAHOO.util.Event.addListener(dropdownEl, "change", this.showEditPosition, this, true);
-        YAHOO.util.Event.on(dropdownEl, 'click', function(evt, context) { context.form.setFocusedField(context) }, this);
-		YAHOO.util.Event.addListener(editPositionEl, "click", this.showEditPositionDialog, this, true);
-	},
+      failure: function () {
+        this.parentControl.orderValue = -1;
+        this.parentControl._onChange(null, this.parentControl);
+      }
+    }; // end of callback
+    submitCallback.parentControl = this;
+    var query = location.search.substring(1);
+    var thisPage = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
+    var parentPath = CStudioAuthoring.Utils.getParentPath(thisPage);
+    CStudioAuthoring.Service.getNextOrderSequenceRequest(CStudioAuthoringContext.site, parentPath, submitCallback);
+  },
 
-	getValue: function() {
-		return this.value;
-	},
-	
-	setOrderValue: function(){
-		var submitCallback = {
-				success: function(orderValue) {
-					this.parentControl.orderValue = orderValue;
-					this.parentControl._onChange(null, this.parentControl);
-				},
+  setValue: function (value) {
+    this.value = value;
+    this.edited = false;
 
-				failure: function() {
-					this.parentControl.orderValue = -1;
-					this.parentControl._onChange(null, this.parentControl);
-				}
-			}; // end of callback
-			submitCallback.parentControl = this;
-		var query = location.search.substring(1); 
-		var thisPage = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
-		var parentPath = CStudioAuthoring.Utils.getParentPath(thisPage);
-			CStudioAuthoring.Service.getNextOrderSequenceRequest(CStudioAuthoringContext.site, parentPath,submitCallback);
-	},
-	
-	setValue: function(value) {
-		this.value = value;
-        this.edited = false;
-		
-		if( value === "true" || value === true){
-			this.dropdownEl.value = "true";
-			this.editPositionEl.style.display = "inline";
-			
-			//Takes the value of the orderDefault if exists
-			this.orderValue = this.form.getModelValue(this.orderDefault);
-			if(!this.orderValue || this.orderValue === -1 || this.orderValue === 0){
-				this.setOrderValue();
-			}else{
-				this._onChange(null, this);
-			}
-		}else{
-			this.dropdownEl.value = "false";
-			this._onChange(null, this);
-		}
+    if (value === 'true' || value === true) {
+      this.dropdownEl.value = 'true';
+      this.editPositionEl.style.display = 'inline';
 
-	
-	},
+      //Takes the value of the orderDefault if exists
+      this.orderValue = this.form.getModelValue(this.orderDefault);
+      if (!this.orderValue || this.orderValue === -1 || this.orderValue === 0) {
+        this.setOrderValue();
+      } else {
+        this._onChange(null, this);
+      }
+    } else {
+      this.dropdownEl.value = 'false';
+      this._onChange(null, this);
+    }
+  },
 
-	getName: function() {
-		return "page-nav-order";
-	},
+  getName: function () {
+    return 'page-nav-order';
+  },
 
-	getSupportedProperties: function() {
-		return [
-		   { label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean"}
-		];
-	},
+  getSupportedProperties: function () {
+    return [{ label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
+  },
 
-	getSupportedConstraints: function() {
-		return [
-			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" },
-		];
-	}
-
+  getSupportedConstraints: function () {
+    return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
+  }
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-page-nav-order", CStudioForms.Controls.PageNavOrder);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-page-nav-order', CStudioForms.Controls.PageNavOrder);

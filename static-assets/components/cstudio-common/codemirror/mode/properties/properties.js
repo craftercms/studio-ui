@@ -1,6 +1,6 @@
-CodeMirror.defineMode("properties", function() {
+CodeMirror.defineMode('properties', function () {
   return {
-    token: function(stream, state) {
+    token: function (stream, state) {
       var sol = stream.sol() || state.afterSection;
       var eol = stream.eol();
 
@@ -11,34 +11,36 @@ CodeMirror.defineMode("properties", function() {
           state.inMultiline = true;
           state.nextMultiline = false;
         } else {
-          state.position = "def";
+          state.position = 'def';
         }
       }
 
-      if (eol && ! state.nextMultiline) {
+      if (eol && !state.nextMultiline) {
         state.inMultiline = false;
-        state.position = "def";
+        state.position = 'def';
       }
 
       if (sol) {
-        while(stream.eatSpace());
+        while (stream.eatSpace());
       }
 
       var ch = stream.next();
 
-      if (sol && (ch === "#" || ch === "!" || ch === ";")) {
-        state.position = "comment";
+      if (sol && (ch === '#' || ch === '!' || ch === ';')) {
+        state.position = 'comment';
         stream.skipToEnd();
-        return "comment";
-      } else if (sol && ch === "[") {
+        return 'comment';
+      } else if (sol && ch === '[') {
         state.afterSection = true;
-        stream.skipTo("]"); stream.eat("]");
-        return "header";
-      } else if (ch === "=" || ch === ":") {
-        state.position = "quote";
+        stream.skipTo(']');
+        stream.eat(']');
+        return 'header';
+      } else if (ch === '=' || ch === ':') {
+        state.position = 'quote';
         return null;
-      } else if (ch === "\\" && state.position === "quote") {
-        if (stream.next() !== "u") {    // u = Unicode sequence \u1234
+      } else if (ch === '\\' && state.position === 'quote') {
+        if (stream.next() !== 'u') {
+          // u = Unicode sequence \u1234
           // Multiline value
           state.nextMultiline = true;
         }
@@ -47,17 +49,16 @@ CodeMirror.defineMode("properties", function() {
       return state.position;
     },
 
-    startState: function() {
+    startState: function () {
       return {
-        position : "def",       // Current position, "def", "quote" or "comment"
-        nextMultiline : false,  // Is the next line multiline value
-        inMultiline : false,    // Is the current line a multiline value
-        afterSection : false    // Did we just open a section
+        position: 'def', // Current position, "def", "quote" or "comment"
+        nextMultiline: false, // Is the next line multiline value
+        inMultiline: false, // Is the current line a multiline value
+        afterSection: false // Did we just open a section
       };
     }
-
   };
 });
 
-CodeMirror.defineMIME("text/x-properties", "properties");
-CodeMirror.defineMIME("text/x-ini", "properties");
+CodeMirror.defineMIME('text/x-properties', 'properties');
+CodeMirror.defineMIME('text/x-ini', 'properties');
