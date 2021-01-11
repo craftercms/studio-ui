@@ -36,6 +36,9 @@ export const defaultThemeOptions: ThemeOptions = (function() {
       primary: {
         main: palette.blue.main
       },
+      secondary: {
+        main: palette.white
+      },
       warning: {
         main: palette.orange.main
       },
@@ -145,6 +148,11 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         root: {
           display: 'block'
         }
+      }
+    },
+    props: {
+      MuiButton: {
+        color: 'secondary'
       }
     }
   };
