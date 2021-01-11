@@ -303,7 +303,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     });
 
     setCheckedItems(newChecked);
-  }, [items, setCheckedItems]);
+  }, [items]);
 
   useEffect(() => {
     if (rejectionReason === '') {
