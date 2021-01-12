@@ -81,7 +81,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 
     var createEl = document.createElement('div');
     YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-    createEl.innerHTML = CMgs.format(langBundle, 'createNew') + ' - ' + newElTitle;
+    createEl.textContent = CMgs.format(langBundle, 'createNew') + ' - ' + newElTitle;
     control.addContainerEl.create.appendChild(createEl);
 
     var addContainerEl = control.addContainerEl;
@@ -132,7 +132,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     );
 
     var browseEl = document.createElement('div');
-    browseEl.innerHTML = CMgs.format(langBundle, 'browseExisting') + ' - ' + newElTitle;
+    browseEl.textContent = CMgs.format(langBundle, 'browseExisting') + ' - ' + newElTitle;
     YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
     control.addContainerEl.browse.appendChild(browseEl);
 
