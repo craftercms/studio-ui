@@ -35,7 +35,8 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: '0 12px',
       borderRadius: '5px',
       '&.focus': {
-        backgroundColor: theme.palette.background.paper
+        backgroundColor: theme.palette.background.paper,
+        border: '1px solid transparent'
       },
       '&.noPadded': {
         padding: '0 0 0 12px'

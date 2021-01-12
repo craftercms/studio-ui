@@ -51,14 +51,15 @@ import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
+import { PrimaryButton } from '../PrimaryButton';
 
 const translations = defineMessages({
   title: {
-    id: 'bulkUpload.title',
+    id: 'uploadDialog.title',
     defaultMessage: 'Upload'
   },
   subtitle: {
-    id: 'bulkUpload.subtitle',
+    id: 'uploadDialog.subtitle',
     defaultMessage: 'Drop the desired files from your desktop into space below.'
   },
   close: {
@@ -70,7 +71,7 @@ const translations = defineMessages({
     defaultMessage: 'Done'
   },
   dropHere: {
-    id: 'bulkUpload.dropHere',
+    id: 'uploadDialog.dropHere',
     defaultMessage: 'Drop files here or <span>browse</span>'
   },
   browse: {
@@ -78,15 +79,15 @@ const translations = defineMessages({
     defaultMessage: 'Browse'
   },
   cancelAll: {
-    id: 'bulkUpload.cancelAll',
+    id: 'uploadDialog.cancelAll',
     defaultMessage: 'Cancel all'
   },
   filesProgression: {
-    id: 'bulkUpload.filesProgression',
+    id: 'uploadDialog.filesProgression',
     defaultMessage: '{start}/{end}'
   },
   uploadInProgress: {
-    id: 'bulkUpload.uploadInProgress',
+    id: 'uploadDialog.uploadInProgress',
     defaultMessage:
       'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
   }
@@ -587,30 +588,30 @@ const initialDropZoneStatus: DropZoneStatus = {
   progress: 0
 };
 
-interface BulkUploadBaseProps {
+interface UploadDialogBaseProps {
   open: boolean;
   path: string;
   site: string;
   maxSimultaneousUploads?: number;
 }
 
-export type BulkUploadProps = PropsWithChildren<
-  BulkUploadBaseProps & {
+export type UploadDialogProps = PropsWithChildren<
+  UploadDialogBaseProps & {
     onClose(response: { dropZoneStatus: DropZoneStatus; path?: string }): void;
     onClosed?(): void;
   }
 >;
 
-export interface BulkUploadStateProps extends BulkUploadBaseProps {
+export interface UploadDialogStateProps extends UploadDialogBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
 }
 
-export default function BulkUploadDialog(props: BulkUploadProps) {
+export default function UploadDialog(props: UploadDialogProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   // NOTE: this id needs to changed if we added support to many dialogs at the same time;
-  const id = 'bulkUpload';
+  const id = 'uploadDialog';
   const { open, path, onClose } = props;
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
 
@@ -674,7 +675,7 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
       fullWidth
       maxWidth="sm"
     >
-      <BulkUploadUI
+      <UploadDialogUI
         {...props}
         onMinimized={onMinimized}
         dropZoneStatus={dropZoneStatus}
@@ -685,14 +686,14 @@ export default function BulkUploadDialog(props: BulkUploadProps) {
   );
 }
 
-interface BulkUploadUIProps extends BulkUploadProps {
+interface UploadDialogUIProps extends UploadDialogProps {
   dropZoneStatus: DropZoneStatus;
   onMinimized?(): void;
   onStatusChange(status: DropZoneStatus): void;
   onFileUploaded(path: string): void;
 }
 
-function BulkUploadUI(props: BulkUploadUIProps) {
+function UploadDialogUI(props: UploadDialogUIProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const {
@@ -768,13 +769,12 @@ function BulkUploadUI(props: BulkUploadUIProps) {
             <Button
               id="cancelBtn"
               onClick={onCancel}
-              variant="contained"
-              color="default"
+              variant="outlined"
+              color="primary"
               ref={cancelRef}
               className={classes.cancelBtn}
-            >
-              {formatMessage(translations.cancelAll)}
-            </Button>
+              children={formatMessage(translations.cancelAll)}
+            />
           )}
           {dropZoneStatus.files && (
             <Typography variant="caption" className={classes.status}>
@@ -784,9 +784,7 @@ function BulkUploadUI(props: BulkUploadUIProps) {
               })}
             </Typography>
           )}
-          <Button onClick={onBrowse} variant="contained" color="primary">
-            {formatMessage(translations.browse)}
-          </Button>
+          <PrimaryButton onClick={onBrowse} children={formatMessage(translations.browse)} />
         </DialogFooter>
       )}
     </>

@@ -18,22 +18,50 @@ import React, { PropsWithChildren, useMemo } from 'react';
 import { createMuiTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import palette from '../../styles/palette';
+import { extend } from '../../utils/object';
 
 export type CrafterThemeProviderProps = PropsWithChildren<{ themeOptions?: ThemeOptions }>;
 
 export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = useMemo(
-    () =>
-      createMuiTheme({
-        ...(props.themeOptions ?? defaultThemeOptions),
-        palette: {
-          ...(props.themeOptions ?? defaultThemeOptions).palette,
-          type: prefersDarkMode ? 'dark' : 'light'
-        }
-      }),
-    [prefersDarkMode, props.themeOptions]
-  );
+  const theme = useMemo(() => {
+    const type = prefersDarkMode ? 'dark' : 'light';
+    const auxTheme = createMuiTheme({ palette: { type } });
+    return createMuiTheme({
+      ...(props.themeOptions ?? defaultThemeOptions),
+      palette: {
+        type,
+        primary: {
+          main: prefersDarkMode ? palette.blue.tint : palette.blue.main
+        },
+        warning: {
+          main: prefersDarkMode ? palette.orange.tint : palette.orange.main
+        },
+        error: {
+          main: prefersDarkMode ? palette.red.tint : palette.red.main
+        },
+        success: {
+          main: prefersDarkMode ? palette.green.tint : palette.green.main
+        },
+        info: {
+          main: prefersDarkMode ? palette.teal.tint : palette.teal.main
+        },
+        ...props.themeOptions?.palette
+      },
+      overrides: extend(
+        (props.themeOptions ?? defaultThemeOptions).overrides ?? {},
+        {
+          MuiInputBase: {
+            input: {
+              backgroundColor: auxTheme.palette.background.paper
+            }
+          }
+        },
+        { deep: true }
+      )
+    });
+  }, [prefersDarkMode, props.themeOptions]);
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider generateClassName={generateClassName} children={props.children} />

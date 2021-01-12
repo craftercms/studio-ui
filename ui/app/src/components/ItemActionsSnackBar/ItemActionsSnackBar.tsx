@@ -85,7 +85,7 @@ interface ActionsBarProps {
   onAcceptSelection?(items: DetailedItem[]): any;
 }
 
-export default function ActionsBar(props: ActionsBarProps) {
+export default function ItemActionsSnackBar(props: ActionsBarProps) {
   const { open, selectedItems, handleClearSelected, onActionSuccess, mode = 'default', onAcceptSelection } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();

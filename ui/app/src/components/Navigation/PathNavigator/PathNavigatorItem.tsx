@@ -38,6 +38,7 @@ interface NavItemProps {
   item: DetailedItem;
   locale: string;
   isLeaf?: boolean;
+  isActive?: boolean;
   isLevelDescriptor?: boolean;
   isSelectMode?: boolean;
   showItemNavigateToButton?: boolean;
@@ -68,6 +69,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
   const classes = useStyles();
   const {
     item,
+    isActive = false,
     onItemClicked,
     onChangeParent,
     onPreview,
@@ -90,6 +92,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
 
   return (
     <ListItem
+      selected={isActive}
       button={!isSelectMode as true}
       className={clsx(
         classes.navItem,

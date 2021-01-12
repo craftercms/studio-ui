@@ -105,13 +105,14 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.default
     },
     addressBarInputFocused: {
-      backgroundColor: theme.palette.background.paper
+      border: `1px solid ${theme.palette.primary.main}`
     },
     inputContainer: {
       marginLeft: theme.spacing(1)
     },
     input: {
       border: 'none',
+      background: 'transparent',
       '&:focus:invalid, &:focus': {
         border: 'none',
         boxShadow: 'none'
