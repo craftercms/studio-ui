@@ -24,7 +24,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
 import ContextMenu, { Option, SectionItem } from '../ContextMenu';
-import Link from '@material-ui/core/Link';
 import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
@@ -34,6 +33,7 @@ import DialogBody from './DialogBody';
 import DialogHeader from './DialogHeader';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
+import ActionsBar from '../ActionsBar';
 
 const translations = defineMessages({
   mark: {
@@ -174,63 +174,6 @@ const menuOptions = [
   }
 ];
 
-const contextSelectionOptionsOverlayStyles = makeStyles((theme) =>
-  createStyles({
-    itemHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      background: 'rgba(0, 122, 255, 0.1)'
-    },
-    optionTypography: {
-      color: palette.blue.main,
-      marginRight: '25px'
-    },
-    checkbox: {
-      color: theme.palette.primary.main
-    }
-  })
-);
-
-interface ContextSelectionOptionsOverlayProps {
-  options: Option[];
-  isIndeterminate: boolean;
-  isChecked: boolean;
-
-  onOptionClicked(option: Option): void;
-
-  toggleSelectAll(): void;
-}
-
-function ContextSelectionOptionsOverlay(props: ContextSelectionOptionsOverlayProps) {
-  const classes = contextSelectionOptionsOverlayStyles({});
-  const { formatMessage } = useIntl();
-  const { options, onOptionClicked, isIndeterminate, toggleSelectAll, isChecked } = props;
-
-  return (
-    <header className={classes.itemHeader}>
-      <Checkbox
-        color="primary"
-        indeterminate={isIndeterminate}
-        checked={isChecked}
-        className={classes.checkbox}
-        onChange={toggleSelectAll}
-      />
-      {options.map((option: Option) => (
-        <Link
-          key={option.id}
-          color="inherit"
-          component="button"
-          variant="subtitle2"
-          TypographyClasses={{ root: classes.optionTypography }}
-          onClick={() => onOptionClicked(option)}
-        >
-          {formatMessage(option.label)}
-        </Link>
-      ))}
-    </header>
-  );
-}
-
 interface ContentLocalizationDialogProps {
   open: boolean;
   locales: any;
@@ -353,7 +296,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
         />
         <section className={classes.contentLocalizationRoot}>
           {selected.length > 0 ? (
-            <ContextSelectionOptionsOverlay
+            <ActionsBar
               isIndeterminate={selected.length > 0 && selected.length < locales.length}
               onOptionClicked={onOptionClicked}
               options={menuOptions}

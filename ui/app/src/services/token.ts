@@ -27,13 +27,11 @@ export function createToken(label: string, expiresAt?: string): Observable<Token
   return postJSON('/studio/api/2/security/tokens', {
     label,
     ...(expiresAt && { expiresAt })
-    // TODO: change tokens to token when BE fix the issue
-  }).pipe(pluck('response', 'tokens'));
+  }).pipe(pluck('response', 'token'));
 }
 
 export function updateToken(id: number, properties: Object): Observable<Token> {
-  // TODO: change tokens to token when BE fix the issue
-  return postJSON(`/studio/api/2/security/tokens/${id}`, properties).pipe(pluck('response', 'tokens'));
+  return postJSON(`/studio/api/2/security/tokens/${id}`, properties).pipe(pluck('response', 'token'));
 }
 
 export function deleteToken(id: number): Observable<any> {

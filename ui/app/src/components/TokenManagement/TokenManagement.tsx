@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -42,6 +42,10 @@ import CreateTokenDialog from '../Dialogs/CreateTokenDialog';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ActionsBar, { Action } from '../ActionsBar';
+import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import EmptyState from '../SystemStatus/EmptyState';
+import CopyTokenDialog from '../Dialogs/CopyTokenDialog';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -52,7 +56,6 @@ const styles = makeStyles((theme) =>
       margin: '10px 0',
       borderRadius: '50px',
       border: 0,
-      boxShadow: '0 3px 1px -2px rgba(0,0,0,0.2), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12)',
       padding: '5px 25px'
     },
     tableWrapper: {
@@ -64,6 +67,12 @@ const styles = makeStyles((theme) =>
     actions: {
       width: '150px',
       padding: '5px 20px'
+    },
+    actionsBar: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      zIndex: 1
     },
     chip: {
       backgroundColor: theme.palette.success.light,
@@ -108,15 +117,40 @@ const translations = defineMessages({
   confirmCancel: {
     id: 'words.no',
     defaultMessage: 'No'
+  },
+  deletedSelected: {
+    id: 'tokenManagement.deletedSelected',
+    defaultMessage: 'Delete Selected'
+  },
+  clearSelected: {
+    id: 'tokenManagement.clearSelected',
+    defaultMessage: 'Clear Selected ({count})'
+  },
+  emptyTokens: {
+    id: 'tokenManagement.emptyTokens',
+    defaultMessage: 'There are no tokens, click on Create Token to add a new one'
   }
 });
 
 export default function TokenManagement() {
   const classes = styles();
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const [tokens, setTokens] = useState<Token[]>(null);
+  const [checkedLookup, setCheckedLookup] = useState({});
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [createdToken, setCreatedToken] = useState(null);
+  const checkedCount = useMemo(() => Object.values(checkedLookup).filter(Boolean).length, [checkedLookup]);
+  const options = [
+    {
+      id: 'delete',
+      label: formatMessage(translations.deletedSelected)
+    },
+    {
+      id: 'clear',
+      label: formatMessage(translations.clearSelected, { count: checkedCount })
+    }
+  ];
 
   useEffect(() => {
     fetchTokens();
@@ -136,7 +170,11 @@ export default function TokenManagement() {
     setOpenCreateDialog(false);
   };
 
-  const onCreateTokenSuccess = (token: Token) => {
+  const onCopyTokenDialogClose = () => {
+    setCreatedToken(null);
+  };
+
+  const onTokenCreated = (token: Token) => {
     fetchTokens();
     dispatch(
       showSystemNotification({
@@ -144,6 +182,7 @@ export default function TokenManagement() {
       })
     );
     setOpenCreateDialog(false);
+    setCreatedToken(token);
   };
 
   const onSetEnabled = (id: number, checked: boolean) => {
@@ -180,109 +219,160 @@ export default function TokenManagement() {
     });
   };
 
+  const onOptionClicked = (action: Action) => {
+    switch (action.id) {
+      case 'delete': {
+        // TODO: API to Delete many??
+        break;
+      }
+      case 'clear': {
+        onToggleSelectAll(false);
+        break;
+      }
+    }
+  };
+
+  const onItemChecked = (id: number, checked: boolean) => {
+    setCheckedLookup({ ...checkedLookup, [id]: checked });
+  };
+
+  const onToggleSelectAll = (check: boolean) => {
+    const _checkedLookup = {};
+    tokens.forEach((token) => {
+      _checkedLookup[token.id] = check;
+    });
+    setCheckedLookup(_checkedLookup);
+  };
+
   return (
     <section>
       <Typography variant="h4" component="h1" className={classes.title}>
         <FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />
       </Typography>
       <Divider />
-      <Button variant="outlined" startIcon={<AddIcon />} className={classes.createToken} onClick={onCreateToken}>
+      <Button variant="contained" startIcon={<AddIcon />} className={classes.createToken} onClick={onCreateToken}>
         <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
       </Button>
       <Divider />
-      <TableContainer className={classes.tableWrapper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox defaultChecked indeterminate color="primary" />
-              </TableCell>
-              <TableCell align="left" padding="none">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.status" defaultMessage="Status" />
-                </Typography>
-              </TableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.label" defaultMessage="Label" />
-                </Typography>
-              </StyledTableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.expiration" defaultMessage="Expiration" />
-                </Typography>
-              </StyledTableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.created" defaultMessage="Created" />
-                </Typography>
-              </StyledTableCell>
-              <TableCell align="center" className={classes.actions} />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tokens.map((token) => (
-              <TableRow key={token.id}>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    // checked={token.enabled}
-                    color="primary"
-                    // onChange={(event, checked) => {
-                    //   onSetEnabled(token.id, checked);
-                    // }}
-                  />
-                </TableCell>
-                <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
-                  <Chip
-                    label={
-                      token.enabled ? (
-                        <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
-                      ) : (
-                        <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
-                      )
-                    }
-                    className={clsx(classes.chip, !token.enabled && 'disabled')}
-                  />
-                </TableCell>
-                <StyledTableCell align="left">{token.label}</StyledTableCell>
-                <StyledTableCell align="left">
-                  {token.expiresAt ? (
-                    <AsDayMonthDateTime date={token.expiresAt} />
-                  ) : (
-                    <Typography color="textSecondary" variant="body2">
-                      (<FormattedMessage id="words.never" defaultMessage="Never" />)
+      <ConditionalLoadingState isLoading={tokens === null}>
+        {tokens?.length ? (
+          <TableContainer className={classes.tableWrapper}>
+            {checkedCount > 0 && (
+              <ActionsBar
+                onOptionClicked={onOptionClicked}
+                options={options}
+                isIndeterminate={checkedCount > 0 && checkedCount < tokens.length}
+                isChecked={checkedCount === tokens.length}
+                toggleSelectAll={() => onToggleSelectAll(checkedCount !== tokens.length)}
+                classes={{
+                  root: classes.actionsBar
+                }}
+              />
+            )}
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      disabled={checkedCount > 0}
+                      checked={false}
+                      color="primary"
+                      onClick={() => {
+                        onToggleSelectAll(true);
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="left" padding="none">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.status" defaultMessage="Status" />
                     </Typography>
-                  )}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  <AsDayMonthDateTime date={token.createdOn} />
-                </StyledTableCell>
-                <TableCell align="center" className={classes.actions}>
-                  <Switch
-                    checked={token.enabled}
-                    onChange={(e, checked) => {
-                      onSetEnabled(token.id, checked);
-                    }}
-                    color="primary"
-                  />
-                  <ConfirmDropdown
-                    cancelText={formatMessage(translations.confirmCancel)}
-                    confirmText={formatMessage(translations.confirmOk)}
-                    confirmHelperText={formatMessage(translations.confirmHelperText, {
-                      label: token.label
-                    })}
-                    icon={DeleteIcon}
-                    onConfirm={() => {
-                      onDeleteToken(token.id);
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <CreateTokenDialog open={openCreateDialog} onCreated={onCreateTokenSuccess} onClose={onCreateTokenDialogClose} />
+                  </TableCell>
+                  <StyledTableCell align="left">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.label" defaultMessage="Label" />
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.expiration" defaultMessage="Expiration" />
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.created" defaultMessage="Created" />
+                    </Typography>
+                  </StyledTableCell>
+                  <TableCell align="center" className={classes.actions} />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tokens.map((token) => (
+                  <TableRow key={token.id}>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={!!checkedLookup[token.id]}
+                        color="primary"
+                        onChange={(event, checked) => {
+                          onItemChecked(token.id, checked);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
+                      <Chip
+                        label={
+                          token.enabled ? (
+                            <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
+                          ) : (
+                            <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
+                          )
+                        }
+                        className={clsx(classes.chip, !token.enabled && 'disabled')}
+                      />
+                    </TableCell>
+                    <StyledTableCell align="left">{token.label}</StyledTableCell>
+                    <StyledTableCell align="left">
+                      {token.expiresAt ? (
+                        <AsDayMonthDateTime date={token.expiresAt} />
+                      ) : (
+                        <Typography color="textSecondary" variant="body2">
+                          (<FormattedMessage id="words.never" defaultMessage="Never" />)
+                        </Typography>
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <AsDayMonthDateTime date={token.createdOn} />
+                    </StyledTableCell>
+                    <TableCell align="center" className={classes.actions}>
+                      <Switch
+                        checked={token.enabled}
+                        onChange={(e, checked) => {
+                          onSetEnabled(token.id, checked);
+                        }}
+                        color="primary"
+                      />
+                      <ConfirmDropdown
+                        cancelText={formatMessage(translations.confirmCancel)}
+                        confirmText={formatMessage(translations.confirmOk)}
+                        confirmHelperText={formatMessage(translations.confirmHelperText, {
+                          label: token.label
+                        })}
+                        icon={DeleteIcon}
+                        onConfirm={() => {
+                          onDeleteToken(token.id);
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <EmptyState title={formatMessage(translations.emptyTokens)} />
+        )}
+      </ConditionalLoadingState>
+      <CreateTokenDialog open={openCreateDialog} onCreated={onTokenCreated} onClose={onCreateTokenDialogClose} />
+      <CopyTokenDialog open={Boolean(createdToken)} token={createdToken} onClose={onCopyTokenDialogClose} />
     </section>
   );
 }
