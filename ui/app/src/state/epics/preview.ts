@@ -29,7 +29,7 @@ import {
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
   setStoredEditModeChoice,
-  setStoredhighlightModeChoice,
+  setStoredHighlightModeChoice,
   setStoredPreviewToolsPanelPage
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
@@ -43,7 +43,7 @@ export default [
       withLatestFrom(state$),
       tap(([{ type, payload }, state]) => {
         if (payload) {
-          setStoredPreviewToolsPanelPage(state.sites.active, payload);
+          setStoredPreviewToolsPanelPage(state.sites.active, state.user.username, payload);
         }
       }),
       ignoreElements()
@@ -56,20 +56,22 @@ export default [
         if (state.preview.toolsPanelPageStack.length) {
           setStoredPreviewToolsPanelPage(
             state.sites.active,
+            state.user.username,
             state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1]
           );
         } else {
-          removeStoredPreviewToolsPanelPage(state.sites.active);
+          removeStoredPreviewToolsPanelPage(state.sites.active, state.user.username);
         }
       }),
       ignoreElements()
     ),
   // region setPreviewEditMode
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(setPreviewEditMode.type),
-      tap((action) => {
-        setStoredEditModeChoice(action.payload.editMode);
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        setStoredEditModeChoice(action.payload.editMode, state.user.username);
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
@@ -85,11 +87,12 @@ export default [
     ),
   // endregion
   // region setHighlightMode
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(setHighlightMode.type),
-      tap((action) => {
-        setStoredhighlightModeChoice(action.payload.highlightMode);
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username);
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
@@ -101,7 +104,7 @@ export default [
       ofType(setClipBoard.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
-        setStoredClipboard(state.sites.active, payload);
+        setStoredClipboard(state.sites.active, state.user.username, payload);
       }),
       ignoreElements()
     )
