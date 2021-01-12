@@ -45,7 +45,7 @@ import { DetailedItem } from './Item';
 import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog';
 import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
 import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
-import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
+import { UploadDialogStateProps } from '../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
@@ -163,7 +163,7 @@ export interface GlobalState {
     createFolder: CreateFolderStateProps;
     createFile: CreateFileStateProps;
     copy: CopyDialogStateProps;
-    upload: BulkUploadStateProps;
+    upload: UploadDialogStateProps;
     preview: PreviewDialogStateProps;
     editSite: EditSiteDialogStateProps;
     pathSelection: PathSelectionDialogStateProps;

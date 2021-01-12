@@ -21,7 +21,6 @@ import { useLogicResource, useUnmount } from '../../utils/hooks';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
@@ -32,6 +31,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
+import { SecondaryButton } from '../SecondaryButton';
+import { PrimaryButton } from '../PrimaryButton';
 
 // region Typings
 
@@ -91,9 +92,7 @@ const useStyles = makeStyles(() =>
 
 function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
   const { resource, onClose, onDismiss, onContinue, classes } = props;
-
   const items = resource.read();
-
   return (
     <>
       <DialogHeader
@@ -122,14 +121,14 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
       </DialogBody>
       <DialogFooter>
         {onClose && (
-          <Button onClick={onClose} variant="contained">
+          <SecondaryButton onClick={onClose}>
             <FormattedMessage id="workflowCancellation.cancel" defaultMessage="Cancel" />
-          </Button>
+          </SecondaryButton>
         )}
         {onContinue && (
-          <Button onClick={onContinue} variant="contained" color="primary" autoFocus>
+          <PrimaryButton onClick={onContinue} autoFocus>
             <FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
-          </Button>
+          </PrimaryButton>
         )}
       </DialogFooter>
     </>

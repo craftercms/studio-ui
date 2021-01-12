@@ -17,7 +17,6 @@
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
@@ -32,6 +31,8 @@ import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
+import { PrimaryButton } from '../PrimaryButton';
+import { SecondaryButton } from '../SecondaryButton';
 
 const messages = defineMessages({
   ok: {
@@ -85,12 +86,12 @@ export interface PathSelectionDialogStateProps extends PathSelectionDialogBasePr
 export default function PathSelectionDialog(props: PathSelectionDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
-      <PathSelectionDialogWrapper {...props} />
+      <PathSelectionDialogBody {...props} />
     </Dialog>
   );
 }
 
-function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
+function PathSelectionDialogBody(props: PathSelectionDialogProps) {
   const { onClosed, onClose, onOk, rootPath, initialPath, title, showCreateFolder = true } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
@@ -249,27 +250,18 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       </DialogBody>
       <DialogFooter>
         {showCreateFolder && (
-          <Button
+          <SecondaryButton
             disabled={invalidPath || isFetching}
             onClick={onCreateFolder}
-            variant="outlined"
             className={classes.createFolderBtn}
           >
             {formatMessage(messages.create)}
-          </Button>
+          </SecondaryButton>
         )}
-
-        <Button onClick={onClose} variant="outlined">
-          {formatMessage(messages.cancel)}
-        </Button>
-        <Button
-          disabled={invalidPath || isFetching || dirtyInput}
-          onClick={() => onOk({ path: currentPath })}
-          variant="contained"
-          color="primary"
-        >
+        <SecondaryButton onClick={onClose}>{formatMessage(messages.cancel)}</SecondaryButton>
+        <PrimaryButton disabled={invalidPath || isFetching || dirtyInput} onClick={() => onOk({ path: currentPath })}>
           {formatMessage(messages.ok)}
-        </Button>
+        </PrimaryButton>
       </DialogFooter>
       <CreateFolderDialog
         path={currentPath}

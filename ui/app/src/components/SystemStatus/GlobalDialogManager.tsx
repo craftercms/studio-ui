@@ -49,7 +49,7 @@ const LegacyCodeEditorDialog = lazy(() => import('../Dialogs/LegacyCodeEditorDia
 const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
-const BulkUploadDialog = lazy(() => import('../Dialogs/BulkUploadDialog'));
+const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemMenu/ItemMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
