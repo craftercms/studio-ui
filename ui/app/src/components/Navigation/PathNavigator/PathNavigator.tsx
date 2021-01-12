@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
@@ -37,7 +37,7 @@ import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import NavItem from './PathNavigatorItem';
-import Nav from './PathNavigatorList';
+import ItemList from './PathNavigatorList';
 import { languages } from '../../../utils/i18n-legacy';
 import {
   pathNavigatorConditionallySetPath,
@@ -87,6 +87,9 @@ export interface WidgetProps {
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
+  onItemClicked?: (item: DetailedItem) => void;
+  computeActiveItems?: () => string[];
+  createItemClickedHandler?: (defaultHandler: (item: DetailedItem) => void) => (item: DetailedItem) => void;
 }
 
 interface Menu {
@@ -141,7 +144,10 @@ export default function PathNavigator(props: WidgetProps) {
     id = label?.replace(/\s/g, ''),
     locale,
     excludes,
-    showChildrenRail = true
+    showChildrenRail = true,
+    onItemClicked: onItemClickedProp,
+    createItemClickedHandler = (defaultHandler) => defaultHandler,
+    computeActiveItems: computeActiveItemsProp
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
@@ -260,6 +266,9 @@ export default function PathNavigator(props: WidgetProps) {
     };
   }, [state, id, dispatch]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
+
   if (!state) {
     return <LoadingState />;
   }
@@ -376,22 +385,20 @@ export default function PathNavigator(props: WidgetProps) {
 
   const onCloseItemMenu = () => setItemMenu({ ...itemMenu, anchorEl: null });
 
-  const onItemClicked = (item: DetailedItem) => {
-    const navigable = isNavigable(item);
-    const previewable = isPreviewable(item);
-    const folder = isFolder(item);
-
-    if (navigable) {
-      if (item.previewUrl) {
-        let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-        window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
-      }
-    } else if (folder) {
-      onPathSelected(item);
-    } else if (previewable) {
-      onPreview(item);
-    }
-  };
+  const onItemClicked = onItemClickedProp
+    ? onItemClickedProp
+    : createItemClickedHandler((item: DetailedItem) => {
+        if (isNavigable(item)) {
+          if (item.previewUrl) {
+            let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
+            window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+          }
+        } else if (isFolder(item)) {
+          onPathSelected(item);
+        } else if (isPreviewable(item)) {
+          onPreview(item);
+        }
+      });
 
   const onBreadcrumbSelected = (item: DetailedItem) => {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
@@ -447,6 +454,7 @@ export default function PathNavigator(props: WidgetProps) {
         onCloseItemMenu={onCloseItemMenu}
         onCloseSimpleMenu={onCloseSimpleMenu}
         onSimpleMenuClick={onSimpleMenuClick}
+        computeActiveItems={computeActiveItems}
       />
     </Suspencified>
   );
@@ -478,7 +486,8 @@ export function PathNavigatorUI(props: WidgetUIProps) {
     onPageChanged,
     onCloseItemMenu,
     onCloseSimpleMenu,
-    onSimpleMenuClick
+    onSimpleMenuClick,
+    computeActiveItems
   } = props;
   // endregion
   const { formatMessage } = useIntl();
@@ -568,7 +577,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
                 onItemClicked={onItemClicked}
               />
             )}
-            <Nav
+            <ItemList
               leaves={state.leaves}
               locale={state.localeCode}
               resource={resource}
@@ -577,6 +586,7 @@ export function PathNavigatorUI(props: WidgetUIProps) {
               onPreview={onPreview}
               onOpenItemMenu={onOpenItemMenu}
               onItemClicked={onItemClicked}
+              computeActiveItems={computeActiveItems}
             />
           </SuspenseWithEmptyState>
           <TablePagination

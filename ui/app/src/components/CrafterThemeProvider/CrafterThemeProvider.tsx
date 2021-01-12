@@ -35,9 +35,6 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         primary: {
           main: prefersDarkMode ? palette.blue.tint : palette.blue.main
         },
-        secondary: {
-          main: auxTheme.palette.background.paper
-        },
         warning: {
           main: prefersDarkMode ? palette.orange.tint : palette.orange.main
         },

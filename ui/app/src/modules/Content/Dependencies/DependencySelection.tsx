@@ -26,7 +26,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Typography from '@material-ui/core/Typography';
-import { checkState, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import { createCheckedItems, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
@@ -241,7 +241,7 @@ interface DependencySelectionDeleteProps {
 export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
   const classes = useStyles({});
   const { items, resultItems, onChange, onEditDependency } = props;
-  const [checked, _setChecked] = useState<any>(checkState(items));
+  const [checked, _setChecked] = useState<any>(createCheckedItems(items));
   const siteId = useActiveSiteId();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const defaultFormSrc = `${authoringBase}/legacy/form`;

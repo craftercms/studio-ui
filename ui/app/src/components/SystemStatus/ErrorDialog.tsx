@@ -56,12 +56,12 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
 export default function ErrorDialog(props: ErrorDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <ErrorDialogWrapper {...props} />
+      <ErrorDialogBody {...props} />
     </Dialog>
   );
 }
 
-function ErrorDialogWrapper(props: ErrorDialogProps) {
+function ErrorDialogBody(props: ErrorDialogProps) {
   const { onDismiss, error } = props;
   const classes = useStyles({});
   useUnmount(props.onClosed);

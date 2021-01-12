@@ -149,11 +149,6 @@ export const defaultThemeOptions: ThemeOptions = (function() {
           display: 'block'
         }
       }
-    },
-    props: {
-      MuiButton: {
-        color: 'secondary'
-      }
     }
   };
   return theme;

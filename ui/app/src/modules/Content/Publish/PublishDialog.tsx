@@ -38,6 +38,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import LookupTable from '../../../models/LookupTable';
+import { SecondaryButton } from '../../../components/SecondaryButton';
+import { PrimaryButton } from '../../../components/PrimaryButton';
 
 // region Typings
 
@@ -142,7 +144,7 @@ const submitMessages = defineMessages({
   }
 });
 
-export const checkState: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
+export const createCheckedItems: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
   return (items || []).reduce((table: LookupTable<boolean>, item) => {
     table[item.path] = true;
     return table;
@@ -289,7 +291,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     apiState,
     classes
   } = props;
-
   return (
     <>
       <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} />
@@ -335,23 +336,16 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         >
           <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
         </Button>
-
-        <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
+        <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button
-          variant="contained"
-          autoFocus
-          onClick={handleSubmit}
-          color="primary"
-          disabled={submitDisabled || apiState.submitting}
-        >
+        </SecondaryButton>
+        <PrimaryButton autoFocus onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
           {apiState.submitting ? (
             <CircularProgress className={classes.btnSpinner} size={20} />
           ) : (
-            <FormattedMessage id="requestPublishDialog.submit" defaultMessage={`Submit`} />
+            <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
           )}
-        </Button>
+        </PrimaryButton>
       </DialogFooter>
     </>
   );
@@ -374,13 +368,13 @@ export default function PublishDialog(props: PublishDialogProps) {
 function PublishDialogWrapper(props: PublishDialogProps) {
   const { items, scheduling = 'now', onDismiss, onSuccess } = props;
   const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, scheduling });
-  const [publishingChannels, setPublishingChannels] = useState(null);
+  const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
-  const [checkedItems, setCheckedItems] = useState<any>(() => checkState(items)); // selected deps
+  const [checkedItems, setCheckedItems] = useState<any>({}); // selected deps
   const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
-  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
   const [apiState, setApiState] = useSpreadState<ApiState>({
     error: null,
@@ -404,10 +398,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const setSelectedItems = useCallback(
     (pItems) => {
       if (!pItems || pItems.length === 0) {
-        setSubmitDisabled(true);
         setShowDepsDisabled(true);
       } else {
-        setSubmitDisabled(false);
         setShowDepsDisabled(false);
       }
       setDialog({ selectedItems: pItems });
@@ -415,21 +407,24 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     [setDialog]
   );
 
-  const getPublishingChannels = useCallback(() => {
-    setPublishingChannelsStatus('Loading');
-    setSubmitDisabled(true);
-    fetchPublishingTargets(siteId).subscribe(
-      (response) => {
-        setPublishingChannels(response);
-        setPublishingChannelsStatus('Success');
-        setSubmitDisabled(false);
-      },
-      () => {
-        setPublishingChannelsStatus('Error');
-        setSubmitDisabled(true);
-      }
-    );
-  }, [siteId]);
+  const getPublishingChannels = useCallback(
+    (success?: (channels) => any, error?: (error) => any) => {
+      setPublishingChannelsStatus('Loading');
+      setSubmitDisabled(true);
+      fetchPublishingTargets(siteId).subscribe(
+        (response) => {
+          setPublishingChannels(response);
+          setPublishingChannelsStatus('Success');
+          success?.(response);
+        },
+        (e) => {
+          setPublishingChannelsStatus('Error');
+          error?.(e);
+        }
+      );
+    },
+    [siteId]
+  );
 
   const publishSource = useMemo(
     () => ({
@@ -441,7 +436,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   );
 
   const resource = useLogicResource<Return, Source>(publishSource, {
-    shouldResolve: (source) => !source.items?.some((item) => !item.live) && Boolean(source.publishingChannels),
+    shouldResolve: (source) => Boolean(source.items && source.publishingChannels),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => ({
@@ -452,8 +447,10 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   });
 
   useEffect(() => {
-    getPublishingChannels();
-  }, [getPublishingChannels]);
+    getPublishingChannels(() => {
+      setCheckedItems(createCheckedItems(items));
+    });
+  }, [getPublishingChannels, items]);
 
   useEffect(() => {
     const result = Object.entries({ ...checkedItems, ...checkedSoftDep })
@@ -467,10 +464,6 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [scheduling, setDialog]);
 
   useEffect(() => {
-    setCheckedItems(checkState(items));
-  }, [items, setCheckedItems]);
-
-  useEffect(() => {
     if (items.length === 1 && items[0].live?.lastScheduledDate) {
       setDialog({
         scheduling: 'custom',
@@ -478,6 +471,14 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       });
     }
   }, [items, setDialog]);
+
+  useEffect(() => {
+    if (!apiState.submitting && Object.values(checkedItems).filter(Boolean).length > 0 && publishingChannels?.length) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [apiState.submitting, checkedItems, publishingChannels]);
 
   const handleSubmit = () => {
     const data = {
