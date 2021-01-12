@@ -16,10 +16,10 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
+import DialogHeader from '../Dialogs/DialogHeader';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
+import DialogBody from '../Dialogs/DialogBody';
+import DialogFooter from '../Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import { useUnmount } from '../../utils/hooks';
 import { Token } from '../../models/Token';

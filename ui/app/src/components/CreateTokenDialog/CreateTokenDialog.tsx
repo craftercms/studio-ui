@@ -16,15 +16,15 @@
 
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
+import DialogHeader from '../Dialogs/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
+import DialogBody from '../Dialogs/DialogBody';
+import DialogFooter from '../Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useUnmount } from '../../utils/hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { createToken } from '../../services/token';
+import { createToken } from '../../services/tokens';
 import { Token } from '../../models/Token';
 import DateTimePicker from '../Controls/DateTimePicker';
 import moment from 'moment-timezone';

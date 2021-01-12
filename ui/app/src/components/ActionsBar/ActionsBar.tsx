@@ -51,9 +51,7 @@ interface ActionsBarProps {
   isIndeterminate: boolean;
   isChecked: boolean;
   classes?: Partial<Record<'root', string>>;
-
   onOptionClicked(option: Action): void;
-
   toggleSelectAll(): void;
 }
 

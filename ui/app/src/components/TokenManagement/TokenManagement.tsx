@@ -35,17 +35,17 @@ import { createStyles, darken, lighten, makeStyles, withStyles } from '@material
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import { deleteToken, getTokens, updateToken } from '../../services/token';
+import { deleteToken, getTokens, updateToken } from '../../services/tokens';
 import { useDispatch } from 'react-redux';
 import { Token } from '../../models/Token';
-import CreateTokenDialog from '../Dialogs/CreateTokenDialog';
+import CreateTokenDialog from '../CreateTokenDialog/CreateTokenDialog';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import ActionsBar, { Action } from '../ActionsBar';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
-import CopyTokenDialog from '../Dialogs/CopyTokenDialog';
+import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';
 import moment from 'moment-timezone';
 import { forkJoin } from 'rxjs';
 
@@ -163,16 +163,19 @@ export default function TokenManagement() {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [createdToken, setCreatedToken] = useState<Token>(null);
   const checkedCount = useMemo(() => Object.values(checkedLookup).filter(Boolean).length, [checkedLookup]);
-  const options = [
-    {
-      id: 'delete',
-      label: formatMessage(translations.deletedSelected)
-    },
-    {
-      id: 'clear',
-      label: formatMessage(translations.clearSelected, { count: checkedCount })
-    }
-  ];
+  const options = useMemo(
+    () => [
+      {
+        id: 'delete',
+        label: formatMessage(translations.deletedSelected)
+      },
+      {
+        id: 'clear',
+        label: formatMessage(translations.clearSelected, { count: checkedCount })
+      }
+    ],
+    [checkedCount, formatMessage]
+  );
 
   useEffect(() => {
     fetchTokens();
