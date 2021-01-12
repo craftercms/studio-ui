@@ -16,7 +16,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
   Checkbox,
   Chip,
   Divider,
@@ -48,6 +47,7 @@ import EmptyState from '../SystemStatus/EmptyState';
 import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';
 import moment from 'moment-timezone';
 import { forkJoin } from 'rxjs';
+import SecondaryButton from '../SecondaryButton';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -58,7 +58,8 @@ const styles = makeStyles((theme) =>
       margin: '10px 0',
       borderRadius: '50px',
       border: 0,
-      padding: '5px 25px'
+      padding: '5px 25px',
+      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)'
     },
     tableWrapper: {
       marginTop: '25px'
@@ -310,9 +311,9 @@ export default function TokenManagement() {
         <FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />
       </Typography>
       <Divider />
-      <Button variant="contained" startIcon={<AddIcon />} className={classes.createToken} onClick={onCreateToken}>
+      <SecondaryButton startIcon={<AddIcon />} className={classes.createToken} onClick={onCreateToken}>
         <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
-      </Button>
+      </SecondaryButton>
       <Divider />
       <ConditionalLoadingState isLoading={tokens === null}>
         {tokens?.length ? (

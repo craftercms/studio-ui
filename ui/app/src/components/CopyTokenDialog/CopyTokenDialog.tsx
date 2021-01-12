@@ -20,12 +20,13 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import { useUnmount } from '../../utils/hooks';
 import { Token } from '../../models/Token';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputBase from '@material-ui/core/InputBase';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 interface CopyTokenProps {
   open: boolean;
@@ -110,12 +111,12 @@ function CopyTokenUI(props: CopyTokenProps) {
         <InputBase inputRef={inputRef} autoFocus value={token?.token ?? ''} readOnly className={classes.input} />
       </DialogBody>
       <DialogFooter className={classes.footer}>
-        <Button onClick={onCopyToken} variant="contained">
+        <SecondaryButton onClick={onCopyToken}>
           <FormattedMessage id="words.copy" defaultMessage="Copy" />
-        </Button>
-        <Button onClick={onClose} variant="contained" color="primary">
+        </SecondaryButton>
+        <PrimaryButton onClick={onClose}>
           <FormattedMessage id="words.done" defaultMessage="Done" />
-        </Button>
+        </PrimaryButton>
       </DialogFooter>
     </>
   );

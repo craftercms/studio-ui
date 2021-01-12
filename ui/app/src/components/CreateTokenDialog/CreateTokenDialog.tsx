@@ -20,7 +20,6 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useUnmount } from '../../utils/hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -33,6 +32,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Collapse from '@material-ui/core/Collapse';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 interface CreateTokenProps {
   open: boolean;
@@ -153,13 +154,13 @@ function CreateTokenUI(props: CreateTokenProps) {
         </Collapse>
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onClose} variant="contained">
+        <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>
+        </SecondaryButton>
+        <PrimaryButton onClick={onOk} autoFocus disabled={inProgress}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
-        </Button>
+        </PrimaryButton>
       </DialogFooter>
     </>
   );
