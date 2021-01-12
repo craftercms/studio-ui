@@ -1455,26 +1455,14 @@
   app.controller('EncryptionToolCtrl', [
     '$scope',
     function($scope) {
-      const workarea = document.querySelector('#encryption-tool-view');
-      const el = document.createElement('div');
-
-      $(workarea).html('');
-      workarea.appendChild(el);
-
-      CrafterCMSNext.render(el, 'EncryptTool');
+      CrafterCMSNext.render(document.querySelector('#encryption-tool-view'), 'EncryptTool');
     }
   ]);
 
   app.controller('TokenManagementCtrl', [
     '$scope',
     function($scope) {
-      const workarea = document.querySelector('#token-management-view');
-      const el = document.createElement('div');
-
-      $(workarea).html('');
-      workarea.appendChild(el);
-
-      CrafterCMSNext.render(el, 'TokenManagement');
+      CrafterCMSNext.render(document.querySelector('#token-management-view'), 'TokenManagement');
     }
   ]);
 
