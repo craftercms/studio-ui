@@ -221,6 +221,10 @@ export default function TokenManagement() {
 
   const onDeleteToken = (id: number) => {
     setTokens(tokens.filter((token) => token.id !== id));
+    setCheckedLookup({
+      ...checkedLookup,
+      [id]: false
+    });
     deleteToken(id).subscribe((token) => {
       fetchTokens();
       dispatch(
