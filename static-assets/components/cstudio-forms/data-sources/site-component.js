@@ -62,13 +62,12 @@ CStudioForms.Datasources.SiteComponent =
                   if (items.length == undefined) {
                     items = [items];
                   }
-                  items = items.map((item) => {
-                    let values = {};
-                    Array.from(item.children).map((child) => {
-                      values[child.tagName] = CStudioAuthoring.Utils.unescapeHTML(child.innerHTML);
-                    });
-                    return values;
-                  });
+
+                  items = items.map((item) => ({
+                      key: CStudioAuthoring.Utils.unescapeHTML(item.value),
+                      value: CStudioAuthoring.Utils.unescapeHTML(item.value)
+                    })
+                  );
 
                   _self.list = items;
 
