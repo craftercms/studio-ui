@@ -69,6 +69,7 @@ import {
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
+
 const menuOptions = {
   edit: {
     id: 'edit',
@@ -668,7 +669,8 @@ export const itemActionDispatcher = (
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: closeCreateFileDialog()
+            onCreated: closeCreateFileDialog(),
+            allowBraces: item.path.startsWith('/scripts/rest')
           })
         );
         break;
