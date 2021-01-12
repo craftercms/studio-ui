@@ -63,12 +63,6 @@ CStudioForms.Datasources.SiteComponent =
                     items = [items];
                   }
 
-                  items = items.map((item) => ({
-                      key: CStudioAuthoring.Utils.unescapeHTML(item.value),
-                      value: CStudioAuthoring.Utils.unescapeHTML(item.value)
-                    })
-                  );
-
                   _self.list = items;
 
                   for (var j = 0; j < _self.callbacks.length; j++) {
