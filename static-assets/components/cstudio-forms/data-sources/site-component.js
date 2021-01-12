@@ -62,6 +62,14 @@ CStudioForms.Datasources.SiteComponent =
                   if (items.length == undefined) {
                     items = [items];
                   }
+                  items = items.map((item) => {
+                    let values = {};
+                    Array.from(item.children).map((child) => {
+                      values[child.tagName] = CStudioAuthoring.Utils.unescapeHTML(child.innerHTML);
+                    });
+                    return values;
+                  });
+
                   _self.list = items;
 
                   for (var j = 0; j < _self.callbacks.length; j++) {

@@ -291,8 +291,8 @@
 
         parentFolderLinkEl.appendChild(moduleClosed);
         parentFolderLinkEl.appendChild(moduleOpen);
+        parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
-        parentFolderLinkEl.innerHTML += label;
         parentFolderLinkEl.onclick = Self.onRootFolderClick;
         parentFolderLinkEl.componentInstance = instance;
 
@@ -623,8 +623,6 @@
             document.addEventListener(
               'crafter.refresh',
               function (e) {
-                /*eventCM.typeAction = e.typeAction;
-                            document.dispatchEvent(eventCM);*/
                 try {
                   if (e.data && e.data.length) {
                     for (var i = 0; i < e.data.length; i++) {
@@ -955,7 +953,8 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.label;
+          nodeSpan.innerHTML += CStudioAuthoring.Utils.escapeHTML(treeNodeTO.label);
+
           nodeSpan.setAttribute('title', treeNodeTO.title);
           nodeSpan.className = treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
 
@@ -1715,7 +1714,6 @@
                               currentInternalName =
                                 treeData.item.internalName != '' ? treeData.item.internalName : treeData.item.name,
                               curElt = YDom.get(curNode.labelElId);
-                            // curElt ? curElt.innerHTML = currentInternalName : null;
                             curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                             if (
                               typeAction === 'publish' &&
@@ -1809,7 +1807,9 @@
                             var icon = CStudioAuthoring.Utils.getContentItemIcon(treeData.item);
                             curElt.innerHTML = '';
                             curElt.appendChild(icon);
-                            curElt ? (curElt.innerHTML += currentInternalName) : null;
+                            curElt
+                              ? (curElt.innerHTML += CStudioAuthoring.Utils.escapeHTML(currentInternalName))
+                              : null;
                           }
                         },
                         failure: function () {}
@@ -2110,6 +2110,7 @@
           itemNameLabel = 'Page';
         }
 
+        label = CStudioAuthoring.Utils.escapeHTML(label);
         label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
         return CStudioAuthoring.Utils.buildToolTip(
@@ -2147,6 +2148,7 @@
           itemNameLabel = 'Page';
         }
 
+        label = CStudioAuthoring.Utils.escapeHTML(label);
         label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
         try {

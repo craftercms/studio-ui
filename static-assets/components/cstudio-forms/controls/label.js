@@ -57,8 +57,8 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
 
-      if (prop.name == 'text') {
-        controlWidgetContainerEl.innerHTML = prop.value;
+      if (prop.name === 'text') {
+        controlWidgetContainerEl.textContent = prop.value;
       }
     }
   },

@@ -159,8 +159,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
     parentFolderLinkEl.appendChild(moduleClosed);
     parentFolderLinkEl.appendChild(moduleOpen);
+    parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
-    parentFolderLinkEl.innerHTML += label;
     parentFolderLinkEl.onclick = CStudioAuthoring.ContextualNav.WcmAssetsFolder.onRootFolderClick;
     parentFolderLinkEl.componentInstance = instance;
 
@@ -538,7 +538,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         nodeSpan.appendChild(icon);
       }
 
-      nodeSpan.innerHTML += treeNodeTO.label;
+      nodeSpan.innerHTML += CStudioAuthoring.Utils.escapeHTML(treeNodeTO.label);
       nodeSpan.setAttribute('title', treeNodeTO.title);
       nodeSpan.className = treeNodeTO.style + ' yui-resize-label treenode-label';
 
@@ -1173,6 +1173,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       itemNameLabel = 'Page';
     }
 
+    label = CStudioAuthoring.Utils.escapeHTML(label);
     label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
     return CStudioAuthoring.Utils.buildToolTip(
@@ -1210,6 +1211,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       itemNameLabel = 'Page';
     }
 
+    label = CStudioAuthoring.Utils.escapeHTML(label);
     label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
     try {
@@ -1226,7 +1228,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         icon
       );
     } catch (err) {
-      //console.log(err);
+      console.log(err);
     }
     return toolTip;
   },

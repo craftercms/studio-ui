@@ -86,7 +86,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
             state.path +
             "' /></td>" +
             "<td class='cs-statelist-detail-id'>" +
-            state.path +
+            CStudioAuthoring.Utils.escapeHTML(state.path) +
             '</td>' +
             "<td class='cs-statelist-detail'>" +
             state.state +

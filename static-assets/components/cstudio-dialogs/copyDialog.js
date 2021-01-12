@@ -55,14 +55,14 @@ CStudioAuthoring.Dialogs.DialogCopy =
         html =
           '<ul>' +
           '<input type="checkbox" id="' +
-          item.uri +
+          encodeURIComponent(item.uri) +
           '" checked="true"/>' +
           '<div class="' +
           itemIconClass +
           '" >' +
           '<div>' +
           icon +
-          item.internalName +
+          CStudioAuthoring.Utils.escapeHTML(item.internalName) +
           '</div> ' +
           '</div>';
 
@@ -112,7 +112,9 @@ CStudioAuthoring.Dialogs.DialogCopy =
     }
 
     function onCopyCheckBoxSubmittedItemClick(event, matchedEl) {
-      var selectedItemURI, selectedItem;
+      var selectedItemURI,
+        selectedItem,
+        id = decodeURIComponent(matchedEl.id);
 
       function selectParents(selectedItem, checked) {
         var inputElement;
@@ -142,12 +144,12 @@ CStudioAuthoring.Dialogs.DialogCopy =
         }
       }
 
-      if (matchedEl.id == item.uri) {
+      if (id === item.uri) {
         matchedEl.checked = true;
         return;
       }
 
-      selectedItemURI = matchedEl.id;
+      selectedItemURI = id;
       selectedItem = flatMap[selectedItemURI];
       if (matchedEl.checked) {
         selectParents(selectedItem, true);
@@ -198,7 +200,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
       for (var i = 0; i < inputItems.length; i++) {
         if (inputItems[i].checked) {
-          selectedURI = inputItems[i].id;
+          selectedURI = decodeURIComponent(inputItems[i].id);
           selectedIds[selectedURI] = 'selected';
         }
       }

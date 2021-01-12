@@ -18,7 +18,7 @@
 /**
  * Preview Tools
  */
-CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.TargetingMod || {
+CStudioAuthoring.ContextualNav.TargetingMod = {
   initialized: false,
 
   /**
@@ -164,7 +164,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                     var labelSpan = document.createElement('span');
                     YAHOO.util.Dom.addClass(labelSpan, 'control-label bold');
                     labelSpan.style.cssText = 'min-width: 80px; display: inline-block; margin-right: 20px;';
-                    labelSpan.innerHTML = currentProp.label;
+                    labelSpan.textContent = currentProp.label;
                     targetingContainerEl.appendChild(controlContainer);
                     controlContainer.appendChild(labelSpan);
 
@@ -269,7 +269,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                     var description = document.createElement('span');
                     YAHOO.util.Dom.addClass(description, 'description');
-                    description.innerHTML = currentProp.description;
+                    description.textContent = currentProp.description;
 
                     description.style.cssText =
                       'color: #999999; display: block; margin-left: 100px; text-align: justify; margin-top: 5px;';
@@ -277,7 +277,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                     var hint = document.createElement('span');
                     YAHOO.util.Dom.addClass(hint, 'hint');
-                    hint.innerHTML = currentProp.hint;
+                    hint.textContent = currentProp.hint;
                     hint.style.cssText = 'color: #999999; margin-left: 100px; text-align: justify; margin-top: 5px;';
                     controlContainer.appendChild(hint);
                   }

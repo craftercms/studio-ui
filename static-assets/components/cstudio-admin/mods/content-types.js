@@ -273,7 +273,8 @@ CStudioAuthoring.Module.requireModule(
                               CMgs.format(langBundle, 'notification'),
                               CMgs.format(langBundle, 'saveFailed') +
                                 CMgs.format(langBundle, 'errorName') +
-                                validation.idError.toString().replace(/,/g, ', '),
+                                validation.idError.map((s) => CStudioAuthoring.Utils.escapeHTML(s))
+                                  .join(', '),
                               null, // use default button
                               YAHOO.widget.SimpleDialog.ICON_BLOCK,
                               'studioDialog'
@@ -764,7 +765,7 @@ CStudioAuthoring.Module.requireModule(
 
           var formNameEl = document.createElement('div');
           YDom.addClass(formNameEl, 'content-form-name');
-          formNameEl.innerHTML = this.definition.title;
+          formNameEl.textContent = this.definition.title;
           formVisualContainerEl.appendChild(formNameEl);
 
           var divPropertiesEl = document.createElement('div');
@@ -807,7 +808,7 @@ CStudioAuthoring.Module.requireModule(
 
           var datasourcesNameEl = document.createElement('span');
           YDom.addClass(datasourcesNameEl, 'content-section-name');
-          datasourcesNameEl.innerHTML = CMgs.format(langBundle, 'datasources');
+          datasourcesNameEl.textContent = CMgs.format(langBundle, 'datasources');
           datasourcesContainerEl.appendChild(datasourcesNameEl);
           var tar = new YAHOO.util.DDTarget(datasourcesContainerEl);
 
@@ -832,7 +833,7 @@ CStudioAuthoring.Module.requireModule(
 
             var datasourceNameEl = document.createElement('span');
             YDom.addClass(datasourceNameEl, 'content-datasource-name');
-            datasourceNameEl.innerHTML = datasource.title;
+            datasourceNameEl.textContent = datasource.title;
             datasourceEl.appendChild(datasourceNameEl);
 
             var datasourceTypeEl = document.createElement('span');
@@ -918,7 +919,7 @@ CStudioAuthoring.Module.requireModule(
 
             var sectionNameEl = document.createElement('span');
             YDom.addClass(sectionNameEl, 'content-section-name');
-            sectionNameEl.innerHTML = section.title;
+            sectionNameEl.textContent = section.title;
             sectionContainerEl.appendChild(sectionNameEl);
 
             section.sectionContainerEl = sectionContainerEl;
@@ -1021,7 +1022,7 @@ CStudioAuthoring.Module.requireModule(
           var minValue = field.properties[0] && field.properties[0].value != '' ? field.properties[0].value : '0';
           var maxValue = field.properties[0] && field.properties[1].value != '' ? field.properties[1].value : '*';
 
-          fieldNameEl.innerHTML =
+          fieldNameEl.textContent =
             field.title + ' ' + CMgs.format(langBundle, 'repeatingGroup') + ' [' + minValue + ' ... ' + maxValue + ']';
           fieldContainerEl.appendChild(fieldNameEl);
 
@@ -1093,17 +1094,17 @@ CStudioAuthoring.Module.requireModule(
 
           var fieldNameEl = document.createElement('span');
           YDom.addClass(fieldNameEl, 'content-field-name');
-          fieldNameEl.innerHTML = field.title;
+          fieldNameEl.textContent = field.title;
           fieldContainerEl.appendChild(fieldNameEl);
 
           var fieldTypeEl = document.createElement('span');
           YDom.addClass(fieldTypeEl, 'content-field-type');
-          fieldTypeEl.innerHTML = field.type;
+          fieldTypeEl.textContent = field.type;
           fieldContainerEl.appendChild(fieldTypeEl);
 
           var fieldNameEl = document.createElement('span');
           YDom.addClass(fieldNameEl, 'content-field-variable');
-          fieldNameEl.innerHTML = field.id;
+          fieldNameEl.textContent = field.id;
           fieldContainerEl.appendChild(fieldNameEl);
 
           var dd = new DragAndDropDecorator(fieldContainerEl);

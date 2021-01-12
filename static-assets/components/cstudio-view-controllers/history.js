@@ -60,7 +60,7 @@
 
             var itemStateEl = _this.getComponent('span.show-for-item');
             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
-            itemStateEl.innerHTML = history.item.internalName;
+            itemStateEl.innerHTML = CStudioAuthoring.Utils.escapeHTML(history.item.internalName);
 
             if (versions.length == 0) {
               tbody.innerHTML =

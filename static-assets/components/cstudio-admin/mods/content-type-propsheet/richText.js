@@ -159,8 +159,6 @@ YAHOO.extend(
       YDom.addClass(inputEl, 'cstudio-form-control-input');
       richTextDialogEl.inputEl = inputEl;
 
-      inputEl.value = CStudioForms.Util.unEscapeXml(value);
-
       var editor = tinyMCE.init({
         // General options
         autoresize_min_height: 200,
@@ -200,6 +198,8 @@ YAHOO.extend(
         external_image_list_url: 'js/image_list.js',
         media_external_list_url: 'js/media_list.js',
         plugins: 'paste, noneditable, ',
+        valid_elements:
+          'ul[class,style],li[class,style],img[src,style,class],p[class,style],br,strong/b,a[href|target=_blank]',
 
         setup: function (ed) {
           try {

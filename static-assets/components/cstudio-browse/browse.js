@@ -213,7 +213,7 @@
       }
 
       if (key === 'internalName') {
-        this.text = value;
+        this.text = CStudioAuthoring.Utils.escapeHTML(value);
       } else {
         return value;
       }

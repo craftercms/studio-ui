@@ -226,7 +226,6 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 
     var uploadHandler = {
       upload: function (o) {
-        //console.log('responseText '+o.responseText);
         YAHOO.util.Dom.setStyle('indicator', 'visibility', 'hidden');
         var r = eval('(' + o.responseText + ')');
         if (r && r.hasError) {

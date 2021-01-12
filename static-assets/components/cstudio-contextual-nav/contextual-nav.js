@@ -110,8 +110,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   getNavBarContent: function () {
     var callback = {
       success: function (results) {
-        document.getElementById('nav-user-name').innerHTML = results.first_name + ' ' + results.last_name;
-        document.getElementById('nav-user-email').innerHTML = results.email;
+        document.getElementById('nav-user-name').textContent = results.first_name + ' ' + results.last_name;
+        document.getElementById('nav-user-email').textContent = results.email;
         document.getElementById('account-dropdown').childNodes[0].nodeValue = results.username;
       },
       failure: function (response) {}

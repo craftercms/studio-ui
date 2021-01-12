@@ -220,7 +220,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
           var itemEl = document.createElement('div');
           YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-video-picker-add-container-item');
-          itemEl.innerHTML = el.title;
+          itemEl.textContent = el.title;
           addContainerEl.appendChild(itemEl);
 
           YAHOO.util.Event.on(
@@ -274,7 +274,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
             } else {
               this.videoPicker.previewEl.src = videoData.previewUrl;
               this.videoPicker.previewEl.setAttribute('controls', 'true');
-              this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace('?crafterCMIS=true', '');
+              this.videoPicker.urlEl.textContent = videoData.relativeUrl.replace('?crafterCMIS=true', '');
               this.videoPicker.downloadEl.href = videoData.previewUrl;
 
               this.videoPicker.addEl.value = CMgs.format(langBundle, 'replace');
@@ -337,7 +337,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-video-picker-container');
@@ -355,7 +355,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
     var urlEl = document.createElement('div');
     this.urlEl = urlEl;
-    urlEl.innerHTML = this.inputEl.value;
+    urlEl.textContent = this.inputEl.value;
     controlWidgetContainerEl.appendChild(urlEl);
 
     var videoEl = document.createElement('div');
@@ -483,7 +483,6 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
     descriptionEl.innerHTML = config.description;
-    //descriptionEl.style.marginLeft = "341px";
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);
@@ -554,7 +553,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
       this.previewEl.style.display = 'block';
       this.previewEl.setAttribute('controls', 'true');
       this.noPreviewEl.style.display = 'none';
-      this.urlEl.innerHTML = this.external ? value.replace('?crafterCMIS=true', '') : value;
+      this.urlEl.textContent = this.external ? value.replace('?crafterCMIS=true', '') : value;
 
       this.zoomEl.style.display = 'inline-block';
       this.downloadEl.style.display = 'inline-block';

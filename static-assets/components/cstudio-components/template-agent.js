@@ -39,10 +39,10 @@
     get: function (tmpl, pieces) {
       var template = this.oTemplate[tmpl];
       if (Lang.isArray(pieces)) {
-        return Util.format.apply(Util, [template].concat(pieces));
+        return Util.format.apply(Util, [template].concat(pieces.map((p) => CStudioAuthoring.Utils.escapeHTML(p))));
       } /* if (Lang.isObject(pieces)) */ else {
         return Util.advFormat(template, function (txt) {
-          return pieces[txt] || '';
+          return CStudioAuthoring.Utils.escapeHTML(pieces[txt]) || '';
         });
       }
     }

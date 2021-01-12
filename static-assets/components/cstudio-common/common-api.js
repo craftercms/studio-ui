@@ -7814,6 +7814,7 @@ var nodeOpen = false,
         schedDate,
         icon
       ) {
+        label = CStudioAuthoring.Utils.escapeHTML(label);
         label = label.replace(new RegExp(' ', 'g'), '&nbsp;');
 
         if (contentType.indexOf('/page/') != -1) contentType = contentType.replace('/page/', '') + '&nbsp;(Page)';
@@ -7876,7 +7877,6 @@ var nodeOpen = false,
 
         return CStudioAuthoring.StringUtils.format(
           toolTipMarkup,
-
           itemNameLabel,
           label,
           style,
@@ -8153,6 +8153,18 @@ var nodeOpen = false,
             $($('.studio-ice-container-' + id, parent.document)[0]).height(212);
           }
         }
+      },
+
+      unescapeHTML: function(html) {
+        const txt = document.createElement('textarea');
+        txt.innerHTML = html;
+        return txt.value;
+      },
+
+      escapeHTML(str) {
+        const element = document.createElement('textarea');
+        element.textContent = str;
+        return element.innerHTML;
       }
     },
     'Utils.Doc': {
