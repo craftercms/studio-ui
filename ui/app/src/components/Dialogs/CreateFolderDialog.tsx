@@ -20,7 +20,6 @@ import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { createFolder, renameFolder } from '../../services/content';
 import { useActiveSiteId, useUnmount } from '../../utils/hooks';
@@ -29,6 +28,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
+import { SecondaryButton } from '../SecondaryButton';
+import { PrimaryButton } from '../PrimaryButton';
 
 export const translations = defineMessages({
   placeholder: {
@@ -184,17 +185,17 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         />
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onClose} variant="contained" disabled={inProgress}>
+        <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
-        </Button>
-        <Button onClick={() => onOk()} variant="contained" color="primary" autoFocus disabled={inProgress}>
+        </SecondaryButton>
+        <PrimaryButton onClick={() => onOk()} autoFocus disabled={inProgress}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
           ) : (
             <FormattedMessage id="words.create" defaultMessage="Create" />
           )}
-        </Button>
+        </PrimaryButton>
       </DialogFooter>
     </>
   );

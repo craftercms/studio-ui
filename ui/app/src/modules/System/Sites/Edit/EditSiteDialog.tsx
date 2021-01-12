@@ -23,7 +23,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import StandardAction from '../../../../models/StandardAction';
 import { useLogicResource, useUnmount } from '../../../../utils/hooks';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { Site } from '../../../../models/Site';
 import Suspencified from '../../../../components/SystemStatus/Suspencified';
 import { updateSite } from '../../../../services/sites';
@@ -33,6 +32,8 @@ import GlobalState from '../../../../models/GlobalState';
 import { LookupTable } from '../../../../models/LookupTable';
 import { fetchSites } from '../../../../state/reducers/sites';
 import Grid from '@material-ui/core/Grid';
+import { SecondaryButton } from '../../../../components/SecondaryButton';
+import { PrimaryButton } from '../../../../components/PrimaryButton';
 
 type Source = { site: Site; error: Error };
 type Return = Omit<Source, 'error'>;
@@ -281,19 +282,19 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
       </DialogBody>
       <DialogFooter>
         {onClose && (
-          <Button onClick={onClose} variant="contained">
+          <SecondaryButton onClick={onClose} variant="contained">
             <FormattedMessage id="editSiteDialog.cancel" defaultMessage="Cancel" />
-          </Button>
+          </SecondaryButton>
         )}
         {onSubmit && (
-          <Button
+          <PrimaryButton
             onClick={() => onSubmit()}
             variant="contained"
             color="primary"
             disabled={submitting || submitDisabled}
           >
             <FormattedMessage id="words.submit" defaultMessage="Submit" />
-          </Button>
+          </PrimaryButton>
         )}
       </DialogFooter>
     </>

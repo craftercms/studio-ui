@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import SearchIcon from '@material-ui/icons/Search';
 import Grid from '@material-ui/core/Grid';
@@ -23,8 +23,6 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
 import Spinner from '../../../../components/SystemStatus/Spinner';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
@@ -59,6 +57,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
+import { PrimaryButton } from '../../../../components/PrimaryButton';
+import Button from '@material-ui/core/Button';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -221,9 +221,6 @@ const useStyles = makeStyles((theme: Theme) =>
         height: '100%',
         paddingTop: '70px'
       }
-    },
-    backBtn: {
-      marginRight: 'auto'
     },
     tabs: {
       display: 'flex',
@@ -910,12 +907,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           )}
           {site.selectedView !== 0 && (
             <DialogFooter classes={{ root: classes.fadeIn }}>
-              <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
-                {formatMessage(messages.back)}
-              </Button>
-              <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
-                {views[site.selectedView].btnText}
-              </Button>
+              <Button color="primary" variant="outlined" onClick={handleBack} children={formatMessage(messages.back)} />
+              <PrimaryButton ref={finishRef} onClick={handleFinish} children={views[site.selectedView].btnText} />
             </DialogFooter>
           )}
         </div>

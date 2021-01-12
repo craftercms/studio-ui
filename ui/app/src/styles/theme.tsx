@@ -29,28 +29,11 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         textTransform: 'none'
       },
       fontSize: 14,
-      fontFamily: '"Source Sans Pro", "Open Sans", sans-serif'
-    },
-    palette: {
-      type: 'light',
-      primary: {
-        main: palette.blue.main
-      },
-      secondary: {
-        main: palette.white
-      },
-      warning: {
-        main: palette.orange.main
-      },
-      error: {
-        main: palette.red.main
-      },
-      success: {
-        main: palette.green.main
-      },
-      info: {
-        main: palette.teal.main
-      }
+      fontFamily: '"Source Sans Pro", "Open Sans", sans-serif',
+      fontWeightMedium: 600,
+      fontWeightBold: 700,
+      fontWeightLight: 300,
+      fontWeightRegular: 400
     },
     overrides: {
       MuiListItem: {
@@ -148,11 +131,6 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         root: {
           display: 'block'
         }
-      }
-    },
-    props: {
-      MuiButton: {
-        color: 'secondary'
       }
     }
   };

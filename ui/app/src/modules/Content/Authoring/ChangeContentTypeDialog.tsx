@@ -96,12 +96,12 @@ export interface ChangeContentTypeDialogStateProps extends ChangeContentTypeDial
 export default function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <ChangeContentTypeDialogWrapper {...props} />
+      <ChangeContentTypeDialogBody {...props} />
     </Dialog>
   );
 }
 
-function ChangeContentTypeDialogWrapper(props: ChangeContentTypeDialogProps) {
+function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
   const { onDismiss, item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();

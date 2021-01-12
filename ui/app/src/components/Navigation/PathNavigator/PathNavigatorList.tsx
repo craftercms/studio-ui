@@ -17,14 +17,15 @@
 import List from '@material-ui/core/List';
 import { DetailedItem } from '../../../models/Item';
 import NavItem from './PathNavigatorItem';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Resource } from '../../../models/Resource';
 
 interface NavProps {
   locale?: string;
   resource: Resource<DetailedItem[]>;
   isSelectMode?: boolean;
-  leaves?: string[];
+  leaves: string[];
+  computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemNavigateToButton?: boolean;
   classes?: Partial<Record<'root', string>>;
   onItemClicked(item: DetailedItem): void;
@@ -41,6 +42,7 @@ export default function PathNavigatorList(props: NavProps) {
     onPathSelected,
     onPreview,
     locale,
+    computeActiveItems,
     isSelectMode,
     onSelectItem,
     onOpenItemMenu,
@@ -49,6 +51,7 @@ export default function PathNavigatorList(props: NavProps) {
     showItemNavigateToButton
   } = props;
   const items = resource.read();
+  const active = useMemo(() => computeActiveItems?.(items) ?? [], [items, computeActiveItems]);
   return (
     <List component="nav" disablePadding={true} classes={{ root: props.classes?.root }}>
       {items.map((item: DetailedItem) => (
@@ -56,6 +59,7 @@ export default function PathNavigatorList(props: NavProps) {
           item={item}
           key={item.id}
           isLeaf={leaves.includes(item.id)}
+          isActive={active.includes(item.id)}
           locale={locale}
           onChangeParent={onPathSelected}
           onPreview={onPreview}
