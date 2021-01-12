@@ -31,7 +31,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, darken, lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
@@ -46,6 +46,8 @@ import ActionsBar, { Action } from '../ActionsBar';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
 import CopyTokenDialog from '../Dialogs/CopyTokenDialog';
+import moment from 'moment-timezone';
+import { forkJoin } from 'rxjs';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -75,11 +77,23 @@ const styles = makeStyles((theme) =>
       zIndex: 1
     },
     chip: {
-      backgroundColor: theme.palette.success.light,
+      backgroundColor:
+        theme.palette.type === 'light'
+          ? lighten(theme.palette.success.main, 0.9)
+          : darken(theme.palette.success.main, 0.9),
       height: 'auto',
       padding: '4px 6.5px',
       '&.disabled': {
-        backgroundColor: theme.palette.warning.light
+        backgroundColor:
+          theme.palette.type === 'light'
+            ? lighten(theme.palette.warning.main, 0.9)
+            : darken(theme.palette.warning.main, 0.9)
+      },
+      '&.expired': {
+        backgroundColor:
+          theme.palette.type === 'light'
+            ? lighten(theme.palette.error.main, 0.9)
+            : darken(theme.palette.error.main, 0.9)
       }
     }
   })
@@ -96,19 +110,23 @@ const StyledTableCell = withStyles((theme: Theme) =>
 const translations = defineMessages({
   tokenCreated: {
     id: 'tokenManagement.created',
-    defaultMessage: 'Token created'
+    defaultMessage: 'Token created and copied to clipboard'
   },
   tokenCopied: {
     id: 'tokenManagement.copied',
-    defaultMessage: 'Token copied'
+    defaultMessage: 'Token copied to clipboard'
   },
   tokenDeleted: {
     id: 'tokenManagement.deleted',
-    defaultMessage: 'Token deleted'
+    defaultMessage: '{count, plural, one {Token deleted} other {The selected tokens were deleted}}'
   },
   tokenUpdated: {
     id: 'tokenManagement.updated',
     defaultMessage: 'Token updated'
+  },
+  never: {
+    id: 'words.never',
+    defaultMessage: 'Never'
   },
   confirmHelperText: {
     id: 'words.helperText',
@@ -229,7 +247,7 @@ export default function TokenManagement() {
       fetchTokens();
       dispatch(
         showSystemNotification({
-          message: formatMessage(translations.tokenDeleted)
+          message: formatMessage(translations.tokenDeleted, { count: 1 })
         })
       );
     });
@@ -238,6 +256,29 @@ export default function TokenManagement() {
   const onOptionClicked = (action: Action) => {
     switch (action.id) {
       case 'delete': {
+        const requests = [];
+        let checkedIds = [];
+        let _checkedLookup = { ...checkedLookup };
+        Object.keys(checkedLookup).forEach((id, i) => {
+          if (checkedLookup[id]) {
+            checkedIds.push(parseInt(id));
+            _checkedLookup[id] = false;
+            requests.push(deleteToken(parseInt(id)));
+          }
+        });
+
+        setCheckedLookup(_checkedLookup);
+
+        setTokens(tokens.filter((token) => !checkedIds.includes(token.id)));
+
+        forkJoin(requests).subscribe((responses) => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.tokenDeleted, { count: checkedIds.length })
+            })
+          );
+        });
+
         // TODO: API to Delete many??
         break;
       }
@@ -336,13 +377,19 @@ export default function TokenManagement() {
                     <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
                       <Chip
                         label={
-                          token.enabled ? (
+                          moment(token.expiresAt) < moment() ? (
+                            <FormattedMessage id="words.expired" defaultMessage="Expired" />
+                          ) : token.enabled ? (
                             <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
                           ) : (
                             <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
                           )
                         }
-                        className={clsx(classes.chip, !token.enabled && 'disabled')}
+                        className={clsx(
+                          classes.chip,
+                          !token.enabled && 'disabled',
+                          moment(token.expiresAt) < moment() && 'expired'
+                        )}
                       />
                     </TableCell>
                     <StyledTableCell align="left">{token.label}</StyledTableCell>
@@ -351,21 +398,23 @@ export default function TokenManagement() {
                         <AsDayMonthDateTime date={token.expiresAt} />
                       ) : (
                         <Typography color="textSecondary" variant="body2">
-                          (<FormattedMessage id="words.never" defaultMessage="Never" />)
+                          ({formatMessage(translations.never).toLowerCase()})
                         </Typography>
                       )}
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       <AsDayMonthDateTime date={token.createdOn} />
                     </StyledTableCell>
-                    <TableCell align="center" className={classes.actions}>
-                      <Switch
-                        checked={token.enabled}
-                        onChange={(e, checked) => {
-                          onSetEnabled(token.id, checked);
-                        }}
-                        color="primary"
-                      />
+                    <TableCell align="right" className={classes.actions}>
+                      {(token.expiresAt === null || moment(token.expiresAt) > moment()) && (
+                        <Switch
+                          checked={token.enabled}
+                          onChange={(e, checked) => {
+                            onSetEnabled(token.id, checked);
+                          }}
+                          color="primary"
+                        />
+                      )}
                       <ConfirmDropdown
                         cancelText={formatMessage(translations.confirmCancel)}
                         confirmText={formatMessage(translations.confirmOk)}

@@ -77,18 +77,22 @@ function CopyTokenUI(props: CopyTokenProps) {
 
   useUnmount(onClosed);
 
-  const onCopyToken = useCallback(() => {
+  const copyToken = useCallback(() => {
     const el = inputRef.current;
     el.select();
     document.execCommand('copy');
+  }, []);
+
+  const onCopyToken = useCallback(() => {
+    copyToken();
     onCopy();
-  }, [onCopy]);
+  }, [copyToken, onCopy]);
 
   useEffect(() => {
     if (tokenKey && token) {
-      onCopyToken();
+      copyToken();
     }
-  }, [onCopyToken, token, tokenKey]);
+  }, [copyToken, onCopyToken, token, tokenKey]);
 
   return (
     <>

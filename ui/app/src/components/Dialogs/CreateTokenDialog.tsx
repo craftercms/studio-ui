@@ -130,7 +130,7 @@ function CreateTokenUI(props: CreateTokenProps) {
             {expires ? (
               <FormattedMessage
                 id="createTokenDialog.expiresHelperNeverText"
-                defaultMessage="Switch off to set expiration as never."
+                defaultMessage="Switch off to never expire."
               />
             ) : (
               <FormattedMessage
