@@ -36,9 +36,6 @@ export const defaultThemeOptions: ThemeOptions = (function() {
       primary: {
         main: palette.blue.main
       },
-      secondary: {
-        main: palette.white
-      },
       warning: {
         main: palette.orange.main
       },
