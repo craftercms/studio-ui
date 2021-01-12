@@ -159,6 +159,8 @@ YAHOO.extend(
       YDom.addClass(inputEl, 'cstudio-form-control-input');
       richTextDialogEl.inputEl = inputEl;
 
+      inputEl.value = CStudioAuthoring.Utils.unescapeHTML(value);
+
       var editor = tinyMCE.init({
         // General options
         autoresize_min_height: 200,
