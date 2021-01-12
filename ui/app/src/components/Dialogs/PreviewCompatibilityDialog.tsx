@@ -18,13 +18,14 @@ import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { SecondaryButton } from '../SecondaryButton';
+import { PrimaryButton } from '../PrimaryButton';
 
 const translations = defineMessages({
   go: {
@@ -109,12 +110,12 @@ export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProp
           control={<Checkbox color="primary" checked={remember} onChange={(e) => setRemember(e.target.checked)} />}
         />
         <div>
-          <Button onClick={() => onCancel({ remember })} variant="outlined" style={{ marginRight: 5 }}>
+          <SecondaryButton onClick={() => onCancel({ remember })} style={{ marginRight: 5 }}>
             {formatMessage(translations.stay)}
-          </Button>
-          <Button onClick={() => onOk({ remember })} variant="contained" color="primary" autoFocus>
+          </SecondaryButton>
+          <PrimaryButton onClick={() => onOk({ remember })} autoFocus>
             {formatMessage(translations.go)}
-          </Button>
+          </PrimaryButton>
         </div>
       </DialogFooter>
     </>

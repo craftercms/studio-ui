@@ -78,6 +78,7 @@ export default function SiteCard(props: TitleCardProps) {
         component={ListItem}
         onClick={() => onCardClick(value)}
         className={clsx(classes.card, props.classes?.root)}
+        title={title}
       >
         <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
         {options && (

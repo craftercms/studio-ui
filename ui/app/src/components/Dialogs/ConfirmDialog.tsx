@@ -17,7 +17,6 @@
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
@@ -27,6 +26,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import questionGraphicUrl from '../../assets/question.svg';
 import { CSSProperties } from '@material-ui/styles';
+import { PrimaryButton } from '../PrimaryButton';
+import { SecondaryButton } from '../SecondaryButton';
 
 const messages = defineMessages({
   accept: {
@@ -153,14 +154,14 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
       </DialogContent>
       <DialogFooter className={classes.dialogFooter}>
         {onOk && (
-          <Button onClick={onOk} variant="contained" color="primary" autoFocus fullWidth size="large">
+          <PrimaryButton onClick={onOk} autoFocus fullWidth size="large">
             {formatMessage(messages.accept)}
-          </Button>
+          </PrimaryButton>
         )}
         {onCancel && (
-          <Button onClick={onCancel} variant="outlined" fullWidth size="large">
+          <SecondaryButton onClick={onCancel} fullWidth size="large">
             {formatMessage(messages.cancel)}
-          </Button>
+          </SecondaryButton>
         )}
       </DialogFooter>
     </>

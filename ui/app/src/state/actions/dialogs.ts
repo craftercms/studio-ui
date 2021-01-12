@@ -32,7 +32,7 @@ import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormD
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
 import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
 import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
-import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
+import { UploadDialogStateProps } from '../../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
@@ -153,7 +153,7 @@ export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
 // endregion
 
 // region Upload Dialog
-export const showUploadDialog = createAction<Partial<BulkUploadStateProps>>('SHOW_UPLOAD_DIALOG');
+export const showUploadDialog = createAction<Partial<UploadDialogStateProps>>('SHOW_UPLOAD_DIALOG');
 export const closeUploadDialog = createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
 export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
 // endregion

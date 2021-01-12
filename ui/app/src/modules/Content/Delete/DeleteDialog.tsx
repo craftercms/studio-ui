@@ -26,7 +26,6 @@ import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
@@ -37,6 +36,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { deleteItems } from '../../../services/content';
 import { emitSystemEvent, itemsDeleted } from '../../../state/actions/system';
+import { SecondaryButton } from '../../../components/SecondaryButton';
+import { PrimaryButton } from '../../../components/PrimaryButton';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -188,7 +189,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
-
   return (
     <>
       <DialogHeader
@@ -209,14 +209,12 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
-          <FormattedMessage id="deleteDialog.cancel" defaultMessage={'Cancel'} />
-        </Button>
-        <Button
-          variant="contained"
+        <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
+          <FormattedMessage id="deleteDialog.cancel" defaultMessage="Cancel" />
+        </SecondaryButton>
+        <PrimaryButton
           autoFocus
           onClick={handleSubmit}
-          color="primary"
           disabled={apiState.submitting || !selectedItems || selectedItems.length === 0}
         >
           {apiState.submitting ? (
@@ -224,7 +222,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
           ) : (
             <FormattedMessage id="deleteDialog.submit" defaultMessage={'Delete'} />
           )}
-        </Button>
+        </PrimaryButton>
       </DialogFooter>
     </>
   );
@@ -246,10 +244,9 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     submitting: false
   });
   const siteId = useActiveSiteId();
-  const deleteDependencies = useSelector<GlobalState, { childItems: string[]; dependentItems: string[] }>((state) => ({
-    childItems: state.dialogs.delete.childItems,
-    dependentItems: state.dialogs.delete.dependentItems
-  }));
+  const deleteDependencies = useSelector<GlobalState, { childItems: string[]; dependentItems: string[] }>(
+    (state) => state.dialogs.delete
+  );
 
   const [selectedItems, setSelectedItems] = useState(null);
   const dispatch = useDispatch();

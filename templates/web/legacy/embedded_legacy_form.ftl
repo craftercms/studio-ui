@@ -206,6 +206,7 @@
                     },
                     cancelled: () => {
                       window.top.postMessage({
+                        close: true,
                         type: 'EMBEDDED_LEGACY_FORM_CLOSE',
                         refresh: false,
                         tab: type,

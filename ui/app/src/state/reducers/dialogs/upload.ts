@@ -17,9 +17,9 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeUploadDialog, showUploadDialog, uploadDialogClosed } from '../../actions/dialogs';
-import { BulkUploadStateProps } from '../../../components/Dialogs/BulkUploadDialog';
+import { UploadDialogStateProps } from '../../../components/Dialogs/UploadDialog';
 
-const initialState: BulkUploadStateProps = {
+const initialState: UploadDialogStateProps = {
   open: false,
   path: null,
   maxSimultaneousUploads: 1,

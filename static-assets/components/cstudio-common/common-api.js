@@ -2806,6 +2806,12 @@ var nodeOpen = false,
               type: 'BATCH_ACTIONS',
               payload: [
                 {
+                  type: 'SHOW_REJECT_ITEM_SUCCESS_NOTIFICATION',
+                  payload: {
+                    count: sandboxItems.length
+                  }
+                },
+                {
                   type: 'LEGACY_DIALOG_CALLBACK',
                   payload: { id: eventIdSuccess }
                 },

@@ -121,7 +121,7 @@ const getLegacyDialogStyles = makeStyles(() => ({
                   {field.type === 'html' ? (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: decodeHTML(version.content[version.id][field.id])
+                        __html: unescapeHTML(version.content[version.id][field.id])
                       }}
                     />
                   ) : typeof version.content[version.id][field.id] === 'object' ? (

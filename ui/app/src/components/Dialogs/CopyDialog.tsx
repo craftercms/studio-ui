@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -31,6 +30,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
+import { PrimaryButton } from '../PrimaryButton';
+import { SecondaryButton } from '../SecondaryButton';
 
 const messages = defineMessages({
   copy: {
@@ -269,12 +270,8 @@ function CopyDialogUI(props: CopyDialogProps) {
         />
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onClose} variant="contained">
-          {formatMessage(messages.cancel)}
-        </Button>
-        <Button onClick={onCopy} variant="contained" color="primary">
-          {formatMessage(messages.copy)}
-        </Button>
+        <SecondaryButton onClick={onClose}>{formatMessage(messages.cancel)}</SecondaryButton>
+        <PrimaryButton onClick={onCopy}>{formatMessage(messages.copy)}</PrimaryButton>
       </DialogFooter>
     </>
   );

@@ -27,6 +27,8 @@ import ErrorIcon from '@material-ui/icons/Error';
 import { green, red } from '@material-ui/core/colors';
 import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 interface EncryptToolProps {
   site: string;
@@ -184,14 +186,11 @@ const EncryptTool = (props: EncryptToolProps) => {
         <h1 className={classes.title}>{formatMessage(messages.pageTitle)}</h1>
       </header>
       <div className="form-group">
-        <label htmlFor="encryptionToolRawText" className="control-label">
-          {formatMessage(messages.inputLabel)}
-        </label>
-        <input
-          type="text"
+        <TextField
+          label={formatMessage(messages.inputLabel)}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="form-control"
+          fullWidth
           id="encryptionToolRawText"
           name="encryptionToolRawText"
           autoFocus
@@ -218,14 +217,13 @@ const EncryptTool = (props: EncryptToolProps) => {
         </div>
       )}
       <div className="form-group">
-        <button type="submit" className="btn btn-primary" onClick={encrypt} disabled={fetching}>
-          <span>{formatMessage(messages.buttonText)}</span>
-        </button>{' '}
-        <button type="button" className="btn btn-default" onClick={clear} disabled={fetching}>
-          <span>{formatMessage(messages.clearResultButtonText)}</span>
-        </button>
+        <Button type="button" onClick={clear} disabled={fetching} color="default" variant="outlined">
+          {formatMessage(messages.clearResultButtonText)}
+        </Button>{' '}
+        <Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">
+          {formatMessage(messages.buttonText)}
+        </Button>
       </div>
-
       <Snackbar
         anchorOrigin={{
           vertical: 'top',

@@ -32,7 +32,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import DialogFooter from './DialogFooter';
-import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -44,6 +43,8 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { getCurrentLocale } from '../../utils/i18n';
+import { SecondaryButton } from '../SecondaryButton';
+import { PrimaryButton } from '../PrimaryButton';
 
 // region Typings
 
@@ -167,7 +168,6 @@ function RejectDialogUI(props: RejectDialogUIProps) {
     onReject,
     classes
   } = props;
-
   return (
     <>
       <DialogHeader
@@ -252,20 +252,18 @@ function RejectDialogUI(props: RejectDialogUIProps) {
       </DialogBody>
       <DialogFooter>
         {onClose && (
-          <Button onClick={onClose} variant="contained">
+          <SecondaryButton onClick={onClose}>
             <FormattedMessage id="rejectDialog.cancel" defaultMessage="Cancel" />
-          </Button>
+          </SecondaryButton>
         )}
         {onReject && (
-          <Button
+          <PrimaryButton
             onClick={onReject}
-            variant="contained"
-            color="primary"
             autoFocus
             disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
           >
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
-          </Button>
+          </PrimaryButton>
         )}
       </DialogFooter>
     </>
@@ -303,7 +301,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     });
 
     setCheckedItems(newChecked);
-  }, [items, setCheckedItems]);
+  }, [items]);
 
   useEffect(() => {
     if (rejectionReason === '') {
