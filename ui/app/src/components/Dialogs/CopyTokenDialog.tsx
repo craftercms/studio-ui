@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import Button from '@material-ui/core/Button';
@@ -32,6 +32,7 @@ interface CopyTokenProps {
   token: Token;
   onClose?(): void;
   onClosed?(): void;
+  onCopy?(): void;
 }
 
 export const translations = defineMessages({
@@ -47,10 +48,14 @@ export const translations = defineMessages({
 
 const styles = makeStyles((theme) =>
   createStyles({
-    expiresWrapper: {
+    footer: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between'
+    },
+    input: {
+      marginTop: '16px',
+      marginBottom: '8px'
     }
   })
 );
@@ -65,14 +70,25 @@ export default function CopyTokenDialog(props: CopyTokenProps) {
 }
 
 function CopyTokenUI(props: CopyTokenProps) {
-  const { onClosed, onClose, token } = props;
+  const { onClosed, onClose, token, onCopy } = props;
   const classes = styles();
-  const [label, setLabel] = useState('');
-  const { formatMessage } = useIntl();
+  const inputRef = useRef<HTMLInputElement>();
+  const tokenKey = inputRef.current;
 
   useUnmount(onClosed);
 
-  const onCopy = () => {};
+  const onCopyToken = useCallback(() => {
+    const el = inputRef.current;
+    el.select();
+    document.execCommand('copy');
+    onCopy();
+  }, [onCopy]);
+
+  useEffect(() => {
+    if (tokenKey && token) {
+      onCopyToken();
+    }
+  }, [onCopyToken, token, tokenKey]);
 
   return (
     <>
@@ -87,15 +103,10 @@ function CopyTokenUI(props: CopyTokenProps) {
             defaultMessage="Token created successfully. Please copy the token and store it securely as you won’t be able to see it’s value again."
           />
         </FormHelperText>
-        <InputBase
-          autoFocus
-          value={token.token}
-          readOnly
-          // margin="normal"
-        />
+        <InputBase inputRef={inputRef} autoFocus value={token?.token ?? ''} readOnly className={classes.input} />
       </DialogBody>
-      <DialogFooter>
-        <Button onClick={onCopy} variant="contained">
+      <DialogFooter className={classes.footer}>
+        <Button onClick={onCopyToken} variant="contained">
           <FormattedMessage id="words.copy" defaultMessage="Copy" />
         </Button>
         <Button onClick={onClose} variant="contained" color="primary">

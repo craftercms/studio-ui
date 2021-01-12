@@ -98,6 +98,10 @@ const translations = defineMessages({
     id: 'tokenManagement.created',
     defaultMessage: 'Token created'
   },
+  tokenCopied: {
+    id: 'tokenManagement.copied',
+    defaultMessage: 'Token copied'
+  },
   tokenDeleted: {
     id: 'tokenManagement.deleted',
     defaultMessage: 'Token deleted'
@@ -139,7 +143,7 @@ export default function TokenManagement() {
   const [tokens, setTokens] = useState<Token[]>(null);
   const [checkedLookup, setCheckedLookup] = useState({});
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  const [createdToken, setCreatedToken] = useState(null);
+  const [createdToken, setCreatedToken] = useState<Token>(null);
   const checkedCount = useMemo(() => Object.values(checkedLookup).filter(Boolean).length, [checkedLookup]);
   const options = [
     {
@@ -183,6 +187,14 @@ export default function TokenManagement() {
     );
     setOpenCreateDialog(false);
     setCreatedToken(token);
+  };
+
+  const onTokenCopied = () => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.tokenCopied)
+      })
+    );
   };
 
   const onSetEnabled = (id: number, checked: boolean) => {
@@ -372,7 +384,12 @@ export default function TokenManagement() {
         )}
       </ConditionalLoadingState>
       <CreateTokenDialog open={openCreateDialog} onCreated={onTokenCreated} onClose={onCreateTokenDialogClose} />
-      <CopyTokenDialog open={Boolean(createdToken)} token={createdToken} onClose={onCopyTokenDialogClose} />
+      <CopyTokenDialog
+        open={Boolean(createdToken)}
+        token={createdToken}
+        onClose={onCopyTokenDialogClose}
+        onCopy={onTokenCopied}
+      />
     </section>
   );
 }
