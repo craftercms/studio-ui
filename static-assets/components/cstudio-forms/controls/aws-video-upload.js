@@ -184,7 +184,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   render: function(config, containerEl, lastTwo) {
     var titleEl = document.createElement('span');
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
     containerEl.appendChild(titleEl);
 
     var controlWidgetContainerEl = document.createElement('div');
@@ -237,7 +237,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
+    descriptionEl.textContent = config.description;
 
     controlWidgetContainerEl.appendChild(descriptionEl);
 

@@ -166,7 +166,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     var titleEl = document.createElement('span');
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-node-selector-container');
@@ -229,7 +229,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
+    descriptionEl.textContent = config.description;
 
     containerEl.appendChild(titleEl);
     containerEl.appendChild(validEl);
@@ -340,7 +340,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
 
       YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item');
-      itemEl.innerHTML = item.value;
+      itemEl.textContent = item.value;
       itemEl.style.backgroundColor = '#F0F0F0'; // stylesheet not working due to proxy?
       itemEl.style.overflowWrap = 'break-word';
       itemEl._index = i;
@@ -435,7 +435,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         var item = items[i];
         if (item.key == key) {
           validation.successful = false;
-          validation.message = `The item "${value}" already exists.`;
+          message = `The item "${CrafterCMSNext.util.string.escapeHTML(value)}" already exists.`;
           break;
         }
       }

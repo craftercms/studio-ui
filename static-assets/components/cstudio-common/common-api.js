@@ -7834,6 +7834,7 @@ var nodeOpen = false,
         schedDate,
         icon
       ) {
+        label = CrafterCMSNext.util.string.escapeHTML(label);
         label = label.replace(new RegExp(' ', 'g'), '&nbsp;');
 
         if (!contentType) {
@@ -7900,7 +7901,6 @@ var nodeOpen = false,
 
         return CStudioAuthoring.StringUtils.format(
           toolTipMarkup,
-
           itemNameLabel,
           label,
           style,
