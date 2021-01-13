@@ -17,8 +17,8 @@
 import * as React from 'react';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 
-export function PrimaryButton(props: ButtonProps) {
-  return <Button {...props} variant="contained" color="primary" />;
-}
+export const PrimaryButton = React.forwardRef((props: ButtonProps, ref: any) => {
+  return <Button ref={ref} {...props} variant="contained" color="primary" />;
+});
 
 export default PrimaryButton;
