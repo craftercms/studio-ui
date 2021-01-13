@@ -14,18 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
-import { map, switchMap } from 'rxjs/operators';
+import { ofType } from 'redux-observable';
+import { exhaustMap, map } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { getSiteUiConfig } from '../../services/configuration';
+import { CrafterCMSEpic } from '../store';
 
-const fetch_site_ui_config: Epic = (action$) =>
-  action$.pipe(
-    ofType(fetchSiteUiConfig.type),
-    switchMap(({ payload }) =>
-      getSiteUiConfig(payload.site).pipe(map(fetchSiteUiConfigComplete), catchAjaxError(fetchSiteUiConfigFailed))
+export default [
+  (action$) =>
+    action$.pipe(
+      ofType(fetchSiteUiConfig.type),
+      // A very quick site change may present problematic as the
+      // config that would be retrieved would be the first site.
+      exhaustMap(({ payload }) =>
+        getSiteUiConfig(payload.site).pipe(map(fetchSiteUiConfigComplete), catchAjaxError(fetchSiteUiConfigFailed))
+      )
     )
-  );
-
-export default [fetch_site_ui_config] as Epic[];
+] as CrafterCMSEpic[];

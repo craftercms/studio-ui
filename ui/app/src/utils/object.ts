@@ -220,7 +220,7 @@ export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOpt
 }
 
 export function applyDeserializedXMLTransforms<T extends object = {}>(
-  target: object,
+  target: T,
   options: { arrays?: string[]; lookupTables?: string[]; renameTable?: LookupTable<string> }
 ): T {
   const { arrays, lookupTables, renameTable } = options;
@@ -257,7 +257,9 @@ export function applyDeserializedXMLTransforms<T extends object = {}>(
         }
       } else {
         newObject[newName] =
-          typeof target[prop] === 'object' ? applyDeserializedXMLTransforms(target[prop], options) : target[prop];
+          typeof target[prop] === 'object'
+            ? applyDeserializedXMLTransforms(target[prop] as any, options)
+            : target[prop];
       }
     }
   }
