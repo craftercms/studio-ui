@@ -419,17 +419,14 @@ div#acn-active-content {
     height: 100%;
     position: relative;
     display: block;
+    vertical-align: middle;
     & .item-menu-trigger {
       display: none;
-      padding: 3px 10px;
+      padding: 0 10px;
     }
 
     &:hover .item-menu-trigger {
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 0;
-      cursor: pointer;
+      display: inline-block;
     }
     &.warning {
       color: #a2830f !important;

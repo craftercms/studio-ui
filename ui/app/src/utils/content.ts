@@ -567,6 +567,6 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   } else if (isFolder(item)) {
     return isRootPath(item.path) ? 3 : 6;
   } else if (isPreviewable(item)) {
-    return 10;
+    return item.systemType === 'component' || item.systemType === 'taxonomy' ? 11 : 10;
   }
 }
