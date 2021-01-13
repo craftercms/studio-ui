@@ -98,7 +98,7 @@ function CreateFileUI(props: CreateFileUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      const fileName = type === 'controller' ? `${encodeURI(name)}.groovy` : `${encodeURI(name)}.ftl`;
+      const fileName = type === 'controller' ? `${encodeURIComponent(name)}.groovy` : `${encodeURIComponent(name)}.ftl`;
       createFile(site, path, fileName).subscribe(
         () => {
           onCreated?.({ path, fileName, type });
