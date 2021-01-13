@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
@@ -20,418 +19,391 @@
  * Most of CStudio's Filters are similar, this class encapsulates that simularity and
  * allows us to subclass it for specializaitons rather than duplicating code
  */
-CStudioSearch.FilterRenderer.Common = function() { 
-	var object = {
-		title: "TITLE NOT SET",
-		appliesToContentTypes: [ "" ],
-		filterCols: [ ],
+CStudioSearch.FilterRenderer.Common = function () {
+  var object = {
+    title: 'TITLE NOT SET',
+    appliesToContentTypes: [''],
+    filterCols: [],
 
-		/**
-		 * return the title for the filter
-		 */		
-		getFilterTitle: function() {
-			return this.self.title;
-		},
+    /**
+     * return the title for the filter
+     */
+    getFilterTitle: function () {
+      return this.self.title;
+    },
 
-		/*
-		 * returns an array of content types to be target
-		 */
-		getAppliesToContentTypes: function() {
-			return this.self.appliesToContentTypes;
-		},
+    /*
+     * returns an array of content types to be target
+     */
+    getAppliesToContentTypes: function () {
+      return this.self.appliesToContentTypes;
+    },
 
-		/**
-		 * returns an array of sort option objects
-		 */
-		getSortOptions: function() {
-			// sort order will be changed, *only* when content type is *only* news-item
-			if (this.contentTypes && (this.contentTypes.length > 0)) {
-				return [ { "label" : CMgs.format(langBundle, "sortRelevance"), "value" : "relevance" },
-						{ "label" : CMgs.format(langBundle, "sortAlphabetical"), "value" : "cstudio-core:internalName" },
-					];
-			}
-			
-			return [ { "label" : CMgs.format(langBundle, "sortRelevance"), "value" : "relevance" },
-					 { "label" : CMgs.format(langBundle, "sortAlphabetical"), "value" : "cstudio-core:internalName" },
-					 { "label" : CMgs.format(langBundle, "sortCreateDate"), "value": "cm:created"}
-				   ];
-		},
+    /**
+     * returns an array of sort option objects
+     */
+    getSortOptions: function () {
+      // sort order will be changed, *only* when content type is *only* news-item
+      if (this.contentTypes && this.contentTypes.length > 0) {
+        return [
+          { label: CMgs.format(langBundle, 'sortRelevance'), value: 'relevance' },
+          { label: CMgs.format(langBundle, 'sortAlphabetical'), value: 'cstudio-core:internalName' }
+        ];
+      }
 
-		/**
-		 * render the filter body
-		 * @returns HTML
-		 */
-		renderFilterBody: function(filterControlsEl, renderCb) {
-		
-			var filters = this.self.filterCols;
-			
-			var filterBodyRenderCb = {
-				success: function() {
-					this.callbackRecieved++;
+      return [
+        { label: CMgs.format(langBundle, 'sortRelevance'), value: 'relevance' },
+        { label: CMgs.format(langBundle, 'sortAlphabetical'), value: 'cstudio-core:internalName' },
+        { label: CMgs.format(langBundle, 'sortCreateDate'), value: 'cm:created' }
+      ];
+    },
 
-					if(this.callbackRecieved >= this.filters.length) {
-						this.renderCb.success();
-					}
-				},
-				
-				failure: function() {
-				},
-				
-				renderCb: renderCb,
-				filters: filters,
-				callbackRecieved: 0
-			}
-			
-			if(filters.length && filters.length > 0) {
-				for(var i=0; i<filters.length; i++) {
-					filters[i].render(filterControlsEl, filterBodyRenderCb);
-				}
-			}
-			else {
-				filterBodyRenderCb.success();
-			}
-		},
+    /**
+     * render the filter body
+     * @returns HTML
+     */
+    renderFilterBody: function (filterControlsEl, renderCb) {
+      var filters = this.self.filterCols;
 
-		/**
-	 	 * populate search context with filter values from url
-	 	 * returns context
-	  	 */
-		prepareSearchFilterFromUrl: function() {
-			var queryString = document.location.search;
+      var filterBodyRenderCb = {
+        success: function () {
+          this.callbackRecieved++;
 
-			var filters = this.self.filterCols;
-			
-			for(var i=0; i<filters.length; i++) {
-				filters[i].prepareColFromUrl(queryString);
-			}
-   		},
+          if (this.callbackRecieved >= this.filters.length) {
+            this.renderCb.success();
+          }
+        },
 
-		/**
-		 * populate search context with filter values
-		 * returns context
-		 */
-		augmentContextWithActiveFilter: function(searchContext) {
+        failure: function () {},
 
-			if(searchContext.contentTypes == null){
-			searchContext.contentTypes = this.self.contentTypes;
-			}
-			searchContext.includeAspects = this.self.includeAspects;
-			searchContext.excludeAspects = this.self.excludeAspects;
-			
-			var filters = this.self.filterCols;
-			
-			for(var i=0; i<filters.length; i++) {
-				searchContext = filters[i].augmentContextWithCol(searchContext);
-			}
+        renderCb: renderCb,
+        filters: filters,
+        callbackRecieved: 0
+      };
 
-			return searchContext;
-		}
-		
-	};
-	
-	object.self = object;
-	return object;
-}
+      if (filters.length && filters.length > 0) {
+        for (var i = 0; i < filters.length; i++) {
+          filters[i].render(filterControlsEl, filterBodyRenderCb);
+        }
+      } else {
+        filterBodyRenderCb.success();
+      }
+    },
 
+    /**
+     * populate search context with filter values from url
+     * returns context
+     */
+    prepareSearchFilterFromUrl: function () {
+      var queryString = document.location.search;
 
+      var filters = this.self.filterCols;
 
+      for (var i = 0; i < filters.length; i++) {
+        filters[i].prepareColFromUrl(queryString);
+      }
+    },
 
-/** 
+    /**
+     * populate search context with filter values
+     * returns context
+     */
+    augmentContextWithActiveFilter: function (searchContext) {
+      if (searchContext.contentTypes == null) {
+        searchContext.contentTypes = this.self.contentTypes;
+      }
+      searchContext.includeAspects = this.self.includeAspects;
+      searchContext.excludeAspects = this.self.excludeAspects;
+
+      var filters = this.self.filterCols;
+
+      for (var i = 0; i < filters.length; i++) {
+        searchContext = filters[i].augmentContextWithCol(searchContext);
+      }
+
+      return searchContext;
+    }
+  };
+
+  object.self = object;
+  return object;
+};
+
+/**
  * common base for all colums
  */
-CStudioSearch.FilterRenderer.Common.BaseCol = function() {
-	return {
+CStudioSearch.FilterRenderer.Common.BaseCol = function () {
+  return {
+    /**
+     * render col, base does nothing
+     */
+    render: function () {},
 
-		/** 
-		 * render col, base does nothing 
-		 */
-		render: function() {
-		},
-		
-		/**
-		 * translate url parms in to set col values
-		 */
-		prepareColFromUrl: function(queryString) {
-		},
-		
-		/**
-		 * add filters etc for the given column
-		 */
-		augmentContextWithCol: function(searchContext) {
-			return searchContext;
-		},
-		
-		/**
-		 * create a column for controls in the filter
-		 */
-		createFilterColEl: function(label) {
-			var colEl = document.createElement("div");
-			YDom.addClass(colEl, "cstudio-wcm-searchfilter-col");
-			
-			var colLabelEl = document.createElement("div");
-			if (label && label.trim() != "") 
-				colLabelEl.innerHTML = label + ": ";
-			else 
-				colLabelEl.innerHTML = "&nbsp;";
-			
-			
-			colEl.appendChild(colLabelEl);
-			
-			return colEl;
-		},
+    /**
+     * translate url parms in to set col values
+     */
+    prepareColFromUrl: function (queryString) {},
 
-		/**
-		 * create a checkbox 
-		 */
-		createCheckboxEl: function(label, family, id, defaultChecked) {
-			var containerEl  = document.createElement("span");
-			var labelEl = document.createElement("span");
-			YDom.addClass(labelEl, "cstudio-wcm-searchfilter-chkbox-label");
+    /**
+     * add filters etc for the given column
+     */
+    augmentContextWithCol: function (searchContext) {
+      return searchContext;
+    },
 
-			var checkboxEl = document.createElement("input");
-			checkboxEl.type = "checkbox";
-			checkboxEl.id = id;
-			checkboxEl.checked = defaultChecked;
-			checkboxEl.name = family;
-			
-			labelEl.innerHTML = label;
-			
-			containerEl.inputEl = checkboxEl;
-			containerEl.appendChild(checkboxEl);
-			containerEl.appendChild(labelEl);
-			
-			return containerEl;
-		}
+    /**
+     * create a column for controls in the filter
+     */
+    createFilterColEl: function (label) {
+      var colEl = document.createElement('div');
+      YDom.addClass(colEl, 'cstudio-wcm-searchfilter-col');
 
-	};
-}
+      var colLabelEl = document.createElement('div');
+      if (label && label.trim() != '') colLabelEl.innerHTML = label + ': ';
+      else colLabelEl.innerHTML = '&nbsp;';
 
-CStudioSearch.FilterRenderer.Common.MimeTypeReadOnlyCol = function(defaultMimeType) { 
+      colEl.appendChild(colLabelEl);
 
-	var column = new CStudioSearch.FilterRenderer.Common.BaseCol();
-	
-	column.self = column;
-	
-	/**
-	 * render filter
-	 */
-	column.render = function(filtersContainerEl, renderCb) {
-		var mimeTypeColEl = this.self.createFilterColEl("File Type");
+      return colEl;
+    },
 
-		filtersContainerEl.appendChild(mimeTypeColEl);
+    /**
+     * create a checkbox
+     */
+    createCheckboxEl: function (label, family, id, defaultChecked) {
+      var containerEl = document.createElement('span');
+      var labelEl = document.createElement('span');
+      YDom.addClass(labelEl, 'cstudio-wcm-searchfilter-chkbox-label');
 
-		var buildLanguageFilterCallback = {
-			success: function(controlEl) {
-				this.containerEl.appendChild(controlEl);
-				this.parent.mimeTypeEl = controlEl;
-				this.renderCb.success();
-			},
-			
-			failure: function() {
-			},
-			
-			parent: this.self,
-	
-			containerEl: mimeTypeColEl,
-			
-			renderCb: renderCb
-		}
+      var checkboxEl = document.createElement('input');
+      checkboxEl.type = 'checkbox';
+      checkboxEl.id = id;
+      checkboxEl.checked = defaultChecked;
+      checkboxEl.name = family;
 
-		this.self._renderMimeTypeSpan(buildLanguageFilterCallback);	
-	};
+      labelEl.innerHTML = label;
 
-	/**
-	 * prepare from url 
-	 */
-	column.prepareColFromUrl = function(queryString) {
+      containerEl.inputEl = checkboxEl;
+      containerEl.appendChild(checkboxEl);
+      containerEl.appendChild(labelEl);
 
-		var value = CStudioAuthoring.Utils.getQueryVariable(queryString, "cm:content.mimetype");
-	
-		if((!value && ! defaultMimeType) || value == "all") {
-			this.self.mimeTypeEl.innerHTML = "All";
-		} else if (!value) {
-			this.self.mimeTypeEl.innerHTML = defaultMimeType;
-		} else {
-			this.self.mimeTypeEl.innerHTML = new String(value);
-		}
-	}
-	
-	/**
-	 * add filters etc for the given column
-	 */
-	column.augmentContextWithCol = function(searchContext) {
-		
-		var value = this.self.mimeTypeEl.innerHTML;
-		
-		if (value != null && value != "All") {
-			searchContext.filters.push({ qname: "cm:content.mimetype",  value: value });
-		}
-		
-		return searchContext;
-	}
+      return containerEl;
+    }
+  };
+};
 
-	/**
-	 * build the language drop down
-	 */
-	column._renderMimeTypeSpan = function(buildCallback) {
-		var spanEl = document.createElement("span");
-		spanEl.innerHTML = "";
-		buildCallback.success(spanEl);
-	};
-	
-	return column;
-}
+CStudioSearch.FilterRenderer.Common.MimeTypeReadOnlyCol = function (defaultMimeType) {
+  var column = new CStudioSearch.FilterRenderer.Common.BaseCol();
 
+  column.self = column;
 
+  /**
+   * render filter
+   */
+  column.render = function (filtersContainerEl, renderCb) {
+    var mimeTypeColEl = this.self.createFilterColEl('File Type');
+
+    filtersContainerEl.appendChild(mimeTypeColEl);
+
+    var buildLanguageFilterCallback = {
+      success: function (controlEl) {
+        this.containerEl.appendChild(controlEl);
+        this.parent.mimeTypeEl = controlEl;
+        this.renderCb.success();
+      },
+
+      failure: function () {},
+
+      parent: this.self,
+
+      containerEl: mimeTypeColEl,
+
+      renderCb: renderCb
+    };
+
+    this.self._renderMimeTypeSpan(buildLanguageFilterCallback);
+  };
+
+  /**
+   * prepare from url
+   */
+  column.prepareColFromUrl = function (queryString) {
+    var value = CStudioAuthoring.Utils.getQueryVariable(queryString, 'cm:content.mimetype');
+
+    if ((!value && !defaultMimeType) || value == 'all') {
+      this.self.mimeTypeEl.innerHTML = 'All';
+    } else if (!value) {
+      this.self.mimeTypeEl.innerHTML = defaultMimeType;
+    } else {
+      this.self.mimeTypeEl.innerHTML = new String(value);
+    }
+  };
+
+  /**
+   * add filters etc for the given column
+   */
+  column.augmentContextWithCol = function (searchContext) {
+    var value = this.self.mimeTypeEl.innerHTML;
+
+    if (value != null && value != 'All') {
+      searchContext.filters.push({ qname: 'cm:content.mimetype', value: value });
+    }
+
+    return searchContext;
+  };
+
+  /**
+   * build the language drop down
+   */
+  column._renderMimeTypeSpan = function (buildCallback) {
+    var spanEl = document.createElement('span');
+    spanEl.innerHTML = '';
+    buildCallback.success(spanEl);
+  };
+
+  return column;
+};
 
 /**Content-type filter start**/
-CStudioSearch.FilterRenderer.Common.ContentTypeCol = function() {
+CStudioSearch.FilterRenderer.Common.ContentTypeCol = function () {
+  var column = new CStudioSearch.FilterRenderer.Common.BaseCol();
 
-	var column = new CStudioSearch.FilterRenderer.Common.BaseCol();
+  column.self = column;
 
-	column.self = column;
+  /**
+   * render filter
+   */
+  column.render = function (filtersContainerEl, renderCb) {
+    var contentTypeColEl = this.self.createFilterColEl('Content Type');
 
-	/**
-	 * render filter
-	 */
-	column.render = function(filtersContainerEl, renderCb) {
-		var contentTypeColEl = this.self.createFilterColEl("Content Type");
+    filtersContainerEl.appendChild(contentTypeColEl);
 
-		filtersContainerEl.appendChild(contentTypeColEl);
+    var buildLanguageFilterCallback = {
+      success: function (controlEl) {
+        this.containerEl.appendChild(controlEl);
+        this.parent.contentTypeEl = controlEl;
+        this.renderCb.success();
+      },
 
-		var buildLanguageFilterCallback = {
-			success: function(controlEl) {
-				this.containerEl.appendChild(controlEl);
-				this.parent.contentTypeEl = controlEl;
-				this.renderCb.success();
-			},
+      failure: function () {},
 
-			failure: function() {
-			},
+      parent: this.self,
 
-			parent: this.self,
+      containerEl: contentTypeColEl,
 
-			containerEl: contentTypeColEl,
+      renderCb: renderCb
+    };
 
-			renderCb: renderCb
-		}
+    this.self._renderContentTypeSpan(buildLanguageFilterCallback);
+  };
 
-		this.self._renderContentTypeSpan(buildLanguageFilterCallback);
-	};
+  /**
+   * prepare from url
+   */
+  column.prepareColFromUrl = function (queryString) {
+    var value = CStudioAuthoring.Utils.getQueryVariable(queryString, 'content-type');
 
-	/**
-	 * prepare from url
-	 */
-	column.prepareColFromUrl = function(queryString) {
+    if (!value || value == 'all') {
+      this.self.contentTypeEl.innerHTML = 'All';
+    } else {
+      this.self.contentTypeEl.innerHTML = new String(value);
+    }
+  };
 
-		var value = CStudioAuthoring.Utils.getQueryVariable(queryString, "content-type");
+  /**
+   * add filters etc for the given column
+   */
+  column.augmentContextWithCol = function (searchContext) {
+    var value = this.self.contentTypeEl.innerHTML;
 
-		if((!value) || value == "all") {
-			this.self.contentTypeEl.innerHTML = "All";
-		} else {
-			this.self.contentTypeEl.innerHTML = new String(value);
-		}
-	}
+    if (value != null && value != 'All') {
+      searchContext.filters.push({ qname: 'content-type', value: value, useWildCard: false });
+    }
 
-	/**
-	 * add filters etc for the given column
-	 */
-	column.augmentContextWithCol = function(searchContext) {
+    return searchContext;
+  };
 
-		var value = this.self.contentTypeEl.innerHTML;
+  /**
+   * build the language drop down
+   */
+  column._renderContentTypeSpan = function (buildCallback) {
+    var spanEl = document.createElement('span');
+    spanEl.innerHTML = '';
+    buildCallback.success(spanEl);
+  };
 
-		if (value != null && value != "All") {
-			searchContext.filters.push({ qname: "content-type",  value: value, useWildCard: false });
-		}
+  return column;
+}; /**Content-type filter end**/
 
-		return searchContext;
-	}
+CStudioSearch.FilterRenderer.Common.PathReadOnlyCol = function (defaultPath) {
+  var column = new CStudioSearch.FilterRenderer.Common.BaseCol();
+  column.self = column;
 
-	/**
-	 * build the language drop down
-	 */
-	column._renderContentTypeSpan = function(buildCallback) {
-		var spanEl = document.createElement("span");
-		spanEl.innerHTML = "";
-		buildCallback.success(spanEl);
-	};
+  /**
+   * render filter
+   */
+  column.render = function (filtersContainerEl, renderCb) {
+    var pathColEl = this.self.createFilterColEl('Path');
 
-	return column;
-}/**Content-type filter end**/
+    filtersContainerEl.appendChild(pathColEl);
 
-CStudioSearch.FilterRenderer.Common.PathReadOnlyCol = function(defaultPath) {
+    var buildLanguageFilterCallback = {
+      success: function (controlEl) {
+        this.containerEl.appendChild(controlEl);
+        this.parent.pathEl = controlEl;
+        this.renderCb.success();
+      },
 
-	var column = new CStudioSearch.FilterRenderer.Common.BaseCol();
-	column.self = column;
-	
-	/**
-	 * render filter
-	 */
-	column.render = function(filtersContainerEl, renderCb) {
-		var pathColEl = this.self.createFilterColEl("Path");
+      failure: function () {},
 
-		filtersContainerEl.appendChild(pathColEl);
+      parent: this.self,
 
-		var buildLanguageFilterCallback = {
-			success: function(controlEl) {
-				this.containerEl.appendChild(controlEl);
-				this.parent.pathEl = controlEl;
-				this.renderCb.success();
-			},
-			
-			failure: function() {
-			},
-			
-			parent: this.self,
-	
-			containerEl: pathColEl,
-			
-			renderCb: renderCb
-		}
+      containerEl: pathColEl,
 
-		this.self._renderPathSpan(buildLanguageFilterCallback);	
-	};
+      renderCb: renderCb
+    };
 
-	/**
-	 * prepare from url 
-	 */
-	column.prepareColFromUrl = function(queryString) {
+    this.self._renderPathSpan(buildLanguageFilterCallback);
+  };
 
-		var value = CStudioAuthoring.Utils.getQueryVariable(queryString, "path");
-	
-		if((!value && !defaultPath) || value == "any") {
-			this.self.pathEl.innerHTML = "Any";
-		} else if (!value) {
-			this.self.pathEl.innerHTML = defaultPath;
-		} else {
-			this.self.pathEl.innerHTML = new String(value);
-		}
-	}
-	
-	/**
-	 * add filters etc for the given column
-	 */
-	column.augmentContextWithCol = function(searchContext) {
-		
-		var value = this.self.pathEl.innerHTML;
-		
-		if (value != null && value != "Any") {
-			searchContext.filters.push({ qname: "PATH",  value: value });
-		}
-		
-		return searchContext;
-	}
+  /**
+   * prepare from url
+   */
+  column.prepareColFromUrl = function (queryString) {
+    var value = CStudioAuthoring.Utils.getQueryVariable(queryString, 'path');
 
-	/**
-	 * build the language drop down
-	 */
-	column._renderPathSpan = function(buildCallback) {
-		var spanEl = document.createElement("span");
-		spanEl.innerHTML = "";
-		buildCallback.success(spanEl);
-	};
-	
-	return column;
-}
+    if ((!value && !defaultPath) || value == 'any') {
+      this.self.pathEl.innerHTML = 'Any';
+    } else if (!value) {
+      this.self.pathEl.innerHTML = defaultPath;
+    } else {
+      this.self.pathEl.innerHTML = new String(value);
+    }
+  };
 
-CStudioAuthoring.Module.moduleLoaded("search-filter-common", CStudioSearch.FilterRenderer.Common);
+  /**
+   * add filters etc for the given column
+   */
+  column.augmentContextWithCol = function (searchContext) {
+    var value = this.self.pathEl.innerHTML;
+
+    if (value != null && value != 'Any') {
+      searchContext.filters.push({ qname: 'PATH', value: value });
+    }
+
+    return searchContext;
+  };
+
+  /**
+   * build the language drop down
+   */
+  column._renderPathSpan = function (buildCallback) {
+    var spanEl = document.createElement('span');
+    spanEl.innerHTML = '';
+    buildCallback.success(spanEl);
+  };
+
+  return column;
+};
+
+CStudioAuthoring.Module.moduleLoaded('search-filter-common', CStudioSearch.FilterRenderer.Common);

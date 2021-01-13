@@ -1,39 +1,38 @@
-CodeMirror.defineMode('ocaml', function(config) {
-
+CodeMirror.defineMode('ocaml', function (config) {
   var words = {
-    'true': 'atom',
-    'false': 'atom',
-    'let': 'keyword',
-    'rec': 'keyword',
-    'in': 'keyword',
-    'of': 'keyword',
-    'and': 'keyword',
-    'succ': 'keyword',
-    'if': 'keyword',
-    'then': 'keyword',
-    'else': 'keyword',
-    'for': 'keyword',
-    'to': 'keyword',
-    'while': 'keyword',
-    'do': 'keyword',
-    'done': 'keyword',
-    'fun': 'keyword',
-    'function': 'keyword',
-    'val': 'keyword',
-    'type': 'keyword',
-    'mutable': 'keyword',
-    'match': 'keyword',
-    'with': 'keyword',
-    'try': 'keyword',
-    'raise': 'keyword',
-    'begin': 'keyword',
-    'end': 'keyword',
-    'open': 'builtin',
-    'trace': 'builtin',
-    'ignore': 'builtin',
-    'exit': 'builtin',
-    'print_string': 'builtin',
-    'print_endline': 'builtin'
+    true: 'atom',
+    false: 'atom',
+    let: 'keyword',
+    rec: 'keyword',
+    in: 'keyword',
+    of: 'keyword',
+    and: 'keyword',
+    succ: 'keyword',
+    if: 'keyword',
+    then: 'keyword',
+    else: 'keyword',
+    for: 'keyword',
+    to: 'keyword',
+    while: 'keyword',
+    do: 'keyword',
+    done: 'keyword',
+    fun: 'keyword',
+    function: 'keyword',
+    val: 'keyword',
+    type: 'keyword',
+    mutable: 'keyword',
+    match: 'keyword',
+    with: 'keyword',
+    try: 'keyword',
+    raise: 'keyword',
+    begin: 'keyword',
+    end: 'keyword',
+    open: 'builtin',
+    trace: 'builtin',
+    ignore: 'builtin',
+    exit: 'builtin',
+    print_string: 'builtin',
+    print_endline: 'builtin'
   };
 
   function tokenBase(stream, state) {
@@ -66,7 +65,7 @@ CodeMirror.defineMode('ocaml', function(config) {
       }
       return 'number';
     }
-    if ( /[+\-*&%=<>!?|]/.test(ch)) {
+    if (/[+\-*&%=<>!?|]/.test(ch)) {
       return 'operator';
     }
     stream.eatWhile(/\w/);
@@ -75,7 +74,9 @@ CodeMirror.defineMode('ocaml', function(config) {
   }
 
   function tokenString(stream, state) {
-    var next, end = false, escaped = false;
+    var next,
+      end = false,
+      escaped = false;
     while ((next = stream.next()) != null) {
       if (next === '"' && !escaped) {
         end = true;
@@ -87,11 +88,11 @@ CodeMirror.defineMode('ocaml', function(config) {
       state.tokenize = tokenBase;
     }
     return 'string';
-  };
+  }
 
   function tokenComment(stream, state) {
     var prev, next;
-    while(state.commentLevel > 0 && (next = stream.next()) != null) {
+    while (state.commentLevel > 0 && (next = stream.next()) != null) {
       if (prev === '(' && next === '*') state.commentLevel++;
       if (prev === '*' && next === ')') state.commentLevel--;
       prev = next;
@@ -103,12 +104,14 @@ CodeMirror.defineMode('ocaml', function(config) {
   }
 
   return {
-    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
-    token: function(stream, state) {
+    startState: function () {
+      return { tokenize: tokenBase, commentLevel: 0 };
+    },
+    token: function (stream, state) {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     }
   };
 });
-  
+
 CodeMirror.defineMIME('text/x-ocaml', 'ocaml');

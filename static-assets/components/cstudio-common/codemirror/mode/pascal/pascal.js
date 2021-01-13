@@ -1,27 +1,30 @@
-CodeMirror.defineMode("pascal", function(config) {
+CodeMirror.defineMode('pascal', function (config) {
   function words(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {},
+      words = str.split(' ');
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
-  var keywords = words("and array begin case const div do downto else end file for forward integer " +
-                       "boolean char function goto if in label mod nil not of or packed procedure " +
-                       "program record repeat set string then to type until var while with");
-  var atoms = {"null": true};
+  var keywords = words(
+    'and array begin case const div do downto else end file for forward integer ' +
+      'boolean char function goto if in label mod nil not of or packed procedure ' +
+      'program record repeat set string then to type until var while with'
+  );
+  var atoms = { null: true };
 
   var isOperatorChar = /[+\-*&%=<>!?|\/]/;
 
   function tokenBase(stream, state) {
     var ch = stream.next();
-    if (ch == "#" && state.startOfLine) {
+    if (ch == '#' && state.startOfLine) {
       stream.skipToEnd();
-      return "meta";
+      return 'meta';
     }
     if (ch == '"' || ch == "'") {
       state.tokenize = tokenString(ch);
       return state.tokenize(stream, state);
     }
-    if (ch == "(" && stream.eat("*")) {
+    if (ch == '(' && stream.eat('*')) {
       state.tokenize = tokenComment;
       return tokenComment(stream, state);
     }
@@ -30,65 +33,71 @@ CodeMirror.defineMode("pascal", function(config) {
     }
     if (/\d/.test(ch)) {
       stream.eatWhile(/[\w\.]/);
-      return "number";
+      return 'number';
     }
-    if (ch == "/") {
-      if (stream.eat("/")) {
+    if (ch == '/') {
+      if (stream.eat('/')) {
         stream.skipToEnd();
-        return "comment";
+        return 'comment';
       }
     }
     if (isOperatorChar.test(ch)) {
       stream.eatWhile(isOperatorChar);
-      return "operator";
+      return 'operator';
     }
     stream.eatWhile(/[\w\$_]/);
     var cur = stream.current();
-    if (keywords.propertyIsEnumerable(cur)) return "keyword";
-    if (atoms.propertyIsEnumerable(cur)) return "atom";
-    return "variable";
+    if (keywords.propertyIsEnumerable(cur)) return 'keyword';
+    if (atoms.propertyIsEnumerable(cur)) return 'atom';
+    return 'variable';
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
-      var escaped = false, next, end = false;
+    return function (stream, state) {
+      var escaped = false,
+        next,
+        end = false;
       while ((next = stream.next()) != null) {
-        if (next == quote && !escaped) {end = true; break;}
-        escaped = !escaped && next == "\\";
+        if (next == quote && !escaped) {
+          end = true;
+          break;
+        }
+        escaped = !escaped && next == '\\';
       }
       if (end || !escaped) state.tokenize = null;
-      return "string";
+      return 'string';
     };
   }
 
   function tokenComment(stream, state) {
-    var maybeEnd = false, ch;
-    while (ch = stream.next()) {
-      if (ch == ")" && maybeEnd) {
+    var maybeEnd = false,
+      ch;
+    while ((ch = stream.next())) {
+      if (ch == ')' && maybeEnd) {
         state.tokenize = null;
         break;
       }
-      maybeEnd = (ch == "*");
+      maybeEnd = ch == '*';
     }
-    return "comment";
+    return 'comment';
   }
 
   // Interface
 
   return {
-    startState: function(basecolumn) {
-      return {tokenize: null};
+    startState: function (basecolumn) {
+      return { tokenize: null };
     },
 
-    token: function(stream, state) {
+    token: function (stream, state) {
       if (stream.eatSpace()) return null;
       var style = (state.tokenize || tokenBase)(stream, state);
-      if (style == "comment" || style == "meta") return style;
+      if (style == 'comment' || style == 'meta') return style;
       return style;
     },
 
-    electricChars: "{}"
+    electricChars: '{}'
   };
 });
 
-CodeMirror.defineMIME("text/x-pascal", "pascal");
+CodeMirror.defineMIME('text/x-pascal', 'pascal');

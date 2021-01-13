@@ -2,23 +2,21 @@
  * editor tools
  */
 CStudioAuthoring.MediumPanel.Browser = CStudioAuthoring.MediumPanel.Browser || {
+  initialized: false,
 
-	initialized : false,
+  initialize: function (config) {
+    if (this.initialized == false) {
+      this.initialized = true;
+    }
+  },
 
-	initialize : function(config) {
-		if (this.initialized == false) {
+  render: function (containerEl, config) {
+    var emulateEl = document.getElementById('cstudio-emulate');
 
-			this.initialized = true;
-		}
-	},
+    if (emulateEl) {
+      emulateEl.parentNode.removeChild(emulateEl);
+    }
+  }
+};
 
-	render : function(containerEl, config) {
-		var emulateEl = document.getElementById("cstudio-emulate");
-
-		if (emulateEl) {
-			emulateEl.parentNode.removeChild(emulateEl);
-		}
-	}
-}
-
-CStudioAuthoring.Module.moduleLoaded("medium-panel-browser", CStudioAuthoring.MediumPanel.Browser);
+CStudioAuthoring.Module.moduleLoaded('medium-panel-browser', CStudioAuthoring.MediumPanel.Browser);

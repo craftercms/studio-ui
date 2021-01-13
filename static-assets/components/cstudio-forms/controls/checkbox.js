@@ -15,138 +15,139 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.Checkbox = CStudioForms.Controls.Checkbox ||
-function(id, form, owner, properties, constraints, readonly)  {
-	this.owner = owner;
-	this.owner.registerField(this);
-	this.errors = []; 
-	this.properties = properties;
-	this.constraints = constraints;
-	this.inputEl = null;
-	this.required = false;
-	this.value = "";
-	this.form = form;
-	this.id = id;
-	this.readonly = readonly;
-	
-	return this;
-}
+CStudioForms.Controls.Checkbox =
+  CStudioForms.Controls.Checkbox ||
+  function (id, form, owner, properties, constraints, readonly) {
+    this.owner = owner;
+    this.owner.registerField(this);
+    this.errors = [];
+    this.properties = properties;
+    this.constraints = constraints;
+    this.inputEl = null;
+    this.required = false;
+    this.value = '';
+    this.form = form;
+    this.id = id;
+    this.readonly = readonly;
+
+    return this;
+  };
 
 YAHOO.extend(CStudioForms.Controls.Checkbox, CStudioForms.CStudioFormField, {
-    getLabel: function() {
-        return CMgs.format(langBundle, "checkBox");
-    },
+  getLabel: function () {
+    return CMgs.format(langBundle, 'checkBox');
+  },
 
-	_onChange: function(evt, obj) {
-		obj.value = obj.inputEl.checked;
-		
-		if(obj.required) {
-			if(obj.inputEl.checked == false) {
-				obj.setError("required", "Field is Required");
-				obj.renderValidation(true, false);
-			} else {
-				obj.clearError("required");
-				obj.renderValidation(true, true);
-			}
-		} else {
-			obj.renderValidation(false, true);
-		}			
+  _onChange: function (evt, obj) {
+    obj.value = obj.inputEl.checked;
 
-		obj.owner.notifyValidation();
-		obj.form.updateModel(obj.id, obj.getValue());
-	},
+    if (obj.required) {
+      if (obj.inputEl.checked == false) {
+        obj.setError('required', 'Field is Required');
+        obj.renderValidation(true, false);
+      } else {
+        obj.clearError('required');
+        obj.renderValidation(true, true);
+      }
+    } else {
+      obj.renderValidation(false, true);
+    }
 
-    _onChangeVal: function(evt, obj) {
-        obj.edited = true;
-        obj._onChange(evt, obj);
-    },
+    obj.owner.notifyValidation();
+    obj.form.updateModel(obj.id, obj.getValue());
+  },
 
-    	
-	render: function(config, containerEl) {
-		// we need to make the general layout of a control inherit from common
-		// you should be able to override it -- but most of the time it wil be the same
-			containerEl.id = this.id;
+  _onChangeVal: function (evt, obj) {
+    obj.edited = true;
+    obj._onChange(evt, obj);
+  },
 
-		    for(var i=0; i<config.properties.length; i++){
-				var prop = config.properties[i];
-				
-				if(prop.name == "readonly" && prop.value == "true"){
-					this.readonly = true;
-				}
-			}
-		var _valueStr = (this.value == "_not-set")?config.defaultValue:this.value;	
-		var _value = (_valueStr == "true" || _valueStr ==  true)?true:false;
-			
-		var titleEl = document.createElement("span");
+  render: function (config, containerEl) {
+    // we need to make the general layout of a control inherit from common
+    // you should be able to override it -- but most of the time it wil be the same
+    containerEl.id = this.id;
 
-  		    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-			titleEl.innerHTML = config.title;
-		
-		var controlWidgetContainerEl = document.createElement("div");
-		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-checkbox-container');
+    for (var i = 0; i < config.properties.length; i++) {
+      var prop = config.properties[i];
 
-		var validEl = document.createElement("span");
-			YAHOO.util.Dom.addClass(validEl, 'validation-hint');
-			YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-			controlWidgetContainerEl.appendChild(validEl);
+      if (prop.name == 'readonly' && prop.value == 'true') {
+        this.readonly = true;
+      }
+    }
+    var _valueStr = this.value == '_not-set' ? config.defaultValue : this.value;
+    var _value = _valueStr == 'true' || _valueStr == true ? true : false;
 
-		var inputEl = document.createElement("input");
-		    inputEl.type = "checkbox";
-		    inputEl.checked = _value;
-			this.inputEl = inputEl;
-			YAHOO.util.Dom.addClass(inputEl, 'datum');
-			YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-checkbox');
-			
-			controlWidgetContainerEl.appendChild(inputEl);
+    var titleEl = document.createElement('span');
 
-			YAHOO.util.Event.on(inputEl, 'click', function(evt, context) { context.form.setFocusedField(context) }, this);
+    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
+    titleEl.textContent = config.title;
 
-			YAHOO.util.Event.on(inputEl, 'change', this._onChangeVal, this);
-			
-			if(this.readonly == true){
-				inputEl.disabled = true;
-			}
+    var controlWidgetContainerEl = document.createElement('div');
+    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-checkbox-container');
 
-		this.renderHelp(config, controlWidgetContainerEl);
+    var validEl = document.createElement('span');
+    YAHOO.util.Dom.addClass(validEl, 'validation-hint');
+    YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
+    controlWidgetContainerEl.appendChild(validEl);
 
-		var descriptionEl = document.createElement("span");
-			YAHOO.util.Dom.addClass(descriptionEl, 'description');
-			YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-			descriptionEl.innerHTML = config.description;
-		
-		containerEl.appendChild(titleEl);
-		containerEl.appendChild(controlWidgetContainerEl);
-		containerEl.appendChild(descriptionEl);
-	},
+    var inputEl = document.createElement('input');
+    inputEl.type = 'checkbox';
+    inputEl.checked = _value;
+    this.inputEl = inputEl;
+    YAHOO.util.Dom.addClass(inputEl, 'datum');
+    YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-checkbox');
 
-	getValue: function() {
-		return this.value;
-	},
-	
-	setValue: function(value) {
-		this.value = value;
-		this.inputEl.checked =  (this.value == "true" || this.value ==  true)?true:false;
-		this._onChange(null, this);
-        this.edited = false;
-	},
+    controlWidgetContainerEl.appendChild(inputEl);
 
-	getName: function() {
-		return "checkbox";
-	},
-	
-	getSupportedProperties: function() {
-			return [
-			{ label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean" }
-			 ];
-	},
+    YAHOO.util.Event.on(
+      inputEl,
+      'click',
+      function (evt, context) {
+        context.form.setFocusedField(context);
+      },
+      this
+    );
 
-	getSupportedConstraints: function() {
-		return [
-			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
-		];
-	}
+    YAHOO.util.Event.on(inputEl, 'change', this._onChangeVal, this);
 
+    if (this.readonly == true) {
+      inputEl.disabled = true;
+    }
+
+    this.renderHelp(config, controlWidgetContainerEl);
+
+    var descriptionEl = document.createElement('span');
+    YAHOO.util.Dom.addClass(descriptionEl, 'description');
+    YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
+    descriptionEl.textContent = config.description;
+
+    containerEl.appendChild(titleEl);
+    containerEl.appendChild(controlWidgetContainerEl);
+    containerEl.appendChild(descriptionEl);
+  },
+
+  getValue: function () {
+    return this.value;
+  },
+
+  setValue: function (value) {
+    this.value = value;
+    this.inputEl.checked = this.value == 'true' || this.value == true ? true : false;
+    this._onChange(null, this);
+    this.edited = false;
+  },
+
+  getName: function () {
+    return 'checkbox';
+  },
+
+  getSupportedProperties: function () {
+    return [{ label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
+  },
+
+  getSupportedConstraints: function () {
+    return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
+  }
 });
 
-
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-checkbox", CStudioForms.Controls.Checkbox);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-checkbox', CStudioForms.Controls.Checkbox);

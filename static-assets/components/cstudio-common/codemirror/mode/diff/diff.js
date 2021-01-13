@@ -1,5 +1,4 @@
-CodeMirror.defineMode("diff", function() {
-
+CodeMirror.defineMode('diff', function () {
   var TOKEN_NAMES = {
     '+': 'tag',
     '-': 'string',
@@ -7,13 +6,12 @@ CodeMirror.defineMode("diff", function() {
   };
 
   return {
-    token: function(stream) {
+    token: function (stream) {
       var tw_pos = stream.string.search(/[\t ]+?$/);
 
       if (!stream.sol() || tw_pos === 0) {
         stream.skipToEnd();
-        return ("error " + (
-          TOKEN_NAMES[stream.string.charAt(0)] || '')).replace(/ $/, '');
+        return ('error ' + (TOKEN_NAMES[stream.string.charAt(0)] || '')).replace(/ $/, '');
       }
 
       var token_name = TOKEN_NAMES[stream.peek()] || stream.skipToEnd();
@@ -29,4 +27,4 @@ CodeMirror.defineMode("diff", function() {
   };
 });
 
-CodeMirror.defineMIME("text/x-diff", "diff");
+CodeMirror.defineMIME('text/x-diff', 'diff');

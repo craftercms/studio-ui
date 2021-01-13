@@ -16,280 +16,333 @@
  */
 
 var YDom = YAHOO.util.Dom;
-var contextPath = location.protocol + "//" + location.hostname + ":" + location.port;
+var contextPath = location.protocol + '//' + location.hostname + ':' + location.port;
 
-if (typeof CStudioAuthoringWidgets == "undefined" || !CStudioAuthoringWidgets) {
-    var CStudioAuthoringWidgets = {};
+if (typeof CStudioAuthoringWidgets == 'undefined' || !CStudioAuthoringWidgets) {
+  var CStudioAuthoringWidgets = {};
 }
 
 /**
  * golive queue
  */
-CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQueueDashboard || function(widgetId, pageId) {
+CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
+  this.widgetId = widgetId;
+  this.pageId = pageId;
+  this._self = this;
+  this.showInprogressItems = false;
+  this.expanded = true;
+  this.hideEmptyRow = true;
+  this.defaultSortBy = 'eventDate';
+  this.skipComponentSort = true;
+  this.tooltipLabels = null;
+  WcmDashboardWidgetCommon.init(this);
 
-        this.widgetId = widgetId;
-        this.pageId = pageId;
-        this._self = this;
-        this.showInprogressItems = false;
-        this.expanded = true;
-        this.hideEmptyRow = true;
-        this.defaultSortBy = 'eventDate';
-        this.skipComponentSort = true;
-        this.tooltipLabels=null;
-        WcmDashboardWidgetCommon.init(this);
+  /**
+   * get table data
+   */
+  this.retrieveTableData = function (sortBy, sortAscDesc, callback) {
+    sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
+    CStudioAuthoring.Service.getGoLiveQueueItems(
+      CStudioAuthoringContext.site,
+      this.showInprogressItems,
+      sortBy,
+      sortAscDesc,
+      callback
+    );
+  };
 
-        /**
-         * get table data
-         */
-        this.retrieveTableData = function(sortBy, sortAscDesc, callback) {
-            sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
-            CStudioAuthoring.Service.getGoLiveQueueItems(
-                CStudioAuthoringContext.site,
-                this.showInprogressItems,
-                sortBy,
-                sortAscDesc,
-                callback);
-        };
+  /**
+   * render widget specific controls
+   */
+  this.renderAuxControls = function (containerEl) {
+    var listItemEl = document.createElement('li');
 
-        /**
-         * render widget specific controls
-         */
-        this.renderAuxControls = function(containerEl) {
+    var itemFilterEl = document.createElement('a');
 
-            var listItemEl = document.createElement("li");
+    /**
+     * adding loading image to go-live0queue widget
+     */
+    var liLoadingEl = document.createElement('li');
+    liLoadingEl.id = 'loading-' + widgetId;
+    var imgEl = document.createElement('i');
+    imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw';
+    liLoadingEl.appendChild(imgEl);
 
-            var itemFilterEl = document.createElement("a");
+    itemFilterEl.innerHTML = CMgs.format(langBundle, 'dashletGoLiveShowInProgress');
+    itemFilterEl.hfref = 'javascript:void(0);';
+    itemFilterEl.id = 'widget-expand-state-' + widgetId;
+    YDom.addClass(itemFilterEl, 'btn btn-default btn-sm');
 
-            /**
-             * adding loading image to go-live0queue widget
-             */
-            var liLoadingEl = document.createElement("li");
-            liLoadingEl.id = "loading-" + widgetId;
-            var imgEl = document.createElement("i");
-            imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw';
-            liLoadingEl.appendChild(imgEl);
+    containerEl.appendChild(listItemEl);
+    containerEl.appendChild(liLoadingEl);
+    listItemEl.appendChild(itemFilterEl);
+    itemFilterEl._self = this;
 
+    itemFilterEl.onclick = function () {
+      var _self = this._self;
 
-            itemFilterEl.innerHTML = CMgs.format(langBundle, "dashletGoLiveShowInProgress");
-            itemFilterEl.hfref = "javascript:void(0);";
-            itemFilterEl.id = "widget-expand-state-" + widgetId;
-            YDom.addClass(itemFilterEl, "btn btn-default btn-sm");
+      _self.showInprogressItems = !_self.showInprogressItems;
 
+      if (_self.showInprogressItems) {
+        this.innerHTML = CMgs.format(langBundle, 'dashletGoLiveHideInProgress');
+      } else {
+        this.innerHTML = CMgs.format(langBundle, 'dashletGoLiveShowInProgress');
+      }
 
-            containerEl.appendChild(listItemEl);
-            containerEl.appendChild(liLoadingEl);
-            listItemEl.appendChild(itemFilterEl);
-            itemFilterEl._self = this;
+      /*
+       * As we are using same loading function for sorting and Show/Hide In-Progress Items
+       * Along with Show/Hide In-Progress Items, sorting also executing.
+       * While calling function for Hide/Show In-Progress Items, We need to set reverse sort order
+       * so that Hide/Show function will execute with current sort order.
+       */
+      var previousSortType = YDom.get('sort-type-' + _self.widgetId).innerHTML;
+      if (previousSortType == 'true') {
+        YDom.get('sort-type-' + _self.widgetId).innerHTML = 'false';
+      } else if (previousSortType == 'false') {
+        YDom.get('sort-type-' + _self.widgetId).innerHTML = 'true';
+      }
 
-            itemFilterEl.onclick = function() {
-                var _self = this._self;
+      if (typeof WcmDashboardWidgetCommon != 'undefined') {
+        WcmDashboardWidgetCommon.refreshAllDashboards();
+      }
+    };
+  };
 
-                _self.showInprogressItems = !_self.showInprogressItems;
+  /**
+   * callback to render the table headings
+   */
+  this.renderItemsHeading = function () {
+    var widgetId = this._self.widgetId,
+      Common = WcmDashboardWidgetCommon;
 
-                if (_self.showInprogressItems) {
-                    this.innerHTML = CMgs.format(langBundle, "dashletGoLiveHideInProgress");
-                }
-                else {
-                    this.innerHTML = CMgs.format(langBundle, "dashletGoLiveShowInProgress");
-                }
+    var header = [
+      Common.getSimpleRow(
+        'checkAll',
+        widgetId,
+        '<input title="Select all" class="dashlet-item-check" id="' +
+        widgetId +
+        'CheckAll" name="check-all" type="checkbox"/>',
+        'minimize'
+      ),
+      Common.getSimpleRow('internalName', widgetId, CMgs.format(langBundle, 'dashletGoLiveColPageName'), 'minimize'),
+      Common.getSimpleRow('view', widgetId, CMgs.format(langBundle, 'dashletGoLiveColView'), 'minimize'),
+      Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize'),
+      Common.getSortableRow('browserUri', widgetId, CMgs.format(langBundle, 'dashletGoLiveColURL'), 'maximize'),
+      '<th id="fullUri" class="width0"></th>',
+      Common.getSimpleRow('server', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEnvironment'), 'maximize'),
+      Common.getSortableRow(
+        'scheduledDate',
+        widgetId,
+        CMgs.format(langBundle, 'dashletGoLiveColPublishDate'),
+        'minimize'
+      ),
+      Common.getSimpleRow(
+        'userLastName',
+        widgetId,
+        CMgs.format(langBundle, 'dashletGoLiveColLastEditedBy'),
+        'alignRight minimize'
+      ),
+      Common.getSortableRow(
+        'eventDate',
+        widgetId,
+        CMgs.format(langBundle, 'dashletGoLiveColLastEditedDate'),
+        'ttThColLast alignRight minimize'
+      )
+    ].join('');
 
-                /*
-                 * As we are using same loading function for sorting and Show/Hide In-Progress Items
-                 * Along with Show/Hide In-Progress Items, sorting also executing.
-                 * While calling function for Hide/Show In-Progress Items, We need to set reverse sort order
-                 * so that Hide/Show function will execute with current sort order.
-                 */
-                var previousSortType = YDom.get('sort-type-' + _self.widgetId).innerHTML;
-                if (previousSortType == "true") {
-                    YDom.get('sort-type-' + _self.widgetId).innerHTML = "false";
-                } else if (previousSortType == "false") {
-                    YDom.get('sort-type-' + _self.widgetId).innerHTML = "true";
-                }
+    return header;
+  };
 
-                if (typeof WcmDashboardWidgetCommon != "undefined") {
-                    WcmDashboardWidgetCommon.refreshAllDashboards();
-                }
-            };
-        };
+  /**
+   * optional on click handler
+   */
+  this.onCheckedClickHandler = function (event, matchedEl) {
+    this.handleTopDownPathDependenciesItemsClick(event, matchedEl);
+  };
 
-        /**
-         * callback to render the table headings
-         */
-        this.renderItemsHeading = function() {
+  /**
+   * Call back to render each line item of the table
+   */
+  this.renderLineItem = function (item, isFirst, count, depth) {
+    if (!item.folder) {
+      var html = [],
+        name = item.internalName,
+        editLinkId;
 
-            var widgetId = this._self.widgetId,
-                Common = WcmDashboardWidgetCommon;
+      //reducing max character length to support 1024 screen resolution
+      var removeCharCount = window.innerWidth <= 1024 ? 5 : 0;
+      var displayName = CStudioAuthoring.Utils.escapeHTML(
+        WcmDashboardWidgetCommon.getFormattedString(name, 80 - removeCharCount, item.newFile)
+      );
 
-            var header = [
-                Common.getSimpleRow("checkAll", widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', "minimize"),
-                Common.getSimpleRow("internalName", widgetId, CMgs.format(langBundle, "dashletGoLiveColPageName"), "minimize"),
-                Common.getSimpleRow("view", widgetId, "View", "minimize"),
-                Common.getSimpleRow("edit", widgetId, CMgs.format(langBundle, "dashletGoLiveColEdit"), "minimize"),
-                Common.getSortableRow("browserUri", widgetId, CMgs.format(langBundle, "dashletGoLiveColURL"), "maximize"),
-                '<th id="fullUri" class="width0"></th>',
-                Common.getSimpleRow("server", widgetId, CMgs.format(langBundle, "dashletGoLiveColEnvironment"),"maximize"),
-                Common.getSortableRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColPublishDate"), "minimize"),
-                Common.getSimpleRow("userLastName", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedBy"), "alignRight minimize"),
-                Common.getSortableRow("eventDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedDate"), "ttThColLast alignRight minimize")
-            ].join('');
+      if (isFirst) {
+        html.push('<td colspan="4">');
 
-            return header;
-        };
-
-        /**
-         * optional on click handler
-         */
-        this.onCheckedClickHandler = function(event, matchedEl) {
-            this.handleTopDownPathDependenciesItemsClick(event, matchedEl);
+        if (item.numOfChildren > 0) {
+          var parentClass = ['wcm-table-parent-', name, '-', count].join('');
+          html = html.concat([
+            '<span id="',
+            parentClass,
+            '"',
+            'class="',
+            item.children.length ? 'ttClose parent-div-widget' : 'ttOpen parent-div-widget',
+            '"',
+            'onclick="WcmDashboardWidgetCommon.toggleLineItem(\'' + parentClass + '\');" >',
+            '</span>'
+          ]);
         }
 
-        /**
-         * Call back to render each line item of the table
-         */
-        this.renderLineItem = function(item, isFirst, count, depth) {
+        html = html.concat([
+          '<span class="wcm-widget-margin-align" title="',
+          name,
+          '">',
+          displayName,
+          ' (',
+          item.numOfChildren,
+          ')',
+          '</span>',
+          '</td>',
+          '<td colspan="3"></td>'
+        ]);
+      } else {
+        var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
+          displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 50 - removeCharCount),
+          uri = item.uri,
+          fmt = CStudioAuthoring.Utils.formatDateFromString,
+          environment = item.submittedToEnvironment ? item.submittedToEnvironment : '';
 
-            if(!item.folder){
+        editLinkId = encodeURIComponent(
+          'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri)
+        );
+        viewLinkId = encodeURIComponent(
+          'previewLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri)
+        );
 
-                var html = [],
-                name = item.internalName,
-                editLinkId;
+        var ttSpanId = 'tt_' + this.widgetId + '_' + item.uri + '_' + (this.tooltipLabels.length + 1);
+        var itemTitle = CStudioAuthoring.Utils.getTooltipContent(item);
+        this.tooltipLabels.push(ttSpanId);
 
-                //reducing max character length to support 1024 screen resolution
-                var removeCharCount = ((window.innerWidth <= 1024)?5:0);
-                var displayName = WcmDashboardWidgetCommon.getFormattedString(name, (80 - removeCharCount), item.newFile);
+        if (item.component && item.internalName == 'crafter-level-descriptor.level.xml') {
+          browserUri = '';
+          displayBrowserUri = '';
+        }
 
-                if (isFirst) {
+        var itemIconStatus = CStudioAuthoring.Utils.getIconFWClasses(item);
+        itemIconStatus += item.disabled && !item.previewable ? ' non-previewable-disabled' : '';
 
-                    html.push('<td colspan="4">');
+        // this API will replace double quotes with ASCII character
+        // to resolve page display issue
+        displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-                    if (item.numOfChildren > 0) {
-                        var parentClass = ['wcm-table-parent-', name, '-', count].join("");
-                        html = html.concat([
-                            '<span id="', parentClass, '"',
-                            'class="', item.children.length ? 'ttClose parent-div-widget' : 'ttOpen parent-div-widget', '"',
-                            'onclick="WcmDashboardWidgetCommon.toggleLineItem(\'' + parentClass + '\');" >',
-                            '</span>'
-                        ]);
-                    }
+        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        WcmDashboardWidgetCommon.insertViewLink(item, viewLinkId);
 
-                    html = html.concat([
-                        '<span class="wcm-widget-margin-align" title="', name, '">',
-                        displayName, ' (', item.numOfChildren, ')',
-                        '</span>',
-                        '</td>',
-                        '<td colspan="3">&nbsp;</td>'
-                    ]);
+        var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
+          currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
+            ? JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked'))[0]
+            : null,
+          currentBrowserUri = browserUri !== '' ? browserUri : '/';
 
-                } else {
+        html = html.concat([
+          '<td colspan=2>',
+          '<div class="dashlet-ident">',
+          `<input type="checkbox" class="dashlet-item-check" id="${encodeURIComponent(uri)}" ${
+            this.widgetId == currentDashboard &&
+            currentCheckItem &&
+            CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
+            item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+              ? ' checked'
+              : ''
+          } ${item.deleted || item.inFlight ? ' disabled' : ''}  />`,
+          CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
+          `<a class="anchorRow"
+           ${
+            item.previewable
+              ? `href="/studio/preview/#/?page=${currentBrowserUri}&site=${CStudioAuthoringContext.site}"`
+              : ''
+          }
+           class="itemNameCol ${item.previewable ? 'previewLink' : 'non-previewable-link'} ${
+            item.disabled ? ' dashboard-item disabled' : ''
+          }"
+          >`,
+          displayName,
+          '</a>',
+          '</span>',
+          '</div>',
+          depth ? '</div>' : '',
+          '</div>',
+          '</td>',
+          '<td id="' + viewLinkId + '"></td>',
+          '<td id="' + editLinkId + '"></td>',
+          `<td class='urlCol' title="${browserUri}">`,
+          displayBrowserUri,
+          '</td>',
+          "<td title='fullUri' class='width0'>",
+          CStudioAuthoring.Utils.escapeHTML(uri),
+          '</td>',
+          "<td title='server'>",
+          environment,
+          '</td>',
+          '<td class="">',
+          item.scheduled
+            ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat')
+            : '',
+          '</td>',
+          "<td class='alignRight username trim'>",
+          WcmDashboardWidgetCommon.getDisplayName(item),
+          '</td>',
+          "<td class='alignRight ttThColLast'>",
+          CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
+          '</td>'
+        ]);
+      }
 
-                    var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
-                        displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, (50 - removeCharCount)),
-                        uri = item.uri,
-                        fmt = CStudioAuthoring.Utils.formatDateFromString,
-                        environment = item.submittedToEnvironment ? item.submittedToEnvironment : "";
+      if (
+        this.widgetId == currentDashboard &&
+        currentCheckItem &&
+        CStudioAuthoring.SelectedContent.getSelectedContent().length > 0 &&
+        item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim()
+      ) {
+        CStudioAuthoring.Utils.Cookies.eraseCookie('dashboard-checked');
+      }
 
-                    editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
-                    viewLinkId = 'previewLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
+      return html.join('');
+    }
+  };
 
-                    var ttSpanId =  "tt_" + this.widgetId + "_" + item.uri + "_" + (this.tooltipLabels.length + 1);
-                    var itemTitle = CStudioAuthoring.Utils.getTooltipContent(item);
-                    this.tooltipLabels.push(ttSpanId);
+  /**
+   * internal method to help determine what items are parents
+   * We need to improve this - performance is not great and there must be an easier way
+   */
+  this.handleTopDownPathDependenciesItemsClick = function (event, matchedEl) {
+    var isChecked = matchedEl.checked;
+    var selectedElementURI = decodeURIComponent(matchedEl.id);
+    var item = CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap[selectedElementURI];
+    WcmDashboardWidgetCommon.selectItem(matchedEl, matchedEl.checked);
 
-                    if (item.component && item.internalName == "crafter-level-descriptor.level.xml") {
-                        browserUri = "";
-                        displayBrowserUri = "";
-                    }
-
-                    var itemIconStatus = CStudioAuthoring.Utils.getIconFWClasses(item);
-                    itemIconStatus += ((item.disabled && !item.previewable) ? ' non-previewable-disabled' : '');
-
-                    // this API will replace double quotes with ASCII character
-                    // to resolve page display issue
-                    displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
-
-                    WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
-                    WcmDashboardWidgetCommon.insertViewLink(item, viewLinkId);
-
-                    var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
-                        currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
-                            JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null,
-                        currentBrowserUri = browserUri !== "" ? browserUri : "/";
-
-                    html = html.concat([
-                        '<td colspan=2>',
-                        '<div class="dashlet-ident">',
-                        '<input type="checkbox" class="dashlet-item-check" id="', uri, '"',
-                        ((this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
-                            && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())) ? ' checked' : ''),
-                        ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
-                        // '<span class="', itemIconStatus, (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
-                        CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-                        '<a class="anchorRow" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="itemNameCol "', (item.previewable == true) ? "previewLink" : "non-previewable-link",
-                        (item.disabled == true ? ' dashboard-item disabled' : '') , '">',
-                        displayName,
-                        '</a>',
-                        '</span>',
-                        '</div>', depth ?
-                            '</div>' : '',
-                        '</div>',
-                        '</td>',
-                        '<td id="' + viewLinkId + '"></td>',
-                        '<td id="' + editLinkId + '"></td>',
-                        "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
-                        "<td title='fullUri' class='width0'>", uri, "</td>",
-                        "<td title='server'>", environment, "</td>",
-                        '<td class="">', item.scheduled ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat') : '', '</td>',
-                        "<td class='alignRight'>", WcmDashboardWidgetCommon.getDisplayName(item), "</td>",
-                        "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), "</td>"
-                    ]);
-
-                }
-
-                if(this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
-                    && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())){
-                    CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
-                }
-
-                return html.join('');
-
-            }
-
-        };
-
-        /**
-         * internal method to help determine what items are parents
-         * We need to improve this - performance is not great and there must be an easier way
-         */
-        this.handleTopDownPathDependenciesItemsClick = function(event, matchedEl) {
-
-            var isChecked = matchedEl.checked;
-            var selectedElementURI = matchedEl.id;
-            var item = CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap[selectedElementURI];
-            WcmDashboardWidgetCommon.selectItem(matchedEl, matchedEl.checked);
-            //CStudioAuthoring.SelectedContent.selectContent({"item":item});
-
-            if (isChecked) {//check all parents
-                var parentURI = item.mandatoryParent;
-                if (parentURI) {
-                    var parentInputElement = YDom.get(parentURI);
-                    if (parentInputElement) {
-                        parentInputElement.checked = true;
-                        this.handleTopDownPathDependenciesItemsClick(null, parentInputElement);
-                    }
-                }
-            } else {//deselect all children
-                var children = CStudioAuthoring.Service.getChildren(item, CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap);
-                if (children.length > 0) {
-                    for (var i = 0; i < children.length; i++) {
-                        var child = children[i];
-                        var childInputElement = YDom.get(child.uri);
-                        if (childInputElement) {
-                            childInputElement.checked = false;
-                            this.handleTopDownPathDependenciesItemsClick(null, childInputElement);
-                        }
-                    }
-                }
-
-            }
-        };
-    };
+    if (isChecked) {
+      //check all parents
+      var parentURI = item.mandatoryParent;
+      if (parentURI) {
+        var parentInputElement = YDom.get(parentURI);
+        if (parentInputElement) {
+          parentInputElement.checked = true;
+          this.handleTopDownPathDependenciesItemsClick(null, parentInputElement);
+        }
+      }
+    } else {
+      //deselect all children
+      var children = CStudioAuthoring.Service.getChildren(item, CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap);
+      if (children.length > 0) {
+        for (var i = 0; i < children.length; i++) {
+          var child = children[i];
+          var childInputElement = YDom.get(child.uri);
+          if (childInputElement) {
+            childInputElement.checked = false;
+            this.handleTopDownPathDependenciesItemsClick(null, childInputElement);
+          }
+        }
+      }
+    }
+  };
+};
