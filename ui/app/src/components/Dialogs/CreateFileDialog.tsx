@@ -35,6 +35,7 @@ interface CreateFileBaseProps {
   open: boolean;
   type: 'controller' | 'template';
   path: string;
+  allowBraces?: boolean;
 }
 
 export type CreateFileProps = PropsWithChildren<
@@ -85,7 +86,7 @@ interface CreateFileUIProps extends CreateFileProps {
 }
 
 function CreateFileUI(props: CreateFileUIProps) {
-  const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path } = props;
+  const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
   const [name, setName] = useState('');
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -97,7 +98,7 @@ function CreateFileUI(props: CreateFileUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
+      const fileName = type === 'controller' ? `${encodeURIComponent(name)}.groovy` : `${encodeURIComponent(name)}.ftl`;
       createFile(site, path, fileName).subscribe(
         () => {
           onCreated?.({ path, fileName, type });
@@ -155,7 +156,9 @@ function CreateFileUI(props: CreateFileUIProps) {
           InputLabelProps={{
             shrink: true
           }}
-          onChange={(event) => setName(event.target.value.replace(/[^a-zA-Z0-9-_.]/g, ''))}
+          onChange={(event) =>
+            setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+          }
         />
       </DialogBody>
       <DialogFooter>

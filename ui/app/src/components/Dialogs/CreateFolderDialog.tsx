@@ -114,7 +114,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
 
     if (name) {
       if (rename) {
-        renameFolder(site, path, encodeURI(name)).subscribe(
+        renameFolder(site, path, encodeURIComponent(name)).subscribe(
           (response) => {
             onRenamed?.({ path, name, rename });
             dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
@@ -125,7 +125,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           }
         );
       } else {
-        createFolder(site, path, encodeURI(name)).subscribe(
+        createFolder(site, path, encodeURIComponent(name)).subscribe(
           (resp) => {
             onCreated?.({ path, name, rename });
             dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
