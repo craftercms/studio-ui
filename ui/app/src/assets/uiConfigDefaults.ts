@@ -15,6 +15,7 @@
  */
 
 import { defineMessages } from 'react-intl';
+import GlobalState from '../models/GlobalState';
 
 const messages = defineMessages({
   pageBuilder: {
@@ -45,7 +46,7 @@ const messages = defineMessages({
 
 let count = 0;
 
-const uiConfigDefaults = {
+const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'> = {
   preview: {
     toolsPanel: {
       widgets: [
@@ -570,8 +571,12 @@ const uiConfigDefaults = {
       ]
     }
   },
-  globalNav: {
-    sections: [
+  siteNav: {
+    title: {
+      id: 'words.site',
+      defaultMessage: 'Site'
+    },
+    widgets: [
       {
         uiKey: count++,
         title: {

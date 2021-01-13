@@ -193,8 +193,10 @@ export interface GlobalState {
         widgets: WidgetDescriptor[];
       };
     };
-    globalNav: {
-      sections: { uiKey: number; title: string | MessageDescriptor; widgets: WidgetDescriptor[]; roles?: string[] }[];
+    siteNav: {
+      title: string | MessageDescriptor;
+      roles?: string[];
+      widgets: any;
     };
   };
   pathNavigator: {

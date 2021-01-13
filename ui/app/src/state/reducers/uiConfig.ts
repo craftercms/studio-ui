@@ -27,9 +27,7 @@ const initialState: GlobalState['uiConfig'] = {
       widgets: null
     }
   },
-  globalNav: {
-    sections: []
-  }
+  siteNav: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
