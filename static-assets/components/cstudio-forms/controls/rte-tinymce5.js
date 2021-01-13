@@ -555,7 +555,7 @@ CStudioAuthoring.Module.requireModule(
 
                 var itemEl = document.createElement('div');
                 YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
-                itemEl.innerHTML = el.title;
+                itemEl.textContent = el.title;
                 addContainerEl.appendChild(itemEl);
 
                 YAHOO.util.Event.on(
@@ -768,7 +768,7 @@ CStudioAuthoring.Module.requireModule(
           // Control title of form
           titleEl = document.createElement('span');
           YDom.addClass(titleEl, 'cstudio-form-field-title');
-          titleEl.innerHTML = config.title;
+          titleEl.textContent = config.title;
 
           // Control container under form
           controlWidgetContainerEl = document.createElement('div');

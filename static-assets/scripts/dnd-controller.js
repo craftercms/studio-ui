@@ -814,15 +814,18 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       html.push('<sh2 class="studio-category-name studio-category-name-collapse">' + category.label + '</sh2>');
       html.push('<sul>');
       if (category.components) {
+        var textArea = document.createElement('textarea');
         if (category.components.length) {
           $.each(category.components, function(j, component) {
-            html.push(crafter.String(COMPONENT_TPL).fmt(component.path || '', component.type, component.label));
+            textArea.textContent = component.label;
+            html.push(crafter.String(COMPONENT_TPL).fmt(component.path || '', component.type, textArea.innerHTML));
           });
         } else {
+          textArea.textContent = category.components.label;
           html.push(
             crafter
               .String(COMPONENT_TPL)
-              .fmt(category.components.path || '', category.components.type, category.components.label)
+              .fmt(category.components.path || '', category.components.type, textArea.innerHTML)
           );
         }
       }

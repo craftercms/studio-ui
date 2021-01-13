@@ -97,7 +97,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         `<li class="cstudio-form-controls-create-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
           langBundle,
           'createNew'
-        )} - ${newElTitle}</a></li>`
+        )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}</a></li>`
       );
 
       control.$dropdownMenu.append(create);

@@ -38,10 +38,10 @@
     get: function(tmpl, pieces) {
       var template = this.oTemplate[tmpl];
       if (Lang.isArray(pieces)) {
-        return Util.format.apply(Util, [template].concat(pieces));
+        return Util.format.apply(Util, [template].concat(pieces.map((p) => CrafterCMSNext.util.string.escapeHTML(p))));
       } /* if (Lang.isObject(pieces)) */ else {
         return Util.advFormat(template, function(txt) {
-          return pieces[txt] || '';
+          return CrafterCMSNext.util.string.escapeHTML(pieces[txt]) || '';
         });
       }
     }
