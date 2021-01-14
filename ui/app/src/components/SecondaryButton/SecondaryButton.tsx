@@ -17,8 +17,8 @@
 import * as React from 'react';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 
-export function SecondaryButton(props: ButtonProps) {
-  return <Button {...props} variant="outlined" />;
-}
+export const SecondaryButton = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <Button ref={ref} {...props} variant="outlined" />;
+});
 
 export default SecondaryButton;

@@ -299,15 +299,16 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           });
 
           var actionButtonsContainer = document.createElement('div');
-          actionButtonsContainer.style.cssText = 'position: absolute; bottom: 15px; right: 15px;';
+          actionButtonsContainer.style.cssText =
+            'position: absolute; bottom: 15px; right: 15px; left: 15px; display: flex; place-content: center space-between';
           YAHOO.util.Dom.addClass(actionButtonsContainer, 'action-buttons');
 
           const targetingMod = CStudioAuthoring.ContextualNav.TargetingMod;
 
           var clearBtn = document.createElement('a');
           YAHOO.util.Dom.addClass(clearBtn, 'btn btn-primary mr10');
+          clearBtn.style.marginRight = 'auto';
           clearBtn.innerHTML = targetingMod.formatMessage(targetingMod.messages.defaults);
-          actionButtonsContainer.appendChild(clearBtn);
           clearBtn.onclick = function() {
             CStudioAuthoring.Service.lookupConfigurtion(
               CStudioAuthoringContext.site,
@@ -369,28 +370,33 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           };
 
           var applyBtn = document.createElement('a');
-          YAHOO.util.Dom.addClass(applyBtn, 'btn btn-primary mr10');
+          YAHOO.util.Dom.addClass(applyBtn, 'btn btn-primary');
           applyBtn.innerHTML = CMgs.format(previewLangBundle, 'apply');
-          actionButtonsContainer.appendChild(applyBtn);
           applyBtn.onclick = function() {
             me.updateTargeting(reportContainerEl);
           };
 
+          var separatorDiv = document.createElement('div');
+
           this.bindEvents();
 
           var cancelBtn = document.createElement('a');
-          YAHOO.util.Dom.addClass(cancelBtn, 'btn btn-default');
+          YAHOO.util.Dom.addClass(cancelBtn, 'btn btn-default mr10');
           cancelBtn.innerHTML = CMgs.format(previewLangBundle, 'cancel');
-          actionButtonsContainer.appendChild(cancelBtn);
           cancelBtn.onclick = function() {
             me.closeDialog(reportContainerEl);
             $(document).off('keyup');
           };
 
+          actionButtonsContainer.appendChild(clearBtn);
+          separatorDiv.appendChild(cancelBtn);
+          separatorDiv.appendChild(applyBtn);
+          actionButtonsContainer.appendChild(separatorDiv);
+
           reportContainerEl.appendChild(actionButtonsContainer);
         },
 
-        //update model from current form and save on profile
+        // update model from current form and save on profile
         updateTargeting: function(reportContainerEl) {
           this.updateModel();
 
@@ -427,7 +433,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           document.body.removeChild(reportContainerEl);
         },
 
-        //model created from xml config file and currentProfile
+        // model created from xml config file and currentProfile
         initModel: function(properties, callback) {
           var me = this,
             properties = properties;
@@ -466,7 +472,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           });
         },
 
-        //get model from current form
+        // get model from current form
         updateModel: function() {
           var me = this,
             test = $('#targeting-container .control-container'),
