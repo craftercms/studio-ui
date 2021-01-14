@@ -19,6 +19,8 @@ import ReactDOM from 'react-dom';
 
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import * as string from './string';
+import * as object from './object';
+import { nou } from './object';
 import * as ajax from './ajax';
 import * as path from './path';
 import * as auth from './auth';
@@ -34,7 +36,6 @@ import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
-import { nou } from './object';
 import * as babel from './babelHelpers-legacy';
 import * as security from '../services/security';
 import * as authService from '../services/auth';
@@ -181,6 +182,7 @@ export function createCodebaseBridge() {
       ajax,
       path,
       string,
+      object,
       auth,
       babel,
       state,

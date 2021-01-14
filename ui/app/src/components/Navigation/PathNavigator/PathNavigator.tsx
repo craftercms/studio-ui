@@ -221,7 +221,20 @@ export default function PathNavigator(props: WidgetProps) {
           }
           break;
         }
-        case folderCreated.type:
+        case folderCreated.type: {
+          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
+          if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
+              })
+            );
+          }
+          break;
+        }
         case itemsPasted.type: {
           if (payload.clipboard.type === 'COPY') {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {

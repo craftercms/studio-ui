@@ -202,7 +202,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           `<li class="cstudio-form-controls-create-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
             langBundle,
             'createNew'
-          )} - ${newElTitle}</a></li>`
+          )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}</a></li>`
         );
 
         control.$dropdownMenu.append(create);
@@ -226,7 +226,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           `<li class="cstudio-form-controls-browse-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
             langBundle,
             'browseExisting'
-          )} - ${newElTitle}</a></li>`
+          )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}</a></li>`
         );
 
         control.$dropdownMenu.append(browse);
@@ -250,7 +250,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           `<li class="cstudio-form-controls-search-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
             langBundle,
             'searchExisting'
-          )} - ${newElTitle}</a></li>`
+          )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}</a></li>`
         );
 
         control.$dropdownMenu.append(search);
