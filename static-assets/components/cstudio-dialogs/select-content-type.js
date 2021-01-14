@@ -122,14 +122,14 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       /********/ '</div>' +
       /******/ '</div>' +
       /******/ '<div class="contentTypePopupBtn"> ' +
-      /********/ '<input type="submit" class="btn btn-primary cstudio-xform-button ok" id="submitWCMPopup" value="' +
-      CMgs.format(formsLangBundle, 'openType') +
-      '">' +
       (isDialog
-        ? /********/ '<input type="button" class="btn btn-default cstudio-xform-button cancel" id="closeWCMPopup" value="' +
+        ? /********/ '<input type="button" class="btn btn-default cstudio-xform-button cancel mr10" id="closeWCMPopup" value="' +
           CMgs.format(formsLangBundle, 'cancel') +
           '">'
         : '') +
+      /********/ '<input type="submit" class="btn btn-primary cstudio-xform-button ok" id="submitWCMPopup" value="' +
+      CMgs.format(formsLangBundle, 'openType') +
+      '">' +
       /******/ '</div>' +
       /****/ '</form> ' +
       /**/ '</div> ' +

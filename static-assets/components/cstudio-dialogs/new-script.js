@@ -83,12 +83,12 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
       '</div>' +
       '</div> ' +
       '<div class="contentTypePopupBtn"> ' +
-      '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' +
-      CMgs.format(siteDropdownLangBundle, 'create') +
-      '" />' +
       '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="' +
       CMgs.format(siteDropdownLangBundle, 'cancel') +
       '"/>' +
+      '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' +
+      CMgs.format(siteDropdownLangBundle, 'create') +
+      '" />' +
       '</div>' +
       '</div> ' +
       '</div>';

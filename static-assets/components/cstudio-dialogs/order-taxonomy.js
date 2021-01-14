@@ -151,8 +151,8 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy = CStudioAuthoring.Dialogs.DialogOr
       '</div>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
-      '<input type="submit" class="cstudio-xform-button ok" id="otOkButton" value="OK" />' +
       '<input type="submit" class="cstudio-xform-button" id="otCancelButton" value="Cancel" />' +
+      '<input type="submit" class="cstudio-xform-button ok" id="otOkButton" value="OK" />' +
       '</div> ' +
       '</div> ' +
       '</div>';

@@ -125,7 +125,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 
     var html = '';
     html =
-      "<div width='300px'>" +
+      '<div>' +
       "<select id='setState'>" +
       "<option value='NEW_UNPUBLISHED_LOCKED'>NEW_UNPUBLISHED_LOCKED</option>" +
       "<option value='NEW_UNPUBLISHED_UNLOCKED'>NEW_UNPUBLISHED_UNLOCKED</option>" +
@@ -195,8 +195,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
     };
 
     var myButtons = [
-      { text: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'), handler: handleSet },
-      { text: CMgs.format(formsLangBundle, 'cancel'), handler: handleCancel, isDefault: true }
+      { text: CMgs.format(formsLangBundle, 'cancel'), handler: handleCancel },
+      { text: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'), handler: handleSet }
     ];
 
     CStudioAuthoring.Operations.showSimpleDialog(
