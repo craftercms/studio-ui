@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div ng-show="!externallyManaged">
                 <h2>{{ 'settings.CHANGE_PASSWORD_LABEL' | translate }}</h2>
                 <form name="settingsForm" class="form well"  novalidate class="ng-dirty ng-invalid ng-invalid-required">
@@ -119,7 +119,7 @@
       {{ confirmationText }}
     </div>
     <div class="modal-footer">
-      <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ messages.yes }}</button>
       <button class="btn" ng-click="hideModal()">{{ messages.no }}</button>
+      <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ messages.yes }}</button>
     </div>
   </script>

@@ -196,7 +196,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 
     var myButtons = [
       { text: CMgs.format(formsLangBundle, 'cancel'), handler: handleCancel },
-      { text: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'), handler: handleSet }
+      { text: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'), handler: handleSet, isDefault: true }
     ];
 
     CStudioAuthoring.Operations.showSimpleDialog(
