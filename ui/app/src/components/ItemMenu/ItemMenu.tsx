@@ -165,7 +165,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
     <div className={emptyClasses.root}>
       <ErrorOutlineOutlinedIcon fontSize={'small'} />
       <Typography variant="caption" display="block">
-        <FormattedMessage id="itemMenu.noPermissions" defaultMessage="Not enough permissions to perform any actions" />
+        <FormattedMessage id="itemMenu.noPermissions" defaultMessage="No actions available for this item." />
       </Typography>
     </div>
   ) : (
