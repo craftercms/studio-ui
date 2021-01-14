@@ -858,10 +858,9 @@ export function createFile(site: string, path: string, fileName: string): Observ
 }
 
 export function renameFolder(site: string, path: string, name: string) {
-  return post(`/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return post(
+    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
