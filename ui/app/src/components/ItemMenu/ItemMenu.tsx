@@ -23,7 +23,7 @@ import { useActiveSiteId, useEnv, useLogicResource, usePermissions, useSelection
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { rand } from '../Navigation/PathNavigator/utils';
@@ -32,6 +32,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Clipboard } from '../../models/GlobalState';
 import StandardAction from '../../models/StandardAction';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 
 interface ItemMenuBaseProps {
   path: string;
@@ -69,6 +70,16 @@ const useStyles = makeStyles((theme) =>
     },
     typo: {
       padding: '6px 0'
+    }
+  })
+);
+
+export const emptyStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      display: 'block',
+      padding: '0 10px',
+      textAlign: 'center'
     }
   })
 );
@@ -142,13 +153,24 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   const { resource, classes, onMenuItemClicked, clipboard } = props;
   const item = resource.item.read();
   let permissions = resource.permissions.read();
+  const emptyClasses = emptyStyles();
   const hasClipboard =
     clipboard?.paths.length &&
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
     isValidCutPastePath(item.path, clipboard.sourcePath);
   const options = generateSingleItemOptions(item, { hasClipboard, ...permissions });
+  const noOptions = options.length === 1 && options[0].length === 0;
 
-  return <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />;
+  return noOptions ? (
+    <div className={emptyClasses.root}>
+      <ErrorOutlineOutlinedIcon fontSize="small" />
+      <Typography variant="caption" display="block">
+        <FormattedMessage id="itemMenu.noPermissions" defaultMessage="No actions available for this item." />
+      </Typography>
+    </div>
+  ) : (
+    <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />
+  );
 }
 
 export const Loader = React.memo((props: { numOfItems?: number }) => {
