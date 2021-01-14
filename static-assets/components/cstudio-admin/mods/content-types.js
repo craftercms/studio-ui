@@ -213,6 +213,45 @@
                 // render save bar
                 CStudioAdminConsole.CommandBar.render([
                   {
+                    label: CMgs.format(langBundle, 'cancel'),
+                    class: 'btn-default',
+                    fn: function() {
+                      if (CStudioAdminConsole.isDirty) {
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                          'error-dialog',
+                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                          CMgs.format(langBundle, 'notification'),
+                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+                          [
+                            {
+                              text: CMgs.format(formsLangBundle, 'yes'),
+                              handler: function() {
+                                CStudioAdminConsole.isDirty = false;
+                                _self.renderWorkarea();
+                                this.destroy();
+                                CStudioAdminConsole.CommandBar.hide();
+                              },
+                              isDefault: false
+                            },
+                            {
+                              text: CMgs.format(formsLangBundle, 'no'),
+                              handler: function() {
+                                this.destroy();
+                              },
+                              isDefault: false
+                            }
+                          ],
+                          YAHOO.widget.SimpleDialog.ICON_WARN,
+                          'studioDialog'
+                        );
+                      } else {
+                        CStudioAdminConsole.isDirty = false;
+                        _self.renderWorkarea();
+                        CStudioAdminConsole.CommandBar.hide();
+                      }
+                    }
+                  },
+                  {
                     label: CMgs.format(langBundle, 'save'),
                     class: 'btn-primary',
                     fn: function() {
@@ -426,45 +465,6 @@
                           // otherwise, save
                           saveFn();
                         }
-                      }
-                    }
-                  },
-                  {
-                    label: CMgs.format(langBundle, 'cancel'),
-                    class: 'btn-default',
-                    fn: function() {
-                      if (CStudioAdminConsole.isDirty) {
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                          'error-dialog',
-                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                          CMgs.format(langBundle, 'notification'),
-                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-                          [
-                            {
-                              text: CMgs.format(formsLangBundle, 'yes'),
-                              handler: function() {
-                                CStudioAdminConsole.isDirty = false;
-                                _self.renderWorkarea();
-                                this.destroy();
-                                CStudioAdminConsole.CommandBar.hide();
-                              },
-                              isDefault: false
-                            },
-                            {
-                              text: CMgs.format(formsLangBundle, 'no'),
-                              handler: function() {
-                                this.destroy();
-                              },
-                              isDefault: false
-                            }
-                          ],
-                          YAHOO.widget.SimpleDialog.ICON_WARN,
-                          'studioDialog'
-                        );
-                      } else {
-                        CStudioAdminConsole.isDirty = false;
-                        _self.renderWorkarea();
-                        CStudioAdminConsole.CommandBar.hide();
                       }
                     }
                   }

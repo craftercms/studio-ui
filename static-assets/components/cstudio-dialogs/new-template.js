@@ -83,12 +83,12 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
       '</div>' +
       '</div> ' +
       '<div class="contentTypePopupBtn"> ' +
-      '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' +
-      CMgs.format(langBundle, 'create') +
-      '" />' +
       '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="' +
       CMgs.format(langBundle, 'cancel') +
       '"/>' +
+      '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' +
+      CMgs.format(langBundle, 'create') +
+      '" />' +
       '</div>' +
       '</div> ' +
       '</div>';

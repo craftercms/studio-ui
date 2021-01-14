@@ -205,9 +205,9 @@
     </div>
 
     <div class="modal-footer">
+      <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize"
               ng-click="okModalFunction(group)" ng-disabled="createNameForm.$invalid">{{ 'common.' + dialogMode | translate }}</button>
-      <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
     </div>
 
   </form>
@@ -230,8 +230,8 @@
     {{ confirmationText }}
   </div>
   <div class="modal-footer">
-    <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
     <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
   </div>
 </script>
 

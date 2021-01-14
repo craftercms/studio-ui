@@ -104,7 +104,8 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
       '</table></div>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
-      '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
+      '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  />' +
+      '</div>' +
       '</form></div>' +
       '</div> ' +
       '</div>';
