@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
@@ -291,6 +291,15 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     apiState,
     classes
   } = props;
+
+  const inputRef = useRef<HTMLButtonElement>();
+
+  useEffect(() => {
+    if (submitDisabled === false) {
+      inputRef.current.focus();
+    }
+  }, [submitDisabled]);
+
   return (
     <>
       <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} />
@@ -339,7 +348,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton autoFocus onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
+        <PrimaryButton ref={inputRef} onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
           {apiState.submitting ? (
             <CircularProgress className={classes.btnSpinner} size={20} />
           ) : (
