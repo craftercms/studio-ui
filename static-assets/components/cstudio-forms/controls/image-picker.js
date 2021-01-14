@@ -230,7 +230,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     imagePicker.inputEl.value = imageData.relativeUrl;
 
     imagePicker.previewEl.src = imageData.previewUrl.replace(/ /g, '%20') + '?' + new Date().getTime();
-    imagePicker.urlEl.innerHTML = imageData.relativeUrl.replace('?crafterCMIS=true', '');
+    imagePicker.urlEl.textContent = imageData.relativeUrl.replace('?crafterCMIS=true', '');
     imagePicker.downloadEl.href = imageData.previewUrl;
     imagePicker.remote = imageData.remote && imageData.remote === true ? true : false;
 
@@ -466,7 +466,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-image-picker-container');
@@ -487,7 +487,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     var urlEl = document.createElement('div');
     this.urlEl = urlEl;
-    urlEl.innerHTML = this.inputEl.value;
+    urlEl.textContent = this.inputEl.value;
     YAHOO.util.Dom.addClass(urlEl, 'info');
     imgInfoContainer.appendChild(urlEl);
 
@@ -624,8 +624,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
-    //descriptionEl.style.marginLeft = "341px";
+    descriptionEl.textContent = config.description;
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);
@@ -833,7 +832,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       }
       this.previewEl.style.display = 'inline';
       this.noPreviewEl.style.display = 'none';
-      this.urlEl.innerHTML = this.external ? value.replace('?crafterCMIS=true', '') : value;
+      this.urlEl.textContent = this.external ? value.replace('?crafterCMIS=true', '') : value;
       this.downloadEl.href = this.external ? value.replace('?crafterCMIS=true', '') : value;
 
       this.$addBtn.text(CMgs.format(langBundle, 'replace'));

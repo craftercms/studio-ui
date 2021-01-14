@@ -393,15 +393,15 @@
 
     <div class="modal-footer">
       <button
+        class="btn btn-default" ng-click="hideModal()"
+      >{{ 'common.CANCEL_LABEL' | translate }}
+      </button>
+      <button
         class="btn btn-primary text-capitalize"
         ng-click="okModalFunction(repo)"
         ng-disabled="createNameForm.$invalid"
       >
         {{ 'common.' + dialogMode | translate }}
-      </button>
-      <button
-        class="btn btn-default" ng-click="hideModal()"
-      >{{ 'common.CANCEL_LABEL' | translate }}
       </button>
     </div>
 
@@ -416,12 +416,12 @@
     {{ confirmationText }}
   </div>
   <div class="modal-footer">
+    <button class="btn btn-default" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
     <button
       class="btn btn-primary" ng-disabled="confirmationSubmitDisabled"
       ng-click="confirmationAction(); hideModal()"
     >{{ 'common.YES' | translate }}
     </button>
-    <button class="btn btn-default" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
   </div>
 </script>
 
@@ -507,13 +507,13 @@
     </div>
     <div class="modal-footer">
       <button
+        class="btn btn-default" ng-click="hideModal()"
+      >{{ 'common.CANCEL_LABEL' | translate }}
+      </button>
+      <button
         class="btn btn-primary" ng-disabled="pullPushForm.$invalid"
         ng-click="confirmationAction(branch); hideModal()"
       >{{ 'common.OK' | translate }}
-      </button>
-      <button
-        class="btn btn-default" ng-click="hideModal()"
-      >{{ 'common.CANCEL_LABEL' | translate }}
       </button>
     </div>
   </form>
@@ -557,14 +557,14 @@
 
       <div class="modal-footer">
         <button
+          class="btn btn-default" ng-click="hideModal()"
+        >{{ 'common.CANCEL' | translate }}
+        </button>
+        <button
           class="btn btn-primary" ng-disabled="confirmResolutionForm.commitMsg.$error.required"
           ng-click="repositories.commitResolution(); hideModal()"
         >
           {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
-        </button>
-        <button
-          class="btn btn-default" ng-click="hideModal()"
-        >{{ 'common.CANCEL' | translate }}
         </button>
       </div>
 

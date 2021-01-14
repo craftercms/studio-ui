@@ -213,6 +213,45 @@
                 // render save bar
                 CStudioAdminConsole.CommandBar.render([
                   {
+                    label: CMgs.format(langBundle, 'cancel'),
+                    class: 'btn-default',
+                    fn: function() {
+                      if (CStudioAdminConsole.isDirty) {
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                          'error-dialog',
+                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                          CMgs.format(langBundle, 'notification'),
+                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+                          [
+                            {
+                              text: CMgs.format(formsLangBundle, 'yes'),
+                              handler: function() {
+                                CStudioAdminConsole.isDirty = false;
+                                _self.renderWorkarea();
+                                this.destroy();
+                                CStudioAdminConsole.CommandBar.hide();
+                              },
+                              isDefault: false
+                            },
+                            {
+                              text: CMgs.format(formsLangBundle, 'no'),
+                              handler: function() {
+                                this.destroy();
+                              },
+                              isDefault: false
+                            }
+                          ],
+                          YAHOO.widget.SimpleDialog.ICON_WARN,
+                          'studioDialog'
+                        );
+                      } else {
+                        CStudioAdminConsole.isDirty = false;
+                        _self.renderWorkarea();
+                        CStudioAdminConsole.CommandBar.hide();
+                      }
+                    }
+                  },
+                  {
                     label: CMgs.format(langBundle, 'save'),
                     class: 'btn-primary',
                     fn: function() {
@@ -359,8 +398,8 @@
                       errorMessage +=
                         validation.idError.length > 0
                           ? `<li>${formatMessage(contentTypesMessages.idError)} ${validation.idError
-                              .toString()
-                              .replace(/,/g, ', ')}</li>`
+                              .map((s) => CrafterCMSNext.util.string.escapeHTML(s))
+                              .join(', ')}</li>`
                           : '';
 
                       errorMessage +=
@@ -426,45 +465,6 @@
                           // otherwise, save
                           saveFn();
                         }
-                      }
-                    }
-                  },
-                  {
-                    label: CMgs.format(langBundle, 'cancel'),
-                    class: 'btn-default',
-                    fn: function() {
-                      if (CStudioAdminConsole.isDirty) {
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                          'error-dialog',
-                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                          CMgs.format(langBundle, 'notification'),
-                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-                          [
-                            {
-                              text: CMgs.format(formsLangBundle, 'yes'),
-                              handler: function() {
-                                CStudioAdminConsole.isDirty = false;
-                                _self.renderWorkarea();
-                                this.destroy();
-                                CStudioAdminConsole.CommandBar.hide();
-                              },
-                              isDefault: false
-                            },
-                            {
-                              text: CMgs.format(formsLangBundle, 'no'),
-                              handler: function() {
-                                this.destroy();
-                              },
-                              isDefault: false
-                            }
-                          ],
-                          YAHOO.widget.SimpleDialog.ICON_WARN,
-                          'studioDialog'
-                        );
-                      } else {
-                        CStudioAdminConsole.isDirty = false;
-                        _self.renderWorkarea();
-                        CStudioAdminConsole.CommandBar.hide();
                       }
                     }
                   }
@@ -1099,7 +1099,7 @@
 
         var formNameEl = document.createElement('div');
         YDom.addClass(formNameEl, 'content-form-name');
-        formNameEl.innerHTML = this.definition.title;
+        formNameEl.textContent = this.definition.title;
         formVisualContainerEl.appendChild(formNameEl);
 
         var divPropertiesEl = document.createElement('div');
@@ -1142,7 +1142,7 @@
 
         var datasourcesNameEl = document.createElement('span');
         YDom.addClass(datasourcesNameEl, 'content-section-name');
-        datasourcesNameEl.innerHTML = CMgs.format(langBundle, 'datasources');
+        datasourcesNameEl.textContent = CMgs.format(langBundle, 'datasources');
         datasourcesContainerEl.appendChild(datasourcesNameEl);
         var tar = new YAHOO.util.DDTarget(datasourcesContainerEl);
 
@@ -1167,7 +1167,7 @@
 
           var datasourceNameEl = document.createElement('span');
           YDom.addClass(datasourceNameEl, 'content-datasource-name');
-          datasourceNameEl.innerHTML = datasource.title;
+          datasourceNameEl.textContent = datasource.title;
           datasourceEl.appendChild(datasourceNameEl);
 
           var datasourceTypeEl = document.createElement('span');
@@ -1253,7 +1253,7 @@
 
           var sectionNameEl = document.createElement('span');
           YDom.addClass(sectionNameEl, 'content-section-name');
-          sectionNameEl.innerHTML = section.title;
+          sectionNameEl.textContent = section.title;
           sectionContainerEl.appendChild(sectionNameEl);
 
           section.sectionContainerEl = sectionContainerEl;
@@ -1356,7 +1356,7 @@
         var minValue = field.properties[0] && field.properties[0].value != '' ? field.properties[0].value : '0';
         var maxValue = field.properties[0] && field.properties[1].value != '' ? field.properties[1].value : '*';
 
-        fieldNameEl.innerHTML =
+        fieldNameEl.textContent =
           field.title + ' ' + CMgs.format(langBundle, 'repeatingGroup') + ' [' + minValue + ' ... ' + maxValue + ']';
         fieldContainerEl.appendChild(fieldNameEl);
 
@@ -1431,17 +1431,17 @@
 
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-name');
-        fieldNameEl.innerHTML = field.title;
+        fieldNameEl.textContent = field.title;
         fieldContainerEl.appendChild(fieldNameEl);
 
         var fieldTypeEl = document.createElement('span');
         YDom.addClass(fieldTypeEl, 'content-field-type');
-        fieldTypeEl.innerHTML = field.type;
+        fieldTypeEl.textContent = field.type;
         fieldContainerEl.appendChild(fieldTypeEl);
 
         var fieldNameEl = document.createElement('span');
         YDom.addClass(fieldNameEl, 'content-field-variable');
-        fieldNameEl.innerHTML = field.id;
+        fieldNameEl.textContent = field.id;
         fieldContainerEl.appendChild(fieldNameEl);
 
         var dd = new DragAndDropDecorator(fieldContainerEl);

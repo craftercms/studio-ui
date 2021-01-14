@@ -179,13 +179,15 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
   createVideoContainer: function(video) {
     var previewEl = document.createElement('div');
+    var span = document.createElement('span');
     YAHOO.util.Dom.addClass(
       previewEl,
       'cstudio-form-control-node-selector-item cstudio-form-control-video-selector-item'
     );
     previewEl.style.wordWrap = 'break-word';
 
-    previewEl.innerHTML = '<span>' + video.url + '</span>';
+    span.textContent = video.url;
+    previewEl.appendChild(span);
 
     var previewBtn = document.createElement('a');
     YAHOO.util.Dom.addClass(previewBtn, 'action video-preview');
@@ -244,7 +246,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
           var itemEl = document.createElement('div');
           YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-video-picker-add-container-item');
-          itemEl.innerHTML = el.title;
+          itemEl.textContent = el.title;
           addContainerEl.appendChild(itemEl);
 
           YAHOO.util.Event.on(
@@ -297,7 +299,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
             } else {
               this.videoPicker.previewEl.src = videoData.previewUrl;
               this.videoPicker.previewEl.setAttribute('controls', 'true');
-              this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace('?crafterCMIS=true', '');
+              this.videoPicker.urlEl.textContent = videoData.relativeUrl.replace('?crafterCMIS=true', '');
               this.videoPicker.downloadEl.href = videoData.previewUrl;
               this.videoPicker.remote = videoData.remote && videoData.remote === true ? true : false;
 
@@ -368,7 +370,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-video-picker-container');
@@ -386,7 +388,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     var urlEl = document.createElement('div');
     YAHOO.util.Dom.addClass(urlEl, 'url');
     this.urlEl = urlEl;
-    urlEl.innerHTML = this.inputEl.value;
+    urlEl.textContent = this.inputEl.value;
     controlWidgetContainerEl.appendChild(urlEl);
 
     var videoEl = document.createElement('div');
@@ -513,8 +515,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
-    //descriptionEl.style.marginLeft = "341px";
+    descriptionEl.textContent = config.description;
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);
@@ -611,7 +612,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         this.zoomEl.style.display = 'inline-block';
         this.downloadEl.style.display = 'inline-block';
         this.downloadEl.href = this.external ? value.replace('?crafterCMIS=true', '') : value;
-        this.urlEl.innerHTML = this.external ? value.replace('?crafterCMIS=true', '') : value;
+        this.urlEl.textContent = this.external ? value.replace('?crafterCMIS=true', '') : value;
       }
 
       this.noPreviewEl.style.display = 'none';

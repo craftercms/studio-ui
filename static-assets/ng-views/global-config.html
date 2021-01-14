@@ -53,6 +53,7 @@
   </div>
   <div class="modal-footer">
     <div class="btn-group" uib-dropdown>
+      <button class="btn btn-default mr10" type="button" ng-click="$ctrl.cancel()">{{ messages.close }}</button>
       <button type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
         {{ messages.useSampleContent }}
       </button>
@@ -62,7 +63,6 @@
         <li role="menuitem"><a>{{ messages.cancel }}</a></li>
       </ul>
     </div>
-    <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">{{ messages.close }}</button>
   </div>
 </script>
 

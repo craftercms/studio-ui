@@ -670,7 +670,8 @@ export const itemActionDispatcher = (
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()])
+            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()]),
+            allowBraces: item.path.startsWith('/scripts/rest')
           })
         );
         break;

@@ -247,7 +247,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
 
           var itemEl = document.createElement('div');
           YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-video-picker-add-container-item');
-          itemEl.innerHTML = el.title;
+          itemEl.textContent = el.title;
           addContainerEl.appendChild(itemEl);
 
           YAHOO.util.Event.on(
@@ -359,7 +359,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-video-picker-container');
@@ -504,8 +504,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
-    //descriptionEl.style.marginLeft = "341px";
+    descriptionEl.textContent = config.description;
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);

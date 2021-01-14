@@ -66,11 +66,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
         '</div>' +
         '</div>' +
         "<div class='contentTypePopupBtn'>" +
-        "<input type='submit' class='btn btn-primary ok' id='acceptCTChange' value='" +
-        CMgs.format(formsLangBundle, 'yes') +
-        "' />" +
         "<input type='submit'class='btn btn-default cancel' id='cancelCTChange' value='" +
         CMgs.format(formsLangBundle, 'no') +
+        "' />" +
+        "<input type='submit' class='btn btn-primary ok' id='acceptCTChange' value='" +
+        CMgs.format(formsLangBundle, 'yes') +
         "' />" +
         '</div>' +
         '</form> ' +
