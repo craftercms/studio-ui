@@ -151,44 +151,52 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
-        <TextField
-          label={
-            rename ? (
-              <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
-            ) : (
-              <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
-            )
-          }
-          value={name}
-          autoFocus
-          required
-          error={!name && submitted}
-          placeholder={formatMessage(translations.placeholder)}
-          helperText={
-            !name && submitted ? (
-              <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
-            ) : (
-              <FormattedMessage
-                id="newFolder.helperText"
-                defaultMessage="Consisting of: letters, numbers, dash (-) and underscore (_)."
-              />
-            )
-          }
-          disabled={inProgress}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onOk();
           }}
-          onChange={(event) =>
-            setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
-          }
-        />
+        >
+          <TextField
+            fullWidth
+            label={
+              rename ? (
+                <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
+              ) : (
+                <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+              )
+            }
+            value={name}
+            autoFocus
+            required
+            error={!name && submitted}
+            placeholder={formatMessage(translations.placeholder)}
+            helperText={
+              !name && submitted ? (
+                <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
+              ) : (
+                <FormattedMessage
+                  id="newFolder.helperText"
+                  defaultMessage="Consisting of: letters, numbers, dash (-) and underscore (_)."
+                />
+              )
+            }
+            disabled={inProgress}
+            margin="normal"
+            InputLabelProps={{
+              shrink: true
+            }}
+            onChange={(event) =>
+              setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+            }
+          />
+        </form>
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={() => onOk()} autoFocus disabled={inProgress}>
+        <PrimaryButton onClick={onOk} autoFocus disabled={inProgress || name === ''}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
