@@ -292,11 +292,11 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     classes
   } = props;
 
-  const inputRef = useRef<HTMLButtonElement>();
+  const buttonRef = useRef<HTMLButtonElement>();
 
   useEffect(() => {
     if (submitDisabled === false) {
-      inputRef.current.focus();
+      buttonRef.current.focus();
     }
   }, [submitDisabled]);
 
@@ -348,7 +348,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton ref={inputRef} onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
+        <PrimaryButton ref={buttonRef} onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
           {apiState.submitting ? (
             <CircularProgress className={classes.btnSpinner} size={20} />
           ) : (

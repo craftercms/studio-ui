@@ -189,11 +189,11 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
-  const inputRef = useRef<HTMLButtonElement>();
+  const buttonRef = useRef<HTMLButtonElement>();
 
   useEffect(() => {
-    if (selectedItems && selectedItems.length > 0) {
-      inputRef.current.focus();
+    if (selectedItems?.length > 0) {
+      buttonRef.current.focus();
     }
   }, [selectedItems]);
 
@@ -221,7 +221,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
           <FormattedMessage id="deleteDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton
-          ref={inputRef}
+          ref={buttonRef}
           onClick={handleSubmit}
           disabled={apiState.submitting || !selectedItems || selectedItems.length === 0}
         >
