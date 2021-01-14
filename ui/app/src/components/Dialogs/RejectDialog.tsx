@@ -212,6 +212,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 </InputLabel>
                 <Select
                   fullWidth
+                  autoFocus
                   input={<SelectInput />}
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value as string)}
@@ -259,7 +260,6 @@ function RejectDialogUI(props: RejectDialogUIProps) {
         {onReject && (
           <PrimaryButton
             onClick={onReject}
-            autoFocus
             disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
           >
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
