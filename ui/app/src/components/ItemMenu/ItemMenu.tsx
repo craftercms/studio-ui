@@ -163,7 +163,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
 
   return noOptions ? (
     <div className={emptyClasses.root}>
-      <ErrorOutlineOutlinedIcon fontSize={'small'} />
+      <ErrorOutlineOutlinedIcon fontSize="small" />
       <Typography variant="caption" display="block">
         <FormattedMessage id="itemMenu.noPermissions" defaultMessage="No actions available for this item." />
       </Typography>
