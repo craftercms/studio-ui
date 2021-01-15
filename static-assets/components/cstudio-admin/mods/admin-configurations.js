@@ -546,6 +546,7 @@
           hideSampleButtonEl.style.display = 'inline';
           viewSampleButtonEl.style.display = 'none';
           sampleAreaEl.style.display = 'inline';
+          me.configInfo.sampleEditor.renderer.updateFull();
         };
 
         hideSampleButtonEl.onclick = function() {
