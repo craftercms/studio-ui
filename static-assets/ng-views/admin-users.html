@@ -23,18 +23,11 @@
             <h1>{{ 'admin.users.HEADER_LABEL' | translate }}</h1>
           </header>
 
-          <h4 class="pl15 mt8 mb20">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</h4>
+          <a class="btn btn-default btn-pill btn-padded" id="new-user-btn" ng-click="users.createUserDialog()" role="button">
+            <i class="fa fa-plus-circle mr5" aria-hidden="true"></i> {{ 'admin.users.NEW_USER' | translate }}
+          </a>
 
-          <a
-            class="btn btn-default" id="new-user-btn" ng-click="users.createUserDialog()"
-            role="button" style="float: right;"
-          >{{ 'admin.users.NEW_USER' | translate }}</a>
-
-          <div class="pull-right mr15" ng-show="!users.searchdirty">
-            <label>{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
-            <input id="users-items-per-page" class="audit-number-logs" type="number" name="input" ng-model="users.itemsPerPage"
-                   min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
-          </div>
+          <divider class="mt10"/>
 
           <table class="table table-striped">
             <thead>
@@ -112,7 +105,18 @@
             </tbody>
           </table>
 
-          <dir-pagination-controls ng-show="!users.searchdirty" on-page-change="users.pageChanged(newPageNumber)"></dir-pagination-controls>
+          <p class="pl15 mt8 mb20">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</p>
+
+          <div class="global-menu-pagination-wrapper">
+            <div class="pull-right mr15" ng-show="!users.searchdirty">
+              <label class="mr5">{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
+              <input id="users-items-per-page" class="audit-number-logs mr10" type="number" name="input" ng-model="users.itemsPerPage"
+                     min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
+            </div>
+
+            <dir-pagination-controls ng-show="!users.searchdirty" on-page-change="users.pageChanged(newPageNumber)"></dir-pagination-controls>
+          </div>
+
         </div>
       </div>
     </div>

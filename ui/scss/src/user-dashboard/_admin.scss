@@ -402,14 +402,6 @@ table {
   }
 
 
-  .audit-number-logs {
-    border: 1px solid #ccc;
-    padding: 6px;
-    border-radius: 4px;
-    text-align: center;
-    min-width: 50px;
-  }
-
   .timezoneContainer {
     border-top: 1px solid #ccc;
     padding: 10px 0;
@@ -651,6 +643,22 @@ table {
     min-width: 20px;
   }
 
+}
+
+.global-menu-pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  .pagination {
+    margin: 0;
+    display: block;
+  }
+}
+
+divider {
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid #e7e7e7;
 }
 
 #create-site-dialog {
