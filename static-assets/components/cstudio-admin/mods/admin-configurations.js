@@ -354,6 +354,7 @@
             viewSampleButtonEl.style.display = 'none';
           }
 
+          CStudioAdminConsole.CommandBar.commandBarEl.classList.remove('content-types-command-bar');
           CStudioAdminConsole.CommandBar.show();
           $('#encryptHintText').show();
         } else {
@@ -412,18 +413,18 @@
 
         CStudioAdminConsole.CommandBar.render([
           {
-            label: CMgs.format(langBundle, 'save'),
-            class: 'btn-primary',
-            fn: function() {
-              saveFn();
-            }
-          },
-          {
             label: CMgs.format(langBundle, 'cancel'),
             class: 'btn-default',
             fn: function() {
               me.renderWorkarea();
               CStudioAdminConsole.CommandBar.hide();
+            }
+          },
+          {
+            label: CMgs.format(langBundle, 'save'),
+            class: 'btn-primary',
+            fn: function() {
+              saveFn();
             }
           }
         ]);
