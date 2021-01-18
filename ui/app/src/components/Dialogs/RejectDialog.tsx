@@ -45,7 +45,7 @@ import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { getCurrentLocale } from '../../utils/i18n';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import ListSubheader from '@material-ui/core/ListSubheader';
 
 // region Typings
