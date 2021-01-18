@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { SandboxItem } from '../../../models/Item';
 import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
@@ -189,13 +189,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
-  const buttonRef = useRef<HTMLButtonElement>();
-
-  useEffect(() => {
-    if (selectedItems?.length > 0) {
-      buttonRef.current.focus();
-    }
-  }, [selectedItems]);
 
   return (
     <>
@@ -221,7 +214,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
           <FormattedMessage id="deleteDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton
-          ref={buttonRef}
           onClick={handleSubmit}
           disabled={apiState.submitting || !selectedItems || selectedItems.length === 0}
         >
