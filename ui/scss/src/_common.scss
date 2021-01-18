@@ -69,7 +69,14 @@
 }
 
 .btn {
-  box-shadow: $box-shadow;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  font-weight: 600;
+  min-width: 64px;
+}
+
+.btn-default:hover {
+  border-color: rgba(0, 0, 0, 0.23);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .craftercms-entitlement {

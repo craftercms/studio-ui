@@ -66,8 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: 0
   },
   title: {
-    color: '#555555',
-    padding: '0 20px'
+    color: '#555555'
   },
   success: {
     backgroundColor: green[600]
@@ -182,7 +181,7 @@ const EncryptTool = (props: EncryptToolProps) => {
 
   return (
     <form onSubmit={encrypt} className="site-config-landing-page">
-      <header className={`${classes.header} page-header`} style={{ marginTop: 0 }}>
+      <header className={`${classes.header} screen-title mb10`} style={{ marginTop: 0 }}>
         <h1 className={classes.title}>{formatMessage(messages.pageTitle)}</h1>
       </header>
       <div className="form-group">
