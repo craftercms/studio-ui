@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { BaseItem, SandboxItem } from '../../../models/Item';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -27,7 +27,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Typography from '@material-ui/core/Typography';
 import { createCheckedItems, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import { useActiveSiteId, useSelection } from '../../../utils/hooks';
@@ -83,8 +82,7 @@ const useStyles = makeStyles((theme) => ({
   dependencySelection: {
     padding: '11px 12px',
     background: theme.palette.background.paper,
-    border: '1px solid',
-    borderColor: 'rgba(0, 0, 0, .125)',
+    border: `1px solid ${theme.palette.divider}`,
     height: 'calc(100% - 24px)',
     minHeight: '374px',
     overflowY: 'hidden'
