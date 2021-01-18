@@ -150,7 +150,7 @@ $dark-mode-input-border: #ced4da;
           color: $dark-mode-font-color;
         }
       }
-      .global-menu--item-link:hover {
+      .global-menu--item-link:hover, .global-menu--item-link:focus  {
         color: $dark-mode-font-color;
         background: $dark-mode-background-default !important;
       }
@@ -158,7 +158,8 @@ $dark-mode-input-border: #ced4da;
     .global-menu--item-link {
       color: $dark-mode-font-color;
     }
-    .global-menu--item-link:hover {
+
+    .global-menu--item-link:hover, .global-menu--item-link:focus {
       color: $dark-mode-font-color;
       background-color: $dark-mode-hover !important;
     }
