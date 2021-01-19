@@ -380,15 +380,13 @@ CStudioAuthoring.Module.requireModule(
             paste_postprocess: function(plugin, args) {
               // If no text, and external it means that is dragged
               // text validation is because it can be text copied from outside the editor
-              if (args.node.outerText === '' && !args.internal) {
-                if (!_thisControl.editorImageDatasources.length) {
-                  args.preventDefault();
-                  _thisControl.editor.notificationManager.open({
-                    text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
-                    timeout: 3000,
-                    type: 'error'
-                  });
-                }
+              if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
+                args.preventDefault();
+                _thisControl.editor.notificationManager.open({
+                  text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
+                  timeout: 3000,
+                  type: 'error'
+                });
               }
             },
             images_upload_handler: function(blobInfo, success, failure) {
