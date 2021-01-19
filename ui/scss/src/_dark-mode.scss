@@ -97,15 +97,15 @@ $dark-mode-input-border: #ced4da;
     }
   }
 
-  .table-hover {
-    tr:hover {
-      background-color: $dark-mode-hover !important;
-    }
-  }
-
   .table-striped {
     tr {
       background: none !important;
+    }
+  }
+
+  .table-hover {
+    tr:hover {
+      background-color: $dark-mode-hover !important;
     }
   }
 

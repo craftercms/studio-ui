@@ -117,7 +117,7 @@ table {
           &.completed {
             background: none;
 
-            &:after {
+            &::after {
               /*Add another block-level blank space*/
               content: '';
               display: block;
@@ -329,7 +329,7 @@ table {
     border-bottom: 1px solid #bfbfbf;
     color: #fff;
 
-    &:after {
+    &::after {
       display: inline-block;
       content: 'x';
       margin-right: -10px;
@@ -678,7 +678,7 @@ table {
     content: ' ';
   }
 
-  ul.nav-wizard:after {
+  ul.nav-wizard::after {
     display: block;
     position: absolute;
     left: 0px;
@@ -737,11 +737,11 @@ table {
     right: -16px;
   }
 
-  ul.nav-wizard li:last-child:before {
+  ul.nav-wizard li:last-child::before {
     border: 0;
   }
 
-  ul.nav-wizard li:after {
+  ul.nav-wizard li::after {
     position: absolute;
     display: block;
     border: 24px solid transparent;
@@ -753,7 +753,7 @@ table {
     right: -15px;
   }
 
-  ul.nav-wizard li:last-child:after {
+  ul.nav-wizard li:last-child::after {
     border: 0;
   }
 
@@ -762,7 +762,7 @@ table {
     background: #d9edf7;
   }
 
-  ul.nav-wizard li.active:after {
+  ul.nav-wizard li.active::after {
     border-left: 16px solid #d9edf7;
   }
 
@@ -779,7 +779,7 @@ table {
     background: #fffdfd;
   }
 
-  ul.nav-wizard .active ~ li:after {
+  ul.nav-wizard .active ~ li::after {
     border-left: 16px solid #fffdfd;
   }
 
@@ -803,7 +803,7 @@ table {
     background: #f6fbfd;
   }
 
-  ul.nav-wizard.nav-wizard-backnav li:hover:after {
+  ul.nav-wizard.nav-wizard-backnav li:hover::after {
     border-left: 16px solid #f6fbfd;
   }
 
@@ -820,7 +820,7 @@ table {
     background: #f9f9f9;
   }
 
-  ul.nav-wizard.nav-wizard-backnav .active ~ li:after {
+  ul.nav-wizard.nav-wizard-backnav .active ~ li::after {
     border-left: 16px solid #f9f9f9;
   }
 
@@ -839,8 +839,7 @@ table {
     }
   }
 
-  /* ANIMATION STYLINGS
-============================================================================= */
+  /* ANIMATION STYLINGS  */
   #wizard-content-container {
     position: relative;
     height: 398px;
@@ -883,12 +882,11 @@ table {
 
   #createSitesBlueprint {
     z-index: 15000;
-    background-color: fff;
+    background-color: #fff;
     min-height: 200px;
   }
 
-  /* ANIMATIONS
-  ============================================================================= */ /**/ /*
+  /* ANIMATIONS */
   /* slide out to the left */
   @keyframes slideOutLeft {
     to {
