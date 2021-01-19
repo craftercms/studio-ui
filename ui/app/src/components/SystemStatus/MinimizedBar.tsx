@@ -3,7 +3,7 @@ import { Theme } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import AddRoundedIcon from '@material-ui/icons/AddRounded';
+import MaximizeIcon from '@material-ui/icons/OpenInBrowserRounded';
 import React from 'react';
 import { MinimizedDialogStatus } from '../../models/MinimizedDialog';
 import { ProgressBar } from './ProgressBar';
@@ -15,7 +15,8 @@ export const useStyles = makeStyles((theme: Theme) =>
       padding: '10px 14px',
       alignItems: 'center',
       marginLeft: '20px',
-      position: 'relative'
+      position: 'relative',
+      border: `1px solid ${theme.palette.divider}`
     },
     title: {
       display: 'flex',
@@ -33,7 +34,6 @@ interface MinimizedBarProps {
   title: string;
   subtitle?: string;
   status?: MinimizedDialogStatus;
-
   onMaximized?(): void;
 }
 
@@ -41,19 +41,13 @@ export function MinimizedBar(props: MinimizedBarProps) {
   const { title, onMaximized, subtitle, status } = props;
   const classes = useStyles({});
   return (
-    <Paper className={classes.root}>
-      <Typography variant="h6">{title}</Typography>
-      {subtitle && (
-        <Typography variant="subtitle1" className={classes.subtitle}>
-          {subtitle}
-        </Typography>
-      )}
-      {onMaximized ? (
-        <IconButton aria-label="close" onClick={onMaximized}>
-          <AddRoundedIcon />
-        </IconButton>
-      ) : null}
+    <Paper className={classes.root} elevation={4}>
+      <Typography variant="h6" children={title} />
+      {subtitle && <Typography variant="subtitle1" className={classes.subtitle} children={subtitle} />}
+      {onMaximized ? <IconButton aria-label="Maximize" onClick={onMaximized} children={<MaximizeIcon />} /> : null}
       {status && <ProgressBar status={status.status} progress={status.progress} />}
     </Paper>
   );
 }
+
+export default MinimizedBar;

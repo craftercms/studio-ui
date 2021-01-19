@@ -418,18 +418,17 @@ div#acn-active-content {
   .treenode-label {
     height: 100%;
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
     & .item-menu-trigger {
       display: none;
-      padding: 3px 10px;
+      padding: 0 10px;
+      margin-left: auto;
+      cursor: pointer;
     }
 
     &:hover .item-menu-trigger {
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 0;
-      cursor: pointer;
+      display: inline-block;
     }
     &.warning {
       color: #a2830f !important;

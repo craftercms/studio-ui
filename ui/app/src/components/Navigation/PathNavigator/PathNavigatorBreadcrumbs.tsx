@@ -28,13 +28,15 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import { isNavigable } from './utils';
 
+export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchButton';
+
 interface BreadcrumbsProps {
-  keyword?: string;
   breadcrumb: DetailedItem[];
+  keyword?: string;
+  classes?: Partial<Record<BreadcrumbsClassKey, string>>;
   onMenu?(element: Element): void;
   onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: DetailedItem): void;
-  classes?: Partial<Record<'searchRoot', string>>;
 }
 
 // PathBreadcrumbs + PathOptions + (Path)Search
@@ -53,7 +55,7 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const maxIndex = breadcrumb.length - 1;
 
   return (
-    <section className={clsx(classes.breadcrumbs, classes.widgetSection)}>
+    <section className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}>
       {showSearch && onSearch ? (
         <SearchBar
           autoFocus
@@ -69,8 +71,8 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           showActionButton={true}
           classes={{
             root: clsx(classes.searchRoot, props.classes?.searchRoot),
-            inputInput: classes.searchInput,
-            actionIcon: classes.searchCloseIcon
+            inputInput: clsx(classes.searchInput, props.classes?.searchInput),
+            actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchButton)
           }}
         />
       ) : (

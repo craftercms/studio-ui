@@ -15,6 +15,7 @@
  */
 
 import { defineMessages } from 'react-intl';
+import GlobalState from '../models/GlobalState';
 
 const messages = defineMessages({
   pageBuilder: {
@@ -45,7 +46,7 @@ const messages = defineMessages({
 
 let count = 0;
 
-const uiConfigDefaults = {
+const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'> = {
   preview: {
     toolsPanel: {
       widgets: [
@@ -570,64 +571,59 @@ const uiConfigDefaults = {
       ]
     }
   },
-  globalNav: {
-    sections: [
+  siteNav: {
+    title: {
+      id: 'words.site',
+      defaultMessage: 'Site'
+    },
+    widgets: [
       {
+        id: 'craftercms.components.GlobalNavLinkTile',
         uiKey: count++,
-        title: {
-          id: 'words.site',
-          defaultMessage: 'Site'
-        },
-        widgets: [
-          {
-            id: 'craftercms.components.GlobalNavLinkTile',
-            uiKey: count++,
-            configuration: {
-              title: {
-                id: 'words.dashboard',
-                defaultMessage: 'Dashboard'
-              },
-              systemLinkId: 'siteDashboard',
-              icon: { id: '@material-ui/icons/DashboardRounded' }
-            }
+        configuration: {
+          title: {
+            id: 'words.dashboard',
+            defaultMessage: 'Dashboard'
           },
-          {
-            id: 'craftercms.components.GlobalNavLinkTile',
-            uiKey: count++,
-            configuration: {
-              title: {
-                id: 'words.preview',
-                defaultMessage: 'Preview'
-              },
-              systemLinkId: 'preview',
-              icon: { id: 'craftercms.icons.Preview' }
-            }
+          systemLinkId: 'siteDashboard',
+          icon: { id: '@material-ui/icons/DashboardRounded' }
+        }
+      },
+      {
+        id: 'craftercms.components.GlobalNavLinkTile',
+        uiKey: count++,
+        configuration: {
+          title: {
+            id: 'words.preview',
+            defaultMessage: 'Preview'
           },
-          {
-            id: 'craftercms.components.GlobalNavLinkTile',
-            uiKey: count++,
-            configuration: {
-              title: {
-                id: 'siteTools.title',
-                defaultMessage: 'Site Tools'
-              },
-              systemLinkId: 'siteTools',
-              icon: { id: '@material-ui/icons/BuildRounded' }
-            }
+          systemLinkId: 'preview',
+          icon: { id: 'craftercms.icons.Preview' }
+        }
+      },
+      {
+        id: 'craftercms.components.GlobalNavLinkTile',
+        uiKey: count++,
+        configuration: {
+          title: {
+            id: 'siteTools.title',
+            defaultMessage: 'Site Tools'
           },
-          {
-            id: 'craftercms.components.GlobalNavLinkTile',
-            uiKey: count++,
-            configuration: {
-              title: {
-                id: 'words.search',
-                defaultMessage: 'Search'
-              },
-              systemLinkId: 'siteSearch',
-              icon: { id: '@material-ui/icons/SearchRounded' }
-            }
-          }
-        ]
+          systemLinkId: 'siteTools',
+          icon: { id: '@material-ui/icons/BuildRounded' }
+        }
+      },
+      {
+        id: 'craftercms.components.GlobalNavLinkTile',
+        uiKey: count++,
+        configuration: {
+          title: {
+            id: 'words.search',
+            defaultMessage: 'Search'
+          },
+          systemLinkId: 'siteSearch',
+          icon: { id: '@material-ui/icons/SearchRounded' }
+        }
       }
     ]
   }

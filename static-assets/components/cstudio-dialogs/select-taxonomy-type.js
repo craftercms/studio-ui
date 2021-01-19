@@ -82,8 +82,8 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
       '</div> ' +
       '<div style="width:100%; text-align:center; margin:0; position:absolute; left:0; bottom:15px;">' +
       '<div class="contentTypePopupBtn"> ' +
-      '<input type="submit" class="cstudio-xform-button ok" id="submitWCMPopup" value="OK" />' +
       '<input type="submit" class="cstudio-xform-button cancel" id="closeWCMPopup" value="Cancel">' +
+      '<input type="submit" class="cstudio-xform-button ok" id="submitWCMPopup" value="OK" />' +
       '</div></div>' +
       '</form> ' +
       '</div> ' +

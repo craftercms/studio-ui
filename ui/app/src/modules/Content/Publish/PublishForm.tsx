@@ -52,8 +52,8 @@ const messages = defineMessages({
     defaultMessage: 'Later'
   },
   environment: {
-    id: 'publishForm.environment',
-    defaultMessage: 'Environment'
+    id: 'publishForm.publishingTargetDropdownLabel',
+    defaultMessage: 'Publishing Target'
   },
   environmentLoading: {
     id: 'publishForm.environmentLoading',
@@ -61,7 +61,7 @@ const messages = defineMessages({
   },
   environmentError: {
     id: 'publishForm.environmentError',
-    defaultMessage: 'Failed to load environments.'
+    defaultMessage: 'Publishing targets load failed.'
   },
   environmentRetry: {
     id: 'publishForm.environmentRetry',

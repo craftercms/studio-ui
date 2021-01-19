@@ -291,6 +291,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     apiState,
     classes
   } = props;
+
   return (
     <>
       <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} />
@@ -339,7 +340,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton autoFocus onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
+        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
           {apiState.submitting ? (
             <CircularProgress className={classes.btnSpinner} size={20} />
           ) : (

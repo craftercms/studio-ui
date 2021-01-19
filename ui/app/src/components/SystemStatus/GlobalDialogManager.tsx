@@ -338,6 +338,7 @@ function GlobalDialogManager() {
         open={state.createFile.open}
         path={state.createFile.path}
         type={state.createFile.type}
+        allowBraces={state.createFile.allowBraces}
         onClose={createCallback(state.createFile.onClose, dispatch)}
         onClosed={createCallback(state.createFile.onClosed, dispatch)}
         onCreated={createCallback(state.createFile.onCreated, dispatch)}

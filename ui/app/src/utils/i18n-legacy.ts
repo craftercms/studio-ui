@@ -1423,6 +1423,10 @@ export const itemSuccessMessages = defineMessages({
     defaultMessage:
       '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
   },
+  itemCreated: {
+    id: 'item.created',
+    defaultMessage: 'Item created successfully'
+  },
   itemEdited: {
     id: 'item.edited',
     defaultMessage: 'Item updated successfully'

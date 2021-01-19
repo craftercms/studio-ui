@@ -495,7 +495,7 @@ CStudioAuthoring.Module.requireModule(
                     var filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
                     var filenameElement = document.createElement('p');
                     filenameElement.className = 'fileName';
-                    filenameElement.innerHTML = filename;
+                    filenameElement.textContent = filename;
                     const nameWrapper = document.createElement('div');
                     nameWrapper.className = 'nameWrapper';
                     nameWrapper.appendChild(filenameElement);

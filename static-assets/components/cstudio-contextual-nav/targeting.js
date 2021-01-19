@@ -21,7 +21,7 @@ if (!$.prototype.timezones) {
 /**
  * Preview Tools
  */
-CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.TargetingMod || {
+CStudioAuthoring.ContextualNav.TargetingMod = {
   initialized: false,
   formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
   messages: CrafterCMSNext.i18n.messages.targetingDialog,
@@ -170,7 +170,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                     var labelSpan = document.createElement('span');
                     YAHOO.util.Dom.addClass(labelSpan, 'control-label bold');
                     labelSpan.style.cssText = 'min-width: 80px; display: inline-block; margin-right: 20px;';
-                    labelSpan.innerHTML = currentProp.label;
+                    labelSpan.textContent = currentProp.label;
                     targetingContainerEl.appendChild(controlContainer);
                     controlContainer.appendChild(labelSpan);
 
@@ -281,7 +281,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                     var description = document.createElement('span');
                     YAHOO.util.Dom.addClass(description, 'description');
-                    description.innerHTML = currentProp.description;
+                    description.textContent = currentProp.description;
 
                     description.style.cssText =
                       'color: #999999; display: block; margin-left: 100px; text-align: justify; margin-top: 5px;';
@@ -289,7 +289,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                     var hint = document.createElement('span');
                     YAHOO.util.Dom.addClass(hint, 'hint');
-                    hint.innerHTML = currentProp.hint;
+                    hint.textContent = currentProp.hint;
                     hint.style.cssText = 'color: #999999; margin-left: 100px; text-align: justify; margin-top: 5px;';
                     controlContainer.appendChild(hint);
                   }
@@ -299,15 +299,16 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           });
 
           var actionButtonsContainer = document.createElement('div');
-          actionButtonsContainer.style.cssText = 'position: absolute; bottom: 15px; right: 15px;';
+          actionButtonsContainer.style.cssText =
+            'position: absolute; bottom: 15px; right: 15px; left: 15px; display: flex; place-content: center space-between';
           YAHOO.util.Dom.addClass(actionButtonsContainer, 'action-buttons');
 
           const targetingMod = CStudioAuthoring.ContextualNav.TargetingMod;
 
           var clearBtn = document.createElement('a');
           YAHOO.util.Dom.addClass(clearBtn, 'btn btn-primary mr10');
+          clearBtn.style.marginRight = 'auto';
           clearBtn.innerHTML = targetingMod.formatMessage(targetingMod.messages.defaults);
-          actionButtonsContainer.appendChild(clearBtn);
           clearBtn.onclick = function() {
             CStudioAuthoring.Service.lookupConfigurtion(
               CStudioAuthoringContext.site,
@@ -369,28 +370,33 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           };
 
           var applyBtn = document.createElement('a');
-          YAHOO.util.Dom.addClass(applyBtn, 'btn btn-primary mr10');
+          YAHOO.util.Dom.addClass(applyBtn, 'btn btn-primary');
           applyBtn.innerHTML = CMgs.format(previewLangBundle, 'apply');
-          actionButtonsContainer.appendChild(applyBtn);
           applyBtn.onclick = function() {
             me.updateTargeting(reportContainerEl);
           };
 
+          var separatorDiv = document.createElement('div');
+
           this.bindEvents();
 
           var cancelBtn = document.createElement('a');
-          YAHOO.util.Dom.addClass(cancelBtn, 'btn btn-default');
+          YAHOO.util.Dom.addClass(cancelBtn, 'btn btn-default mr10');
           cancelBtn.innerHTML = CMgs.format(previewLangBundle, 'cancel');
-          actionButtonsContainer.appendChild(cancelBtn);
           cancelBtn.onclick = function() {
             me.closeDialog(reportContainerEl);
             $(document).off('keyup');
           };
 
+          actionButtonsContainer.appendChild(clearBtn);
+          separatorDiv.appendChild(cancelBtn);
+          separatorDiv.appendChild(applyBtn);
+          actionButtonsContainer.appendChild(separatorDiv);
+
           reportContainerEl.appendChild(actionButtonsContainer);
         },
 
-        //update model from current form and save on profile
+        // update model from current form and save on profile
         updateTargeting: function(reportContainerEl) {
           this.updateModel();
 
@@ -427,7 +433,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           document.body.removeChild(reportContainerEl);
         },
 
-        //model created from xml config file and currentProfile
+        // model created from xml config file and currentProfile
         initModel: function(properties, callback) {
           var me = this,
             properties = properties;
@@ -466,7 +472,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           });
         },
 
-        //get model from current form
+        // get model from current form
         updateModel: function() {
           var me = this,
             test = $('#targeting-container .control-container'),

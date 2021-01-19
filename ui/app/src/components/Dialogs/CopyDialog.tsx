@@ -271,7 +271,9 @@ function CopyDialogUI(props: CopyDialogProps) {
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onClose}>{formatMessage(messages.cancel)}</SecondaryButton>
-        <PrimaryButton onClick={onCopy}>{formatMessage(messages.copy)}</PrimaryButton>
+        <PrimaryButton autoFocus onClick={onCopy}>
+          {formatMessage(messages.copy)}
+        </PrimaryButton>
       </DialogFooter>
     </>
   );

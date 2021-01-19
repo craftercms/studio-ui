@@ -245,13 +245,11 @@
       YDom.addClass(toggleEl, 'acn-accordion-toggle');
       YDom.addClass(panelEl, 'acn-accordion-panel');
 
+      const span = document.createElement('span');
+      span.textContent = CMgs.format(previewLangBundle, moduleConfig.config.title);
+
       toggleEl.href = '#';
-      toggleEl.innerHTML =
-        '<span data-translation="' +
-        moduleConfig.config.title +
-        '">' +
-        CMgs.format(previewLangBundle, moduleConfig.config.title) +
-        '</span>';
+      toggleEl.appendChild(span);
       moduleEl.id = moduleConfig.config.moduleName + '-elem';
       headerEl.appendChild(toggleEl);
 

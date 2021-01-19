@@ -153,8 +153,9 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       '</div>' +
       '</div>' +
       '<div class="contentTypePopupBtn" id="crop-popup-btns"> ' +
+      '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel" />' +
       '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cropButton" value="Crop" />' +
-      '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel" /></div>' +
+      '</div>' +
       '</div>' +
       '</div> ' +
       '</div>';

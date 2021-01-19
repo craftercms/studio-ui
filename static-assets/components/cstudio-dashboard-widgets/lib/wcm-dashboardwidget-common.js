@@ -236,7 +236,6 @@ WcmDashboardWidgetCommon.getDisplayName = function(item) {
   if (hasLastName) {
     displayName += item.userLastName;
   }
-
   var hasFirstName = !CStudioAuthoring.Utils.isEmpty(item.userFirstName);
   if (hasFirstName) {
     displayName += hasLastName ? ', ' + item.userFirstName : item.userFirstName;
@@ -856,6 +855,9 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
                       payload: {
                         path
                       }
+                    },
+                    {
+                      type: 'CLOSE_EDIT_DIALOG'
                     }
                   ]
                 },
@@ -907,6 +909,9 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
                   payload: {
                     path
                   }
+                },
+                {
+                  type: 'CLOSE_EDIT_DIALOG'
                 }
               ]
             },

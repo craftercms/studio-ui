@@ -21,16 +21,17 @@ import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
   showCopyItemSuccessNotification,
+  showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
   showPasteItemSuccessNotification,
   showPublishItemSuccessNotification,
+  showRejectItemSuccessNotification,
   showRevertItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification,
-  showRejectItemSuccessNotification,
   storeInitialized
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
@@ -107,6 +108,19 @@ const systemEpics: CrafterCMSEpic[] = [
         hostToHost$.next(
           showSystemNotification({
             message
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showCreateItemSuccessNotification.type),
+      tap(({ payload: { action } }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: getIntl().formatMessage(itemSuccessMessages.itemCreated)
           })
         );
       }),

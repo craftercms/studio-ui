@@ -189,6 +189,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
+
   return (
     <>
       <DialogHeader
@@ -213,7 +214,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
           <FormattedMessage id="deleteDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton
-          autoFocus
           onClick={handleSubmit}
           disabled={apiState.submitting || !selectedItems || selectedItems.length === 0}
         >

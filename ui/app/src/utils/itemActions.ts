@@ -51,6 +51,7 @@ import {
   emitSystemEvent,
   itemCut,
   showCopyItemSuccessNotification,
+  showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
@@ -69,6 +70,7 @@ import {
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
+
 const menuOptions = {
   edit: {
     id: 'edit',
@@ -658,7 +660,7 @@ export const itemActionDispatcher = (
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'template',
-            onCreated: closeCreateFileDialog()
+            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()])
           })
         );
         break;
@@ -668,7 +670,8 @@ export const itemActionDispatcher = (
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: closeCreateFileDialog()
+            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()]),
+            allowBraces: item.path.startsWith('/scripts/rest')
           })
         );
         break;

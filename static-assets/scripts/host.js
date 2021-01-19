@@ -126,24 +126,6 @@
 
   // Opens studio form on pencil click
   communicator.subscribe(Topics.ICE_ZONE_ON, function(message, scope) {
-    var subscribeCallback = function(_message) {
-      switch (_message.type) {
-        case 'FORM_ENGINE_RENDER_COMPLETE': {
-          amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-          CStudioAuthoring.InContextEdit.messageDialogs({
-            type: 'OPEN_CHILD_COMPONENT',
-            key: message.embeddedItemId,
-            iceId: message.iceId ? message.iceId : null,
-            edit: true
-          });
-          break;
-        }
-      }
-    };
-
-    if (message.embeddedItemId) {
-      amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-    }
     var isWrite = false;
     var par = [];
     var currentPath = message.itemId ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
@@ -152,32 +134,75 @@
       cacheContentKey =
         CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
       isContentCached = cache.get(cacheContentKey);
-    var isLockOwner = function(lockOwner) {
-      if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
-        par = [];
-        isWrite = false;
-        par.push({ name: 'readonly' });
-      }
-    };
-    var editCb = {
-      success: function(contentTO, editorId, name, value, draft) {
-        if (CStudioAuthoringContext.isPreview) {
-          try {
-            CStudioAuthoring.Operations.refreshPreview();
-          } catch (err) {
-            if (!draft) {
-              this.callingWindow.location.reload(true);
-            }
+
+    const openForm = function(path, readonly) {
+      const site = CrafterCMSNext.system.store.getState().sites.active;
+      const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
+      const legacyFormSrc = `${authoringBase}/legacy/form`;
+      const eventIdSuccess = 'editDialogSuccess';
+      const eventIdDismissed = 'editDialogDismissed';
+      let unsubscribe, cancelUnsubscribe;
+
+      const qs = CrafterCMSNext.util.object.toQueryString({
+        site: site,
+        path: path,
+        type: 'form',
+        readonly: readonly,
+        iceId: message.embeddedItemId ? null : message.iceId,
+        isHidden: !!message.embeddedItemId,
+        modelId: message.embeddedItemId ? message.embeddedItemId : null
+      });
+      const src = `${legacyFormSrc}${qs}`;
+
+      CrafterCMSNext.system.store.dispatch({
+        type: 'SHOW_EDIT_DIALOG',
+        payload: {
+          src: src,
+          onSaveSuccess: {
+            type: 'BATCH_ACTIONS',
+            payload: [
+              {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: eventIdSuccess }
+              },
+              {
+                type: 'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+              },
+              {
+                type: 'CLOSE_EDIT_DIALOG'
+              }
+            ]
+          },
+          onCancel: {
+            type: 'BATCH_ACTIONS',
+            payload: [
+              {
+                type: 'CLOSE_EDIT_DIALOG'
+              },
+              {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: eventIdDismissed }
+              }
+            ]
           }
         }
+      });
+
+      unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        const draft = response.action === 'save';
         if (CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
           eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
           eventNS.typeAction = '';
           document.dispatchEvent(eventNS);
         }
-      },
-      failure: function() {}
+        cancelUnsubscribe();
+      });
+
+      cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
+        unsubscribe();
+      });
     };
+
     var editPermsCallback = {
       success: function(response) {
         if (!isPermissionCached) {
@@ -187,38 +212,33 @@
         if (!isWrite) {
           par.push({ name: 'readonly' });
         }
+
         if (!message.itemId) {
           // base page edit
-          isLockOwner(CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner);
-          CStudioAuthoring.Operations.performSimpleIceEdit(
-            CStudioAuthoring.SelectedContent.getSelectedContent()[0],
-            message.iceId, //field
-            isWrite,
-            editCb,
-            par
-          );
+          const readonly =
+            isWrite === false ||
+            (CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner !== '' &&
+              CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner !== null &&
+              CStudioAuthoringContext.user !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner);
+
+          openForm(CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, readonly);
         } else {
           var getContentItemsCb = {
             success: function(contentTO) {
               if (!isContentCached) {
                 cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
               }
-              isLockOwner(contentTO.item.lockOwner);
-              CStudioAuthoring.Operations.performSimpleIceEdit(
-                contentTO.item,
-                message.embeddedItemId ? null : this.iceId, //field
-                isWrite,
-                this.editCb,
-                par,
-                null,
-                message.embeddedItemId ? true : false
-              );
+              const readonly =
+                isWrite === false ||
+                (contentTO.item.lockOwner !== '' &&
+                  contentTO.item.lockOwner !== null &&
+                  CStudioAuthoringContext.user !== contentTO.item.lockOwner);
+
+              openForm(contentTO.item.uri, readonly);
             },
             failure: function() {
               callback.failure();
-            },
-            iceId: message.iceId,
-            editCb: editCb
+            }
           };
 
           if (isContentCached) {

@@ -285,8 +285,11 @@
         }
       }
 
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = label;
+
       toolContainerEl.appendChild(span);
-      toolContainerEl.innerHTML += label;
+      toolContainerEl.appendChild(labelSpan);
       YDom.addClass(toolContainerEl, 'cstudio-admin-console-item');
 
       var elId = label.replace(/\s+/g, '-').toLowerCase();

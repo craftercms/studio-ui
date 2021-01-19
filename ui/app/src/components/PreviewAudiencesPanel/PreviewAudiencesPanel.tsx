@@ -20,7 +20,6 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Button from '@material-ui/core/Button';
 import { useActiveSiteId, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
@@ -37,6 +36,8 @@ import CheckboxGroup from '../Controls/FormEngine/CheckboxGroup';
 import DateTime from '../Controls/FormEngine/DateTime';
 import LookupTable from '../../models/LookupTable';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { PrimaryButton } from '../PrimaryButton';
+import { SecondaryButton } from '../SecondaryButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,8 +61,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     actionButton: {
       margin: '18px 0 80px 15px',
-      '& .MuiButton-contained': {
-        marginRight: '8px'
+      '& .MuiButton-root': {
+        marginRight: theme.spacing(1)
       }
     },
     divider: {
@@ -142,18 +143,15 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             {Object.keys(fields).map((fieldId: string) => {
               const type = fields[fieldId].type;
               const Control = controlsMap[type];
-
               const controlProps = {
                 field: fields[fieldId],
                 value: model[fieldId] ?? undefined,
                 onChange: onFieldChange(fieldId, type),
                 disabled: modelApplying
               };
-
               if (controlProps.field.type === 'date-time' && model[`${fieldId}_tz`]) {
                 controlProps['timezone'] = model[`${fieldId}_tz`];
               }
-
               return (
                 <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
                   <Control {...controlProps} />
@@ -162,12 +160,12 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             })}
           </Grid>
           <Grid className={classes.actionButton}>
-            <Button variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
-              <FormattedMessage id="audiencesPanel.defaults" defaultMessage={`Defaults`} />
-            </Button>
-            <Button variant="contained" color="primary" onClick={() => onSaveModel()}>
-              <FormattedMessage id="audiencesPanel.apply" defaultMessage={`Apply`} />
-            </Button>
+            <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
+              <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
+            </SecondaryButton>
+            <PrimaryButton onClick={() => onSaveModel()}>
+              <FormattedMessage id="audiencesPanel.apply" defaultMessage="Apply" />
+            </PrimaryButton>
           </Grid>
         </>
       }

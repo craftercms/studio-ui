@@ -1,6 +1,7 @@
 {
   "name": "@craftercms/studio-ui",
-  "version": "1.0.0-alpha.3",
+  "description": "Services, components, models & utils to build Crafter CMS authoring extensions.",
+  "version": "1.0.0-alpha.4",
   "private": true,
   "repository": {
     "type": "git",
@@ -66,8 +67,8 @@
     "build:tsc": "tsc -p tsconfig.build.json",
     "format:npm": "prettier --config ../../prettier.config.js ./build_tsc/**/*.{js,ts} --write",
     "package:npm": "node scripts/package.js",
-    "build:npm": "yarn clean:npm && yarn build:tsc && yarn clean:models && yarn package:npm",
-    "clean:npm": "rimraf ./build_tsc",
+    "build:npm": "run-s clean:npm build:tsc clean:models package:npm",
+    "clean:npm": "rimraf ./build_tsc ./tsconfig.build.tsbuildinfo",
     "clean:models": "rimraf ./build_tsc/models/*.{js,map}",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",

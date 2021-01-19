@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { WidgetState } from '../../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
@@ -36,7 +36,7 @@ import {
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
 
-const reducer = createReducer<LookupTable<WidgetState>>(
+const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
   {
     [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {

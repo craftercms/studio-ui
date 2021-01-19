@@ -91,23 +91,21 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       CMgs.format(formsLangBundle, 'newContTypeDialogContentTypeNamelMsg') +
       '" id="contentTypeName" type="text"></label>' +
       '<div class="selectInput">' +
-      '<label for="contentTypeObjectType">' +
-      CMgs.format(formsLangBundle, 'newContTypeDialogType') +
-      ':</label>' +
-      '<select title="' +
-      CMgs.format(formsLangBundle, 'newContTypeDialogTypeMsg') +
-      '" id="contentTypeObjectType">' +
+      `<label for="contentTypeObjectType">${CMgs.format(formsLangBundle, 'newContTypeDialogType')}:</label>` +
+      `<select title="${CMgs.format(formsLangBundle, 'newContTypeDialogTypeMsg')}" id="contentTypeObjectType">` +
       '</select></div>' +
       '<label style="display:none;" class="checkboxInput" for="contentTypeAsFolder"><span>Model as index (content as folder)</span>' +
       '<input style="display:none;" id="contentTypeAsFolder" type="checkbox" checked="true"></label>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
-      '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' +
-      CMgs.format(formsLangBundle, 'create') +
-      '" disabled="disabled" />' +
-      '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="' +
-      CMgs.format(formsLangBundle, 'cancel') +
-      '" />' +
+      `<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="${CMgs.format(
+        formsLangBundle,
+        'cancel'
+      )}" />` +
+      `<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="${CMgs.format(
+        formsLangBundle,
+        'create'
+      )}" disabled="disabled" />` +
       '</div>' +
       '</div>';
 

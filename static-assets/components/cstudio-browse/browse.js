@@ -223,7 +223,7 @@
       }
 
       if (key === 'internalName') {
-        this.text = value;
+        this.text = CrafterCMSNext.util.string.escapeHTML(value);
       } else {
         return value;
       }

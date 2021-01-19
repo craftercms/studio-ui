@@ -204,31 +204,33 @@ export function getSiteUiConfig(
 ): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
+      const config = uiConfigDefaults;
       if (xml) {
-        const widgets = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
-        if (widgets) {
+        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+        const renameTable = { permittedRoles: 'roles' };
+        const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
+        if (toolsPanelPages) {
           // When rendering widgets dynamically and changing pages on the tools panel, if there are duplicate react key
           // props across pages, react may no swap the components correctly, incurring in unexpected behaviours.
           // We need a unique key for each widget.
-          widgets.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+          toolsPanelPages.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
           const lookupTables = ['fields'];
-          const renameTable = { permittedRoles: 'roles' };
-          return {
-            preview: {
-              toolsPanel: applyDeserializedXMLTransforms(deserialize(widgets), { arrays, lookupTables, renameTable })
-            },
-            // TODO: parse XML.
-            globalNav: {
-              sections: []
-            }
-          };
-        } else {
-          return uiConfigDefaults;
+          config.preview.toolsPanel = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
+            arrays,
+            lookupTables,
+            renameTable
+          });
         }
-      } else {
-        return uiConfigDefaults;
+        const siteNavSection = xml.querySelector('[id="craftercms.components.GlobalNavSiteSection"] > configuration');
+        if (siteNavSection) {
+          siteNavSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          config.siteNav = applyDeserializedXMLTransforms(deserialize(siteNavSection), {
+            arrays,
+            renameTable
+          }).configuration;
+        }
       }
+      return config;
     })
   );
 }

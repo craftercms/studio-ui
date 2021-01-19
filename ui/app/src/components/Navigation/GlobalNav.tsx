@@ -344,7 +344,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles();
   const [menuItems, setMenuItems] = useState(null);
-  const sections = useSiteUIConfig().globalNav.sections;
+  const siteNav = useSiteUIConfig().siteNav;
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
@@ -521,19 +521,21 @@ export default function GlobalNav(props: GlobalNavProps) {
                 />
               </nav>
               {/* region Site */}
-              {sections.map((section) => (
-                <Fragment key={section.uiKey}>
-                  <Typography
-                    variant="subtitle1"
-                    component="h2"
-                    className={classes.title}
-                    style={{ margin: '0px 0 10px 0' }}
-                  >
-                    {typeof section.title === 'string' ? section.title : formatMessage(section.title)}
-                  </Typography>
-                  <nav className={classes.sitesApps}>{renderWidgets(section.widgets, section.roles)}</nav>
-                </Fragment>
-              ))}
+              {site && siteNav && (
+                <>
+                  {siteNav.title && (
+                    <Typography
+                      variant="subtitle1"
+                      component="h2"
+                      className={classes.title}
+                      style={{ margin: '0 0 10px 0' }}
+                    >
+                      {typeof siteNav.title === 'string' ? siteNav.title : formatMessage(siteNav.title)}
+                    </Typography>
+                  )}
+                  <nav className={classes.sitesApps}>{renderWidgets(siteNav.widgets, user.rolesBySite[site])}</nav>
+                </>
+              )}
               {/* endregion */}
             </div>
             <div className={classes.railBottom}>

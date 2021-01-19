@@ -38,7 +38,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
-import { WidgetState } from '../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../components/Navigation/PathNavigator/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
@@ -194,12 +194,14 @@ export interface GlobalState {
         widgets: WidgetDescriptor[];
       };
     };
-    globalNav: {
-      sections: { uiKey: number; title: string | MessageDescriptor; widgets: WidgetDescriptor[]; roles?: string[] }[];
+    siteNav: {
+      title: string | MessageDescriptor;
+      roles?: string[];
+      widgets: any;
     };
   };
   pathNavigator: {
-    [id: string]: WidgetState;
+    [id: string]: PathNavigatorStateProps;
   };
 }
 

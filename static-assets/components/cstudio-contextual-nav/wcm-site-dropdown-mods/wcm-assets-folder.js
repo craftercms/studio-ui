@@ -174,8 +174,8 @@ var storage = CStudioAuthoring.Storage;
 
       parentFolderLinkEl.appendChild(moduleClosed);
       parentFolderLinkEl.appendChild(moduleOpen);
+      parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
-      parentFolderLinkEl.innerHTML += label;
       parentFolderLinkEl.onclick = CStudioAuthoring.ContextualNav.WcmAssetsFolder.onRootFolderClick;
       parentFolderLinkEl.componentInstance = instance;
 
