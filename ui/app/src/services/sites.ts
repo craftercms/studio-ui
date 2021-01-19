@@ -15,8 +15,8 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { CreateSiteMeta, Site } from '../models/Site';
-import { map } from 'rxjs/operators';
+import { Action, ContentValidationResult, CreateSiteMeta, Site } from '../models/Site';
+import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
@@ -65,4 +65,16 @@ export function updateSite(site: Site) {
 
 export function checkHandleAvailability(name: string) {
   return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`);
+}
+
+export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult> {
+  return postJSON(`/studio/api/2/sites/${site}/policy/validate`, {
+    actions: [action]
+  }).pipe(pluck('response', 'results', '0'));
+}
+
+export function validateActionsPolicy(site: string, actions: Action[]): Observable<ContentValidationResult[]> {
+  return postJSON(`/studio/api/2/sites/${site}/policy/validate`, {
+    actions
+  }).pipe(pluck('response', 'results'));
 }

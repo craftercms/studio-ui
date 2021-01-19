@@ -30,6 +30,7 @@ import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
+import { validateActionPolicy } from '../../services/sites';
 
 export const translations = defineMessages({
   placeholder: {
@@ -125,16 +126,32 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           }
         );
       } else {
-        createFolder(site, path, encodeURIComponent(name)).subscribe(
-          (resp) => {
-            onCreated?.({ path, name, rename });
-            dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
-          },
-          (response) => {
-            setState({ inProgress: false, submitted: true });
-            dispatch(showErrorDialog({ error: response }));
+        validateActionPolicy(site, {
+          type: 'CREATE',
+          target: `${path}/${name}`
+        }).subscribe(({ allowed, modifiedValue }) => {
+          if (allowed) {
+            let _name = modifiedValue ? modifiedValue.replace(`${path}/`, '') : name;
+            createFolder(site, path, encodeURIComponent(_name)).subscribe(
+              (resp) => {
+                onCreated?.({ path, name: _name, rename });
+                dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
+              },
+              (response) => {
+                setState({ inProgress: false, submitted: true });
+                dispatch(showErrorDialog({ error: response }));
+              }
+            );
+          } else {
+            dispatch(
+              showErrorDialog({
+                error: {
+                  message: 'Not supported.'
+                }
+              })
+            );
           }
-        );
+        });
       }
     }
   };

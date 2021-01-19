@@ -113,3 +113,21 @@ export interface LegacySite {
   siteId: string;
   desc: string;
 }
+
+export interface Action {
+  type: string;
+  source?: string;
+  target: string;
+  recursive?: boolean;
+  contentMetadata?: {
+    fileSize?: number;
+    contentType?: string;
+  };
+}
+
+export interface ContentValidationResult {
+  type: string;
+  target: string;
+  allowed: boolean;
+  modifiedValue: string;
+}
