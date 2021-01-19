@@ -135,7 +135,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
             createFolder(site, path, encodeURIComponent(_name)).subscribe(
               (resp) => {
                 onCreated?.({ path, name: _name, rename });
-                dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
+                dispatch(emitSystemEvent(folderCreated({ target: path, name: _name })));
               },
               (response) => {
                 setState({ inProgress: false, submitted: true });
