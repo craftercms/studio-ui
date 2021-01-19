@@ -378,7 +378,9 @@ CStudioAuthoring.Module.requireModule(
 
             paste_data_images: true,
             paste_postprocess: function(plugin, args) {
-              if (!_thisControl.editorImageDatasources.length) {
+              // If no text, and external it means that is dragged
+              // text validation is because it can be text copied from outside the editor
+              if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
                 args.preventDefault();
                 _thisControl.editor.notificationManager.open({
                   text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
