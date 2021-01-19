@@ -44,6 +44,8 @@ import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { getCurrentLocale } from '../../utils/i18n';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
+import Typography from '@material-ui/core/Typography';
+import ListSubheader from '@material-ui/core/ListSubheader';
 
 // region Typings
 
@@ -111,6 +113,26 @@ const useStyles = makeStyles((theme) =>
       '& textarea[aria-hidden="true"]': {
         width: '50% !important'
       }
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    submittedBy: {
+      flexGrow: 0,
+      width: '100px',
+      textAlign: 'right',
+      alignSelf: 'flex-start'
+    },
+    listSubHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      borderBottom: `1px solid ${palette.gray.light5}`,
+      lineHeight: '30px'
+    },
+    subHeaderItem: {
+      marginLeft: '40px'
     }
   })
 );
@@ -129,7 +151,19 @@ function RejectDialogContentUI(props: RejectDialogContentUIProps) {
   const rejectItems = resource.read();
 
   return (
-    <List className={classes.itemsList}>
+    <List
+      subheader={
+        <ListSubheader component="div" className={classes.listSubHeader}>
+          <label className={classes.subHeaderItem}>
+            <FormattedMessage id="words.item" defaultMessage="Item" />
+          </label>
+          <label>
+            <FormattedMessage id="rejectDialog.submittedBy" defaultMessage="Submitted By" />
+          </label>
+        </ListSubheader>
+      }
+      className={classes.itemsList}
+    >
       {rejectItems.map((item) => {
         const labelId = `checkbox-list-label-${item.path}`;
 
@@ -145,7 +179,20 @@ function RejectDialogContentUI(props: RejectDialogContentUIProps) {
                 color="primary"
               />
             </ListItemIcon>
-            <ListItemText primary={item.label} secondary={item.path} id={labelId} />
+            <ListItemText
+              primary={item.label}
+              secondary={item.path}
+              id={labelId}
+              primaryTypographyProps={{
+                classes: { root: classes.ellipsis }
+              }}
+              secondaryTypographyProps={{
+                classes: { root: classes.ellipsis }
+              }}
+            />
+            <ListItemText disableTypography={true} className={classes.submittedBy}>
+              <Typography>{item.modifier}</Typography>
+            </ListItemText>
           </ListItem>
         );
       })}

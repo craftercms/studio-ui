@@ -97,6 +97,9 @@ export interface LegacyItem {
   contentType: string;
   internalName: string;
   children: LegacyItem[];
+  user: string;
+  userFirstName: string;
+  userLastName: string;
   [prop: string]: any;
 }
 
