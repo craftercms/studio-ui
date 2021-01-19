@@ -177,7 +177,12 @@ function NewContentDialogBody(props: NewContentDialogProps) {
 
   useEffect(() => {
     if (selectedItem.path) {
-      fetchLegacyContentTypes(site, selectedItem.path).subscribe(
+      const path =
+        selectedItem.contentTypeId === 'folder' && !selectedItem.path.endsWith('/')
+          ? `${selectedItem.path}/`
+          : selectedItem.path;
+
+      fetchLegacyContentTypes(site, path).subscribe(
         (response) => {
           setContentTypes(response);
         },
