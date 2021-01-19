@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme) =>
     listSubHeader: {
       display: 'flex',
       justifyContent: 'space-between',
-      borderBottom: `1px solid ${palette.gray.light5}`,
+      borderBottom: `1px solid ${theme.palette.divider}`,
       lineHeight: '30px'
     },
     subHeaderItem: {
