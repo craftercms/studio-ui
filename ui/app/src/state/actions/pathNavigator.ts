@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { DetailedItem } from '../../models/Item';
-import { WidgetState } from '../../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -29,7 +29,9 @@ export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: s
   'PATH_NAVIGATOR_SET_LOCALE_CODE'
 );
 
-export const pathNavigatorUpdate = createAction<PayloadWithId<Partial<WidgetState>>>('PATH_NAVIGATOR_UPDATE');
+export const pathNavigatorUpdate = createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>(
+  'PATH_NAVIGATOR_UPDATE'
+);
 
 export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed: boolean }>>(
   'PATH_NAVIGATOR_SET_COLLAPSED'
