@@ -37,7 +37,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
-import palette from '../../styles/palette';
 import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
@@ -96,11 +95,11 @@ export interface RejectDialogStateProps extends RejectDialogBaseProps {
 
 // endregion
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     itemsList: {
-      border: `1px solid ${palette.gray.light5}`,
-      backgroundColor: palette.white,
+      border: `1px solid ${theme.palette.divider}`,
+      background: theme.palette.background.paper,
       padding: 0,
       height: '100%'
     },
@@ -212,6 +211,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 </InputLabel>
                 <Select
                   fullWidth
+                  autoFocus
                   input={<SelectInput />}
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value as string)}
@@ -259,7 +259,6 @@ function RejectDialogUI(props: RejectDialogUIProps) {
         {onReject && (
           <PrimaryButton
             onClick={onReject}
-            autoFocus
             disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
           >
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />

@@ -358,8 +358,8 @@
     </div>
 
     <div class="modal-footer" id="new-user-dialog-footer">
-      <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-      <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+      <button type="button" ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+      <button type="button" ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize save-new-user" ng-if="dialogMode"
               ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externallyManaged || validPass">{{ 'admin.users.SAVE' | translate }}</button>
     </div>
@@ -418,8 +418,8 @@
     </div>
 
     <div class="modal-footer" id="new-user-dialog-footer">
-      <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-      <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+      <button type="button" ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+      <button type="button" ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize"
               ng-click="okModalFunction(user)" ng-disabled="passwordForm.$invalid || user.externallyManaged || validResetPass">{{ 'admin.users.SAVE' | translate }}</button>
     </div>

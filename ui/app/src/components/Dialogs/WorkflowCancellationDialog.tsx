@@ -30,7 +30,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 
@@ -71,7 +70,7 @@ export interface WorkflowCancellationDialogStateProps extends WorkflowCancellati
 
 // endregion
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     contentRoot: {
       height: '254px'
@@ -83,8 +82,8 @@ const useStyles = makeStyles(() =>
     },
     filesList: {
       height: '100%',
-      border: '1px solid #D8D8DC',
-      backgroundColor: palette.white,
+      border: `1px solid ${theme.palette.divider}`,
+      background: theme.palette.background.paper,
       padding: 0
     }
   })

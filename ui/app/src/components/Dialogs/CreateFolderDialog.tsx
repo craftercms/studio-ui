@@ -196,7 +196,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onOk} autoFocus disabled={inProgress || name === ''}>
+        <PrimaryButton onClick={onOk} disabled={inProgress || name === ''}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
