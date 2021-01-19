@@ -1,11 +1,10 @@
-
 $dark-mode-background-default: #212121;
 $dark-mode-background-default-dimmed: #21212150;
 $dark-mode-background-paper: #424242;
 $dark-mode-font-color: #fff;
-$dark-mode-font-highlight: #70D7FF;
+$dark-mode-font-highlight: #70d7ff;
 $dark-mode-button-outlined-border: rgba(255, 255, 255, 0.23);
-$dark-mode-button-primary: #409CFF;
+$dark-mode-button-primary: #409cff;
 $dark-mode-button-primary-color: rgba(0, 0, 0, 0.87);
 $dark-mode-button-primary-color-hover: rgb(44, 109, 178);
 $dark-mode-hover: rgba(255, 255, 255, 0.08);
@@ -30,7 +29,7 @@ $dark-mode-input-border: #ced4da;
     background: $dark-mode-background-paper;
   }
   #studioBar {
-    &> .navbar-fixed-top {
+    & > .navbar-fixed-top {
       color: $dark-mode-font-color;
       background-color: $dark-mode-background-default;
 
@@ -39,12 +38,14 @@ $dark-mode-input-border: #ced4da;
       }
 
       #activeContentActions {
-        .acn-link a, .context-nav-title-element{
+        .acn-link a,
+        .context-nav-title-element {
           color: $dark-mode-font-color;
         }
       }
 
-      #activeContentActions, #toolbarGlobalNav {
+      #activeContentActions,
+      #toolbarGlobalNav {
         border-color: transparent;
       }
     }
@@ -56,7 +57,8 @@ $dark-mode-input-border: #ced4da;
 
   // Typography
 
-  p, label {
+  p,
+  label {
     color: $dark-mode-font-color;
   }
 
@@ -66,7 +68,8 @@ $dark-mode-input-border: #ced4da;
     border: 0;
     color: $dark-mode-button-primary-color;
     background: $dark-mode-button-primary;
-    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.12);
   }
 
   .btn-primary:hover {
@@ -87,7 +90,8 @@ $dark-mode-input-border: #ced4da;
   // Table
 
   .table {
-    th, td {
+    th,
+    td {
       color: $dark-mode-font-color;
       border-color: $dark-mode-divider;
     }
@@ -129,14 +133,16 @@ $dark-mode-input-border: #ced4da;
   }
 
   // Inputs
-  input, .form-control {
+  input,
+  .form-control {
     border-color: $dark-mode-input-border;
     background: none;
     color: $dark-mode-font-color;
   }
 
   .admin-console-view {
-    .screen-title, .screen-title h1 {
+    .screen-title,
+    .screen-title h1 {
       color: $dark-mode-font-color;
       background: none;
       border-color: $dark-mode-divider;
@@ -150,7 +156,8 @@ $dark-mode-input-border: #ced4da;
           color: $dark-mode-font-color;
         }
       }
-      .global-menu--item-link:hover, .global-menu--item-link:focus  {
+      .global-menu--item-link:hover,
+      .global-menu--item-link:focus {
         color: $dark-mode-font-color;
         background: $dark-mode-background-default !important;
       }
@@ -159,7 +166,8 @@ $dark-mode-input-border: #ced4da;
       color: $dark-mode-font-color;
     }
 
-    .global-menu--item-link:hover, .global-menu--item-link:focus {
+    .global-menu--item-link:hover,
+    .global-menu--item-link:focus {
       color: $dark-mode-font-color;
       background-color: $dark-mode-hover !important;
     }
@@ -183,7 +191,8 @@ $dark-mode-input-border: #ced4da;
   body:not(.user-dashboard) .craftercms-entitlement {
     border-color: $dark-mode-background-default-dimmed !important;
     .craftercms-entitlement-copy {
-      &, a {
+      &,
+      a {
         color: $dark-mode-font-color;
       }
     }
@@ -197,7 +206,10 @@ $dark-mode-input-border: #ced4da;
       border-color: $dark-mode-background-default-dimmed;
     }
 
-    #acn-sites-link, .acn-parent-folder, .acn-admin-console, .ygtvcell {
+    #acn-sites-link,
+    .acn-parent-folder,
+    .acn-admin-console,
+    .ygtvcell {
       color: $dark-mode-font-color;
     }
 
@@ -206,7 +218,8 @@ $dark-mode-input-border: #ced4da;
     }
 
     #acn-dropdown-menu-inner {
-      .no-preview, .folder {
+      .no-preview,
+      .folder {
         color: $dark-mode-font-color !important;
       }
     }
@@ -228,7 +241,8 @@ $dark-mode-input-border: #ced4da;
     background-color: $dark-mode-background-paper !important;
     color: $dark-mode-font-color;
 
-    .hd, .acn-accordion-header {
+    .hd,
+    .acn-accordion-header {
       background-color: $dark-mode-background-paper !important;
       color: $dark-mode-font-color !important;
       border: none !important;
@@ -238,7 +252,9 @@ $dark-mode-input-border: #ced4da;
       }
     }
 
-    button, select, input {
+    button,
+    select,
+    input {
       background-color: $dark-mode-background-paper;
       color: $dark-mode-font-color;
       border: 1px solid $dark-mode-font-color;
@@ -249,7 +265,8 @@ $dark-mode-input-border: #ced4da;
     background-color: $dark-mode-background-paper !important;
     color: $dark-mode-font-color;
 
-    select, input {
+    select,
+    input {
       background-color: $dark-mode-background-paper !important;
     }
 
@@ -264,7 +281,11 @@ $dark-mode-input-border: #ced4da;
       background-color: transparent !important;
       border: none;
 
-      .hd, .bd, .ft, .yui-button, .yui-button span {
+      .hd,
+      .bd,
+      .ft,
+      .yui-button,
+      .yui-button span {
         color: $dark-mode-font-color;
         background-color: $dark-mode-background-paper !important;
         border-top: none;

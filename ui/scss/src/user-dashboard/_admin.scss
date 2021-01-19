@@ -36,7 +36,6 @@ table {
     &.break {
       word-break: break-all;
     }
-
   }
 }
 
@@ -72,12 +71,11 @@ table {
 
 .modal-dialog {
   .admin-dialog {
-
     .image-group {
       padding-left: 0;
       position: relative;
 
-      button[type="file"] {
+      button[type='file'] {
         position: absolute;
         top: 0;
         width: 100%;
@@ -167,7 +165,7 @@ table {
 
   .edit-false {
     .image-group {
-      button[type="file"] {
+      button[type='file'] {
         display: none;
       }
     }
@@ -184,7 +182,6 @@ table {
       width: initial;
       height: initial;
       cursor: default !important;
-
     }
   }
 
@@ -232,8 +229,8 @@ table {
       tr {
         cursor: pointer;
 
-
-        &:hover, &.active {
+        &:hover,
+        &.active {
           background-color: #f3f3f3;
         }
 
@@ -314,7 +311,6 @@ table {
 }
 
 .audit-view {
-
   min-height: 435px;
 
   &.operations-open {
@@ -326,7 +322,6 @@ table {
       font-size: 13px;
       margin-top: 3px;
     }
-
   }
 
   .audit-actions .dropdown-menu a.active {
@@ -349,7 +344,6 @@ table {
       /*width: 113px;
       overflow: hidden;*/
     }
-
   }
 
   .well {
@@ -362,7 +356,6 @@ table {
   }
 
   .date-container {
-
     span {
       display: inline-block;
       position: relative;
@@ -382,7 +375,6 @@ table {
         width: 100%;
         text-align: center;
       }
-
     }
 
     .form-control.date {
@@ -396,9 +388,7 @@ table {
         right: 3px;
       }
     }
-
   }
-
 
   .timezoneContainer {
     border-top: 1px solid #ccc;
@@ -413,7 +403,6 @@ table {
       height: 30px;
       text-align: center;
     }
-
   }
 
   .audit-table-container {
@@ -439,7 +428,6 @@ table {
       min-width: 100px;
     }
   }
-
 }
 
 .groups-view {
@@ -467,7 +455,8 @@ table {
   }
 }
 
-.logging-levels-view, .log-console-view {
+.logging-levels-view,
+.log-console-view {
   .actions {
     button {
       height: 30px;
@@ -506,7 +495,6 @@ table {
 }
 
 .publishing-view {
-
   padding: 0 20px;
 
   .panel {
@@ -525,15 +513,14 @@ table {
       #refreshPublish {
         font-size: 12px;
       }
-
     }
 
     .orange {
-      color: #FF8C00;
+      color: #ff8c00;
     }
 
     .red {
-      color: #FF0000;
+      color: #ff0000;
     }
 
     .blue {
@@ -547,15 +534,17 @@ table {
     #publishIcon {
       font-size: 18px;
     }
-
   }
 
   .publish-buttons {
     text-align: right;
   }
 
-  .bulkContainer, .commitsContainer {
-    input, select, textarea {
+  .bulkContainer,
+  .commitsContainer {
+    input,
+    select,
+    textarea {
       max-width: 500px;
     }
 
@@ -563,7 +552,6 @@ table {
       color: red;
     }
   }
-
 }
 
 .audit-number-logs {
@@ -598,7 +586,6 @@ table {
   }
 
   .autocomplete {
-
     //.suggestion-item:hover, .suggestion-item:focus, .suggestion-item:active{
     //  background-color: blue;
     //}
@@ -611,20 +598,17 @@ table {
           font-size: 13px;
         }
       }
-
     }
   }
 }
 
 .admin-console-view {
-
   .tab-content > .tab-pane {
     display: block;
     visibility: visible;
   }
 
   .nav-stacked > li {
-
     border-radius: 4px;
     margin-bottom: 2px;
 
@@ -640,7 +624,6 @@ table {
   .nav-icon {
     min-width: 20px;
   }
-
 }
 
 .global-menu-pagination-wrapper {
@@ -658,7 +641,6 @@ table {
 }
 
 #create-site-dialog {
-
   .wizard-header {
     background-color: #e2e2e2;
     border-bottom: 1px solid #c9c9c9;
@@ -667,7 +649,6 @@ table {
     #wizard-content-container {
       min-height: 100px;
     }
-
   }
 
   #wizard-container {
@@ -694,7 +675,7 @@ table {
     top: 46px;
     height: 47px;
     z-index: 11;
-    content: " ";
+    content: ' ';
   }
 
   ul.nav-wizard:after {
@@ -705,7 +686,7 @@ table {
     top: 138px;
     height: 47px;
     z-index: 11;
-    content: " ";
+    content: ' ';
   }
 
   ul.nav-wizard li {
@@ -727,12 +708,10 @@ table {
 
   ul.nav-wizard li:first-child {
     border-radius: 10px 0px 0px 10px;
-
   }
 
   ul.nav-wizard li:last-child {
     border-radius: 0px 10px 10px 0px;
-
   }
 
   ul.nav-wizard li a {
@@ -807,7 +786,8 @@ table {
   ul.nav-wizard .active ~ li a,
   ul.nav-wizard .active ~ li a:active,
   ul.nav-wizard .active ~ li a:visited,
-  ul.nav-wizard .active ~ li a:focus, .disabledNavBtn {
+  ul.nav-wizard .active ~ li a:focus,
+  .disabledNavBtn {
     color: #999999;
     background: #fffdfd;
     pointer-events: none;
@@ -908,7 +888,7 @@ table {
   }
 
   /* ANIMATIONS
-  ============================================================================= *//**//*
+  ============================================================================= */ /**/ /*
   /* slide out to the left */
   @keyframes slideOutLeft {
     to {
@@ -985,11 +965,9 @@ table {
         overflow: hidden;
       }
     }
-
   }
 
   .carousel {
-
     .flex-viewport {
       background-color: #e2e2e2;
 
@@ -1003,13 +981,12 @@ table {
           object-fit: cover;
           overflow: hidden;
           display: block;
-          opacity: .5;
+          opacity: 0.5;
           cursor: pointer;
 
           &:hover {
             opacity: 1;
           }
-
         }
       }
 
@@ -1018,7 +995,6 @@ table {
         cursor: default;
       }
     }
-
   }
 
   .flex-control-paging {
@@ -1033,7 +1009,6 @@ table {
         height: 8px;
       }
     }
-
   }
 
   .flex-control-thumbs {
@@ -1055,7 +1030,6 @@ table {
         object-fit: cover;
         overflow: hidden;
       }
-
     }
   }
 
@@ -1068,7 +1042,7 @@ table {
 
   .flex-direction-nav a:before {
     font-size: 20px;
-    color: #FFF;
+    color: #fff;
     line-height: 40px;
   }
 
@@ -1077,10 +1051,9 @@ table {
   }
 
   //form
-  input[type="radio"] {
+  input[type='radio'] {
     margin-left: 2px;
   }
-
 
   // Grid
   .grid {
@@ -1184,5 +1157,4 @@ table {
       margin-top: 20px;
     }
   }
-
 }
