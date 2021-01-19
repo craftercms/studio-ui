@@ -59,8 +59,8 @@ const translations = defineMessages({
     defaultMessage: 'Item has no children'
   },
   itemMenu: {
-    id: 'navigator.itemMenu',
-    defaultMessage: 'Item menu'
+    id: 'words.options',
+    defaultMessage: 'Options'
   }
 });
 
@@ -163,7 +163,7 @@ export default function PathNavigatorItem(props: NavItemProps) {
                 } else if (navigable || folder) {
                   onChangeParent?.(item);
                 } else if (previewable) {
-                  onPreview(item);
+                  onPreview?.(item);
                 }
               }}
             >

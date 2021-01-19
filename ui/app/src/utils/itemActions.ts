@@ -51,6 +51,7 @@ import {
   emitSystemEvent,
   itemCut,
   showCopyItemSuccessNotification,
+  showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
@@ -659,7 +660,7 @@ export const itemActionDispatcher = (
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'template',
-            onCreated: closeCreateFileDialog()
+            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()])
           })
         );
         break;
@@ -669,7 +670,7 @@ export const itemActionDispatcher = (
           showCreateFileDialog({
             path: withoutIndex(item.path),
             type: 'controller',
-            onCreated: closeCreateFileDialog(),
+            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()]),
             allowBraces: item.path.startsWith('/scripts/rest')
           })
         );

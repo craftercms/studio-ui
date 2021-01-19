@@ -14,30 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
-import clsx from 'clsx';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
-import {
-  useActiveSiteId,
-  useEnv,
-  useLogicResource,
-  useMount,
-  useSelection,
-  useSiteLocales,
-  useSpreadState
-} from '../../../utils/hooks';
+import { useActiveSiteId, useEnv, useMount, useSelection, useSiteLocales, useSpreadState } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import Suspencified, { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
+import Suspencified from '../../SystemStatus/Suspencified';
 import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
-import { useStyles } from './styles';
 import { translations } from './translations';
-import Header from './PathNavigatorHeader';
-import Breadcrumbs from './PathNavigatorBreadcrumbs';
-import NavItem from './PathNavigatorItem';
-import ItemList from './PathNavigatorList';
 import { languages } from '../../../utils/i18n-legacy';
 import {
   pathNavigatorConditionallySetPath,
@@ -58,10 +43,7 @@ import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialog
 import { getContentXML } from '../../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
-import LookupTable from '../../../models/LookupTable';
 import { StateStylingProps } from '../../../models/UiConfig';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import {
@@ -73,24 +55,8 @@ import {
   itemsPasted,
   itemUpdated
 } from '../../../state/actions/system';
-import List from '@material-ui/core/List';
-import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import { getNumOfMenuOptionsForItem } from '../../../utils/content';
-
-export interface WidgetProps {
-  id: string;
-  label: string;
-  rootPath: string;
-  excludes?: string[];
-  locale?: string;
-  showChildrenRail?: boolean;
-  icon?: Partial<StateStylingProps>;
-  container?: Partial<StateStylingProps>;
-  classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
-  onItemClicked?: (item: DetailedItem) => void;
-  computeActiveItems?: () => string[];
-  createItemClickedHandler?: (defaultHandler: (item: DetailedItem) => void) => (item: DetailedItem) => void;
-}
+import PathNavigatorUI from './PathNavigatorUI';
 
 interface Menu {
   path?: string;
@@ -103,7 +69,22 @@ interface Menu {
   };
 }
 
-export interface WidgetState {
+export interface PathNavigatorProps {
+  id: string;
+  label: string;
+  rootPath: string;
+  excludes?: string[];
+  locale?: string;
+  showChildrenRail?: boolean;
+  icon?: Partial<StateStylingProps>;
+  container?: Partial<StateStylingProps>;
+  classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
+  onItemClicked?: (item: DetailedItem) => void;
+  computeActiveItems?: (items: DetailedItem[]) => string[];
+  createItemClickedHandler?: (defaultHandler: (item: DetailedItem) => void) => (item: DetailedItem) => void;
+}
+
+export interface PathNavigatorStateProps {
   rootPath: string;
   currentPath: string;
   localeCode: string;
@@ -121,12 +102,6 @@ export interface WidgetState {
   collapsed?: boolean;
 }
 
-interface WidgetUIProps {
-  state: WidgetState;
-  // TODO: add props
-  [key: string]: any;
-}
-
 const menuOptions = {
   refresh: {
     id: 'refresh',
@@ -134,14 +109,13 @@ const menuOptions = {
   }
 };
 
-// PathNavigator
-export default function PathNavigator(props: WidgetProps) {
+export default function PathNavigator(props: PathNavigatorProps) {
   const {
-    label,
-    icon = {},
-    container = {},
+    label = '(No name)',
+    icon,
+    container,
     rootPath: path,
-    id = label?.replace(/\s/g, ''),
+    id = label.replace(/\s/g, ''),
     locale,
     excludes,
     showChildrenRail = true,
@@ -156,12 +130,11 @@ export default function PathNavigator(props: WidgetProps) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [simpleMenu, setSimpleMenu] = useState<Menu>({
+  const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: [],
     emptyState: null
   });
-
   const [itemMenu, setItemMenu] = useSpreadState<Menu>({
     path,
     sections: [],
@@ -178,7 +151,7 @@ export default function PathNavigator(props: WidgetProps) {
   });
 
   useEffect(() => {
-    if (siteLocales.defaultLocaleCode) {
+    if (siteLocales.defaultLocaleCode && state?.localeCode !== siteLocales.defaultLocaleCode) {
       dispatch(
         pathNavigatorSetLocaleCode({
           id,
@@ -186,7 +159,7 @@ export default function PathNavigator(props: WidgetProps) {
         })
       );
     }
-  }, [dispatch, id, siteLocales.defaultLocaleCode]);
+  }, [dispatch, id, siteLocales.defaultLocaleCode, state?.localeCode]);
 
   // Item Updates Propagation
   useEffect(() => {
@@ -334,6 +307,7 @@ export default function PathNavigator(props: WidgetProps) {
     }
   };
 
+  // TODO: Implement pagination when get_children api is ready.
   const onPageChanged = (page: number) => void 0;
 
   const onSelectItem = (item: DetailedItem, checked: boolean) => {
@@ -379,22 +353,21 @@ export default function PathNavigator(props: WidgetProps) {
         defaultMessage: formatMessage(languages[code])
       }
     }));
-
     if (type === 'language') {
-      setSimpleMenu({
+      setWidgetMenu({
         sections: locales.length ? [locales] : [],
         anchorEl,
         emptyState: locales.length === 0 ? { message: formatMessage(translations.noLocales) } : null
       });
     } else {
-      setSimpleMenu({
+      setWidgetMenu({
         sections: [[menuOptions.refresh]],
         anchorEl
       });
     }
   };
 
-  const onCloseSimpleMenu = () => setSimpleMenu({ ...simpleMenu, anchorEl: null });
+  const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
   const onCloseItemMenu = () => setItemMenu({ ...itemMenu, anchorEl: null });
 
@@ -409,7 +382,7 @@ export default function PathNavigator(props: WidgetProps) {
         } else if (isFolder(item)) {
           onPathSelected(item);
         } else if (isPreviewable(item)) {
-          onPreview(item);
+          onPreview?.(item);
         }
       });
 
@@ -422,7 +395,7 @@ export default function PathNavigator(props: WidgetProps) {
   };
 
   const onSimpleMenuClick = (section: SectionItem) => {
-    onCloseSimpleMenu();
+    onCloseWidgetMenu();
     if (section.id === 'refresh') {
       dispatch(
         pathNavigatorRefresh({
@@ -450,8 +423,6 @@ export default function PathNavigator(props: WidgetProps) {
         icon={icon}
         container={container}
         title={label}
-        itemMenu={itemMenu}
-        simpleMenu={simpleMenu}
         onChangeCollapsed={onChangeCollapsed}
         onHeaderButtonClick={onHeaderButtonClick}
         onCurrentParentMenu={onCurrentParentMenu}
@@ -464,190 +435,23 @@ export default function PathNavigator(props: WidgetProps) {
         onOpenItemMenu={onOpenItemMenu}
         onItemClicked={onItemClicked}
         onPageChanged={onPageChanged}
-        onCloseItemMenu={onCloseItemMenu}
-        onCloseSimpleMenu={onCloseSimpleMenu}
-        onSimpleMenuClick={onSimpleMenuClick}
         computeActiveItems={computeActiveItems}
+      />
+      <ItemMenu
+        open={Boolean(itemMenu.anchorEl)}
+        path={itemMenu.path}
+        loaderItems={itemMenu.loaderItems}
+        anchorEl={itemMenu.anchorEl}
+        onClose={onCloseItemMenu}
+      />
+      <ContextMenu
+        anchorEl={widgetMenu.anchorEl}
+        sections={widgetMenu.sections}
+        emptyState={widgetMenu.emptyState}
+        open={Boolean(widgetMenu.anchorEl)}
+        onClose={onCloseWidgetMenu}
+        onMenuItemClicked={onSimpleMenuClick}
       />
     </Suspencified>
   );
 }
-
-export function PathNavigatorUI(props: WidgetUIProps) {
-  const classes = useStyles();
-  // region consts {...} = props
-  const {
-    state,
-    itemsByPath,
-    icon,
-    container,
-    title,
-    itemMenu,
-    simpleMenu,
-    showChildrenRail,
-    onChangeCollapsed,
-    onHeaderButtonClick,
-    onCurrentParentMenu,
-    siteLocales,
-    onSearch,
-    onBreadcrumbSelected,
-    onSelectItem,
-    onPathSelected,
-    onPreview,
-    onOpenItemMenu,
-    onItemClicked,
-    onPageChanged,
-    onCloseItemMenu,
-    onCloseSimpleMenu,
-    onSimpleMenuClick,
-    computeActiveItems
-  } = props;
-  // endregion
-  const { formatMessage } = useIntl();
-
-  const resource = useLogicResource<DetailedItem[], { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
-    // We only want to renew the state when itemsInPath changes.
-    // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath }), [state.itemsInPath]),
-    {
-      shouldResolve: ({ itemsInPath, itemsByPath }) => {
-        return Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
-      },
-      shouldRenew: (items, resource) => resource.complete,
-      shouldReject: () => false,
-      resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
-      errorSelector: null
-    }
-  );
-
-  const levelDescriptor = useMemo(() => {
-    if (itemsByPath && state.levelDescriptor) {
-      return itemsByPath[state.levelDescriptor];
-    }
-    return null;
-  }, [state.levelDescriptor, itemsByPath]);
-
-  return (
-    <>
-      <Accordion
-        expanded={!state.collapsed}
-        onChange={() => onChangeCollapsed(!state.collapsed)}
-        className={clsx(
-          classes.accordion,
-          props.classes?.root,
-          container.baseClass,
-          state.collapsed ? container.collapsedClass : container.expandedClass
-        )}
-        style={{
-          ...container.baseStyle,
-          ...(state.collapsed ? container.collapsedStyle : container.expandedStyle)
-        }}
-      >
-        <Header
-          iconClassName={clsx(icon.baseClass, state.collapsed ? icon.collapsedClass : icon.expandedClass)}
-          iconStyle={{
-            ...icon.baseStyle,
-            ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
-          }}
-          title={title}
-          locale={state.localeCode}
-          onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
-          onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
-        />
-        <AccordionDetails
-          className={clsx(classes.accordionDetails, showChildrenRail && classes.childrenRail, props.classes?.body)}
-        >
-          <Breadcrumbs
-            keyword={state.keyword}
-            breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
-            onMenu={onCurrentParentMenu}
-            onSearch={(keyword) => onSearch(keyword)}
-            onCrumbSelected={onBreadcrumbSelected}
-            classes={{ searchRoot: props.classes?.searchRoot }}
-          />
-          <SuspenseWithEmptyState
-            resource={resource}
-            errorBoundaryProps={{
-              errorStateProps: { classes: { graphic: classes.stateGraphics } }
-            }}
-            withEmptyStateProps={{
-              emptyStateProps: {
-                title: 'No items at this location',
-                classes: { image: classes.stateGraphics }
-              }
-            }}
-            suspenseProps={{
-              fallback: <NavLoader numOfItems={state.limit} />
-            }}
-          >
-            {levelDescriptor && (
-              <NavItem
-                item={levelDescriptor}
-                locale={state.localeCode}
-                isLevelDescriptor
-                onOpenItemMenu={onOpenItemMenu}
-                onItemClicked={onItemClicked}
-              />
-            )}
-            <ItemList
-              leaves={state.leaves}
-              locale={state.localeCode}
-              resource={resource}
-              onSelectItem={onSelectItem}
-              onPathSelected={onPathSelected}
-              onPreview={onPreview}
-              onOpenItemMenu={onOpenItemMenu}
-              onItemClicked={onItemClicked}
-              computeActiveItems={computeActiveItems}
-            />
-          </SuspenseWithEmptyState>
-          <TablePagination
-            classes={{
-              root: classes.pagination,
-              selectRoot: 'hidden',
-              toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
-            }}
-            component="div"
-            labelRowsPerPage=""
-            count={state.count}
-            rowsPerPage={state.limit}
-            page={state && Math.ceil(state.offset / state.limit)}
-            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-            onChangePage={(e, page: number) => onPageChanged(page)}
-          />
-        </AccordionDetails>
-      </Accordion>
-      {Boolean(itemMenu.anchorEl) && (
-        <ItemMenu
-          path={itemMenu.path}
-          open={true}
-          loaderItems={itemMenu.loaderItems}
-          anchorEl={itemMenu.anchorEl}
-          onClose={onCloseItemMenu}
-        />
-      )}
-      <ContextMenu
-        anchorEl={simpleMenu.anchorEl}
-        sections={simpleMenu.sections}
-        emptyState={simpleMenu.emptyState}
-        open={Boolean(simpleMenu.anchorEl)}
-        onClose={onCloseSimpleMenu}
-        onMenuItemClicked={onSimpleMenuClick}
-      />
-    </>
-  );
-}
-
-const NavLoader = React.memo((props: { numOfItems?: number }) => {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  return (
-    <List component="nav" disablePadding={true}>
-      {items.map((value, i) => (
-        <PathNavigatorSkeletonItem key={i} />
-      ))}
-    </List>
-  );
-});

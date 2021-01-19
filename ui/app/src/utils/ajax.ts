@@ -23,7 +23,7 @@ import { ObservableInput } from 'rxjs';
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
-export const OMIT_GLOBAL_HEADERS = {};
+export const OMIT_GLOBAL_HEADERS = Symbol('OmitGlobalHeaders');
 
 export function setGlobalHeaders(props: object): void {
   Object.assign(HEADERS, props);
@@ -39,7 +39,7 @@ export function getGlobalHeaders(): object {
   return { ...HEADERS };
 }
 
-function mergeHeaders(headers: object = {}): object {
+function mergeHeaders(headers: object | typeof OMIT_GLOBAL_HEADERS = {}): object {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;
   } else if (Object.values(headers).includes(OMIT_GLOBAL_HEADERS)) {

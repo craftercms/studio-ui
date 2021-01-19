@@ -124,48 +124,56 @@ function CreateFileUI(props: CreateFileUIProps) {
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
-        <TextField
-          label={
-            type === 'controller' ? (
-              <FormattedMessage id="newFile.controllerName" defaultMessage="Controller Name" />
-            ) : (
-              <FormattedMessage id="newFile.templateName" defaultMessage="Template Name" />
-            )
-          }
-          value={name}
-          autoFocus
-          required
-          error={!name && submitted}
-          placeholder={formatMessage(translations.placeholder)}
-          helperText={
-            !name && submitted ? (
-              type === 'controller' ? (
-                <FormattedMessage id="newFile.controllerRequired" defaultMessage="Controller name is required." />
-              ) : (
-                <FormattedMessage id="newFile.templateRequired" defaultMessage="Template name is required." />
-              )
-            ) : (
-              <FormattedMessage
-                id="newFile.helperText"
-                defaultMessage="Consisting of: letters, numbers, dot (.), dash (-) and underscore (_)."
-              />
-            )
-          }
-          disabled={inProgress}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onOk();
           }}
-          onChange={(event) =>
-            setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
-          }
-        />
+        >
+          <TextField
+            label={
+              type === 'controller' ? (
+                <FormattedMessage id="newFile.controllerName" defaultMessage="Controller Name" />
+              ) : (
+                <FormattedMessage id="newFile.templateName" defaultMessage="Template Name" />
+              )
+            }
+            value={name}
+            fullWidth
+            autoFocus
+            required
+            error={!name && submitted}
+            placeholder={formatMessage(translations.placeholder)}
+            helperText={
+              !name && submitted ? (
+                type === 'controller' ? (
+                  <FormattedMessage id="newFile.controllerRequired" defaultMessage="Controller name is required." />
+                ) : (
+                  <FormattedMessage id="newFile.templateRequired" defaultMessage="Template name is required." />
+                )
+              ) : (
+                <FormattedMessage
+                  id="newFile.helperText"
+                  defaultMessage="Consisting of: letters, numbers, dot (.), dash (-) and underscore (_)."
+                />
+              )
+            }
+            disabled={inProgress}
+            margin="normal"
+            InputLabelProps={{
+              shrink: true
+            }}
+            onChange={(event) =>
+              setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+            }
+          />
+        </form>
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={() => onOk()} autoFocus disabled={inProgress}>
+        <PrimaryButton onClick={onOk} disabled={inProgress || name === ''}>
           {inProgress ? <CircularProgress size={15} /> : <FormattedMessage id="words.create" defaultMessage="Create" />}
         </PrimaryButton>
       </DialogFooter>

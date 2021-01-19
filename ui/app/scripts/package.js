@@ -62,9 +62,16 @@ const peerDeps = [
 
 async function createPackageFile() {
   const packageData = await fse.readFile(path.resolve(packagePath, './package.json'), 'utf8');
-  const { scripts, dependencies, devDependencies, eslintConfig, browserslist, proxy, ...packageDataOther } = JSON.parse(
-    packageData
-  );
+  const {
+    scripts,
+    dependencies,
+    devDependencies,
+    eslintConfig,
+    browserslist,
+    proxy,
+    bic,
+    ...packageDataOther
+  } = JSON.parse(packageData);
 
   delete dependencies['react-scripts'];
   const packageDeps = {
@@ -95,7 +102,7 @@ async function createPackageFile() {
   };
   const targetPath = path.resolve(buildPath, './package.json');
 
-  await fse.writeFile(targetPath, JSON.stringify(newPackageData, null, 2), 'utf8');
+  await fse.writeFile(targetPath, JSON.stringify(newPackageData, null, 2), { flag: 'w+', encoding: 'utf8' });
   console.log(`Created package.json`);
 }
 

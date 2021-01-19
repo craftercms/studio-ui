@@ -357,19 +357,20 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 .cstudio-form-controls-button-container #splitButtonContainer {
   margin-left: 15px;
 }
+
 .cstudio-form-controls-button-container #cancelBtn {
-  border: 0;
-  padding: 6px 16px;
-  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  padding: 5px 15px;
+  box-shadow: none;
+  font-weight: 600;
   line-height: 1.75;
   border-radius: 4px;
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
   background-color: #fff;
 }
 
 .cstudio-form-controls-button-container #cancelBtn:hover, .cstudio-form-controls-button-container #cancelBtn:focus {
-  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-  background-color: #fff;
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.04);
   outline: none;
 }
 
@@ -1328,6 +1329,7 @@ body.yui-skin-cstudioTheme.masked {
   display: block;
   width: 100%;
 }
+
 .cstudio-form-control-video-picker-container .cstudio-button {
   align-self: flex-start;
 }
@@ -1355,6 +1357,7 @@ body.yui-skin-cstudioTheme.masked {
 .cstudio-form-control-input-container.disabled {
   background-color: whitesmoke;
 }
+
 .cstudio-form-control-input-container.focused {
   outline: -webkit-focus-ring-color auto 1px;
   outline-color: -webkit-focus-ring-color;
@@ -1437,7 +1440,8 @@ body.yui-skin-cstudioTheme.masked {
   order: 1;
 }
 
-.cstudio-form-control-filename-edit {}
+.cstudio-form-control-filename-edit {
+}
 
 .cstudio-form-control-checkbox {
   width: 15px;
@@ -1482,6 +1486,17 @@ body.yui-skin-cstudioTheme.masked {
   color: #7C7C80;
   padding: 2px 7px;
   cursor: pointer;
+  border-radius: 4px;
+}
+
+.node-selector-item-icon:hover {
+  color: var(--craftercms-blue);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.node-selector-item-icon:active {
+  color: var(--craftercms-blue);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .ml-auto {
@@ -1551,7 +1566,8 @@ body.yui-skin-cstudioTheme.masked {
   float: left;
 }
 
-.cstudio-form-control-page-nav-order-container .edit-position {}
+.cstudio-form-control-page-nav-order-container .edit-position {
+}
 
 .cstudio-form-control-validation {
   width: 16px;
@@ -1561,13 +1577,13 @@ body.yui-skin-cstudioTheme.masked {
   background: #fafafa;
 }
 
-.panel-default>.panel-heading {
+.panel-default > .panel-heading {
   cursor: pointer;
   padding: 10px 0 10px 15px;
 }
 
 .btn .caret {
-   margin-left: 2px !important;
+  margin-left: 2px !important;
 }
 
 .dropdown {

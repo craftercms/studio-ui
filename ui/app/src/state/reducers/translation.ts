@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
-import { FETCH_SITE_LOCALES, FETCH_SITE_LOCALES_COMPLETE, FETCH_SITE_LOCALES_FAILED } from '../actions/translation';
+import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 
 export const initialState = {
   siteLocales: {
@@ -28,14 +28,14 @@ export const initialState = {
 };
 
 const reducer = createReducer<GlobalState['translation']>(initialState, {
-  [FETCH_SITE_LOCALES]: (state) => ({
+  [fetchSiteLocales.type]: (state) => ({
     ...state,
     siteLocales: {
       ...state.siteLocales,
       isFetching: true
     }
   }),
-  [FETCH_SITE_LOCALES_COMPLETE]: (state, { payload }) => ({
+  [fetchSiteLocalesComplete.type]: (state, { payload }) => ({
     ...state,
     siteLocales: {
       ...state.siteLocales,
@@ -44,11 +44,12 @@ const reducer = createReducer<GlobalState['translation']>(initialState, {
       defaultLocaleCode: payload.defaultLocaleCode
     }
   }),
-  [FETCH_SITE_LOCALES_FAILED]: (state) => ({
+  [fetchSiteLocalesFailed.type]: (state, { payload }) => ({
     ...state,
     siteLocales: {
       ...state.siteLocales,
-      isFetching: false
+      isFetching: false,
+      error: payload
     }
   })
 });
