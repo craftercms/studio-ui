@@ -345,8 +345,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       itemEl.style.overflowWrap = 'break-word';
       itemEl._index = i;
       itemEl.context = this;
-      const editBtn = $('<span class="fa fa-pencil node-selector-item-icon ml-auto"></span>');
-      const deleteBtn = $('<span class="fa fa-trash node-selector-item-icon"></span>');
+      const editBtn = $(
+        '<span class="fa fa-pencil node-selector-item-icon ml-auto" title="Edit" aria-label="Edit" role="button"></span>'
+      );
+      const deleteBtn = $(
+        '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
+      );
 
       if (this.selectedItemIndex == i) {
         YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item-selected');

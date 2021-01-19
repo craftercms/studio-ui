@@ -14,22 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { getSiteLocales } from '../../services/translation';
 import { catchAjaxError } from '../../utils/ajax';
-import { FETCH_SITE_LOCALES, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
+import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
+import { CrafterCMSEpic } from '../store';
 
-const fetchSiteLocales: Epic = (action$, state$: Observable<GlobalState>) =>
-  action$.pipe(
-    ofType(FETCH_SITE_LOCALES),
-    withLatestFrom(state$),
-    switchMap(([, state]) =>
-      getSiteLocales(state.sites.active).pipe(map(fetchSiteLocalesComplete), catchAjaxError(fetchSiteLocalesFailed))
+export default [
+  (action$, state$: Observable<GlobalState>) =>
+    action$.pipe(
+      ofType(fetchSiteLocales.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        getSiteLocales(state.sites.active).pipe(map(fetchSiteLocalesComplete), catchAjaxError(fetchSiteLocalesFailed))
+      )
     )
-  );
-
-export default [fetchSiteLocales] as Epic[];
+] as CrafterCMSEpic[];

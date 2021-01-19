@@ -305,14 +305,15 @@ export function useSiteList(): Site[] {
   return useMemo(() => (state.byId ? Object.values(state.byId) : null), [state.byId]);
 }
 
+// TODO: 1. Presents issues when call loads 2. Not refreshing when site changes
 export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
   const siteLocales = useSelection((state) => state.translation.siteLocales);
   const dispatch = useDispatch();
-
-  if (!siteLocales.localeCodes && !siteLocales.isFetching) {
-    dispatch(fetchSiteLocales());
-  }
-
+  useEffect(() => {
+    if (!siteLocales.localeCodes && !siteLocales.isFetching && !siteLocales.error) {
+      dispatch(fetchSiteLocales());
+    }
+  }, [dispatch, siteLocales.error, siteLocales.isFetching, siteLocales.localeCodes]);
   return siteLocales;
 }
 
