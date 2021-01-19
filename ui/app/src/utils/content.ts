@@ -169,7 +169,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     ...parseLegacyItemToBaseItem(item),
     creator: null,
     createdDate: null,
-    modifier: null,
+    modifier: item.user,
     lastModifiedDate: null,
     commitId: null,
     sizeInBytes: null
@@ -189,7 +189,7 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
     sandbox: {
       creator: null,
       createdDate: null,
-      modifier: null,
+      modifier: item.user,
       lastModifiedDate: null,
       commitId: null,
       sizeInBytes: null
@@ -567,6 +567,7 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   } else if (isFolder(item)) {
     return isRootPath(item.path) ? 3 : 6;
   } else if (isPreviewable(item)) {
-    return 10;
+    // TODO: Unsure if the BE will return taxonomy as a systemType
+    return item.systemType === 'component' || item.systemType === 'taxonomy' ? 11 : 10;
   }
 }

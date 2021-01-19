@@ -205,7 +205,7 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+      <button type="button" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize"
               ng-click="okModalFunction(group)" ng-disabled="createNameForm.$invalid">{{ 'common.' + dialogMode | translate }}</button>
     </div>
