@@ -114,25 +114,24 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      validateActionPolicy(site, {
-        type: rename ? 'RENAME' : 'CREATE',
-        target: `${path}/${name}`
-      }).subscribe(({ allowed, modifiedValue }) => {
-        if (allowed) {
-          let _name = modifiedValue ? modifiedValue.replace(`${path}/`, '') : name;
-
-          if (rename) {
-            renameFolder(site, path, encodeURIComponent(_name)).subscribe(
-              (response) => {
-                onRenamed?.({ path, name: _name, rename });
-                dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: _name })));
-              },
-              (response) => {
-                setState({ inProgress: false, submitted: true });
-                dispatch(showErrorDialog({ error: response }));
-              }
-            );
-          } else {
+      if (rename) {
+        renameFolder(site, path, encodeURIComponent(name)).subscribe(
+          (response) => {
+            onRenamed?.({ path, name, rename });
+            dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
+          },
+          (response) => {
+            setState({ inProgress: false, submitted: true });
+            dispatch(showErrorDialog({ error: response }));
+          }
+        );
+      } else {
+        validateActionPolicy(site, {
+          type: 'CREATE',
+          target: `${path}/${name}`
+        }).subscribe(({ allowed, modifiedValue }) => {
+          if (allowed) {
+            let _name = modifiedValue ? modifiedValue.replace(`${path}/`, '') : name;
             createFolder(site, path, encodeURIComponent(_name)).subscribe(
               (resp) => {
                 onCreated?.({ path, name: _name, rename });
@@ -143,17 +142,17 @@ function CreateFolderUI(props: CreateFolderUIProps) {
                 dispatch(showErrorDialog({ error: response }));
               }
             );
+          } else {
+            dispatch(
+              showErrorDialog({
+                error: {
+                  message: 'Not supported.'
+                }
+              })
+            );
           }
-        } else {
-          dispatch(
-            showErrorDialog({
-              error: {
-                message: 'Not supported.'
-              }
-            })
-          );
-        }
-      });
+        });
+      }
     }
   };
   return (
