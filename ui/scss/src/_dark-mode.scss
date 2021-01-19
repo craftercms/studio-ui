@@ -163,6 +163,10 @@ $dark-mode-input-border: #ced4da;
       color: $dark-mode-font-color;
       background-color: $dark-mode-hover !important;
     }
+
+    .divider {
+      border-color: $dark-mode-divider;
+    }
   }
 
   #categories-panel {

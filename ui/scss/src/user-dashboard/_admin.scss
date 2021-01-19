@@ -322,8 +322,6 @@ table {
   }
 
   .audit-nav {
-    border-bottom: 1px solid #e7e7e7;
-
     i.fa {
       font-size: 13px;
       margin-top: 3px;
@@ -655,10 +653,8 @@ table {
   }
 }
 
-divider {
-  width: 100%;
-  display: block;
-  border-bottom: 1px solid #e7e7e7;
+.divider {
+  border-top: 1px solid #e7e7e7;
 }
 
 #create-site-dialog {
