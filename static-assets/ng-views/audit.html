@@ -15,12 +15,12 @@
   -->
 
 <div class="audit-view mainContainer" ng-class="{'operations-open': actionsDropdown.isopen}">
-    <header class="screen-title mb25">
+    <header class="screen-title mb10">
         <h1>{{ 'admin.audit.AUDIT' | translate }}</h1>
     </header>
 
     <div class="audit-nav">
-        <div class="nav-containers mb20">
+        <div class="nav-containers mb10">
             <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
             <span class="pr20" ng-show="audit.currentSiteName">{{ audit.currentSiteName }}</span>
             <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 5px;" ng-show="!audit.currentSiteName">
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="nav-containers mb20">
+        <div class="nav-containers mb10">
             <label>{{ 'admin.audit.USER' | translate }}: </label>
             <div class="btn-group" uib-dropdown is-open="usersDropdown.isopen" style="margin-right: 5px;">
                 <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle  title="{{audit.userSelected || 'admin.audit.ALL_USERS' | translate}}">
@@ -58,7 +58,7 @@
             </div>
         </div>
 
-        <div class="nav-containers mb20">
+        <div class="nav-containers mb10">
             <label>{{ 'admin.audit.OPERATIONS' | translate }}: </label>
             <div class="btn-group audit-actions" uib-dropdown is-open="actionsDropdown.isopen" style="margin-right: 10px;">
                 <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle title="{{audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate}}">
@@ -147,13 +147,9 @@
 
         <button type="button" class="btn btn-default" ng-click="isCollapsed = !isCollapsed" style="margin-right: 10px;">{{ 'admin.audit.OPTIONS' | translate }} <i class="pull-right fa" ng-class="{'fa-chevron-right': isCollapsed, 'fa-chevron-down': !isCollapsed}"></i></button>
 
-        <div class="nav-containers logs-site mb20">
-            <label>{{ 'admin.audit.LOGS_PER_PAGE' | translate }}: </label>
-            <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
-                   min="0" max="500" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
-        </div>
-
     </div>
+
+  <hr class="divider mt10 mb15"/>
 
     <div uib-collapse="isCollapsed">
          <div class="well well-lg col-xs-12 col-sm-12 col-md-12 mt10">
@@ -200,7 +196,7 @@
      </div>
 
     <div class="audit-table-container">
-        <table class="table table-striped mt20">
+        <table class="table table-striped">
             <thead>
             <tr>
                 <th><a ng-click="audit.generalUpdate(); isSortAsc = !isSortAsc" >{{ 'admin.audit.TIMESTAMP' | translate }} <i class="fa" ng-class="{'fa-caret-up': isSortAsc, 'fa-caret-down': !isSortAsc}"></i></a></th>
@@ -238,7 +234,16 @@
         </table>
     </div>
 
+  <div class="global-menu-pagination-wrapper">
+    <div class="mr10">
+      <label class="mr5">{{ 'admin.audit.LOGS_PER_PAGE' | translate }}: </label>
+      <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
+             min="0" max="500" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
+    </div>
     <dir-pagination-controls on-page-change="audit.pageChanged(newPageNumber)"></dir-pagination-controls>
+  </div>
+
+
 
 </div>
 
