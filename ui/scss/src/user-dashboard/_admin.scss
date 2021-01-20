@@ -428,6 +428,11 @@ table {
       min-width: 100px;
     }
   }
+
+  .audit-nav {
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 
 .groups-view {
@@ -634,6 +639,12 @@ table {
     margin: 0;
     display: block;
   }
+}
+
+.create-user-helper-text {
+  text-align: center;
+  margin-top: 15px;
+  color: #7c7c80;
 }
 
 .divider {

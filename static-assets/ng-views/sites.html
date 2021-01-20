@@ -15,15 +15,15 @@
   -->
 
 <div class="sites-view mainContainer">
-  <header class="screen-title">
+  <header class="screen-title mb10">
     <h1>{{ 'dashboard.sites.SITES_LABEL' | translate }}</h1>
   </header>
 
   <div ng-if="sites">
-    <div ng-show="createSites" class="m10 createSitesBtn pull-left">
+    <div ng-show="createSites" class="createSitesBtn pull-left mb10">
       <button
         id="create-site"
-        class="btn btn-default btn-pill btn-block"
+        class="btn btn-default btn-pill btn-block btn-padded"
         ng-click="createSitesDialog()"
         ng-class="{ active: $state.includes('create') }"
       >

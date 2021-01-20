@@ -55,6 +55,12 @@ $dark-mode-input-border: #ced4da;
     background-color: $dark-mode-background-default;
   }
 
+  .admin-view {
+    .create-user-helper-text {
+      color: $dark-mode-font-color;
+    }
+  }
+
   // Typography
 
   p,
