@@ -1,25 +1,35 @@
-
 $dark-mode-background-default: #212121;
 $dark-mode-background-default-dimmed: #21212150;
 $dark-mode-background-paper: #424242;
 $dark-mode-font-color: #fff;
-$dark-mode-font-highlight: #70D7FF;
+$dark-mode-font-highlight: #70d7ff;
+$dark-mode-button-outlined-border: rgba(255, 255, 255, 0.23);
+$dark-mode-button-primary: #409cff;
+$dark-mode-button-primary-color: rgba(0, 0, 0, 0.87);
+$dark-mode-button-primary-color-hover: rgb(44, 109, 178);
+$dark-mode-hover: rgba(255, 255, 255, 0.08);
+$dark-mode-divider: rgba(255, 255, 255, 0.12);
+$dark-mode-input-border: #ced4da;
 
 @media (prefers-color-scheme: light) {
   .craftercms-logo-dark {
     display: none !important;
   }
-  .cstudio-form-controls-container {
+  .user-dashboard,
+  .cstudio-form-controls-container,
+  .template-editor-button-container {
     background: white;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .cstudio-form-controls-container {
+  .user-dashboard,
+  .cstudio-form-controls-container,
+  .template-editor-button-container {
     background: $dark-mode-background-paper;
   }
   #studioBar {
-    &> .navbar-fixed-top {
+    & > .navbar-fixed-top {
       color: $dark-mode-font-color;
       background-color: $dark-mode-background-default;
 
@@ -28,12 +38,14 @@ $dark-mode-font-highlight: #70D7FF;
       }
 
       #activeContentActions {
-        .acn-link a, .context-nav-title-element{
+        .acn-link a,
+        .context-nav-title-element {
           color: $dark-mode-font-color;
         }
       }
 
-      #activeContentActions, #toolbarGlobalNav {
+      #activeContentActions,
+      #toolbarGlobalNav {
         border-color: transparent;
       }
     }
@@ -41,6 +53,128 @@ $dark-mode-font-highlight: #70D7FF;
   .cstudio-navbar {
     color: $dark-mode-font-color;
     background-color: $dark-mode-background-default;
+  }
+
+  // Typography
+
+  p,
+  label {
+    color: $dark-mode-font-color;
+  }
+
+  // Buttons
+
+  .btn-primary {
+    border: 0;
+    color: $dark-mode-button-primary-color;
+    background: $dark-mode-button-primary;
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  }
+
+  .btn-primary:hover {
+    background: $dark-mode-button-primary-color-hover;
+  }
+
+  .btn-default {
+    border: 1px solid $dark-mode-button-outlined-border !important;
+    color: $dark-mode-font-color;
+    background: none;
+  }
+
+  .btn-default:hover {
+    color: $dark-mode-font-color;
+    background: $dark-mode-hover;
+  }
+
+  // Table
+
+  .table {
+    th,
+    td {
+      color: $dark-mode-font-color;
+      border-color: $dark-mode-divider;
+    }
+  }
+
+  .table-striped {
+    tr {
+      background: none !important;
+    }
+  }
+
+  .table-hover {
+    tr:hover {
+      background-color: $dark-mode-hover !important;
+    }
+  }
+
+  // Pagination
+
+  .global-menu-pagination-wrapper {
+    .pagination {
+      a {
+        border-color: $dark-mode-divider;
+        color: $dark-mode-font-color;
+        background: none;
+      }
+      a:hover {
+        border-color: $dark-mode-divider;
+        color: $dark-mode-font-color;
+        background: $dark-mode-hover;
+      }
+      a:focus {
+        background: none;
+      }
+      .active a {
+        background: $dark-mode-button-primary;
+      }
+    }
+  }
+
+  // Inputs
+  input,
+  .form-control {
+    border-color: $dark-mode-input-border;
+    background: none;
+    color: $dark-mode-font-color;
+  }
+
+  .admin-console-view {
+    .screen-title,
+    .screen-title h1 {
+      color: $dark-mode-font-color;
+      background: none;
+      border-color: $dark-mode-divider;
+    }
+    .global-menu--item__active {
+      .global-menu--item-link {
+        background: $dark-mode-background-default;
+        color: $dark-mode-font-color;
+        .global-menu--nav-icon {
+          background: none;
+          color: $dark-mode-font-color;
+        }
+      }
+      .global-menu--item-link:hover,
+      .global-menu--item-link:focus {
+        color: $dark-mode-font-color;
+        background: $dark-mode-background-default !important;
+      }
+    }
+    .global-menu--item-link {
+      color: $dark-mode-font-color;
+    }
+
+    .global-menu--item-link:hover,
+    .global-menu--item-link:focus {
+      color: $dark-mode-font-color;
+      background-color: $dark-mode-hover !important;
+    }
+
+    .divider {
+      border-color: $dark-mode-divider;
+    }
   }
 
   #categories-panel {
@@ -57,7 +191,8 @@ $dark-mode-font-highlight: #70D7FF;
   body:not(.user-dashboard) .craftercms-entitlement {
     border-color: $dark-mode-background-default-dimmed !important;
     .craftercms-entitlement-copy {
-      &, a {
+      &,
+      a {
         color: $dark-mode-font-color;
       }
     }
@@ -71,7 +206,10 @@ $dark-mode-font-highlight: #70D7FF;
       border-color: $dark-mode-background-default-dimmed;
     }
 
-    #acn-sites-link, .acn-parent-folder, .acn-admin-console, .ygtvcell {
+    #acn-sites-link,
+    .acn-parent-folder,
+    .acn-admin-console,
+    .ygtvcell {
       color: $dark-mode-font-color;
     }
 
@@ -80,7 +218,8 @@ $dark-mode-font-highlight: #70D7FF;
     }
 
     #acn-dropdown-menu-inner {
-      .no-preview, .folder {
+      .no-preview,
+      .folder {
         color: $dark-mode-font-color !important;
       }
     }
@@ -102,7 +241,8 @@ $dark-mode-font-highlight: #70D7FF;
     background-color: $dark-mode-background-paper !important;
     color: $dark-mode-font-color;
 
-    .hd, .acn-accordion-header {
+    .hd,
+    .acn-accordion-header {
       background-color: $dark-mode-background-paper !important;
       color: $dark-mode-font-color !important;
       border: none !important;
@@ -112,7 +252,9 @@ $dark-mode-font-highlight: #70D7FF;
       }
     }
 
-    button, select, input {
+    button,
+    select,
+    input {
       background-color: $dark-mode-background-paper;
       color: $dark-mode-font-color;
       border: 1px solid $dark-mode-font-color;
@@ -123,7 +265,8 @@ $dark-mode-font-highlight: #70D7FF;
     background-color: $dark-mode-background-paper !important;
     color: $dark-mode-font-color;
 
-    select, input {
+    select,
+    input {
       background-color: $dark-mode-background-paper !important;
     }
 
@@ -138,7 +281,11 @@ $dark-mode-font-highlight: #70D7FF;
       background-color: transparent !important;
       border: none;
 
-      .hd, .bd, .ft, .yui-button, .yui-button span {
+      .hd,
+      .bd,
+      .ft,
+      .yui-button,
+      .yui-button span {
         color: $dark-mode-font-color;
         background-color: $dark-mode-background-paper !important;
         border-top: none;

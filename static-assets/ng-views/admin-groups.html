@@ -17,17 +17,17 @@
 <div class="container-fluid admin-view groups-view">
   <div class="row full">
     <div ng-show="!groups.groupView" class="mainContainer">
-      <div class="actions clearfix pull-right mb10" style="width: 100%;">
+      <div class="actions clearfix pull-right" style="width: 100%;">
         <header class="screen-title mb10">
           <h1>{{ 'admin.groups.HEADER_LABEL' | translate }}</h1>
         </header>
 
-        <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.groups.NEW_GROUP' | translate }}</a>
-        <div class="pull-right mr15">
-          <label>{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
-          <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
-                 min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
-        </div>
+        <a class="btn btn-default btn-pill btn-padded" ng-click="createGroupDialog()" role="button">
+          <i class="fa fa-plus-circle mr5" aria-hidden="true"></i>{{ 'admin.groups.NEW_GROUP' | translate }}
+        </a>
+
+        <hr class="divider mt10 mb15"/>
+
       </div>
 
       <div class="">
@@ -67,7 +67,14 @@
           </tbody>
         </table>
 
-        <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+        <div class="global-menu-pagination-wrapper">
+          <div class="mr10">
+            <label class="mr5">{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
+            <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
+                   min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
+          </div>
+          <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+        </div>
       </div>
     </div>
     <div ng-show="groups.groupView" class="col-md-12 single-group-view">

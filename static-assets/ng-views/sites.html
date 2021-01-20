@@ -27,21 +27,9 @@
         ng-click="createSitesDialog()"
         ng-class="{ active: $state.includes('create') }"
       >
-        <i class="fa fa-plus-circle"></i>
+        <i class="fa fa-plus-circle mr5"></i>
         <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
       </button>
-    </div>
-    <div class="pull-right m10">
-      <label>{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
-      <input
-        class="audit-number-logs"
-        type="number"
-        name="input"
-        ng-model="sitesPag.sitesPerPage"
-        min="0"
-        max="500"
-        ng-model-options="{debounce: defaultDelay}"
-      />
     </div>
     <div ui-view>
       <table class="site-list table table-hover">
@@ -95,12 +83,25 @@
           </tr>
         </tbody>
       </table>
-
-      <dir-pagination-controls
-        id="sites-pagination"
-        class="ml10"
-        on-page-change="pageChanged(newPageNumber)"
-      ></dir-pagination-controls>
+      <div class="global-menu-pagination-wrapper">
+        <div class="mr10">
+          <label class="mr5" >{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
+          <input
+            class="audit-number-logs"
+            type="number"
+            name="input"
+            ng-model="sitesPag.sitesPerPage"
+            min="0"
+            max="500"
+            ng-model-options="{debounce: defaultDelay}"
+          />
+        </div>
+        <dir-pagination-controls
+          id="sites-pagination"
+          class="ml10"
+          on-page-change="pageChanged(newPageNumber)"
+        ></dir-pagination-controls>
+      </div>
     </div>
   </div>
 
