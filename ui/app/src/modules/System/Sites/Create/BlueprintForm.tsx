@@ -25,7 +25,7 @@ import { Blueprint } from '../../../../models/Blueprint';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import FormBuilder from './FormBuilder';
-import { fetchSites } from '../../../../services/sites';
+import { fetchAll } from '../../../../services/sites';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
@@ -124,7 +124,7 @@ function BlueprintForm(props: BlueprintFormProps) {
 
   useEffect(() => {
     if (sites === null) {
-      fetchSites().subscribe(setSites);
+      fetchAll().subscribe(setSites);
     }
   }, [sites]);
 

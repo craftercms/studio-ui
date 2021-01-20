@@ -25,7 +25,7 @@ import { useLogicResource, useUnmount } from '../../../../utils/hooks';
 import TextField from '@material-ui/core/TextField';
 import { Site } from '../../../../models/Site';
 import Suspencified from '../../../../components/SystemStatus/Suspencified';
-import { updateSite } from '../../../../services/sites';
+import { update } from '../../../../services/sites';
 import { Resource } from '../../../../models/Resource';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../../models/GlobalState';
@@ -143,7 +143,7 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
 
   const handleSubmit = (id: string, name: string, description: string) => {
     setSubmitting(true);
-    updateSite({ id, name, description }).subscribe(
+    update({ id, name, description }).subscribe(
       (response) => {
         setSubmitting(false);
         dispatch(fetchSites());
