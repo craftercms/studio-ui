@@ -1360,7 +1360,7 @@
           $scope.paginationData = params;
         }
 
-        CrafterCMSNext.services.sites.fetchSites($scope.paginationData).subscribe(
+        CrafterCMSNext.services.sites.fetchAll($scope.paginationData).subscribe(
           (data) => {
             $scope.totalSites = data.total;
             $scope.sites = data;

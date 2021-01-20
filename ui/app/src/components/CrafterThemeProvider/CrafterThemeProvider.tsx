@@ -20,8 +20,12 @@ import { defaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import palette from '../../styles/palette';
 import { extend } from '../../utils/object';
+import { GenerateId } from 'jss';
 
-export type CrafterThemeProviderProps = PropsWithChildren<{ themeOptions?: ThemeOptions }>;
+export type CrafterThemeProviderProps = PropsWithChildren<{
+  themeOptions?: ThemeOptions;
+  generateClassName?: GenerateId;
+}>;
 
 export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -64,7 +68,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   }, [prefersDarkMode, props.themeOptions]);
   return (
     <ThemeProvider theme={theme}>
-      <StylesProvider generateClassName={generateClassName} children={props.children} />
+      <StylesProvider generateClassName={props.generateClassName ?? generateClassName} children={props.children} />
     </ThemeProvider>
   );
 }

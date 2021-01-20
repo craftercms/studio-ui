@@ -34,13 +34,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from '../../Publishing/Queue/PluginDetailsView';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
-import { underscore } from '../../../../utils/string';
 import { setRequestForgeryToken, setSiteCookie } from '../../../../utils/auth';
-import {
-  checkHandleAvailability,
-  createSite,
-  fetchBlueprints as fetchBuiltInBlueprints
-} from '../../../../services/sites';
+import { create, exists, fetchBlueprints as fetchBuiltInBlueprints } from '../../../../services/sites';
 import {
   createSite as createSiteFromMarketplace,
   fetchBlueprints as fetchMarketplaceBlueprints
@@ -376,7 +371,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     if (tab === 0 && blueprints === null && !apiState.error) {
       subscriptions.push(
         fetchBuiltInBlueprints().subscribe(
-          ({ response }) => {
+          (blueprints) => {
             const _blueprints: [Blueprint] = [
               {
                 id: 'GIT',
@@ -394,7 +389,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 }
               }
             ];
-            response.blueprints.forEach((bp: any) => {
+            blueprints.forEach((bp: any) => {
               _blueprints.push(bp.plugin);
             });
             setBlueprints(_blueprints);
@@ -567,7 +562,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         createNewSiteFromMarketplace(marketplaceParams);
       } else {
         const blueprintParams = createParams();
-        createNewSite(blueprintParams);
+        createSite(blueprintParams);
       }
     }
   }
@@ -627,7 +622,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         siteId: site.siteId,
         singleBranch: false,
         createAsOrphan: site.createAsOrphan,
-        name: site.siteName
+        siteName: site.siteName
       };
       if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;
@@ -635,7 +630,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       } else {
         params.useRemote = true;
       }
-
       if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
       if (site.description) params.description = site.description;
       if (site.pushSite || site.blueprint.id === 'GIT') {
@@ -657,63 +651,56 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       }
       if (Object.keys(site.blueprintFields).length) params.siteParams = site.blueprintFields;
       params.createOption = site.pushSite ? 'push' : 'clone';
-
-      // TODO: remove this when change to Api2
-      let _params: any = {};
-      Object.keys(params).forEach((key) => {
-        _params[underscore(key)] = params[key];
-      });
-      return _params;
+      return params;
     }
   }
 
-  function createNewSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
-    (fromMarketplace
-      ? createSiteFromMarketplace(site as MarketplaceSite)
-      : createSite(site as CreateSiteMeta)
-    ).subscribe(
-      () => {
-        setApiState({ creatingSite: false });
-        handleClose();
-        // TODO: Remove when createSite updates to API2
-        // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
-        setSiteCookie(site.siteId ?? site.site_id);
-        window.location.href = `${authoringBase}/preview`;
-      },
-      ({ response }) => {
-        if (response) {
-          if (fromMarketplace) {
-            setApiState({
-              creatingSite: false,
-              error: true,
-              errorResponse: response,
-              global: true
-            });
-          } else {
-            // TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
-            const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setApiState({
-              creatingSite: false,
-              error: true,
-              errorResponse: _response,
-              global: true
-            });
-          }
+  function createSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
+    const success = () => {
+      setApiState({ creatingSite: false });
+      handleClose();
+      // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
+      setSiteCookie(site.siteId);
+      window.location.href = `${authoringBase}/preview`;
+    };
+    const error = ({ response }) => {
+      if (response) {
+        if (fromMarketplace) {
+          setApiState({
+            creatingSite: false,
+            error: true,
+            errorResponse: response,
+            global: true
+          });
+        } else {
+          // TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
+          const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+          setApiState({
+            creatingSite: false,
+            error: true,
+            errorResponse: _response,
+            global: true
+          });
         }
       }
-    );
+    };
+    if (fromMarketplace) {
+      createSiteFromMarketplace(site as MarketplaceSite).subscribe(success, error);
+    } else {
+      create(site as CreateSiteMeta).subscribe(success, error);
+    }
   }
 
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
-    createNewSite(site, true);
+    createSite(site, true);
   }
 
   function checkNameExist(siteId: string) {
     if (siteId) {
-      checkHandleAvailability(siteId).subscribe(
-        ({ response }) => {
-          if (response.exists) {
-            refts.setSite({ siteIdExist: response.exists, selectedView: 1 });
+      exists(siteId).subscribe(
+        (exists) => {
+          if (exists) {
+            refts.setSite({ siteIdExist: exists, selectedView: 1 });
           } else {
             refts.setSite({ siteIdExist: false });
           }

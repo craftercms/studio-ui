@@ -16,16 +16,18 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { CreateSiteMeta, Site } from '../models/Site';
-import { map } from 'rxjs/operators';
+import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
+import { Blueprint } from '../models/Blueprint';
+import { underscore } from '../utils/string';
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/sites/available_blueprints');
+export function fetchBlueprints(): Observable<Blueprint[]> {
+  return get('/studio/api/2/sites/available_blueprints').pipe(pluck('response', 'blueprints'));
 }
 
-export function fetchSites(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
+export function fetchAll(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
   const options: PaginationOptions = Object.assign(
     {
       limit: 100,
@@ -51,18 +53,34 @@ export function fetchSites(paginationOptions?: PaginationOptions): Observable<Pa
   );
 }
 
-export function createSite(site: CreateSiteMeta) {
-  return postJSON('/studio/api/1/services/api/1/site/create.json', site);
+export function create(site: CreateSiteMeta): Observable<Site> {
+  let api1Params: any = {};
+  Object.entries(site).forEach(([key, value]) => {
+    if (key === 'siteName') {
+      api1Params.name = value;
+    } else {
+      api1Params[underscore(key)] = value;
+    }
+  });
+  return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
+    pluck('response'),
+    mapTo({ id: site.siteId, name: site.siteName, description: site.description ?? '' })
+  );
 }
 
-export function deleteSite(id: string) {
-  return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id });
+export function trash(id: string): Observable<boolean> {
+  return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id }).pipe(
+    pluck('response'),
+    mapTo(true)
+  );
 }
 
-export function updateSite(site: Site) {
-  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description });
+export function update(site: Site): Observable<Site> {
+  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description }).pipe(
+    pluck('response')
+  );
 }
 
-export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`);
+export function exists(siteId: string): Observable<boolean> {
+  return get(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(pluck('response', 'exists'));
 }
