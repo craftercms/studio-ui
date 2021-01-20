@@ -31,6 +31,7 @@ import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actio
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
+import { getParentPath } from '../../utils/path';
 
 export const translations = defineMessages({
   placeholder: {
@@ -114,26 +115,28 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      if (rename) {
-        renameFolder(site, path, encodeURIComponent(name)).subscribe(
-          (response) => {
-            onRenamed?.({ path, name, rename });
-            dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
-          },
-          (response) => {
-            setState({ inProgress: false, submitted: true });
-            dispatch(showErrorDialog({ error: response }));
-          }
-        );
-      } else {
-        validateActionPolicy(site, {
-          type: 'CREATE',
-          target: `${path}/${name}`
-        }).subscribe(({ allowed, modifiedValue }) => {
-          if (allowed) {
-            let _name = modifiedValue ? modifiedValue.replace(`${path}/`, '') : name;
+      const parentPath = rename ? getParentPath(path) : path;
+      validateActionPolicy(site, {
+        type: rename ? 'RENAME' : 'CREATE',
+        target: `${parentPath}/${name}`
+      }).subscribe(({ allowed, modifiedValue }) => {
+        if (allowed) {
+          // TODO: add confirmation if modifiedValue?
+          let _name = modifiedValue ? modifiedValue.replace(`${parentPath}/`, '') : name;
+          if (rename) {
+            renameFolder(site, path, encodeURIComponent(_name)).subscribe(
+              (response) => {
+                onRenamed?.({ path, name, rename });
+                dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: _name })));
+              },
+              (response) => {
+                setState({ inProgress: false, submitted: true });
+                dispatch(showErrorDialog({ error: response }));
+              }
+            );
+          } else {
             createFolder(site, path, encodeURIComponent(_name)).subscribe(
-              (resp) => {
+              (response) => {
                 onCreated?.({ path, name: _name, rename });
                 dispatch(emitSystemEvent(folderCreated({ target: path, name: _name })));
               },
@@ -142,17 +145,18 @@ function CreateFolderUI(props: CreateFolderUIProps) {
                 dispatch(showErrorDialog({ error: response }));
               }
             );
-          } else {
-            dispatch(
-              showErrorDialog({
-                error: {
-                  message: 'Not supported.'
-                }
-              })
-            );
           }
-        });
-      }
+        } else {
+          dispatch(
+            showErrorDialog({
+              error: {
+                // TODO: Display error Message
+                message: 'Not supported.'
+              }
+            })
+          );
+        }
+      });
     }
   };
   return (
