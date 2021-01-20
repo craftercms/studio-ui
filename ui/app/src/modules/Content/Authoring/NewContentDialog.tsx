@@ -177,8 +177,9 @@ function NewContentDialogBody(props: NewContentDialogProps) {
 
   useEffect(() => {
     if (selectedItem.path) {
+      // TODO: https://github.com/craftercms/craftercms/issues/4473
       const path =
-        selectedItem.contentTypeId === 'folder' && !selectedItem.path.endsWith('/')
+        selectedItem.systemType === 'folder' && !selectedItem.path.endsWith('/')
           ? `${selectedItem.path}/`
           : selectedItem.path;
 
