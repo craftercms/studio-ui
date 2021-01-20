@@ -340,16 +340,24 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   };
 
   const revertToPrevious = (activeItem: LegacyVersion) => {
+    const previousBranch = getPreviousBranch(activeItem);
+
     dispatch(
       showConfirmDialog({
         title: formatMessage(translations.confirmRevertTitle),
         body: formatMessage(translations.confirmRevertBody, {
-          versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
+          versionTitle: asDayMonthDateTime(previousBranch.lastModifiedDate)
         }),
         onCancel: closeConfirmDialog(),
         onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ id: activeItem.versionNumber })])
       })
     );
+  };
+
+  const getPreviousBranch = (currentBranch: LegacyVersion) => {
+    const versions = versionsBranch.versions;
+    const currentIndex = versions.findIndex((branch) => branch.versionNumber === currentBranch.versionNumber);
+    return versions[currentIndex + 1] ?? null;
   };
 
   const revertTo = (activeItem: LegacyVersion) => {
