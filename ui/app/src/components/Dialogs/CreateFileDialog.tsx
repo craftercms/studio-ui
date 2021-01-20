@@ -27,9 +27,10 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
-import { emitSystemEvent, itemCreated } from '../../state/actions/system';
+import { emitSystemEvent, itemCreated, showSystemNotification } from '../../state/actions/system';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
+import { validateActionPolicy } from '../../services/sites';
 
 interface CreateFileBaseProps {
   open: boolean;
@@ -56,6 +57,10 @@ export const translations = defineMessages({
   placeholder: {
     id: 'createFile.placeholder',
     defaultMessage: 'Please type a name'
+  },
+  createPolicy: {
+    id: 'createFile.createPolicy',
+    defaultMessage: 'The file will be created with the {name} name due to site policy'
   }
 });
 
@@ -98,17 +103,35 @@ function CreateFileUI(props: CreateFileUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      const fileName = type === 'controller' ? `${encodeURIComponent(name)}.groovy` : `${encodeURIComponent(name)}.ftl`;
-      createFile(site, path, fileName).subscribe(
-        () => {
-          onCreated?.({ path, fileName, type });
-          dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
-        },
-        (response) => {
-          setState({ inProgress: false, submitted: true });
-          dispatch(showErrorDialog({ error: response }));
+      validateActionPolicy(site, {
+        type: 'CREATE',
+        target: `${path}/${name}`
+      }).subscribe(({ allowed, modifiedValue }) => {
+        if (allowed) {
+          let _name = name;
+          if (modifiedValue) {
+            _name = modifiedValue.replace(`${path}/`, '');
+            dispatch(
+              showSystemNotification({
+                message: formatMessage(translations.createPolicy, { name: _name })
+              })
+            );
+          }
+          const fileName = type === 'controller' ? `${_name}.groovy` : `${_name}.ftl`;
+
+          createFile(site, path, fileName).subscribe(
+            () => {
+              onCreated?.({ path, fileName, type });
+              dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
+            },
+            (response) => {
+              setState({ inProgress: false, submitted: true });
+              dispatch(showErrorDialog({ error: response }));
+            }
+          );
+        } else {
         }
-      );
+      });
     }
   };
   return (

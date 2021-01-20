@@ -845,7 +845,9 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
   return post(
-    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
+    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&name=${encodeURIComponent(name)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -859,7 +861,9 @@ export function createFile(site: string, path: string, fileName: string): Observ
 
 export function renameFolder(site: string, path: string, name: string) {
   return post(
-    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
+    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&name=${encodeURIComponent(name)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 

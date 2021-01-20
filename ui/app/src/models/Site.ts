@@ -115,7 +115,7 @@ export interface LegacySite {
 }
 
 export interface Action {
-  type: string;
+  type: 'CREATE' | 'RENAME' | 'MOVE' | 'COPY';
   source?: string;
   target: string;
   recursive?: boolean;

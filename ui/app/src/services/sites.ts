@@ -68,9 +68,7 @@ export function checkHandleAvailability(name: string) {
 }
 
 export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult> {
-  return postJSON(`/studio/api/2/sites/${site}/policy/validate`, {
-    actions: [action]
-  }).pipe(pluck('response', 'results', '0'));
+  return validateActionsPolicy(site, [action]).pipe(pluck('0'));
 }
 
 export function validateActionsPolicy(site: string, actions: Action[]): Observable<ContentValidationResult[]> {

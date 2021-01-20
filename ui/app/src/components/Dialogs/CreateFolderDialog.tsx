@@ -27,7 +27,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
-import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
+import { emitSystemEvent, folderCreated, folderRenamed, showSystemNotification } from '../../state/actions/system';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
@@ -37,6 +37,18 @@ export const translations = defineMessages({
   placeholder: {
     id: 'createFolder.placeholder',
     defaultMessage: 'Please type a folder name'
+  },
+  createPolicy: {
+    id: 'createFolder.createPolicy',
+    defaultMessage: 'The folder will be created with the {name} name due to site policy'
+  },
+  renamePolicy: {
+    id: 'createFolder.renamePolicy',
+    defaultMessage: 'The folder will be renamed with the {name} name due to site policy'
+  },
+  policyError: {
+    id: 'createFolder.renamePolicy',
+    defaultMessage: 'The {name} is not allowed due to site policy'
   }
 });
 
@@ -120,11 +132,20 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         type: rename ? 'RENAME' : 'CREATE',
         target: `${parentPath}/${name}`
       }).subscribe(({ allowed, modifiedValue }) => {
+        let _name = name;
         if (allowed) {
-          // TODO: add confirmation if modifiedValue?
-          let _name = modifiedValue ? modifiedValue.replace(`${parentPath}/`, '') : name;
+          if (modifiedValue) {
+            _name = modifiedValue.replace(`${parentPath}/`, '');
+            dispatch(
+              showSystemNotification({
+                message: rename
+                  ? formatMessage(translations.renamePolicy, { name: _name })
+                  : formatMessage(translations.createPolicy, { name: _name })
+              })
+            );
+          }
           if (rename) {
-            renameFolder(site, path, encodeURIComponent(_name)).subscribe(
+            renameFolder(site, path, _name).subscribe(
               (response) => {
                 onRenamed?.({ path, name, rename });
                 dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: _name })));
@@ -135,7 +156,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
               }
             );
           } else {
-            createFolder(site, path, encodeURIComponent(_name)).subscribe(
+            createFolder(site, path, _name).subscribe(
               (response) => {
                 onCreated?.({ path, name: _name, rename });
                 dispatch(emitSystemEvent(folderCreated({ target: path, name: _name })));
@@ -150,8 +171,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           dispatch(
             showErrorDialog({
               error: {
-                // TODO: Display error Message
-                message: 'Not supported.'
+                message: formatMessage(translations.policyError)
               }
             })
           );
