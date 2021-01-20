@@ -134,7 +134,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
 
       response.forEach((resp: GetChildrenResponse, i: number) => {
         if (i === response.length - 1) {
-          itemsInPath = resp.map((item) => item.id);
+          itemsInPath = resp.map((item) => item.path);
           if (resp.levelDescriptor) {
             levelDescriptor = resp.levelDescriptor.path;
           }

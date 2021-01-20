@@ -143,7 +143,7 @@ const reducer = createReducer<ContentState>(initialState, {
       items: {
         ...state.items,
         byPath: {
-          ...createLookupTable(items),
+          ...createLookupTable(items, 'path'),
           ...state.items.byPath
         }
       }
