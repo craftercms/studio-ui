@@ -485,12 +485,7 @@ export default function GlobalNav(props: GlobalNavProps) {
               <CloseIcon />
             </IconButton>
             <div className={classes.railTop}>
-              <Typography
-                variant="subtitle1"
-                component="h2"
-                className={classes.title}
-                style={{ margin: '0px 0 10px 0' }}
-              >
+              <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
                 {formatMessage(messages.global)}
               </Typography>
               <nav className={classes.sitesApps}>

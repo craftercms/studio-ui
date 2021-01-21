@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: '200px',
     maxWidth: '400px',
     marginTop: '5px',
-    padding: '0px 5px 5px 5px'
+    padding: '0 5px 5px 5px'
   },
   root: {
     backgroundColor: theme.palette.background.paper,

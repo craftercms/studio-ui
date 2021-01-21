@@ -710,7 +710,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
     dl.setAttribute('alt', '');
     dl.setAttribute('href', '#');
-    dl.className = 'date-link btn btn-default btn-sm';
+    dl.className = 'date-link btn btn-default btn-sm date-time-picker-date-button';
     dl.innerHTML = label;
 
     YAHOO.util.Event.on(
@@ -1019,7 +1019,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         clearDateLabel = document.createTextNode(CMgs.format(langBundle, 'clearVal')),
         self = this;
 
-      clearDateEl.className = 'clear-link btn btn-default btn-sm';
+      clearDateEl.className = 'clear-link btn btn-default btn-sm date-time-picker-clear-button';
       clearDateEl.href = '#';
       clearDateEl.appendChild(clearDateLabel);
 

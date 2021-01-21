@@ -4,12 +4,12 @@
       <header class="screen-title mb10">
         <h1>{{ messages.title }}</h1>
       </header>
-      <button class="btn btn-default btn-pill btn-padded" ng-click="sample()" ng-disabled="!uiEnabled">
+      <button class="btn btn-default btn-pill btn-padded pull-right" ng-click="sample()" ng-disabled="!uiEnabled">
         {{ messages.viewSample }}
       </button>
-      <hr class="divider mt10 mb15"/>
     </div>
   </div>
+  <hr class="divider mt10 mb15"/>
   <div class="form-group" ng-style="{ opacity: uiEnabled ? 1 : 0.4 }">
     <div
       id="globalConfigAceEditor"

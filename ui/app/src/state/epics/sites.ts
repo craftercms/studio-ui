@@ -17,7 +17,7 @@
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { setSiteCookie } from '../../utils/auth';
-import { fetchSites } from '../../services/sites';
+import { fetchAll } from '../../services/sites';
 import { catchAjaxError } from '../../utils/ajax';
 import { changeSite, fetchSites as fetchSitesAction, fetchSitesComplete, fetchSitesFailed } from '../reducers/sites';
 import GlobalState from '../../models/GlobalState';
@@ -36,7 +36,7 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(fetchSitesAction.type),
-      switchMap(() => fetchSites().pipe(map(fetchSitesComplete), catchAjaxError(fetchSitesFailed)))
+      switchMap(() => fetchAll().pipe(map(fetchSitesComplete), catchAjaxError(fetchSitesFailed)))
     )
   // endregion
 ] as Epic[];

@@ -318,6 +318,8 @@ table {
   }
 
   .audit-nav {
+    display: flex;
+    justify-content: flex-end;
     i.fa {
       font-size: 13px;
       margin-top: 3px;
@@ -428,6 +430,7 @@ table {
       min-width: 100px;
     }
   }
+
 }
 
 .groups-view {
@@ -613,7 +616,7 @@ table {
     margin-bottom: 2px;
 
     > a {
-      margin-right: 0px;
+      margin-right: 0;
     }
   }
 
@@ -634,6 +637,12 @@ table {
     margin: 0;
     display: block;
   }
+}
+
+.create-user-helper-text {
+  text-align: center;
+  margin-top: 15px;
+  color: #7c7c80;
 }
 
 .divider {
@@ -667,11 +676,11 @@ table {
     overflow: hidden;
   }
 
-  ul.nav-wizard:before {
+  ul.nav-wizard::before {
     display: block;
     position: absolute;
-    left: 0px;
-    right: 0px;
+    left: 0;
+    right: 0;
     top: 46px;
     height: 47px;
     z-index: 11;
@@ -681,8 +690,8 @@ table {
   ul.nav-wizard::after {
     display: block;
     position: absolute;
-    left: 0px;
-    right: 0px;
+    left: 0;
+    right: 0;
     top: 138px;
     height: 47px;
     z-index: 11;
@@ -707,11 +716,11 @@ table {
   }
 
   ul.nav-wizard li:first-child {
-    border-radius: 10px 0px 0px 10px;
+    border-radius: 10px 0 0 10px;
   }
 
   ul.nav-wizard li:last-child {
-    border-radius: 0px 10px 10px 0px;
+    border-radius: 0 10px 10px 0;
   }
 
   ul.nav-wizard li a {
@@ -725,7 +734,7 @@ table {
     background-color: transparent;
   }
 
-  ul.nav-wizard li:before {
+  ul.nav-wizard li::before {
     position: absolute;
     display: block;
     border: 24px solid transparent;
@@ -937,7 +946,7 @@ table {
   }
 
   .mainslider {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 
   .flexslider.carousel {
@@ -1012,7 +1021,7 @@ table {
   .flex-control-thumbs {
     border: 2px solid #e2e2e2;
     background-color: #e2e2e2;
-    margin: 0px;
+    margin: 0;
 
     li {
       border-right: 2px solid #e2e2e2;
@@ -1038,13 +1047,13 @@ table {
     text-align: center;
   }
 
-  .flex-direction-nav a:before {
+  .flex-direction-nav a::before {
     font-size: 20px;
     color: #fff;
     line-height: 40px;
   }
 
-  .flex-direction-nav a.flex-next:before {
+  .flex-direction-nav a.flex-next::before {
     padding-left: 1px;
   }
 
@@ -1065,8 +1074,8 @@ table {
 
   .grid > article {
     border: 1px solid #ccc;
-    -webkit-box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.3);
-    box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.3);
     /*flex: 0 1 31%;*/
     flex: 0 1 100%;
     margin-bottom: 30px;

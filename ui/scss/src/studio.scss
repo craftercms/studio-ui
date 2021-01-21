@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
 
-@import "navbar";
-@import "preview";
+@import 'navbar';
+@import 'preview';

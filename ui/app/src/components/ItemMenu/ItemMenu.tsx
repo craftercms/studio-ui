@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     loadingWrapper: {
       width: '135px',
-      padding: '0px 15px'
+      padding: '0 15px'
     },
     typo: {
       padding: '6px 0'

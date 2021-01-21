@@ -199,7 +199,7 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       fontWeight: 700,
       pointerEvents: 'none',
       zIndex: config.zoneLabelZIndex,
-      boxShadow: `0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)`,
+      boxShadow: `0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12)`,
       ...overrides['craftercms-zone-marker-label']
     },
     'craftercms-drop-marker': {
@@ -263,7 +263,7 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       transform: 'none',
       transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
       boxShadow:
-        '0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12)',
+        '0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12)',
       zIndex: config.snackBarZIndex,
       ...overrides['craftercms-snackbar']
     },
@@ -286,7 +286,7 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       bottom: '10px',
       right: '10px',
       backgroundColor: palette.white,
-      boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
+      boxShadow: '0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 1px 3px 0 rgba(0,0,0,0.12)',
       padding: '10px 14px',
       color: palette.black,
       display: 'flex',

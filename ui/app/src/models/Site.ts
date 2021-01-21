@@ -83,8 +83,7 @@ export interface CreateSiteMeta {
   siteParams?: {
     [key: string]: string;
   };
-
-  [key: string]: any;
+  createAsOrphan: boolean;
 }
 
 export interface MarketplaceSite {
@@ -99,8 +98,8 @@ export interface MarketplaceSite {
   siteParams?: {
     [key: string]: string;
   };
-
-  [key: string]: any;
+  sandboxBranch?: string;
+  description: string;
 }
 
 export interface Site {

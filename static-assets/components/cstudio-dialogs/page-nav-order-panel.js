@@ -217,15 +217,16 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
     dndOKButtonDiv.className = 'cstudio-xform-button btn btn-primary';
     dndOKButtonDiv.setAttribute('type', 'submit');
     dndOKButtonDiv.setAttribute('value', 'OK');
-    YAHOO.util.Dom.get('reorderButtonWrapper').appendChild(dndOKButtonDiv);
+    dndOKButtonDiv.style.marginLeft = '15px';
 
     var dndCancelButtonDiv = document.createElement('input');
     dndCancelButtonDiv.id = 'dndCancelButton';
     dndCancelButtonDiv.className = 'cstudio-xform-button btn btn-default';
-    dndCancelButtonDiv.style.marginLeft = '15px';
     dndCancelButtonDiv.setAttribute('type', 'submit');
     dndCancelButtonDiv.setAttribute('value', 'Cancel');
+
     YAHOO.util.Dom.get('reorderButtonWrapper').appendChild(dndCancelButtonDiv);
+    YAHOO.util.Dom.get('reorderButtonWrapper').appendChild(dndOKButtonDiv);
 
     if (config.control.readonly != true) {
       new YAHOO.util.DDTarget('sortable');
@@ -234,7 +235,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
         new CStudioForms.DDList('li1_' + eval(j + 1), draggableItemId); // set item to be dragged
       }
     } else {
-      dndOKButtonDiv.style.visibility = 'hidden'; //Hidden the ok button
+      dndOKButtonDiv.style.visibility = 'hidden'; // Hidden the ok button
     }
 
     YAHOO.util.Event.addListener('dndOKButton', 'click', function() {

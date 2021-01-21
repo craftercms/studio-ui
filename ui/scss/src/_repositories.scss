@@ -36,7 +36,6 @@ $split-view-size: $diff-modal-size / 2;
     background-color: #f2f2f2;
     margin: 5px 0 10px 0;
   }
-
 }
 
 .diff-header {
@@ -49,7 +48,8 @@ $split-view-size: $diff-modal-size / 2;
       border: none;
       outline: 0;
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         color: #333;
         background-color: #f9f9f9;
       }
@@ -68,7 +68,6 @@ $split-view-size: $diff-modal-size / 2;
   overflow: hidden;
 
   .diff-container {
-
     .nav-tabs {
       display: none;
     }
@@ -96,7 +95,8 @@ $split-view-size: $diff-modal-size / 2;
         padding: 15px 0 0 0;
       }
 
-      .studio-version, .remote-version {
+      .studio-version,
+      .remote-version {
         height: $split-view-size;
       }
     }

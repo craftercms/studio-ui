@@ -177,7 +177,13 @@ function NewContentDialogBody(props: NewContentDialogProps) {
 
   useEffect(() => {
     if (selectedItem.path) {
-      fetchLegacyContentTypes(site, selectedItem.path).subscribe(
+      // TODO: https://github.com/craftercms/craftercms/issues/4473
+      const path =
+        selectedItem.systemType === 'folder' && !selectedItem.path.endsWith('/')
+          ? `${selectedItem.path}/`
+          : selectedItem.path;
+
+      fetchLegacyContentTypes(site, path).subscribe(
         (response) => {
           setContentTypes(response);
         },
