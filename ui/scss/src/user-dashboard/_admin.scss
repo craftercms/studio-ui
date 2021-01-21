@@ -318,6 +318,8 @@ table {
   }
 
   .audit-nav {
+    display: flex;
+    justify-content: flex-end;
     i.fa {
       font-size: 13px;
       margin-top: 3px;
@@ -429,10 +431,6 @@ table {
     }
   }
 
-  .audit-nav {
-    display: flex;
-    justify-content: flex-end;
-  }
 }
 
 .groups-view {
