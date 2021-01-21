@@ -30,6 +30,7 @@ import {
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
   pasteItem,
+  pasteItemWithValidationPolicy,
   reloadDetailedItem,
   unlockItem,
   unSetClipBoard
@@ -41,7 +42,7 @@ import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
-import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
+import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
   emitSystemEvent,
@@ -55,7 +56,8 @@ import {
 import { batchActions } from '../actions/misc';
 import { isValidCutPastePath } from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { itemFailureMessages } from '../../utils/i18n-legacy';
+import { itemFailureMessages, sitePolicyMessages } from '../../utils/i18n-legacy';
+import { validateActionPolicy } from '../../services/sites';
 
 const content = [
   // region Quick Create
@@ -178,7 +180,7 @@ const content = [
       })
     ),
   // endregion
-  // region Item Pasted
+  // region Item Paste
   (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
@@ -206,6 +208,41 @@ const content = [
           );
           return NEVER;
         }
+      })
+    ),
+  // endregion
+  // region Item Paste with validation policy
+  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+    action$.pipe(
+      ofType(pasteItemWithValidationPolicy.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return validateActionPolicy(state.sites.active, {
+          type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
+          target: payload.path,
+          source: state.content.clipboard.sourcePath
+        }).pipe(
+          map(({ allowed, modifiedValue, target }) => {
+            if (allowed && modifiedValue) {
+              return showConfirmDialog({
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+                  path: target,
+                  modifiedPath: modifiedValue
+                }),
+                onCancel: closeConfirmDialog(),
+                onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+              });
+            } else if (allowed) {
+              return pasteItem({
+                path: payload.path
+              });
+            } else {
+              return showConfirmDialog({
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError)
+              });
+            }
+          })
+        );
       })
     )
   // endregion

@@ -63,6 +63,7 @@ import {
   duplicateAsset,
   duplicateItem,
   pasteItem,
+  pasteItemWithValidationPolicy,
   reloadDetailedItem,
   setClipBoard,
   unlockItem
@@ -570,7 +571,7 @@ export const itemActionDispatcher = (
             }
           });
         } else {
-          dispatch(pasteItem({ path: item.path }));
+          dispatch(pasteItemWithValidationPolicy({ path: item.path }));
         }
         break;
       }
