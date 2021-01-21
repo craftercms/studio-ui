@@ -27,7 +27,6 @@
 }
 
 .contentTypePopupInner {
-  background: #d6d6d6 url(../images/bg/gradient_workflow.gif) repeat-x;
   border: 5px solid #000;
   height: 434px;
   width: 598px;
@@ -75,13 +74,6 @@
 
 #contentTypePreviewImg {
   margin: 5px 0 0 0;
-}
-
-.contentTypePopupInner {
-  background: #d6d6d6 url(../images/bg/gradient_workflow.gif) repeat-x;
-  border: 5px solid #000;
-  height: 434px;
-  width: 598px;
 }
 
 #cstudio-wcm-popup-div .rename-container::before,

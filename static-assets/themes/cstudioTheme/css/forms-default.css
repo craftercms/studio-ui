@@ -75,19 +75,12 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   width: 74%;
 }
 
-.cstudio-form-control-asset-picker-body {
-  position: relative;
-  display: inline-block;
-  min-height: 65px;
-  padding-right: 220px;
-}
+/*.cstudio-form-control-asset-picker-body {
+  hello world
+}*/
 
 .cstudio-form-control-image-picker-options {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 215px;
-  /*display: inline;*/
+  margin: 5px 0;
 }
 
 .cstudio-form-field-image-picker-constraints {
@@ -1002,12 +995,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 /* Start Asset Picker Styles - image, video and flash */
 
 .cstudio-form-control-asset-picker-preview-block {
-  border: 1px solid #c5d6e2;
-  height: 100px;
-  width: 300px;
-  display: inline-block;
-  background: #f0f0f0;
-  position: relative;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background: #fafafa;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  place-content: center;
 }
 
 @media screen and (max-width: 1105px) {
@@ -1035,8 +1029,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-asset-picker-preview-content {
-  height: 100px;
-  width: 300px;
+  height: 250px;
+  width: 100%;
+  object-fit: contain;
 }
 
 .cstudio-form-control-hover-btn {
@@ -1050,24 +1045,24 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   text-decoration: none;
 }
 
+.cstudio-form-control-asset-picker-zoom-button,
+.cstudio-form-control-asset-picker-download-button {
+  position: absolute;
+  top: 100px;
+}
+
 .cstudio-form-control-asset-picker-zoom-button {
-  /*background: url("/studio/static-assets/themes/cstudioTheme/images/magnify.png") no-repeat scroll 0 0;
-  width: 21px;*/
   cursor: pointer;
   border: none;
-  position: absolute;
-  top: 0;
-  right: 26px;
+  right: 50px;
+}
+
+.cstudio-form-control-asset-picker-download-button {
+  right: 25px;
 }
 
 .cstudio-form-control-asset-picker-zoom-button.video-zoom {
   right: 17px;
-}
-
-.cstudio-form-control-asset-picker-download-button {
-  position: absolute;
-  top: 0;
-  right: 3px;
 }
 
 .zoom-button {
@@ -1206,7 +1201,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .date-time-container .date-control {
-  background: #ffffff url(../images/icons/icon_calendar.gif) no-repeat right center;
+  background: #ffffff url(../images/icons/icon_calendar.gif) no-repeat 99% center;
   width: 103px;
   border: 1px solid #c5d6e2;
   color: #000000;
@@ -1306,8 +1301,6 @@ body.yui-skin-cstudioTheme.masked {
 
 .image-picker-control .cstudio-form-control-image-picker-container {
   float: none;
-  display: inline-block;
-  width: 74%;
 }
 
 .image-picker-control .cstudio-form-control-image-picker-container .validation-hint {
@@ -1318,9 +1311,7 @@ body.yui-skin-cstudioTheme.masked {
 }
 
 .image-picker-control .cstudio-form-control-image-picker-container .imgInfoContainer {
-  float: none;
-  display: inline-block;
-  width: 94.5%;
+  width: 100%;
   word-break: break-all;
 }
 
@@ -1364,10 +1355,6 @@ body.yui-skin-cstudioTheme.masked {
 
 .cstudio-form-control-video-picker-container .cstudio-button {
   align-self: flex-start;
-}
-
-.cstudio-form-control-asset-picker-preview-block {
-  margin-right: 5px;
 }
 
 .cstudio-form-control-input-container {
@@ -1576,6 +1563,15 @@ body.yui-skin-cstudioTheme.masked {
 
 .date-link {
   text-decoration: none !important;
+}
+
+.date-time-picker-date-button {
+  width: 90px;
+  margin-left: 5px;
+}
+
+.date-time-picker-clear-button {
+  width: 120px;
 }
 
 .cstudio-form-repeat-container {
