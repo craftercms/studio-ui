@@ -31,10 +31,11 @@ import {
   fetchUserPermissionsFailed,
   pasteItem,
   reloadDetailedItem,
-  unlockItem
+  unlockItem,
+  unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem, unlock } from '../../services/content';
+import { duplicate, fetchQuickCreateList, getDetailedItem, paste, unlock } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -45,7 +46,9 @@ import { isEditableAsset } from '../../utils/content';
 import {
   emitSystemEvent,
   itemDuplicated,
+  itemsPasted,
   itemUnlocked,
+  showPasteItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification
 } from '../actions/system';
@@ -53,7 +56,6 @@ import { batchActions } from '../actions/misc';
 import { isValidCutPastePath } from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemFailureMessages } from '../../utils/i18n-legacy';
-import { validateActionPolicy } from '../../services/sites';
 
 const content = [
   // region Quick Create
@@ -182,29 +184,16 @@ const content = [
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const target = payload.path;
-        const source = state.content.clipboard.sourcePath;
         if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
-          validateActionPolicy(state.sites.active, {
-            type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
-            target,
-            source
-          }).subscribe((result) => {
-            // TODO: WIP Need to consult with jose
-            console.log(result);
-          });
-
-          return NEVER;
-
-          // return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-          //   map(({ items }) => {
-          //     return batchActions([
-          //       emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
-          //       unSetClipBoard(),
-          //       showPasteItemSuccessNotification()
-          //     ]);
-          //   })
-          // );
+          return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+            map(({ items }) => {
+              return batchActions([
+                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
+                unSetClipBoard(),
+                showPasteItemSuccessNotification()
+              ]);
+            })
+          );
         } else {
           const hostToHost$ = getHostToHostBus();
           hostToHost$.next(
