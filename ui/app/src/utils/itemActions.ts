@@ -54,14 +54,13 @@ import {
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
-  showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
   showPublishItemSuccessNotification,
   showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
   duplicateAsset,
-  duplicateItem,
+  duplicateWithValidationPolicy,
   pasteItem,
   pasteItemWithValidationPolicy,
   reloadDetailedItem,
@@ -314,12 +313,14 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         if (deleteItem) {
           _optionsA.push(menuOptions.delete);
         }
-        if (type === 'taxonomy' || type === 'component') {
-          _optionsA.push(menuOptions.changeContentType);
-        }
         _optionsA.push(menuOptions.cut);
         _optionsA.push(menuOptions.copy);
-        _optionsA.push(menuOptions.duplicateAsset);
+        if (type === 'taxonomy' || type === 'component') {
+          _optionsA.push(menuOptions.duplicate);
+          _optionsA.push(menuOptions.changeContentType);
+        } else {
+          _optionsA.push(menuOptions.duplicateAsset);
+        }
         if (hasClipboard) {
           _optionsA.push(menuOptions.paste);
         }
@@ -583,12 +584,9 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateAsset({
+              duplicateWithValidationPolicy({
                 path: item.path,
-                onSuccess: batchActions([
-                  showDuplicatedItemSuccessNotification(),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
+                type: 'asset'
               })
             ])
           })
@@ -603,12 +601,9 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateItem({
+              duplicateWithValidationPolicy({
                 path: item.path,
-                onSuccess: batchActions([
-                  showDuplicatedItemSuccessNotification(),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
+                type: 'item'
               })
             ])
           })

@@ -1483,10 +1483,7 @@ export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
     id: 'pastePolicy.confirm',
     defaultMessage:
-      'The selected copy|cut target goes against site policies for the destination directory. \n' +
-      '• Original path: "{path}"\n' +
-      '• Suggested path is: "{modifiedPath}". \n' +
-      'Would you like to use the suggested path?'
+      'The selected {action} target goes against site policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
   },
   itemPastePolicyError: {
     id: 'pastePolicy.error',
