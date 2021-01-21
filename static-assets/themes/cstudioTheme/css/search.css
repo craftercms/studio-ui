@@ -33,7 +33,6 @@
 
 #template_search_search-results {
   position: relative;
-  height: auto !important;
   min-height: 99%;
   height: 99%;
 }
@@ -146,9 +145,7 @@ select.fixed-width-search-filter {
 
 input[type='text'].cstudio-wcm-search-result-header-pagination-textbox {
   width: 23px;
-  text-align: right;
   margin: 0 0 0 3px;
-  font-weight: bold;
   text-align: center;
   font-weight: normal;
   padding: 6px 3px;

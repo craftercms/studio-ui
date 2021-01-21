@@ -141,7 +141,6 @@ input[type='checkbox'].content-type-selector--checkbox {
   height: 100vh;
 }
 
-.embedded #admin-console #categories-panel,
 .embedded #admin-console #categories-panel {
   display: none;
 }
@@ -343,7 +342,6 @@ input[type='checkbox'].content-type-selector--checkbox {
 }
 
 #content-type-canvas .content-type-visual-section-container {
-  background-color: #fff;
   margin-bottom: 17px;
   background-color: white;
   border: 1px solid #dddddd;

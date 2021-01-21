@@ -61,12 +61,12 @@
 }
 
 .container::before,
-.container:after {
+.container::after {
   content: ' ';
   display: table;
 }
 
-.container:after {
+.container::after {
   clear: both;
 }
 

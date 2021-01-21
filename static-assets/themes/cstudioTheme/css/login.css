@@ -35,9 +35,6 @@ a:hover {
   color: #005986;
 }
 
-a:active {
-}
-
 input {
   font-size: 9px;
 
@@ -83,7 +80,6 @@ fieldset {
   margin-left: 46.5%;
   height: 33px;
   width: 450px;
-
   background: transparent url('../images/app-logo.png') no-repeat;
 }
 

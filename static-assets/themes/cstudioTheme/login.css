@@ -24,17 +24,8 @@ a {
   text-decoration: none;
 }
 
-a:link {
-}
-
-a:visited {
-}
-
 a:hover {
   color: #005986;
-}
-
-a:active {
 }
 
 input {
@@ -86,12 +77,6 @@ input {
   width: 450px;
 
   background: transparent url('./images/app-logo.png') no-repeat;
-}
-
-.submitButtonstyle {
-}
-
-.inputStyle {
 }
 
 .errorStyle {

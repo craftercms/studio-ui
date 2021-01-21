@@ -29,7 +29,7 @@
   float: left !important;
 }
 
-.status-icon.new:after {
+.status-icon.new::after {
   /*
   content: "*";
   */
@@ -51,7 +51,7 @@
 
 /* Differences in the different component views (dropdown, search, etc) */
 
-.cstudio-search-result-body .status-icon.new:after {
+.cstudio-search-result-body .status-icon.new::after {
   content: '';
 }
 

@@ -778,7 +778,7 @@ p#clear {
   zoom: 1;
 }
 
-.yui-carousel-nav:after {
+.yui-carousel-nav::after {
   clear: both;
   content: '';
   display: block;
@@ -878,7 +878,7 @@ p#clear {
   list-style: none;
 }
 
-.yui-skin-cstudioTheme .yui-carousel-nav ul:after {
+.yui-skin-cstudioTheme .yui-carousel-nav ul::after {
   clear: both;
   content: '';
   display: block;
@@ -1276,7 +1276,7 @@ p#clear {
 }
 
 .yui-skin-cstudioTheme .yui-dialog .ft span.yui-button-disabled {
-  background-position: 0pt -1500px;
+  background-position: 0 -1500px;
   border-color: #ccc;
 }
 
@@ -1447,7 +1447,7 @@ th.yui-dt-hidden .yui-dt-resizer {
   font-weight: normal;
   font-style: italic;
   line-height: 1;
-  padding: 1em 0pt;
+  padding: 1em 0;
   text-align: center;
 }
 
@@ -1759,7 +1759,7 @@ tbody .yui-dt-editable {
   display: none;
 }
 
-.yui-toolbar-container .yui-toolbar-subcont:after {
+.yui-toolbar-container .yui-toolbar-subcont::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -1813,7 +1813,7 @@ tbody .yui-dt-editable {
   zoom: 1;
 }
 
-.yui-toolbar-container .yui-toolbar-group:after {
+.yui-toolbar-container .yui-toolbar-group::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -2000,7 +2000,7 @@ tbody .yui-dt-editable {
 
 .yui-editor-panel .hd h3 {
   font-weight: bold;
-  padding: 0.25em 0pt 0.25em 0.25em;
+  padding: 0.25em 0 0.25em 0.25em;
   margin: 0;
 }
 
@@ -2019,7 +2019,7 @@ tbody .yui-dt-editable {
   overflow: auto;
 }
 
-.yui-editor-panel .bd div.yui-editor-body-cont:after {
+.yui-editor-panel .bd div.yui-editor-body-cont::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -2247,7 +2247,7 @@ h3.yui-editor-skipheader {
   overflow: hidden;
 }
 
-.yui-toolbar-colors:after {
+.yui-toolbar-colors::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -2286,7 +2286,7 @@ h3.yui-editor-skipheader {
   zoom: 1;
 }
 
-.yui-toolbar-colors span:after {
+.yui-toolbar-colors span::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -3517,7 +3517,7 @@ body.yui-layout {
   *zoom: normal;
 }
 
-.yuimenubar > .bd > ul:after {
+.yuimenubar > .bd > ul::after {
   content: '.';
   display: block;
   clear: both;
@@ -3903,9 +3903,9 @@ body.yui-layout {
   margin: 4px 10px 0 0;
 }
 
-.yui-skin-cstudioTheme .yui-pv .hd:after,
-.yui-pv .bd:after,
-.yui-skin-cstudioTheme .yui-pv-chartlegend dl:after {
+.yui-skin-cstudioTheme .yui-pv .hd::after,
+.yui-pv .bd::after,
+.yui-skin-cstudioTheme .yui-pv-chartlegend dl::after {
   content: '.';
   visibility: hidden;
   clear: left;
@@ -4344,7 +4344,7 @@ body.yui-layout {
   display: none;
 }
 
-.yui-toolbar-container .yui-toolbar-subcont:after {
+.yui-toolbar-container .yui-toolbar-subcont::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -4398,7 +4398,7 @@ body.yui-layout {
   zoom: 1;
 }
 
-.yui-toolbar-container .yui-toolbar-group:after {
+.yui-toolbar-container .yui-toolbar-group::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -4585,7 +4585,7 @@ body.yui-layout {
 
 .yui-editor-panel .hd h3 {
   font-weight: bold;
-  padding: 0.25em 0pt 0.25em 0.25em;
+  padding: 0.25em 0 0.25em 0.25em;
   margin: 0;
 }
 
@@ -4604,7 +4604,7 @@ body.yui-layout {
   overflow: auto;
 }
 
-.yui-editor-panel .bd div.yui-editor-body-cont:after {
+.yui-editor-panel .bd div.yui-editor-body-cont::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -4832,7 +4832,7 @@ h3.yui-editor-skipheader {
   overflow: hidden;
 }
 
-.yui-toolbar-colors:after {
+.yui-toolbar-colors::after {
   display: block;
   clear: both;
   visibility: hidden;
@@ -4871,7 +4871,7 @@ h3.yui-editor-skipheader {
   zoom: 1;
 }
 
-.yui-toolbar-colors span:after {
+.yui-toolbar-colors span::after {
   display: block;
   clear: both;
   visibility: hidden;

@@ -381,14 +381,6 @@ table.scroll-body {
   border-collapse: collapse;
 
   tr {
-    /*&::after {
-      */ /* IE8 fix */ /*
-      content: ".";
-      margin-left: -3px; */ /* to hide the content above tr */ /*
-      */ /* not necessary if you are ok with 1px gap */ /*
-      visibility: hidden;
-    }*/
-
     .small {
       width: 10%;
     }
