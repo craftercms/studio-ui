@@ -489,7 +489,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                 variant="subtitle1"
                 component="h2"
                 className={classes.title}
-                style={{ margin: '0px 0 10px 0' }}
+                style={{ margin: '0 0 10px 0' }}
               >
                 {formatMessage(messages.global)}
               </Typography>

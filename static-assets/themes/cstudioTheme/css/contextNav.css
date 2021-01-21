@@ -28,7 +28,7 @@
 
 .contentTypePopupInner {
   background: url(../images/bg/gradient_workflow.gif) repeat-x;
-  background-color: #D6D6D6;
+  background-color: #d6d6d6;
   border: 5px solid #000;
   height: 434px;
   width: 598px;
@@ -49,7 +49,7 @@
 }
 
 .contentType {
-  padding: 0 10px 0 0px;
+  padding: 0 10px 0 0;
   height: 260px;
   width: 250px;
 }
@@ -59,12 +59,10 @@
 }
 
 #wcm-popup-container {
-
   border: 3px solid #000000;
 }
 
 #cstudio-wcm-popup-table {
-
   width: 350px;
   margin-left: auto;
   margin-right: auto;
@@ -82,14 +80,15 @@
 
 .contentTypePopupInner {
   background: url(../images/bg/gradient_workflow.gif) repeat-x;
-  background-color: #D6D6D6;
+  background-color: #d6d6d6;
   border: 5px solid #000;
   height: 434px;
   width: 598px;
 }
 
-#cstudio-wcm-popup-div .rename-container:before, #cstudio-wcm-popup-div-login .rename-container:before {
-  content: "." attr(data-extension);
+#cstudio-wcm-popup-div .rename-container::before,
+#cstudio-wcm-popup-div-login .rename-container::before {
+  content: '.' attr(data-extension);
   top: 9px;
   right: 20px;
   color: #000;
@@ -124,7 +123,7 @@
 }
 
 .contentType {
-  padding: 0 10px 0 0px;
+  padding: 0 10px 0 0;
   height: 260px;
   width: 250px;
 }
@@ -156,13 +155,15 @@ body .mask#expandComponentError_mask {
   z-index: 103 !important;
 }
 
-div[id*="expandComponentError"].yui-dialog {
+div[id*='expandComponentError'].yui-dialog {
   z-index: 104 !important;
 }
 
-.cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"],
-.cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"],
-.cstudio-dialogue[id^="viewcontroller-requestpublish"] {
+.cstudio-dialogue[id^='viewcontroller-history'],
+.cstudio-dialogue[id^='viewcontroller-dependencies'],
+.cstudio-dialogue[id^='viewcontroller-approve'],
+.cstudio-dialogue[id^='viewcontroller-delete'],
+.cstudio-dialogue[id^='viewcontroller-requestpublish'] {
   z-index: 1030 !important;
 }
 
@@ -225,7 +226,8 @@ div[id*="expandComponentError"].yui-dialog {
   width: auto;
 }
 
-.contentTypePopupInner input[type="text"], .contentTypePopupInner input[type="password"] {
+.contentTypePopupInner input[type='text'],
+.contentTypePopupInner input[type='password'] {
   display: inline-block;
   width: 100%;
   height: 31px;
@@ -264,13 +266,19 @@ div[id*="expandComponentError"].yui-dialog {
 }
 
 /* -- Go Live and Schedule Overlay -- */
-#acnVersionWrapper div, #acnVersionWrapper span,
-#acnVersionWrapper label, #acnVersionWrapper h1, #acnVersionWrapper h2, #acnVersionWrapper h3, #acnVersionWrapper h4,
-#acnVersionWrapper b, #acnVersionWrapper textarea {
+#acnVersionWrapper div,
+#acnVersionWrapper span,
+#acnVersionWrapper label,
+#acnVersionWrapper h1,
+#acnVersionWrapper h2,
+#acnVersionWrapper h3,
+#acnVersionWrapper h4,
+#acnVersionWrapper b,
+#acnVersionWrapper textarea {
   cursor: auto;
   color: #000000;
   direction: ltr;
-  font: normal normal normal 12px/normal;
+  font: normal normal normal 12px / normal;
   font-size-adjust: none;
   font-stretch: normal;
   letter-spacing: normal;
@@ -287,10 +295,11 @@ div[id*="expandComponentError"].yui-dialog {
   word-wrap: normal;
 }
 
-#acnVersionWrapper select, #acnVersionWrapper option {
+#acnVersionWrapper select,
+#acnVersionWrapper option {
   cursor: auto;
   direction: ltr;
-  font: normal normal normal 12px/normal;
+  font: normal normal normal 12px / normal;
   font-size-adjust: none;
   font-stretch: normal;
   letter-spacing: normal;
@@ -307,7 +316,8 @@ div[id*="expandComponentError"].yui-dialog {
   word-wrap: normal;
 }
 
-#acnVersionWrapper input[type="radio"], #acnVersionWrapper input[type="checkbox"] {
+#acnVersionWrapper input[type='radio'],
+#acnVersionWrapper input[type='checkbox'] {
   margin: 0;
 }
 
@@ -329,7 +339,7 @@ div[id*="expandComponentError"].yui-dialog {
 
 #acnVersionWrapper .comment textarea {
   height: 40px;
-  border: 1px solid #7F9DB9;
+  border: 1px solid #7f9db9;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -352,13 +362,13 @@ div[id*="expandComponentError"].yui-dialog {
 
 #acnVersionWrapper.acnBox .publishing-channels h3 {
   font-size: 18px;
-  border-bottom: 1px solid #7F9DB9;
+  border-bottom: 1px solid #7f9db9;
   padding: 0;
 }
 
 #acnVersionWrapper .publishing-channels {
   padding: 20px 15px;
-  border: 1px solid #7F9DB9;
+  border: 1px solid #7f9db9;
   float: left;
   margin: 5px 0 0 10px;
 }
@@ -381,7 +391,7 @@ div[id*="expandComponentError"].yui-dialog {
 
 #acnVersionWrapper .publishing-channels .pub-msg b.emphasize,
 #acnVersionWrapper .publishing-channels .pub-msg .over-limit b {
-  color: #D92626;
+  color: #d92626;
 }
 
 #acnVersionWrapper .publishing-channels .pub-msg .over-limit span {
@@ -399,7 +409,7 @@ div[id*="expandComponentError"].yui-dialog {
 
 #acnVersionWrapper .publishing-channels .pub-channel > select {
   width: 135px;
-  border: 1px solid #C5D6E2;
+  border: 1px solid #c5d6e2;
   font-weight: normal;
 }
 
@@ -423,7 +433,7 @@ div[id*="expandComponentError"].yui-dialog {
 #acnVersionWrapper .publishing-channels .pub-msg span.counter,
 #acnVersionWrapper .publishing-channels .pub-status textarea {
   width: 240px;
-  border: 1px solid #C5D6E2;
+  border: 1px solid #c5d6e2;
   font-weight: normal;
 }
 
@@ -459,15 +469,23 @@ div[id*="expandComponentError"].yui-dialog {
 
 /* -- END Go Live and Schedule Overlay -- */
 
-
 /* -- Upload Overlay -- */
-.yui-pe-content div, .yui-pe-content span,
-#cstudio-wcm-popup-div label, #cstudio-wcm-popup-div-login label, #cstudio-wcm-popup-div h1, #cstudio-wcm-popup-div-login h1, #cstudio-wcm-popup-div h2, #cstudio-wcm-popup-div-login h2,
-#cstudio-wcm-popup-div h3, #cstudio-wcm-popup-div-login h3, #cstudio-wcm-popup-div b, #cstudio-wcm-popup-div-login b {
+.yui-pe-content div,
+.yui-pe-content span,
+#cstudio-wcm-popup-div label,
+#cstudio-wcm-popup-div-login label,
+#cstudio-wcm-popup-div h1,
+#cstudio-wcm-popup-div-login h1,
+#cstudio-wcm-popup-div h2,
+#cstudio-wcm-popup-div-login h2,
+#cstudio-wcm-popup-div h3,
+#cstudio-wcm-popup-div-login h3,
+#cstudio-wcm-popup-div b,
+#cstudio-wcm-popup-div-login b {
   cursor: auto;
   color: #000000;
   direction: ltr;
-  font: normal normal normal 12px/normal;
+  font: normal normal normal 12px / normal;
   font-size-adjust: none;
   font-stretch: normal;
   letter-spacing: normal;
@@ -488,10 +506,13 @@ div[id*="expandComponentError"].yui-dialog {
   color: #fff;
 }
 
-#cstudio-wcm-popup-div select, #cstudio-wcm-popup-div-login select, #cstudio-wcm-popup-div option, #cstudio-wcm-popup-div-login option {
+#cstudio-wcm-popup-div select,
+#cstudio-wcm-popup-div-login select,
+#cstudio-wcm-popup-div option,
+#cstudio-wcm-popup-div-login option {
   cursor: auto;
   direction: ltr;
-  font: normal normal normal 12px/normal;
+  font: normal normal normal 12px / normal;
   font-size-adjust: none;
   font-stretch: normal;
   letter-spacing: normal;
@@ -508,28 +529,31 @@ div[id*="expandComponentError"].yui-dialog {
   word-wrap: normal;
 }
 
-#cstudio-wcm-popup-div.yui-panel .hd, #cstudio-wcm-popup-div-login.yui-panel .hd {
-  height: 0px;
+#cstudio-wcm-popup-div.yui-panel .hd,
+#cstudio-wcm-popup-div-login.yui-panel .hd {
+  height: 0;
   display: none;
   width: 400px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .bd, #cstudio-wcm-popup-div-login.yui-panel .bd {
+#cstudio-wcm-popup-div.yui-panel .bd,
+#cstudio-wcm-popup-div-login.yui-panel .bd {
   background: url(../images/bg/gradient_workflow.gif) repeat-x;
-  background-color: #D6D6D6;
+  background-color: #d6d6d6;
   height: 100%;
   min-height: 100%;
   overflow: hidden;
   width: 400px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .ft, #cstudio-wcm-popup-div-login.yui-panel .ft {
-
-  height: 0px;
+#cstudio-wcm-popup-div.yui-panel .ft,
+#cstudio-wcm-popup-div-login.yui-panel .ft {
+  height: 0;
   display: none;
 }
 
-#cstudio-wcm-popup-div.yui-panel .header-titl, #cstudio-wcm-popup-div-login.yui-panel .header-title {
+#cstudio-wcm-popup-div.yui-panel .header-titl,
+#cstudio-wcm-popup-div-login.yui-panel .header-title {
   font-size: 14px;
   color: black;
   font-weight: bold;
@@ -537,63 +561,75 @@ div[id*="expandComponentError"].yui-dialog {
   padding-top: 10px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-label, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-label {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-label,
+#cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-label {
   font-weight: bold;
 }
 
-#cstudio-wcm-popup-div.yui-panel .templateName, #cstudio-wcm-popup-div-login.yui-panel .templateName,
-#cstudio-wcm-popup-div.yui-panel .previewImage, #cstudio-wcm-popup-div-login.yui-panel .previewImage {
+#cstudio-wcm-popup-div.yui-panel .templateName,
+#cstudio-wcm-popup-div-login.yui-panel .templateName,
+#cstudio-wcm-popup-div.yui-panel .previewImage,
+#cstudio-wcm-popup-div-login.yui-panel .previewImage {
   width: 50%;
   float: left;
 }
 
-#cstudio-wcm-popup-div.yui-panel .templateName .contentTypeDropdown, #cstudio-wcm-popup-div-login.yui-panel .templateName .contentTypeDropdown {
+#cstudio-wcm-popup-div.yui-panel .templateName .contentTypeDropdown,
+#cstudio-wcm-popup-div-login.yui-panel .templateName .contentTypeDropdown {
   margin-right: 2px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .previewImage .contentTypePreview, #cstudio-wcm-popup-div-login.yui-panel .previewImage .contentTypePreview {
+#cstudio-wcm-popup-div.yui-panel .previewImage .contentTypePreview,
+#cstudio-wcm-popup-div-login.yui-panel .previewImage .contentTypePreview {
   margin-left: 8px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control,
+#cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
   height: 260px;
   width: 235px;
   margin: 5px 0 0 0;
 }
 
-#cstudio-wcm-popup-div .yui-resize .yui-resize-handle-br, #cstudio-wcm-popup-div-login .yui-resize .yui-resize-handle-br {
+#cstudio-wcm-popup-div .yui-resize .yui-resize-handle-br,
+#cstudio-wcm-popup-div-login .yui-resize .yui-resize-handle-br {
   background-position: -20px -58px;
   height: 12px;
   width: 10px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control,
+#cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
   color: #000000;
-  border: 1px solid #C5D6E2;
+  border: 1px solid #c5d6e2;
   background: #ffffff;
   padding: 1px 0 1px 0;
-  border-radius: 0px;
-  box-shadow: 0px;
-  border-radius: 0px;
+  border-radius: 0;
+  box-shadow: 0;
+  border-radius: 0;
   -moz-box-shadow: 0 0 0 0 #000000 inset;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control option, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control option {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control option,
+#cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control option {
   padding: 0 5px 0 3px;
 }
 
-#cstudio-wcm-popup-div .contentTypePopupHeader, #cstudio-wcm-popup-div-login .contentTypePopupHeader {
+#cstudio-wcm-popup-div .contentTypePopupHeader,
+#cstudio-wcm-popup-div-login .contentTypePopupHeader {
   font: normal 1.8em;
   margin: 0;
   padding: 6px 0;
 }
 
-#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader, #cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader {
+#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader,
+#cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader {
   font-size: 1.5em;
-  padding: 0px 15px 3px !important;
+  padding: 0 15px 3px !important;
 }
 
-#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader #crafterLogo, #cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader #crafterLogo {
+#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader #crafterLogo,
+#cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader #crafterLogo {
   width: 200px;
   margin: 30px auto 0;
   display: block;
@@ -604,13 +640,15 @@ div[id*="expandComponentError"].yui-dialog {
   color: red;
 }
 
-#cstudio-wcm-popup-div .contentTypePopupBtn, #cstudio-wcm-popup-div-login .contentTypePopupBtn {
+#cstudio-wcm-popup-div .contentTypePopupBtn,
+#cstudio-wcm-popup-div-login .contentTypePopupBtn {
   margin: 15px 0 0 0;
   padding: 0 0 20px 0;
   text-align: center;
 }
 
-#cstudio-wcm-popup-div .contentTypePopupBtn input, #cstudio-wcm-popup-div-login .contentTypePopupBtn input {
+#cstudio-wcm-popup-div .contentTypePopupBtn input,
+#cstudio-wcm-popup-div-login .contentTypePopupBtn input {
   margin-right: 4px;
 }
 
@@ -630,7 +668,8 @@ div[id*="expandComponentError"].yui-dialog {
 }
 
 /* login dialog */
-#login-popup-inner .contentTypePopupHeader, #login-popup-inner .contentTypeOuter {
+#login-popup-inner .contentTypePopupHeader,
+#login-popup-inner .contentTypeOuter {
   border-bottom: none;
 }
 
@@ -648,7 +687,7 @@ div[id*="expandComponentError"].yui-dialog {
 }
 
 #messageOverlay .message {
-  background-color: #E2E1E1;
+  background-color: #e2e1e1;
   border: 4px #000 solid;
   color: #000;
   margin: 0;
@@ -714,12 +753,15 @@ div[id*="expandComponentError"].yui-dialog {
   width: 15px;
 }
 
-#cstudio-wcm-popup-div, #cstudio-wcm-popup-div-login {
+#cstudio-wcm-popup-div,
+#cstudio-wcm-popup-div-login {
   border: none;
 }
 
-#cstudio-wcm-popup-div .content span, #cstudio-wcm-popup-div-login .content span,
-#cstudio-wcm-popup-div .content .selectInput label, #cstudio-wcm-popup-div-login .content .selectInput label {
+#cstudio-wcm-popup-div .content span,
+#cstudio-wcm-popup-div-login .content span,
+#cstudio-wcm-popup-div .content .selectInput label,
+#cstudio-wcm-popup-div-login .content .selectInput label {
   text-align: right;
 }
 
@@ -736,13 +778,13 @@ div[id*="expandComponentError"].yui-dialog {
   text-align: center !important;
   top: 51px;
   width: 100%;
-  left: 0px;
+  left: 0;
   z-index: 999;
 }
 
 .acnDisabledContent {
-  background-color: #CC3333;
-  border: 1px solid #FF0000;
+  background-color: #cc3333;
+  border: 1px solid #ff0000;
   color: white;
   display: block;
   font-weight: bold !important;
@@ -768,10 +810,10 @@ body.yui-skin-cstudioTheme .mask {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   border-radius: 6px;
   background-color: white;
-
 }
 
-#cstudio-wcm-popup-div, #cstudio-wcm-popup-div-login {
+#cstudio-wcm-popup-div,
+#cstudio-wcm-popup-div-login {
   box-shadow: none;
   background-color: transparent;
 }
@@ -814,7 +856,8 @@ body.yui-skin-cstudioTheme .mask {
   width: 595px !important;
 }
 
-.yui-overlay.yui-panel .bd > div select, .rejectReasonDropDown {
+.yui-overlay.yui-panel .bd > div select,
+.rejectReasonDropDown {
   display: block;
   width: 100%;
   height: 31px;
@@ -869,17 +912,17 @@ body.yui-skin-cstudioTheme .mask {
 
 .yui-overlay.yui-panel .ft {
   background-color: white;
-  padding: 0px 10px 10px;
+  padding: 0 10px 10px;
 }
 
-#errMissingRequirements .ft .button-group, .studioDialog .ft .button-group {
+#errMissingRequirements .ft .button-group,
+.studioDialog .ft .button-group {
   display: block;
 }
 
 .yui-overlay.yui-panel .ft .button-group {
   text-align: right !important;
   margin: 15px 0;
-
 }
 
 .yui-overlay.yui-panel .ft .button-group span {
@@ -923,10 +966,7 @@ body.yui-skin-cstudioTheme .mask {
   user-select: none;
   color: white;
   background-color: var(--craftercms-blue);
-  box-shadow:
-    0 3px 1px -2px rgba(0, 0, 0, 0.2),
-    0 2px 2px 0 rgba(0, 0, 0, 0.14),
-    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
 .yui-module.yui-overlay.yui-panel button:hover {
@@ -957,15 +997,20 @@ body.yui-skin-cstudioTheme .mask {
   border-color: #adadad;
 }
 
-#errNoTemplAssoc, #errMissingRequirements {
+#errNoTemplAssoc,
+#errMissingRequirements {
   border: none;
 }
 
-#closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd, .studioDialog .bd {
+#closeUserWarning .bd,
+#saveDraftWar .bd,
+#errMissingRequirements .bd,
+.studioDialog .bd {
   padding: 24px;
 }
 
-#errMissingRequirements .bd, .studioDialog .bd {
+#errMissingRequirements .bd,
+.studioDialog .bd {
   font-size: 12px;
   line-height: normal;
   height: auto !important;
@@ -975,21 +1020,30 @@ body.yui-skin-cstudioTheme .mask {
   border-radius: 0 0 6px 6px;
 }
 
-#errMissingRequirements .bd, .studioDialog .bd {
+#errMissingRequirements .bd,
+.studioDialog .bd {
   padding: 24px 25px;
 }
 
-#closeUserWarning .hd, #saveDraftWar .hd, #errMissingRequirements .hd, .yui-dialog .yui-overlay.yui-panel.studioDialog .hd {
+#closeUserWarning .hd,
+#saveDraftWar .hd,
+#errMissingRequirements .hd,
+.yui-dialog .yui-overlay.yui-panel.studioDialog .hd {
   border-radius: 6px 6px 0 0;
   font-size: 15px;
   padding: 7px 10px;
 }
 
-#closeUserWarning .ft, #saveDraftWar .ft, #errMissingRequirements .ft, .studioDialog .ft {
+#closeUserWarning .ft,
+#saveDraftWar .ft,
+#errMissingRequirements .ft,
+.studioDialog .ft {
   border-radius: 0 0 6px 6px;
 }
 
-#closeUserWarning .ft span.button-group, #saveDraftWar .ft span.button-group, #errMissingRequirements .ft span.button-group,
+#closeUserWarning .ft span.button-group,
+#saveDraftWar .ft span.button-group,
+#errMissingRequirements .ft span.button-group,
 .studioDialog .ft span.button-group {
   margin: 12px 0 6px;
 }
@@ -1003,7 +1057,7 @@ body.yui-skin-cstudioTheme .mask {
 }
 
 .yui-skin-cstudioTheme .yui-simple-dialog .success .bd span.infoicon {
-  background: url("../images/icons/success-icon.png") no-repeat 0 0;
+  background: url('../images/icons/success-icon.png') no-repeat 0 0;
 }
 
 /*Crop Dialog*/
@@ -1030,7 +1084,6 @@ body.yui-skin-cstudioTheme .mask {
   width: 100%;
   max-height: 270px;
   margin-bottom: 5px;
-
 }
 
 #crop-popup-inner .formDesc {
@@ -1077,4 +1130,3 @@ body.yui-skin-cstudioTheme .mask {
 #crop-popup-inner .error {
   border-color: rgba(169, 68, 66, 0.47);
 }
-

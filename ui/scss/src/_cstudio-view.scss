@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 .cstudio-view {
-
   font-size: 12px;
 
   .view-square-wrp {
@@ -31,12 +29,11 @@
   }
 
   a {
-
-    &, &:hover {
-      color: #0176B1;
+    &,
+    &:hover {
+      color: #0176b1;
       text-decoration: none;
     }
-
   }
 
   label {
@@ -48,11 +45,11 @@
   .view-square-wrp .head {
     background-color: #7f9db9;
     padding: 3px 10px;
-    color: #FFFFFF;
+    color: #ffffff;
   }
 
   .view-square-wrp .body {
-    background-color: #FFF;
+    background-color: #fff;
     padding: 5px 10px;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -83,7 +80,7 @@
   }
 
   input.date-picker {
-    background-image: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_calendar.gif");
+    background-image: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_calendar.gif');
     background-position: right center;
     background-repeat: no-repeat;
     width: 75px;
@@ -95,7 +92,7 @@
   }
 
   .terms-policy-wrp {
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     border: 1px solid #7f9db9;
     height: 301px;
     overflow: auto;
@@ -116,7 +113,6 @@
     background-color: transparent;
     border: 0;
   }
-
 }
 
 .water-marked {
@@ -130,7 +126,7 @@
   overflow: hidden;
 }
 
-.dependencies-listing .item input[type=checkbox] {
+.dependencies-listing .item input[type='checkbox'] {
   float: left;
   margin: 2px 7px 0 0;
 }
@@ -140,7 +136,6 @@
 }
 
 .cstudio-dialogue {
-
   border: none;
 
   &.yui-dialog {
@@ -166,16 +161,16 @@
     border: none;
     border-radius: $border-radius-base;
   }
-
 }
 
-.cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"] {
-  left: 0px !important;
-  right: 0px !important;
+.cstudio-dialogue[id^='viewcontroller-history'],
+.cstudio-dialogue[id^='viewcontroller-dependencies'] {
+  left: 0 !important;
+  right: 0 !important;
   width: 90% !important;
   margin: auto;
-  top: 0px !important;
-  bottom: 0px !important;
+  top: 0 !important;
+  bottom: 0 !important;
   position: fixed;
 
   .yui-panel {
@@ -200,25 +195,29 @@
             height: 100%;
             display: block;
 
-            thead, tbody {
+            thead,
+            tbody {
               tr {
                 width: 100%;
                 display: table;
 
-                th, td {
+                th,
+                td {
                   width: 10%;
 
-                  & + th, & + td {
+                  & + th,
+                  & + td {
                     width: 17%;
 
-                    & + th, & + td {
+                    & + th,
+                    & + td {
                       width: 45%;
 
-                      & + th, & + td {
+                      & + th,
+                      & + td {
                         width: 8%;
                       }
                     }
-
                   }
                 }
               }
@@ -235,14 +234,12 @@
             }
           }
         }
-
-
       }
     }
   }
 }
 
-.cstudio-dialogue[id^="viewcontroller-dependencies"] {
+.cstudio-dialogue[id^='viewcontroller-dependencies'] {
   .full-height {
     height: 100%;
   }
@@ -288,14 +285,12 @@
       }
     }
   }
-
 }
 
 .cstudio-dialogue-mask {
-  opacity: .7 !important;
+  opacity: 0.7 !important;
   background-color: #000 !important;
   position: fixed !important;
-
 }
 
 body.masked {

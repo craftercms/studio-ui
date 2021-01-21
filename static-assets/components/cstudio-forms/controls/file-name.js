@@ -366,8 +366,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       editFileNameBtn.type = 'button';
       editFileNameBtn.value = 'Edit';
       editFileNameBtn.style.padding = '1px 5px';
+      editFileNameBtn.style.minWidth = '0';
       editFileNameBtn.style.marginLeft = '5px';
-      YAHOO.util.Dom.addClass(editFileNameBtn, 'btn btn-primary btn-sm cstudio-button');
+      YAHOO.util.Dom.addClass(editFileNameBtn, 'btn btn-default btn-sm cstudio-button');
       editFileNameEl.appendChild(editFileNameBtn);
       containerEl.appendChild(editFileNameEl);
 

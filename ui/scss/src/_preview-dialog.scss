@@ -1,10 +1,10 @@
 .cstudio-image-popup-overlay {
   position: fixed;
   display: none;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   margin: auto;
   z-index: 32;
   background: rgba(0, 0, 0, 0.6);
@@ -44,7 +44,8 @@
       }
     }
 
-    img, video.html-video {
+    img,
+    video.html-video {
       border-radius: 6px;
       max-width: 700px;
       background-color: #fff;

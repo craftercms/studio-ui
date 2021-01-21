@@ -684,7 +684,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     if (this.value !== '') {
       if (this.originalWidth > this.previewBoxWidth || this.originalHeight > this.previewBoxHeight) {
         this.zoomEl.style.display = 'inline-block';
-        this.downloadEl.style.marginLeft = '0px';
+        this.downloadEl.style.marginLeft = '0';
       } else {
         this.downloadEl.style.marginLeft = '-20px';
       }

@@ -184,7 +184,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
 
     var editPositionEl = document.createElement('input');
     this.editPositionEl = editPositionEl;
-    YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-primary btn-sm edit-position');
+    YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-default btn-sm edit-position');
     editPositionEl.type = 'button';
     editPositionEl.value = 'Edit Position';
     editPositionEl.style.padding = '1px 5px';

@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "variables";
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
+@import 'variables';
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins';
 // Reset and dependencies
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize";
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/print";
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/scaffolding";
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/type";
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize';
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/print';
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/scaffolding';
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/type';
 
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/glyphicons";
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/glyphicons';
 
 .yui-skin-cstudioTheme {
   overflow-x: hidden;
@@ -54,13 +54,13 @@
 
   .panel {
     border: none !important;
-    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12) !important;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
     .panel-heading {
       @include clearfix;
       border: none !important;
 
       .studio-section-widget {
-        background: url("../themes/cstudioTheme/images/icons/icon_strip.gif") no-repeat scroll -20px 5px transparent;
+        background: url('../themes/cstudioTheme/images/icons/icon_strip.gif') no-repeat scroll -20px 5px transparent;
         display: block;
         float: left;
         height: 30px;
@@ -72,14 +72,15 @@
       }
 
       .studio-section-widget-close {
-        background: url("../themes/cstudioTheme/images/icons/icon_strip.gif") no-repeat scroll 0px 5px transparent;
+        background: url('../themes/cstudioTheme/images/icons/icon_strip.gif') no-repeat scroll 0 5px transparent;
       }
 
       .panel-title {
         float: left;
         line-height: 27px;
 
-        &, * {
+        &,
+        * {
           font-size: 14px;
         }
       }
@@ -100,11 +101,12 @@
       }
     }
 
-    [id*="-body"] table {
+    [id*='-body'] table {
       table-layout: fixed;
       margin: 0;
 
-      .urlCol, .itemNameCol {
+      .urlCol,
+      .itemNameCol {
         word-break: break-all;
       }
     }
@@ -139,7 +141,7 @@
 
 .site-dashboard-footer {
   padding: 20px 0;
-  transition: padding .5s, transform .5s;
+  transition: padding 0.5s, transform 0.5s;
 }
 
 .embedded {
@@ -154,7 +156,8 @@
     box-shadow: none;
     top: -100px;
 
-    .navbar-nav:not(#activeContentActions), .navbar-right {
+    .navbar-nav:not(#activeContentActions),
+    .navbar-right {
       display: none;
     }
 
@@ -169,8 +172,8 @@
       border: none;
       background: #e6f2ff;
       border-radius: 5px;
-      -webkit-box-shadow: 1px 7px 8px -1px rgba(0,0,0,0.5);
-      box-shadow: 0px 6px 8px -2px rgba(0,0,0,0.5);
+      -webkit-box-shadow: 1px 7px 8px -1px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.5);
       padding: 0 20px;
 
       &.selected-content {
@@ -222,60 +225,55 @@
 .studio-view,
 .studio-dialog,
 .site-dashboard {
-
   // Core CSS
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/code";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/grid";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/tables";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/forms";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/buttons";
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/code';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/grid';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/tables';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/forms';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/buttons';
 
   // Components
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/component-animations";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/dropdowns";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/button-groups";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/input-groups";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/navs";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/navbar";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/breadcrumbs";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/pagination";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/pager";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/labels";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/badges";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/jumbotron";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/thumbnails";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/alerts";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/progress-bars";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/media";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/list-group";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/panels";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-embed";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/wells";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/close";
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/component-animations';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/dropdowns';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/button-groups';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/input-groups';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/navs';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/navbar';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/breadcrumbs';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/pagination';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/pager';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/labels';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/badges';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/jumbotron';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/thumbnails';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/alerts';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/progress-bars';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/media';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/list-group';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/panels';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-embed';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/wells';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/close';
 
   // Components w/ JavaScript
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/modals";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/tooltip";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/popovers";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/carousel";
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/modals';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/tooltip';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/popovers';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/carousel';
 
   // Utility classes
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/utilities";
-  @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-utilities";
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/utilities';
+  @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-utilities';
 
   .row {
-
     &.unpad {
-
       margin-left: 0;
       margin-right: 0;
 
-      > [class|="col"] {
+      > [class|='col'] {
         padding: 0;
       }
-
     }
-
   }
 
   #loadSpinner {
@@ -284,14 +282,12 @@
     left: 48%;
     z-index: 110038 !important;
     color: #3f66a0;
-
   }
 
   #loadSpinnerMask {
     z-index: 110037 !important;
     display: block;
   }
-
 }
 
 .studio-view table.item-listing thead {
@@ -301,11 +297,10 @@
 
 .studio-view,
 .studio-dialog {
-
   &.history-view {
-
     table.item-listing {
-      thead, tbody {
+      thead,
+      tbody {
         display: block;
       }
 
@@ -336,10 +331,10 @@
     border-radius: $border-radius-base;
 
     tr {
-
     }
 
-    th, td {
+    th,
+    td {
       padding: 5px 10px;
     }
 
@@ -363,12 +358,11 @@
     td {
       background-color: #fff;
     }
-
   }
 
   p.validation {
     color: #a94442;
-    padding: 0px;
+    padding: 0;
   }
 
   #differentRequestedDatesWarning {
@@ -379,9 +373,7 @@
     p {
       color: #dd7e2c;
     }
-
   }
-
 }
 
 table.scroll-body {
@@ -389,11 +381,11 @@ table.scroll-body {
   border-collapse: collapse;
 
   tr {
-    /*&:after {
-      *//* IE8 fix *//*
+    /*&::after {
+      */ /* IE8 fix */ /*
       content: ".";
-      margin-left: -3px; *//* to hide the content above tr *//*
-      *//* not necessary if you are ok with 1px gap *//*
+      margin-left: -3px; */ /* to hide the content above tr */ /*
+      */ /* not necessary if you are ok with 1px gap */ /*
       visibility: hidden;
     }*/
 
@@ -439,7 +431,6 @@ table.scroll-body {
         border-radius: 0 3px 0 0;
       }
     }
-
   }
 
   tbody {
@@ -455,25 +446,21 @@ table.scroll-body {
       width: 100%;
       display: table;
     }
-
   }
-
 }
 
 .studio-dialog {
-
   > .yui-panel {
     border: none;
   }
 
   .hd {
-    display: none
+    display: none;
   }
 
   .modal-body {
     background-color: #f2f2f2;
   }
-
 }
 
 .ice-mask {
@@ -501,11 +488,10 @@ table.scroll-body {
   border: 1px solid #e7e7e7;
   border-bottom-left-radius: $border-radius-base;
   border-bottom-right-radius: $border-radius-base;
-  transition: height .25s, transform .25s;
+  transition: height 0.25s, transform 0.25s;
 
   > .bd {
-
-    &.overlay:before {
+    &.overlay::before {
       content: '';
       position: fixed;
       width: 100%;
@@ -513,10 +499,10 @@ table.scroll-body {
       top: 0;
       height: 100vh;
       background-color: rgba(0, 0, 0, 0.65);
-      transition: height .5s, transform .5s;
+      transition: height 0.5s, transform 0.5s;
     }
 
-    &.overlay.overlay-collapsed:before {
+    &.overlay.overlay-collapsed::before {
       content: '';
       height: 0;
     }
@@ -574,7 +560,7 @@ table.scroll-body {
     }
 
     iframe {
-      transition: top .5s, transform .5s;
+      transition: top 0.5s, transform 0.5s;
     }
   }
 }
@@ -597,7 +583,8 @@ table.scroll-body {
   z-index: 100;
 }
 
-#approve-dialog, #requestDialog {
+#approve-dialog,
+#requestDialog {
   .approve-subtitle {
     font-size: 15px;
   }
@@ -624,5 +611,5 @@ table.scroll-body {
 }
 
 .navbar-default {
-  box-shadow: 0 1px 5px 0 rgba(0,0,0,0.12);
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
