@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       '& > li > ul': {
-        marginLeft: '0px'
+        marginLeft: '0'
       }
     },
     searchWrapper: {

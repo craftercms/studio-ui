@@ -1,7 +1,7 @@
 <#if args.baseUrl?exists>
-  <#assign urlBase = args.baseUrl > 
+  <#assign urlBase = args.baseUrl >
 <#else>
-  <#assign urlBase = url.context >  
+  <#assign urlBase = url.context >
 </#if>
 <#if args.siteId?exists>
   <#assign siteId = args.siteId >
@@ -96,7 +96,7 @@ div.yui-calcontainer {
 .strike {
     text-decoration: line-through;
 }
-</#if>  
+</#if>
 
 .cstudio-view .view-square-wrp {
     border:1px #7f9db9 solid;
@@ -351,12 +351,12 @@ div.acn-link
   float:left;
   margin:6px 0 0 0;
   color: #FFF;
-  <#if previewMode == true> 
-  padding: 0px 5px 0px;
+  <#if previewMode == true>
+  padding: 0 5px 0;
   <#else>
-  padding: 1px 5px 0px;
-  </#if>  
-  text-align: center; 
+  padding: 1px 5px 0;
+  </#if>
+  text-align: center;
 }
 
 div.acn-link a
@@ -419,7 +419,7 @@ div#acn-active-content div.acn-link-last a
 {
   float:left;
   color:#000;
-  margin:4px 0px 10px 6px;
+  margin:4px 0 10px 6px;
 }
 
 .acn-default-navTitle
@@ -470,7 +470,7 @@ div#acn-active-content div.acn-link-last a
 
 #acn-ice-tools-container
 {
-  padding: 4px 8px 5px 0px;
+  padding: 4px 8px 5px 0;
   cusor: pointer;
   background: url('${urlBase}/static-assets/themes/cstudioTheme/images/bg/bar_vertical_divider.gif') repeat-y scroll right center transparent;
   cursor: pointer;
@@ -535,8 +535,8 @@ div#acn-active-content div.acn-link-last a
   padding:3px 0 0;
 }
 
-#authoringContextNavHeader table { 
-  font-size: inherit; 
+#authoringContextNavHeader table {
+  font-size: inherit;
   background-color: transparent;
 }
 #authoringContextNavHeader table.ygtvtable td.ygtvcontent span { cursor: pointer; }
@@ -636,10 +636,10 @@ div#acn-active-content div.acn-link-last a
   width:100%;
   <#if previewMode == true>
   background:#ffffff;
-  padding:0px;
-  border-radius:0px;
-  box-shadow:0px;
-  -moz-border-radius:0px;
+  padding:0;
+  border-radius:0;
+  box-shadow:0;
+  -moz-border-radius:0;
   </#if>
 }
 
@@ -1009,7 +1009,7 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover{
 {
   background:url('${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat top;
   background-position:0 -501px;
-  padding:2px 0 0 18px;    
+  padding:2px 0 0 18px;
 }
 
 .acn-component-progress
@@ -1125,7 +1125,7 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover{
 
 .ygtvlp,.ygtvtp,.ygtvlph,.ygtvlphh,.ygtvtph,.ygtvtphh
 {
-  background-position:0 0px;
+  background-position:0 0;
 }
 
 .ygtvtm,.ygtvtmh,.ygtvtmhh,.ygtvlm,.ygtvlmh,.ygtvlmhh
@@ -1399,10 +1399,10 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover{
   width:225px;
   <#if previewMode == true>
   background:#ffffff;
-  padding:0px;
-  border-radius:0px;
-  box-shadow:0px;
-  -moz-border-radius:0px;
+  padding:0;
+  border-radius:0;
+  box-shadow:0;
+  -moz-border-radius:0;
   </#if>
 }
 
@@ -1680,12 +1680,12 @@ div.schedulePolicyWrapper{
 div.schedulePolicyContent{
   margin:0 0 15px 0;
   border: 1px solid #7F9DB9 ;
-  overflow: auto;   
+  overflow: auto;
   height: 330px;
   width: 510px;
   background: #FFFFFF;
   padding:15px 20px;
-  
+
 }
 
 div.schedulePolicyWrapper h3
@@ -1784,7 +1784,7 @@ div.acnBox div.radio div.textField
   height: 12px;
   border: none;
   margin: 1px 0 0 0;
-  padding: 0px;
+  padding: 0;
   display: block;
   cursor: pointer;
 }
@@ -1795,13 +1795,13 @@ div.acnBox div.radio div.textField
   height: 12px;
   border: none;
   margin: -4px 0 0 0;
-  padding: 0px;
+  padding: 0;
   display: block;
   cursor: pointer;
 }
 
 div.textField .calendarContainer {
-  margin: 12px 5px 0px;
+  margin: 12px 5px 0;
 }
 
 .timeButtonContainer{
@@ -1866,7 +1866,7 @@ div.acnBox div.acnScroll h5 span.right
 
 div.acnBox div.acnScroll div.acnScrollBox
 {
-  border:1px solid #7F9BD9; 
+  border:1px solid #7F9BD9;
   background-color:#fff;
   height: 280px;
   overflow-y: scroll;
@@ -1886,7 +1886,7 @@ div.acnBox table.acnLiveTable
 
 div.acnBox table.acnLiveTable td
 {
-  padding:3px 0px 0 0;
+  padding:3px 0 0 0;
 }
 
 div.acnBox table.acnLiveTable td.acnLiveTableFileURI{
@@ -2131,8 +2131,8 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight
 #submitPanel .bd
 {
   padding:0;
-  border: 0px;
-  margin: 0px;
+  border: 0;
+  margin: 0;
   text-align: left;
 }
 
@@ -2558,10 +2558,10 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight
   <#if previewMode == true>
   color:#000000;
   background:#ffffff;
-  padding:0px;
-  border-radius:0px;
-  box-shadow:0px;
-  -moz-border-radius:0px;
+  padding:0;
+  border-radius:0;
+  box-shadow:0;
+  -moz-border-radius:0;
   </#if>
 }
 
@@ -2646,7 +2646,7 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight
 
 
 #submitPanel_c {
-  padding:0px 0px 0px 0px;
+  padding:0 0 0 0;
 }
 
 #submitPanel {
@@ -2693,7 +2693,7 @@ div#cal1Container{
 
 .yui-calendar td.calcell {
   background: #fff;
-  border: 0px;
+  border: 0;
   #padding: 5px;
 }
 
@@ -2844,7 +2844,7 @@ table.yui-calendar{
 /* CSS for preview server dialog icons */
 .document {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -398px;
+  background-position: 0 -398px;
   display: inline-block;
   padding-left: 20px;
   float: left;
@@ -2852,177 +2852,177 @@ table.yui-calendar{
 
 .madeLiveDocument {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -398px;
+  background-position: 0 -398px;
   display: inline-block;
 }
 
 .documentSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -441px;
+  background-position: 0 -441px;
   display: inline-block;
 }
 
 .documentScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -461px;
+  background-position: 0 -461px;
   display: inline-block;
 }
 
 .documentSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -481px;
+  background-position: 0 -481px;
   display: inline-block;
 }
 
 .documentInProgress {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -421px;
+  background-position: 0 -421px;
   display: inline-block;
 }
 
 .documentDeleted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -701px;
+  background-position: 0 -701px;
   display: inline-block;
 }
 
 .documentDeletedSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -701px;
+  background-position: 0 -701px;
   display: inline-block;
 }
 
 .documentDeletedScheduled,
 .documentDeletedSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -781px;
+  background-position: 0 -781px;
   display: inline-block;
 }
 
 .documentApprovedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -461px;
+  background-position: 0 -461px;
   display: inline-block;
 }
 
 
 .ttFloating {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -301px;
+  background-position: 0 -301px;
   display: inline-block;
 }
 
 .ttFloatingSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -341px;
+  background-position: 0 -341px;
   display: inline-block;
 }
 
 .ttFloatingScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -361px;
+  background-position: 0 -361px;
   display: inline-block;
 }
 
 .ttFloatingSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -381px;
+  background-position: 0 -381px;
   display: inline-block;
 }
 
 .ttFloatingInProgress {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -321px;
+  background-position: 0 -321px;
   display: inline-block;
 }
 
 .ttFloatingDeleted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -680px;
+  background-position: 0 -680px;
   display: inline-block;
 }
 
 .ttFloatingDeletedSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -680px;
+  background-position: 0 -680px;
   display: inline-block;
 }
 
 .ttFloatingDeletedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -760px;
+  background-position: 0 -760px;
   display: inline-block;
 }
 
 .ttFloatingDeletedSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -760px;
+  background-position: 0 -760px;
   display: inline-block;
 }
 
 .ttFloatingApprovedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -361px;
+  background-position: 0 -361px;
   display: inline-block;
 }
 
 .ttSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -241px;
+  background-position: 0 -241px;
   display: inline-block;
 }
 
 .ttScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -261px;
+  background-position: 0 -261px;
   display: inline-block;
 }
 
 .ttSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -281px;
+  background-position: 0 -281px;
   display: inline-block;
 }
 
 .ttDeleted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -661px;
+  background-position: 0 -661px;
   display: inline-block;
 }
 
 .ttDeletedSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -661px;
+  background-position: 0 -661px;
   display: inline-block;
 }
 
 .ttDeletedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -740px;
+  background-position: 0 -740px;
   display: inline-block;
 }
 
 .ttDeletedSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -740px;
+  background-position: 0 -740px;
   display: inline-block;
 }
 
 .ttInProgress {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -221px;
+  background-position: 0 -221px;
   display: inline-block;
 }
 
 .ttApprovedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -261px;
+  background-position: 0 -261px;
   display: inline-block;
 }
 
 .component {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -498px;
+  background-position: 0 -498px;
   display: inline-block;
   padding-left: 20px;
   float: left;
@@ -3030,73 +3030,73 @@ table.yui-calendar{
 
 .madeLiveComponent {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -498px;
+  background-position: 0 -498px;
   display: inline-block;
 }
 
 .componentSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -541px;
+  background-position: 0 -541px;
   display: inline-block;
 }
 
 .componentScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -561px;
+  background-position: 0 -561px;
   display: inline-block;
 }
 
 .componentSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -581px;
+  background-position: 0 -581px;
   display: inline-block;
 }
 
 .componentInProgress {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -521px;
+  background-position: 0 -521px;
   display: inline-block;
 }
 
 .componentDeleted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -721px;
+  background-position: 0 -721px;
   display: inline-block;
 }
 
 .componentDeletedSubmitted {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -721px;
+  background-position: 0 -721px;
   display: inline-block;
 }
 
 .componentDeletedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -800px;
+  background-position: 0 -800px;
   display: inline-block;
 }
 
 .componentDeletedSubmittedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -800px;
+  background-position: 0 -800px;
   display: inline-block;
 }
 
 .componentApprovedScheduled {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -561px;
+  background-position: 0 -561px;
   display: inline-block;
 }
 
 .navPage {
   background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -201px;
+  background-position: 0 -201px;
   display: inline-block;
 }
 
 /* canned search icon */
 span.acn-canned-search{
-  background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/magnify-icon.jpg) no-repeat;  
+  background: url(${urlBase}/static-assets/themes/cstudioTheme/images/icons/magnify-icon.jpg) no-repeat;
   background-repeat: no-repeat;
   padding: 0 0 0 16px;
 }
@@ -3106,8 +3106,8 @@ span.acn-canned-search{
   text-align:left;
 }
 
-.copy-content-container { 
-  margin: 10px 0px 10px 0px;
+.copy-content-container {
+  margin: 10px 0 10px 0;
   height: 292px;
   overflow: hidden;
   width: 546px;
@@ -3117,7 +3117,7 @@ span.acn-canned-search{
   background-color: #7F9DB9;
   color: #FFFFFF;
   font-weight: normal;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   overflow: hidden;
   padding: 3px 20px;
 }
@@ -3135,7 +3135,7 @@ span.acn-canned-search{
   overflow-y: scroll;
   position: relative;
   width: 544px;
-  padding: 2px 0 0; 
+  padding: 2px 0 0;
 }
 
 .copy-content-container ul div{
@@ -3152,7 +3152,7 @@ span.acn-canned-search{
 }
 
 .copy-content-container ul li {
-  margin:5px 0px 5px 15px;
+  margin:5px 0 5px 15px;
   list-style-type: none;
 }
 
@@ -3161,7 +3161,7 @@ span.acn-canned-search{
   margin-right: 2px;
 }
 
-#authoringContextNavHeader .no-preview, .no-preview, 
+#authoringContextNavHeader .no-preview, .no-preview,
 #authoringContextNavHeader .folder, .folder {
   color: #808080 !important;
   cursor:default !important;
@@ -3417,9 +3417,9 @@ body.masked {
 }
 
 .dropbox-element.dropbox-dragover {
-    -webkit-box-shadow: inset 0px 0px 50px #777;
-    -moz-box-shadow: inset 0px 0px 50px #777;
-    box-shadow: inset 0px 0px 50px #777;
+    -webkit-box-shadow: inset 0 0 50px #777;
+    -moz-box-shadow: inset 0 0 50px #777;
+    box-shadow: inset 0 0 50px #777;
 }
 
 .dropbox-element .title {

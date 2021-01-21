@@ -15,15 +15,15 @@
   -->
 
 <div class="sites-view mainContainer">
-  <header class="screen-title">
+  <header class="screen-title mb10">
     <h1>{{ 'dashboard.sites.SITES_LABEL' | translate }}</h1>
   </header>
 
   <div ng-if="sites">
-    <div ng-show="createSites" class="m10 createSitesBtn pull-left">
+    <div ng-show="createSites" class="createSitesBtn pull-left mb10">
       <button
         id="create-site"
-        class="btn btn-default btn-pill btn-block"
+        class="btn btn-default btn-pill btn-block btn-padded"
         ng-click="createSitesDialog()"
         ng-class="{ active: $state.includes('create') }"
       >
@@ -51,21 +51,22 @@
             current-page="pagination"
             total-items="totalSites"
           >
-            <td class="name site-name trim" title="{{site.name ? site.name : site.id }}">{{site.name ? site.name : site.id }}</td>
+            <td class="name site-name trim" title="{{site.name ? site.name : site.id}}">
+              {{site.name ? site.name : site.id }}
+            </td>
             <td class="preview">
               <a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a>
             </td>
             <td class="dashboard">
-              <a ng-click="goToDashboard(site)"
-                >{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a
-              >
+              <a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a>
             </td>
             <td class="remove">
               <a
                 ng-show="site.edit"
+                ng-click="editSiteData(site)"
+                class="btn btn-sm"
                 tooltip-placement="bottom"
                 uib-tooltip="Edit"
-                ng-click="editSiteData(site)"
               >
                 <i class="fa fa-pencil"></i>
               </a>
@@ -74,6 +75,7 @@
               <a
                 ng-show="site.remove"
                 ng-click="removeSiteSites(site)"
+                class="btn btn-sm"
                 tooltip-placement="bottom"
                 uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
               >
@@ -85,7 +87,7 @@
       </table>
       <div class="global-menu-pagination-wrapper">
         <div class="mr10">
-          <label class="mr5" >{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
+          <label class="mr5">{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
           <input
             class="audit-number-logs"
             type="number"

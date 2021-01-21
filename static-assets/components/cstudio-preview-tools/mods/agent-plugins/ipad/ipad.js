@@ -87,7 +87,7 @@ CStudioAuthoring.MediumPanel.IPad = CStudioAuthoring.MediumPanel.IPad || {
       emulateEl.style.background =
         "url('" +
         CStudioAuthoringContext.authoringAppBaseUri +
-        "/static-assets/components/cstudio-preview-tools/mods/agent-plugins/ipad/ipad-hozbg.gif') repeat scroll 0px 0pt transparent";
+        "/static-assets/components/cstudio-preview-tools/mods/agent-plugins/ipad/ipad-hozbg.gif') repeat scroll 0 0pt transparent";
       emulateEl.style.marginLeft = '' + (CStudioAuthoring.Utils.viewportWidth() / 2 - 540) + 'px';
 
       var iframeEl = document.createElement('iframe');

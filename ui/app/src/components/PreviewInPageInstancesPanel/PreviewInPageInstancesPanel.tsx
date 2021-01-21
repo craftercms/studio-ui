@@ -58,7 +58,7 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme) =>
   createStyles({
     search: {
-      padding: '15px 15px 0px 15px'
+      padding: '15px 15px 0 15px'
     },
     Select: {
       width: '100%',

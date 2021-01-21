@@ -14,34 +14,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "../variables";
+@import '../variables';
 
 $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 
 // bower:scss
-@import "../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+@import '../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss';
 // endbower
 
-@import "../util/util";
+@import '../util/util';
 
-@import "type";
-@import "layout";
-@import "navbar";
-@import "../repositories";
+@import 'type';
+@import 'layout';
+@import 'navbar';
+@import '../repositories';
 
-@import "views";
-@import "../common";
+@import 'views';
+@import '../common';
 
-body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   font-family: 'Source Sans Pro', '', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   font-weight: 600;
 }
 
 // Bootstrap styles for outline buttons (no support on bootstrap 3)
-.btn-outline-danger, .btn-outline-danger:focus {
+.btn-outline-danger,
+.btn-outline-danger:focus {
   color: #dc3545;
   border-color: #dc3545;
   background-color: #fff;
@@ -53,7 +77,8 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
-.btn-outline-success, .btn-outline-success:focus {
+.btn-outline-success,
+.btn-outline-success:focus {
   color: #28a745;
   border-color: #28a745;
   background-color: #fff;
@@ -65,12 +90,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
-[class^="btn btn-outline"][disabled] {
+[class^='btn btn-outline'][disabled] {
   border-color: #ccc;
   color: #ccc;
 }
 
-.btn-outline-warning, .btn-outline-warning:focus {
+.btn-outline-warning,
+.btn-outline-warning:focus {
   color: #ffc107;
   border-color: #ffc107;
   background-color: #fff;
@@ -131,7 +157,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 .login-view,
 .recover-view {
-
   .pad {
     padding: 20px;
   }
@@ -143,7 +168,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   .alert {
     padding: 7px 15px;
   }
-
 }
 
 .settings-view {
@@ -167,7 +191,8 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
-.settings-view, .about-us-view {
+.settings-view,
+.about-us-view {
   .row {
     padding: 0 25px;
   }
@@ -196,7 +221,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
       padding-left: 4%;
       width: 78%;
     }
-
   }
 }
 
@@ -216,17 +240,14 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .panel {
-
   .alert {
     margin: 0;
     border: 0;
     border-radius: 0;
   }
-
 }
 
 .user-display {
-
   padding: 0 20px 5px;
   margin-bottom: 5px;
   border-bottom: 1px solid #f2f2f2;
@@ -242,7 +263,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     margin-top: 20px;
     max-width: 370px;
   }
-
 }
 
 small {
@@ -253,7 +273,6 @@ small {
 
 .site-list {
   a {
-
   }
 
   .remove a .fa {
@@ -265,8 +284,8 @@ i.fa {
   font-size: 16px;
 }
 
-.glyphicon-info-sign:before {
-  content: "\e086";
+.glyphicon-info-sign::before {
+  content: '\e086';
 }
 
 .reset-password-view {
@@ -281,7 +300,7 @@ i.fa {
   display: inline-block !important;
   width: 15px;
   height: 15px;
-  background: url("/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif") no-repeat;
+  background: url('/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif') no-repeat;
   background-size: 100% 100%;
   margin-right: 5px;
   margin-bottom: -2px;
@@ -397,7 +416,7 @@ i.fa {
   padding: 1px;
   /* position: absolute; */
   text-align: center !important;
-  left: 0px;
+  left: 0;
 }
 
 body.iewarning {
@@ -413,16 +432,16 @@ body.iewarning {
 .global-menu {
   // Bootstrap styles are fairly specific, had to "important"
   &--item-link {
-    color: #3A3A3C;
+    color: #3a3a3c;
 
     &:hover {
-      color: #3A3A3C;
+      color: #3a3a3c;
       border-color: transparent !important;
     }
   }
 
   &--nav-icon {
-    color: #7C7C80;
+    color: #7c7c80;
   }
 
   &--item {
@@ -433,7 +452,7 @@ body.iewarning {
     &__active .global-menu--item-link:focus,
     &__active .global-menu--item-link:active {
       color: var(--craftercms-blue);
-      background: #E6F2FF;
+      background: #e6f2ff;
     }
   }
 }

@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) =>
       padding: 0
     },
     search: {
-      padding: '15px 15px 0px 15px'
+      padding: '15px 15px 0 15px'
     },
     pagination: {
       borderTop: '1px solid rgba(0, 0, 0, 0.12)',

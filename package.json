@@ -15,7 +15,9 @@
     "prettier:legacy": "node scripts/prettier.js legacy",
     "prettier:check": "node scripts/prettier.js check-changed",
     "prettier:changed": "node scripts/prettier.js changed",
-    "prettier:certify": "node scripts/prettier.js check"
+    "prettier:certify": "node scripts/prettier.js check",
+    "prettier:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
+    "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'"
   },
   "eslintConfig": {
     "extends": [

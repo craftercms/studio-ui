@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) =>
     },
     toolPanelBody: () => {
       const toolbarMixin: any = theme.mixins.toolbar;
-      const key1 = '@media (min-width:0px) and (orientation: landscape)';
+      const key1 = '@media (min-width:0) and (orientation: landscape)';
       const key2 = '@media (min-width:600px)';
       if (!toolbarMixin[key1] || !toolbarMixin[key2] || !toolbarMixin.minHeight) {
         console.error(

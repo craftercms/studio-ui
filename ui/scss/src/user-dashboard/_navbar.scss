@@ -15,18 +15,15 @@
  */
 
 .navbar {
-
   margin-bottom: 0;
 
   .navbar-brand {
-
     padding: 0;
 
     > img {
       width: 125px;
       margin: 10px;
     }
-
   }
 
   .nav-link {
@@ -42,9 +39,8 @@
       }
     }
   }
-
 }
 
 .navbar-default {
-  box-shadow: 0 1px 5px 0 rgba(0,0,0,0.12);
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }

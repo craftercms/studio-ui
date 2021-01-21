@@ -79,7 +79,7 @@ CStudioAuthoring.AnnotatePanel = CStudioAuthoring.AnnotatePanel || {
       boardEl.style.width = '100%';
       boardEl.style.height = '80%';
       boardEl.style.position = 'absolute';
-      boardEl.style.top = '0px';
+      boardEl.style.top = '0';
       boardEl.style.zIndex = 10;
 
       boardEl.id = 'default-board';
@@ -166,7 +166,7 @@ setTimeout(function() {
 			 var commentEl = document.createElement("div");
 			 commentEl.id = id;
 			 document.body.appendChild(commentEl);
-			
+
 			commentEl.style.position = "absolute";
 			commentEl.style.top = ""+this.board.coords.current.y+"px";
 			commentEl.style.left = ""+this.board.coords.current.x+"px";

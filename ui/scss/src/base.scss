@@ -19,7 +19,8 @@
   margin: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -31,7 +32,8 @@ html, body {
   padding-top: 50px;
 }
 
-.sticky-footer, .sticky-push {
+.sticky-footer,
+.sticky-push {
   height: 50px;
   margin: 0 0 71px;
 }
@@ -136,7 +138,7 @@ hr {
 
 .page-title {
   clear: left;
-  margin: 0px -10px;
+  margin: 0 -10px;
   min-height: 2em;
   padding: 6px 10px;
 }
@@ -167,7 +169,7 @@ span.navigation-separator,
 span.navigation-item,
 span.navigation-item-alt {
   vertical-align: middle;
-  margin: 0px;
+  margin: 0;
 }
 
 span.navigation-item,
@@ -193,7 +195,7 @@ span.navigation-separator {
 }
 
 span.navigation-separator-alt {
-  padding: 0px 0px 0px 10px;
+  padding: 0 0 0 10px;
   text-align: center;
 }
 
@@ -259,10 +261,10 @@ span.navigation-separator-alt {
   position: fixed;
   width: 100%;
   z-index: auto;
-  transition: background-color .5s ease-in-out;
-  -moz-transition: background-color .5s ease-in-out;
-  -webkit-transition: background-color .5s ease-in-out;
-  -o-transition: background-color .5s ease-in-out;
+  transition: background-color 0.5s ease-in-out;
+  -moz-transition: background-color 0.5s ease-in-out;
+  -webkit-transition: background-color 0.5s ease-in-out;
+  -o-transition: background-color 0.5s ease-in-out;
   overflow: hidden;
 }
 
@@ -319,15 +321,15 @@ span.navigation-separator-alt {
   text-decoration: none;
 }
 
-.cstudio-rte-add-component div[role="listbox"] {
+.cstudio-rte-add-component div[role='listbox'] {
   max-height: calc(80vh - 68px) !important;
   overflow-y: scroll;
   overflow-x: hidden;
-  border: 1px solid #D4D0C8;
+  border: 1px solid #d4d0c8;
   background: white;
 }
 
-.cstudio-rte-add-component div[role="presentation"] {
+.cstudio-rte-add-component div[role='presentation'] {
   border: none;
 }
 
@@ -335,15 +337,15 @@ span.navigation-separator-alt {
   white-space: nowrap;
 }
 
-.cstudio-rte-add-component div[role="listbox"]::-webkit-scrollbar {
+.cstudio-rte-add-component div[role='listbox']::-webkit-scrollbar {
   -webkit-appearance: none;
   width: 10px;
 }
 
-.cstudio-rte-add-component div[role="listbox"]::-webkit-scrollbar-thumb {
+.cstudio-rte-add-component div[role='listbox']::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, .5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 .help__popover-mask {
@@ -354,5 +356,5 @@ span.navigation-separator-alt {
   width: 100%;
   height: 100%;
   position: fixed;
-  z-index: 9999
+  z-index: 9999;
 }

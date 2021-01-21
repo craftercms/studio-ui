@@ -105,8 +105,6 @@
             </tbody>
           </table>
 
-          <p class="pl15 mt8 mb20">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</p>
-
           <div class="global-menu-pagination-wrapper">
             <div ng-show="!users.searchdirty" class="mr10">
               <label class="mr5">{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
@@ -116,6 +114,8 @@
 
             <dir-pagination-controls ng-show="!users.searchdirty" on-page-change="users.pageChanged(newPageNumber)"></dir-pagination-controls>
           </div>
+
+          <p class="create-user-helper-text">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</p>
 
         </div>
       </div>
@@ -359,11 +359,12 @@
           {{usersError.message}}. {{usersError.remedialAction}}
         </div>
       </div>
+      <p class="create-user-helper-text mt0">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</p>
     </div>
 
     <div class="modal-footer" id="new-user-dialog-footer">
-      <button type="button" ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-      <button type="button" ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+      <button type="button" ng-if="!dialogMode" class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+      <button type="button" ng-if="dialogMode" class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize save-new-user" ng-if="dialogMode"
               ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externallyManaged || validPass">{{ 'admin.users.SAVE' | translate }}</button>
     </div>
@@ -422,8 +423,8 @@
     </div>
 
     <div class="modal-footer" id="new-user-dialog-footer">
-      <button type="button" ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-      <button type="button" ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+      <button type="button" ng-if="!dialogMode" class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+      <button type="button" ng-if="dialogMode" class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize"
               ng-click="okModalFunction(user)" ng-disabled="passwordForm.$invalid || user.externallyManaged || validResetPass">{{ 'admin.users.SAVE' | translate }}</button>
     </div>

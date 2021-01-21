@@ -15,8 +15,8 @@
  */
 
 #cstudio-form-readonly-banner {
-  background-color: #3399CC;
-  border-bottom: 1px solid #115F85;
+  background-color: #3399cc;
+  border-bottom: 1px solid #115f85;
   color: white;
   display: block;
   font-size: 14px;
@@ -45,13 +45,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-node-selector-item-selected {
-  background: none repeat scroll 0 0 #D5E6F2 !important;
-  border: 1px solid #0290D6 !important;
+  background: none repeat scroll 0 0 #d5e6f2 !important;
+  border: 1px solid #0290d6 !important;
 }
 
 .cstudio-form-control-node-selector-item {
-  background: none repeat scroll 0 0 #F0F0F0;
-  border: 1px solid #C1C1C1;
+  background: none repeat scroll 0 0 #f0f0f0;
+  border: 1px solid #c1c1c1;
   margin: 3px;
   padding-left: 5px;
   text-align: left;
@@ -75,19 +75,12 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   width: 74%;
 }
 
-.cstudio-form-control-asset-picker-body {
-  position: relative;
-  display: inline-block;
-  min-height: 65px;
-  padding-right: 220px;
-}
+/*.cstudio-form-control-asset-picker-body {
+  hello world
+}*/
 
 .cstudio-form-control-image-picker-options {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 215px;
-  /*display: inline;*/
+  margin: 5px 0;
 }
 
 .cstudio-form-field-image-picker-constraints {
@@ -114,15 +107,15 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 .cstudio-form-control-flash-picker-add-container,
 .cstudio-form-control-video-picker-add-container {
   background: none repeat scroll 0 0 white;
-  border: 1px solid #0176B1;
-  color: #0176B1;
+  border: 1px solid #0176b1;
+  color: #0176b1;
   display: inline-block;
   position: absolute;
   width: auto;
   z-index: 5;
 }
 
-[role="dialog"] .cstudio-form-control-image-picker-add-container {
+[role='dialog'] .cstudio-form-control-image-picker-add-container {
   background-color: #fff;
   border-color: #ccc;
   border-radius: 3px;
@@ -131,9 +124,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   box-shadow: none;
   color: #222f3e;
   padding: 10px 5px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue',
+    sans-serif;
   font-size: 16px;
-
 }
 
 .cstudio-form-control-node-selector-add-container-item,
@@ -143,14 +136,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   padding: 5px 5px 0;
 }
 
-[role="dialog"] .cstudio-form-control-image-picker-add-container
+[role='dialog'] .cstudio-form-control-image-picker-add-container,
 .cstudio-form-control-image-picker-add-container-item:first-child {
   margin-bottom: 10px;
 }
 
-.cstudio-form-control-image-picker-add-container.cstudio-tinymce
 .cstudio-form-control-image-picker-add-container-item,
-.cstudio-form-control-image-picker-add-container.cstudio-tinymce
+.cstudio-form-control-image-picker-add-container.cstudio-tinymce,
 .cstudio-form-control-image-picker-add-container-item:first-child {
   margin-bottom: 5px;
 }
@@ -159,7 +151,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 .cstudio-form-control-image-picker-add-container-item:hover,
 .cstudio-form-control-flash-picker-add-container-item:hover,
 .cstudio-form-control-video-picker-add-container-item:hover {
-  background: none repeat scroll 0 0 #F0F0F0;
+  background: none repeat scroll 0 0 #f0f0f0;
   color: black;
   cursor: pointer;
 }
@@ -232,8 +224,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-expandcollapseall {
-  border-left: 1px solid #A0A0A0;
-  color: #0176B1;
+  border-left: 1px solid #a0a0a0;
+  color: #0176b1;
   cursor: pointer;
   padding-left: 7px;
   text-decoration: none;
@@ -243,8 +235,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-section-header {
-  background: url("../images/bg/bar_bg.gif") repeat-x scroll 0 0 #F0F0F0;
-  border-bottom: 1px solid #A1A1A1;
+  background: url('../images/bg/bar_bg.gif') repeat-x scroll 0 0 #f0f0f0;
+  border-bottom: 1px solid #a1a1a1;
   height: 30px;
   line-height: 30px;
   padding: 0 15px;
@@ -252,11 +244,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-section-widget::before {
-  content: "\f077";
+  content: '\f077';
 }
 
 .cstudio-form-section-widget-closed::before {
-  content: "\f078";
+  content: '\f078';
 }
 
 .cstudio-form-section-widget {
@@ -269,9 +261,6 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   padding: 0 10px;
   top: 1px;
   position: relative;
-}
-
-.cstudio-form-section-widget-closed {
 }
 
 .cstudio-form-section-indicator {
@@ -287,7 +276,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   font-size: 15.6px;
   font-weight: 400;
   font-style: normal;
-  color: #0176B1;
+  color: #0176b1;
   word-spacing: 0;
   line-height: 30px;
   text-align: left;
@@ -331,19 +320,19 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .collapseForm .btn-primary {
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
   color: #000;
-  border-color: #E0E0E0;
+  border-color: #e0e0e0;
 }
 
 .collapseForm .btn-primary:hover {
-  background-color: #D2D1D1;
+  background-color: #d2d1d1;
   color: #000;
-  border-color: #D2D1D1;
+  border-color: #d2d1d1;
 }
 
 .collapseForm #colExpButtonBtn {
-  background-position: 0px -26px;
+  background-position: 0 -26px;
 }
 
 .cstudio-form-controls-button-container {
@@ -365,10 +354,10 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   font-weight: 600;
   line-height: 1.75;
   border-radius: 4px;
-  background-color: #fff;
 }
 
-.cstudio-form-controls-button-container #cancelBtn:hover, .cstudio-form-controls-button-container #cancelBtn:focus {
+.cstudio-form-controls-button-container #cancelBtn:hover,
+.cstudio-form-controls-button-container #cancelBtn:focus {
   text-decoration: none;
   background-color: rgba(0, 0, 0, 0.04);
   outline: none;
@@ -387,7 +376,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   height: auto;
 }
 
-.cstudio-form-field-container#header, .cstudio-form-field-container#footer {
+.cstudio-form-field-container#header,
+.cstudio-form-field-container#footer {
   background: none;
   width: 100%;
   border: none;
@@ -451,7 +441,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   background-color: white;
   border-radius: 6px;
   box-shadow: none;
-  border: 1px solid #EEE;
+  border: 1px solid #eee;
   z-index: 1036;
 }
 
@@ -460,7 +450,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   font-size: 21px;
   padding: 10px;
   text-align: left;
-  border-bottom: 1px solid #DDD;
+  border-bottom: 1px solid #ddd;
 }
 
 #help-dialog .dialog-body {
@@ -468,11 +458,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   height: auto;
   max-height: 300px;
   overflow-y: auto;
-  border-bottom: 1px solid #DDD;
+  border-bottom: 1px solid #ddd;
 }
 
 #help-dialog .dialog-button-bar {
-  margin: 20px 15px 20px 0px;
+  margin: 20px 15px 20px 0;
   text-align: right;
 }
 
@@ -480,9 +470,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   display: inline-block;
 }
 
-
 #help-dialog .dialog-button {
-  background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green-button.png");
+  background-image: url('/proxy/authoring/themes/cstudioTheme/images/overlay-green-button.png');
   color: white;
   cursor: pointer;
   font-family: Arial, Helvetica;
@@ -497,123 +486,158 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 #help-dialog address,
 #help-dialog blockquote,
-#help-dialog dd, #help-dialog div,
-#help-dialog dl, #help-dialog dt,
-#help-dialog h1, #help-dialog h2, #help-dialog h3, #help-dialog h4,
-#help-dialog h5, #help-dialog h6,
-#help-dialog ol, #help-dialog p, #help-dialog ul,
-#help-dialog center, #help-dialog dir,
-#help-dialog hr, #help-dialog menu, #help-dialog pre {
+#help-dialog dd,
+#help-dialog div,
+#help-dialog dl,
+#help-dialog dt,
+#help-dialog h1,
+#help-dialog h2,
+#help-dialog h3,
+#help-dialog h4,
+#help-dialog h5,
+#help-dialog h6,
+#help-dialog ol,
+#help-dialog p,
+#help-dialog ul,
+#help-dialog center,
+#help-dialog dir,
+#help-dialog hr,
+#help-dialog menu,
+#help-dialog pre {
   display: block;
-  unicode-bidi: embed
+  unicode-bidi: embed;
 }
 
 #help-dialog h1 {
   font-size: 2em;
-  margin: .67em 0
+  margin: 0.67em 0;
 }
 
 #help-dialog h2 {
   font-size: 1.5em;
-  margin: .75em 0
+  margin: 0.75em 0;
 }
 
 #help-dialog h3 {
   font-size: 1.17em;
-  margin: .83em 0
+  margin: 0.83em 0;
 }
 
-#help-dialog h4, #help-dialog p,
-#help-dialog blockquote, #help-dialog ul,
-#help-dialog ol, #help-dialog dl, #help-dialog dir,
+#help-dialog h4,
+#help-dialog p,
+#help-dialog blockquote,
+#help-dialog ul,
+#help-dialog ol,
+#help-dialog dl,
+#help-dialog dir,
 #help-dialog menu {
-  margin: 1.12em 0
+  margin: 1.12em 0;
 }
 
 #help-dialog h5 {
-  font-size: .83em;
-  margin: 1.5em 0
+  font-size: 0.83em;
+  margin: 1.5em 0;
 }
 
 #help-dialog h6 {
-  font-size: .75em;
-  margin: 1.67em 0
+  font-size: 0.75em;
+  margin: 1.67em 0;
 }
 
-#help-dialog h1, #help-dialog h2, #help-dialog h3, #help-dialog h4,
-#help-dialog h5, #help-dialog h6, #help-dialog b,
+#help-dialog h1,
+#help-dialog h2,
+#help-dialog h3,
+#help-dialog h4,
+#help-dialog h5,
+#help-dialog h6,
+#help-dialog b,
 #help-dialog strong {
-  font-weight: bolder
+  font-weight: bolder;
 }
 
-#help-dialog i, #help-dialog cite, #help-dialog em,
-#help-dialog var, #help-dialog address {
-  font-style: italic
+#help-dialog i,
+#help-dialog cite,
+#help-dialog em,
+#help-dialog var,
+#help-dialog address {
+  font-style: italic;
 }
 
-#help-dialog pre, #help-dialog tt, #help-dialog code,
-#help-dialog kbd, #help-dialog samp {
-  font-family: monospace
+#help-dialog pre,
+#help-dialog tt,
+#help-dialog code,
+#help-dialog kbd,
+#help-dialog samp {
+  font-family: monospace;
 }
 
 #help-dialog pre {
-  white-space: pre
+  white-space: pre;
 }
 
 #help-dialog big {
-  font-size: 1.17em
+  font-size: 1.17em;
 }
 
-#help-dialog small, #help-dialog sub, #help-dialog sup {
-  font-size: .83em
+#help-dialog small,
+#help-dialog sub,
+#help-dialog sup {
+  font-size: 0.83em;
 }
 
 #help-dialog sub {
-  vertical-align: sub
+  vertical-align: sub;
 }
 
 #help-dialog sup {
-  vertical-align: super
+  vertical-align: super;
 }
 
 #help-dialog hr {
-  border: 1px inset
+  border: 1px inset;
 }
 
-#help-dialog #help-dialog ol, #help-dialog ul, #help-dialog dir,
-#help-dialog menu, #help-dialog dd {
-  margin-left: 40px
+#help-dialog #help-dialog ol,
+#help-dialog ul,
+#help-dialog dir,
+#help-dialog menu,
+#help-dialog dd {
+  margin-left: 40px;
 }
 
 #help-dialog ol {
-  list-style-type: decimal
+  list-style-type: decimal;
 }
 
-#help-dialog ol ul, #help-dialog ul ol,
-#help-dialog ul ul, #help-dialog ol ol {
+#help-dialog ol ul,
+#help-dialog ul ol,
+#help-dialog ul ul,
+#help-dialog ol ol {
   margin-top: 0;
-  margin-bottom: 0
+  margin-bottom: 0;
 }
 
-#help-dialog u, #help-dialog ins {
-  text-decoration: underline
+#help-dialog u,
+#help-dialog ins {
+  text-decoration: underline;
 }
 
-#help-dialog br:before {
-  content: "\A";
-  white-space: pre-line
+#help-dialog br::before {
+  content: '\A';
+  white-space: pre-line;
 }
 
 #help-dialog center {
-  text-align: center
+  text-align: center;
 }
 
-#help-dialog :link, #help-dialog :visited {
-  text-decoration: underline
+#help-dialog :link,
+#help-dialog :visited {
+  text-decoration: underline;
 }
 
 #help-dialog :focus {
-  outline: thin dotted invert
+  outline: thin dotted invert;
 }
 
 .dialog-dialog-mask {
@@ -628,7 +652,6 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 /* -- End Help Dialog -- */
-
 
 .cstudio-form-control-validation {
   background-position: left center;
@@ -650,12 +673,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   color: #0c9052;
 }
 
-.cstudio-form-repeat-title {
-}
-
 .cstudio-form-repeat-control {
-  border-left: 1px solid #A0A0A0;
-  color: #0176B1;
+  border-left: 1px solid #a0a0a0;
+  color: #0176b1;
   cursor: pointer;
   margin-left: 10px;
   padding-left: 10px;
@@ -668,8 +688,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-repeat-container {
-  background-color: #DFDFDF;
-  border: 1px solid #A0A0A0;
+  background-color: #dfdfdf;
+  border: 1px solid #a0a0a0;
   margin-top: 5px;
   padding: 10px;
 }
@@ -692,7 +712,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-input {
-  border: 1px solid #C5D6E2;
+  border: 1px solid #c5d6e2;
   font-weight: normal;
   padding: 2px;
   display: inline;
@@ -706,7 +726,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-input-url-err {
-  color: #DA291C;
+  color: #da291c;
   display: none;
   padding-left: 5px;
 }
@@ -774,12 +794,12 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .rte-active .mceLayout {
-  box-shadow: 0px 0px 5px 0px #0176B1;
+  box-shadow: 0 0 5px 0 #0176b1;
 }
 
 .ie9 .rte-active .mceLayout {
   border-collapse: separate;
-  box-shadow: 0px 0px 6px 0px #0176B1;
+  box-shadow: 0 0 6px 0 #0176b1;
 }
 
 .rte-active .mceLayout > tbody > tr.mceFirst > td.mceToolbar > div {
@@ -787,8 +807,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   top: 0;
   width: 100%;
   position: fixed;
-  background-color: #E1E9F0;
-  border: 1px solid #81A1BE;
+  background-color: #e1e9f0;
+  border: 1px solid #81a1be;
   border-top: 0 none;
   z-index: 20;
   padding: 4px 0;
@@ -799,9 +819,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-rte-container .CodeMirror {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   line-height: 14px;
-  border-bottom: 1px solid #CCCCCC;
+  border-bottom: 1px solid #cccccc;
 }
 
 .cstudio-form-control-rte-container .CodeMirror-lines,
@@ -810,7 +830,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-rte-container .CodeMirror-gutter {
-  background-color: #F3F3F3;
+  background-color: #f3f3f3;
 }
 
 .cstudio-form-control-rte-container .CodeMirror-gutter-text pre {
@@ -843,14 +863,14 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .rte-image-prop-altlink-alttext {
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   width: 125px;
   margin-left: 10px;
   margin-top: 10px;
 }
 
 .rte-image-prop-align {
-  background: url("../images/editor-sprite.gif") no-repeat scroll 0 50% transparent;
+  background: url('../images/editor-sprite.gif') no-repeat scroll 0 50% transparent;
   border: 1px solid;
   display: inline-block;
   height: 20px;
@@ -861,23 +881,23 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .rte-image-prop-align-none {
-  background: url("../images/editor-sprite.gif") no-repeat scroll 0px -899px transparent;
+  background: url('../images/editor-sprite.gif') no-repeat scroll 0 -899px transparent;
 }
 
 .rte-image-prop-align-center {
-  background: url("../images/editor-sprite.gif") no-repeat scroll 0px -864px transparent;
+  background: url('../images/editor-sprite.gif') no-repeat scroll 0 -864px transparent;
 }
 
 .rte-image-prop-align-left {
-  background: url("../images/editor-sprite.gif") no-repeat scroll 0px -972px transparent;
+  background: url('../images/editor-sprite.gif') no-repeat scroll 0 -972px transparent;
 }
 
 .rte-image-prop-align-right {
-  background: url("../images/editor-sprite.gif") no-repeat scroll 0px -936px transparent;
+  background: url('../images/editor-sprite.gif') no-repeat scroll 0 -936px transparent;
 }
 
 .rte-image-prop-align-selected {
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
 }
 
 .rte-image-prop-size-container {
@@ -901,7 +921,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .rte-image-prop-size-input {
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   width: 36px;
   margin-left: 10px;
   margin-top: 10px;
@@ -916,7 +936,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .rte-image-prop-layout-input {
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   width: 36px;
   padding: 6px 3px;
   text-align: center;
@@ -945,7 +965,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .rte-panel {
-  color: #CCCCCC;
+  color: #cccccc;
   height: 207px;
   position: fixed;
   top: 0;
@@ -956,9 +976,14 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.5);
   background: rgba(0, 0, 0, 0.6);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3), inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25), inset 0 -15px 30px rgba(0, 0, 0, 0.3);
-  -o-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3), inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25), inset 0 -15px 30px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3), inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25), inset 0 -15px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3), inset 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 10px 20px rgba(255, 255, 255, 0.25), inset 0 -15px 30px rgba(0, 0, 0, 0.3);
+  -o-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25),
+    inset 0 -15px 30px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25),
+    inset 0 -15px 30px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3);
   z-index: 40;
 }
@@ -970,12 +995,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 /* Start Asset Picker Styles - image, video and flash */
 
 .cstudio-form-control-asset-picker-preview-block {
-  border: 1px solid #C5D6E2;
-  height: 100px;
-  width: 300px;
-  display: inline-block;
-  background: #F0F0F0;
-  position: relative;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background: #fafafa;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  place-content: center;
 }
 
 @media screen and (max-width: 1105px) {
@@ -1003,8 +1029,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-control-asset-picker-preview-content {
-  height: 100px;
-  width: 300px;
+  height: 250px;
+  width: 100%;
+  object-fit: contain;
 }
 
 .cstudio-form-control-hover-btn {
@@ -1018,24 +1045,24 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   text-decoration: none;
 }
 
+.cstudio-form-control-asset-picker-zoom-button,
+.cstudio-form-control-asset-picker-download-button {
+  position: absolute;
+  top: 100px;
+}
+
 .cstudio-form-control-asset-picker-zoom-button {
-  /*background: url("/studio/static-assets/themes/cstudioTheme/images/magnify.png") no-repeat scroll 0 0;
-  width: 21px;*/
   cursor: pointer;
   border: none;
-  position: absolute;
-  top: 0;
-  right: 26px;
+  right: 50px;
+}
+
+.cstudio-form-control-asset-picker-download-button {
+  right: 25px;
 }
 
 .cstudio-form-control-asset-picker-zoom-button.video-zoom {
   right: 17px;
-}
-
-.cstudio-form-control-asset-picker-download-button {
-  position: absolute;
-  top: 0;
-  right: 3px;
 }
 
 .zoom-button {
@@ -1065,15 +1092,15 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 /* End Asset Picker Styles - image, video and flash */
 
 .cstudio-rteSkin span.mce_insertLayout {
-  background: url("../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif") no-repeat scroll 2px -938px !important;
+  background: url('../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat scroll 2px -938px !important;
 }
 
 .cstudio-rteSkin span.mce_insertComponent {
-  background: url("../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif") no-repeat scroll 2px -980px !important;
+  background: url('../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat scroll 2px -980px !important;
 }
 
 .cstudio-rteSkin span.mce_insertStub {
-  background: url("../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif") no-repeat scroll 2px -521px !important;
+  background: url('../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat scroll 2px -521px !important;
 }
 
 .cstudio-rteSkin span.mce_csLink {
@@ -1090,7 +1117,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 #left-drag-handle {
   width: 15px;
   height: 20px;
-  background: url("../images/drag-drop-icon.png") center no-repeat;
+  background: url('../images/drag-drop-icon.png') center no-repeat;
   float: left;
   margin: 0 -20px;
 }
@@ -1168,14 +1195,15 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   color: #888888;
 }
 
-.cstudio-form-field-container .date-time-container { /*display: inline-block;*/
+.cstudio-form-field-container .date-time-container {
+  /*display: inline-block;*/
   position: relative;
 }
 
 .date-time-container .date-control {
-  background: #FFFFFF url(../images/icons/icon_calendar.gif) no-repeat right center;
+  background: #ffffff url(../images/icons/icon_calendar.gif) no-repeat 99% center;
   width: 103px;
-  border: 1px solid #C5D6E2;
+  border: 1px solid #c5d6e2;
   color: #000000;
   padding: 2px 3px;
   margin-right: 6px;
@@ -1200,9 +1228,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .date-time-container .time-control {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   width: 100px;
-  border: 1px solid #C5D6E2;
+  border: 1px solid #c5d6e2;
   color: #000000;
   margin: 0 2px 0 0;
   padding: 2px 3px;
@@ -1234,7 +1262,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 .date-time-container .warning {
   font-size: 11px;
-  color: #D50;
+  color: #d50;
   width: 100%;
 }
 
@@ -1273,8 +1301,6 @@ body.yui-skin-cstudioTheme.masked {
 
 .image-picker-control .cstudio-form-control-image-picker-container {
   float: none;
-  display: inline-block;
-  width: 74%;
 }
 
 .image-picker-control .cstudio-form-control-image-picker-container .validation-hint {
@@ -1285,9 +1311,7 @@ body.yui-skin-cstudioTheme.masked {
 }
 
 .image-picker-control .cstudio-form-control-image-picker-container .imgInfoContainer {
-  float: none;
-  display: inline-block;
-  width: 94.5%;
+  width: 100%;
   word-break: break-all;
 }
 
@@ -1317,7 +1341,6 @@ body.yui-skin-cstudioTheme.masked {
   padding-top: 5px;
 }
 
-
 .cstudio-form-control-input.cstudio-form-control-file-name {
   border: 0;
   background: none;
@@ -1332,10 +1355,6 @@ body.yui-skin-cstudioTheme.masked {
 
 .cstudio-form-control-video-picker-container .cstudio-button {
   align-self: flex-start;
-}
-
-.cstudio-form-control-asset-picker-preview-block {
-  margin-right: 5px;
 }
 
 .cstudio-form-control-input-container {
@@ -1387,7 +1406,10 @@ body.yui-skin-cstudioTheme.masked {
   max-width: 100%;
 }
 
-.date-time-container, .zone-container, .date-el-container, .time-container {
+.date-time-container,
+.zone-container,
+.date-el-container,
+.time-container {
   display: flex !important;
   width: 100%;
   align-items: center;
@@ -1405,7 +1427,8 @@ body.yui-skin-cstudioTheme.masked {
   margin-right: 5px;
 }
 
-.date-link, .clear-link {
+.date-link,
+.clear-link {
   font-size: 16px !important;
 }
 
@@ -1438,9 +1461,6 @@ body.yui-skin-cstudioTheme.masked {
 
 .cstudio-form-control-input-url-err {
   order: 1;
-}
-
-.cstudio-form-control-filename-edit {
 }
 
 .cstudio-form-control-checkbox {
@@ -1483,7 +1503,7 @@ body.yui-skin-cstudioTheme.masked {
 }
 
 .node-selector-item-icon {
-  color: #7C7C80;
+  color: #7c7c80;
   padding: 2px 7px;
   cursor: pointer;
   border-radius: 4px;
@@ -1506,9 +1526,9 @@ body.yui-skin-cstudioTheme.masked {
 .cstudio-form-control-node-selector-options {
   width: 100%;
   display: flex;
-  background: #FAFAFA;
+  background: #fafafa;
   border: 1px solid #ced4da;
-  border-radius: 0px 0px 4px 4px;
+  border-radius: 0 0 4px 4px;
   align-items: center;
 }
 
@@ -1519,20 +1539,20 @@ body.yui-skin-cstudioTheme.masked {
 }
 
 .panel-default {
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px !important;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 1px -1px, rgba(0, 0, 0, 0.14) 0 1px 1px 0, rgba(0, 0, 0, 0.12) 0 1px 3px 0 !important;
   border: 0 !important;
   margin-bottom: 10px !important;
 }
 
 .page-header {
-  margin: 0px 0 20px !important;
+  margin: 0 0 20px !important;
 }
 
 #cstudio-form-expand-all {
   margin: 2px 10px 2px 2px;
 }
 
-.checkbox-group .input[type="checkbox"] {
+.checkbox-group .input[type='checkbox'] {
   width: 15px;
   height: 15px;
 }
@@ -1543,6 +1563,15 @@ body.yui-skin-cstudioTheme.masked {
 
 .date-link {
   text-decoration: none !important;
+}
+
+.date-time-picker-date-button {
+  width: 90px;
+  margin-left: 5px;
+}
+
+.date-time-picker-clear-button {
+  width: 120px;
 }
 
 .cstudio-form-repeat-container {
@@ -1564,9 +1593,6 @@ body.yui-skin-cstudioTheme.masked {
 
 .image-picker-control .cstudio-form-field-title {
   float: left;
-}
-
-.cstudio-form-control-page-nav-order-container .edit-position {
 }
 
 .cstudio-form-control-validation {
@@ -1604,4 +1630,3 @@ body.yui-skin-cstudioTheme.masked {
   margin-left: 5px;
   vertical-align: middle;
 }
-
