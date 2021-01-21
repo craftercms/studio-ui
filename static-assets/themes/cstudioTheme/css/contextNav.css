@@ -588,17 +588,6 @@ div[id*='expandComponentError'].yui-dialog {
   height: 260px;
   width: 235px;
   margin: 5px 0 0 0;
-}
-
-#cstudio-wcm-popup-div .yui-resize .yui-resize-handle-br,
-#cstudio-wcm-popup-div-login .yui-resize .yui-resize-handle-br {
-  background-position: -20px -58px;
-  height: 12px;
-  width: 10px;
-}
-
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control,
-#cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
   color: #000000;
   border: 1px solid #c5d6e2;
   background: #ffffff;
@@ -606,6 +595,13 @@ div[id*='expandComponentError'].yui-dialog {
   box-shadow: 0;
   border-radius: 0;
   -moz-box-shadow: 0 0 0 0 #000000 inset;
+}
+
+#cstudio-wcm-popup-div .yui-resize .yui-resize-handle-br,
+#cstudio-wcm-popup-div-login .yui-resize .yui-resize-handle-br {
+  background-position: -20px -58px;
+  height: 12px;
+  width: 10px;
 }
 
 #cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control option,
@@ -754,6 +750,8 @@ div[id*='expandComponentError'].yui-dialog {
 #cstudio-wcm-popup-div,
 #cstudio-wcm-popup-div-login {
   border: none;
+  box-shadow: none;
+  background-color: transparent;
 }
 
 #cstudio-wcm-popup-div .content span,
@@ -808,12 +806,6 @@ body.yui-skin-cstudioTheme .mask {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   border-radius: 6px;
   background-color: white;
-}
-
-#cstudio-wcm-popup-div,
-#cstudio-wcm-popup-div-login {
-  box-shadow: none;
-  background-color: transparent;
 }
 
 .yui-overlay.yui-panel .hd {
@@ -1001,11 +993,6 @@ body.yui-skin-cstudioTheme .mask {
 
 #saveDraftWar .bd {
   border-radius: 0 0 6px 6px;
-}
-
-#errMissingRequirements .bd,
-.studioDialog .bd {
-  padding: 24px 25px;
 }
 
 #closeUserWarning .hd,

@@ -998,17 +998,15 @@
   right: -3px;
   top: -3px;
 }
-.box-picker
-  .be.bcu-uploads-manager-container.bcu-is-expanded
-  .bcu-overall-progress-bar:hover
-  .bcu-uploads-manager-toggle::before {
+.box-picker,
+.be.bcu-uploads-manager-container.bcu-is-expanded .bcu-overall-progress-bar:hover .bcu-uploads-manager-toggle::before {
   bottom: 6px;
   left: 6px;
 }
-.box-picker
-  .be.bcu-uploads-manager-container.bcu-is-expanded
-  .bcu-overall-progress-bar:hover
-  .bcu-uploads-manager-toggle::after {
+.box-picker,
+.be.bcu-uploads-manager-container.bcu-is-expanded,
+.bcu-overall-progress-bar:hover,
+.bcu-uploads-manager-toggle::after {
   right: 6px;
   top: 6px;
 }
@@ -1064,8 +1062,6 @@
   border-radius: 2px;
   color: #464a4f;
   cursor: pointer;
-  border-style: solid;
-  border-width: 1px;
   box-sizing: border-box;
   display: inline-block;
   font-size: 13px;

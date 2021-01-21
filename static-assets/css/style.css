@@ -60,6 +60,9 @@ body {
   margin: 0;
   font-size: 13px;
   line-height: 1.231;
+  background-color: #e3e6ed;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e3e6ed), to(#e3e6ed), color-stop(0.6, #f2f2f6));
+  background-image: -moz-linear-gradient(19% 100% 90deg, #e3e6ed, #f2f2f6, #e3e6ed 87%);
 }
 
 body,
@@ -368,9 +371,7 @@ textarea {
 }
 
 /* Colors for form validity */
-input:valid,
-textarea:valid {
-}
+
 input:invalid,
 textarea:invalid {
   background-color: #f0dddd;
@@ -392,12 +393,6 @@ td {
    Author:
    ========================================================================== */
 
-body {
-  background-color: #e3e6ed;
-  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e3e6ed), to(#e3e6ed), color-stop(0.6, #f2f2f6));
-  background-image: -moz-linear-gradient(19% 100% 90deg, #e3e6ed, #f2f2f6, #e3e6ed 87%);
-  /* background: url(/static-assets/images/bg-tile.jpg) repeat 0 0; */
-}
 /* #bg-top { background: url(/static-assets/images/bg-top.png) no-repeat center top; margin: 0 auto; height: 160px; position: absolute; left: 0; top: 0; width: 100%; z-index: 1; } */
 #container {
   background-color: #f1f0f0;

@@ -247,18 +247,12 @@ div.grid.columnSize4.yui-g div.yui-g div.yui-u.first {
 }
 
 /**
- * Customise layouts
- */
-.customise-layout div.layouts ul {
-  width: 62em;
-}
-
-/**
  * Customise dashlets
  */
 .customise-layout div.layouts ul {
   overflow: hidden;
   width: 61em;
+  width: 62em;
 }
 
 .customise-dashlets div.used div.noOfColumns1 {

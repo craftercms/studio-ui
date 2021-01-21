@@ -28,16 +28,12 @@ a:link {
   color: #005986;
 }
 
-a:visited {
-}
-
 a:hover {
   color: #005986;
 }
 
 input {
   font-size: 9px;
-
   border: 1px solid #534a3d;
   padding: 2px;
   color: #999999;

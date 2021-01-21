@@ -2173,19 +2173,10 @@ tbody .yui-dt-editable {
   width: 95px !important;
 }
 
-.yui-toolbar-bordersize-menu .yuimenuitemlabel,
-.yui-toolbar-bordertype-menu .yuimenuitemlabel,
-.yui-toolbar-bordersize-menu .yuimenuitemlabel,
-.yui-toolbar-bordertype-menu .yuimenuitemlabel:hover {
-  margin: 0 3px 7px 17px;
-}
-
-.yui-toolbar-bordersize-menu .yuimenuitemlabel .checkedindicator,
-.yui-toolbar-bordertype-menu .yuimenuitemlabel .checkedindicator {
+.yui-toolbar-bordertype-menu .yuimenuitemlabel .checkedindicator,
+.yui-toolbar-bordersize-menu .yuimenuitemlabel .checkedindicator {
   position: absolute;
   left: -12px;
-  *top: 14px;
-  *left: 0;
 }
 
 .yui-toolbar-bordersize-menu li.yui-toolbar-bordersize-1 a {
@@ -2491,10 +2482,6 @@ h3.yui-editor-skipheader {
 .yui-skin-cstudioTheme .yui-toolbar-container .yui-color-button-disabled,
 .yui-skin-cstudioTheme .yui-toolbar-container .yui-menu-button-disabled {
   border-color: #ccc;
-}
-
-.yui-skin-cstudioTheme .yui-toolbar-container .yui-button .first-child {
-  *left: 0;
 }
 
 .yui-skin-cstudioTheme .yui-toolbar-container .yui-toolbar-fontname {
@@ -3507,6 +3494,7 @@ body.yui-layout {
 .yuimenubaritemlabel {
   text-align: left;
   white-space: nowrap;
+  display: block;
 }
 
 .yuimenubar ul {
@@ -3528,11 +3516,6 @@ body.yui-layout {
 
 .yuimenubaritem {
   float: left;
-}
-
-.yuimenubaritemlabel,
-.yuimenuitemlabel {
-  display: block;
 }
 
 .yuimenuitemlabel .helptext {
@@ -3949,8 +3932,7 @@ body.yui-layout {
 }
 
 .yui-skin-cstudioTheme .yui-pv .yui-pv-table .yui-dt-hd th {
-  background-image: none;
-  background: #2e2d2d;
+  background: #2e2d2d none;
 }
 
 .yui-skin-cstudioTheme .yui-pv th.yui-dt-asc .yui-dt-liner {
@@ -4342,14 +4324,6 @@ body.yui-layout {
 
 .yui-toolbar-container-collapsed .yui-toolbar-subcont {
   display: none;
-}
-
-.yui-toolbar-container .yui-toolbar-subcont::after {
-  display: block;
-  clear: both;
-  visibility: hidden;
-  content: '.';
-  height: 0;
 }
 
 .yui-toolbar-container span.yui-toolbar-draghandle {
@@ -4758,7 +4732,6 @@ body.yui-layout {
   width: 95px !important;
 }
 
-.yui-toolbar-bordersize-menu .yuimenuitemlabel,
 .yui-toolbar-bordertype-menu .yuimenuitemlabel,
 .yui-toolbar-bordersize-menu .yuimenuitemlabel,
 .yui-toolbar-bordertype-menu .yuimenuitemlabel:hover {
@@ -4769,8 +4742,6 @@ body.yui-layout {
 .yui-toolbar-bordertype-menu .yuimenuitemlabel .checkedindicator {
   position: absolute;
   left: -12px;
-  *top: 14px;
-  *left: 0;
 }
 
 .yui-toolbar-bordersize-menu li.yui-toolbar-bordersize-1 a {
@@ -5079,7 +5050,6 @@ h3.yui-editor-skipheader {
 }
 
 .yui-skin-cstudioTheme .yui-toolbar-container .yui-button .first-child {
-  *left: 0;
 }
 
 .yui-skin-cstudioTheme .yui-toolbar-container .yui-toolbar-fontname {

@@ -173,10 +173,7 @@ div.diff-conflict-image {
 div.diff-removed-image,
 div.diff-added-image,
 div.diff-conflict-image {
-  margin-top: 2px;
-  margin-bottom: 2px;
-  margin-right: 2px;
-  margin-left: 2px;
+  margin: 2px;
 }
 
 div.diff-removed-image {

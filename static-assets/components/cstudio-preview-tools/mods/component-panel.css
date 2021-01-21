@@ -140,8 +140,6 @@
   outline: 3px dotted #a9a9a9;
   margin: 15px 0;
 }
-.cstudio-component-zone .cstudio-draggable-component.new-component span {
-}
 
 .cstudio-component-zone .cstudio-draggable-component.new-component:hover {
   outline: 3px solid #86bbea;
