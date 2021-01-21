@@ -154,9 +154,6 @@
   min-width: 24px;
 }
 
-.fa {
-}
-
 .studio-fa-stack {
   position: relative;
   display: inline-block;
@@ -186,9 +183,6 @@
 
 .icon-yellow {
   color: #f6cc2f;
-}
-
-.icon-default {
 }
 
 .icon-orange {

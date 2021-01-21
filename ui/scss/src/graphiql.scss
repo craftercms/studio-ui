@@ -614,9 +614,6 @@ div.CodeMirror-lint-tooltip > * + * {
   white-space: nowrap;
 }
 
-.CodeMirror-linenumbers {
-}
-
 .CodeMirror-linenumber {
   color: #999;
   min-width: 20px;
@@ -675,9 +672,6 @@ div.CodeMirror-lint-tooltip > * + * {
 
 /* Can style cursor different in overwrite (non-insert) mode */
 
-div.CodeMirror-overwrite div.CodeMirror-cursor {
-}
-
 .cm-tab {
   display: inline-block;
   text-decoration: inherit;
@@ -706,11 +700,6 @@ div.CodeMirror-overwrite div.CodeMirror-cursor {
   color: #00f;
 }
 
-.cm-s-default .cm-variable,
-.cm-s-default .cm-punctuation,
-.cm-s-default .cm-property,
-.cm-s-default .cm-operator {
-}
 
 .cm-s-default .cm-variable-2 {
   color: #05a;
@@ -978,9 +967,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   overflow: auto;
   position: relative;
   z-index: 2;
-}
-
-.CodeMirror-widget {
 }
 
 .CodeMirror-code {

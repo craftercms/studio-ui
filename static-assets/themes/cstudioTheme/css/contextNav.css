@@ -738,9 +738,6 @@ div[id*='expandComponentError'].yui-dialog {
   line-height: 20px;
 }
 
-.contentTypePopupContent .content label.checkboxInput {
-}
-
 .contentTypePopupContent .content .checkboxInput input {
   padding: 0;
   vertical-align: 4px;
