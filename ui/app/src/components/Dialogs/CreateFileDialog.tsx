@@ -66,7 +66,7 @@ export const translations = defineMessages({
   },
   policyError: {
     id: 'createFile.policyError',
-    defaultMessage: 'The supplied name goes against site policies. '
+    defaultMessage: 'The supplied name goes against site policies.'
   }
 });
 
@@ -99,7 +99,6 @@ interface CreateFileUIProps extends CreateFileProps {
 function CreateFileUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
   const [name, setName] = useState('');
-  const [modifiedName, setModifiedName] = useState('');
   const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -129,13 +128,12 @@ function CreateFileUI(props: CreateFileUIProps) {
         target: `${path}/${name}`
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
-          const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
           if (modifiedValue) {
-            setModifiedName(modifiedValue.replace(`${path}/`, ''));
             setConfirm({
               body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
             });
           } else {
+            const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
             onCreateFile(site, path, fileName);
           }
         } else {
@@ -148,7 +146,7 @@ function CreateFileUI(props: CreateFileUIProps) {
   };
 
   const onConfirm = () => {
-    const fileName = type === 'controller' ? `${modifiedName}.groovy` : `${modifiedName}.ftl`;
+    const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
     onCreateFile(site, path, fileName);
   };
 
