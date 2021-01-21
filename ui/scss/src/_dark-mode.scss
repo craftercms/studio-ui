@@ -55,10 +55,58 @@ $dark-mode-input-border: #ced4da;
     background-color: $dark-mode-background-default;
   }
 
+  .site-dashboard-body {
+    background-color: $dark-mode-background-default !important;
+    .iconName {
+      color: $dark-mode-font-color !important;
+    }
+  }
+
+  .form-engine-body {
+    background-color: $dark-mode-background-default;
+    .cstudio-form-field-title,
+    .cstudio-form-control-node-selector-item {
+      color: $dark-mode-font-color;
+    }
+    .cstudio-form-control-node-selector-items-container,
+    .cstudio-form-control-node-selector-options,
+    .tox .tox-edit-area__iframe {
+      background: none;
+    }
+    .cstudio-form-control-node-selector-item {
+      background: none !important;
+    }
+  }
+
+  header .page-header {
+    background-color: $dark-mode-background-default;
+    .header,
+    .name {
+      color: $dark-mode-font-color;
+    }
+  }
+
   .admin-view {
     .create-user-helper-text {
       color: $dark-mode-font-color;
     }
+  }
+
+  // Modals
+  .modal-content {
+    background: $dark-mode-background-paper;
+    .modal-title {
+      color: $dark-mode-font-color;
+    }
+  }
+
+  // Panels
+  .panel-heading,
+  .panel-default {
+    background: $dark-mode-background-paper !important;
+  }
+  .panel-title {
+    color: $dark-mode-font-color !important;
   }
 
   // Typography
@@ -82,15 +130,17 @@ $dark-mode-input-border: #ced4da;
     background: $dark-mode-button-primary-color-hover;
   }
 
-  .btn-default {
+  .btn-default,
+  .btn-transparent {
     border: 1px solid $dark-mode-button-outlined-border !important;
     color: $dark-mode-font-color;
     background: none;
   }
 
-  .btn-default:hover {
+  .btn-default:hover,
+  .btn-transparent:hover {
     color: $dark-mode-font-color;
-    background: $dark-mode-hover;
+    background: $dark-mode-hover !important;
   }
 
   // Table
