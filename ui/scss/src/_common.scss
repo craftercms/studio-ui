@@ -14,62 +14,62 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "source-sans";
-@import "dark-mode";
+@import 'source-sans';
+@import 'dark-mode';
 
 :root {
-  --craftercms-blue: #007AFF;
-  --craftercms-blueTint: #409CFF;
-  --craftercms-blueShade: #0040DD;
-  --craftercms-blueHighlight: #E6F2FF;
+  --craftercms-blue: #007aff;
+  --craftercms-blueTint: #409cff;
+  --craftercms-blueShade: #0040dd;
+  --craftercms-blueHighlight: #e6f2ff;
   /* - - - - - - - - - - */
-  --craftercms-gray: #8E8393;
-  --craftercms-grayTint: #98989D;
-  --craftercms-grayShade: #69696E;
+  --craftercms-gray: #8e8393;
+  --craftercms-grayTint: #98989d;
+  --craftercms-grayShade: #69696e;
   /* - - - - - - - - - - */
-  --craftercms-green: #34C759;
-  --craftercms-greenTint: #30DB5B;
-  --craftercms-greenShade: #248A3D;
+  --craftercms-green: #34c759;
+  --craftercms-greenTint: #30db5b;
+  --craftercms-greenShade: #248a3d;
   /* - - - - - - - - - - */
   --craftercms-indigo: #5856d6;
-  --craftercms-indigoTint: #7D7AFF;
-  --craftercms-indigoShade: #3634A3;
+  --craftercms-indigoTint: #7d7aff;
+  --craftercms-indigoShade: #3634a3;
   /* - - - - - - - - - - */
-  --craftercms-orange: #FF9500;
-  --craftercms-orangeTint: #FFB340;
-  --craftercms-orangeShade: #C93400;
+  --craftercms-orange: #ff9500;
+  --craftercms-orangeTint: #ffb340;
+  --craftercms-orangeShade: #c93400;
   /* - - - - - - - - - - */
-  --craftercms-pink: #FF2D55;
-  --craftercms-pinkTint: #FF6482;
-  --craftercms-pinkShade: #D30F45;
+  --craftercms-pink: #ff2d55;
+  --craftercms-pinkTint: #ff6482;
+  --craftercms-pinkShade: #d30f45;
   /* - - - - - - - - - - */
-  --craftercms-purple: #AF52DE;
-  --craftercms-purpleTint: #DA8FFF;
-  --craftercms-purpleShade: #8944AB;
+  --craftercms-purple: #af52de;
+  --craftercms-purpleTint: #da8fff;
+  --craftercms-purpleShade: #8944ab;
   /* - - - - - - - - - - */
-  --craftercms-red: #FF3B30;
-  --craftercms-redTint: #FF6961;
-  --craftercms-redShade: #D70015;
+  --craftercms-red: #ff3b30;
+  --craftercms-redTint: #ff6961;
+  --craftercms-redShade: #d70015;
   /* - - - - - - - - - - */
-  --craftercms-teal: #5AC8FA;
-  --craftercms-tealTint: #70D7FF;
-  --craftercms-tealShade: #0071A4;
+  --craftercms-teal: #5ac8fa;
+  --craftercms-tealTint: #70d7ff;
+  --craftercms-tealShade: #0071a4;
   /* - - - - - - - - - - */
-  --craftercms-yellow: #FFCC00;
-  --craftercms-yellowTint: #FFD426;
-  --craftercms-yellowShade: #A05A00;
+  --craftercms-yellow: #ffcc00;
+  --craftercms-yellowTint: #ffd426;
+  --craftercms-yellowShade: #a05a00;
   /* - - - */
-  --craftercms-light0: #FAFAFA;
-  --craftercms-light1: #F3F3F3;
-  --craftercms-light2: #F2F2F7;
-  --craftercms-light3: #EBEBF0;
-  --craftercms-light4: #E5E5EA;
-  --craftercms-light5: #D8D8DC;
-  --craftercms-medium4: #7C7C80;
+  --craftercms-light0: #fafafa;
+  --craftercms-light1: #f3f3f3;
+  --craftercms-light2: #f2f2f7;
+  --craftercms-light3: #ebebf0;
+  --craftercms-light4: #e5e5ea;
+  --craftercms-light5: #d8d8dc;
+  --craftercms-medium4: #7c7c80;
 }
 
 .btn {
-  border: 1px solid rgba(0, 0, 0, 0.23);
+  border: 1px solid rgba(0, 0, 0, 0.23) !important;
   font-weight: 600;
   min-width: 64px;
 }
@@ -130,7 +130,8 @@
   color: #fff;
   padding: 15px 20px;
   font-size: 0.875rem;
-  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 18px 0px rgba(0, 0, 0, 0.12);
   align-items: center;
   font-weight: 400;
   line-height: 1.43;
@@ -146,12 +147,12 @@
 
 .notifyjs-material-success {
   color: #fff !important;
-  background-color: #43a047 !important
+  background-color: #43a047 !important;
 }
 
 .notifyjs-material-error {
   color: #fff !important;
-  background-color: #d32f2f !important
+  background-color: #d32f2f !important;
 }
 
 .notifyjs-material-icon-root {
@@ -163,5 +164,5 @@
   font-size: 16px;
   transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   flex-shrink: 0;
-  user-select: none
+  user-select: none;
 }
