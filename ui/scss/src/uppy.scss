@@ -403,6 +403,9 @@
 .uppy-Root [role~='tooltip'][data-microtip-position|='bottom']::after {
   /* no important */
   margin-top: 11px;
+  transform: translate3d(-50%, -10px, 0);
+  top: 100%;
+  left: 50%;
 }
 
 .uppy-Root [role~='tooltip'][data-microtip-position|='bottom']::before {
@@ -416,13 +419,6 @@
 .uppy-Root [role~='tooltip'][data-microtip-position|='bottom']:hover::before {
   /* no important */
   transform: translate3d(-50%, 0, 0);
-}
-
-.uppy-Root [role~='tooltip'][data-microtip-position|='bottom']::after {
-  /* no important */
-  transform: translate3d(-50%, -10px, 0);
-  top: 100%;
-  left: 50%;
 }
 
 .uppy-Root [role~='tooltip'][data-microtip-position='bottom']:hover::after {

@@ -63,15 +63,6 @@
     content: '';
     position: absolute;
     display: none;
-  }
-
-  /* Show the checkmark when checked */
-  input:checked ~ .checkmark::after {
-    display: block;
-  }
-
-  /* Style the checkmark/indicator */
-  .checkmark::after {
     left: 6px;
     top: 2px;
     width: 5px;
@@ -81,6 +72,11 @@
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
+  }
+
+  /* Show the checkmark when checked */
+  input:checked ~ .checkmark::after {
+    display: block;
   }
 }
 
