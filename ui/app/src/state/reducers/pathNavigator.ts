@@ -88,7 +88,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
             ...state[id],
             currentPath: path,
             breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
-            itemsInPath: response.map((item) => item.id),
+            itemsInPath: response.map((item) => item.path),
             levelDescriptor: response.levelDescriptor?.path,
             count: response.length
           }
@@ -110,7 +110,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         [id]: {
           ...state[id],
           breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
-          itemsInPath: response.length === 0 ? [] : response.map((item) => item.id),
+          itemsInPath: response.length === 0 ? [] : response.map((item) => item.path),
           levelDescriptor: response.levelDescriptor?.path,
           count: response.length,
           leaves: response.length === 0 ? state[id].leaves.concat(path) : state[id].leaves
