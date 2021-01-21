@@ -27,10 +27,11 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
-import { emitSystemEvent, itemCreated, showSystemNotification } from '../../state/actions/system';
+import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
+import ConfirmDialog from './ConfirmDialog';
 
 interface CreateFileBaseProps {
   open: boolean;
@@ -60,7 +61,12 @@ export const translations = defineMessages({
   },
   createPolicy: {
     id: 'createFile.createPolicy',
-    defaultMessage: 'The file will be created with the {name} name due to site policy'
+    defaultMessage:
+      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
+  },
+  policyError: {
+    id: 'createFile.policyError',
+    defaultMessage: 'The supplied name goes against site policies. '
   }
 });
 
@@ -93,13 +99,28 @@ interface CreateFileUIProps extends CreateFileProps {
 function CreateFileUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
   const [name, setName] = useState('');
+  const [modifiedName, setModifiedName] = useState('');
+  const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
   useUnmount(onClosed);
 
-  const onOk = () => {
+  const onCreateFile = (site: string, path: string, fileName: string) => {
+    createFile(site, path, fileName).subscribe(
+      () => {
+        onCreated?.({ path, fileName, type });
+        dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
+      },
+      (response) => {
+        setState({ inProgress: false, submitted: true });
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onCreate = () => {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
@@ -108,32 +129,34 @@ function CreateFileUI(props: CreateFileUIProps) {
         target: `${path}/${name}`
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
-          let _name = name;
+          const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
           if (modifiedValue) {
-            _name = modifiedValue.replace(`${path}/`, '');
-            dispatch(
-              showSystemNotification({
-                message: formatMessage(translations.createPolicy, { name: _name })
-              })
-            );
+            setModifiedName(modifiedValue.replace(`${path}/`, ''));
+            setConfirm({
+              body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+            });
+          } else {
+            onCreateFile(site, path, fileName);
           }
-          const fileName = type === 'controller' ? `${_name}.groovy` : `${_name}.ftl`;
-
-          createFile(site, path, fileName).subscribe(
-            () => {
-              onCreated?.({ path, fileName, type });
-              dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
-            },
-            (response) => {
-              setState({ inProgress: false, submitted: true });
-              dispatch(showErrorDialog({ error: response }));
-            }
-          );
         } else {
+          setConfirm({
+            body: formatMessage(translations.policyError)
+          });
         }
       });
     }
   };
+
+  const onConfirm = () => {
+    const fileName = type === 'controller' ? `${modifiedName}.groovy` : `${modifiedName}.ftl`;
+    onCreateFile(site, path, fileName);
+  };
+
+  const onConfirmCancel = () => {
+    setConfirm(null);
+    setState({ inProgress: false, submitted: true });
+  };
+
   return (
     <>
       <DialogHeader
@@ -150,7 +173,7 @@ function CreateFileUI(props: CreateFileUIProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onOk();
+            onCreate();
           }}
         >
           <TextField
@@ -196,10 +219,11 @@ function CreateFileUI(props: CreateFileUIProps) {
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onOk} disabled={inProgress || name === ''}>
+        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''}>
           {inProgress ? <CircularProgress size={15} /> : <FormattedMessage id="words.create" defaultMessage="Create" />}
         </PrimaryButton>
       </DialogFooter>
+      <ConfirmDialog open={Boolean(confirm)} body={confirm?.body} onOk={onConfirm} onCancel={onConfirmCancel} />
     </>
   );
 }
