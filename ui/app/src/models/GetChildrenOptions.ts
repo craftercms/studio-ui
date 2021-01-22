@@ -17,9 +17,9 @@
 import { PaginationOptions } from './PaginationOptions';
 
 export interface GetChildrenOptions extends PaginationOptions {
-  order: 'ASC' | 'DESC';
-  locale: string;
-  keyword: string;
+  localeCode: string;
   sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
+  order: 'ASC' | 'DESC';
+  keyword: string;
   excludes?: string[];
 }

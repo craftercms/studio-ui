@@ -778,7 +778,7 @@ export function getChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const qs = toQueryString({ siteId: site, path, ...options });
+  const qs = toQueryString({ order: 'ASC', sortStrategy: 'default', siteId: site, path, ...options });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
     map(({ children, parent, levelDescriptor }) => Object.assign(children, { parent, levelDescriptor })),
