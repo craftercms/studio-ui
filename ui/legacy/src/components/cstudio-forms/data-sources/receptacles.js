@@ -68,7 +68,7 @@
           }
         });
       }
-      if (this.allowShared && this.enableSearch) {
+      if (this.enableSearch) {
         let message = formatMessage('searchExisting');
         $(control.$dropdownMenu).append(
           self._createOption(message, () => {
@@ -280,7 +280,7 @@
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
-      if (self.allowShared && self.enableBrowse) {
+      if (self.enableBrowse) {
         let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
         control.$dropdownMenu.append(
           self._createOption(message, () => {
