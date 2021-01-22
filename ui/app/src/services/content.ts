@@ -781,7 +781,9 @@ export function getChildrenByPath(
   const qs = toQueryString({ siteId: site, path, ...options });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
-    map(({ children, parent, levelDescriptor }) => Object.assign(children, { parent, levelDescriptor })),
+    map(({ children, parent, levelDescriptor, total, offset, limit }) =>
+      Object.assign(children, { parent, levelDescriptor, total, offset, limit })
+    ),
     catchError(errorSelectorApi1)
   );
 }
