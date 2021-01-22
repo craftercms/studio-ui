@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { getRequestForgeryToken, getRequestForgeryTokenParamName } from '../../utils/auth';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
