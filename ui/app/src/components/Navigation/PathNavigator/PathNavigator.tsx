@@ -18,7 +18,7 @@ import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../../models/Item';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
-import { useActiveSiteId, useEnv, useMount, useSelection, useSiteLocales, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, useEnv, useLogicResource, useMount, usePreviewState, useSelection, useSiteLocales, useSpreadState } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../../SystemStatus/Suspencified';
 import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
@@ -36,7 +36,6 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
-import { getStoredPreviewChoice } from '../../../utils/state';
 import ItemMenu from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
@@ -127,6 +126,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -376,7 +376,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     : createItemClickedHandler((item: DetailedItem) => {
         if (isNavigable(item)) {
           if (item.previewUrl) {
-            let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
+            let previewBase = previewChoice[site] === '2' ? 'next/preview' : 'preview';
             window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
           }
         } else if (isFolder(item)) {

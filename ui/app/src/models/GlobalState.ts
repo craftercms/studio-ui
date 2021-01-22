@@ -123,6 +123,7 @@ export interface GlobalState {
   preview: {
     editMode: boolean;
     highlightMode: string;
+    previewChoice: LookupTable<string>;
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;

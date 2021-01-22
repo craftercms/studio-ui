@@ -1587,7 +1587,7 @@ var nodeOpen = false,
               url = '/';
             }
           }
-          if (CrafterCMSNext.util.state.getStoredPreviewChoice(CStudioAuthoringContext.site) === '2') {
+          if (CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.site] === '2') {
             window.location = `/studio/next/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
           } else {
             window.location = `/studio/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;

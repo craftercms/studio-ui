@@ -52,6 +52,7 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   setHighlightMode,
+  setPreviewChoice,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateToolsPanelWidth
 } from '../actions/preview';
@@ -142,6 +143,7 @@ const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
     highlightMode: 'ALL',
+    previewChoice: null,
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe
@@ -537,6 +539,10 @@ const reducer = createReducer<GlobalState['preview']>(
     [setHighlightMode.type]: (state, { payload }) => ({
       ...state,
       highlightMode: payload.highlightMode
+    }),
+    [setPreviewChoice.type]: (state, { payload }) => ({
+      ...state,
+      previewChoice: { ...state.previewChoice, [payload.site]: payload.previewChoice }
     })
   }
 );

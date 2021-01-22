@@ -52,6 +52,7 @@ import {
   setContentTypeReceptacles,
   setHighlightMode,
   setItemBeingDragged,
+  setPreviewChoice,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
@@ -80,6 +81,7 @@ import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previe
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
+  useActiveUser,
   useContentTypes,
   useMount,
   usePermissions,
@@ -94,11 +96,9 @@ import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
-  getStoredhighlightModeChoice,
-  getStoredPreviewChoice,
+  getStoredHighlightModeChoice,
   getStoredPreviewToolsPanelPage,
-  removeStoredClipboard,
-  setStoredPreviewChoice
+  removeStoredClipboard
 } from '../../utils/state';
 import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
@@ -144,7 +144,8 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, currentUrl, computedUrl, editMode, highlightMode } = usePreviewState();
+  const user = useActiveUser();
+  const { guest, currentUrl, computedUrl, editMode, highlightMode, previewChoice } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
@@ -159,9 +160,9 @@ export function PreviewConcierge(props: any) {
   const requestedSourceMapPaths = useRef({});
   const handlePreviewCompatDialogRemember = useCallback(
     (remember, goOrStay) => {
-      setStoredPreviewChoice(site, remember ? goOrStay : 'ask');
+      dispatch(setPreviewChoice({ site, previewChoice: remember ? goOrStay : 'ask' }));
     },
-    [site]
+    [dispatch, site]
   );
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
@@ -193,21 +194,23 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice() ? getStoredEditModeChoice() === 'true' : null;
+    const localEditMode = getStoredEditModeChoice(user.username)
+      ? getStoredEditModeChoice(user.username) === 'true'
+      : null;
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
-    const localHighlightMode = getStoredhighlightModeChoice();
+    const localHighlightMode = getStoredHighlightModeChoice(user.username);
     if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
-    const localClipboard = getStoredClipboard(site);
+    const localClipboard = getStoredClipboard(site, user.username);
     if (localClipboard) {
       let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
       if (hours >= 24) {
-        removeStoredClipboard(site);
+        removeStoredClipboard(site, user.username);
       } else {
         dispatch(
           restoreClipBoard({
@@ -220,7 +223,7 @@ export function PreviewConcierge(props: any) {
     }
 
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
-    const storedPage = getStoredPreviewToolsPanelPage(site);
+    const storedPage = getStoredPreviewToolsPanelPage(site, user.username);
     if (storedPage) {
       dispatch(pushToolsPanelPage(storedPage));
     }
@@ -253,9 +256,9 @@ export function PreviewConcierge(props: any) {
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
-            let previousChoice = getStoredPreviewChoice(site);
+            let previousChoice = previewChoice[site];
             if (previousChoice === null) {
-              setStoredPreviewChoice(site, (previousChoice = '1'));
+              dispatch(setPreviewChoice({ site, previewChoice: previousChoice = '1' }));
             }
             if (previousChoice && !compatibilityAsk) {
               if (previousChoice === '1') {
@@ -672,6 +675,7 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     editMode,
     highlightMode,
+    previewChoice,
     handlePreviewCompatibilityDialogGo
   ]);
 

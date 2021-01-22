@@ -83,7 +83,10 @@
         window: getEngineWindow().contentWindow
       });
       const handleRemember = (remember, goOrStay) => {
-        CrafterCMSNext.util.state.setStoredPreviewChoice(CStudioAuthoringContext.siteId, remember ? goOrStay : 'ask');
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SET_PREVIEW_CHOICE',
+          payload: { site: CStudioAuthoringContext.siteId, previewChoice: remember ? goOrStay : 'ask' }
+        });
       };
       const doGo = () => {
         const state = CrafterCMSNext.system.store.getState();
@@ -107,9 +110,12 @@
           unmount = args.unmount;
         });
       };
-      let previousChoice = CrafterCMSNext.util.state.getStoredPreviewChoice(CStudioAuthoringContext.siteId);
+      let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
       if (previousChoice === null) {
-        CrafterCMSNext.util.state.setStoredPreviewChoice(CStudioAuthoringContext.siteId, (previousChoice = '2'));
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SET_PREVIEW_CHOICE',
+          payload: { site: CStudioAuthoringContext.siteId, previewChoice: (previousChoice = '2') }
+        });
       }
       if (previousChoice && !compatibilityAsk) {
         if (previousChoice === '2') {

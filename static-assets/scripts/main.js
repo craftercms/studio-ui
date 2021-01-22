@@ -474,7 +474,7 @@
         $timeout(
           function() {
             $window.location.href =
-              CrafterCMSNext.util.state.getStoredPreviewChoice(site.id) === '2'
+              CrafterCMSNext.system.store.getState().preview.previewChoice[site.id] === '2'
                 ? '/studio/next/preview'
                 : '/studio/preview';
           },
@@ -537,7 +537,7 @@
         return sitesApi.deleteSite(site).toPromise();
       };
 
-      this.getPermissions = function(siteId, path, user) {
+      this.getPermissions = function(siteId, path) {
         return securityApi.getUserPermissions(siteId, path).toPromise();
       };
 
