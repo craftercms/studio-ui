@@ -408,7 +408,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         <SuspenseWithEmptyState resource={itemsResource}>
           <PathNavigatorList
             leaves={state?.leaves ?? []}
-            locale={'en'}
+            locale={'en_US'}
             resource={itemsResource}
             onPathSelected={onPathSelected}
             onItemClicked={handleItemClicked}

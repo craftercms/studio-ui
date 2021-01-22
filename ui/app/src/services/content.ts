@@ -778,28 +778,10 @@ export function getChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  // TODO: Waiting for API. Temporarily calling API1's get-items-tree
-  // const qs = toQueryString({ siteId: site, path, ...options });
-  // return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
-  //   pluck('response'),
-  //   map(({ children, parent, levelDescriptor }) => Object.assign(children, { parent, levelDescriptor })),
-  //   catchError(errorSelectorApi1)
-  // );
-  const qs = toQueryString({ site, path, depth: 1, order: 'default', ...options });
-  return get(`/studio/api/1/services/api/1/content/get-items-tree.json${qs}`).pipe(
+  const qs = toQueryString({ siteId: site, path, ...options });
+  return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
-    map(({ item }) => {
-      const levelDescriptor = item.children.find((item) => item.contentType === '/component/level-descriptor');
-      return Object.assign(parseLegacyItemToSandBoxItem(item.children), {
-        parent: parseLegacyItemToSandBoxItem(item),
-        levelDescriptor: levelDescriptor
-          ? {
-              ...parseLegacyItemToSandBoxItem(levelDescriptor),
-              label: 'Section Defaults'
-            }
-          : null
-      });
-    }),
+    map(({ children, parent, levelDescriptor }) => Object.assign(children, { parent, levelDescriptor })),
     catchError(errorSelectorApi1)
   );
 }

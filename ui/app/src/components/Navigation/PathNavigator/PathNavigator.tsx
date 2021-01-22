@@ -350,7 +350,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
       id: `locale.${code}`,
       label: {
         id: `locale.${code}`,
-        defaultMessage: formatMessage(languages[code])
+        defaultMessage: formatMessage(languages[code.toLowerCase()])
       }
     }));
     if (type === 'language') {
