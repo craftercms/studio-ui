@@ -18,7 +18,7 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
-import { createIntl, createIntlCache, IntlShape } from 'react-intl';
+import { createIntl, createIntlCache, IntlShape, MessageDescriptor } from 'react-intl';
 import { Subject } from 'rxjs';
 
 export type BundledTranslationsLocaleCodes = 'en' | 'es' | 'de' | 'ko';
@@ -75,6 +75,10 @@ export function getTranslation(key: string, table: any, formatMessage = (descrip
       defaultMessage: key || '(check configuration)'
     }
   );
+}
+
+export function getPossibleTranslation(titleOrDescriptor: string | MessageDescriptor, formatMessage): string {
+  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
 }
 
 export function getCurrentLocale(): string {

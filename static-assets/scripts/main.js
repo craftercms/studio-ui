@@ -286,6 +286,15 @@
             }
           }
         })
+        .state('home.globalMenu.tokenManagement', {
+          url: '/token-management',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/tokenManagement.html',
+              controller: 'TokenManagementCtrl'
+            }
+          }
+        })
         .state('home.sites', {
           url: 'sites',
           views: {
@@ -1451,14 +1460,27 @@
 
   app.controller('EncryptionToolCtrl', [
     '$scope',
-    function($scope) {
-      const workarea = document.querySelector('#encryption-tool-view');
-      const el = document.createElement('div');
+    '$rootScope',
+    function($scope, $rootScope) {
+      CrafterCMSNext.render(document.querySelector('#encryption-tool-view'), 'EncryptTool').then((done) => {
+        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+          unsubscribe();
+          done.unmount();
+        });
+      });
+    }
+  ]);
 
-      $(workarea).html('');
-      workarea.appendChild(el);
-
-      CrafterCMSNext.render(el, 'EncryptTool');
+  app.controller('TokenManagementCtrl', [
+    '$scope',
+    '$rootScope',
+    function($scope, $rootScope) {
+      CrafterCMSNext.render(document.querySelector('#token-management-view'), 'TokenManagement').then((done) => {
+        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+          unsubscribe();
+          done.unmount();
+        });
+      });
     }
   ]);
 
