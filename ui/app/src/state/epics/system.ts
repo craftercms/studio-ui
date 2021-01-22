@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, pluck, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
@@ -236,7 +236,10 @@ const systemEpics: CrafterCMSEpic[] = [
       filter(() => Boolean(systemBroadcastChannel)),
       // ...begin listening for system events sent through the broadcast channel.
       switchMap(() =>
-        fromEvent<MessageEvent>(systemBroadcastChannel, 'message').pipe(filter((e) => e.data && e.data.type))
+        fromEvent<MessageEvent>(systemBroadcastChannel, 'message').pipe(
+          filter((e) => e.data && e.data.type),
+          pluck('data')
+        )
       )
       // This mechanism has been added to support multi-tab UX on studio with the JWT mechanics since,
       // when other tabs are opened, refreshToken API is called, invalidating the token of other tabs.

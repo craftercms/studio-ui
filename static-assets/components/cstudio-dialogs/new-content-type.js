@@ -523,13 +523,14 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   },
 
   writeConfig: function(url, content, cb) {
-    YAHOO.util.Connect.setDefaultPostHeader(false);
-    YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
-    YAHOO.util.Connect.initHeader(
-      CStudioAuthoringContext.xsrfHeaderName,
-      CrafterCMSNext.util.auth.getRequestForgeryToken()
+    CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(url), content).subscribe(
+      function() {
+        cb.success();
+      },
+      function() {
+        cb.failure();
+      }
     );
-    YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);
   },
 
   /**

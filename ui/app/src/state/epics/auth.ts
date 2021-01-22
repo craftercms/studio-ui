@@ -25,7 +25,7 @@ import {
   refreshAuthTokenComplete,
   refreshAuthTokenFailed
 } from '../actions/auth';
-import { ignoreElements, map, mapTo, pluck, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mapTo, pluck, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { refreshSession } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';

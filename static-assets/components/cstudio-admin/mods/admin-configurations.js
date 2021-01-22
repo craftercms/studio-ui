@@ -66,9 +66,9 @@
         workareaEl.innerHTML = '<div id="config-area"></div>';
         var actions = [];
 
-        CStudioAuthoring.Service.getActiveEnvironment({
-          success: function(data) {
-            self.environment = JSON.parse(data.responseText).environment;
+        CrafterCMSNext.services.environment.fetchActiveEnvironment().subscribe(
+          (environment) => {
+            self.environment = environment;
             CStudioAuthoring.ContextualNav.AdminConsoleNav &&
               CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
             self.renderJobsList();
@@ -79,10 +79,10 @@
 
             document.getElementById('activeContentActions').appendChild(historyEl);
           },
-          failure: function(data) {
+          () => {
             console.log(data.response.message);
           }
-        });
+        );
       },
 
       renderJobsList: function() {
@@ -266,23 +266,13 @@
           var descriptionEl = document.getElementById('config-description');
           descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute('description');
 
-          // load configuration into editor
-          var url =
-              '/studio/api/2/configuration/get_configuration?siteId=' +
-              CStudioAuthoringContext.site +
-              '&module=' +
-              itemSelectEl[selectedIndex].getAttribute('module') +
-              '&path=' +
-              itemSelectEl[selectedIndex].value,
-            elemPath = itemSelectEl[selectedIndex].value;
-          if (environment) {
-            url += '&environment=' + environment;
-          }
-          YAHOO.util.Connect.asyncRequest('GET', url, {
-            success: function(response) {
-              var responseObj = eval('(' + response.responseText + ')');
-              if (responseObj.content) {
-                editor.setValue(responseObj.content);
+          const site = CStudioAuthoringContext.site;
+          const path = itemSelectEl[selectedIndex].value;
+          const module = itemSelectEl[selectedIndex].getAttribute('module');
+          CrafterCMSNext.services.configuration.getRawConfiguration(site, path, module).subscribe(
+            (content) => {
+              if (content) {
+                editor.setValue(content);
               } else {
                 editor.setValue('');
               }
@@ -314,30 +304,24 @@
               const historyEl = document.getElementById('historyEl');
               historyEl && historyEl.append(historyLink);
             },
-            failure: function() {
+            () => {
               editor.setValue('');
               CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
             }
-          });
+          );
 
           //sample
           var sampleTextEl = document.getElementById('sample-text');
-
           // load sample configuration into view sample area
-          var samplePath = itemSelectEl[selectedIndex].getAttribute('sample');
+          var samplePath = `${configSampleFilesPath}/${itemSelectEl[selectedIndex].getAttribute('sample')}`;
           var viewSampleButtonEl = document.getElementById('view-sample-button');
-          if (samplePath != 'undefined' && samplePath != '') {
-            var url =
-              '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=' +
-              configSampleFilesPath +
-              '/' +
-              itemSelectEl[selectedIndex].getAttribute('sample');
 
-            YAHOO.util.Connect.asyncRequest('GET', url, {
-              success: function(response) {
+          if (samplePath != 'undefined' && samplePath != '') {
+            CrafterCMSNext.services.configuration.getRawConfiguration('studio_root', samplePath, 'studio').subscribe(
+              (sampleConfig) => {
                 var sampleAreaEl = document.getElementById('sample-window');
                 sampleAreaEl.style.display = 'inline';
-                sampleEditor.setValue(response.responseText);
+                sampleEditor.setValue(sampleConfig);
                 sampleEditor.clearSelection(); // This will remove the highlight over the text
                 CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(sampleEditor);
                 CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(editor);
@@ -346,10 +330,10 @@
                 hideSampleButtonEl.style.display = 'none';
                 sampleAreaEl.style.display = 'none';
               },
-              failure: function() {
+              () => {
                 viewSampleButtonEl.style.display = 'none';
               }
-            });
+            );
           } else {
             viewSampleButtonEl.style.display = 'none';
           }
@@ -464,41 +448,33 @@
                 };
 
                 var requestAsString = JSON.stringify(reqObj);
-                YAHOO.util.Connect.setDefaultPostHeader(false);
-                YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
-                YAHOO.util.Connect.initHeader(
-                  CStudioAuthoringContext.xsrfHeaderName,
-                  CrafterCMSNext.util.auth.getRequestForgeryToken()
-                );
-                YAHOO.util.Connect.asyncRequest(
-                  'POST',
-                  CStudioAuthoring.Service.createServiceUri(url),
-                  {
-                    success: function() {
-                      CStudioAuthoring.Utils.showNotification(
-                        CMgs.format(langBundle, 'saved'),
-                        'top',
-                        'left',
-                        'success',
-                        48,
-                        197,
-                        'saveConf'
-                      );
-                      me.clearCache();
-                    },
-                    failure: function() {
-                      CStudioAuthoring.Operations.showSimpleDialog(
-                        'errorDialog-dialog',
-                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                        CMgs.format(langBundle, 'notification'),
-                        CMgs.format(langBundle, 'saveFailed'),
-                        null, // use default button
-                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                        'studioDialog'
-                      );
-                    }
+
+                const site = CStudioAuthoringContext.site;
+                const module = itemSelectEl[selectedIndex].getAttribute('module');
+                CrafterCMSNext.services.configuration.writeConfiguration(site, defPath, module, xml).subscribe(
+                  () => {
+                    CStudioAuthoring.Utils.showNotification(
+                      CMgs.format(langBundle, 'saved'),
+                      'top',
+                      'left',
+                      'success',
+                      48,
+                      197,
+                      'saveConf'
+                    );
+                    me.clearCache();
                   },
-                  requestAsString
+                  () => {
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      'errorDialog-dialog',
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      CMgs.format(langBundle, 'notification'),
+                      CMgs.format(langBundle, 'saveFailed'),
+                      null, // use default button
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      'studioDialog'
+                    );
+                  }
                 );
               } else {
                 let tags;
@@ -686,21 +662,22 @@
         var serviceUri =
           '/api/1/services/api/1/site/clear-configuration-cache.json?site=' + CStudioAuthoringContext.site;
 
-        YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), {
-          success: function() {},
-
-          failure: function() {
-            CStudioAuthoring.Operations.showSimpleDialog(
-              'cacheError-dialog',
-              CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              CMgs.format(langBundle, 'notification'),
-              CMgs.format(langBundle, 'clearCacheError'),
-              null, // use default button
-              YAHOO.widget.SimpleDialog.ICON_BLOCK,
-              'studioDialog'
-            );
-          }
-        });
+        CrafterCMSNext.util.ajax
+          .get(`/studio/api/1/services/api/1/site/clear-configuration-cache.json?site=${CStudioAuthoringContext.site}`)
+          .subscribe(
+            () => {},
+            () => {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'cacheError-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(langBundle, 'notification'),
+                CMgs.format(langBundle, 'clearCacheError'),
+                null, // use default button
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          );
       }
     });
 

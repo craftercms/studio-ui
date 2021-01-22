@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,26 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.cs-loggerlist-heading {
-    background: none repeat scroll 0 0 black;
-    border: 1px solid black;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    border-color: black white black black;
-    padding: 5px;
+interface LogParameters {
+  targetId: string;
+  targetType: string;
+  targetSubtype: string;
+  targetValue: string;
 }
 
-.cs-loggerlist {
-   left: 50px;
-   position: relative;
-   right: auto;
-   top: 85px;
-}
-
-.cs-loggerlist-detail {
-    font-size: 12px;
-    border: 1px solid black;
-    padding: 5px;
-    text-align: left;
+export interface AuditLog {
+  id: number;
+  organizationId: number;
+  siteId: number;
+  siteName: string;
+  operation: string;
+  operationTimestamp: string;
+  origin: string;
+  primaryTargetId: string;
+  primaryTargetType: string;
+  primaryTargetSubtype: string;
+  primaryTargetValue: string;
+  actorId: string;
+  actorDetails: string;
+  clusterNodeId: string;
+  parameters: LogParameters[];
 }

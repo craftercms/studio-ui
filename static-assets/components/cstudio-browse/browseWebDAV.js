@@ -445,7 +445,7 @@
 
     var callbackContent = {
       success: function(response) {
-        cb.success(response.items);
+        cb.success(response);
       },
       failure: function(response) {
         var message = CMgs.format(browseLangBundle, '' + response.status + '');
@@ -494,7 +494,9 @@
       }
     };
 
-    CStudioAuthoring.Service.getWebDAVContentByBrowser(site, profileId, path, callbackContent, filter);
+    CrafterCMSNext.services.webdav
+      .list(site, profileId, { path, filter })
+      .subscribe(callbackContent.success, callbackContent.failure);
   };
 
   CStudioBrowseWebDAV.uploadContent = function(site, path) {

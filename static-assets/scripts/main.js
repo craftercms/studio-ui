@@ -57,50 +57,56 @@
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
       $rootScope.$on('$stateChangeStart', function(event, toState) {
-        if (toState.name.indexOf('users') !== -1) {
-          var user = authService.getUser();
-          if (user && user.username) {
-            var createSitePermissions = false;
-            sitesService.getPermissions('', '/', user.username || user).then(function(permissions) {
-              if (permissions.includes('create-site')) {
-                createSitePermissions = true;
-              }
-              if (!createSitePermissions) {
-                $state.go('home.globalMenu');
-              }
+        const init = () => {
+          if (toState.name.indexOf('users') !== -1) {
+            var user = authService.getUser();
+            if (user && user.username) {
+              var createSitePermissions = false;
+              sitesService.getPermissions('', '/', user.username || user).then(function(permissions) {
+                if (permissions.includes('create-site')) {
+                  createSitePermissions = true;
+                }
+                if (!createSitePermissions) {
+                  $state.go('home.globalMenu');
+                }
+              });
+            }
+          }
+
+          function setDocTitle(globalMenuData, toState) {
+            let docTitle;
+
+            // check if state is a globalMenu Item
+            const globalMenuItem = globalMenuData.find((o) => o.id === toState.name);
+
+            // if globalMenuItem exists => check if globalMenuMessages has the id, or use the label as docTitle
+            if (globalMenuItem) {
+              docTitle = globalMenuMessages[globalMenuItem.id]
+                ? `${formatMessage(globalMenuMessages[globalMenuItem.id])} - Crafter CMS`
+                : `${globalMenuItem.label} - Crafter CMS`;
+            } else {
+              // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
+              docTitle = globalMenuMessages[toState.name]
+                ? `${formatMessage(globalMenuMessages[toState.name])} - Crafter CMS`
+                : 'Crafter CMS';
+            }
+
+            document.title = docTitle;
+          }
+
+          if ($rootScope.globalMenuData) {
+            setDocTitle($rootScope.globalMenuData, toState);
+          } else {
+            sitesService.getGlobalMenu().then(function(menuItems) {
+              $rootScope.globalMenuData = menuItems;
+              setDocTitle(menuItems, toState);
             });
           }
-        }
+        };
 
-        function setDocTitle(globalMenuData, toState) {
-          let docTitle;
-
-          // check if state is a globalMenu Item
-          const globalMenuItem = globalMenuData.find((o) => o.id === toState.name);
-
-          // if globalMenuItem exists => check if globalMenuMessages has the id, or use the label as docTitle
-          if (globalMenuItem) {
-            docTitle = globalMenuMessages[globalMenuItem.id]
-              ? `${formatMessage(globalMenuMessages[globalMenuItem.id])} - Crafter CMS`
-              : `${globalMenuItem.label} - Crafter CMS`;
-          } else {
-            // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
-            docTitle = globalMenuMessages[toState.name]
-              ? `${formatMessage(globalMenuMessages[toState.name])} - Crafter CMS`
-              : 'Crafter CMS';
-          }
-
-          document.title = docTitle;
-        }
-
-        if ($rootScope.globalMenuData) {
-          setDocTitle($rootScope.globalMenuData, toState);
-        } else {
-          sitesService.getGlobalMenu().then(function(menuItems) {
-            $rootScope.globalMenuData = menuItems;
-            setDocTitle(menuItems, toState);
-          });
-        }
+        CrafterCMSNext.system.getStore().subscribe(() => {
+          init();
+        });
       });
 
       sitesService.getLanguages($rootScope, true);

@@ -259,7 +259,9 @@
     }
   }
 
-  openDialog(type, path);
+  CrafterCMSNext.system.getStore().subscribe(() => {
+    openDialog(type, path);
+  });
 </script>
 </body>
 </html>

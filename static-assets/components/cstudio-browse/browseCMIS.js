@@ -179,8 +179,8 @@
             success: function(response) {
               var subFolders = false;
 
-              if (response.total > 0) {
-                $.each(response.items, function(index, value) {
+              if (response.length > 0) {
+                $.each(response, function(index, value) {
                   if ('folder' === value.mimeType) {
                     $tree.jstree(
                       'create_node',
@@ -285,28 +285,30 @@
         site = CStudioAuthoring.Utils.getQueryParameterByName('site'),
         path = contentTO.browserUri,
         paramsJson = { siteId: site, cmisRepoId: repoId, cmisPath: path, studioPath: studioPath };
-      var callbackContent = {
-        success: function(response) {
-          contentTO.clone = true;
-          $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
-          CStudioAuthoring.SelectedContent.selectContent(contentTO);
-          me.saveContent();
-        },
-        failure: function(response) {
-          $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
-          const error = JSON.parse(response.responseText);
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'error-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(browseLangBundle, 'notification'),
-            error.response.remedialAction,
-            null,
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
-          );
-        }
-      };
-      CStudioAuthoring.Service.contentCloneCMIS(paramsJson, callbackContent);
+
+      CrafterCMSNext.services.cmis
+        .clone(paramsJson.siteId, paramsJson.cmisRepoId, paramsJson.cmisPath, paramsJson.studioPath)
+        .subscribe(
+          function() {
+            contentTO.clone = true;
+            $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
+            CStudioAuthoring.SelectedContent.selectContent(contentTO);
+            me.saveContent();
+          },
+          function() {
+            $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
+            const error = JSON.parse(response.responseText);
+            CStudioAuthoring.Operations.showSimpleDialog(
+              'error-dialog',
+              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+              CMgs.format(browseLangBundle, 'notification'),
+              error.response.remedialAction,
+              null,
+              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              'studioDialog'
+            );
+          }
+        );
 
       const dialogContent =
         '<div class="cstudio__loading-bar animate mb5">' +
@@ -400,7 +402,7 @@
       },
       object;
 
-    $.each(items.items, function(index, value) {
+    $.each(items, function(index, value) {
       if ('folder' === value.mimeType) {
         object = {
           id: value.itemId,
@@ -450,12 +452,12 @@
       //root - we already have the items
 
       var filesPresent = false,
-        items = this.rootItems.items;
+        items = this.rootItems;
 
       $resultsContainer.empty();
       $resultsActions.empty();
 
-      if (this.rootItems.total > 0) {
+      if (this.rootItems.length > 0) {
         var $resultsWrapper = $('<div class="results-wrapper"/>');
         $resultsContainer.prepend($resultsWrapper);
 
@@ -478,12 +480,12 @@
         {
           success: function(response) {
             var filesPresent = false,
-              items = response.items;
+              items = response;
 
             $resultsContainer.empty();
             $resultsActions.empty();
 
-            if (response.total > 0) {
+            if (response.length > 0) {
               var $resultsWrapper = $('<div class="results-wrapper"/>');
               $resultsContainer.prepend($resultsWrapper);
 
@@ -580,14 +582,18 @@
     };
 
     if (type === 'browse') {
-      CStudioAuthoring.Service.getCMISContentByBrowser(site, repoId, path, callbackContent);
+      CrafterCMSNext.services.cmis
+        .list(site, repoId, { path })
+        .subscribe(callbackContent.success, callbackContent.failure);
     } else {
       if (!searchTerm || '' === searchTerm) {
         //TODO: ask if this is correct
         searchTerm = '*';
       }
 
-      CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, searchTerm, callbackContent);
+      CrafterCMSNext.services.cmis
+        .search(site, repoId, searchTerm, { path })
+        .subscribe(callbackContent.success, callbackContent.failure);
     }
   };
 

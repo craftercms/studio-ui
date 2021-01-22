@@ -24,7 +24,6 @@
 
   CStudioBrowseS3.init = function() {
     var me = this;
-    console.log('here');
 
     this.repoBaseUrl = CStudioAuthoring.Utils.getQueryParameterByName('baseUrl');
 
@@ -444,11 +443,11 @@
       site = CStudioAuthoring.Utils.getQueryParameterByName('site'),
       filter = CStudioAuthoring.Utils.getQueryParameterByName('filter');
 
-    var callbackContent = {
-      success: function(response) {
-        cb.success(response.items);
+    CrafterCMSNext.services.aws.list(site, profileId, { path, filter }).subscribe(
+      function(response) {
+        cb.success(response);
       },
-      failure: function(response) {
+      function(response) {
         var message = CMgs.format(browseLangBundle, '' + response.status + '');
         var error = JSON.parse(response.responseText),
           errorMessage = error.errors[0];
@@ -493,9 +492,7 @@
           }
         });
       }
-    };
-
-    CStudioAuthoring.Service.getS3ContentByBrowser(site, profileId, path, callbackContent, filter);
+    );
   };
 
   CStudioBrowseS3.uploadContent = function(site, path) {

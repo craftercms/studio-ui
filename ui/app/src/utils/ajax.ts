@@ -63,6 +63,14 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
+export function getBinary(url: string, headers?: object): Observable<AjaxResponse> {
+  return ajax({
+    url,
+    responseType: 'arraybuffer',
+    headers: mergeHeaders(headers)
+  });
+}
+
 export function post(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders(headers));
 }

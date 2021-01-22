@@ -74,46 +74,41 @@
       };
 
       // CLUSTERS
-      this.getClusterMembers = function(id) {
-        return $http.get(cluster(id));
+      let clustersApi = CrafterCMSNext.services.clusters;
+
+      this.getClusterMembers = function() {
+        return clustersApi.fetchMembers().toPromise();
       };
 
       this.deleteClusterMember = function(clusterParam) {
-        return $http.delete(cluster('id=' + clusterParam.id));
+        return clustersApi.deleteMember(clusterParam.id).toPromise();
       };
 
       // GROUPS
+      let groupsApi = CrafterCMSNext.services.groups;
 
       this.getGroups = function(params) {
-        return $http.get(groups2(), {
-          params: params
-        });
-      };
-
-      this.getGroup = function(group) {
-        return $http.get(groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id));
+        return groupsApi.fetchAll(params).toPromise();
       };
 
       this.getUsersFromGroup = function(group, params) {
-        return $http.get(groupsMembers(group.id, true), { params });
+        return groupsApi.fetchUsersFromGroup(group.id, params).toPromise();
       };
 
       this.deleteUserFromGroup = function(groupId, params) {
-        return $http.delete(groupsMembers(groupId, true), {
-          params: params
-        });
+        return groupsApi.deleteUserFromGroup(groupId, params.userId, params.username).toPromise();
       };
 
       this.createGroup = function(group) {
-        return $http.post(groups2(), group);
+        return groupsApi.create(group).toPromise();
       };
 
       this.editGroup = function(group) {
-        return $http.patch(groups2(), group);
+        return groupsApi.update(group).toPromise();
       };
 
       this.deleteGroup = function(group) {
-        return $http.delete(groups2('id=' + group.id));
+        return groupsApi.trash(group.id).toPromise();
       };
 
       this.addUserToGroup = function(data) {
@@ -121,88 +116,77 @@
           ids: [data.userId.toString()],
           usernames: [data.username]
         };
-        return $http.post(groupsMembers(data.groupId, true), body);
+        return groupsApi.addUsersToGroup(data.groupId, body).toPromise();
       };
 
       // REPOSITORIES
+      let repositoriesApi = CrafterCMSNext.services.repositories;
 
       this.getRepositories = function(data) {
-        return $http.get(repositories('list_remotes', 'siteId=' + data.site));
+        return repositoriesApi.fetchRepositories(data.site).toPromise();
       };
 
       this.createRepository = function(data) {
-        return $http.post(repositories('add_remote'), data);
+        return repositoriesApi.addRemote(data).toPromise();
       };
 
       this.deleteRepository = function(data) {
-        return $http.post(repositories('remove_remote'), data);
+        return repositoriesApi.deleteRemote(data.siteId, data.remoteName).toPromise();
       };
 
       this.pullRepository = function(data) {
-        return $http.post(repositories('pull_from_remote'), data);
+        return repositoriesApi.pull(data).toPromise();
       };
 
       this.pushRepository = function(data) {
-        return $http.post(repositories('push_to_remote'), data);
+        return repositoriesApi.push(data).toPromise();
       };
 
-      this.repositoryStatus = function(data) {
-        return $http.get(repositories('status', 'siteId=' + data));
+      this.repositoryStatus = function(site) {
+        return repositoriesApi.status(site).toPromise();
       };
 
       this.resolveConflict = function(data) {
-        return $http.post(repositories('resolve_conflict'), data);
+        return repositoriesApi.resolveConflict(data.siteId, data.path, data.resolution).toPromise();
       };
 
       this.diffConflictedFile = function(data) {
-        return $http.get(repositories('diff_conflicted_file'), {
-          params: data
-        });
+        return repositoriesApi.diffConflictedFile(data.siteId, data.path).toPromise();
       };
 
       this.commitResolution = function(data) {
-        return $http.post(repositories('commit_resolution'), data);
+        return repositoriesApi.commitResolution(data.siteId, data.commitMessage).toPromise();
       };
 
       this.cancelFailedPull = function(data) {
-        return $http.post(repositories('cancel_failed_pull'), data);
+        return repositoriesApi.cancelFailedPull(data.siteId).toPromise();
       };
 
       // AUDIT
+      let auditApi = CrafterCMSNext.services.audit;
 
       this.getAudit = function(data) {
-        return $http.get(audit(), {
-          params: data
-        });
+        return auditApi.fetchAudit(data).toPromise();
       };
 
       this.getSpecificAudit = function(auditId) {
-        return $http.get(audit(auditId));
-      };
-
-      this.getTimeZone = function(data) {
-        return $http.get(api('get-configuration'), {
-          params: data
-        });
+        return auditApi.fetchSpecificAudit(auditId).toPromise();
       };
 
       // LOGGING
+      let logsApi = CrafterCMSNext.services.logs;
 
       this.getLoggers = function() {
-        return $http.get(Constants.SERVICE + 'server/get-loggers.json');
+        return logsApi.fetchLoggers().toPromise();
       };
 
       this.setLogger = function(data) {
-        return $http.get(Constants.SERVICE + 'server/set-logger-state.json', {
-          params: data
-        });
+        return logsApi.setLogger(data.logger, data.level).toPromise();
       };
 
       // LOG CONSOLE
       this.getLogStudio = function(data) {
-        return $http.get(Constants.SERVICE2 + 'monitoring/log', {
-          params: data
-        });
+        return logsApi.fetchLogs(data.since).toPromise();
       };
 
       this.getLogPreview = function(data) {
@@ -212,134 +196,49 @@
       };
 
       // PUBLISHING
+      let publishingApi = CrafterCMSNext.services.publishing;
+
       this.getPublishStatus = function(site) {
-        return $http.get(publish('status', 'site_id=' + site));
+        return publishingApi.status(site).toPromise();
       };
 
       this.startPublishStatus = function(site) {
-        return $http.post(publish('start'), site);
+        return publishingApi.start(site.site_id).toPromise();
       };
 
       this.stopPublishStatus = function(site) {
-        return $http.post(publish('stop'), site);
+        return publishingApi.stop(site.site_id).toPromise();
+      };
+
+      this.getTimeZone = function(data) {
+        return CrafterCMSNext.util.ajax
+          .get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${data.site}&path=${data.path}`)
+          .toPromise();
       };
 
       // BULKPUBLISH
       this.getPublishingChannels = function(site) {
-        return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
+        return publishingApi.fetchPublishingTargets(site).toPromise();
       };
 
-      this.bulkGoLive = function(site, path, environmet, submissionComment) {
-        environmet = environmet ? environmet : Constants.BULK_ENVIRONMENT;
+      this.bulkGoLive = function(site, path, environment, submissionComment) {
+        environment = environment ? environment : Constants.BULK_ENVIRONMENT;
         submissionComment = submissionComment ? submissionComment : '';
-        return $http.post(
-          bulkPublish(
-            'bulk-golive',
-            'site_id=' + site + '&path=' + path + '&environment=' + environmet + '&comment=' + submissionComment
-          )
-        );
+
+        return publishingApi.bulkGoLive(site, path, environment, submissionComment).toPromise();
       };
 
       // COMMITSPUBLISH
 
       this.commitsPublish = function(data) {
-        // return $http.post(publish('commits', 'site_id=' + site + "&commit_ids=" + commitIds + "&environment=" + environmet));
-        return $http.post(publish('commits'), data);
+        return publishingApi.publishByCommits(data.site_id, data.commit_ids, data.environment, data.comment).toPromise();
       };
-
-      function api(action) {
-        return Constants.SERVICE + 'site/' + action + '.json';
-      }
-
-      function users(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'user/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'user/' + action + '.json';
-        }
-      }
-
-      function users2(params) {
-        if (params) {
-          return Constants.SERVICE2 + 'users?' + params;
-        } else {
-          return Constants.SERVICE2 + 'users';
-        }
-      }
-
-      function usersActions(action, params) {
-        if (params) {
-          return Constants.SERVICE2 + 'users/' + action + params;
-        } else {
-          return Constants.SERVICE2 + 'users/' + action;
-        }
-      }
-
-      function cluster(params) {
-        if (params) {
-          return Constants.SERVICE2 + 'cluster?' + params;
-        } else {
-          return Constants.SERVICE2 + 'cluster';
-        }
-      }
-
-      function publish(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'publish/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'publish/' + action + '.json';
-        }
-      }
-
-      function bulkPublish(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'deployment/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'deployment/' + action + '.json';
-        }
-      }
-
-      function groups(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'group/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'group/' + action + '.json';
-        }
-      }
-
-      function groups2(params) {
-        if (params) {
-          return Constants.SERVICE2 + 'groups?' + params;
-        } else {
-          return Constants.SERVICE2 + 'groups';
-        }
-      }
-
-      function groupsMembers(id, isMember, params) {
-        var url = Constants.SERVICE2 + 'groups/' + id;
-        if (isMember) {
-          url += '/members';
-        }
-        if (params) {
-          url += '?' + params;
-        }
-        return url;
-        // '/members.json?offset=0&limit=1000&sort=desc';
-      }
 
       function repositories(action, params) {
         if (params) {
           return Constants.SERVICE2 + 'repository/' + action + '?' + params;
         } else {
           return Constants.SERVICE2 + 'repository/' + action;
-        }
-      }
-
-      function audit(id) {
-        if (id) {
-          return Constants.SERVICE2 + 'audit/' + id;
-        } else {
-          return Constants.SERVICE2 + 'audit';
         }
       }
 
@@ -402,15 +301,15 @@
       };
 
       var getUsers = function(site) {
-        adminService
-          .getUsers(site)
-          .success(function(data) {
+        adminService.getUsers(site).then(
+          function(data) {
             audit.users = data.users;
             audit.userSelected = '';
-          })
-          .error(function() {
+          },
+          function() {
             audit.users = null;
-          });
+          }
+        );
       };
 
       var getAudit = function(site) {
@@ -493,26 +392,26 @@
             params.limit = audit.logsPerPage;
           }
 
-          adminService
-            .getAudit(params)
-            .success(function(data) {
+          adminService.getAudit(params).then(
+            function(data) {
               audit.totalLogs = data.total;
-              audit.logs = data.auditLog;
-            })
-            .error(function(err) {
+              audit.logs = data;
+              $scope.$apply();
+            },
+            function(err) {
               audit.totalLogs = 0;
               audit.logs = '';
-            });
+            }
+          );
         }
       };
 
       var getSpecificAudit = function(id) {
         var collapseContainer = $('#collapseContainer' + id);
         var html;
-        adminService
-          .getSpecificAudit(id)
-          .success(function(data) {
-            var parameters = data.auditLog.parameters;
+        adminService.getSpecificAudit(id).then(
+          function(data) {
+            var parameters = data.parameters;
             // parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
 
             if (parameters.length > 0) {
@@ -579,13 +478,14 @@
 
             collapseContainer.append(html);
             collapseMethod(id);
-          })
-          .error(function(err) {
+          },
+          function(err) {
             html =
               "<div class='mt10 has-children'><span>" + $translate.instant('admin.audit.ERROR_PARAM') + '</span></div>';
             collapseContainer.append(html);
             collapseMethod(id);
-          });
+          }
+        );
       };
 
       audit.initCalendar = function() {
@@ -720,8 +620,9 @@
       $scope.logging = {};
       var logging = $scope.logging;
 
-      adminService.getLoggers().success(function(data) {
+      adminService.getLoggers().then(function(data) {
         logging.levels = data;
+        $scope.$apply();
       });
 
       logging.setLevel = function(log, level) {
@@ -730,9 +631,10 @@
             logger: log,
             level: level
           })
-          .success(function() {
-            adminService.getLoggers().success(function(data) {
+          .then(function() {
+            adminService.getLoggers().then(function(data) {
               logging.levels = data;
+              $scope.$apply();
             });
           });
       };
@@ -806,10 +708,11 @@
           data.crafterSite = data.site;
         }
 
-        logService(data).success(function(data) {
-          var events = data.events ? data.events : data;
+        logService(data).then(function(data) {
+          var events = data;
           if (events.length > 0) {
             logs.entries = logs.entries.concat(events);
+            $scope.$apply();
 
             $timeout(
               function() {
@@ -978,7 +881,7 @@
           site: publish.site,
           path: '/site-config.xml'
         })
-        .success(function(data) {
+        .then(function(data) {
           var publishing = data['publishing'];
           publish.timeZone = data['default-timezone'];
           publish.isValidateCommentOn =
@@ -1000,9 +903,8 @@
         });
 
       publish.getPublish = function() {
-        adminService
-          .getPublishStatus(publish.site)
-          .success(function(data) {
+        adminService.getPublishStatus(publish.site).then(
+          function(data) {
             publish.stopDisabled = false;
             publish.startDisabled = false;
             switch (data.status.toLowerCase()) {
@@ -1028,8 +930,10 @@
             publish.iconColor = currentIconColor;
             publish.message = data.message;
             publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
-          })
-          .error(function(err) {});
+            $scope.$apply();
+          },
+          function(err) {}
+        );
       };
 
       var renderStatusView = function() {
@@ -1046,38 +950,38 @@
 
       publish.startPublish = function() {
         var requestAsString = { site_id: publish.site };
-        adminService
-          .startPublishStatus(requestAsString)
-          .success(function(data) {
+        adminService.startPublishStatus(requestAsString).then(
+          function(data) {
             publish.getPublish(requestAsString);
             getTopLegacyWindow().postMessage('status-changed', '*');
-          })
-          .error(function(err) {
+          },
+          function(err) {
             if (err.message) {
               publish.error = err.message;
             } else {
               publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
             }
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
-          });
+          }
+        );
       };
 
       publish.stopPublish = function() {
         var requestAsString = { site_id: publish.site };
-        adminService
-          .stopPublishStatus(requestAsString)
-          .success(function(data) {
+        adminService.stopPublishStatus(requestAsString).then(
+          function(data) {
             publish.getPublish(requestAsString);
             getTopLegacyWindow().postMessage('status-changed', '*');
-          })
-          .error(function(err) {
+          },
+          function(err) {
             if (err.message) {
               publish.error = err.message;
             } else {
               publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
             }
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
-          });
+          }
+        );
       };
 
       // BULK PUBLISH
@@ -1092,16 +996,16 @@
       publish.pathPublish = '';
 
       publish.getPublishingChannels = function() {
-        adminService
-          .getPublishingChannels(publish.site)
-          .success(function(data) {
-            publish.channels = data.availablePublishChannels;
+        adminService.getPublishingChannels(publish.site).then(
+          function(data) {
+            publish.channels = data;
             publish.selectedChannel = publish.channels[0].name.toString();
             publish.selectedChannelCommit = publish.channels[0].name.toString();
-          })
-          .error(function() {
+          },
+          function() {
             publish.channels = [];
-          });
+          }
+        );
       };
 
       publish.getPublishingChannels();
@@ -1117,17 +1021,19 @@
 
         adminService
           .bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
-          .success(function(data) {
-            publish.disable = false;
-            spinnerOverlay.close();
-            $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
-          })
-          .error(function(err) {
-            publish.error = err.message;
-            $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
-            spinnerOverlay.close();
-            publish.disable = false;
-          });
+          .then(
+            function() {
+              publish.disable = false;
+              spinnerOverlay.close();
+              $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
+            },
+            function(err) {
+              publish.error = err.message;
+              $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
+              spinnerOverlay.close();
+              publish.disable = false;
+            }
+          );
       };
 
       angular.element(document).ready(function() {
@@ -1138,7 +1044,7 @@
 
         document.getElementById('submissionComment').addEventListener('keyup', function(e) {
           CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-            commentLength: publish.submissionComment.length
+            commentLength: publish.submissionComment.length ? publish.submissionComment.length : 0
           });
         });
       });
@@ -1159,19 +1065,19 @@
         publish.commitIdsDisable = true;
         spinnerOverlay = $scope.spinnerOverlay();
 
-        adminService
-          .commitsPublish(data)
-          .success(function(data) {
+        adminService.commitsPublish(data).then(
+          function(data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
             $rootScope.showNotification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'));
-          })
-          .error(function(err) {
+          },
+          function(err) {
             publish.error = err.message;
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
             spinnerOverlay.close();
             publish.commitIdsDisable = false;
-          });
+          }
+        );
       };
 
       angular.element(document).ready(function() {
@@ -1597,8 +1503,9 @@
       $scope.membersCollection = [];
 
       clusters.getClusters = function() {
-        adminService.getClusterMembers().success(function(data) {
-          $scope.membersCollection = data.clusterMembers;
+        adminService.getClusterMembers().then(function(data) {
+          $scope.membersCollection = data;
+          $scope.$apply();
         });
       };
 
@@ -1613,9 +1520,8 @@
       };
       clusters.removeClusterMember = function(clusterMember) {
         var deleteClusterMember = function() {
-          adminService
-            .deleteClusterMember(clusterMember)
-            .success(function(data) {
+          adminService.deleteClusterMember(clusterMember).then(
+            function(data) {
               var index = $scope.membersCollection.indexOf(clusterMember);
               if (index !== -1) {
                 $scope.membersCollection.splice(index, 1);
@@ -1625,11 +1531,12 @@
                   cluster: clusterMember.gitUrl
                 })
               );
-            })
-            .error(function(data) {
+            },
+            function(data) {
               $scope.error = data.response.message;
               $scope.adminModal = $scope.showModal('deleteClusterError.html', 'md', true);
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteClusterMember;
@@ -1742,9 +1649,10 @@
             params.limit = groups.itemsPerPage;
           }
 
-          adminService.getGroups(params).success(function(data) {
+          adminService.getGroups(params).then(function(data) {
             groups.totalLogs = data.total;
-            $scope.groupsCollection = data.groups;
+            $scope.groupsCollection = data;
+            $scope.$apply();
           });
         }
       };
@@ -1759,10 +1667,10 @@
           if (!groups.searchdirty) {
             groups.searchdirty = true;
 
-            adminService.getGroups().success(function(data) {
+            adminService.getGroups().then(function(data) {
               groups.groupsCollectionBackup = $scope.groupsCollection;
               groups.itemsPerPageBackup = groups.itemsPerPage;
-              $scope.groupsCollection = data.groups;
+              $scope.groupsCollection = data;
               groups.itemsPerPage = adminService.maxInt;
             });
           }
@@ -1781,60 +1689,47 @@
       $scope.createGroup = function(group) {
         // group.site_id = groups.site;
 
-        adminService
-          .createGroup(group)
-          .success(function(data) {
+        adminService.createGroup(group).then(
+          function(data) {
             $scope.hideModal();
-            $scope.groupsCollection.push(data.group);
+            $scope.groupsCollection.push(data);
             $scope.groups.totalLogs++;
             $scope.groups.pagination.goToLast();
             $rootScope.showNotification(formatMessage(groupsAdminMessages.groupCreated, { group: group.name }));
-          })
-          .error(function(error) {
+          },
+          function(error) {
             $scope.groupsError = `${error.response.message}. ${error.response.remedialAction}`;
-          });
-      };
-      $scope.editGroupDialog = function(group) {
-        $scope.editedGroup = group;
-        $scope.group = {};
-        $scope.okModalFunction = $scope.editGroup;
-
-        $scope.adminModal = $scope.showModal('modalView.html');
-        $scope.dialogMode = 'EDIT';
-        $scope.dialogTitle = $translate.instant('admin.groups.EDIT_GROUP');
-
-        adminService
-          .getGroup(group)
-          .success(function(data) {
-            $scope.group = data;
-          })
-          .error(function() {
-            // TODO: properly display error.
-          });
+          }
+        );
       };
       $scope.editGroup = function(group) {
         // group.site_id = groups.site;
 
         adminService
-          .editGroup(group)
-          .success(function(data) {
-            $rootScope.showNotification(formatMessage(groupsAdminMessages.groupEdited, { group: group.name }));
+          .editGroup({
+            id: group.id,
+            name: group.name,
+            desc: group.desc
           })
-          .error(function(error) {
-            if ('Unauthorized' === error.response.message) {
-              $rootScope.showNotification($translate.instant('admin.groups.UNAUTHORIZED'), null, null, 'error');
-            } else {
-              $rootScope.showNotification(error.response.message, null, null, 'error');
+          .then(
+            function(data) {
+              $rootScope.showNotification(formatMessage(groupsAdminMessages.groupEdited, { group: group.name }));
+            },
+            function(error) {
+              if ('Unauthorized' === error.response.message) {
+                $rootScope.showNotification($translate.instant('admin.groups.UNAUTHORIZED'), null, null, 'error');
+              } else {
+                $rootScope.showNotification(error.response.message, null, null, 'error');
+              }
             }
-          });
+          );
       };
       $scope.removeGroup = function(group) {
         var deleteGroup = function() {
           // group.site_id = groups.site;
 
-          adminService
-            .deleteGroup(group)
-            .success(function(data) {
+          adminService.deleteGroup(group).then(
+            function(data) {
               var index = $scope.groupsCollection.indexOf(group);
               if (index !== -1) {
                 $scope.groupsCollection.splice(index, 1);
@@ -1845,14 +1740,15 @@
               $scope.noGroupSelected = true;
 
               $rootScope.showNotification(formatMessage(groupsAdminMessages.groupDeleted, { group: group.name }));
-            })
-            .error(function(error) {
+            },
+            function(error) {
               if ('Unauthorized' === error.response.message) {
                 $rootScope.showNotification($translate.instant('admin.groups.UNAUTHORIZED'), null, null, 'error');
               } else {
                 $rootScope.showNotification(error.response.message, null, null, 'error');
               }
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteGroup;
@@ -1965,16 +1861,17 @@
             params.limit = groups.members.itemsPerPage;
           }
 
-          adminService
-            .getUsersFromGroup(group, params)
-            .success(function(data) {
+          adminService.getUsersFromGroup(group, params).then(
+            function(data) {
               groups.members.totalLogs = data.total;
-              groups.usersFromGroupCollection = data.users;
+              groups.usersFromGroupCollection = data;
               groups.getUsersAutocomplete();
-            })
-            .error(function(e) {
+              $scope.$apply();
+            },
+            function(e) {
               groups.members.getMembersError = e.response.message + '. ' + e.response.remedialAction;
-            });
+            }
+          );
         }
 
         getResultsPage(1);
@@ -1989,7 +1886,7 @@
           if (!groups.members.searchdirty) {
             groups.members.searchdirty = true;
 
-            adminService.getGroups().success(function(data) {
+            adminService.getGroups().then(function(data) {
               groups.usersFromGroupCollectionBackup = groups.usersFromGroupCollection;
               groups.members.itemsPerPageBackup = groups.members.itemsPerPage;
               $scope.usersFromGroupCollection = data.users;
@@ -2006,9 +1903,8 @@
         // user.site_id = groups.site;
 
         var removeUserFromGroup = function() {
-          adminService
-            .deleteUserFromGroup(group.id, deleteUserFromGroupParams)
-            .success(function() {
+          adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).then(
+            function() {
               $scope.getGroupMembers(group);
               $rootScope.showNotification(
                 formatMessage(groupsAdminMessages.userRemoved, {
@@ -2016,10 +1912,11 @@
                   group: group.name
                 })
               );
-            })
-            .error(function(error) {
+            },
+            function(error) {
               $rootScope.showNotification(error.response.message, null, null, 'error');
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = removeUserFromGroup;
@@ -2039,10 +1936,9 @@
             userId: user.id,
             groupId: activeGroup.id
           })
-          .success(function(data) {
+          .then(function(data) {
             $scope.getGroupMembers(activeGroup);
-          })
-          .error(function() {});
+          });
       };
     }
   ]);
@@ -2101,8 +1997,8 @@
       });
 
       repositories.getRepositoryStatus = function() {
-        adminService.repositoryStatus($location.search().site).success(function(data) {
-          repositories.status = data.repositoryStatus;
+        adminService.repositoryStatus($location.search().site).then(function(data) {
+          repositories.status = data;
         });
       };
       repositories.getFileName = function(filePath) {
@@ -2112,7 +2008,7 @@
       function repositoriesReceived(data) {
         const reachable = [],
           unreachable = [];
-        data.remotes.forEach((remote) => {
+        data.forEach((remote) => {
           if (remote.reachable) {
             reachable.push(remote);
           } else {
@@ -2157,12 +2053,9 @@
         repositories.spinnerOverlay = $scope.spinnerOverlay();
         repositories.getRepositoryStatus();
 
-        adminService
-          .getRepositories(repositories)
-          .success(repositoriesReceived)
-          .error(function(error) {
-            $scope.showError(error.response);
-          });
+        adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
+          $scope.showError(error.response);
+        });
       };
       this.init();
 
@@ -2181,22 +2074,19 @@
         repo.siteId = repositories.site;
         repo.authenticationType = repo.authenticationType ? repo.authenticationType : 'none';
 
-        adminService
-          .createRepository(repo)
-          .success(function(data) {
+        adminService.createRepository(repo).then(
+          function(data) {
             $scope.hideModal();
-            adminService
-              .getRepositories(repositories)
-              .success(repositoriesReceived)
-              .error(function(error) {
-                $scope.showError(error.response);
-                repositories.spinnerOverlay.close();
-              });
-          })
-          .error(function(error) {
+            adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
+              $scope.showError(error.response);
+              repositories.spinnerOverlay.close();
+            });
+          },
+          function(error) {
             $scope.showError(error.response);
             repositories.spinnerOverlay.close();
-          });
+          }
+        );
       };
 
       $scope.removeRepo = function(repo) {
@@ -2204,16 +2094,16 @@
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          adminService
-            .deleteRepository(currentRepo)
-            .success(function(data) {
+          adminService.deleteRepository(currentRepo).then(
+            function(data) {
               repositories.repositories.reachable = repositories.repositories.reachable.filter((r) => r !== repo);
               repositories.repositories.unreachable = repositories.repositories.unreachable.filter((r) => r !== repo);
               $rootScope.showNotification(`'${repo.name}' ${$translate.instant('admin.repositories.REPO_DELETED')}.`);
-            })
-            .error(function(error) {
+            },
+            function(error) {
               $scope.showError(error.response);
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteRepo;
@@ -2232,18 +2122,18 @@
           currentRepo.remoteBranch = branch;
           currentRepo.mergeStrategy = repositories.mergeStrategy;
 
-          adminService
-            .pullRepository(currentRepo)
-            .success(function(data) {
+          adminService.pullRepository(currentRepo).then(
+            function(data) {
               repositories.spinnerOverlay.close();
               repositories.getRepositoryStatus();
               $rootScope.showNotification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'));
-            })
-            .error(function(error) {
+            },
+            function(error) {
               repositories.getRepositoryStatus();
               repositories.spinnerOverlay.close();
               $scope.showError(error.response);
-            });
+            }
+          );
         };
 
         repositories.repoAction = 'pull';
@@ -2264,16 +2154,16 @@
           currentRepo.remoteName = repo.name;
           currentRepo.remoteBranch = branch;
 
-          adminService
-            .pushRepository(currentRepo)
-            .success(function(data) {
+          adminService.pushRepository(currentRepo).then(
+            function(data) {
               repositories.spinnerOverlay.close();
               $rootScope.showNotification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'));
-            })
-            .error(function(error) {
+            },
+            function(error) {
               repositories.spinnerOverlay.close();
               $scope.showError(error.response);
-            });
+            }
+          );
         };
 
         repositories.repoAction = 'push';
@@ -2296,7 +2186,7 @@
             siteId: repositories.site,
             commitMessage: repositories.commitMsg
           })
-          .success(function(data) {
+          .then(function(data) {
             repositories.status = data.repositoryStatus;
             repositories.commitMsg = '';
           });
@@ -2310,7 +2200,7 @@
             siteId: repositories.site,
             path: path
           })
-          .success(function(data) {
+          .then(function(data) {
             repositories.diff = {
               diff: data.diff.diff,
               studioVersion: data.diff.studioVersion,
@@ -2331,8 +2221,9 @@
             path,
             resolution
           })
-          .success(function(data) {
-            repositories.status = data.repositoryStatus;
+          .then(function(data) {
+            repositories.status = data;
+            $scope.$apply();
           });
       };
 
@@ -2341,7 +2232,7 @@
           .cancelFailedPull({
             siteId: repositories.site
           })
-          .success(function(data) {
+          .then(function(data) {
             repositories.status = data.repositoryStatus;
           });
       };

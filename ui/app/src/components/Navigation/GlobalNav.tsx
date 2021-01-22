@@ -42,7 +42,7 @@ import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
-import { User } from '../../models/User';
+import { EnhancedUser } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
@@ -330,7 +330,7 @@ const globalNavStyles = makeStyles((theme) =>
 );
 
 interface GlobalNavProps {
-  user: User;
+  user: EnhancedUser;
   site: string;
   sites: Site[];
   anchor: Element;
