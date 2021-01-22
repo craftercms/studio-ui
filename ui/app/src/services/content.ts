@@ -40,6 +40,7 @@ import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
 import { getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
+import { getStateMap } from '../utils/constants';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -782,7 +783,19 @@ export function getChildrenByPath(
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
     map(({ children, parent, levelDescriptor, total, offset, limit }) =>
-      Object.assign(children, { parent, levelDescriptor, total, offset, limit })
+      Object.assign(
+        children.map((child) => ({
+          ...child,
+          stateMap: getStateMap(child.state)
+        })),
+        {
+          parent: { ...parent, stateMap: getStateMap(parent.state) },
+          levelDescriptor: { ...levelDescriptor, stateMap: getStateMap(levelDescriptor.state) },
+          total,
+          offset,
+          limit
+        }
+      )
     ),
     catchError(errorSelectorApi1)
   );
