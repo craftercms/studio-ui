@@ -294,11 +294,11 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
     ];
 
     var folderRow = [
-      '<td style="padding-right:0px">',
+      '<td style="padding-right:0">',
       '<div class="dashlet-ident">',
       '</div>',
       '</td>',
-      '<td style="padding-left:0px" class="itemNameCol">' + '<div class="',
+      '<td style="padding-left:0" class="itemNameCol">' + '<div class="',
       item.disabled == true ? ' disabled' : '',
       '" id="' + ttSpanId + '" title="' + itemTitle + '">',
       '<div class="icon-container  cs-item-icon"><span class="status-icon mr9 studio-fa-stack"><span class="fa studio-fa-stack-2x fa-folder-o"></span><span class=""></span></span></div>',

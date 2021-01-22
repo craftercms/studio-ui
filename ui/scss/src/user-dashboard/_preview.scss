@@ -15,7 +15,6 @@
  */
 
 .studio-preview {
-
   width: 100%;
   height: 100%;
 
@@ -31,7 +30,6 @@
   }
 
   .preview-container > header {
-
   }
 
   .preview-container > footer {
@@ -44,15 +42,12 @@
       padding: 0 10px;
       color: red;
     }
-
   }
 
   #main {
-
     top: 51px;
 
     .site-window {
-
       bottom: 30px;
 
       > iframe {
@@ -60,18 +55,15 @@
         height: 100%;
         border: none;
       }
-
     }
-
   }
-
 }
 
 .centered-dialog {
   text-align: center;
   padding: 0 !important;
 
-  &:before {
+  &::before {
     content: '';
     display: inline-block;
     height: 100%;

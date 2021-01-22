@@ -267,23 +267,17 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var datasourceMap = this.form.datasourceMap,
       datasourceDef = this.form.definition.datasources;
 
-    if (imageManagerNames !== '' && imageManagerNames.indexOf(',') !== -1) {
+    if (imageManagerNames !== '') {
       // The datasource title is only found in the definition.datasources. It'd make more sense to have all
       // the information in just one place.
-
-      var addMenuOption = function(el) {
+      datasourceDef.forEach(function(el) {
         // We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
         // would fail if a datasource id string is a substring of another datasource id)
         var mapDatasource;
-
-        //if (imageManagerNames.search(regexpr) > -1) {
         if (imageManagerNames.indexOf(el.id) !== -1) {
           mapDatasource = datasourceMap[el.id];
-
           const $itemEl = $(`<li><a class="cstudio-form-control-image-picker-add-container-item">${el.title}</a></li>`);
-
           _self.$dropdownMenu.append($itemEl);
-
           YAHOO.util.Event.on(
             $itemEl[0],
             'click',
@@ -293,11 +287,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             $itemEl[0]
           );
         }
-      };
-      datasourceDef.forEach(addMenuOption);
-    } else if (imageManagerNames !== '') {
-      imageManagerNames = imageManagerNames.replace('["', '').replace('"]', '');
-      this._addImage(datasourceMap[imageManagerNames]);
+      });
     }
   },
 
@@ -443,8 +433,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       this.originalHeight = null;
 
       YAHOO.util.Dom.addClass(this.previewEl, 'cstudio-form-control-asset-picker-preview-content');
-      YAHOO.util.Dom.setStyle(this.imageEl, 'width', this.previewBoxWidth + 'px');
-      YAHOO.util.Dom.setStyle(this.imageEl, 'height', this.previewBoxHeight + 'px');
 
       this._onChangeVal(null, this);
     }
@@ -477,8 +465,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     var inputEl = document.createElement('input');
     this.inputEl = inputEl;
-    inputEl.style.display = 'none';
-    YAHOO.util.Dom.addClass(inputEl, 'datum');
+    inputEl.disabled = true;
+    inputEl.placeholder = '(Path)';
+    YAHOO.util.Dom.addClass(inputEl, 'datum cstudio-form-control-input');
+    inputEl.style.marginBottom = '5px';
     controlWidgetContainerEl.appendChild(inputEl);
 
     var imgInfoContainer = document.createElement('div');
@@ -488,6 +478,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     var urlEl = document.createElement('div');
     this.urlEl = urlEl;
     urlEl.textContent = this.inputEl.value;
+    urlEl.style.display = 'none';
     YAHOO.util.Dom.addClass(urlEl, 'info');
     imgInfoContainer.appendChild(urlEl);
 
@@ -499,12 +490,11 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     this.imageEl = imageEl;
     imageEl.id = divPrefix + 'cstudio-form-image-picker';
     YAHOO.util.Dom.addClass(imageEl, 'cstudio-form-control-asset-picker-preview-block');
-    YAHOO.util.Dom.addClass(imageEl, 'cstudio-form-control-asset-picker-no-preview-image');
     bodyEl.appendChild(imageEl);
 
     var noPreviewEl = document.createElement('span');
     this.noPreviewEl = noPreviewEl;
-    noPreviewEl.innerHTML = 'No Image Available';
+    noPreviewEl.innerHTML = 'No Image Selected';
     YAHOO.util.Dom.addClass(noPreviewEl, 'cstudio-form-control-asset-picker-no-preview-content');
     imageEl.appendChild(noPreviewEl);
 
@@ -568,7 +558,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     delEl.type = 'button';
     delEl.value = CMgs.format(langBundle, 'delete');
     delEl.style.position = 'relative';
-    YAHOO.util.Dom.addClass(delEl, 'cstudio-button btn btn-default btn-sm');
+    YAHOO.util.Dom.addClass(delEl, 'btn btn-default btn-sm');
 
     ctrlOptionsEl.appendChild(delEl);
 
@@ -610,9 +600,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       }
     }
 
-    YAHOO.util.Dom.setStyle(this.imageEl, 'height', this.previewBoxHeight + 'px');
-    YAHOO.util.Dom.setStyle(this.imageEl, 'width', this.previewBoxWidth + 'px');
-
     var helpContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(helpContainerEl, 'cstudio-form-field-help-container');
     ctrlOptionsEl.appendChild(helpContainerEl);
@@ -633,7 +620,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     containerEl.appendChild(descriptionEl);
 
     if (this.readonly === true) {
-      this.$addBtn.attr('disabled', 'disabled');
+      this.$addBtn.attr('disabled', 'true');
       this.$addBtn.addClass('cstudio-button-disabled');
       delEl.disabled = true;
       YAHOO.util.Dom.addClass(delEl, 'cstudio-button-disabled');
@@ -684,7 +671,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     if (this.value !== '') {
       if (this.originalWidth > this.previewBoxWidth || this.originalHeight > this.previewBoxHeight) {
         this.zoomEl.style.display = 'inline-block';
-        this.downloadEl.style.marginLeft = '0px';
+        this.downloadEl.style.marginLeft = '0';
       } else {
         this.downloadEl.style.marginLeft = '-20px';
       }
@@ -782,33 +769,33 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
   },
 
   adjustImage: function() {
-    var wImg = this.originalWidth || 0;
-    var hImg = this.originalHeight || 0;
-    var wThb = parseInt(this.previewBoxWidth, 10);
-    var hThb = parseInt(this.previewBoxHeight, 10);
-    var adjustedWidth = 0;
-    var adjustedHeight = 0;
-
-    YAHOO.util.Dom.setStyle(this.previewEl, 'height', '100%');
-    YAHOO.util.Dom.setStyle(this.previewEl, 'width', '100%');
-
-    if (wImg < wThb && hImg < hThb) {
-      YAHOO.util.Dom.removeClass(this.previewEl, 'cstudio-form-control-asset-picker-preview-content');
-      YAHOO.util.Dom.setStyle(this.imageEl, 'height', hImg + 'px');
-      YAHOO.util.Dom.setStyle(this.imageEl, 'width', wImg + 'px');
-    } else {
-      if (wImg && hImg) {
-        var conversionFactor = wImg / wThb > hImg / hThb ? wImg / wThb : hImg / hThb;
-        adjustedHeight = Math.floor(hImg / conversionFactor);
-        adjustedWidth = Math.floor(wImg / conversionFactor);
-
-        YAHOO.util.Dom.setStyle(this.imageEl, 'height', adjustedHeight + 'px');
-        YAHOO.util.Dom.setStyle(this.imageEl, 'width', adjustedWidth + 'px');
-      } else {
-        YAHOO.util.Dom.setStyle(this.imageEl, 'height', hThb + 'px');
-        YAHOO.util.Dom.setStyle(this.imageEl, 'width', wThb + 'px');
-      }
-    }
+    // var wImg = this.originalWidth || 0;
+    // var hImg = this.originalHeight || 0;
+    // var wThb = parseInt(this.previewBoxWidth, 10);
+    // var hThb = parseInt(this.previewBoxHeight, 10);
+    // var adjustedWidth = 0;
+    // var adjustedHeight = 0;
+    //
+    // YAHOO.util.Dom.setStyle(this.previewEl, 'height', '100%');
+    // YAHOO.util.Dom.setStyle(this.previewEl, 'width', '100%');
+    //
+    // if (wImg < wThb && hImg < hThb) {
+    //   YAHOO.util.Dom.removeClass(this.previewEl, 'cstudio-form-control-asset-picker-preview-content');
+    //   YAHOO.util.Dom.setStyle(this.imageEl, 'height', hImg + 'px');
+    //   YAHOO.util.Dom.setStyle(this.imageEl, 'width', wImg + 'px');
+    // } else {
+    //   if (wImg && hImg) {
+    //     var conversionFactor = wImg / wThb > hImg / hThb ? wImg / wThb : hImg / hThb;
+    //     adjustedHeight = Math.floor(hImg / conversionFactor);
+    //     adjustedWidth = Math.floor(wImg / conversionFactor);
+    //
+    //     YAHOO.util.Dom.setStyle(this.imageEl, 'height', adjustedHeight + 'px');
+    //     YAHOO.util.Dom.setStyle(this.imageEl, 'width', adjustedWidth + 'px');
+    //   } else {
+    //     YAHOO.util.Dom.setStyle(this.imageEl, 'height', hThb + 'px');
+    //     YAHOO.util.Dom.setStyle(this.imageEl, 'width', wThb + 'px');
+    //   }
+    // }
   },
 
   setValue: function(value, attribute) {

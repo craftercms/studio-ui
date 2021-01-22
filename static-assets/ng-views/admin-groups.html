@@ -17,17 +17,17 @@
 <div class="container-fluid admin-view groups-view">
   <div class="row full">
     <div ng-show="!groups.groupView" class="mainContainer">
-      <div class="actions clearfix pull-right mb10" style="width: 100%;">
+      <div class="actions clearfix pull-right" style="width: 100%;">
         <header class="screen-title mb10">
           <h1>{{ 'admin.groups.HEADER_LABEL' | translate }}</h1>
         </header>
 
-        <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.groups.NEW_GROUP' | translate }}</a>
-        <div class="pull-right mr15">
-          <label>{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
-          <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
-                 min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
-        </div>
+        <a class="btn btn-default btn-pill btn-padded" ng-click="createGroupDialog()" role="button">
+          <i class="fa fa-plus-circle mr5" aria-hidden="true"></i>{{ 'admin.groups.NEW_GROUP' | translate }}
+        </a>
+
+        <hr class="divider mt10 mb15"/>
+
       </div>
 
       <div class="">
@@ -49,7 +49,7 @@
             <td class="group-description hidden-sm hidden-xs">{{group.desc}}</td>
             <td>
               <a ng-click="groups.viewGroup(group)"
-                 class="btn btn-sm edit"
+                 class="btn btn-default btn-sm edit"
                  tooltip-placement="bottom"
                  uib-tooltip="{{'common.EDIT' | translate}}">
                 <i class="fa fa-pencil"></i>
@@ -57,7 +57,7 @@
             </td>
             <td>
               <a ng-click="removeGroup(group)"
-                 class="btn btn-sm remove"
+                 class="btn btn-default btn-sm remove"
                  tooltip-placement="bottom"
                  uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
                 <i class="fa fa-trash-o"></i>
@@ -67,7 +67,14 @@
           </tbody>
         </table>
 
-        <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+        <div class="global-menu-pagination-wrapper">
+          <div class="mr10">
+            <label class="mr5">{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
+            <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
+                   min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
+          </div>
+          <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+        </div>
       </div>
     </div>
     <div ng-show="groups.groupView" class="col-md-12 single-group-view">
@@ -144,7 +151,7 @@
           <td>{{user.email}}</td>
           <td>
             <a ng-click="removeUserFromGroup(user, groups.selectedGroup)"
-               class="btn btn-sm"
+               class="btn btn-default btn-sm"
                tooltip-placement="bottom"
                uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
               <i class="glyphicon glyphicon-trash"></i>
@@ -205,7 +212,7 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+      <button type="button" class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button class="btn btn-primary text-capitalize"
               ng-click="okModalFunction(group)" ng-disabled="createNameForm.$invalid">{{ 'common.' + dialogMode | translate }}</button>
     </div>
@@ -230,8 +237,8 @@
     {{ confirmationText }}
   </div>
   <div class="modal-footer">
-    <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
-    <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+    <button class="btn btn-default" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    <button class="btn btn-primary" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
   </div>
 </script>
 

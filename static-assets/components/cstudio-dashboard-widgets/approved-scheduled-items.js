@@ -241,7 +241,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
           currentBrowserUri = browserUri !== '' ? browserUri : '/';
 
         html = html.concat([
-          '<td style="padding-right:0px">',
+          '<td style="padding-right:0">',
           '<div class="dashlet-ident">',
           '<input type="checkbox" class="dashlet-item-check" id="',
           uri,
@@ -256,7 +256,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
           ' />',
           '</div>',
           '</td>',
-          '<td style="padding-left:0px" class="itemNameCol">' + '<div class="',
+          '<td style="padding-left:0" class="itemNameCol">' + '<div class="',
           item.disabled == true ? ' disabled' : '',
           '" id="' + ttSpanId + '" title="' + itemTitle + '">',
           // '<span class="iconRow ', itemIconStatus, '"></span>',

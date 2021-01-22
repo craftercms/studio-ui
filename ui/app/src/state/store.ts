@@ -25,7 +25,7 @@ import epic from './epics/root';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { fetchMyRolesInSite, me } from '../services/users';
-import { fetchSites } from '../services/sites';
+import { fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
 import { initialState as authInitialState } from './reducers/auth';
@@ -171,7 +171,7 @@ export function createMockInitialState(): Partial<GlobalState> {
 export function fetchInitialState(): Observable<Partial<GlobalState>> {
   return forkJoin({
     user: me(),
-    sites: fetchSites()
+    sites: fetchAll()
   }).pipe(
     switchMap(({ user, sites }) =>
       sites.length

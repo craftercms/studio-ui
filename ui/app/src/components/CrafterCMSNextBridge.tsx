@@ -30,6 +30,7 @@ import StoreProvider from './StoreProvider';
 import CrafterThemeProvider from './CrafterThemeProvider';
 import SnackbarCloseButton from './SnackbarCloseButton';
 import LegacyConcierge from './LegacyConcierge';
+import { GenerateId } from 'jss';
 
 const useStyles = makeStyles({
   topSnackbar: {
@@ -44,6 +45,7 @@ function Bridge(
     mountLegacyConcierge?: boolean;
     resource: Resource<CrafterCMSStore>;
     themeOptions?: ThemeOptions;
+    generateClassName?: GenerateId;
   }>
 ) {
   useLayoutEffect(setRequestForgeryToken, []);
@@ -62,7 +64,7 @@ function Bridge(
   return (
     <StoreProvider resource={props.resource}>
       <I18nProvider>
-        <CrafterThemeProvider themeOptions={props.themeOptions}>
+        <CrafterThemeProvider themeOptions={props.themeOptions} generateClassName={props.generateClassName}>
           {mountSnackbarProvider ? (
             <SnackbarProvider
               maxSnack={5}
@@ -89,6 +91,7 @@ export default function CrafterCMSNextBridge(
     mountGlobalDialogManager?: boolean;
     mountSnackbarProvider?: boolean;
     mountLegacyConcierge?: boolean;
+    generateClassName?: GenerateId;
   }>
 ) {
   const [storeResource] = useState(() =>
@@ -97,6 +100,7 @@ export default function CrafterCMSNextBridge(
   return (
     <Suspencified>
       <Bridge
+        generateClassName={props.generateClassName}
         mountGlobalDialogManager={props.mountGlobalDialogManager}
         mountSnackbarProvider={props.mountSnackbarProvider}
         mountLegacyConcierge={props.mountLegacyConcierge}

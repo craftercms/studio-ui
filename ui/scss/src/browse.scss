@@ -15,8 +15,8 @@
  */
 
 @import 'util/util';
-@import "variables";
-@import "../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap";
+@import 'variables';
+@import '../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap';
 
 * {
   box-sizing: border-box;
@@ -24,7 +24,7 @@
 
 body {
   font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   margin: 0;
   padding-top: 20px;
   box-sizing: border-box;
@@ -34,7 +34,7 @@ body {
   }
 
   .status-icon {
-    background-image: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif") !important;
+    background-image: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') !important;
   }
 
   .status-icon.folder {
@@ -50,11 +50,11 @@ body {
     width: 100%;
     max-width: 1370px;
     margin: 0 auto;
-    padding: 0px 20px 40px;
+    padding: 0 20px 40px;
     background-color: #fff;
 
     #cstudio-wcm-search-filter-controls {
-      [data-display="hidden-node"] {
+      [data-display='hidden-node'] {
         display: none;
       }
     }
@@ -79,10 +79,10 @@ body {
           background-position: 4px 0;
         }
       }
-
     }
 
-    #cstudio-wcm-search-result, #cstudio-wcm-browse-result {
+    #cstudio-wcm-search-result,
+    #cstudio-wcm-browse-result {
       width: calc(100% - 400px) !important;
       border-radius: 5px;
       padding-left: 20px;
@@ -111,7 +111,9 @@ body {
           .cstudio-result-body {
             margin-left: 15px;
 
-            .cstudio-search-result-description, .cstudio-search-description-preview, .cstudio-search-result-description-cmis {
+            .cstudio-search-result-description,
+            .cstudio-search-description-preview,
+            .cstudio-search-result-description-cmis {
               width: 100%;
 
               &.result-cmis {
@@ -146,11 +148,11 @@ body {
               }
             }
 
-            .cstudio-search-result-description, .cstudio-search-description-preview {
+            .cstudio-search-result-description,
+            .cstudio-search-description-preview {
               @media (min-width: 992px) {
                 width: 50%;
                 float: left;
-
               }
             }
 
@@ -164,7 +166,6 @@ body {
                 max-width: 100%;
               }
             }
-
           }
 
           .cstudio-search-component {
@@ -177,8 +178,6 @@ body {
               text-align: right;
               margin-right: 10px;
             }
-
-
           }
 
           .no-preview {
@@ -194,7 +193,6 @@ body {
     }
 
     #searchForm {
-
       #searchLabel i {
         font-size: 22px;
         padding-left: 1px;
@@ -211,18 +209,16 @@ body {
         border: 1px solid #ccc;
         border-radius: 4px;
       }
-
     }
-
   }
 
   .cstudio-image-popup-overlay {
     position: fixed;
     display: none;
-    top: 0px;
-    left: 0px;
-    bottom: 0px;
-    right: 0px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     margin: auto;
     z-index: 32;
     background: rgba(0, 0, 0, 0.6);
@@ -257,7 +253,8 @@ body {
         }
       }
 
-      img, video {
+      img,
+      video {
         border-radius: 6px;
         max-width: 700px;
         background-color: #fff;
@@ -268,8 +265,8 @@ body {
       }
     }
 
-    &:before {
-      content: "";
+    &::before {
+      content: '';
       display: inline-block;
       vertical-align: middle;
       height: 100%;
@@ -293,14 +290,14 @@ body {
 
   /*----- Tab Links -----*/
   /* Clearfix */
-  .tab-links:after {
+  .tab-links::after {
     display: block;
     clear: both;
     content: '';
   }
 
   .tab-links li {
-    margin: 0px 5px;
+    margin: 0 5px;
     float: left;
     list-style: none;
   }
@@ -308,7 +305,7 @@ body {
   .tab-links a {
     padding: 9px 15px;
     display: inline-block;
-    border-radius: 3px 3px 0px 0px;
+    border-radius: 3px 3px 0 0;
     background: #8eafc5;
     font-size: 16px;
     text-decoration: none;
@@ -322,7 +319,8 @@ body {
     text-decoration: none;
   }
 
-  li.active a, li.active a:hover {
+  li.active a,
+  li.active a:hover {
     background: #fff;
     color: #4c4c4c;
   }
@@ -353,7 +351,7 @@ body {
         cursor: auto;
         color: #000000;
         direction: ltr;
-        font: normal normal normal 12px/normal;
+        font: normal normal normal 12px / normal;
         font-size-adjust: none;
         font-stretch: normal;
         letter-spacing: normal;
@@ -404,7 +402,6 @@ body {
   ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(128, 128, 128, 0.4);
   }
-
 }
 
 .cstudio__loading-bar {

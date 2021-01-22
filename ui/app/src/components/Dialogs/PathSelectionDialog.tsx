@@ -114,7 +114,7 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getIndividualPaths(currentPath).filter(
+        const allPaths = getIndividualPaths(currentPath, rootPath).filter(
           (path) => !nodesLookup[path] || !nodesLookup[path].fetched
         );
         const requests: Observable<AjaxResponse>[] = [];

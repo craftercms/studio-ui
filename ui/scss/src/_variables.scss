@@ -17,14 +17,12 @@
 $lib-path: '/studio/static-assets/libs/' !default;
 $icon-font-path: '/studio/static-assets/libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 
-$crimson: #ED1C24;
+$crimson: #ed1c24;
 $studio-blue: #283277;
 $old-purple: #7e9dbb;
 $success-green: #28a745;
 
-$box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-0 2px 2px 0 rgba(0, 0, 0, 0.14),
-0 1px 5px 0 rgba(0, 0, 0, 0.12);
+$box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
 $class-prefix: 'studio' !default;
 
@@ -37,8 +35,8 @@ $ice-component-attribute-name: 'data-studio-component' !default;
 
 /* Bootstrap Config */
 
-$brand-primary: #007AFF;
-$brand-danger: #FF3B30;
+$brand-primary: #007aff;
+$brand-danger: #ff3b30;
 
 $btn-primary-border: transparent;
 
@@ -52,4 +50,4 @@ $headings-font-family: $font-family-sans-serif;
 $navbar-default-bg: #fafafa;
 $navbar-default-border: transparent;
 
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables";
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables';

@@ -403,7 +403,7 @@ CStudioAuthoring.Module.requireModule(
               ? window.getComputedStyle(sectionContainer).getPropertyValue('width')
               : sectionContainer.currentStyle
               ? sectionContainer.currentStyle.width
-              : '0px';
+              : '0';
           }
 
           fieldContainerWidth = +fieldContainerWidth.split('px')[0];

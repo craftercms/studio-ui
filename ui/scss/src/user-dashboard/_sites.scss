@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 .sites-view {
   .site-message {
     position: relative;
@@ -27,7 +26,6 @@
 }
 
 .screen-title {
-
   margin: 0;
   color: #555555;
   padding: 15px 20px;
@@ -39,7 +37,6 @@
     margin: 0;
     float: left;
   }
-
 }
 
 .modal-body {
@@ -64,7 +61,6 @@
     float: left;
     width: 92%;
   }
-
 }
 
 .green .modal-body .notificationBody .icon {
@@ -72,12 +68,9 @@
 }
 
 .createSitesBtn {
-  width: 194px;
-
   .fa {
     font-size: 14px;
   }
-
 }
 
 .nav-panel {
@@ -98,7 +91,7 @@
 }
 
 .list-group-item {
-  border-color: var(--craftercms-light0);;
+  border-color: var(--craftercms-light0);
   border-radius: 0 !important;
   background-color: transparent;
   border-style: none solid none none;
@@ -115,7 +108,8 @@
     td {
       padding: 10px;
 
-      &.preview, &.dashboard {
+      &.preview,
+      &.dashboard {
         text-align: center;
       }
 
@@ -127,7 +121,6 @@
         text-align: right;
         padding-right: 30px;
       }
-
     }
 
     .site-description {
@@ -137,7 +130,6 @@
 }
 
 .site-view {
-
   padding: 0 20px;
 
   .row {
@@ -146,13 +138,11 @@
 }
 
 .create-site-view {
-
   small.error {
     color: #a94442;
   }
 
   .form-control {
-
     &.ng-invalid.ng-dirty,
     &.ng-touched.ng-invalid {
       border-color: #a94442;
@@ -165,7 +155,6 @@
       -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
     }
-
   }
 
   @media (min-width: $screen-md-min) {

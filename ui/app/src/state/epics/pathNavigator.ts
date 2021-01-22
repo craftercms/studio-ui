@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
-import GlobalState from '../../models/GlobalState';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
@@ -38,6 +37,7 @@ import {
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/state';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   (action$, state$) =>
@@ -57,7 +57,7 @@ export default [
         ].filter(Boolean);
       })
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorRefresh.type),
       withLatestFrom(state$),
@@ -68,7 +68,7 @@ export default [
         )
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorConditionallySetPath.type),
       withLatestFrom(state$),
@@ -79,7 +79,7 @@ export default [
         )
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
@@ -90,7 +90,7 @@ export default [
         )
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorSetKeyword.type),
       withLatestFrom(state$),
@@ -103,7 +103,7 @@ export default [
         )
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorFetchParentItems.type),
       withLatestFrom(state$),
@@ -135,7 +135,7 @@ export default [
         }
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(
         pathNavigatorFetchPathComplete.type,
@@ -161,4 +161,4 @@ export default [
       ),
       ignoreElements()
     )
-] as Epic[];
+] as CrafterCMSEpic[];

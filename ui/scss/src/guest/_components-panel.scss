@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 body.#{$class-prefix}-dnd-enabled {
-
   .affix,
   .navbar-fixed-bottom,
   .navbar-fixed-top {
@@ -29,8 +27,8 @@ body.#{$class-prefix}-dnd-enabled {
     position: relative !important;
     border-color: $crimson !important;
     border-radius: $border-radius-base !important;
-    background-color: rgba(255, 255, 255, .7) !important;
-    box-shadow: 0 0 10px 0 rgba($crimson, .4) !important;
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 0 10px 0 rgba($crimson, 0.4) !important;
 
     .ui-sortable-handle {
       position: relative;
@@ -38,10 +36,9 @@ body.#{$class-prefix}-dnd-enabled {
       .removeComp {
         position: absolute;
         top: -5px;
-        right: 0px;
+        right: 0;
         color: #000 !important;
       }
-
     }
 
     .ui-sortable-helper {
@@ -53,11 +50,9 @@ body.#{$class-prefix}-dnd-enabled {
     * {
       cursor: pointer;
     }
-
   }
 
   [data-studio-component] {
-
   }
 
   .#{$class-prefix}-div-mouse {
@@ -83,25 +78,19 @@ body.#{$class-prefix}-dnd-enabled {
   }
 
   .#{$class-prefix}-draggable-over {
-    background-color: rgba(255, 255, 255, .9) !important;
-    box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), .4) !important;
-    //width: 130%;
-    //height: 200%!important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), 0.4) !important;
   }
 
   &.#{$class-prefix}-pointer-enabled {
     .#{$class-prefix}-pointer-over {
-      background-color: rgba(255, 255, 255, .9) !important;
-      box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), .4) !important;
-      //width: 130%;
-      //height: 200%!important;
+      background-color: rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), 0.4) !important;
     }
   }
-
 }
 
 .#{$class-prefix}-components-panel {
-
   @extend .studio-view;
 
   top: 0;
@@ -112,12 +101,13 @@ body.#{$class-prefix}-dnd-enabled {
   display: block;
   position: fixed;
   background: var(--craftercms-light0);
-  box-shadow: 0 0 10px 0 rgba(#fff, .5);
+  box-shadow: 0 0 10px 0 rgba(#fff, 0.5);
   border-top: 1px solid #ccc;
   height: auto;
   z-index: 1036;
 
-  &, * {
+  &,
+  * {
     font-style: normal;
     font-weight: normal;
     padding: 0;
@@ -131,11 +121,11 @@ body.#{$class-prefix}-dnd-enabled {
     font-weight: bold;
   }
 
-  [data-action="done"] {
+  [data-action='done'] {
     top: 9px;
     right: 11px;
     border: none;
-    padding: 0px 11px;
+    padding: 0 11px;
     line-height: 27px;
     position: absolute;
     color: #fff !important;
@@ -144,7 +134,7 @@ body.#{$class-prefix}-dnd-enabled {
   .#{$class-prefix}-component-search {
     padding: 0 10px;
 
-    input[type="search"] {
+    input[type='search'] {
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 50px;
@@ -155,7 +145,6 @@ body.#{$class-prefix}-dnd-enabled {
   }
 
   .#{$class-prefix}-components-container {
-
     left: 0;
     right: 0;
     bottom: 0;
@@ -165,9 +154,8 @@ body.#{$class-prefix}-dnd-enabled {
     overflow: auto;
 
     .#{$class-prefix}-category {
-
       margin-bottom: 12px;
-      box-shadow: 1px 0 2px rgba(0, 0, 0, .1);
+      box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
       border-radius: $border-radius-base;
 
       .#{$class-prefix}-category-name {
@@ -176,7 +164,7 @@ body.#{$class-prefix}-dnd-enabled {
         border-bottom: 1px solid $gray-lighter;
         border-top-left-radius: $border-radius-base;
         border-top-right-radius: $border-radius-base;
-        background: #F0F0F0;
+        background: #f0f0f0;
         font-weight: bold;
 
         &.add-existing-component {
@@ -195,15 +183,13 @@ body.#{$class-prefix}-dnd-enabled {
         border-bottom-right-radius: $border-radius-base;
 
         > sli {
-
-          border-bottom: 1px solid #F0F0F0;
+          border-bottom: 1px solid #f0f0f0;
           display: block;
 
           > sa {
             display: inline-block;
             padding: 5px 10px;
             width: 87%;
-
           }
 
           > .deleteComponent {
@@ -217,8 +203,6 @@ body.#{$class-prefix}-dnd-enabled {
             top: 6px;
           }
         }
-
-
       }
 
       &.#{$class-prefix}-collapse {
@@ -231,9 +215,7 @@ body.#{$class-prefix}-dnd-enabled {
           display: none;
         }
       }
-
     }
-
   }
 
   .add-component {
@@ -254,10 +236,10 @@ body.#{$class-prefix}-dnd-enabled {
   .ui-draggable-dragging {
     cursor: move !important;
   }
-
 }
 
-.studio-category .fa:before, .studio-component-drag-target .fa:before {
+.studio-category .fa::before,
+.studio-component-drag-target .fa::before {
   color: #7e9dbb;
 }
 
@@ -273,11 +255,10 @@ body.#{$class-prefix}-dnd-enabled {
 .ui-sortable-handle.ui-sortable-helper {
   z-index: 99999 !important;
   position: relative;
-
 }
 
 .studio-component-drag-target.studio-component-over {
-  box-shadow: 0 0 3px 3px rgba(lighten($crimson, 10%), .2) !important;
+  box-shadow: 0 0 3px 3px rgba(lighten($crimson, 10%), 0.2) !important;
 }
 
 .studio-component-drag-target.ui-draggable.ui-draggable-handle.ui-draggable-dragging {

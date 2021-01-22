@@ -87,8 +87,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           [id]: {
             ...state[id],
             currentPath: path,
-            breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
-            itemsInPath: response.map((item) => item.id),
+            breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
+            itemsInPath: response.map((item) => item.path),
             levelDescriptor: response.levelDescriptor?.path,
             count: response.length
           }
@@ -109,8 +109,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
-          itemsInPath: response.length === 0 ? [] : response.map((item) => item.id),
+          breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
+          itemsInPath: response.length === 0 ? [] : response.map((item) => item.path),
           levelDescriptor: response.levelDescriptor?.path,
           count: response.length,
           leaves: response.length === 0 ? state[id].leaves.concat(path) : state[id].leaves
@@ -134,7 +134,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
 
       response.forEach((resp: GetChildrenResponse, i: number) => {
         if (i === response.length - 1) {
-          itemsInPath = resp.map((item) => item.id);
+          itemsInPath = resp.map((item) => item.path);
           if (resp.levelDescriptor) {
             levelDescriptor = resp.levelDescriptor.path;
           }
@@ -147,7 +147,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           ...state[id],
           itemsInPath,
           levelDescriptor,
-          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath)
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
         }
       };
     },

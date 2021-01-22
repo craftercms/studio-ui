@@ -18,7 +18,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { del, get, patchJSON, postJSON } from '../utils/ajax';
 import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
-import { fetchSites } from './sites';
+import { fetchAll as fetchAllSites } from './sites';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
 import { PagedArray } from '../models/PagedArray';
@@ -132,7 +132,7 @@ export function fetchMyRolesInSite(siteId: string): Observable<string[]> {
 export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<LookupTable<string[]>> {
   return forkJoin({
     username: username ? of(username) : me().pipe(map((user) => user.username)),
-    sites: sites ? of(sites) : fetchSites()
+    sites: sites ? of(sites) : fetchAllSites()
   }).pipe(
     switchMap(({ username, sites }) =>
       forkJoin<LookupTable<Observable<string[]>>, ''>(
@@ -147,7 +147,7 @@ export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<
 
 // renamed from fetchRolesBySiteForCurrent
 export function fetchMyRolesBySite(sites?: Site[]): Observable<LookupTable<string[]>> {
-  return (sites ? of(sites) : fetchSites()).pipe(
+  return (sites ? of(sites) : fetchAllSites()).pipe(
     switchMap((sites) =>
       forkJoin<LookupTable<Observable<string[]>>, ''>(
         sites.reduce((lookup, site) => {

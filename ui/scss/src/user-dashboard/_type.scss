@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-body, html {
+body,
+html {
   height: 100%;
 }
 
@@ -35,4 +35,8 @@ a[ng-click] {
 
 .btn-pill {
   border-radius: 50px;
+}
+
+.btn-padded {
+  padding: 6px 20px;
 }
