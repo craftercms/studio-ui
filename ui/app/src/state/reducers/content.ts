@@ -62,7 +62,7 @@ const updateItemByPath = (state, { payload: { response } }) => {
       ...state.items,
       byPath: {
         [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
-        ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[])),
+        ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[]), 'path'),
         ...(response.levelDescriptor && {
           [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor)
         }),
@@ -143,7 +143,7 @@ const reducer = createReducer<ContentState>(initialState, {
       items: {
         ...state.items,
         byPath: {
-          ...createLookupTable(items),
+          ...createLookupTable(items, 'path'),
           ...state.items.byPath
         }
       }

@@ -90,7 +90,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
                     expandedClass: 'fa-file-text-o',
                     collapsedClass: 'fa-file-text'
                   },
-                  rootPath: '/site/website',
+                  rootPath: '/site/website/index.xml',
                   locale: 'en'
                 }
               },
