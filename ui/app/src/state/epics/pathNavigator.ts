@@ -99,7 +99,8 @@ export default [
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, keyword } }, state]) =>
         getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
-          keyword
+          keyword,
+          limit: state.pathNavigator[id].limit
         }).pipe(
           map((response) => pathNavigatorFetchPathComplete({ id, response })),
           catchAjaxError(pathNavigatorFetchPathFailed)
@@ -149,7 +150,7 @@ export default [
               catchAjaxError(pathNavigatorFetchPathFailed)
             );
           } else {
-            return getChildrenByPath(site, path, { excludes }).pipe(
+            return getChildrenByPath(site, path, { excludes, limit }).pipe(
               map((response) => pathNavigatorFetchPathComplete({ id, response })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );

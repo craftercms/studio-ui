@@ -41,6 +41,9 @@ import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin, Observable } from 'rxjs';
 import palette from '../../../styles/palette';
 import { isFolder } from '../../../components/Navigation/PathNavigator/utils';
+import TablePagination from '@material-ui/core/TablePagination';
+import { translations } from '../../../components/Navigation/PathNavigator/translations';
+import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -83,7 +86,34 @@ const useStyles = makeStyles((theme) => ({
     fill: palette.teal.main,
     marginRight: 10
   },
-  selectIcon: {}
+  selectIcon: {},
+  // region Pagination
+  pagination: {
+    '& p': {
+      padding: 0
+    },
+    '& svg': {
+      top: 'inherit'
+    },
+    '& .hidden': {
+      display: 'none'
+    }
+  },
+  paginationToolbar: {
+    padding: '0 0 0 12px',
+    minHeight: '30px !important',
+    justifyContent: 'space-between',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
+      display: 'none'
+    },
+    '& .MuiButtonBase-root': {
+      padding: 0
+    }
+  }
+  // endregion
 }));
 
 interface SingleItemSelectorProps {
@@ -119,6 +149,9 @@ interface SingleItemSelectorState extends PaginationOptions {
   currentPath: string;
   keywords: string;
   pageNumber: number;
+  offset: number;
+  total: number;
+  limit: number;
   breadcrumb: string[];
 }
 
@@ -131,8 +164,9 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   keywords: '',
   pageNumber: 0,
   breadcrumb: [],
-  offset: null,
-  limit: null,
+  offset: 0,
+  limit: 10,
+  total: 0,
   rootPath: props.rootPath,
   currentPath: props.selectedItem?.path ?? props.rootPath
 });
@@ -150,8 +184,12 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     case setKeyword.type: {
       return {
         ...state,
-        keywords: payload
+        keywords: payload,
+        isFetching: true
       };
+    }
+    case changePage.type: {
+      return { ...state, isFetching: true };
     }
     case fetchParentsItems.type:
     case fetchChildrenByPath.type: {
@@ -168,6 +206,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
           ...state,
           currentPath: getNextPath(currentPath, byId),
           leaves: leaves.concat(currentPath),
+          total: payload.total,
           isFetching: false
         };
       } else {
@@ -181,6 +220,9 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
           byId: nextItems,
           items: payload.map((item) => item.path),
           isFetching: false,
+          total: payload.total,
+          offset: payload.offset,
+          limit: payload.limit,
           breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
         };
       }
@@ -189,10 +231,16 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       const { currentPath, rootPath, byId } = state;
       let nextItems: any = { ...byId };
       let items = [];
+      let total;
+      let offset;
+      let limit;
 
       payload.forEach((response: GetChildrenResponse, i: number) => {
         if (i === payload.length - 1) {
           items = response.map((item) => item.path);
+          total = response.total;
+          offset = response.offset;
+          limit = response.limit;
         }
         nextItems = {
           ...nextItems,
@@ -206,6 +254,9 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
         byId: nextItems,
         items: items,
         isFetching: false,
+        limit,
+        total,
+        offset,
         breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
       };
     }
@@ -230,6 +281,8 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
 export const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
 export const setKeyword = createAction<string>('SET_KEYWORD');
+
+export const changePage = createAction<number>('CHANGE_PAGE');
 
 export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
 
@@ -261,6 +314,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const classes = useStyles();
   const anchorEl = useRef();
   const [state, _dispatch] = useReducer(reducer, props, init);
+  const { formatMessage } = useIntl();
   const site = useActiveSiteId();
 
   const exec = useCallback(
@@ -269,14 +323,21 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       const { type, payload } = action;
       switch (type) {
         case setKeyword.type: {
-          getChildrenByPath(site, state.currentPath, { keyword: payload }).subscribe(
+          getChildrenByPath(site, state.currentPath, { limit: state.limit, keyword: payload }).subscribe(
+            (response) => exec(fetchChildrenByPathComplete(response)),
+            (response) => exec(fetchChildrenByPathFailed(response))
+          );
+          break;
+        }
+        case changePage.type: {
+          getChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
             (response) => exec(fetchChildrenByPathComplete(response)),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         }
         case fetchChildrenByPath.type:
-          getChildrenByPath(site, payload).subscribe(
+          getChildrenByPath(site, payload, { limit: state.limit }).subscribe(
             (response) => exec(fetchChildrenByPathComplete(response)),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
@@ -288,7 +349,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
               if (!state.items[parentPath] && !state.items[withIndex(parentPath)]) {
-                requests.push(getChildrenByPath(site, parentPath));
+                requests.push(getChildrenByPath(site, parentPath, { limit: state.limit }));
               }
             });
             forkJoin(requests).subscribe(
@@ -296,7 +357,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           } else {
-            getChildrenByPath(site, payload).subscribe(
+            getChildrenByPath(site, payload, { limit: state.limit }).subscribe(
               (response) => exec(fetchChildrenByPathComplete(response)),
               (response) => exec(fetchChildrenByPathFailed(response))
             );
@@ -345,6 +406,11 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       exec(changeCurrentPath(item));
       onItemClicked(item);
     }
+  };
+
+  const onPageChanged = (page: number) => {
+    const offset = page * state.limit;
+    exec(changePage(offset));
   };
 
   const Wrapper = hideUI ? React.Fragment : Paper;
@@ -409,6 +475,21 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
             resource={itemsResource}
             onPathSelected={onPathSelected}
             onItemClicked={handleItemClicked}
+          />
+          <TablePagination
+            classes={{
+              root: classes.pagination,
+              selectRoot: 'hidden',
+              toolbar: classes.paginationToolbar
+            }}
+            component="div"
+            labelRowsPerPage=""
+            count={state.total}
+            rowsPerPage={state.limit}
+            page={state && Math.ceil(state.offset / state.limit)}
+            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onChangePage={(e, page: number) => onPageChanged(page)}
           />
         </SuspenseWithEmptyState>
       </Popover>
