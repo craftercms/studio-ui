@@ -159,7 +159,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
     isValidCutPastePath(item.path, clipboard.sourcePath);
   const options = generateSingleItemOptions(item, { hasClipboard, ...permissions });
-  const noOptions = options.length === 0 || (options.length === 1 && options[0].length === 0);
+  const noOptions = options.flatMap((i) => i).length === 0;
 
   return noOptions ? (
     <div className={emptyClasses.root}>

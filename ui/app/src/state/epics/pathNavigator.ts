@@ -137,7 +137,12 @@ export default [
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
-              requests.push(getChildrenByPath(site, parentPath, { excludes, limit }));
+              requests.push(
+                getChildrenByPath(site, parentPath, {
+                  excludes,
+                  limit
+                })
+              );
             });
             return forkJoin(requests).pipe(
               map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),

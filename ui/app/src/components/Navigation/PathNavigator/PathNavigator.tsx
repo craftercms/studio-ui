@@ -164,9 +164,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
   });
 
   useEffect(() => {
-    onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
       dispatch(pathNavigatorSetKeyword({ id, keyword }));
     });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [dispatch, id, onSearch$]);
 
   useEffect(() => {

@@ -36,7 +36,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
 import { getChildrenByPath } from '../../../services/content';
-import { getParentPath, getParentsFromPath, itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
+import { getIndividualPaths, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin, Observable } from 'rxjs';
 import palette from '../../../styles/palette';
@@ -119,7 +119,7 @@ interface SingleItemSelectorState extends PaginationOptions {
   currentPath: string;
   keywords: string;
   pageNumber: number;
-  breadcrumb: DetailedItem[];
+  breadcrumb: string[];
 }
 
 const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props: SingleItemSelectorProps) => ({
@@ -172,16 +172,16 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
         };
       } else {
         const nextItems = {
-          ...{ ...state.byId, ...createLookupTable(payload) },
-          [payload.parent.id]: payload.parent
+          ...{ ...state.byId, ...createLookupTable(payload, 'path') },
+          [payload.parent.path]: payload.parent
         };
 
         return {
           ...state,
           byId: nextItems,
-          items: payload.map((item) => item.id),
+          items: payload.map((item) => item.path),
           isFetching: false,
-          breadcrumb: itemsFromPath(currentPath, rootPath, nextItems)
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
         };
       }
     }
@@ -189,16 +189,15 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       const { currentPath, rootPath, byId } = state;
       let nextItems: any = { ...byId };
       let items = [];
-      let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
 
       payload.forEach((response: GetChildrenResponse, i: number) => {
         if (i === payload.length - 1) {
-          items = response.map((item) => item.id);
+          items = response.map((item) => item.path);
         }
         nextItems = {
           ...nextItems,
-          ...createLookupTable(response),
-          [response.parent.id]: response.parent
+          ...createLookupTable(response, 'path'),
+          [response.parent.path]: response.parent
         };
       });
 
@@ -207,7 +206,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
         byId: nextItems,
         items: items,
         isFetching: false,
-        breadcrumb: itemsFromPath(parentPath, rootPath, nextItems)
+        breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
       };
     }
     default:
@@ -283,7 +282,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           );
           break;
         case fetchParentsItems.type:
-          const parentsPath = getParentsFromPath(payload, state.rootPath);
+          const parentsPath = getIndividualPaths(payload, state.rootPath);
           const requests: Observable<GetChildrenResponse>[] = [];
 
           if (parentsPath.length) {
@@ -312,9 +311,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
     shouldReject: (consumer) => Boolean(consumer.error),
     shouldRenew: (consumer, resource) => consumer.isFetching && resource.complete,
-    resultSelector: (consumer) => {
-      return consumer.items.map((id) => consumer.byId[id]);
-    },
+    resultSelector: (consumer) => consumer.items.map((id) => consumer.byId[id]),
     errorSelector: (consumer) => consumer.error
   });
 
@@ -401,7 +398,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       >
         <Breadcrumbs
           keyword={state?.keywords}
-          breadcrumb={state?.breadcrumb ?? []}
+          breadcrumb={state.breadcrumb.map((path) => state.byId[path] ?? state.byId[withIndex(path)])}
           onSearch={onSearch}
           onCrumbSelected={onCrumbSelected}
         />

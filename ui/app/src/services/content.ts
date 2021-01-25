@@ -33,14 +33,18 @@ import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { parseContentXML, parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
+import {
+  createItemStateMap,
+  parseContentXML,
+  parseLegacyItemToDetailedItem,
+  parseLegacyItemToSandBoxItem
+} from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
 import { getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
-import { getStateMap } from '../utils/constants';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -779,19 +783,24 @@ export function getChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
+  if (path === '/site/website' && !options?.skipHomePathOverride) {
+    path = '/site/website/index.xml';
+  }
   const qs = toQueryString({ siteId: site, path, ...options });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
     map(({ children, parent, levelDescriptor, total, offset, limit }) =>
       Object.assign(
-        children.map((child) => ({
-          ...child,
-          stateMap: getStateMap(child.state)
-        })),
+        children
+          ? children.map((child) => ({
+              ...child,
+              stateMap: createItemStateMap(child.state)
+            }))
+          : [],
         {
-          parent: { ...parent, stateMap: getStateMap(parent.state) },
+          parent: { ...parent, stateMap: createItemStateMap(parent.state) },
           ...(levelDescriptor && {
-            levelDescriptor: { ...levelDescriptor, stateMap: getStateMap(levelDescriptor.state) }
+            levelDescriptor: { ...levelDescriptor, stateMap: createItemStateMap(levelDescriptor.state) }
           }),
           total,
           offset,
