@@ -790,14 +790,15 @@ export function getChildrenByPath(
         })),
         {
           parent: { ...parent, stateMap: getStateMap(parent.state) },
-          levelDescriptor: { ...levelDescriptor, stateMap: getStateMap(levelDescriptor.state) },
+          ...(levelDescriptor && {
+            levelDescriptor: { ...levelDescriptor, stateMap: getStateMap(levelDescriptor.state) }
+          }),
           total,
           offset,
           limit
         }
       )
-    ),
-    catchError(errorSelectorApi1)
+    )
   );
 }
 
