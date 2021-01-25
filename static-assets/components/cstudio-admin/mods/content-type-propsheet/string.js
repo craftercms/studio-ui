@@ -27,16 +27,19 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
     render: function(value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
+      var _self = this;
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
       containerEl.appendChild(valueEl);
       valueEl.value = value;
       valueEl.fieldName = this.fieldName;
+      validations && valueEl.setAttribute('data-id', validations.name);
 
       if (updateFn) {
         var updateFieldFn = function(event, el) {
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+          valueEl.dispatchEvent(new Event('propertyUpdate', { event }));
         };
 
         var onBlur = function(event, el) {
@@ -57,6 +60,17 @@ YAHOO.extend(
             YAHOO.util.Event.on(valueEl, 'blur', onBlur, valueEl);
           }
         }
+      }
+
+      if (validations && validations.dependsOn) {
+        const dependency = document.querySelector(`[data-id="${validations.dependsOn}"]`);
+        valueEl.value = dependency && _self.isDependencyMet(dependency) ? value : '';
+
+        if (dependency) {
+          _self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);
+        }
+      } else {
+        valueEl.value = value;
       }
 
       this.valueEl = valueEl;

@@ -68,7 +68,7 @@
           }
         });
       }
-      if (this.enableSearch) {
+      if (this.allowShared && this.enableSearch) {
         let message = formatMessage('searchExisting');
         $(control.$dropdownMenu).append(
           self._createOption(message, () => {
@@ -119,13 +119,15 @@
           label: formatMessage('enableBrowse'),
           name: 'enableBrowse',
           type: 'boolean',
-          defaultValue: 'false'
+          defaultValue: 'false',
+          dependsOn: 'allowShared'
         },
         {
           label: formatMessage('enableSearch'),
           name: 'enableSearch',
           type: 'boolean',
-          defaultValue: 'false'
+          defaultValue: 'false',
+          dependsOn: 'allowShared'
         },
         {
           label: formatMessage('baseRepositoryPath'),
@@ -280,7 +282,7 @@
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
-      if (self.enableBrowse) {
+      if (self.allowShared && self.enableBrowse) {
         let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
         control.$dropdownMenu.append(
           self._createOption(message, () => {

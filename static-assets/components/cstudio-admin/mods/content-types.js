@@ -2827,6 +2827,54 @@
 
       getValue: function() {
         return '';
+      },
+
+      handleDependencyPopover: function(element, dependency, show) {
+        if (show) {
+          $(element)
+            .parent()
+            .popover({
+              content: formatMessage(contentTypesMessages.dependsOn, { dependency }),
+              container: 'body',
+              placement: 'left',
+              trigger: 'hover'
+            });
+        } else {
+          $(element)
+            .parent()
+            .popover('destroy');
+        }
+      },
+
+      // TODO: handle validations with complex types (like datasources)
+      isDependencyMet: function(dependency) {
+        if (dependency.type) {
+          switch (dependency.type) {
+            case "text":
+              return dependency.value !== '';
+            case "checkbox":
+              return dependency.checked;
+          }
+        } else {
+          return false;
+        }
+      },
+
+      handleDependency: function(dependency, valueEl, properties, fieldToUpdate, emptyValue, updateFieldFn) {
+        const _self = this;
+        const isDependencyMet = _self.isDependencyMet(dependency);
+        valueEl.disabled = !isDependencyMet;
+        this.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+
+        dependency.addEventListener('propertyUpdate', (e) => {
+          const isDependencyMet = _self.isDependencyMet(dependency);
+
+          valueEl.disabled = !isDependencyMet;
+          valueEl[fieldToUpdate] = !isDependencyMet ? emptyValue : valueEl[fieldToUpdate];
+          _self.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+
+          updateFieldFn(e, valueEl);
+        });
       }
     };
 
