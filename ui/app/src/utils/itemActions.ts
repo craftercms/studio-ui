@@ -60,7 +60,7 @@ import {
 } from '../state/actions/system';
 import {
   duplicateAsset,
-  duplicateWithValidationPolicy,
+  duplicateWithPolicyValidation,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
@@ -584,7 +584,7 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateWithValidationPolicy({
+              duplicateWithPolicyValidation({
                 path: item.path,
                 type: 'asset'
               })
@@ -601,7 +601,7 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateWithValidationPolicy({
+              duplicateWithPolicyValidation({
                 path: item.path,
                 type: 'item'
               })

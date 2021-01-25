@@ -20,7 +20,7 @@ import {
   completeDetailedItem,
   duplicateAsset,
   duplicateItem,
-  duplicateWithValidationPolicy,
+  duplicateWithPolicyValidation,
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
@@ -204,7 +204,7 @@ const content = [
   // region Duplicate with validation policy
   (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
     action$.pipe(
-      ofType(duplicateWithValidationPolicy.type),
+      ofType(duplicateWithPolicyValidation.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return validateActionPolicy(state.sites.active, {
