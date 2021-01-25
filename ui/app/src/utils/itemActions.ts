@@ -62,7 +62,7 @@ import {
   duplicateAsset,
   duplicateWithValidationPolicy,
   pasteItem,
-  pasteItemWithValidationPolicy,
+  pasteItemWithPolicyValidation,
   reloadDetailedItem,
   setClipBoard,
   unlockItem
@@ -572,7 +572,7 @@ export const itemActionDispatcher = (
             }
           });
         } else {
-          dispatch(pasteItemWithValidationPolicy({ path: item.path }));
+          dispatch(pasteItemWithPolicyValidation({ path: item.path }));
         }
         break;
       }

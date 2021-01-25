@@ -31,7 +31,7 @@ import {
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
   pasteItem,
-  pasteItemWithValidationPolicy,
+  pasteItemWithPolicyValidation,
   reloadDetailedItem,
   unlockItem,
   unSetClipBoard
@@ -58,8 +58,27 @@ import {
 import { batchActions } from '../actions/misc';
 import { getParentPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { itemFailureMessages, sitePolicyMessages } from '../../utils/i18n-legacy';
 import { validateActionPolicy } from '../../services/sites';
+import { defineMessages } from 'react-intl';
+
+export const sitePolicyMessages = defineMessages({
+  itemPastePolicyConfirm: {
+    id: 'pastePolicy.confirm',
+    defaultMessage:
+      'The selected {action} target goes against site policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
+  },
+  itemPastePolicyError: {
+    id: 'pastePolicy.error',
+    defaultMessage: 'The selected copy|cut target goes against site policies for the destination directory.'
+  }
+});
+
+export const itemFailureMessages = defineMessages({
+  itemPasteToChildNotAllowed: {
+    id: 'item.itemPasteToChildNotAllowed',
+    defaultMessage: 'Pasting to a child item is not allowed for cut'
+  }
+});
 
 const content = [
   // region Quick Create
@@ -273,7 +292,7 @@ const content = [
   // region Item Paste with validation policy
   (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
     action$.pipe(
-      ofType(pasteItemWithValidationPolicy.type),
+      ofType(pasteItemWithPolicyValidation.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return validateActionPolicy(state.sites.active, {

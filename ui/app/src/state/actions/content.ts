@@ -65,6 +65,6 @@ export const duplicateWithValidationPolicy = createAction<{ path: string; type: 
   'DUPLICATE_WITH_VALIDATION_POLICY'
 );
 export const pasteItem = createAction<{ path: string }>('PASTE_ITEM');
-export const pasteItemWithValidationPolicy = createAction<{ path: string }>('PASTE_ITEM_WITH_VALIDATION_POLICY');
+export const pasteItemWithPolicyValidation = createAction<{ path: string }>('PASTE_ITEM_WITH_POLICY_VALIDATION');
 export const unlockItem = createAction<{ path: string }>('UNLOCK_ITEM');
 // endregion

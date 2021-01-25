@@ -85,12 +85,16 @@ export function exists(siteId: string): Observable<boolean> {
   return get(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(pluck('response', 'exists'));
 }
 
-export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult> {
-  return validateActionsPolicy(site, [action]).pipe(pluck('0'));
-}
-
-export function validateActionsPolicy(site: string, actions: Action[]): Observable<ContentValidationResult[]> {
+export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult>;
+export function validateActionPolicy(site: string, actions: Action[]): Observable<ContentValidationResult[]>;
+export function validateActionPolicy(
+  site: string,
+  action: Action | Action[]
+): Observable<ContentValidationResult | ContentValidationResult[]> {
+  const multi = Array.isArray(action);
+  const actions = multi ? action : [action];
+  const toPluck = ['response', 'results', !multi && '0'].filter(Boolean);
   return postJSON(`/studio/api/2/sites/${site}/policy/validate`, {
     actions
-  }).pipe(pluck('response', 'results'));
+  }).pipe(pluck(...toPluck));
 }

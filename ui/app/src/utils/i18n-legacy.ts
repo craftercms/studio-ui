@@ -1465,28 +1465,9 @@ export const itemSuccessMessages = defineMessages({
   }
 });
 
-export const itemFailureMessages = defineMessages({
-  itemPasteToChildNotAllowed: {
-    id: 'item.itemPasteToChildNotAllowed',
-    defaultMessage: 'Pasting to a child item is not allowed for cut'
-  }
-});
-
 export const siteSuccessMessages = defineMessages({
   siteDeleted: {
     id: 'site.deleted',
     defaultMessage: 'Site deleted successfully'
-  }
-});
-
-export const sitePolicyMessages = defineMessages({
-  itemPastePolicyConfirm: {
-    id: 'pastePolicy.confirm',
-    defaultMessage:
-      'The selected {action} target goes against site policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
-  },
-  itemPastePolicyError: {
-    id: 'pastePolicy.error',
-    defaultMessage: 'The selected copy|cut target goes against site policies for the destination directory.'
   }
 });
