@@ -69,7 +69,7 @@ export const sitePolicyMessages = defineMessages({
   },
   itemPastePolicyError: {
     id: 'pastePolicy.error',
-    defaultMessage: 'The selected copy|cut target goes against site policies for the destination directory.'
+    defaultMessage: 'The selected {action} target goes against site policies for the destination directory.'
   }
 });
 
@@ -250,7 +250,7 @@ const content = [
                   });
             } else {
               return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError)
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, { action: duplicate })
               });
             }
           })
@@ -317,7 +317,9 @@ const content = [
               });
             } else {
               return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError)
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                })
               });
             }
           })
