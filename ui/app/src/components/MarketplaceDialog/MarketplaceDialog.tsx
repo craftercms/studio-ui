@@ -169,7 +169,11 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
             }}
             loadingStateProps={{ classes: { root: classes.loadingWrapper } }}
           >
-            <PluginList resource={resource} onPluginDetails={onPluginDetails} />
+            <PluginList
+              resource={resource}
+              onPluginDetails={onPluginDetails}
+              onPluginSelected={onPluginDetailsSelected}
+            />
           </SuspenseWithEmptyState>
         </DialogBody>
       )}
@@ -180,17 +184,18 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
 interface PluginListProps {
   resource: Resource<MarketplacePlugin[]>;
   onPluginDetails(plugin: MarketplacePlugin): void;
+  onPluginSelected(plugin: MarketplacePlugin): void;
 }
 
 function PluginList(props: PluginListProps) {
-  const { resource, onPluginDetails } = props;
+  const { resource, onPluginDetails, onPluginSelected } = props;
   const plugins = resource.read();
 
   return (
     <Grid container spacing={3}>
       {plugins.map((plugin) => (
         <Grid item xs={12} sm={6} md={4} lg={3} key={plugin.id}>
-          <PluginCard plugin={plugin} onDetails={onPluginDetails} onPluginSelected={() => {}} />
+          <PluginCard plugin={plugin} onDetails={onPluginDetails} onPluginSelected={onPluginSelected} />
         </Grid>
       ))}
     </Grid>
