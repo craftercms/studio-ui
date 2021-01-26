@@ -32,7 +32,7 @@ import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import PluginDetailsView from '../../Publishing/Queue/PluginDetailsView';
+import PluginDetailsView from '../../../../components/PluginDetailsView/PluginDetailsView';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import { setRequestForgeryToken, setSiteCookie } from '../../../../utils/auth';
 import { create, exists, fetchBlueprints as fetchBuiltInBlueprints } from '../../../../services/sites';
@@ -785,7 +785,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         )) ||
         (site.details && (
           <PluginDetailsView
-            blueprint={site.details.blueprint}
+            plugin={site.details.blueprint}
             selectedIndex={site.details.index}
             onBlueprintSelected={handleBlueprintSelected}
             onCloseDetails={handleCloseDetails}

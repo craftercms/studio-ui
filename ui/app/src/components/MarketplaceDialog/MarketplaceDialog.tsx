@@ -31,6 +31,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import SearchBar from '../Controls/SearchBar';
 import { debounceTime } from 'rxjs/operators';
+import PluginDetailsView from '../PluginDetailsView';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -69,6 +70,7 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(null);
+  const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
   const classes = useStyles();
   const onSearch$ = useSubject<string>();
 
@@ -113,6 +115,18 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
     setKeyword(keyword);
   };
 
+  const onPluginDetails = (plugin: MarketplacePlugin) => {
+    setSelectedDetailsPlugin(plugin);
+  };
+
+  const onPluginDetailsClose = () => {
+    setSelectedDetailsPlugin(null);
+  };
+
+  const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
+    console.log(plugin);
+  };
+
   return (
     <>
       <DialogHeader
@@ -126,45 +140,57 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
           }
         ]}
       />
-      <DialogBody style={{ minHeight: '60vh' }}>
-        {showSearchBar && (
-          <SearchBar
-            showActionButton={Boolean(keyword)}
-            keyword={keyword}
-            onChange={onSearch}
-            autoFocus={true}
-            classes={{ root: classes.searchWrapper }}
+      {selectedDetailsPlugin ? (
+        <DialogBody style={{ minHeight: '60vh' }}>
+          <PluginDetailsView
+            plugin={selectedDetailsPlugin}
+            onCloseDetails={onPluginDetailsClose}
+            onBlueprintSelected={onPluginDetailsSelected}
           />
-        )}
-        <SuspenseWithEmptyState
-          resource={resource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: <FormattedMessage id="MarketplaceDialog.empty" defaultMessage="No plugins found." />,
-              classes: { root: classes.loadingWrapper }
-            }
-          }}
-          loadingStateProps={{ classes: { root: classes.loadingWrapper } }}
-        >
-          <PluginList resource={resource} />
-        </SuspenseWithEmptyState>
-      </DialogBody>
+        </DialogBody>
+      ) : (
+        <DialogBody style={{ minHeight: '60vh' }}>
+          {showSearchBar && (
+            <SearchBar
+              showActionButton={Boolean(keyword)}
+              keyword={keyword}
+              onChange={onSearch}
+              autoFocus={true}
+              classes={{ root: classes.searchWrapper }}
+            />
+          )}
+          <SuspenseWithEmptyState
+            resource={resource}
+            withEmptyStateProps={{
+              emptyStateProps: {
+                title: <FormattedMessage id="MarketplaceDialog.empty" defaultMessage="No plugins found." />,
+                classes: { root: classes.loadingWrapper }
+              }
+            }}
+            loadingStateProps={{ classes: { root: classes.loadingWrapper } }}
+          >
+            <PluginList resource={resource} onPluginDetails={onPluginDetails} />
+          </SuspenseWithEmptyState>
+        </DialogBody>
+      )}
     </>
   );
 }
 
 interface PluginListProps {
   resource: Resource<MarketplacePlugin[]>;
+  onPluginDetails(plugin: MarketplacePlugin): void;
 }
 
 function PluginList(props: PluginListProps) {
-  const plugins = props.resource.read();
+  const { resource, onPluginDetails } = props;
+  const plugins = resource.read();
 
   return (
     <Grid container spacing={3}>
       {plugins.map((plugin) => (
         <Grid item xs={12} sm={6} md={4} lg={3} key={plugin.id}>
-          <PluginCard plugin={plugin} onDetails={() => {}} onPluginSelected={() => {}} />
+          <PluginCard plugin={plugin} onDetails={onPluginDetails} onPluginSelected={() => {}} />
         </Grid>
       ))}
     </Grid>
