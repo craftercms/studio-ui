@@ -37,12 +37,13 @@ export function fetchBlueprints(options?: { type?: string; limit?: number; showI
 
 export function fetchMarketplacePlugins(
   type: string,
+  keywords?: string,
   options?: {
     limit?: number;
     showIncompatible?: boolean;
   }
 ): Observable<PagedArray<MarketplacePlugin>> {
-  const qs = toQueryString({ type, ...options });
+  const qs = toQueryString({ type, keywords, ...options });
   return get(`/studio/api/2/marketplace/search${qs}`).pipe(
     pluck('response'),
     map(({ plugins, offset, total, limit }) => Object.assign(plugins, { total, offset, limit }))

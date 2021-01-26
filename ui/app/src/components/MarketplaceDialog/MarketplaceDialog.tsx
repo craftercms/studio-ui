@@ -20,13 +20,29 @@ import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import { useLogicResource, useMount } from '../../utils/hooks';
+import { useLogicResource, useMount, useSubject } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
 import { fetchMarketplacePlugins } from '../../services/marketplace';
 import PluginCard from '../PluginCard';
 import { PagedArray } from '../../models/PagedArray';
 import Grid from '@material-ui/core/Grid';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import SearchIcon from '@material-ui/icons/SearchRounded';
+import SearchBar from '../Controls/SearchBar';
+import { debounceTime } from 'rxjs/operators';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    searchWrapper: {
+      marginBottom: '16px'
+    },
+    loadingWrapper: {
+      flexGrow: 1,
+      justifyContent: 'center'
+    }
+  })
+);
 
 interface MarketplaceDialogBaseProps {
   open: boolean;
@@ -42,7 +58,7 @@ export type MarketplaceDialogProps = PropsWithChildren<
 
 export default function MarketplaceDialog(props: MarketplaceDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose} maxWidth="md">
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <MarketplaceDialogUI {...props} />
     </Dialog>
   );
@@ -51,7 +67,10 @@ export default function MarketplaceDialog(props: MarketplaceDialogProps) {
 function MarketplaceDialogUI(props: MarketplaceDialogProps) {
   const [keyword, setKeyword] = useState('');
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(null);
+  const classes = useStyles();
+  const onSearch$ = useSubject<string>();
 
   useMount(() => {
     setIsFetching(true);
@@ -61,27 +80,72 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
     });
   });
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
+      setIsFetching(true);
+      fetchMarketplacePlugins('blueprint', keyword).subscribe((plugins) => {
+        setIsFetching(false);
+        setPlugins(plugins);
+      });
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [onSearch$]);
 
   const resource = useLogicResource<MarketplacePlugin[], { plugins: MarketplacePlugin[]; isFetching: boolean }>(
     useMemo(() => ({ plugins, isFetching }), [plugins, isFetching]),
     {
       shouldResolve: (source) => Boolean(source.plugins) && source.isFetching === false,
       shouldReject: (source) => false,
-      shouldRenew: (source, resource) => source.isFetching && resource.complete,
+      shouldRenew: (source, resource) => source.isFetching === false && resource.complete,
       resultSelector: (source) => source.plugins,
       errorSelector: (source) => null
     }
   );
+
+  const onToggleSearchBar = () => {
+    setShowSearchBar(!showSearchBar);
+  };
+
+  const onSearch = (keyword) => {
+    onSearch$.next(keyword);
+    setKeyword(keyword);
+  };
 
   return (
     <>
       <DialogHeader
         title={<FormattedMessage id="MarketplaceDialog.title" defaultMessage="Search & install plugin" />}
         onDismiss={props.onClose}
+        rightActions={[
+          {
+            icon: SearchIcon,
+            disabled: isFetching === null || plugins === null,
+            onClick: onToggleSearchBar
+          }
+        ]}
       />
       <DialogBody style={{ minHeight: '60vh' }}>
-        <SuspenseWithEmptyState resource={resource}>
+        {showSearchBar && (
+          <SearchBar
+            showActionButton={Boolean(keyword)}
+            keyword={keyword}
+            onChange={onSearch}
+            autoFocus={true}
+            classes={{ root: classes.searchWrapper }}
+          />
+        )}
+        <SuspenseWithEmptyState
+          resource={resource}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: <FormattedMessage id="MarketplaceDialog.empty" defaultMessage="No plugins found." />,
+              classes: { root: classes.loadingWrapper }
+            }
+          }}
+          loadingStateProps={{ classes: { root: classes.loadingWrapper } }}
+        >
           <PluginList resource={resource} />
         </SuspenseWithEmptyState>
       </DialogBody>
