@@ -59,7 +59,6 @@ import {
   showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
-  duplicateAsset,
   duplicateWithPolicyValidation,
   pasteItem,
   pasteItemWithPolicyValidation,
