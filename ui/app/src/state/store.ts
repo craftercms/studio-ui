@@ -32,7 +32,7 @@ import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
-import { refreshSession } from '../services/auth';
+import { obtainAuthToken } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
 
@@ -56,7 +56,7 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
     );
   } else {
     store$ = new BehaviorSubject(null);
-    return refreshSession().pipe(
+    return obtainAuthToken().pipe(
       tap(({ token }) => setJwt(token)),
       switchMap((auth) => {
         const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();

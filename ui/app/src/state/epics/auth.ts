@@ -27,7 +27,7 @@ import {
 } from '../actions/auth';
 import { ignoreElements, map, mapTo, pluck, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
-import { refreshSession } from '../../services/auth';
+import { obtainAuthToken } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
@@ -71,7 +71,7 @@ const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(refreshAuthToken.type),
-      switchMap(() => refreshSession().pipe(map(refreshAuthTokenComplete), catchAjaxError(refreshAuthTokenFailed)))
+      switchMap(() => obtainAuthToken().pipe(map(refreshAuthTokenComplete), catchAjaxError(refreshAuthTokenFailed)))
     ),
   (action$, state$, { systemBroadcastChannel }) =>
     action$.pipe(

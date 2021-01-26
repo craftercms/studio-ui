@@ -44,7 +44,7 @@ export function login(credentials: Credentials): Observable<{ user: User; auth: 
       body: `username=${credentials.username}&password=${credentials.password}`
     })
   ).pipe(
-    switchMap(() => refreshSession()),
+    switchMap(() => obtainAuthToken()),
     switchMap((auth) =>
       get(me.url, getJwtHeaders(auth.token))
         .pipe(pluck('response', 'authenticatedUser'))
@@ -95,6 +95,6 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
 
 export type RefreshSessionResponse = { expiresAt: string; token: string };
 
-export function refreshSession(): Observable<RefreshSessionResponse> {
+export function obtainAuthToken(): Observable<RefreshSessionResponse> {
   return get('/studio/refresh.json').pipe(pluck('response'));
 }

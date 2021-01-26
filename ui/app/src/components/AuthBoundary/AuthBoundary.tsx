@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Login from '../../pages/Login';
-import { refreshSession } from '../../services/auth';
+import { obtainAuthToken } from '../../services/auth';
 import I18nProvider from '../I18nProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 import { getRequestForgeryToken } from '../../utils/auth';
@@ -24,7 +24,7 @@ import { getRequestForgeryToken } from '../../utils/auth';
 export function AuthBoundary(props) {
   const [loggedIn, setLoggedIn] = useState<boolean>(null);
   useEffect(() => {
-    refreshSession()
+    obtainAuthToken()
       .pipe()
       .subscribe(
         () => setLoggedIn(true),
