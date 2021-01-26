@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Blueprint } from './Blueprint';
+import { MarketplacePlugin } from './MarketplacePlugin';
 
 interface View {
   title: string;
@@ -27,7 +27,7 @@ export interface Views {
 }
 
 export interface SiteState {
-  blueprint: Blueprint;
+  blueprint: MarketplacePlugin;
   siteId: string;
   siteName: string;
   siteIdExist: boolean;
@@ -48,7 +48,7 @@ export interface SiteState {
   repoKey: string;
   submitted: boolean;
   selectedView: number;
-  details: { blueprint: Blueprint; index: number };
+  details: { blueprint: MarketplacePlugin; index: number };
   blueprintFields?: {
     [key: string]: string;
   };
@@ -59,7 +59,7 @@ export interface SiteState {
   };
   showIncompatible: boolean;
 
-  [key: string]: string | boolean | Blueprint | number | object;
+  [key: string]: string | boolean | MarketplacePlugin | number | object;
 }
 
 export interface CreateSiteMeta {

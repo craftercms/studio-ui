@@ -32,6 +32,10 @@ import TableCell from '@material-ui/core/TableCell';
 import Checkbox from '@material-ui/core/Checkbox';
 import { TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
+import { usePermissions } from '../../utils/hooks';
+import EmptyState from '../SystemStatus/EmptyState';
+import MarketplaceDialog from '../MarketplaceDialog';
+import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -68,88 +72,126 @@ const StyledTableCell = withStyles((theme: Theme) =>
 
 export const PluginManagement = () => {
   const classes = styles();
-
+  const permissions = usePermissions();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
+  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(true);
+  const listPlugins = permissions?.['/']['list_plugins'] ?? true;
+  const installPlugins = permissions?.['/']['install_plugins'] ?? true;
 
   useEffect(() => {
-    setPlugins([
-      {
-        id: 'test',
-        version: {
-          major: 1,
-          minor: 2,
-          patch: 3
-        },
-        pluginUrl: '/testing',
-        installationDate: moment()
-      }
-    ]);
-  }, []);
+    if (listPlugins) {
+      setPlugins([
+        {
+          id: 'test',
+          version: {
+            major: 1,
+            minor: 1,
+            patch: 21
+          },
+          pluginUrl: '/testing',
+          installationDate: moment()
+        }
+      ]);
+    }
+  }, [listPlugins]);
 
-  const onSearchPlugin = () => {};
+  const onSearchPlugin = () => {
+    if (installPlugins) {
+      setOpenMarketPlaceDialog(true);
+    }
+  };
+
+  const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {};
+
+  const onCloseMarketplaceDialog = () => {
+    setOpenMarketPlaceDialog(false);
+  };
 
   return (
     <section>
       <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="PluginManagement.title" defaultMessage="Token Management" />
+        <FormattedMessage id="PluginManagement.title" defaultMessage="Plugin Management" />
       </Typography>
       <Divider />
-      <SecondaryButton startIcon={<AddIcon />} className={classes.createToken} onClick={onSearchPlugin}>
+      <SecondaryButton
+        startIcon={<AddIcon />}
+        className={classes.createToken}
+        onClick={onSearchPlugin}
+        disabled={installPlugins === false}
+      >
         <FormattedMessage id="PluginManagement.searchPlugin" defaultMessage="Search & install" />
       </SecondaryButton>
       <Divider />
-      <ConditionalLoadingState isLoading={plugins === null}>
-        <TableContainer className={classes.tableWrapper}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox color="primary" />
-                </TableCell>
-                <TableCell align="left" padding="none">
-                  <Typography variant="subtitle2">
-                    <FormattedMessage id="words.id" defaultMessage="Id" />
-                  </Typography>
-                </TableCell>
-                <StyledTableCell align="left">
-                  <Typography variant="subtitle2">
-                    <FormattedMessage id="words.version" defaultMessage="Version" />
-                  </Typography>
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  <Typography variant="subtitle2">
-                    <FormattedMessage id="words.url" defaultMessage="Url" />
-                  </Typography>
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  <Typography variant="subtitle2">
-                    <FormattedMessage id="PluginManagement.installationDate" defaultMessage="Installation Date" />
-                  </Typography>
-                </StyledTableCell>
-                <TableCell align="center" className={classes.actions} />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {plugins?.map((plugin) => (
-                <TableRow key={plugin.id}>
+      {listPlugins === false ? (
+        <EmptyState
+          title={
+            <FormattedMessage
+              id="PluginManagement.listPluginPermission"
+              defaultMessage="You don't have enough permissions to see the list of plugins"
+            />
+          }
+        />
+      ) : (
+        <ConditionalLoadingState isLoading={plugins === null}>
+          <TableContainer className={classes.tableWrapper}>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
                   <TableCell padding="checkbox">
                     <Checkbox color="primary" />
                   </TableCell>
-                  <TableCell component="th" id={plugin.id} scope="row" padding="none">
-                    {plugin.id}
+                  <TableCell align="left" padding="none">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.id" defaultMessage="Id" />
+                    </Typography>
                   </TableCell>
-                  <StyledTableCell align="left">{plugin.version.major}</StyledTableCell>
-                  <StyledTableCell align="left">{plugin.pluginUrl}</StyledTableCell>
                   <StyledTableCell align="left">
-                    <AsDayMonthDateTime date={plugin.installationDate} />
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.version" defaultMessage="Version" />
+                    </Typography>
                   </StyledTableCell>
-                  <TableCell align="right" className={classes.actions}></TableCell>
+                  <StyledTableCell align="left">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="words.url" defaultMessage="Url" />
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography variant="subtitle2">
+                      <FormattedMessage id="PluginManagement.installationDate" defaultMessage="Installation Date" />
+                    </Typography>
+                  </StyledTableCell>
+                  <TableCell align="center" className={classes.actions} />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </ConditionalLoadingState>
+              </TableHead>
+              <TableBody>
+                {plugins?.map((plugin) => (
+                  <TableRow key={plugin.id}>
+                    <TableCell padding="checkbox">
+                      <Checkbox color="primary" />
+                    </TableCell>
+                    <TableCell component="th" id={plugin.id} scope="row" padding="none">
+                      {plugin.id}
+                    </TableCell>
+                    <StyledTableCell align="left">
+                      {plugin.version.major}.{plugin.version.minor}.{plugin.version.patch}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">{plugin.pluginUrl}</StyledTableCell>
+                    <StyledTableCell align="left">
+                      <AsDayMonthDateTime date={plugin.installationDate} />
+                    </StyledTableCell>
+                    <TableCell align="right" className={classes.actions}></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </ConditionalLoadingState>
+      )}
+      <MarketplaceDialog
+        open={openMarketPlaceDialog}
+        onClose={onCloseMarketplaceDialog}
+        onInstall={onInstallMarketplacePlugin}
+      />
     </section>
   );
 };

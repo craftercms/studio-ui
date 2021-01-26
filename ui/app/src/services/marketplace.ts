@@ -16,6 +16,11 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { MarketplaceSite } from '../models/Site';
+import { map, pluck } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { MarketplacePlugin } from '../models/MarketplacePlugin';
+import { toQueryString } from '../utils/object';
+import { PagedArray } from '../models/PagedArray';
 
 export function fetchBlueprints(options?: { type?: string; limit?: number; showIncompatible?: boolean }) {
   const params = {
@@ -27,6 +32,20 @@ export function fetchBlueprints(options?: { type?: string; limit?: number; showI
 
   return get(
     `/studio/api/2/marketplace/search?type=${params.type}&limit=${params.limit}&showIncompatible=${params.showIncompatible}`
+  );
+}
+
+export function fetchMarketplacePlugins(
+  type: string,
+  options?: {
+    limit?: number;
+    showIncompatible?: boolean;
+  }
+): Observable<PagedArray<MarketplacePlugin>> {
+  const qs = toQueryString({ type, ...options });
+  return get(`/studio/api/2/marketplace/search${qs}`).pipe(
+    pluck('response'),
+    map(({ plugins, offset, total, limit }) => Object.assign(plugins, { total, offset, limit }))
   );
 }
 

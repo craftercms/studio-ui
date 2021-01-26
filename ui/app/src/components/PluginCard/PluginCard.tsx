@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,25 +24,24 @@ import CardActions from '@material-ui/core/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import { makeStyles } from '@material-ui/core/styles';
-import { Blueprint } from '../../../../models/Blueprint';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
-import MobileStepper from '../../../../components/MobileStepper';
-import { backgroundColor } from '../../../../styles/theme';
+import MobileStepper from '../MobileStepper';
+import { backgroundColor } from '../../styles/theme';
 import Button from '@material-ui/core/Button';
-import { Theme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import clsx from 'clsx';
-import cardTitleStyles from '../../../../styles/card';
+import cardTitleStyles from '../../styles/card';
 
-interface BlueprintCardProps {
-  blueprint: Blueprint;
-  interval: number;
-  marketplace: boolean;
+interface PluginCardProps {
+  plugin: MarketplacePlugin;
+  interval?: number;
+  marketplace?: boolean;
 
-  onBlueprintSelected(blueprint: Blueprint, view: number): any;
+  onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 
-  onDetails(blueprint: Blueprint, index?: number): any;
+  onDetails(plugin: MarketplacePlugin, index?: number): any;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -152,45 +151,45 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const messages = defineMessages({
   version: {
-    id: 'blueprint.version',
+    id: 'plugin.version',
     defaultMessage: 'Version'
   },
   license: {
-    id: 'blueprint.license',
+    id: 'plugin.license',
     defaultMessage: 'License'
   },
   crafterCms: {
-    id: 'blueprint.crafterCMS',
+    id: 'plugin.crafterCMS',
     defaultMessage: 'Crafter CMS'
   },
   by: {
-    id: 'blueprint.by',
+    id: 'plugin.by',
     defaultMessage: 'By'
   },
   noDev: {
-    id: 'blueprint.noDev',
+    id: 'plugin.noDev',
     defaultMessage: 'No developer specified.'
   },
   use: {
-    id: 'blueprint.use',
+    id: 'plugin.use',
     defaultMessage: 'Use'
   },
   more: {
-    id: 'blueprint.more',
+    id: 'plugin.more',
     defaultMessage: 'More...'
   },
   licenseTooltip: {
-    id: 'blueprint.licenseTooltip',
+    id: 'plugin.licenseTooltip',
     defaultMessage: '{license} license'
   }
 });
 
-function BlueprintCard(props: BlueprintCardProps) {
+function PluginCard(props: PluginCardProps) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
-  const { onBlueprintSelected, blueprint, interval, marketplace, onDetails } = props;
-  const { media, name, license, id, developer } = blueprint;
+  const { onPluginSelected, plugin, interval = 5000, marketplace = true, onDetails } = props;
+  const { media, name, license, id, developer } = plugin;
   const { formatMessage } = useIntl();
 
   function handleChangeIndex(value: number) {
@@ -211,10 +210,10 @@ function BlueprintCard(props: BlueprintCardProps) {
   }
 
   function onImageClick(e: any, index: number = 0) {
-    if (blueprint.id === 'GIT') return false;
+    if (plugin.id === 'GIT') return false;
     e.stopPropagation();
     e.preventDefault();
-    onDetails(blueprint, index);
+    onDetails(plugin, index);
   }
 
   function renderLicense() {
@@ -289,18 +288,18 @@ function BlueprintCard(props: BlueprintCardProps) {
   }
 
   let steps = 0;
-  blueprint.media && blueprint.media.screenshots ? (steps = blueprint.media.screenshots.length) : (steps = 0);
-  blueprint.media && blueprint.media.videos ? (steps += blueprint.media.videos.length) : (steps += 0);
+  plugin.media && plugin.media.screenshots ? (steps = plugin.media.screenshots.length) : (steps = 0);
+  plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
     <Card className={classes.card}>
       {id !== 'GIT' && (
         <CardActionArea
           onClick={(e) => {
-            if (marketplace && !blueprint.compatible) {
+            if (marketplace && !plugin.compatible) {
               onImageClick(e);
             } else {
-              onBlueprintSelected(blueprint, 1);
+              onPluginSelected(plugin, 1);
             }
           }}
         >
@@ -322,7 +321,7 @@ function BlueprintCard(props: BlueprintCardProps) {
           />
         </CardActionArea>
       )}
-      <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+      <CardActionArea onClick={() => onPluginSelected(plugin, 1)}>
         <AutoPlaySwipeableViews
           index={index}
           interval={interval}
@@ -338,7 +337,7 @@ function BlueprintCard(props: BlueprintCardProps) {
               {name}
             </Typography>
             <Typography gutterBottom variant="subtitle2" component="h2" color="textSecondary">
-              {blueprint.description}
+              {plugin.description}
             </Typography>
           </CardContent>
         )}
@@ -355,17 +354,17 @@ function BlueprintCard(props: BlueprintCardProps) {
       )}
       {id !== 'GIT' && (
         <CardActions className={'cardActions'}>
-          {((marketplace && blueprint.compatible) || !marketplace) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
+          {((marketplace && plugin.compatible) || !marketplace) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => onBlueprintSelected(blueprint, 1)}
+              onClick={() => onPluginSelected(plugin, 1)}
               className={classes.use}
             >
               {formatMessage(messages.use)}
             </Button>
           )}
-          <Button className={classes.more} onClick={() => onDetails(blueprint)}>
+          <Button className={classes.more} onClick={() => onDetails(plugin)}>
             {formatMessage(messages.more)}
           </Button>
         </CardActions>
@@ -374,4 +373,4 @@ function BlueprintCard(props: BlueprintCardProps) {
   );
 }
 
-export default BlueprintCard;
+export default PluginCard;

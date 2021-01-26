@@ -37,11 +37,6 @@ interface Version {
   patch: number;
 }
 
-interface License {
-  name: string;
-  url: string;
-}
-
 export interface Parameter {
   label: string;
   name: string;
@@ -51,20 +46,40 @@ export interface Parameter {
   defaultValue: string;
 }
 
-export interface Blueprint {
+export interface MarketplacePlugin {
   id: string;
+  type?: string;
   name: string;
+  tags?: string[];
   version?: Version;
-  license?: License;
-  crafterCmsVersions?: [Version];
   description: string;
+  website?: {
+    name: string;
+    url: string;
+  };
   media: Media;
-  developer?: any;
-  website?: any;
-  searchEngine?: string;
+  developer?: {
+    people: any;
+    company?: {
+      name: string;
+      url: string;
+    };
+  };
+  build?: {
+    id: string;
+    url: string;
+  };
+  license?: {
+    name: string;
+    url: string;
+  };
+  crafterCmsVersions?: [Version];
+  crafterCmsEditions?: string[];
+  parameters?: [Parameter];
+  status?: string;
   source?: string;
+  compatible?: boolean;
+  searchEngine?: string;
   url?: string;
   ref?: string;
-  parameters?: [Parameter];
-  compatible?: boolean;
 }

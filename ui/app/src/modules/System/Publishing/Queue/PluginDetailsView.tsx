@@ -23,7 +23,7 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import MobileStepper from '../../../../components/MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Blueprint } from '../../../../models/Blueprint';
+import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -176,13 +176,13 @@ const messages = defineMessages({
 
 interface PluginDetailsViewProps {
   selectedIndex?: number;
-  blueprint: Blueprint;
+  blueprint: MarketplacePlugin;
   interval: number;
   marketplace: boolean;
 
   onCloseDetails(event: any): any;
 
-  onBlueprintSelected(blueprint: Blueprint, view: number): any;
+  onBlueprintSelected(blueprint: MarketplacePlugin, view: number): any;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);

@@ -21,7 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import { SiteState } from '../../../../models/Site';
-import { Blueprint, Parameter } from '../../../../models/Blueprint';
+import { MarketplacePlugin, Parameter } from '../../../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Visibility from '@material-ui/icons/Visibility';
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface BlueprintReviewProps {
   inputs: SiteState;
-  blueprint: Blueprint;
+  blueprint: MarketplacePlugin;
 
   onGoTo(step: number): any;
 }
@@ -75,7 +75,7 @@ const messages = defineMessages({
   },
   blueprintStrategy: {
     id: 'createSiteDialog.blueprintStrategy',
-    defaultMessage: 'Create from blueprint'
+    defaultMessage: 'Create from plugin'
   },
   gitStrategy: {
     id: 'createSiteDialog.gitStrategy',
@@ -146,7 +146,7 @@ const messages = defineMessages({
     defaultMessage: 'Description'
   },
   blueprint: {
-    id: 'createSiteDialog.blueprint',
+    id: 'createSiteDialog.plugin',
     defaultMessage: 'Blueprint'
   },
   blueprintParameters: {

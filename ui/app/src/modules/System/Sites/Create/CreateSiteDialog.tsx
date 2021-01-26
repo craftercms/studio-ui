@@ -21,14 +21,14 @@ import SearchIcon from '@material-ui/icons/Search';
 import Grid from '@material-ui/core/Grid';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import BlueprintCard from './BlueprintCard';
+import PluginCard from '../../../../components/PluginCard/PluginCard';
 import Spinner from '../../../../components/SystemStatus/Spinner';
 import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import LoadingState from '../../../../components/SystemStatus/LoadingState';
 import ConfirmDialog from '../../../../components/Dialogs/ConfirmDialog';
-import { Blueprint } from '../../../../models/Blueprint';
+import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
@@ -131,7 +131,7 @@ const messages = defineMessages({
   chooseCreationStrategy: {
     id: 'createSiteDialog.chooseCreationStrategy',
     defaultMessage:
-      'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
+      'Choose creation strategy: start from an existing Git repo or create based on a plugin that suits you best.'
   },
   showIncompatible: {
     id: 'createSiteDialog.showIncompatible',
@@ -340,15 +340,15 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
   };
 
-  function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
+  function filterBlueprints(blueprints: MarketplacePlugin[], searchKey: string) {
     searchKey = searchKey.toLowerCase();
     return searchKey && blueprints
       ? blueprints.filter((blueprint) => blueprint.name.toLowerCase().includes(searchKey))
       : blueprints;
   }
 
-  const filteredBlueprints: Blueprint[] = filterBlueprints(blueprints, search.searchKey);
-  const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
+  const filteredBlueprints: MarketplacePlugin[] = filterBlueprints(blueprints, search.searchKey);
+  const filteredMarketplace: MarketplacePlugin[] = filterBlueprints(marketplace, search.searchKey);
 
   setRequestForgeryToken();
 
@@ -372,7 +372,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       subscriptions.push(
         fetchBuiltInBlueprints().subscribe(
           (blueprints) => {
-            const _blueprints: [Blueprint] = [
+            const _blueprints: [MarketplacePlugin] = [
               {
                 id: 'GIT',
                 name: formatMessage(messages.gitBlueprintName),
@@ -502,7 +502,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     setSearch({ ...search, searchKey });
   }
 
-  function handleBlueprintSelected(blueprint: Blueprint, view: number) {
+  function handleBlueprintSelected(blueprint: MarketplacePlugin, view: number) {
     if (blueprint.id === 'GIT') {
       setSite({
         selectedView: view,
@@ -556,7 +556,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
     if (site.selectedView === 2) {
       setApiState({ creatingSite: true });
-      // it is a marketplace blueprint
+      // it is a marketplace plugin
       if (site.blueprint.source === 'GIT') {
         const marketplaceParams: MarketplaceSite = createMarketplaceParams();
         createNewSiteFromMarketplace(marketplaceParams);
@@ -714,11 +714,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
   }
 
-  function onDetails(blueprint: Blueprint, index: number) {
+  function onDetails(blueprint: MarketplacePlugin, index: number) {
     setSite({ details: { blueprint: blueprint, index: index } });
   }
 
-  function renderBlueprints(list: Blueprint[]) {
+  function renderBlueprints(list: MarketplacePlugin[]) {
     if (list.length === 0) {
       return (
         <EmptyState
@@ -728,12 +728,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         />
       );
     }
-    return list.map((item: Blueprint) => {
+    return list.map((item: MarketplacePlugin) => {
       return (
         <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
-          <BlueprintCard
-            blueprint={item}
-            onBlueprintSelected={handleBlueprintSelected}
+          <PluginCard
+            plugin={item}
+            onPluginSelected={handleBlueprintSelected}
             interval={5000}
             marketplace={tab === 1}
             onDetails={onDetails}
