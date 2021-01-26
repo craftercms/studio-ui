@@ -58,8 +58,8 @@ export default function PathNavigatorList(props: NavProps) {
         <NavItem
           item={item}
           key={item.id}
-          isLeaf={leaves.includes(item.id)}
-          isActive={active.includes(item.id)}
+          isLeaf={leaves.includes(item.path)}
+          isActive={active.includes(item.path)}
           locale={locale}
           onChangeParent={onPathSelected}
           onPreview={onPreview}

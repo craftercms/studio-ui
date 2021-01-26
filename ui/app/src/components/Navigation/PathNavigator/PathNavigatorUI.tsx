@@ -58,7 +58,7 @@ export interface PathNavigatorStateProps {
   breadcrumb: string[];
   selectedItems: string[];
   leaves: string[];
-  count: number; // Number of items in the current path
+  total: number; // Number of items in the current path
   limit: number;
   offset: number;
   collapsed?: boolean;
@@ -82,6 +82,10 @@ export interface PathNavigatorUIProps {
    * Widget's top title/label
    **/
   title: string;
+  /**
+   * Widget's search keyword
+   **/
+  keyword: string;
   /**
    * Indents all items of the widget wrapping them with a border on the left of the widget
    **/
@@ -173,6 +177,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onCurrentParentMenu,
     siteLocales,
     onSearch,
+    keyword,
     onBreadcrumbSelected,
     onSelectItem,
     onPathSelected,
@@ -245,7 +250,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         className={clsx(classes.accordionDetails, showChildrenRail && classes.childrenRail, props.classes?.body)}
       >
         <Breadcrumbs
-          keyword={state.keyword}
+          keyword={keyword}
           breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
           onMenu={onCurrentParentMenu}
           onSearch={onSearch}
@@ -288,7 +293,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             computeActiveItems={computeActiveItems}
           />
         </SuspenseWithEmptyState>
-        {state.count !== null && (
+        {state.total !== null && (
           <TablePagination
             classes={{
               root: clsx(classes.pagination, props.classes?.paginationRoot),
@@ -297,7 +302,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             }}
             component="div"
             labelRowsPerPage=""
-            count={state.count}
+            count={state.total}
             rowsPerPage={state.limit}
             page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}

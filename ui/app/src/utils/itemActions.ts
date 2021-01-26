@@ -292,14 +292,13 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
       options.push(_optionsA);
       return options;
     }
-    case 'taxonomy':
     case 'component':
     case 'template':
     case 'script':
     case 'asset': {
       let _optionsA = [];
       if (write) {
-        if (type === 'taxonomy' || type === 'component') {
+        if (type === 'component') {
           _optionsA.push(menuOptions.edit);
           if (read) {
             _optionsA.push(menuOptions.view);
@@ -313,7 +312,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         if (deleteItem) {
           _optionsA.push(menuOptions.delete);
         }
-        if (type === 'taxonomy' || type === 'component') {
+        if (type === 'component') {
           _optionsA.push(menuOptions.changeContentType);
         }
         _optionsA.push(menuOptions.cut);
@@ -344,6 +343,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
       return options;
     }
     default: {
+      console.error(`[itemActions.ts] Unknown system type ${item.systemType} for item ${item.path}`);
       return options;
     }
   }
