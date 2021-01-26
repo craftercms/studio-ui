@@ -2846,13 +2846,13 @@
         }
       },
 
-      // TODO: handle validations with complex types (like datasources)
+      // TODO: handle validations with other types
       isDependencyMet: function(dependency) {
         if (dependency.type) {
           switch (dependency.type) {
-            case "text":
+            case 'text':
               return dependency.value !== '';
-            case "checkbox":
+            case 'checkbox':
               return dependency.checked;
           }
         } else {
@@ -2869,9 +2869,13 @@
         dependency.addEventListener('propertyUpdate', (e) => {
           const isDependencyMet = _self.isDependencyMet(dependency);
 
+          const dependencyLabel = e.target.getAttribute('data-label')
+            ? e.target.getAttribute('data-label')
+            : properties.dependsOn;
+
           valueEl.disabled = !isDependencyMet;
           valueEl[fieldToUpdate] = !isDependencyMet ? emptyValue : valueEl[fieldToUpdate];
-          _self.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+          _self.handleDependencyPopover(valueEl, dependencyLabel, !isDependencyMet);
 
           updateFieldFn(e, valueEl);
         });

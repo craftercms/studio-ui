@@ -35,6 +35,7 @@ YAHOO.extend(
       valueEl.type = 'checkbox';
       valueEl.fieldName = this.fieldName;
       properties && valueEl.setAttribute('data-id', properties.name);
+      properties && valueEl.setAttribute('data-label', properties.label);
 
       wrapperEl.appendChild(valueEl);
       containerEl.appendChild(wrapperEl);

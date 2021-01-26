@@ -28,12 +28,17 @@ YAHOO.extend(
   {
     render: function(value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
       var _self = this;
-      var containerEl = this.containerEl;
-      var valueEl = document.createElement('input');
-      containerEl.appendChild(valueEl);
+      var containerEl = this.containerEl,
+        wrapperEl = document.createElement('div'),
+        valueEl = document.createElement('input');
+
+      wrapperEl.appendChild(valueEl);
+      containerEl.appendChild(wrapperEl);
       valueEl.value = value;
       valueEl.fieldName = this.fieldName;
+      valueEl.className = 'text-prop';
       validations && valueEl.setAttribute('data-id', validations.name);
+      validations && valueEl.setAttribute('data-label', validations.label);
 
       if (updateFn) {
         var updateFieldFn = function(event, el) {
