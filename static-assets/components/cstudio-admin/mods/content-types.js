@@ -2639,7 +2639,13 @@
             sheetEl,
             function(e, el) {
               updatePropertyFn(el.fieldName, el.value);
-            }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            property
           );
         }
 
@@ -2847,38 +2853,55 @@
       },
 
       // TODO: handle validations with other types
-      isDependencyMet: function(dependency) {
-        if (dependency.type) {
-          switch (dependency.type) {
+      dependencyStatus: function(dependencyEl) {
+        const status = {
+          dependencyMet: false,
+          supported: true
+        };
+
+        if (dependencyEl && dependencyEl.type) {
+          switch (dependencyEl.type) {
             case 'text':
-              return dependency.value !== '';
+              status.dependencyMet = dependencyEl.value !== '';
+              break;
             case 'checkbox':
-              return dependency.checked;
+              status.dependencyMet = dependencyEl.checked;
+              break;
+            default:
+              status.supported = false;
+              break;
           }
         } else {
-          return false;
+          status.supported = false;
         }
+
+        return status;
       },
 
       handleDependency: function(dependency, valueEl, properties, fieldToUpdate, emptyValue, updateFieldFn) {
         const _self = this;
-        const isDependencyMet = _self.isDependencyMet(dependency);
-        valueEl.disabled = !isDependencyMet;
-        this.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        const isDependencyMet = dependencyStatus.dependencyMet;
 
-        dependency.addEventListener('propertyUpdate', (e) => {
-          const isDependencyMet = _self.isDependencyMet(dependency);
-
-          const dependencyLabel = e.target.getAttribute('data-label')
-            ? e.target.getAttribute('data-label')
-            : properties.dependsOn;
-
+        if (dependencyStatus.supported) {
           valueEl.disabled = !isDependencyMet;
-          valueEl[fieldToUpdate] = !isDependencyMet ? emptyValue : valueEl[fieldToUpdate];
-          _self.handleDependencyPopover(valueEl, dependencyLabel, !isDependencyMet);
+          this.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+          dependency.addEventListener('propertyUpdate', (e) => {
+            const isDependencyMet = _self.dependencyStatus(dependency).dependencyMet;
 
-          updateFieldFn(e, valueEl);
-        });
+            const dependencyLabel = e.target.getAttribute('data-label')
+              ? e.target.getAttribute('data-label')
+              : properties.dependsOn;
+
+            valueEl.disabled = !isDependencyMet;
+            valueEl[fieldToUpdate] = !isDependencyMet ? emptyValue : valueEl[fieldToUpdate];
+            _self.handleDependencyPopover(valueEl, dependencyLabel, !isDependencyMet);
+
+            updateFieldFn(e, valueEl);
+          });
+        } else {
+          console.log(formatMessage(contentTypesMessages.dependencyNotImplemented, { property: properties.dependsOn }));
+        }
       }
     };
 

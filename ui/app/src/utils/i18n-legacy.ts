@@ -417,6 +417,11 @@ export const contentTypesMessages = defineMessages({
   dependsOn: {
     id: 'contentType.dependsOn',
     defaultMessage: 'This property depends on "{dependency}"'
+  },
+  dependencyNotImplemented: {
+    id: 'contentType.dependencyNotImplemented',
+    defaultMessage:
+      '[{property}.js] Control dependency not implemented for input of type "{property}". Dependency will be ignored.'
   }
 });
 

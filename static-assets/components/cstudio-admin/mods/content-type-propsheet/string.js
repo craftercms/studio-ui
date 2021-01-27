@@ -69,7 +69,9 @@ YAHOO.extend(
 
       if (validations && validations.dependsOn) {
         const dependency = document.querySelector(`[data-id="${validations.dependsOn}"]`);
-        valueEl.value = dependency && _self.isDependencyMet(dependency) ? value : '';
+
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        valueEl.value = dependencyStatus.supported ? (dependencyStatus.dependencyMet ? value : false) : value;
 
         if (dependency) {
           _self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);

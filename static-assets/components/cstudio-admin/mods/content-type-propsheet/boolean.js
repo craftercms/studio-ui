@@ -53,7 +53,12 @@ YAHOO.extend(
 
       if (properties && properties.dependsOn) {
         const dependency = document.querySelector(`[data-id="${properties.dependsOn}"]`);
-        valueEl.checked = dependency && _self.isDependencyMet(dependency) ? value == 'true' : false;
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        valueEl.checked = dependencyStatus.supported
+          ? dependencyStatus.dependencyMet
+            ? value == 'true'
+            : false
+          : value == 'true';
 
         if (dependency) {
           _self.handleDependency(dependency, valueEl, properties, 'checked', false, updateFieldFn);
