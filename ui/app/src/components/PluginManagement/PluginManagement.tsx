@@ -30,12 +30,19 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Checkbox from '@material-ui/core/Checkbox';
-import { TableBody } from '@material-ui/core';
+import { ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import { usePermissions } from '../../utils/hooks';
+import { useActiveSiteId, usePermissions } from '../../utils/hooks';
 import EmptyState from '../SystemStatus/EmptyState';
 import MarketplaceDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
+import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
+import Popover from '@material-ui/core/Popover';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { useDispatch } from 'react-redux';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -72,14 +79,30 @@ const StyledTableCell = withStyles((theme: Theme) =>
 
 export const PluginManagement = () => {
   const classes = styles();
+  const dispatch = useDispatch();
   const permissions = usePermissions();
+  const siteId = useActiveSiteId();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
-  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(true);
+  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(false);
   const listPlugins = permissions?.['/']['list_plugins'] ?? true;
   const installPlugins = permissions?.['/']['install_plugins'] ?? true;
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
 
   useEffect(() => {
-    if (listPlugins) {
+    if (listPlugins && siteId) {
+      // fetchInstalledMarketplacePlugins(siteId).subscribe(
+      //   (plugins) => {
+      //     setPlugins(plugins);
+      //   },
+      //   (error) => {
+      //     dispatch(
+      //       showErrorDialog({
+      //         error
+      //       })
+      //     );
+      //   }
+      // );
       setPlugins([
         {
           id: 'test',
@@ -89,11 +112,21 @@ export const PluginManagement = () => {
             patch: 21
           },
           pluginUrl: '/testing',
-          installationDate: moment()
+          installationDate: moment(),
+          files: [
+            {
+              path: 'test/testing/tremendo',
+              sha512: 'sha512a'
+            },
+            {
+              path: '/test/testing/default',
+              sha512: 'sha512b'
+            }
+          ]
         }
       ]);
     }
-  }, [listPlugins]);
+  }, [dispatch, listPlugins, siteId]);
 
   const onSearchPlugin = () => {
     if (installPlugins) {
@@ -105,6 +138,15 @@ export const PluginManagement = () => {
 
   const onCloseMarketplaceDialog = () => {
     setOpenMarketPlaceDialog(false);
+  };
+
+  const showPluginFiles = (event: React.MouseEvent<HTMLButtonElement>, plugin: PluginRecord) => {
+    setPluginFiles(plugin);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closePluginFilesPopover = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -157,6 +199,11 @@ export const PluginManagement = () => {
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <Typography variant="subtitle2">
+                      <FormattedMessage id="words.files" defaultMessage="Files" />
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography variant="subtitle2">
                       <FormattedMessage id="PluginManagement.installationDate" defaultMessage="Installation Date" />
                     </Typography>
                   </StyledTableCell>
@@ -177,6 +224,12 @@ export const PluginManagement = () => {
                     </StyledTableCell>
                     <StyledTableCell align="left">{plugin.pluginUrl}</StyledTableCell>
                     <StyledTableCell align="left">
+                      {plugin.files.length}
+                      <IconButton onClick={(e) => showPluginFiles(e, plugin)} size="small">
+                        <ExpandMoreRoundedIcon />
+                      </IconButton>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
                       <AsDayMonthDateTime date={plugin.installationDate} />
                     </StyledTableCell>
                     <TableCell align="right" className={classes.actions}></TableCell>
@@ -192,6 +245,33 @@ export const PluginManagement = () => {
         onClose={onCloseMarketplaceDialog}
         onInstall={onInstallMarketplacePlugin}
       />
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={closePluginFilesPopover}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center'
+        }}
+      >
+        <List
+          subheader={
+            <ListSubheader>
+              <FormattedMessage id="words.files" defaultMessage="Files" />
+            </ListSubheader>
+          }
+        >
+          {pluginFiles?.files.map((file, i) => (
+            <ListItem key={i}>
+              <ListItemText primary={file.path} />
+            </ListItem>
+          ))}
+        </List>
+      </Popover>
     </section>
   );
 };

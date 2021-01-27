@@ -18,9 +18,10 @@ import { get, postJSON } from '../utils/ajax';
 import { MarketplaceSite } from '../models/Site';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { MarketplacePlugin } from '../models/MarketplacePlugin';
+import { MarketplacePlugin, Version } from '../models/MarketplacePlugin';
 import { toQueryString } from '../utils/object';
 import { PagedArray } from '../models/PagedArray';
+import ApiResponse from '../models/ApiResponse';
 
 export function fetchBlueprints(options?: { type?: string; limit?: number; showIncompatible?: boolean }) {
   const params = {
@@ -48,6 +49,18 @@ export function fetchMarketplacePlugins(
     pluck('response'),
     map(({ plugins, offset, total, limit }) => Object.assign(plugins, { total, offset, limit }))
   );
+}
+
+export function installMarketplacePlugin(
+  siteId: string,
+  pluginId: string,
+  pluginVersion: Version
+): Observable<ApiResponse> {
+  return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion }).pipe(pluck('response'));
+}
+
+export function fetchInstalledMarketplacePlugins(siteId: string) {
+  return get(`/studio/api/2/marketplace/installed?siteId=${siteId}`).pipe(pluck('response', 'plugins'));
 }
 
 export function createSite(site: MarketplaceSite) {

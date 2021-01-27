@@ -20,10 +20,10 @@ import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import { useLogicResource, useMount, useSubject } from '../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useMount, useSubject } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
-import { fetchMarketplacePlugins } from '../../services/marketplace';
+import { fetchMarketplacePlugins, installMarketplacePlugin } from '../../services/marketplace';
 import PluginCard from '../PluginCard';
 import { PagedArray } from '../../models/PagedArray';
 import Grid from '@material-ui/core/Grid';
@@ -32,6 +32,8 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import SearchBar from '../Controls/SearchBar';
 import { debounceTime } from 'rxjs/operators';
 import PluginDetailsView from '../PluginDetailsView';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -66,6 +68,7 @@ export default function MarketplaceDialog(props: MarketplaceDialogProps) {
 }
 
 function MarketplaceDialogUI(props: MarketplaceDialogProps) {
+  const siteId = useActiveSiteId();
   const [keyword, setKeyword] = useState('');
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
@@ -73,13 +76,10 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
   const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
   const classes = useStyles();
   const onSearch$ = useSubject<string>();
+  const dispatch = useDispatch();
 
   useMount(() => {
-    setIsFetching(true);
-    fetchMarketplacePlugins('blueprint').subscribe((plugins) => {
-      setIsFetching(false);
-      setPlugins(plugins);
-    });
+    refresh();
   });
 
   useEffect(() => {
@@ -106,6 +106,14 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
     }
   );
 
+  const refresh = () => {
+    setIsFetching(true);
+    fetchMarketplacePlugins('blueprint').subscribe((plugins) => {
+      setIsFetching(false);
+      setPlugins(plugins);
+    });
+  };
+
   const onToggleSearchBar = () => {
     setShowSearchBar(!showSearchBar);
   };
@@ -124,7 +132,18 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
   };
 
   const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
-    console.log(plugin);
+    installMarketplacePlugin(siteId, plugin.id, plugin.version).subscribe(
+      () => {
+        refresh();
+      },
+      (response) => {
+        dispatch(
+          showErrorDialog({
+            error: response
+          })
+        );
+      }
+    );
   };
 
   return (
