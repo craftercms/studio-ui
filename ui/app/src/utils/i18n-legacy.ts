@@ -1465,13 +1465,6 @@ export const itemSuccessMessages = defineMessages({
   }
 });
 
-export const itemFailureMessages = defineMessages({
-  itemPasteToChildNotAllowed: {
-    id: 'item.itemPasteToChildNotAllowed',
-    defaultMessage: 'Pasting to a child item is not allowed for cut'
-  }
-});
-
 export const siteSuccessMessages = defineMessages({
   siteDeleted: {
     id: 'site.deleted',

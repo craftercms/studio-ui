@@ -74,7 +74,17 @@ const messages = defineMessages({
   }
 });
 
-const actions = ['edit', 'publish', 'delete', 'reject', 'schedule', 'duplicateAsset', 'dependencies', 'history'];
+const actions = [
+  'edit',
+  'publish',
+  'delete',
+  'reject',
+  'schedule',
+  'duplicate,',
+  'duplicateAsset',
+  'dependencies',
+  'history'
+];
 
 interface ActionsBarProps {
   open: boolean;

@@ -54,15 +54,14 @@ import {
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
-  showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
   showPublishItemSuccessNotification,
   showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
-  duplicateAsset,
-  duplicateItem,
+  duplicateWithPolicyValidation,
   pasteItem,
+  pasteItemWithPolicyValidation,
   reloadDetailedItem,
   setClipBoard,
   unlockItem
@@ -312,12 +311,14 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         if (deleteItem) {
           _optionsA.push(menuOptions.delete);
         }
-        if (type === 'component') {
-          _optionsA.push(menuOptions.changeContentType);
-        }
         _optionsA.push(menuOptions.cut);
         _optionsA.push(menuOptions.copy);
-        _optionsA.push(menuOptions.duplicateAsset);
+        if (type === 'component') {
+          _optionsA.push(menuOptions.duplicate);
+          _optionsA.push(menuOptions.changeContentType);
+        } else {
+          _optionsA.push(menuOptions.duplicateAsset);
+        }
         if (hasClipboard) {
           _optionsA.push(menuOptions.paste);
         }
@@ -570,7 +571,7 @@ export const itemActionDispatcher = (
             }
           });
         } else {
-          dispatch(pasteItem({ path: item.path }));
+          dispatch(pasteItemWithPolicyValidation({ path: item.path }));
         }
         break;
       }
@@ -582,12 +583,9 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateAsset({
+              duplicateWithPolicyValidation({
                 path: item.path,
-                onSuccess: batchActions([
-                  showDuplicatedItemSuccessNotification(),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
+                type: 'asset'
               })
             ])
           })
@@ -602,12 +600,9 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateItem({
+              duplicateWithPolicyValidation({
                 path: item.path,
-                onSuccess: batchActions([
-                  showDuplicatedItemSuccessNotification(),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
+                type: 'item'
               })
             ])
           })
