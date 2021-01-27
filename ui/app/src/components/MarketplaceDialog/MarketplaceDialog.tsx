@@ -86,8 +86,9 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
       setIsFetching(true);
       fetchMarketplacePlugins('blueprint', keyword).subscribe((plugins) => {
-        setIsFetching(false);
+        // Moving setPlugins above of setIsFetching to avoid resolve the resource with the prev plugins
         setPlugins(plugins);
+        setIsFetching(false);
       });
     });
     return () => {
@@ -100,7 +101,7 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
     {
       shouldResolve: (source) => Boolean(source.plugins) && source.isFetching === false,
       shouldReject: (source) => false,
-      shouldRenew: (source, resource) => source.isFetching === false && resource.complete,
+      shouldRenew: (source, resource) => resource.complete,
       resultSelector: (source) => source.plugins,
       errorSelector: (source) => null
     }
@@ -154,13 +155,13 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
         rightActions={[
           {
             icon: SearchIcon,
-            disabled: isFetching === null || plugins === null,
+            disabled: isFetching === null || plugins === null || Boolean(selectedDetailsPlugin),
             onClick: onToggleSearchBar
           }
         ]}
       />
       {selectedDetailsPlugin ? (
-        <DialogBody style={{ minHeight: '60vh' }}>
+        <DialogBody style={{ minHeight: '60vh', padding: 0 }}>
           <PluginDetailsView
             plugin={selectedDetailsPlugin}
             onCloseDetails={onPluginDetailsClose}
