@@ -22,7 +22,7 @@ import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigat
 type PayloadWithId<P> = P & { id: string };
 
 export const pathNavigatorInit = createAction<
-  PayloadWithId<{ path: string; locale: string; collapsed?: boolean; excludes?: string[] }>
+  PayloadWithId<{ path: string; locale: string; collapsed?: boolean; excludes?: string[]; limit: number }>
 >('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>(
@@ -63,9 +63,9 @@ export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: Det
 
 export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
 
-export const pathNavigatorFetchParentItems = createAction<PayloadWithId<{ path: string; excludes?: string[] }>>(
-  'PATH_NAVIGATOR_FETCH_PARENT_ITEMS'
-);
+export const pathNavigatorFetchParentItems = createAction<
+  PayloadWithId<{ path: string; excludes?: string[]; limit: number }>
+>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPathComplete = createAction<PayloadWithId<{ response: GetChildrenResponse }>>(
   'PATH_NAVIGATOR_FETCH_PATH_COMPLETE'
@@ -78,3 +78,5 @@ export const pathNavigatorFetchParentItemsComplete = createAction<PayloadWithId<
 export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
 
 export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
+
+export const pathNavigatorChangePage = createAction<PayloadWithId<{ offset: number }>>('PATH_NAVIGATOR_CHANGE_PAGE');
