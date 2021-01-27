@@ -30,6 +30,8 @@ import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
+import { validateActionPolicy } from '../../services/sites';
+import ConfirmDialog from './ConfirmDialog';
 
 interface CreateFileBaseProps {
   open: boolean;
@@ -56,6 +58,15 @@ export const translations = defineMessages({
   placeholder: {
     id: 'createFile.placeholder',
     defaultMessage: 'Please type a name'
+  },
+  createPolicy: {
+    id: 'createFile.createPolicy',
+    defaultMessage:
+      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
+  },
+  policyError: {
+    id: 'createFile.policyError',
+    defaultMessage: 'The supplied name goes against site policies.'
   }
 });
 
@@ -88,29 +99,62 @@ interface CreateFileUIProps extends CreateFileProps {
 function CreateFileUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
   const [name, setName] = useState('');
+  const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
   useUnmount(onClosed);
 
-  const onOk = () => {
+  const onCreateFile = (site: string, path: string, fileName: string) => {
+    createFile(site, path, fileName).subscribe(
+      () => {
+        onCreated?.({ path, fileName, type });
+        dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
+      },
+      (response) => {
+        setState({ inProgress: false, submitted: true });
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onCreate = () => {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      const fileName = type === 'controller' ? `${encodeURIComponent(name)}.groovy` : `${encodeURIComponent(name)}.ftl`;
-      createFile(site, path, fileName).subscribe(
-        () => {
-          onCreated?.({ path, fileName, type });
-          dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
-        },
-        (response) => {
-          setState({ inProgress: false, submitted: true });
-          dispatch(showErrorDialog({ error: response }));
+      validateActionPolicy(site, {
+        type: 'CREATE',
+        target: `${path}/${name}`
+      }).subscribe(({ allowed, modifiedValue }) => {
+        if (allowed) {
+          if (modifiedValue) {
+            setConfirm({
+              body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+            });
+          } else {
+            const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
+            onCreateFile(site, path, fileName);
+          }
+        } else {
+          setConfirm({
+            body: formatMessage(translations.policyError)
+          });
         }
-      );
+      });
     }
   };
+
+  const onConfirm = () => {
+    const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
+    onCreateFile(site, path, fileName);
+  };
+
+  const onConfirmCancel = () => {
+    setConfirm(null);
+    setState({ inProgress: false, submitted: true });
+  };
+
   return (
     <>
       <DialogHeader
@@ -127,7 +171,7 @@ function CreateFileUI(props: CreateFileUIProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onOk();
+            onCreate();
           }}
         >
           <TextField
@@ -173,10 +217,11 @@ function CreateFileUI(props: CreateFileUIProps) {
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onOk} disabled={inProgress || name === ''}>
+        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''}>
           {inProgress ? <CircularProgress size={15} /> : <FormattedMessage id="words.create" defaultMessage="Create" />}
         </PrimaryButton>
       </DialogFooter>
+      <ConfirmDialog open={Boolean(confirm)} body={confirm?.body} onOk={onConfirm} onCancel={onConfirmCancel} />
     </>
   );
 }

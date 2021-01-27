@@ -112,3 +112,21 @@ export interface LegacySite {
   siteId: string;
   desc: string;
 }
+
+export interface Action {
+  type: 'CREATE' | 'RENAME' | 'MOVE' | 'COPY';
+  source?: string;
+  target: string;
+  recursive?: boolean;
+  contentMetadata?: {
+    fileSize?: number;
+    contentType?: string;
+  };
+}
+
+export interface ContentValidationResult {
+  type: string;
+  target: string;
+  allowed: boolean;
+  modifiedValue: string;
+}

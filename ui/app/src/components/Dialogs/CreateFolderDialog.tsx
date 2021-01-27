@@ -30,11 +30,23 @@ import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
+import { validateActionPolicy } from '../../services/sites';
+import { getParentPath } from '../../utils/path';
+import ConfirmDialog from './ConfirmDialog';
 
 export const translations = defineMessages({
   placeholder: {
     id: 'createFolder.placeholder',
     defaultMessage: 'Please type a folder name'
+  },
+  createPolicy: {
+    id: 'createFolder.createPolicy',
+    defaultMessage:
+      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
+  },
+  policyError: {
+    id: 'createFolder.policyError',
+    defaultMessage: 'The supplied name goes against site policies.'
   }
 });
 
@@ -103,41 +115,80 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     allowBraces = false
   } = props;
   const [name, setName] = useState(value);
+  const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
   useUnmount(onClosed);
 
-  const onOk = () => {
+  const onRenameFolder = (site: string, path: string, name: string) => {
+    renameFolder(site, path, name).subscribe(
+      (response) => {
+        onRenamed?.({ path, name, rename });
+        dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
+      },
+      (response) => {
+        setState({ inProgress: false, submitted: true });
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onCreateFolder = (site: string, path: string, name: string) => {
+    createFolder(site, path, name).subscribe(
+      (response) => {
+        onCreated?.({ path, name, rename });
+        dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
+      },
+      (response) => {
+        setState({ inProgress: false, submitted: true });
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onCreate = () => {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      if (rename) {
-        renameFolder(site, path, encodeURIComponent(name)).subscribe(
-          (response) => {
-            onRenamed?.({ path, name, rename });
-            dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
-          },
-          (response) => {
-            setState({ inProgress: false, submitted: true });
-            dispatch(showErrorDialog({ error: response }));
+      const parentPath = rename ? getParentPath(path) : path;
+      validateActionPolicy(site, {
+        type: rename ? 'RENAME' : 'CREATE',
+        target: `${parentPath}/${name}`
+      }).subscribe(({ allowed, modifiedValue }) => {
+        if (allowed && modifiedValue) {
+          setConfirm({
+            body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+          });
+        } else if (allowed) {
+          if (rename) {
+            onRenameFolder(site, path, name);
+          } else {
+            onCreateFolder(site, path, name);
           }
-        );
-      } else {
-        createFolder(site, path, encodeURIComponent(name)).subscribe(
-          (resp) => {
-            onCreated?.({ path, name, rename });
-            dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
-          },
-          (response) => {
-            setState({ inProgress: false, submitted: true });
-            dispatch(showErrorDialog({ error: response }));
-          }
-        );
-      }
+        } else {
+          setConfirm({
+            body: formatMessage(translations.policyError)
+          });
+        }
+      });
     }
   };
+
+  const onConfirm = () => {
+    if (rename) {
+      onRenameFolder(site, path, name);
+    } else {
+      onCreateFolder(site, path, name);
+    }
+  };
+
+  const onConfirmCancel = () => {
+    setConfirm(null);
+    setState({ inProgress: false, submitted: true });
+  };
+
   return (
     <>
       <DialogHeader
@@ -154,7 +205,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onOk();
+            onCreate();
           }}
         >
           <TextField
@@ -196,7 +247,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onOk} disabled={inProgress || name === ''}>
+        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''}>
           {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
@@ -205,6 +256,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           )}
         </PrimaryButton>
       </DialogFooter>
+      <ConfirmDialog open={Boolean(confirm)} body={confirm?.body} onOk={onConfirm} onCancel={onConfirmCancel} />
     </>
   );
 }
