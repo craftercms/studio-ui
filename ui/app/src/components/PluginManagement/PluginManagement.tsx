@@ -259,6 +259,7 @@ export const PluginManagement = () => {
         }}
       >
         <List
+          dense
           subheader={
             <ListSubheader>
               <FormattedMessage id="words.files" defaultMessage="Files" />
