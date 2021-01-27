@@ -473,10 +473,9 @@
         me.setCookie('crafterSite', site.id);
         $timeout(
           function() {
+            const previewChoice = CrafterCMSNext.system.store.getState().preview.previewChoice;
             $window.location.href =
-              CrafterCMSNext.system.store.getState().preview.previewChoice[site.id] === '2'
-                ? '/studio/next/preview'
-                : '/studio/preview';
+              previewChoice && previewChoice[site.id] === '2' ? '/studio/next/preview' : '/studio/preview';
           },
           0,
           false

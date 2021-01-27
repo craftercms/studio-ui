@@ -19,7 +19,7 @@ import '../styles/index.scss';
 import React, { PropsWithChildren, Suspense, useLayoutEffect, useState } from 'react';
 import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { setRequestForgeryToken } from '../utils/auth';
-import { CrafterCMSStore, createStore } from '../state/store';
+import { CrafterCMSStore, getStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
 import { SnackbarProvider } from 'notistack';
 import { createResource } from '../utils/hooks';
@@ -94,9 +94,7 @@ export default function CrafterCMSNextBridge(
     generateClassName?: GenerateId;
   }>
 ) {
-  const [storeResource] = useState(() =>
-    createResource(() => createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise())
-  );
+  const [storeResource] = useState(() => createResource(() => getStore().toPromise()));
   return (
     <Suspencified>
       <Bridge

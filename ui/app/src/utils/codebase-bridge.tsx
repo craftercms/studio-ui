@@ -56,7 +56,7 @@ import * as translation from '../services/translation';
 import * as monitoring from '../services/monitoring';
 import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
-import createStore, { CrafterCMSStore } from '../state/store';
+import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
@@ -179,7 +179,7 @@ export function createCodebaseBridge() {
       palette,
       store: null,
       getHostToHostBus,
-      getStore: createStore
+      getStore
     },
 
     mui: {
@@ -353,7 +353,7 @@ export function createCodebaseBridge() {
   // The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
   // and the store creation is dependant on successfully retrieving the JWT.
   if (!window.location.pathname.includes('/studio/login')) {
-    createStore().subscribe((store) => {
+    getStore().subscribe((store) => {
       Bridge.system.store = store;
     });
   }

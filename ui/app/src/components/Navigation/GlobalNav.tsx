@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -30,12 +30,18 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { useEnv, useMount, usePossibleTranslation, usePreviewState, useSiteUIConfig } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  useMount,
+  usePossibleTranslation,
+  usePreviewState,
+  useSiteUIConfig
+} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
-import Cookies from 'js-cookie';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 import Card from '@material-ui/core/Card/Card';
@@ -55,6 +61,27 @@ import PreviewIcon from '../Icons/Preview';
 import { components } from '../../services/plugin';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { renderWidgets } from '../Widget';
+import { logout } from '../../state/actions/auth';
+
+interface TileProps {
+  icon: SystemIconDescriptor;
+  title: string;
+  link?: string;
+  target?: string;
+  disabled?: any;
+  onClick?(id?: string, type?: string): any;
+}
+
+interface GlobalNavProps {
+  user: EnhancedUser;
+  site: string;
+  sites: Site[];
+  anchor: Element;
+  version: string;
+  logoutUrl: string;
+  authoringUrl: string;
+  onMenuClose: (e: any) => void;
+}
 
 const useTileStyles = makeStyles((theme) =>
   createStyles({
@@ -203,15 +230,6 @@ const messages = defineMessages({
   }
 });
 
-interface TileProps {
-  icon: SystemIconDescriptor;
-  title: string;
-  link?: string;
-  target?: string;
-  disabled?: any;
-  onClick?(id?: string, type?: string): any;
-}
-
 function Tile(props: TileProps) {
   const { title, icon, link, target, onClick, disabled = false } = props;
   const classes = useTileStyles();
@@ -332,17 +350,6 @@ const globalNavStyles = makeStyles((theme) =>
   })
 );
 
-interface GlobalNavProps {
-  user: EnhancedUser;
-  site: string;
-  sites: Site[];
-  anchor: Element;
-  version: string;
-  logoutUrl: string;
-  authoringUrl: string;
-  onMenuClose: (e: any) => void;
-}
-
 export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles();
@@ -390,10 +397,10 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   const handleErrorBack = () => setApiState({ ...apiState, error: false });
 
-  const onSiteCardClick = (id: string) => {
-    dispatch(changeSite(id));
+  const onSiteCardClick = (site: string) => {
+    dispatch(changeSite(site));
     if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
-      navigateTo(previewChoice[id] === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
+      navigateTo(previewChoice[site] === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
     } else {
       setTimeout(() => {
         window.location.reload();
@@ -554,7 +561,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   action={
                     // TODO: what will happen with logoutUrl now that we're always just posting back to /studio/logout?
                     logoutUrl && (
-                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
+                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => dispatch(logout())}>
                         <ExitToAppRoundedIcon />
                       </IconButton>
                     )
@@ -590,25 +597,26 @@ function navigateTo(link: string): void {
   window.location.href = link;
 }
 
-function onLogout(url) {
-  Cookies.set('userSession', null);
-  window.location.href = url;
-}
-
 const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
+  const site = useActiveSiteId();
   return (
     <Tile
       icon={icon}
       title={usePossibleTranslation(title)}
       link={
         link ??
-        {
-          preview: `${authoringBase}/next/preview`,
-          siteTools: `${authoringBase}/site-config`,
-          siteSearch: `${authoringBase}/search`,
-          siteDashboard: `${authoringBase}/site-dashboard`
-        }[systemLinkId]
+        (systemLinkId === 'preview'
+          ? // Preview is a special "dynamic case"
+            previewChoice[site] === '2'
+            ? `${authoringBase}/next/preview`
+            : `${authoringBase}/preview`
+          : {
+              siteTools: `${authoringBase}/site-config`,
+              siteSearch: `${authoringBase}/search`,
+              siteDashboard: `${authoringBase}/site-dashboard`
+            }[systemLinkId])
       }
     />
   );

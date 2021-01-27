@@ -15,14 +15,13 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { User } from '../../models/User';
 import { Credentials } from '../../models/Credentials';
 import { RefreshSessionResponse } from '../../services/auth';
 
 // region Login
 
 export const login = createAction<Credentials>('LOG_IN');
-export const loginComplete = createAction<{ user: User; auth: RefreshSessionResponse }>('LOG_IN_COMPLETE');
+export const loginComplete = createAction('LOG_IN_COMPLETE');
 export const loginFailed = createAction('LOG_IN_FAILED');
 
 // endregion
@@ -30,7 +29,7 @@ export const loginFailed = createAction('LOG_IN_FAILED');
 // region Log Out
 
 export const logout = createAction('LOG_OUT');
-export const logoutComplete = createAction<boolean>('LOG_OUT_COMPLETE');
+export const logoutComplete = createAction<boolean>('LOGOUT_COMPLETE');
 export const logoutFailed = createAction('LOG_OUT_FAILED');
 
 // endregion
@@ -40,8 +39,5 @@ export const logoutFailed = createAction('LOG_OUT_FAILED');
 export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
 export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
-export const authTokenRefreshedFromAnotherTab = createAction<RefreshSessionResponse>(
-  'AUTH_TOKEN_REFRESHED_FROM_ANOTHER_TAB'
-);
 
 // endregion

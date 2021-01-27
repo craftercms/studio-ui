@@ -113,6 +113,7 @@ export interface GlobalState {
   contentTypes: EntityState<ContentType>;
   env: {
     authoringBase: string;
+    logoutUrl: string;
     guestBase: string;
     xsrfHeader: string;
     xsrfArgument: string;

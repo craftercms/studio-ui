@@ -22,8 +22,8 @@ import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
-import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, fromEvent, Observable, of } from 'rxjs';
+import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import { fetchMyRolesInSite, me } from '../services/users';
 import { fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
@@ -32,11 +32,13 @@ import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
-import { obtainAuthToken } from '../services/auth';
+import { RefreshSessionResponse } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
+import { fromPromise } from 'rxjs/internal-compatibility';
+import { refreshAuthTokenComplete } from './actions/auth';
 
-export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; systemBroadcastChannel: BroadcastChannel };
+export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
@@ -44,11 +46,7 @@ export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, E
 
 let store$: BehaviorSubject<CrafterCMSStore>;
 
-// TODO: Re-assess the location of this object.
-const systemBroadcastChannel =
-  window.BroadcastChannel !== undefined ? new BroadcastChannel('org.craftercms.systemChannel') : null;
-
-export function createStore(useMock = false): Observable<CrafterCMSStore> {
+export function getStore(): Observable<CrafterCMSStore> {
   if (store$) {
     return store$.pipe(
       filter((store) => store !== null),
@@ -56,16 +54,19 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
     );
   } else {
     store$ = new BehaviorSubject(null);
-    return obtainAuthToken().pipe(
+    return registerServiceWorker().pipe(
       tap(({ token }) => setJwt(token)),
       switchMap((auth) => {
-        const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
+        const preloadState = retrieveInitialStateScript();
         return (preloadState
           ? of(createStoreSync(preloadState))
           : fetchInitialState().pipe(map((initialState) => createStoreSync(initialState)))
         ).pipe(
           tap((store) => {
             store.dispatch(storeInitialized({ auth }));
+            navigator.serviceWorker.onmessage = (e) => {
+              store.dispatch(refreshAuthTokenComplete(e.data));
+            };
             store$.next(store);
           })
         );
@@ -75,17 +76,49 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
   }
 }
 
-export function getStore(): CrafterCMSStore {
-  return store$?.value;
+export function registerServiceWorker(): Observable<RefreshSessionResponse> {
+  return fromPromise(navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/service-worker.js`)).pipe(
+    switchMap((registration) => registration.update().then(() => registration)),
+    switchMap((registration) => {
+      const begin = () => {
+        navigator.serviceWorker.startMessages();
+        registration.active.postMessage({ type: 'CONNECT' });
+      };
+      if (registration.active) {
+        begin();
+      } else {
+        registration.onupdatefound = () => {
+          if (registration.installing) {
+            registration.installing.onstatechange = () => {
+              if (registration.active?.state === 'activated') {
+                begin();
+              }
+            };
+          }
+        };
+      }
+      return fromEvent<MessageEvent>(navigator.serviceWorker, 'message').pipe(
+        tap((e) => {
+          console.log('%c[page] Message received from worker', 'color: blue', e.data);
+          if (e.data?.type === 'SW_UNAUTHENTICATED') {
+            throw new Error('User not authenticated.');
+          }
+        }),
+        filter((e) => e.data?.type === 'SW_TOKEN'),
+        take(1),
+        pluck('data', 'payload')
+      );
+    })
+  );
 }
 
-export function getSystemBroadcastChannel() {
-  return systemBroadcastChannel;
+export function getStoreSync(): CrafterCMSStore {
+  return store$?.value;
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
   const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
-    dependencies: { getIntl: getCurrentIntl, systemBroadcastChannel }
+    dependencies: { getIntl: getCurrentIntl }
   });
   const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({
@@ -121,53 +154,6 @@ export function retrieveInitialStateScript(): GlobalState {
   return state;
 }
 
-export function createMockInitialState(): Partial<GlobalState> {
-  return {
-    auth: { ...authInitialState, active: true },
-    user: {
-      id: 1,
-      enabled: true,
-      externallyManaged: false,
-      firstName: 'Mr.',
-      lastName: 'Admin',
-      email: 'admin@craftercms.org',
-      username: 'admin',
-      authenticationType: 'DB',
-      rolesBySite: {
-        editorial: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
-        headless: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
-        empty: ['author', 'admin', 'developer', 'reviewer', 'publisher']
-      },
-      sites: ['editorial', 'headless', 'empty'],
-      preferences: {
-        'global.lang': 'en',
-        'global.theme': 'light',
-        'preview.theme': 'dark'
-      }
-    },
-    sites: {
-      ...sitesInitialState,
-      byId: {
-        editorial: {
-          id: 'editorial',
-          name: 'editorial',
-          description: ''
-        },
-        headless: {
-          id: 'headless',
-          name: 'headless',
-          description: ''
-        },
-        empty: {
-          id: 'empty',
-          name: 'empty',
-          description: ''
-        }
-      }
-    }
-  };
-}
-
 export function fetchInitialState(): Observable<Partial<GlobalState>> {
   return forkJoin({
     user: me(),
@@ -176,23 +162,22 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
     switchMap(({ user, sites }) =>
       sites.length
         ? forkJoin<LookupTable<Observable<string[]>>, ''>(
+            // creates an object like `{ [siteId]: Observable<roleName[]> }`
             sites.reduce((lookup, site) => {
               lookup[site.id] = fetchMyRolesInSite(site.id);
               return lookup;
             }, {})
           ).pipe(
-            map((rolesBySite) => {
-              return {
-                user: {
-                  ...user,
-                  rolesBySite: rolesBySite,
-                  sites: sites.map(({ id }) => id),
-                  preferences: {}
-                },
-                sites: { ...sitesInitialState, byId: createLookupTable(sites) },
-                auth: { ...authInitialState, active: true }
-              };
-            })
+            map((rolesBySite) => ({
+              user: {
+                ...user,
+                rolesBySite: rolesBySite,
+                sites: sites.map(({ id }) => id),
+                preferences: {}
+              },
+              sites: { ...sitesInitialState, byId: createLookupTable(sites) },
+              auth: { ...authInitialState, active: true }
+            }))
           )
         : of({
             user: {
@@ -208,4 +193,4 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
   );
 }
 
-export default createStore;
+export default getStore;

@@ -143,7 +143,7 @@ const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
     highlightMode: 'ALL',
-    previewChoice: null,
+    previewChoice: {},
     // What's shown to the user across the board (url, address bar, etc)
     computedUrl: '',
     // The src of the iframe

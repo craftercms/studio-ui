@@ -18,9 +18,9 @@ import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
+import { useActiveSiteId, useLogicResource, usePossibleTranslation, useUnmount } from '../../utils/hooks';
 import FolderBrowserTreeView, { legacyItemsToTreeNodes, TreeNode } from '../Navigation/FolderBrowserTreeView';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CreateFolderDialog from './CreateFolderDialog';
@@ -34,20 +34,52 @@ import StandardAction from '../../models/StandardAction';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
 
-const messages = defineMessages({
-  ok: {
-    id: 'words.accept',
-    defaultMessage: 'Accept'
-  },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
-  },
-  create: {
-    id: 'pathSelectionDialog.createFolderButtonLabel',
-    defaultMessage: 'Create Folder'
-  }
-});
+export interface PathSelectionDialogBaseProps {
+  open: boolean;
+  title?: string | MessageDescriptor;
+  rootPath: string;
+  initialPath?: string;
+  showCreateFolderOption?: boolean;
+}
+
+interface PathSelectionDialogCallbacks {
+  onClose(): void;
+  onClosed?(): void;
+  onOk?(response: { path: string }): void;
+}
+
+export type PathSelectionDialogProps = PropsWithChildren<PathSelectionDialogBaseProps & PathSelectionDialogCallbacks>;
+
+export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onOk?: StandardAction;
+}
+
+export type PathSelectionDialogBodyProps = PathSelectionDialogBaseProps &
+  PathSelectionDialogCallbacks & { site: string };
+
+export interface PathSelectionDialogBodyUIProps {
+  title?: string | MessageDescriptor;
+  treeNodes: TreeNode;
+  isInvalidPath: boolean;
+  rootPath: string;
+  currentPath: string;
+  expandedItemPaths: string[];
+  isFetchingPath: boolean;
+  showCreateFolderOption?: boolean;
+  uncheckedInputValue: boolean;
+  createFolderDialogOpen: boolean;
+  onOk: (args: { path: string }) => void;
+  onClose?: () => void;
+  onPathInputKeyPress: (event: React.KeyboardEvent) => void;
+  onNodeToggle: (event: React.ChangeEvent, nodeIds: string[]) => void;
+  onNodeSelected: (event: React.ChangeEvent, nodeId: string) => void;
+  onPathChanged: (path: string) => void;
+  onCreateFolder: () => void;
+  onCloseCreateFolder: () => void;
+  onFolderCreated: (args: { path: string; name: string }) => void;
+}
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -63,39 +95,17 @@ const useStyles = makeStyles(() =>
   })
 );
 
-interface PathSelectionDialogBaseProps {
-  open: boolean;
-  rootPath: string;
-  showCreateFolder?: boolean;
-  initialPath?: string;
-  title?: string;
-}
-
-export type PathSelectionDialogProps = PropsWithChildren<PathSelectionDialogBaseProps> & {
-  onClose(): void;
-  onClosed?(): void;
-  onOk?(response: { path: string }): void;
-};
-
-export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onOk?: StandardAction;
-}
-
-export default function PathSelectionDialog(props: PathSelectionDialogProps) {
+export function PathSelectionDialog(props: PathSelectionDialogProps) {
+  const site = useActiveSiteId();
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
-      <PathSelectionDialogBody {...props} />
+      {props.children ?? <PathSelectionDialogBody {...props} site={site} />}
     </Dialog>
   );
 }
 
-function PathSelectionDialogBody(props: PathSelectionDialogProps) {
-  const { onClosed, onClose, onOk, rootPath, initialPath, title, showCreateFolder = true } = props;
-  const classes = useStyles({});
-  const site = useActiveSiteId();
-  const { formatMessage } = useIntl();
+export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
+  const { site, onClosed, onClose, onOk, rootPath, initialPath, title, showCreateFolderOption = true } = props;
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
   const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
@@ -170,14 +180,6 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
     }
   }, [currentPath, rootPath, site]);
 
-  const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
-    shouldResolve: (treeNodes) => Boolean(treeNodes),
-    shouldReject: (treeNodes) => false,
-    shouldRenew: (treeNodes, resource) => treeNodes === null && resource.complete,
-    resultSelector: (treeNodes) => treeNodes,
-    errorSelector: (treeNodes) => null
-  });
-
   const onCreateFolder = () => {
     setCreateFolder(true);
   };
@@ -218,14 +220,69 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
     setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
   };
 
-  const onKeyPress = (event: React.KeyboardEvent) => {
+  const onPathInputKeyPress = (event: React.KeyboardEvent) => {
     setDirtyInput(true);
   };
 
   return (
+    <PathSelectionDialogBodyUI
+      title={title}
+      showCreateFolderOption={showCreateFolderOption}
+      onOk={onOk}
+      onClose={onClose}
+      expandedItemPaths={expanded}
+      isInvalidPath={invalidPath}
+      uncheckedInputValue={dirtyInput}
+      isFetchingPath={isFetching}
+      createFolderDialogOpen={createFolder}
+      onCreateFolder={onCreateFolder}
+      onCloseCreateFolder={onCloseCreateFolder}
+      onFolderCreated={onFolderCreated}
+      onNodeToggle={onNodeToggle}
+      onNodeSelected={onNodeSelected}
+      onPathChanged={onPathChanged}
+      onPathInputKeyPress={onPathInputKeyPress}
+      currentPath={currentPath}
+      rootPath={rootPath}
+      treeNodes={treeNodes}
+    />
+  );
+}
+
+export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps) {
+  const {
+    treeNodes,
+    isInvalidPath,
+    rootPath,
+    currentPath = '',
+    expandedItemPaths,
+    isFetchingPath,
+    showCreateFolderOption,
+    uncheckedInputValue,
+    createFolderDialogOpen,
+    onOk,
+    onClose,
+    onPathInputKeyPress,
+    onNodeToggle,
+    onNodeSelected,
+    onPathChanged,
+    onCreateFolder,
+    onCloseCreateFolder,
+    onFolderCreated
+  } = props;
+  const classes = useStyles({});
+  const title = usePossibleTranslation(props.title);
+  const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
+    shouldResolve: (treeNodes) => Boolean(treeNodes),
+    shouldReject: () => false,
+    shouldRenew: (treeNodes, resource) => treeNodes === null && resource.complete,
+    resultSelector: (treeNodes) => treeNodes,
+    errorSelector: () => null
+  });
+  return (
     <>
       <DialogHeader
-        title={title ? title : <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
+        title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
         onDismiss={onClose}
       />
       <DialogBody className={classes.dialogBody}>
@@ -234,41 +291,48 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
             classes={{
               treeViewRoot: classes.treeViewRoot
             }}
-            invalidPath={invalidPath}
+            invalidPath={isInvalidPath}
             onNodeToggle={onNodeToggle}
             onNodeSelected={onNodeSelected}
             rootPath={rootPath}
             currentPath={currentPath}
-            expanded={expanded}
+            expanded={expandedItemPaths}
             selected={currentPath.replace(/\/$/, '')}
             resource={resource}
-            onKeyPress={onKeyPress}
+            onKeyPress={onPathInputKeyPress}
             onPathChanged={onPathChanged}
-            isFetching={isFetching}
+            isFetching={isFetchingPath}
           />
         </Suspencified>
       </DialogBody>
       <DialogFooter>
-        {showCreateFolder && (
+        {showCreateFolderOption && (
           <SecondaryButton
-            disabled={invalidPath || isFetching}
+            disabled={isInvalidPath || isFetchingPath}
             onClick={onCreateFolder}
             className={classes.createFolderBtn}
           >
-            {formatMessage(messages.create)}
+            <FormattedMessage id="pathSelectionDialog.createFolderButtonLabel" defaultMessage="Create Folder" />
           </SecondaryButton>
         )}
-        <SecondaryButton onClick={onClose}>{formatMessage(messages.cancel)}</SecondaryButton>
-        <PrimaryButton disabled={invalidPath || isFetching || dirtyInput} onClick={() => onOk({ path: currentPath })}>
-          {formatMessage(messages.ok)}
+        <SecondaryButton onClick={onClose}>
+          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+        </SecondaryButton>
+        <PrimaryButton
+          disabled={isInvalidPath || isFetchingPath || uncheckedInputValue}
+          onClick={() => onOk({ path: currentPath })}
+        >
+          <FormattedMessage id="words.accept" defaultMessage="Accept" />
         </PrimaryButton>
       </DialogFooter>
       <CreateFolderDialog
         path={currentPath}
-        open={createFolder}
+        open={createFolderDialogOpen}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}
       />
     </>
   );
 }
+
+export default PathSelectionDialog;

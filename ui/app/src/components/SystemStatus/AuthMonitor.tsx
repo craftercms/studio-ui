@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useMount, useSelection } from '../../utils/hooks';
+import { useSelection } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -27,8 +27,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { login, logout, refreshAuthToken } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
-import { getSSOLogoutURL } from '../../services/auth';
-import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
@@ -80,28 +78,19 @@ const useStyles = makeStyles((theme) =>
 export default function AuthMonitor() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { username, authenticationType } = useSelection((state) => state.user) ?? {
-    username: '',
-    authenticationType: 'db'
+  const { username } = useSelection((state) => state.user) ?? {
+    username: ''
   };
-  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
+  const { authoringBase, logoutUrl } = useSelection((state) => state.env);
   const { active } = useSelection((state) => state.auth);
-  const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
-  const isSSO = authenticationType?.toLowerCase() !== 'db';
   const firstRender = useRef(true);
-  useMount(() => {
-    if (isSSO)
-      getSSOLogoutURL()
-        .pipe(pluck('logoutUrl'))
-        .subscribe(setLogoutUrl, () => console.error('[AuthMonitor] Error fetching logout url.'));
-  });
   useEffect(() => {
     // On regular login dialog, the username is locked to the user whose session expired; on the
     // SSO form however, users can enter any username/password. So this check ensures that if a
     // different user logs in after timeout, he won't be working on top of the previous user's work/session.
     if (firstRender.current) {
       firstRender.current = false;
-    } else if (active && isSSO) {
+    } else if (active) {
       me().subscribe((user) => {
         if (user.username !== username) {
           alert(formatMessage(translations.postSSOLoginMismatch));
@@ -109,14 +98,14 @@ export default function AuthMonitor() {
         }
       });
     }
-  }, [active, dispatch, formatMessage, isSSO, username]);
+  }, [active, dispatch, formatMessage, username]);
   return (
     <Dialog open={!active} id="authMonitorDialog" aria-labelledby="craftercmsReLoginDialog">
       <AuthMonitorBody
-        isSSO={isSSO}
+        isSSO={false}
         username={username}
         logoutUrl={logoutUrl}
-        authoringUrl={authoringUrl}
+        authoringUrl={authoringBase}
         dispatch={dispatch}
         formatMessage={formatMessage}
       />

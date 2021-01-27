@@ -18,7 +18,6 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { sessionTimeout } from '../actions/user';
 import {
-  authTokenRefreshedFromAnotherTab,
   login,
   loginFailed,
   logoutComplete,
@@ -52,7 +51,6 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
     isFetching: true
   }),
   [refreshAuthTokenComplete.type]: refreshAuthTokenReducer,
-  [authTokenRefreshedFromAnotherTab.type]: refreshAuthTokenReducer,
   [refreshAuthTokenFailed.type]: (state) => ({
     ...state,
     active: false,

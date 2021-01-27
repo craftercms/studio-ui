@@ -41,6 +41,14 @@ ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
   if (err) {
     console.error(err);
   } else {
-    console.log('Done!');
+    console.log('App code copied.');
+  }
+});
+
+ncp(`${PATH_BUILD}/service-worker.js`, `${DEST}/`, (err) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log('Service worker script copied.');
   }
 });

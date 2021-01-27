@@ -21,9 +21,12 @@ import { Version } from '../../models/monitoring/Version';
 
 export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   authoringBase: process.env.REACT_APP_AUTHORING_BASE ?? `${origin}/studio`,
+  logoutUrl: process.env.REACT_APP_AUTHORING_BASE
+    ? `${process.env.REACT_APP_AUTHORING_BASE}/logout`
+    : `${origin}/studio/logout`,
   guestBase: process.env.REACT_APP_GUEST_BASE ?? origin,
-  xsrfHeader: 'X-XSRF-TOKEN',
-  xsrfArgument: '_csrf',
+  xsrfHeader: document.querySelector('#xsrfHeader')?.textContent ?? 'X-XSRF-TOKEN',
+  xsrfArgument: document.querySelector('#xsrfArgument')?.textContent ?? '_csrf',
   siteCookieName: 'crafterSite',
   previewLandingBase: process.env.REACT_APP_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
   version: null

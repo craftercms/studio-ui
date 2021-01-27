@@ -23,7 +23,6 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
    * initialize module
    */
   initialize: function() {
-    alert("The `logout.js` script shouldn't be in use. Please check.");
     console.error("The `logout.js` script shouldn't be in use. Please check.");
   }
 };

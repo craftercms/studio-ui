@@ -15,26 +15,16 @@
  */
 
 import { ofType } from 'redux-observable';
-import {
-  authTokenRefreshedFromAnotherTab,
-  login,
-  loginComplete,
-  loginFailed,
-  logout,
-  refreshAuthToken,
-  refreshAuthTokenComplete,
-  refreshAuthTokenFailed
-} from '../actions/auth';
-import { ignoreElements, map, mapTo, pluck, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { login, loginComplete, loginFailed, logout, refreshAuthToken, refreshAuthTokenComplete } from '../actions/auth';
+import { ignoreElements, map, mapTo, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
-import { obtainAuthToken } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
 import { interval } from 'rxjs';
 import { storeInitialized } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import Cookies from 'js-cookie';
 
 const epics: CrafterCMSEpic[] = [
   (action$) =>
@@ -49,13 +39,14 @@ const epics: CrafterCMSEpic[] = [
       // Spring requires regular post for logout....
       // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
       tap(([, state]) => {
+        Cookies.set('userSession', null);
         const tokenField = document.createElement('input');
         tokenField.type = 'hidden';
         tokenField.name = state.env.xsrfArgument;
         tokenField.value = getRequestForgeryToken();
         const form = document.createElement('form');
         form.method = 'post';
-        form.action = `${state.env.authoringBase}/logout`;
+        form.action = state.env.logoutUrl;
         form.appendChild(tokenField);
         document.body.appendChild(form);
         form.submit();
@@ -70,34 +61,33 @@ const epics: CrafterCMSEpic[] = [
     ),
   (action$) =>
     action$.pipe(
-      ofType(refreshAuthToken.type),
-      switchMap(() => obtainAuthToken().pipe(map(refreshAuthTokenComplete), catchAjaxError(refreshAuthTokenFailed)))
-    ),
-  (action$, state$, { systemBroadcastChannel }) =>
-    action$.pipe(
       ofType(refreshAuthTokenComplete.type, storeInitialized.type),
       // Note refreshAuthTokenComplete & storeInitialized payload signatures are different.
       tap(({ payload }) => {
         const auth = payload.auth ?? payload;
         const token = auth.token;
-        const action = authTokenRefreshedFromAnotherTab(auth);
         setJwt(token);
-        // For other tabs...
-        systemBroadcastChannel?.postMessage(action);
-        // For other frames on this tab....
-        getHostToHostBus().next(action);
       }),
       ignoreElements()
     ),
   (action$, state$) =>
     action$.pipe(
-      ofType(refreshAuthTokenComplete.type, storeInitialized.type, authTokenRefreshedFromAnotherTab.type),
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
         interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
       )
     ),
-  (action$) => action$.pipe(ofType(loginComplete.type), pluck('payload', 'auth'), map(refreshAuthTokenComplete))
+  (action$) =>
+    action$.pipe(
+      ofType(loginComplete.type),
+      tap(() => {
+        navigator.serviceWorker.getRegistrations().then(([registration]) => {
+          registration.active.postMessage({ type: 'REFRESH' });
+        });
+      }),
+      ignoreElements()
+    )
 ];
 
 export default epics;

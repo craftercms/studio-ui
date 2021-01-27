@@ -88,7 +88,7 @@ import {
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
-import { findParentModelId, nnou, pluckProps } from '../../utils/object';
+import { findParentModelId, nnou, nou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
@@ -257,7 +257,7 @@ export function PreviewConcierge(props: any) {
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
             let previousChoice = previewChoice[site];
-            if (previousChoice === null) {
+            if (nou(previousChoice)) {
               dispatch(setPreviewChoice({ site, previewChoice: previousChoice = '1' }));
             }
             if (previousChoice && !compatibilityAsk) {

@@ -15,20 +15,21 @@
  */
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
-import { Observable, of, from } from 'rxjs';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
 import { ApiResponse } from '../models/ApiResponse';
-import { me } from './users';
-import { getJwtHeaders } from '../utils/auth';
 
+/**
+ * @deprecated Please note API deprecation for Crafter v4.0.0+
+ **/
 export function getSSOLogoutURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 
-export function login(credentials: Credentials): Observable<{ user: User; auth: RefreshSessionResponse }> {
+export function login(credentials: Credentials): Observable<boolean> {
   // Regular post works fine, but fetch provides the redirect: 'manual' option which cancels the 302
   // that's useless for when doing the async style login.
   return from(
@@ -43,14 +44,7 @@ export function login(credentials: Credentials): Observable<{ user: User; auth: 
       redirect: 'manual',
       body: `username=${credentials.username}&password=${credentials.password}`
     })
-  ).pipe(
-    switchMap(() => obtainAuthToken()),
-    switchMap((auth) =>
-      get(me.url, getJwtHeaders(auth.token))
-        .pipe(pluck('response', 'authenticatedUser'))
-        .pipe(map((user: User) => ({ user, auth })))
-    )
-  );
+  ).pipe(mapTo(true));
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {

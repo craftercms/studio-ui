@@ -22,7 +22,6 @@ export interface User {
   lastName: string;
   email: string;
   username: string;
-  authenticationType: string;
   enabled: boolean;
   externallyManaged: boolean;
 }
