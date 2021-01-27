@@ -33,7 +33,12 @@ import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { parseContentXML, parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
+import {
+  createItemStateMap,
+  parseContentXML,
+  parseLegacyItemToDetailedItem,
+  parseLegacyItemToSandBoxItem
+} from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -778,29 +783,31 @@ export function getChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  // TODO: Waiting for API. Temporarily calling API1's get-items-tree
-  // const qs = toQueryString({ siteId: site, path, ...options });
-  // return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
-  //   pluck('response'),
-  //   map(({ children, parent, levelDescriptor }) => Object.assign(children, { parent, levelDescriptor })),
-  //   catchError(errorSelectorApi1)
-  // );
-  const qs = toQueryString({ site, path, depth: 1, order: 'default', ...options });
-  return get(`/studio/api/1/services/api/1/content/get-items-tree.json${qs}`).pipe(
+  if (path === '/site/website' && !options?.skipHomePathOverride) {
+    path = '/site/website/index.xml';
+  }
+  const qs = toQueryString({ siteId: site, path, ...options });
+  return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
-    map(({ item }) => {
-      const levelDescriptor = item.children.find((item) => item.contentType === '/component/level-descriptor');
-      return Object.assign(parseLegacyItemToSandBoxItem(item.children), {
-        parent: parseLegacyItemToSandBoxItem(item),
-        levelDescriptor: levelDescriptor
-          ? {
-              ...parseLegacyItemToSandBoxItem(levelDescriptor),
-              label: 'Section Defaults'
-            }
-          : null
-      });
-    }),
-    catchError(errorSelectorApi1)
+    map(({ children, parent, levelDescriptor, total, offset, limit }) =>
+      Object.assign(
+        children
+          ? children.map((child) => ({
+              ...child,
+              stateMap: createItemStateMap(child.state)
+            }))
+          : [],
+        {
+          parent: { ...parent, stateMap: createItemStateMap(parent.state) },
+          ...(levelDescriptor && {
+            levelDescriptor: { ...levelDescriptor, stateMap: createItemStateMap(levelDescriptor.state) }
+          }),
+          total,
+          offset,
+          limit
+        }
+      )
+    )
   );
 }
 

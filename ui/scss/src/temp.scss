@@ -3135,13 +3135,7 @@ span.acn-canned-search {
 }
 
 #preview-tools-panel-container_c.yui-panel-container {
-  ul,
-  div,
-  div.expanded,
-  div.yui-carousel-nav,
-  div.acn-accordion-panel,
-  div#container.yui-carousel-visible,
-  div#preview-tools-panel-container.yui-module {
+  div#preview-tools-panel-container.yui-module div div.expanded div.acn-accordion-panel div div#container.yui-carousel-visible div.yui-carousel-nav ul {
     display: none;
   }
 }

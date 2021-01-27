@@ -15,8 +15,9 @@
  */
 
 import { SandboxItem } from './Item';
+import { PagedArray } from './PagedArray';
 
-export interface GetChildrenResponse extends Array<SandboxItem> {
+export interface GetChildrenResponse extends PagedArray<SandboxItem> {
   parent: SandboxItem;
   levelDescriptor: SandboxItem;
 }

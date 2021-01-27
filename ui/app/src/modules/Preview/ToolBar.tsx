@@ -227,7 +227,7 @@ export function AddressBar(props: AddressBarProps) {
         />
         <SingleItemSelector
           disabled={noSiteSet}
-          rootPath="/site/website"
+          rootPath="/site/website/index.xml"
           selectedItem={item as DetailedItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}

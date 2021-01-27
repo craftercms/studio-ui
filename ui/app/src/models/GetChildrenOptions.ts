@@ -22,4 +22,5 @@ export interface GetChildrenOptions extends PaginationOptions {
   keyword: string;
   sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
   excludes?: string[];
+  skipHomePathOverride?: boolean;
 }

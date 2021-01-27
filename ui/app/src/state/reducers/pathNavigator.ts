@@ -39,7 +39,7 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false } }) => {
+    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false, limit } }) => {
       return {
         ...state,
         [id]: {
@@ -54,9 +54,9 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           breadcrumb: [],
           selectedItems: [],
           leaves: [],
-          limit: 10,
+          limit,
           offset: 0,
-          count: 0,
+          total: 0,
           collapsed
         }
       };
@@ -87,10 +87,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           [id]: {
             ...state[id],
             currentPath: path,
-            breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
-            itemsInPath: response.map((item) => item.id),
+            breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
+            itemsInPath: response.map((item) => item.path),
             levelDescriptor: response.levelDescriptor?.path,
-            count: response.length
+            total: response.total
           }
         };
       } else {
@@ -109,10 +109,12 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
-          itemsInPath: response.length === 0 ? [] : response.map((item) => item.id),
+          breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
+          itemsInPath: response.length === 0 ? [] : response.map((item) => item.path),
           levelDescriptor: response.levelDescriptor?.path,
-          count: response.length,
+          total: response.total,
+          offset: response.offset,
+          limit: response.limit,
           leaves: response.length === 0 ? state[id].leaves.concat(path) : state[id].leaves
         }
       };
@@ -130,11 +132,17 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
     [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { id, response } }) => {
       const { currentPath, rootPath } = state[id];
       let itemsInPath = [];
+      let total;
+      let offset;
+      let limit;
       let levelDescriptor = null;
 
       response.forEach((resp: GetChildrenResponse, i: number) => {
         if (i === response.length - 1) {
-          itemsInPath = resp.map((item) => item.id);
+          itemsInPath = resp.map((item) => item.path);
+          total = resp.total;
+          offset = resp.offset;
+          limit = resp.limit;
           if (resp.levelDescriptor) {
             levelDescriptor = resp.levelDescriptor.path;
           }
@@ -147,7 +155,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           ...state[id],
           itemsInPath,
           levelDescriptor,
-          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath)
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath)),
+          limit,
+          total,
+          offset
         }
       };
     },

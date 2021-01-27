@@ -22,6 +22,7 @@ import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
+  pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorConditionallySetPathFailed,
@@ -53,7 +54,8 @@ export default [
           pathNavigatorFetchParentItems({
             id,
             path: storedState ? storedState.currentPath : payload.path,
-            excludes: payload.excludes
+            excludes: payload.excludes,
+            limit: payload.limit
           })
         ].filter(Boolean);
       })
@@ -97,7 +99,22 @@ export default [
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, keyword } }, state]) =>
         getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
-          keyword
+          keyword,
+          limit: state.pathNavigator[id].limit
+        }).pipe(
+          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          catchAjaxError(pathNavigatorFetchPathFailed)
+        )
+      )
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorChangePage.type),
+      withLatestFrom(state$),
+      mergeMap(([{ type, payload: { id, offset } }, state]) =>
+        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+          limit: state.pathNavigator[id].limit,
+          offset
         }).pipe(
           map((response) => pathNavigatorFetchPathComplete({ id, response })),
           catchAjaxError(pathNavigatorFetchPathFailed)
@@ -112,7 +129,7 @@ export default [
         ([
           {
             type,
-            payload: { id, path, excludes }
+            payload: { id, path, excludes, limit }
           },
           state
         ]) => {
@@ -121,14 +138,19 @@ export default [
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
-              requests.push(getChildrenByPath(site, parentPath, { excludes }));
+              requests.push(
+                getChildrenByPath(site, parentPath, {
+                  excludes,
+                  limit
+                })
+              );
             });
             return forkJoin(requests).pipe(
               map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );
           } else {
-            return getChildrenByPath(site, path, { excludes }).pipe(
+            return getChildrenByPath(site, path, { excludes, limit }).pipe(
               map((response) => pathNavigatorFetchPathComplete({ id, response })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );
