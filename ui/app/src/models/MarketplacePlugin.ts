@@ -14,30 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Image {
+export interface MarketplacePluginImage {
   url: string;
   title: string;
   description: string;
 }
 
-export interface Video {
+export interface MarketplacePluginVideo {
   title: string;
   description: string;
   url: string;
 }
 
-interface Media {
-  screenshots: [Image];
-  videos?: [Video] | [];
+interface MarketplacePluginMedia {
+  screenshots: [MarketplacePluginImage];
+  videos?: [MarketplacePluginVideo] | [];
 }
 
-export interface Version {
+export interface MarketplacePluginVersion {
   major: number;
   minor: number;
   patch: number;
 }
 
-export interface Parameter {
+export interface MarketplacePluginParameter {
   label: string;
   name: string;
   required: boolean;
@@ -51,13 +51,13 @@ export interface MarketplacePlugin {
   type?: string;
   name: string;
   tags?: string[];
-  version?: Version;
+  version?: MarketplacePluginVersion;
   description: string;
   website?: {
     name: string;
     url: string;
   };
-  media: Media;
+  media: MarketplacePluginMedia;
   developer?: {
     people: any;
     company?: {
@@ -73,9 +73,9 @@ export interface MarketplacePlugin {
     name: string;
     url: string;
   };
-  crafterCmsVersions?: [Version];
+  crafterCmsVersions?: [MarketplacePluginVersion];
   crafterCmsEditions?: string[];
-  parameters?: [Parameter];
+  parameters?: [MarketplacePluginParameter];
   status?: string;
   source?: string;
   compatible?: boolean;

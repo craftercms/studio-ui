@@ -22,7 +22,6 @@ import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
 import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { PluginRecord } from '../../models/Plugin';
-import moment from 'moment-timezone';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -34,7 +33,7 @@ import { ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
 import { useActiveSiteId, usePermissions } from '../../utils/hooks';
 import EmptyState from '../SystemStatus/EmptyState';
-import MarketplaceDialog from '../MarketplaceDialog';
+import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
@@ -43,6 +42,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useDispatch } from 'react-redux';
+import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -84,47 +85,25 @@ export const PluginManagement = () => {
   const siteId = useActiveSiteId();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
   const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(false);
-  const listPlugins = permissions?.['/']['list_plugins'] ?? true;
-  const installPlugins = permissions?.['/']['install_plugins'] ?? true;
+  const listPlugins = permissions?.['/']['list_plugins'];
+  const installPlugins = permissions?.['/']['install_plugins'];
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
 
   useEffect(() => {
     if (listPlugins && siteId) {
-      // fetchInstalledMarketplacePlugins(siteId).subscribe(
-      //   (plugins) => {
-      //     setPlugins(plugins);
-      //   },
-      //   (error) => {
-      //     dispatch(
-      //       showErrorDialog({
-      //         error
-      //       })
-      //     );
-      //   }
-      // );
-      setPlugins([
-        {
-          id: 'test',
-          version: {
-            major: 1,
-            minor: 1,
-            patch: 21
-          },
-          pluginUrl: '/testing',
-          installationDate: moment(),
-          files: [
-            {
-              path: 'test/testing/tremendo',
-              sha512: 'sha512a'
-            },
-            {
-              path: '/test/testing/default',
-              sha512: 'sha512b'
-            }
-          ]
+      fetchInstalledMarketplacePlugins(siteId).subscribe(
+        (plugins) => {
+          setPlugins(plugins);
+        },
+        (error) => {
+          dispatch(
+            showErrorDialog({
+              error
+            })
+          );
         }
-      ]);
+      );
     }
   }, [dispatch, listPlugins, siteId]);
 
@@ -240,7 +219,7 @@ export const PluginManagement = () => {
           </TableContainer>
         </ConditionalLoadingState>
       )}
-      <MarketplaceDialog
+      <InstallPluginDialog
         open={openMarketPlaceDialog}
         onClose={onCloseMarketplaceDialog}
         onInstall={onInstallMarketplacePlugin}

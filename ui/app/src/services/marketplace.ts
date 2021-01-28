@@ -16,12 +16,12 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { MarketplaceSite } from '../models/Site';
-import { map, pluck } from 'rxjs/operators';
+import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { MarketplacePlugin, Version } from '../models/MarketplacePlugin';
+import { MarketplacePlugin, MarketplacePluginVersion } from '../models/MarketplacePlugin';
 import { toQueryString } from '../utils/object';
 import { PagedArray } from '../models/PagedArray';
-import ApiResponse from '../models/ApiResponse';
+import { PluginRecord } from '../models/Plugin';
 
 export function fetchBlueprints(options?: { type?: string; limit?: number; showIncompatible?: boolean }) {
   const params = {
@@ -54,15 +54,15 @@ export function fetchMarketplacePlugins(
 export function installMarketplacePlugin(
   siteId: string,
   pluginId: string,
-  pluginVersion: Version
-): Observable<ApiResponse> {
-  return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion }).pipe(pluck('response'));
+  pluginVersion: MarketplacePluginVersion
+): Observable<Boolean> {
+  return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion }).pipe(mapTo(true));
 }
 
-export function fetchInstalledMarketplacePlugins(siteId: string) {
+export function fetchInstalledMarketplacePlugins(siteId: string): Observable<PluginRecord[]> {
   return get(`/studio/api/2/marketplace/installed?siteId=${siteId}`).pipe(pluck('response', 'plugins'));
 }
 
 export function createSite(site: MarketplaceSite) {
-  return postJSON('/studio/api/2/sites/create_site_from_marketplace', site);
+  return postJSON('/studio/api/2/sites/create_site_from_marketplace', site).pipe(mapTo(true));
 }

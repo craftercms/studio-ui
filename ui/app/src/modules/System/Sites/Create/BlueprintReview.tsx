@@ -21,7 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import { SiteState } from '../../../../models/Site';
-import { MarketplacePlugin, Parameter } from '../../../../models/MarketplacePlugin';
+import { MarketplacePlugin, MarketplacePluginParameter } from '../../../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Visibility from '@material-ui/icons/Visibility';
@@ -168,7 +168,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
   useEffect(() => {
     if (blueprint.parameters) {
       let fields: any = {};
-      blueprint.parameters.forEach((parameter: Parameter) => {
+      blueprint.parameters.forEach((parameter: MarketplacePluginParameter) => {
         if (parameter.type === 'PASSWORD') {
           fields[parameter.name] = false;
         }
@@ -187,11 +187,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
     }
   }
 
-  function showPassword(parameter: Parameter) {
+  function showPassword(parameter: MarketplacePluginParameter) {
     setPasswordFields({ ...passwordFields, [parameter.name]: !passwordFields[parameter.name] });
   }
 
-  function renderSingleParameter(parameter: Parameter) {
+  function renderSingleParameter(parameter: MarketplacePluginParameter) {
     if (inputs.blueprintFields[parameter.name] && parameter.type === 'STRING') {
       return inputs.blueprintFields[parameter.name];
     } else if (parameter.type === 'STRING') {

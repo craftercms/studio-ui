@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Parameter } from '../../../../models/MarketplacePlugin';
+import { MarketplacePluginParameter } from '../../../../models/MarketplacePlugin';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -24,7 +24,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../../../../components/Controls/PasswordTextField';
 
 interface FormBuilderProps {
-  parameters: [Parameter];
+  parameters: [MarketplacePluginParameter];
   inputs: SiteState;
 
   handleInputChange(event: React.ChangeEvent, type?: string): any;
@@ -67,7 +67,7 @@ export default function FormBuilder(props: FormBuilderProps) {
     }
   }
 
-  function renderParameters(parameters: [Parameter]) {
+  function renderParameters(parameters: [MarketplacePluginParameter]) {
     return parameters.map((parameter, index) => {
       return (
         <Grid item xs={12} key={index}>

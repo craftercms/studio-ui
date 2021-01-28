@@ -47,27 +47,27 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-interface MarketplaceDialogBaseProps {
+interface InstallPluginDialogBaseProps {
   open: boolean;
 }
 
-export type MarketplaceDialogProps = PropsWithChildren<
-  MarketplaceDialogBaseProps & {
+export type InstallPluginDialogProps = PropsWithChildren<
+  InstallPluginDialogBaseProps & {
     onInstall(plugin: MarketplacePlugin): void;
     onClose(): void;
     onClosed?(): void;
   }
 >;
 
-export default function MarketplaceDialog(props: MarketplaceDialogProps) {
+export default function InstallPluginDialog(props: InstallPluginDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <MarketplaceDialogUI {...props} />
+      <InstallPluginDialogUI {...props} />
     </Dialog>
   );
 }
 
-function MarketplaceDialogUI(props: MarketplaceDialogProps) {
+function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
   const [keyword, setKeyword] = useState('');
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
@@ -150,7 +150,7 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
   return (
     <>
       <DialogHeader
-        title={<FormattedMessage id="MarketplaceDialog.title" defaultMessage="Search & install plugin" />}
+        title={<FormattedMessage id="InstallPluginDialog.title" defaultMessage="Search & install plugin" />}
         onDismiss={props.onClose}
         rightActions={[
           {
@@ -183,7 +183,7 @@ function MarketplaceDialogUI(props: MarketplaceDialogProps) {
             resource={resource}
             withEmptyStateProps={{
               emptyStateProps: {
-                title: <FormattedMessage id="MarketplaceDialog.empty" defaultMessage="No plugins found." />,
+                title: <FormattedMessage id="InstallPluginDialog.empty" defaultMessage="No plugins found." />,
                 classes: { root: classes.loadingWrapper }
               }
             }}
