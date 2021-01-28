@@ -111,7 +111,7 @@ const reducer = createReducer<ContentState>(initialState, {
       ...state,
       items: {
         ...state.items,
-        byPath: { ...state.items.byPath, [payload.id]: payload }
+        byPath: { ...state.items.byPath, [payload.path]: payload }
       }
     };
   },
