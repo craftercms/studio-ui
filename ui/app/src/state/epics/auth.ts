@@ -55,9 +55,11 @@ const epics: CrafterCMSEpic[] = [
         form.action = state.env.logoutUrl;
         form.appendChild(tokenField);
         document.body.appendChild(form);
-        form.submit();
+        // The timeout purpose is to avoid immediate submission stopping
+        // the logout message from getting to the Service Worker
+        setTimeout(() => form.submit());
       }),
-      ignoreElements()
+      map(() => messageServiceWorker(logout()))
     ),
   (action$) =>
     action$.pipe(

@@ -20,17 +20,17 @@ import { RefreshSessionResponse } from '../../services/auth';
 
 // region Login
 
-export const login = createAction<Credentials>('LOG_IN');
-export const loginComplete = createAction('LOG_IN_COMPLETE');
-export const loginFailed = createAction('LOG_IN_FAILED');
+export const login = createAction<Credentials>('LOGIN');
+export const loginComplete = createAction('LOGIN_COMPLETE');
+export const loginFailed = createAction('LOGIN_FAILED');
 
 // endregion
 
 // region Log Out
 
-export const logout = createAction('LOG_OUT');
+export const logout = createAction('LOGOUT');
 export const logoutComplete = createAction<boolean>('LOGOUT_COMPLETE');
-export const logoutFailed = createAction('LOG_OUT_FAILED');
+export const logoutFailed = createAction('LOGOUT_FAILED');
 
 // endregion
 

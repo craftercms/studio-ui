@@ -59,6 +59,11 @@ self.addEventListener('message', (event) => {
       clearTimeout(timeout);
       status = 'expired';
       break;
+    case 'LOGOUT':
+      clearTimeout(timeout);
+      status = 'expired';
+      broadcast(createUnauthenticatedMessage(), event.source);
+      break;
     default:
       break;
   }
@@ -112,8 +117,11 @@ function retrieve() {
     });
 }
 
-function broadcast(message) {
+function broadcast(message, excludedClient) {
   getClients().then((clients) => {
+    if (excludedClient) {
+      clients = clients.filter((client) => client !== excludedClient);
+    }
     clients.forEach((client) => {
       client.postMessage(message);
     });
