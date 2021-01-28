@@ -2900,7 +2900,9 @@
             updateFieldFn(e, valueEl);
           });
         } else {
-          console.log(formatMessage(contentTypesMessages.dependencyNotImplemented, { property: properties.dependsOn }));
+          console.log(
+            `[content-types.js] Control dependency not implemented for input of type "${properties.dependsOn}". Dependency will be ignored.`
+          );
         }
       }
     };

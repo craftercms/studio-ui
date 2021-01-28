@@ -73,9 +73,7 @@ YAHOO.extend(
         const dependencyStatus = _self.dependencyStatus(dependency);
         valueEl.value = dependencyStatus.supported ? (dependencyStatus.dependencyMet ? value : false) : value;
 
-        if (dependency) {
-          _self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);
-        }
+        _self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);
       } else {
         valueEl.value = value;
       }

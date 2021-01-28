@@ -60,9 +60,7 @@ YAHOO.extend(
             : false
           : value == 'true';
 
-        if (dependency) {
-          _self.handleDependency(dependency, valueEl, properties, 'checked', false, updateFieldFn);
-        }
+        _self.handleDependency(dependency, valueEl, properties, 'checked', false, updateFieldFn);
       } else {
         valueEl.checked = value == 'true';
       }
