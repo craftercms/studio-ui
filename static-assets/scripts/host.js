@@ -112,12 +112,12 @@
       } /* if (!previousChoice) */ else {
         const usersService = CrafterCMSNext.services.users;
         usersService
-          .fetchGlobalPreferences()
+          .fetchGlobalProperties()
           .pipe(
             CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
-              usersService.setPreferences({
+              usersService.setProperties({
                 previewChoice: JSON.stringify(
-                  Object.assign(JSON.parse(prefs.previewChoice || {}), {
+                  Object.assign(JSON.parse(prefs.previewChoice || '{}'), {
                     [CStudioAuthoringContext.siteId]: '2'
                   })
                 )

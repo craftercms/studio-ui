@@ -267,7 +267,7 @@ export function PreviewConcierge(props: any) {
                   switchMap((prefs) =>
                     setProperties({
                       previewChoice: JSON.stringify(
-                        Object.assign(JSON.parse(prefs.previewChoice ?? {}), {
+                        Object.assign(JSON.parse(prefs.previewChoice ?? '{}'), {
                           [site]: '1'
                         })
                       )
