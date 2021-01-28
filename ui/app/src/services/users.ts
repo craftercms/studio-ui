@@ -25,7 +25,6 @@ import { PagedArray } from '../models/PagedArray';
 import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
 import { asArray } from '../utils/array';
-import ApiResponse from '../models/ApiResponse';
 
 // Check services/auth/login if `me` method is changed.
 export function me(): Observable<User> {
@@ -159,26 +158,41 @@ export function fetchMyRolesBySite(sites?: Site[]): Observable<LookupTable<strin
   );
 }
 
-export function fetchGlobalPreferences(): Observable<LookupTable<any>> {
+export function fetchGlobalProperties(): Observable<LookupTable<any>> {
   return get('/studio/api/2/users/me/properties').pipe(pluck('response', 'properties', ''));
 }
 
-export function fetchSitePreferences(siteId: string): Observable<LookupTable<any>> {
+export function deleteGlobalProperties(...preferenceKeys: string[]): Observable<LookupTable<any>> {
+  return del(`/studio/api/2/users/me/properties${toQueryString({ properties: preferenceKeys.join(',') })}`).pipe(
+    pluck('response', 'properties')
+  );
+}
+
+export function fetchSiteProperties(siteId: string): Observable<LookupTable<any>> {
   return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(pluck('response', 'properties', siteId));
 }
 
-export function setPreferences(
-  properties: LookupTable<string | number>,
-  siteId?: string
-): Observable<{ response: ApiResponse; properties: LookupTable<any> }> {
-  return postJSON('studio/api/2/users/me/properties', {
-    siteId,
-    properties
-  }).pipe(pluck('response'));
+export function deleteSiteProperties(site: string, ...preferenceKeys: string[]): Observable<LookupTable<any>> {
+  return del(
+    `/studio/api/2/users/me/properties${toQueryString({
+      siteId: site,
+      properties: JSON.stringify(preferenceKeys)
+    })}`
+  ).pipe(pluck('response', 'properties'));
 }
 
-export function deletePreferences(properties: string[], siteId?: string): Observable<boolean> {
-  return del(`/studio/api/2/users/me/properties?${siteId ? `siteId=${siteId}&` : ``}properties=${properties}`).pipe(
-    mapTo(true)
+export function setProperties(
+  preferences: LookupTable<string | number>,
+  siteId?: string
+): Observable<LookupTable<any>> {
+  return postJSON('/studio/api/2/users/me/properties', {
+    siteId,
+    properties: preferences
+  }).pipe(pluck('response', 'properties'));
+}
+
+export function deleteProperties(properties: string[], siteId?: string): Observable<LookupTable<any>> {
+  return del(`/studio/api/2/users/me/properties${toQueryString({ siteId, properties: properties.join(',') })}`).pipe(
+    pluck('response', 'properties')
   );
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
+import { ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   popToolsPanelPage,
@@ -34,7 +34,8 @@ import {
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipBoard } from '../actions/content';
-import { setPreferences } from '../../services/users';
+import { setProperties } from '../../services/users';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   (action$, state$) =>
@@ -82,7 +83,11 @@ export default [
     action$.pipe(
       ofType(setPreviewChoice.type),
       withLatestFrom(state$),
-      switchMap(([, state]) => setPreferences({ previewChoice: state.preview.previewChoice })),
+      switchMap(([{ payload }, state]) =>
+        setProperties({
+          previewChoice: JSON.stringify({ ...state.preview.previewChoice, [payload.site]: payload.choice })
+        })
+      ),
       map(setPreviewChoiceComplete)
     ),
   // endregion
@@ -109,4 +114,4 @@ export default [
       ignoreElements()
     )
   // endregion
-] as Epic[];
+] as CrafterCMSEpic[];

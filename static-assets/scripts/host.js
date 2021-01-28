@@ -82,12 +82,6 @@
         origin: origin,
         window: getEngineWindow().contentWindow
       });
-      const handleRemember = (remember, goOrStay) => {
-        CrafterCMSNext.system.store.dispatch({
-          type: 'SET_PREVIEW_CHOICE',
-          payload: { site: CStudioAuthoringContext.siteId, previewChoice: remember ? goOrStay : 'ask' }
-        });
-      };
       const doGo = () => {
         const state = CrafterCMSNext.system.store.getState();
         window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
@@ -95,13 +89,9 @@
       const showCompatDialog = () => {
         let unmount;
         CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
-          data,
-          onOk({ remember }) {
-            handleRemember(remember, '2');
-            doGo();
-          },
-          onCancel({ remember }) {
-            handleRemember(remember, '1');
+          onOk: doGo,
+          onCancel() {
+            unmount({ removeContainer: true });
           },
           onClosed() {
             unmount({ removeContainer: true });
@@ -111,20 +101,32 @@
         });
       };
       let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
-      if (previousChoice === null) {
-        CrafterCMSNext.system.store.dispatch({
-          type: 'SET_PREVIEW_CHOICE',
-          payload: { site: CStudioAuthoringContext.siteId, previewChoice: (previousChoice = '2') }
-        });
-      }
-      if (previousChoice && !compatibilityAsk) {
+      if (compatibilityAsk) {
+        showCompatDialog();
+      } else if (previousChoice) {
         if (previousChoice === '2') {
           doGo();
         } else if (previousChoice === 'ask') {
           showCompatDialog();
         }
-      } else {
-        showCompatDialog();
+      } /* if (!previousChoice) */ else {
+        const usersService = CrafterCMSNext.services.users;
+        usersService
+          .fetchGlobalPreferences()
+          .pipe(
+            CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
+              usersService.setPreferences({
+                previewChoice: JSON.stringify(
+                  Object.assign(JSON.parse(prefs.previewChoice || {}), {
+                    [CStudioAuthoringContext.siteId]: '2'
+                  })
+                )
+              })
+            )
+          )
+          .subscribe(() => {
+            doGo();
+          });
       }
     }
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });

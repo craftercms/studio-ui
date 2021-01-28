@@ -15,14 +15,20 @@
  */
 
 import { ofType } from 'redux-observable';
-import { login, loginComplete, loginFailed, logout, refreshAuthToken, refreshAuthTokenComplete } from '../actions/auth';
-import { ignoreElements, map, mapTo, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  login,
+  loginComplete,
+  loginFailed,
+  logout,
+  refreshAuthTokenComplete,
+  serviceWorkerToken
+} from '../actions/auth';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
-import { interval } from 'rxjs';
-import { storeInitialized } from '../actions/system';
+import { messageServiceWorker, storeInitialized } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
 import Cookies from 'js-cookie';
 
@@ -57,7 +63,12 @@ const epics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(sessionTimeout.type),
       tap(() => setRequestForgeryToken()),
-      ignoreElements()
+      map(() => messageServiceWorker({ type: 'TIMEOUT' }))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(serviceWorkerToken.type),
+      map(({ payload }) => refreshAuthTokenComplete(payload))
     ),
   (action$) =>
     action$.pipe(
@@ -70,23 +81,10 @@ const epics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
-  (action$, state$) =>
-    action$.pipe(
-      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
-      withLatestFrom(state$),
-      switchMap(([, state]) =>
-        interval(Math.floor((state.auth.expiresAt - Date.now()) * 0.8)).pipe(mapTo(refreshAuthToken()), take(1))
-      )
-    ),
   (action$) =>
     action$.pipe(
       ofType(loginComplete.type),
-      tap(() => {
-        navigator.serviceWorker.getRegistrations().then(([registration]) => {
-          registration.active.postMessage({ type: 'REFRESH' });
-        });
-      }),
-      ignoreElements()
+      map(() => messageServiceWorker({ type: 'REFRESH' }))
     )
 ];
 

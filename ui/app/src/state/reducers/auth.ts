@@ -23,7 +23,8 @@ import {
   logoutComplete,
   refreshAuthToken,
   refreshAuthTokenComplete,
-  refreshAuthTokenFailed
+  refreshAuthTokenFailed,
+  serviceWorkerUnauthenticated
 } from '../actions/auth';
 import { storeInitialized } from '../actions/system';
 
@@ -34,29 +35,29 @@ export const initialState: GlobalState['auth'] = {
   isFetching: false
 };
 
-const refreshAuthTokenReducer = (state, { payload }) => ({
-  ...state,
-  active: true,
-  isFetching: false,
-  expiresAt: fromExpiresAtString(payload.expiresAt)
-});
-
 const reducer = createReducer<GlobalState['auth']>(initialState, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...state,
-    expiresAt: fromExpiresAtString(payload.auth.expiresAt)
+    active: true,
+    expiresAt: payload.auth.expiresAt
   }),
   [refreshAuthToken.type]: (state) => ({
     ...state,
     isFetching: true
   }),
-  [refreshAuthTokenComplete.type]: refreshAuthTokenReducer,
+  [refreshAuthTokenComplete.type]: (state, { payload }) => ({
+    ...state,
+    active: true,
+    isFetching: false,
+    expiresAt: payload.expiresAt
+  }),
   [refreshAuthTokenFailed.type]: (state) => ({
     ...state,
     active: false,
     isFetching: false
   }),
   [sessionTimeout.type]: () => initialState,
+  [serviceWorkerUnauthenticated.type]: () => initialState,
   [login.type]: (state) => ({ ...state, isFetching: true }),
   [loginFailed.type]: (state, action) => ({
     ...state,
@@ -76,9 +77,5 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
   }),
   [logoutComplete.type]: () => initialState
 });
-
-function fromExpiresAtString(expiresAt: string) {
-  return new Date(expiresAt).getTime();
-}
 
 export default reducer;

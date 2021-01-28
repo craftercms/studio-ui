@@ -231,7 +231,9 @@
       // COMMITSPUBLISH
 
       this.commitsPublish = function(data) {
-        return publishingApi.publishByCommits(data.site_id, data.commit_ids, data.environment, data.comment).toPromise();
+        return publishingApi
+          .publishByCommits(data.site_id, data.commit_ids, data.environment, data.comment)
+          .toPromise();
       };
 
       function repositories(action, params) {
@@ -286,7 +288,6 @@
       audit.allTimeZones = moment.tz.names();
       audit.sort = 'date';
       $scope.originValues = [$translate.instant('admin.audit.ALL_ORIGINS'), 'API', 'GIT'];
-      $scope.sites = CrafterCMSNext.system.store.getState().sites.byId;
 
       var delayTimer;
 
@@ -595,18 +596,10 @@
         }
       };
 
-      if (!$scope.sites) {
-        let unsubscribe;
-        unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
-          $scope.sites = CrafterCMSNext.system.store.getState().sites.byId;
-          if ($scope.sites) {
-            unsubscribe();
-            audit.getAuditInfo();
-          }
-        });
-      } else {
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        $scope.sites = store.getState().sites.byId;
         audit.getAuditInfo();
-      }
+      });
     }
   ]);
 

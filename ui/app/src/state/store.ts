@@ -24,7 +24,7 @@ import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { BehaviorSubject, forkJoin, fromEvent, Observable, of } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
-import { fetchMyRolesInSite, me } from '../services/users';
+import { fetchGlobalProperties, fetchMyRolesInSite, me } from '../services/users';
 import { fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
@@ -36,7 +36,8 @@ import { RefreshSessionResponse } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
 import { fromPromise } from 'rxjs/internal-compatibility';
-import { refreshAuthTokenComplete } from './actions/auth';
+import User, { EnhancedUser } from '../models/User';
+import { Site } from '../models/Site';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
 
@@ -56,27 +57,30 @@ export function getStore(): Observable<CrafterCMSStore> {
     store$ = new BehaviorSubject(null);
     return registerServiceWorker().pipe(
       tap(({ token }) => setJwt(token)),
-      switchMap((auth) => {
-        const preloadState = retrieveInitialStateScript();
-        return (preloadState
-          ? of(createStoreSync(preloadState))
-          : fetchInitialState().pipe(map((initialState) => createStoreSync(initialState)))
-        ).pipe(
-          tap((store) => {
-            store.dispatch(storeInitialized({ auth }));
-            navigator.serviceWorker.onmessage = (e) => {
-              store.dispatch(refreshAuthTokenComplete(e.data));
-            };
-            store$.next(store);
-          })
-        );
-      }),
+      switchMap((auth) =>
+        of(createStoreSync()).pipe(
+          switchMap((store) =>
+            fetchStateInitialization().pipe(
+              tap((requirements) => {
+                store.dispatch(storeInitialized({ auth, ...requirements }));
+                navigator.serviceWorker.onmessage = (e) => {
+                  if (e.data?.type) {
+                    console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
+                    store.dispatch(e.data);
+                  }
+                };
+                store$.next(store);
+              })
+            )
+          )
+        )
+      ),
       switchMap(() => store$.pipe(take(1)))
     );
   }
 }
 
-export function registerServiceWorker(): Observable<RefreshSessionResponse> {
+function registerServiceWorker(): Observable<RefreshSessionResponse> {
   return fromPromise(navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/service-worker.js`)).pipe(
     switchMap((registration) => registration.update().then(() => registration)),
     switchMap((registration) => {
@@ -99,7 +103,7 @@ export function registerServiceWorker(): Observable<RefreshSessionResponse> {
       }
       return fromEvent<MessageEvent>(navigator.serviceWorker, 'message').pipe(
         tap((e) => {
-          console.log('%c[page] Message received from worker', 'color: blue', e.data);
+          console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
           if (e.data?.type === 'SW_UNAUTHENTICATED') {
             throw new Error('User not authenticated.');
           }
@@ -116,7 +120,7 @@ export function getStoreSync(): CrafterCMSStore {
   return store$?.value;
 }
 
-export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
+export function createStoreSync(preloadedState?: Partial<GlobalState>): CrafterCMSStore {
   const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
     dependencies: { getIntl: getCurrentIntl }
   });
@@ -130,36 +134,18 @@ export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCM
   return store;
 }
 
-export function retrieveInitialStateScript(): GlobalState {
-  let state = {} as GlobalState;
-  const script = document.querySelector('#initialState');
-  if (script) {
-    try {
-      state = JSON.parse(script.innerHTML);
-      if (nou(state.sites.active)) {
-        const cookie = Cookies.get(state.env.siteCookieName);
-        cookie && (state.sites.active = Cookies.get(state.env.siteCookieName));
-      }
-    } catch {
-      // The login screen won't have the preloaded state
-      !window.location.href.includes('/login') && console.error('[GlobalContext] Malformed initial global state.');
-      // TODO: Login view should be built separately from the main app to avoid this hack and specially to avoid the bulky build
-    }
-  } else {
-    return null;
-  }
-  const writer = document.querySelector('#initialStateWriter');
-  script?.parentNode.removeChild(script);
-  writer?.parentNode.removeChild(writer);
-  return state;
-}
-
-export function fetchInitialState(): Observable<Partial<GlobalState>> {
+export function fetchStateInitialization(): Observable<{
+  user: User;
+  rolesBySite: LookupTable<string[]>;
+  sites: Site[];
+  properties: LookupTable<any>;
+}> {
   return forkJoin({
     user: me(),
-    sites: fetchAll()
+    sites: fetchAll(),
+    properties: fetchGlobalProperties()
   }).pipe(
-    switchMap(({ user, sites }) =>
+    switchMap(({ user, sites, properties }) =>
       sites.length
         ? forkJoin<LookupTable<Observable<string[]>>, ''>(
             // creates an object like `{ [siteId]: Observable<roleName[]> }`
@@ -169,25 +155,17 @@ export function fetchInitialState(): Observable<Partial<GlobalState>> {
             }, {})
           ).pipe(
             map((rolesBySite) => ({
-              user: {
-                ...user,
-                rolesBySite: rolesBySite,
-                sites: sites.map(({ id }) => id),
-                preferences: {}
-              },
-              sites: { ...sitesInitialState, byId: createLookupTable(sites) },
-              auth: { ...authInitialState, active: true }
+              user,
+              rolesBySite,
+              sites,
+              properties
             }))
           )
         : of({
-            user: {
-              ...user,
-              sites: [],
-              rolesBySite: {},
-              preferences: {}
-            },
-            sites: { ...sitesInitialState, byId: {} },
-            auth: { ...authInitialState, active: true }
+            user,
+            sites,
+            properties,
+            rolesBySite: {}
           })
     )
   );

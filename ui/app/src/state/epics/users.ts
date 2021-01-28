@@ -17,15 +17,15 @@
 import { ofType } from 'redux-observable';
 import { storeInitialized } from '../actions/system';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { deletePreferences, fetchGlobalPreferences, fetchSitePreferences } from '../../services/users';
+import { deleteProperties, fetchGlobalProperties, fetchSiteProperties } from '../../services/users';
 import { NEVER } from 'rxjs';
 import {
-  deletePreferences as deletePreferencesAction,
-  deletePreferencesComplete,
-  fetchGlobalPreferences as fetchGlobalPreferencesAction,
-  fetchGlobalPreferencesComplete,
-  fetchSitePreferences as fetchSitePreferencesAction,
-  fetchSitePreferencesComplete
+  deleteProperties as deletePropertiesAction,
+  deletePropertiesComplete,
+  fetchGlobalProperties as fetchGlobalPropertiesAction,
+  fetchGlobalPropertiesComplete,
+  fetchSiteProperties as fetchSitePropertiesAction,
+  fetchSitePropertiesComplete
 } from '../actions/user';
 import { CrafterCMSEpic } from '../store';
 
@@ -33,26 +33,26 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [fetchGlobalPreferencesAction(), fetchSitePreferencesAction()])
+      switchMap(() => [fetchGlobalPropertiesAction(), fetchSitePropertiesAction()])
     ),
-  (action$, state$, { getIntl }) =>
+  (action$) =>
     action$.pipe(
-      ofType(fetchGlobalPreferencesAction.type),
-      switchMap(() => fetchGlobalPreferences().pipe(map(fetchGlobalPreferencesComplete)))
+      ofType(fetchGlobalPropertiesAction.type),
+      switchMap(() => fetchGlobalProperties().pipe(map(fetchGlobalPropertiesComplete)))
     ),
   (action$, state$) =>
     action$.pipe(
-      ofType(fetchSitePreferencesAction.type),
+      ofType(fetchSitePropertiesAction.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
-        state.sites.active ? fetchSitePreferences(state.sites.active).pipe(map(fetchSitePreferencesComplete)) : NEVER
+        state.sites.active ? fetchSiteProperties(state.sites.active).pipe(map(fetchSitePropertiesComplete)) : NEVER
       )
     ),
   (action$) =>
     action$.pipe(
-      ofType(deletePreferencesAction.type),
+      ofType(deletePropertiesAction.type),
       switchMap((action) =>
-        deletePreferences(action.payload.properties, action.payload.siteId).pipe(map(deletePreferencesComplete))
+        deleteProperties(action.payload.properties, action.payload.siteId).pipe(map(deletePropertiesComplete))
       )
     )
 ] as CrafterCMSEpic[];

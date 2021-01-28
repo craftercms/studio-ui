@@ -40,4 +40,7 @@ export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
 export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
 
+export const serviceWorkerToken = createAction<RefreshSessionResponse>('SW_TOKEN');
+export const serviceWorkerUnauthenticated = createAction<RefreshSessionResponse>('SW_UNAUTHENTICATED');
+
 // endregion

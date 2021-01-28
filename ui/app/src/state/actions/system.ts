@@ -78,3 +78,5 @@ export const showSystemNotification = createAction<{
 export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
 
 export const storeInitialized = createAction<{ auth: RefreshSessionResponse }>('STORE_INITIALIZED');
+
+export const messageServiceWorker = createAction<StandardAction>('MESSAGE_SERVICE_WORKER');

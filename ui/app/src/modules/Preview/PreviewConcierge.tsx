@@ -52,7 +52,6 @@ import {
   setContentTypeReceptacles,
   setHighlightMode,
   setItemBeingDragged,
-  setPreviewChoice,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
@@ -88,7 +87,7 @@ import {
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
-import { findParentModelId, nnou, nou, pluckProps } from '../../utils/object';
+import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
@@ -107,6 +106,7 @@ import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
 import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
+import { fetchGlobalProperties, setProperties } from '../../services/users';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -156,14 +156,10 @@ export function PreviewConcierge(props: any) {
   const childrenMap = guest?.childrenMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
   const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
-  const previewNextCheckInNotificationRef = useRef(false);
   const requestedSourceMapPaths = useRef({});
-  const handlePreviewCompatDialogRemember = useCallback(
-    (remember, goOrStay) => {
-      dispatch(setPreviewChoice({ site, previewChoice: remember ? goOrStay : 'ask' }));
-    },
-    [dispatch, site]
-  );
+  // Controls that the preview compatibility dialog is only shown once per this tab session (once per refresh).
+  // Avoids it showing over and over when navigating studio pages.
+  const previewNextCheckInNotificationRef = useRef(false);
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
@@ -257,17 +253,30 @@ export function PreviewConcierge(props: any) {
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
             let previousChoice = previewChoice[site];
-            if (nou(previousChoice)) {
-              dispatch(setPreviewChoice({ site, previewChoice: previousChoice = '1' }));
-            }
-            if (previousChoice && !compatibilityAsk) {
-              if (previousChoice === '1') {
+            if (compatibilityAsk) {
+              setPreviewCompatibilityDialogOpen(true);
+            } else if (previousChoice) {
+              if (previousChoice === '2') {
                 handlePreviewCompatibilityDialogGo();
               } else if (previousChoice === 'ask') {
                 setPreviewCompatibilityDialogOpen(true);
               }
-            } else {
-              setPreviewCompatibilityDialogOpen(true);
+            } /* if (!previousChoice) */ else {
+              fetchGlobalProperties()
+                .pipe(
+                  switchMap((prefs) =>
+                    setProperties({
+                      previewChoice: JSON.stringify(
+                        Object.assign(JSON.parse(prefs.previewChoice ?? {}), {
+                          [site]: '1'
+                        })
+                      )
+                    })
+                  )
+                )
+                .subscribe((k) => {
+                  handlePreviewCompatibilityDialogGo();
+                });
             }
           }
           break;
@@ -675,8 +684,7 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     editMode,
     highlightMode,
-    previewChoice,
-    handlePreviewCompatibilityDialogGo
+    previewChoice
   ]);
 
   useEffect(() => {
@@ -704,12 +712,8 @@ export function PreviewConcierge(props: any) {
         isPreviewNext={false}
         open={previewCompatibilityDialogOpen}
         onClose={() => setPreviewCompatibilityDialogOpen(false)}
-        onOk={({ remember }) => {
-          handlePreviewCompatDialogRemember(remember, 'go');
-          handlePreviewCompatibilityDialogGo();
-        }}
-        onCancel={({ remember }) => {
-          handlePreviewCompatDialogRemember(remember, 'stay');
+        onOk={handlePreviewCompatibilityDialogGo}
+        onCancel={() => {
           setPreviewCompatibilityDialogOpen(false);
         }}
       />

@@ -34,26 +34,29 @@
 
       $('#admin-console').append('<div id="cstudio-admin-console-workarea"></div>');
 
-      CStudioAuthoring.Service.lookupConfigurtion(
-        CStudioAuthoringContext.site,
-        '/administration/site-config-tools.xml',
-        {
-          success: function(config) {
-            var panelEl = YAHOO.util.Selector.query(
-              '#admin-console .categories-panel #categoriesPanelWrapper',
-              null,
-              true
-            );
-            this.context.toolbar = new CStudioAdminConsole.Toolbar(panelEl);
+      // Need to wait for store to be initialized so auth token is available
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        CStudioAuthoring.Service.lookupConfigurtion(
+          CStudioAuthoringContext.site,
+          '/administration/site-config-tools.xml',
+          {
+            success: function(config) {
+              var panelEl = YAHOO.util.Selector.query(
+                '#admin-console .categories-panel #categoriesPanelWrapper',
+                null,
+                true
+              );
+              this.context.toolbar = new CStudioAdminConsole.Toolbar(panelEl);
 
-            this.context.buildModules(config, panelEl);
-          },
+              this.context.buildModules(config, panelEl);
+            },
 
-          failure: function() {},
+            failure: function() {},
 
-          context: this
-        }
-      );
+            context: this
+          }
+        );
+      });
     },
 
     initRouter(tools) {

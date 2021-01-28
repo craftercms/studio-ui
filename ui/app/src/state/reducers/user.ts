@@ -16,7 +16,15 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { EnhancedUser } from '../../models/User';
+import { storeInitialized } from '../actions/system';
 
-const reducer = createReducer<EnhancedUser>(null, {});
+const reducer = createReducer<EnhancedUser>(null, {
+  [storeInitialized.type]: (state, { payload }) => ({
+    ...payload.user,
+    rolesBySite: payload.rolesBySite,
+    sites: payload.sites.map((id) => id),
+    preferences: null // TODO: is this needed?
+  })
+});
 
 export default reducer;

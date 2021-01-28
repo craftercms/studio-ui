@@ -67,6 +67,8 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { envInitialState } from './env';
+import { fetchGlobalPropertiesComplete } from '../actions/user';
+import { storeInitialized } from '../actions/system';
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -162,6 +164,13 @@ const reducer = createReducer<GlobalState['preview']>(
     }
   },
   {
+    [storeInitialized.type]: (state, { payload }) =>
+      payload.previewChoice
+        ? {
+            ...state,
+            previewChoice: JSON.parse(payload.previewChoice)
+          }
+        : state,
     [OPEN_TOOLS]: (state) => {
       return {
         ...state,
@@ -543,6 +552,10 @@ const reducer = createReducer<GlobalState['preview']>(
     [setPreviewChoice.type]: (state, { payload }) => ({
       ...state,
       previewChoice: { ...state.previewChoice, [payload.site]: payload.previewChoice }
+    }),
+    [fetchGlobalPropertiesComplete.type]: (state, { payload }) => ({
+      ...state,
+      previewChoice: { ...state.previewChoice, ...JSON.parse(payload.previewChoice ?? '{}') }
     })
   }
 );
