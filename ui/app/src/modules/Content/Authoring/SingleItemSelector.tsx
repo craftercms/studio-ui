@@ -228,7 +228,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       }
     }
     case fetchParentsItemsComplete.type: {
-      const { currentPath, rootPath, byId } = state;
+      const { currentPath, rootPath, byId, leaves } = state;
       let nextItems: any = { ...byId };
       let items = [];
       let total;
@@ -248,6 +248,23 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
           [response.parent.path]: response.parent
         };
       });
+
+      if (items.length === 0) {
+        let prevPath = getNextPath(currentPath, nextItems);
+        let prevResponse = payload.find((response) => response.parent.path === prevPath);
+        return {
+          ...state,
+          byId: nextItems,
+          currentPath: prevPath,
+          leaves: leaves.concat(currentPath),
+          items: prevResponse.map((item) => item.path),
+          isFetching: false,
+          limit: prevResponse.limit,
+          total: prevResponse.total,
+          offset: prevResponse.offset,
+          breadcrumb: getIndividualPaths(withoutIndex(prevPath), withoutIndex(rootPath))
+        };
+      }
 
       return {
         ...state,

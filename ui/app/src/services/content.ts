@@ -33,12 +33,7 @@ import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import {
-  createItemStateMap,
-  parseContentXML,
-  parseLegacyItemToDetailedItem,
-  parseLegacyItemToSandBoxItem
-} from '../utils/content';
+import { createItemStateMap, parseContentXML, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -89,8 +84,12 @@ export function getSandboxItem(site: string, path: string): Observable<SandboxIt
   return getLegacyItem(site, path).pipe(map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem));
 }
 
-export function getDetailedItem(site: string, path: string): Observable<DetailedItem> {
-  return getLegacyItem(site, path).pipe(map<LegacyItem, DetailedItem>(parseLegacyItemToDetailedItem));
+export function getDetailedItem(siteId: string, path: string): Observable<DetailedItem> {
+  const qs = toQueryString({ siteId, path });
+  return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
+    pluck('response', 'item'),
+    map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))
+  );
 }
 
 export function getContentInstanceLookup(
