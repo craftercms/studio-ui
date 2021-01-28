@@ -684,7 +684,8 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     editMode,
     highlightMode,
-    previewChoice
+    previewChoice,
+    handlePreviewCompatibilityDialogGo
   ]);
 
   useEffect(() => {

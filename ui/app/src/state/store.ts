@@ -16,8 +16,6 @@
 
 import { configureStore, EnhancedStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import reducer from './reducers/root';
-import { createLookupTable, nou } from '../utils/object';
-import Cookies from 'js-cookie';
 import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
@@ -27,8 +25,6 @@ import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import { fetchGlobalProperties, fetchMyRolesInSite, me } from '../services/users';
 import { fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
-import { initialState as sitesInitialState } from './reducers/sites';
-import { initialState as authInitialState } from './reducers/auth';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
@@ -36,7 +32,7 @@ import { RefreshSessionResponse } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
 import { fromPromise } from 'rxjs/internal-compatibility';
-import User, { EnhancedUser } from '../models/User';
+import User from '../models/User';
 import { Site } from '../models/Site';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
