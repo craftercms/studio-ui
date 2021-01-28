@@ -580,9 +580,14 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   if (isNavigable(item)) {
     return isRootPath(item.path) ? 11 : 16;
   } else if (isFolder(item)) {
-    return isRootPath(item.path) ? 3 : item.path.startsWith('/templates') || item.path.startsWith('/scripts') ? 7 : 6;
+    return isRootPath(item.path)
+      ? item.path.startsWith('/templates') || item.path.startsWith('/scripts')
+        ? 4
+        : 3
+      : item.path.startsWith('/templates') || item.path.startsWith('/scripts')
+      ? 7
+      : 6;
   } else if (isPreviewable(item)) {
-    // TODO: Unsure if the BE will return taxonomy as a systemType
     return item.systemType === 'component' || item.systemType === 'taxonomy' ? 11 : 10;
   }
 }
