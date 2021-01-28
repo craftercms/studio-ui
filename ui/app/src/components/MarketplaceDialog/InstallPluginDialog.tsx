@@ -85,7 +85,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
       setIsFetching(true);
-      fetchMarketplacePlugins('blueprint', keyword).subscribe((plugins) => {
+      fetchMarketplacePlugins('site', keyword).subscribe((plugins) => {
         // Moving setPlugins above of setIsFetching to avoid resolve the resource with the prev plugins
         setPlugins(plugins);
         setIsFetching(false);
@@ -109,7 +109,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
 
   const refresh = () => {
     setIsFetching(true);
-    fetchMarketplacePlugins('blueprint').subscribe((plugins) => {
+    fetchMarketplacePlugins('site').subscribe((plugins) => {
       setIsFetching(false);
       setPlugins(plugins);
     });

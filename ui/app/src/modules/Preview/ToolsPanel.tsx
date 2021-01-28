@@ -52,6 +52,7 @@ import Simulator from '@material-ui/icons/DevicesRounded';
 import BrushOutlinedIcon from '@material-ui/icons/BrushOutlined';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
+import PluginManagement from '../../components/PluginManagement';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -171,7 +172,8 @@ Object.entries({
   'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
   'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
   'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
-  'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel
+  'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,
+  'craftercms.components.PluginManagement': PluginManagement
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

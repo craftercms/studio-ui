@@ -28,10 +28,9 @@ import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import Checkbox from '@material-ui/core/Checkbox';
 import { ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import { useActiveSiteId, usePermissions } from '../../utils/hooks';
+import { useActiveSiteId, useMount } from '../../utils/hooks';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
@@ -44,9 +43,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { getUserPermissions } from '../../services/security';
+import clsx from 'clsx';
 
 const styles = makeStyles((theme) =>
   createStyles({
+    root: {
+      padding: '20px'
+    },
     title: {
       marginBottom: '25px'
     },
@@ -55,7 +59,10 @@ const styles = makeStyles((theme) =>
       borderRadius: '50px',
       border: 0,
       padding: '5px 25px',
-      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)'
+      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)',
+      '&.embedded': {
+        marginLeft: '15px'
+      }
     },
     tableWrapper: {
       marginTop: '25px'
@@ -78,17 +85,28 @@ const StyledTableCell = withStyles((theme: Theme) =>
   })
 )(TableCell);
 
-export const PluginManagement = () => {
+interface PluginManagementProps {
+  embedded?: boolean;
+}
+
+export const PluginManagement = (props: PluginManagementProps) => {
+  const { embedded = false } = props;
   const classes = styles();
   const dispatch = useDispatch();
-  const permissions = usePermissions();
   const siteId = useActiveSiteId();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
+  const [permissions, setPermissions] = useState(null);
   const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(false);
-  const listPlugins = permissions?.['/']['list_plugins'];
-  const installPlugins = permissions?.['/']['install_plugins'];
+  const listPlugins = permissions?.['list_plugins'] ?? false;
+  const installPlugins = permissions?.['install_plugins'] ?? false;
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
+
+  useMount(() => {
+    getUserPermissions(siteId, '/').subscribe((permissions) => {
+      setPermissions(permissions);
+    });
+  });
 
   useEffect(() => {
     if (listPlugins && siteId) {
@@ -129,21 +147,25 @@ export const PluginManagement = () => {
   };
 
   return (
-    <section>
-      <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="PluginManagement.title" defaultMessage="Plugin Management" />
-      </Typography>
-      <Divider />
+    <section className={clsx(!embedded && classes.root)}>
+      {!embedded && (
+        <>
+          <Typography variant="h4" component="h1" className={classes.title}>
+            <FormattedMessage id="PluginManagement.title" defaultMessage="Plugin Management" />
+          </Typography>
+          <Divider />
+        </>
+      )}
       <SecondaryButton
         startIcon={<AddIcon />}
-        className={classes.createToken}
+        className={clsx(classes.createToken, embedded && 'embedded')}
         onClick={onSearchPlugin}
         disabled={installPlugins === false}
       >
         <FormattedMessage id="PluginManagement.searchPlugin" defaultMessage="Search & install" />
       </SecondaryButton>
       <Divider />
-      {listPlugins === false ? (
+      {permissions && listPlugins === false ? (
         <EmptyState
           title={
             <FormattedMessage
@@ -158,10 +180,7 @@ export const PluginManagement = () => {
             <Table className={classes.table}>
               <TableHead>
                 <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox color="primary" />
-                  </TableCell>
-                  <TableCell align="left" padding="none">
+                  <TableCell align="left">
                     <Typography variant="subtitle2">
                       <FormattedMessage id="words.id" defaultMessage="Id" />
                     </Typography>
@@ -192,10 +211,7 @@ export const PluginManagement = () => {
               <TableBody>
                 {plugins?.map((plugin) => (
                   <TableRow key={plugin.id}>
-                    <TableCell padding="checkbox">
-                      <Checkbox color="primary" />
-                    </TableCell>
-                    <TableCell component="th" id={plugin.id} scope="row" padding="none">
+                    <TableCell component="th" id={plugin.id} scope="row">
                       {plugin.id}
                     </TableCell>
                     <StyledTableCell align="left">
