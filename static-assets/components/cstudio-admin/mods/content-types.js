@@ -372,10 +372,6 @@
                               cb,
                               xmlFormDef
                             );
-
-                            document.getElementById(
-                              'cstudio-admin-console-command-bar'
-                            ).children[1].value = CMgs.format(langBundle, 'close');
                           }
                         });
                       }
