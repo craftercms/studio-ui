@@ -41,6 +41,7 @@
     globalMenuMessages = i18n.messages.globalMenuMessages,
     adminDashboardMessages = i18n.messages.adminDashboardMessages;
 
+  // Run runs after "config"
   app.run([
     '$rootScope',
     '$state',
@@ -48,16 +49,14 @@
     'authService',
     'sitesService',
     'Constants',
-    '$uibModal',
-    '$timeout',
-    function($rootScope, $state, $stateParams, authService, sitesService, Constants, $uibModal, $timeout) {
+    function($rootScope, $state, $stateParams, authService, sitesService, Constants) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
       $rootScope.$on('$stateChangeStart', function(event, toState) {
-        const init = () => {
+        CrafterCMSNext.system.getStore().subscribe(() => {
           if (toState.name.indexOf('users') !== -1) {
             var user = authService.getUser();
             if (user && user.username) {
@@ -72,7 +71,6 @@
               });
             }
           }
-
           function setDocTitle(globalMenuData, toState) {
             let docTitle;
 
@@ -93,7 +91,6 @@
 
             document.title = docTitle;
           }
-
           if ($rootScope.globalMenuData) {
             setDocTitle($rootScope.globalMenuData, toState);
           } else {
@@ -102,14 +99,12 @@
               setDocTitle(menuItems, toState);
             });
           }
-        };
-
-        CrafterCMSNext.system.getStore().subscribe(() => {
-          init();
         });
       });
 
-      sitesService.getLanguages($rootScope, true);
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        sitesService.getLanguages($rootScope, true);
+      });
 
       // More configuration on https://notifyjs.com/
       $rootScope.showNotification = function(message, positionx, positiony, type, originalx, originaly, classElt) {
@@ -173,6 +168,7 @@
     }
   ]);
 
+  // Config runs prior to "run"
   app.config([
     '$stateProvider',
     '$urlRouterProvider',
@@ -923,14 +919,6 @@
 
       $scope.user = authService.getUser();
 
-      if ($scope.user && $scope.user.username) {
-        sitesService.getPermissions('', '/', $scope.user.username || $scope.user).then(function(permissions) {
-          if (permissions.includes('create-site')) {
-            $scope.createSites = true;
-          }
-        });
-      }
-
       $scope.data = { email: ($scope.user || { email: '' }).email };
       $scope.error = null;
 
@@ -941,22 +929,31 @@
         $scope.data.email = $scope.user.email;
       });
 
-      if (authService.getUser()) {
-        authService.getStudioInfo().then(function(data) {
-          const packageVersion = data.packageVersion;
-          const simpleVersion = packageVersion.substr(0, 3);
-          $scope.aboutStudio = data.version;
-          $scope.versionNumber = `${packageVersion}-${data.packageBuild.substring(0, 6)}`;
-          $scope.simpleVersion = simpleVersion;
-          $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
-          $scope.attributionHTML = CrafterCMSNext.i18n.intl
-            .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
-              a: (msg) =>
-                `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
-            })
-            .join('');
-        });
-      }
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        if ($scope.user && $scope.user.username) {
+          sitesService.getPermissions('', '/', $scope.user.username || $scope.user).then(function(permissions) {
+            if (permissions.includes('create-site')) {
+              $scope.createSites = true;
+            }
+          });
+        }
+        if (authService.getUser()) {
+          authService.getStudioInfo().then(function(data) {
+            const packageVersion = data.packageVersion;
+            const simpleVersion = packageVersion.substr(0, 3);
+            $scope.aboutStudio = data.version;
+            $scope.versionNumber = `${packageVersion}-${data.packageBuild.substring(0, 6)}`;
+            $scope.simpleVersion = simpleVersion;
+            $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
+            $scope.attributionHTML = CrafterCMSNext.i18n.intl
+              .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
+                a: (msg) =>
+                  `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
+              })
+              .join('');
+          });
+        }
+      });
 
       var isChromium = window.chrome,
         vendorName = window.navigator.vendor,
@@ -1022,15 +1019,18 @@
       if ($rootScope.globalMenuData) {
         initGlobalMenu($rootScope.globalMenuData);
       } else {
-        sitesService.getGlobalMenu().then(
-          function(data) {
-            $rootScope.globalMenuData = data;
-            initGlobalMenu(data);
-          },
-          function(er) {
-            console.log(er);
-          }
-        );
+        CrafterCMSNext.system.getStore().subscribe(() => {
+          sitesService.getGlobalMenu().then(
+            function(data) {
+              $rootScope.globalMenuData = data;
+              initGlobalMenu(data);
+              $scope.$apply();
+            },
+            function(er) {
+              console.log(er);
+            }
+          );
+        });
       }
 
       function setLabels() {
@@ -1044,26 +1044,20 @@
 
       function initGlobalMenu(data) {
         $scope.entities = data;
-
         i18n = CrafterCMSNext.i18n;
         formatMessage = i18n.intl.formatMessage;
         globalMenuMessages = i18n.messages.globalMenuMessages;
-
         if ($scope.entities.length > 1) {
           let defaultView = $scope.entities[0].id; // default view (first)
           const currentView = $state.current.name;
-
           $scope.entities.forEach(function(entry, i) {
             const label = globalMenuMessages[entry.id] ? formatMessage(globalMenuMessages[entry.id]) : entry.label;
-
             entry.label = label;
-
             if (currentView === entry.id) {
               // if current view is an entry of globalMenu -> set as default view
               defaultView = entry.id;
             }
           });
-
           $state.go(defaultView);
         } else {
           if ($scope.entities.length > 0) {
