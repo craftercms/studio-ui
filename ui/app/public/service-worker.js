@@ -22,8 +22,7 @@ const createTokenMessage = () => ({ type: 'SW_TOKEN', payload: current, meta: { 
 const fromExpiresAtString = (expiresAt) => new Date(expiresAt).getTime();
 
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
-  event.waitUntil(retrieve());
+  event.waitUntil(Promise.all([self.skipWaiting(), retrieve()]));
   log('install event');
 });
 
@@ -120,7 +119,7 @@ function retrieve() {
 function broadcast(message, excludedClient) {
   getClients().then((clients) => {
     if (excludedClient) {
-      clients = clients.filter((client) => client !== excludedClient);
+      clients = clients.filter((client) => client.id !== excludedClient.id);
     }
     clients.forEach((client) => {
       client.postMessage(message);
@@ -133,7 +132,7 @@ function getClients() {
 }
 
 function log(message, ...args) {
-  console.log(`%c[ServiceWorker] ${message}.`, 'color: #0071A4', ...args);
+  console.log(`%c[ServiceWorker(v${version})] ${message}.`, 'color: #0071A4', ...args);
 }
 
 log(`Worker v${version} loaded.`);
