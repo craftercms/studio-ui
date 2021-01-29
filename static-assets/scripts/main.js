@@ -1184,7 +1184,9 @@
         }
       }
 
-      getResultsPage(1);
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        getResultsPage(1);
+      });
 
       $scope.removeSiteSites = function(site) {
         var modalInstance = $uibModal.open({
@@ -1349,27 +1351,28 @@
         globalConfig.isModified = true;
       });
 
-      configurationApi
-        .getRawConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio')
-        .subscribe((data) => {
-          aceEditor.setValue(data || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
-          aceEditor.focus();
-          defaultValue = data;
-          globalConfig.isModified = false;
-          enableUI(true);
-          $scope.$apply();
-        });
-
-      // Differ the loading of the sample config file to the "background"
-      // Loading the value from this higher order controller allows caching,
-      // avoiding fetching it multiple times on every sample modal open.
-      setTimeout(() => {
+      CrafterCMSNext.system.getStore().subscribe(() => {
         configurationApi
-          .getRawConfiguration('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio')
+          .getRawConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio')
           .subscribe((data) => {
-            sampleValue = data;
+            aceEditor.setValue(data || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
+            aceEditor.focus();
+            defaultValue = data;
+            globalConfig.isModified = false;
+            enableUI(true);
             $scope.$apply();
           });
+        // Differ the loading of the sample config file to the "background"
+        // Loading the value from this higher order controller allows caching,
+        // avoiding fetching it multiple times on every sample modal open.
+        setTimeout(() => {
+          configurationApi
+            .getRawConfiguration('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio')
+            .subscribe((data) => {
+              sampleValue = data;
+              $scope.$apply();
+            });
+        });
       });
 
       $scope.save = function() {

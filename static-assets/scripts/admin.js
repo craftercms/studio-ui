@@ -613,9 +613,11 @@
       $scope.logging = {};
       var logging = $scope.logging;
 
-      adminService.getLoggers().then(function(data) {
-        logging.levels = data;
-        $scope.$apply();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        adminService.getLoggers().then(function(data) {
+          logging.levels = data;
+          $scope.$apply();
+        });
       });
 
       logging.setLevel = function(log, level) {
@@ -731,7 +733,9 @@
         logs.running = !logs.running;
       };
 
-      logs.getLogs(logs.since);
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        logs.getLogs(logs.since);
+      });
 
       $scope.$on('$viewContentLoaded', function() {
         logs.startTimer();
@@ -869,32 +873,6 @@
       publish.isValidateCommentOn = false;
       publish.isValidateCommitPublishCommentOn = false;
 
-      adminService
-        .getTimeZone({
-          site: publish.site,
-          path: '/site-config.xml'
-        })
-        .then(function(data) {
-          var publishing = data['publishing'];
-          publish.timeZone = data['default-timezone'];
-          publish.isValidateCommentOn =
-            publishing && publishing['comments']
-              ? (publishing['comments']['required'] === 'true' &&
-                  publishing['comments']['bulk-publish-required'] !== 'false') ||
-                publishing['comments']['bulk-publish-required'] === 'true'
-                ? true
-                : false
-              : false;
-          publish.isValidateCommitPublishCommentOn =
-            publishing && publishing['comments']
-              ? (publishing['comments']['required'] === 'true' &&
-                  publishing['comments']['publish-by-commit-required'] !== 'false') ||
-                publishing['comments']['publish-by-commit-required'] === 'true'
-                ? true
-                : false
-              : false;
-        });
-
       publish.getPublish = function() {
         adminService.getPublishStatus(publish.site).then(
           function(data) {
@@ -939,7 +917,6 @@
           false
         );
       };
-      renderStatusView();
 
       publish.startPublish = function() {
         var requestAsString = { site_id: publish.site };
@@ -1084,6 +1061,35 @@
             commentLength: publish.publishComment.length || 0
           });
         });
+      });
+
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        adminService
+          .getTimeZone({
+            site: publish.site,
+            path: '/site-config.xml'
+          })
+          .then(function(data) {
+            var publishing = data['publishing'];
+            publish.timeZone = data['default-timezone'];
+            publish.isValidateCommentOn =
+              publishing && publishing['comments']
+                ? (publishing['comments']['required'] === 'true' &&
+                    publishing['comments']['bulk-publish-required'] !== 'false') ||
+                  publishing['comments']['bulk-publish-required'] === 'true'
+                  ? true
+                  : false
+                : false;
+            publish.isValidateCommitPublishCommentOn =
+              publishing && publishing['comments']
+                ? (publishing['comments']['required'] === 'true' &&
+                    publishing['comments']['publish-by-commit-required'] !== 'false') ||
+                  publishing['comments']['publish-by-commit-required'] === 'true'
+                  ? true
+                  : false
+                : false;
+          });
+        renderStatusView();
       });
     }
   ]);
@@ -1235,7 +1241,9 @@
         }
       };
 
-      getUsers();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        getUsers();
+      });
 
       users.searchUser = function(query) {
         if ('' === query) {
@@ -1502,7 +1510,9 @@
         });
       };
 
-      clusters.getClusters();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        clusters.getClusters();
+      });
 
       clusters.viewClusterMember = function(clusterMember) {
         $scope.clusterMember = clusterMember;
@@ -1649,7 +1659,10 @@
           });
         }
       };
-      getGroups();
+
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        getGroups();
+      });
 
       groups.searchGroup = function(query) {
         if ('' === query) {
@@ -2044,12 +2057,15 @@
         };
 
         repositories.spinnerOverlay = $scope.spinnerOverlay();
-        repositories.getRepositoryStatus();
 
-        adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
-          $scope.showError(error.response);
+        CrafterCMSNext.system.getStore().subscribe(() => {
+          repositories.getRepositoryStatus();
+          adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
+            $scope.showError(error.response);
+          });
         });
       };
+
       this.init();
 
       $scope.createGroupDialog = function() {

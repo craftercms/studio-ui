@@ -52,6 +52,7 @@ import {
   setContentTypeReceptacles,
   setHighlightMode,
   setItemBeingDragged,
+  setPreviewChoice,
   setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
@@ -252,32 +253,33 @@ export function PreviewConcierge(props: any) {
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
-            let previousChoice = previewChoice[site];
+            let choice = previewChoice[site];
             if (compatibilityAsk) {
               setPreviewCompatibilityDialogOpen(true);
-            } else if (previousChoice) {
-              if (previousChoice === '2') {
+            } else if (choice) {
+              if (choice === '2') {
                 handlePreviewCompatibilityDialogGo();
-              } else if (previousChoice === 'ask') {
+              } else if (choice === 'ask') {
                 setPreviewCompatibilityDialogOpen(true);
               }
-            } /* if (!previousChoice) */ else {
-              fetchGlobalProperties()
-                .pipe(
-                  switchMap((prefs) =>
-                    setProperties({
-                      previewChoice: JSON.stringify(
-                        Object.assign(JSON.parse(prefs.previewChoice ?? '{}'), {
-                          [site]: '1'
-                        })
-                      )
-                    })
-                  )
-                )
-                .subscribe((k) => {
-                  handlePreviewCompatibilityDialogGo();
-                });
             }
+          }
+          if (previewChoice[site] !== '1') {
+            fetchGlobalProperties()
+              .pipe(
+                switchMap((properties) =>
+                  setProperties({
+                    previewChoice: JSON.stringify(
+                      Object.assign(JSON.parse(properties.previewChoice ?? '{}'), {
+                        [site]: '1'
+                      })
+                    )
+                  })
+                )
+              )
+              .subscribe((k) => {
+                handlePreviewCompatibilityDialogGo();
+              });
           }
           break;
         case GUEST_CHECK_IN:
@@ -351,6 +353,10 @@ export function PreviewConcierge(props: any) {
               });
           // endregion
           if (type === GUEST_CHECK_IN) {
+            if (previewChoice[site] !== '2') {
+              dispatch(setPreviewChoice({ site, choice: '2' }));
+            }
+
             getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
             dispatch(checkInGuest(payload));
 
