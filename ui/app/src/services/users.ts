@@ -25,10 +25,14 @@ import { PagedArray } from '../models/PagedArray';
 import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
 import { asArray } from '../utils/array';
+import { fetchAuthenticationType } from './auth';
 
 // Check services/auth/login if `me` method is changed.
 export function me(): Observable<User> {
-  return get(me.url).pipe(pluck('response', 'authenticatedUser'));
+  return forkJoin({
+    user: get(me.url).pipe(pluck('response', 'authenticatedUser')),
+    authenticationType: fetchAuthenticationType()
+  }).pipe(map(({ user, authenticationType }) => ({ ...user, authenticationType })));
 }
 
 me.url = '/studio/api/2/users/me.json';

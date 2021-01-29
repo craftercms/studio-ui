@@ -92,3 +92,19 @@ export type RefreshSessionResponse = { expiresAt: string; token: string };
 export function obtainAuthToken(): Observable<RefreshSessionResponse> {
   return get('/studio/refresh.json').pipe(pluck('response'));
 }
+
+export function fetchAuthenticationType(): Observable<'db' | 'ldap' | 'headers' | 'saml'> {
+  return get('/studio/authType.json').pipe(
+    pluck('response', 'authType'),
+    map((value) => value?.toLowerCase() ?? 'db'),
+    // TODO: Remove when the backend is ready
+    catchError((error) => {
+      if (error.name === 'AjaxError' && error.status === 404) {
+        return of('db' as 'db');
+      } else {
+        console.error(error);
+        throw error;
+      }
+    })
+  );
+}

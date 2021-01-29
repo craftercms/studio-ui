@@ -78,11 +78,13 @@ const useStyles = makeStyles((theme) =>
 export default function AuthMonitor() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { username } = useSelection((state) => state.user) ?? {
-    username: ''
+  const { username, authenticationType } = useSelection((state) => state.user) ?? {
+    username: '',
+    authenticationType: 'db'
   };
   const { authoringBase, logoutUrl } = useSelection((state) => state.env);
   const { active } = useSelection((state) => state.auth);
+  const isSSO = authenticationType === 'saml';
   const firstRender = useRef(true);
   useEffect(() => {
     // On regular login dialog, the username is locked to the user whose session expired; on the
@@ -102,7 +104,7 @@ export default function AuthMonitor() {
   return (
     <Dialog open={!active} id="authMonitorDialog" aria-labelledby="craftercmsReLoginDialog">
       <AuthMonitorBody
-        isSSO={false}
+        isSSO={isSSO}
         username={username}
         logoutUrl={logoutUrl}
         authoringUrl={authoringBase}
