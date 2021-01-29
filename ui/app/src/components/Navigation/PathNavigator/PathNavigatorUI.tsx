@@ -258,7 +258,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             }
           }}
           suspenseProps={{
-            fallback: <NavLoader numOfItems={state.limit} />
+            fallback: <NavLoader numOfItems={state.total > 0 ? state.total : state.limit} />
           }}
         >
           {levelDescriptor && (

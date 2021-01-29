@@ -55,16 +55,16 @@ const initialState: ContentState = {
   clipboard: null
 };
 
-const updateItemByPath = (state, { payload: { response } }) => {
+const updateItemByPath = (state, { payload: { item, children } }) => {
   return {
     ...state,
     items: {
       ...state.items,
       byPath: {
-        [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
-        ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[]), 'path'),
-        ...(response.levelDescriptor && {
-          [response.levelDescriptor.path]: parseSandBoxItemToDetailedItem(response.levelDescriptor)
+        [item.path]: item,
+        ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'),
+        ...(children.levelDescriptor && {
+          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
         }),
         ...state.items.byPath
       }
@@ -129,22 +129,18 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { response } }) => {
-    let items = [];
-    response.forEach((childResponse) => {
-      items.push(parseSandBoxItemToDetailedItem(childResponse.parent));
-      items = [...items, ...parseSandBoxItemToDetailedItem(childResponse as SandboxItem[])];
-      if (childResponse.levelDescriptor) {
-        items.push(parseSandBoxItemToDetailedItem(childResponse.levelDescriptor));
-      }
-    });
+  [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
     return {
       ...state,
       items: {
         ...state.items,
         byPath: {
-          ...createLookupTable(items, 'path'),
-          ...state.items.byPath
+          ...state.items.byPath,
+          ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+          ...(children.levelDescriptor && {
+            [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
+          }),
+          ...createLookupTable(items, 'path')
         }
       }
     };
