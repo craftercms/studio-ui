@@ -69,7 +69,7 @@ import PathNavigatorUI from './PathNavigatorUI';
 
 interface Menu {
   path?: string;
-  sections: SectionItem[][];
+  sections?: SectionItem[][];
   anchorEl: Element;
   loaderItems?: number;
   emptyState?: {
@@ -149,7 +149,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   });
   const [itemMenu, setItemMenu] = useSpreadState<Menu>({
     path,
-    sections: [],
     anchorEl: null,
     loaderItems: null
   });
@@ -400,7 +399,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
-  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, anchorEl: null });
+  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
 
   const onItemClicked = onItemClickedProp
     ? onItemClickedProp
