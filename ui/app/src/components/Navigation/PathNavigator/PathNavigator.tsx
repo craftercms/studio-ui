@@ -110,6 +110,7 @@ export interface PathNavigatorStateProps {
   limit: number;
   offset: number;
   collapsed?: boolean;
+  isFetching: boolean;
 }
 
 const menuOptions = {
@@ -420,7 +421,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
       onItemClicked(item);
     } else {
-      dispatch(pathNavigatorSetCurrentPath({ id, path: item.path }));
+      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }
   };
 

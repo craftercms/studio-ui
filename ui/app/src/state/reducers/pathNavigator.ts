@@ -21,6 +21,7 @@ import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorClearChecked,
+  pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
@@ -57,7 +58,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           limit,
           offset: 0,
           total: 0,
-          collapsed
+          collapsed,
+          isFetching: null
         }
       };
     },
@@ -80,6 +82,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         }
       };
     },
+    [pathNavigatorConditionallySetPath.type]: (state, { payload }) => ({
+      ...state,
+      [payload.id]: { ...state[payload.id], isFetching: true }
+    }),
     [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, response } }) => {
       if (response.length > 0) {
         return {
@@ -90,7 +96,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
             breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
             itemsInPath: response.map((item) => item.path),
             levelDescriptor: response.levelDescriptor?.path,
-            total: response.total
+            total: response.total,
+            isFetching: false
           }
         };
       } else {
@@ -98,7 +105,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           ...state,
           [id]: {
             ...state[id],
-            leaves: state[id].leaves.concat(path)
+            leaves: state[id].leaves.concat(path),
+            isFetching: false
           }
         };
       }

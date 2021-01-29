@@ -35,6 +35,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import List from '@material-ui/core/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../../models/GlobalState';
+import { PathNavigatorStateProps } from './PathNavigator';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -45,24 +46,6 @@ export type PathNavigatorUIClassKey =
   | 'paginationRoot';
 
 // export type PathNavigatorUIStyles = Partial<Record<PathNavigatorUIClassKey, CSSProperties>>;
-
-export interface PathNavigatorStateProps {
-  rootPath: string;
-  currentPath: string;
-  localeCode: string;
-  keyword: '';
-  isSelectMode: boolean;
-  hasClipboard: boolean;
-  levelDescriptor: string;
-  itemsInPath: string[];
-  breadcrumb: string[];
-  selectedItems: string[];
-  leaves: string[];
-  total: number; // Number of items in the current path
-  limit: number;
-  offset: number;
-  collapsed?: boolean;
-}
 
 export interface PathNavigatorUIProps {
   state: PathNavigatorStateProps;
@@ -190,16 +173,22 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
   // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<DetailedItem[], { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
+  const resource = useLogicResource<
+    DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem>; isFetching: boolean }
+  >(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath }), [state.itemsInPath]),
+    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath, isFetching: state.isFetching }), [
+      state.itemsInPath,
+      state.isFetching
+    ]),
     {
-      shouldResolve: ({ itemsInPath, itemsByPath }) => {
-        return Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
+      shouldResolve: ({ itemsInPath, itemsByPath, isFetching }) => {
+        return !isFetching && Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
       },
-      shouldRenew: (items, resource) => resource.complete,
+      shouldRenew: ({ isFetching }, resource) => isFetching && resource.complete,
       shouldReject: () => false,
       resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
       errorSelector: null
