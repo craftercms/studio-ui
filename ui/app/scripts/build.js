@@ -36,19 +36,20 @@ fs.writeFileSync(`${TEMPLATES}/web/common/js-next-scripts.ftl`, `${jsNextScripts
 console.log(`Deleting previous build (rm -rf ${DEST}/static)`);
 rimraf.sync(`${DEST}/static`);
 
+console.log(`Copying service worker into to ${DEST}`);
+ncp(`${PATH_BUILD}/service-worker.js`, `${DEST}/service-worker.js`, (err) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log('Service worker script copied.');
+  }
+});
+
 console.log(`Copying build files to ${DEST}/static`);
 ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
   if (err) {
     console.error(err);
   } else {
     console.log('App code copied.');
-  }
-});
-
-ncp(`${PATH_BUILD}/service-worker.js`, `${DEST}/`, (err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('Service worker script copied.');
   }
 });

@@ -33,7 +33,7 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [fetchGlobalPropertiesAction(), fetchSitePropertiesAction()])
+      map(() => fetchSitePropertiesAction())
     ),
   (action$) =>
     action$.pipe(
