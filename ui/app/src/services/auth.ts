@@ -96,15 +96,6 @@ export function obtainAuthToken(): Observable<RefreshSessionResponse> {
 export function fetchAuthenticationType(): Observable<'db' | 'ldap' | 'headers' | 'saml'> {
   return get('/studio/authType.json').pipe(
     pluck('response', 'authType'),
-    map((value) => value?.toLowerCase() ?? 'db'),
-    // TODO: Remove when the backend is ready
-    catchError((error) => {
-      if (error.name === 'AjaxError' && error.status === 404) {
-        return of('db' as 'db');
-      } else {
-        console.error(error);
-        throw error;
-      }
-    })
+    map((value) => value?.toLowerCase() ?? 'db')
   );
 }
