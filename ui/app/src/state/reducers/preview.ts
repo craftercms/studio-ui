@@ -165,10 +165,10 @@ const reducer = createReducer<GlobalState['preview']>(
   },
   {
     [storeInitialized.type]: (state, { payload }) =>
-      payload.previewChoice
+      payload.properties.previewChoice
         ? {
             ...state,
-            previewChoice: JSON.parse(payload.previewChoice)
+            previewChoice: JSON.parse(payload.properties.previewChoice)
           }
         : state,
     [OPEN_TOOLS]: (state) => {

@@ -18,14 +18,14 @@ import { createAction } from '@reduxjs/toolkit';
 
 export const sessionTimeout = createAction('SESSION_TIMEOUT');
 
-export const fetchGlobalProperties = createAction('FETCH_GLOBAL_PREFERENCES');
+export const fetchGlobalProperties = createAction('FETCH_GLOBAL_PROPERTIES');
 
-export const fetchGlobalPropertiesComplete = createAction('FETCH_GLOBAL_PREFERENCES_COMPLETE');
+export const fetchGlobalPropertiesComplete = createAction('FETCH_GLOBAL_PROPERTIES_COMPLETE');
 
-export const fetchSiteProperties = createAction('FETCH_SITE_PREFERENCES');
+export const fetchSiteProperties = createAction('FETCH_SITE_PROPERTIES');
 
-export const fetchSitePropertiesComplete = createAction('FETCH_SITE_PREFERENCES_COMPLETE');
+export const fetchSitePropertiesComplete = createAction('FETCH_SITE_PROPERTIES_COMPLETE');
 
-export const deleteProperties = createAction<{ properties: string[]; siteId?: string }>('DELETE_PREFERENCES');
+export const deleteProperties = createAction<{ properties: string[]; siteId?: string }>('DELETE_PROPERTIES');
 
-export const deletePropertiesComplete = createAction('DELETE_PREFERENCES_COMPLETE');
+export const deletePropertiesComplete = createAction('DELETE_PROPERTIES_COMPLETE');
