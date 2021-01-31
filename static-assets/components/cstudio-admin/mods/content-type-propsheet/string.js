@@ -27,16 +27,24 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
     render: function(value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
-      var containerEl = this.containerEl;
-      var valueEl = document.createElement('input');
-      containerEl.appendChild(valueEl);
+      var _self = this;
+      var containerEl = this.containerEl,
+        wrapperEl = document.createElement('div'),
+        valueEl = document.createElement('input');
+
+      wrapperEl.appendChild(valueEl);
+      containerEl.appendChild(wrapperEl);
       valueEl.value = value;
       valueEl.fieldName = this.fieldName;
+      valueEl.className = 'text-prop';
+      validations && valueEl.setAttribute('data-id', validations.name);
+      validations && valueEl.setAttribute('data-label', validations.label);
 
       if (updateFn) {
         var updateFieldFn = function(event, el) {
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+          valueEl.dispatchEvent(new Event('propertyUpdate', { event }));
         };
 
         var onBlur = function(event, el) {
@@ -57,6 +65,17 @@ YAHOO.extend(
             YAHOO.util.Event.on(valueEl, 'blur', onBlur, valueEl);
           }
         }
+      }
+
+      if (validations && validations.dependsOn) {
+        const dependency = document.querySelector(`[data-id="${validations.dependsOn}"]`);
+
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        valueEl.value = dependencyStatus.supported ? (dependencyStatus.dependencyMet ? value : false) : value;
+
+        _self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);
+      } else {
+        valueEl.value = value;
       }
 
       this.valueEl = valueEl;

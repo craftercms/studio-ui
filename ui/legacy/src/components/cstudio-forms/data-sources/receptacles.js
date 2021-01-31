@@ -119,13 +119,15 @@
           label: formatMessage('enableBrowse'),
           name: 'enableBrowse',
           type: 'boolean',
-          defaultValue: 'false'
+          defaultValue: 'false',
+          dependsOn: 'allowShared'
         },
         {
           label: formatMessage('enableSearch'),
           name: 'enableSearch',
           type: 'boolean',
-          defaultValue: 'false'
+          defaultValue: 'false',
+          dependsOn: 'allowShared'
         },
         {
           label: formatMessage('baseRepositoryPath'),
