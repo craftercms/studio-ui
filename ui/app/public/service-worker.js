@@ -3,6 +3,7 @@
 // TODO:
 //   - Convert to TypeScript.
 //   - Currently declaring globals (which can be accessed via dev tools).
+//   - https://bugs.webkit.org/show_bug.cgi?id=140344, https://bugs.webkit.org/show_bug.cgi?id=140344, https://bugs.webkit.org/show_bug.cgi?id=149850
 
 const version = 1;
 
@@ -103,7 +104,7 @@ function retrieve() {
           }
         });
       } else {
-        log(`Auth has expired.`);
+        log(`Auth has expired`);
         status = 'expired';
         broadcast(createUnauthenticatedMessage());
       }

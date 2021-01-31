@@ -35,7 +35,7 @@ import { fromPromise } from 'rxjs/internal-compatibility';
 import User from '../models/User';
 import { Site } from '../models/Site';
 
-export type EpicMiddlewareDependencies = { getIntl: () => IntlShape };
+export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
@@ -51,15 +51,15 @@ export function getStore(): Observable<CrafterCMSStore> {
     );
   } else {
     store$ = new BehaviorSubject(null);
-    return registerServiceWorker().pipe(
+    return registerSharedWorker().pipe(
       tap(({ token }) => setJwt(token)),
-      switchMap((auth) =>
-        of(createStoreSync()).pipe(
+      switchMap(({ worker, ...auth }) =>
+        of(createStoreSync({ dependencies: { worker } })).pipe(
           switchMap((store) =>
             fetchStateInitialization().pipe(
               tap((requirements) => {
                 store.dispatch(storeInitialized({ auth, ...requirements }));
-                navigator.serviceWorker.onmessage = (e) => {
+                worker.port.onmessage = (e) => {
                   if (e.data?.type) {
                     console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
                     store.dispatch(e.data);
@@ -76,6 +76,7 @@ export function getStore(): Observable<CrafterCMSStore> {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function registerServiceWorker(): Observable<RefreshSessionResponse> {
   return fromPromise(navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/service-worker.js`)).pipe(
     switchMap((registration) => registration.update().then(() => registration)),
@@ -112,13 +113,40 @@ function registerServiceWorker(): Observable<RefreshSessionResponse> {
   );
 }
 
+function registerSharedWorker(): Observable<RefreshSessionResponse & { worker: SharedWorker }> {
+  const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
+    name: 'authWorker',
+    credentials: 'same-origin'
+  });
+  worker.port.start();
+  worker.port.postMessage({ type: 'CONNECT' });
+  window.addEventListener('beforeunload', function() {
+    worker.port.postMessage({ type: 'DISCONNECT' });
+  });
+  return fromEvent<MessageEvent>(worker.port, 'message').pipe(
+    tap((e) => {
+      console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
+      if (e.data?.type === 'SW_UNAUTHENTICATED') {
+        throw new Error('User not authenticated.');
+      }
+    }),
+    filter((e) => e.data?.type === 'SW_TOKEN'),
+    take(1),
+    pluck('data', 'payload'),
+    map((response) => ({ ...response, worker }))
+  );
+}
+
 export function getStoreSync(): CrafterCMSStore {
   return store$?.value;
 }
 
-export function createStoreSync(preloadedState?: Partial<GlobalState>): CrafterCMSStore {
+export function createStoreSync(
+  args: { preloadedState?: Partial<GlobalState>; dependencies?: any } = {}
+): CrafterCMSStore {
+  const { preloadedState, dependencies } = args;
   const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
-    dependencies: { getIntl: getCurrentIntl }
+    dependencies: { getIntl: getCurrentIntl, ...dependencies }
   });
   const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({

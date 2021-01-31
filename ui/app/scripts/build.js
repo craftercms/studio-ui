@@ -36,8 +36,8 @@ fs.writeFileSync(`${TEMPLATES}/web/common/js-next-scripts.ftl`, `${jsNextScripts
 console.log(`Deleting previous build (rm -rf ${DEST}/static)`);
 rimraf.sync(`${DEST}/static`);
 
-console.log(`Copying service worker into to ${DEST}`);
-ncp(`${PATH_BUILD}/service-worker.js`, `${DEST}/service-worker.js`, (err) => {
+console.log(`Copying worker into to ${DEST}`);
+ncp(`${PATH_BUILD}/shared-worker.js`, `${DEST}/shared-worker.js`, (err) => {
   if (err) {
     console.error(err);
   } else {

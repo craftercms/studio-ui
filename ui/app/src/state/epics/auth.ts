@@ -21,7 +21,8 @@ import {
   loginFailed,
   logout,
   refreshAuthTokenComplete,
-  serviceWorkerToken
+  serviceWorkerToken,
+  serviceWorkerUnauthenticated
 } from '../actions/auth';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
@@ -71,6 +72,12 @@ const epics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(serviceWorkerToken.type),
       map(({ payload }) => refreshAuthTokenComplete(payload))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(serviceWorkerUnauthenticated.type),
+      tap(() => setRequestForgeryToken()),
+      ignoreElements()
     ),
   (action$) =>
     action$.pipe(

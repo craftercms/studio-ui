@@ -227,13 +227,11 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
-  (action$) =>
+  (action$, state$, { worker }) =>
     action$.pipe(
       ofType(messageServiceWorker.type),
       tap((action) => {
-        navigator.serviceWorker.getRegistrations().then(([registration]) => {
-          registration.active.postMessage(action.payload);
-        });
+        worker.port.postMessage(action.payload);
       }),
       ignoreElements()
     )
