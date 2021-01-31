@@ -29,7 +29,7 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { DetailedItem, ItemWithChildren, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
@@ -778,17 +778,14 @@ export function getVersions(
 }
 
 export function getChildrenByPath(
-  site: string,
+  siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  if (path === '/site/website' && !options?.skipHomePathOverride) {
-    path = '/site/website/index.xml';
-  }
-  const qs = toQueryString({ siteId: site, path, ...options });
+  const qs = toQueryString({ siteId, path, ...options });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
-    map(({ children, parent, levelDescriptor, total, offset, limit }) =>
+    map(({ children, levelDescriptor, total, offset, limit }) =>
       Object.assign(
         children
           ? children.map((child) => ({
@@ -797,7 +794,6 @@ export function getChildrenByPath(
             }))
           : [],
         {
-          parent: { ...parent, stateMap: createItemStateMap(parent.state) },
           ...(levelDescriptor && {
             levelDescriptor: { ...levelDescriptor, stateMap: createItemStateMap(levelDescriptor.state) }
           }),
@@ -807,6 +803,45 @@ export function getChildrenByPath(
         }
       )
     )
+  );
+}
+
+export function fetchItemsByPath(
+  site: string,
+  paths: string[],
+  options?: {
+    skipHomePathOverride?: boolean;
+  }
+): Observable<DetailedItem[]> {
+  const requests: Observable<DetailedItem>[] = [];
+  paths.forEach((path) =>
+    requests.push(
+      getDetailedItem(
+        site,
+        path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
+      )
+    )
+  );
+  return forkJoin(requests);
+}
+
+export function fetchItemWithPath(
+  siteId: string,
+  path: string,
+  options?: Partial<GetChildrenOptions>
+): Observable<ItemWithChildren> {
+  const requests = [
+    getDetailedItem(
+      siteId,
+      path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
+    ),
+    getChildrenByPath(siteId, path, options)
+  ];
+  return forkJoin(requests).pipe(
+    map(([item, children]: any) => ({
+      item,
+      children
+    }))
   );
 }
 

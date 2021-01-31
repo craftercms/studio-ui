@@ -17,10 +17,9 @@
 import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
-import { getChildrenByPath } from '../../services/content';
+import { fetchItemsByPath, fetchItemWithPath, getChildrenByPath } from '../../services/content';
 import { getIndividualPaths } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
-import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import { forkJoin } from 'rxjs';
 import {
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
@@ -64,8 +63,8 @@ export default [
       ofType(pathNavigatorRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id } }, state]) =>
-        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
-          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+        fetchItemWithPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
+          map(({ item, children }) => pathNavigatorFetchPathComplete({ id, item, children })),
           catchAjaxError(pathNavigatorFetchPathFailed)
         )
       )
@@ -75,8 +74,8 @@ export default [
       ofType(pathNavigatorConditionallySetPath.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) =>
-        getChildrenByPath(state.sites.active, path).pipe(
-          map((response) => pathNavigatorConditionallySetPathComplete({ id, path, response })),
+        fetchItemWithPath(state.sites.active, path).pipe(
+          map(({ item, children }) => pathNavigatorConditionallySetPathComplete({ id, path, item, children })),
           catchAjaxError(pathNavigatorConditionallySetPathFailed)
         )
       )
@@ -86,8 +85,8 @@ export default [
       ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) =>
-        getChildrenByPath(state.sites.active, path).pipe(
-          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+        fetchItemWithPath(state.sites.active, path).pipe(
+          map(({ item, children }) => pathNavigatorFetchPathComplete({ id, item, children })),
           catchAjaxError(pathNavigatorFetchPathFailed)
         )
       )
@@ -101,7 +100,7 @@ export default [
           keyword,
           limit: state.pathNavigator[id].limit
         }).pipe(
-          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          map((children) => pathNavigatorFetchPathComplete({ id, children })),
           catchAjaxError(pathNavigatorFetchPathFailed)
         )
       )
@@ -115,7 +114,7 @@ export default [
           limit: state.pathNavigator[id].limit,
           offset
         }).pipe(
-          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          map((children) => pathNavigatorFetchPathComplete({ id, children })),
           catchAjaxError(pathNavigatorFetchPathFailed)
         )
       )
@@ -134,23 +133,20 @@ export default [
         ]) => {
           const site = state.sites.active;
           const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
-          const requests: Observable<GetChildrenResponse>[] = [];
-          if (parentsPath.length) {
-            parentsPath.forEach((parentPath) => {
-              requests.push(
-                getChildrenByPath(site, parentPath, {
-                  excludes,
-                  limit
-                })
-              );
-            });
-            return forkJoin(requests).pipe(
-              map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),
+          if (parentsPath.length > 1) {
+            return forkJoin([
+              fetchItemsByPath(site, parentsPath),
+              getChildrenByPath(site, path, {
+                excludes,
+                limit
+              })
+            ]).pipe(
+              map(([items, children]) => pathNavigatorFetchParentItemsComplete({ id, items, children })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );
           } else {
-            return getChildrenByPath(site, path, { excludes, limit }).pipe(
-              map((response) => pathNavigatorFetchPathComplete({ id, response })),
+            return fetchItemWithPath(site, path, { excludes, limit }).pipe(
+              map(({ item, children }) => pathNavigatorFetchPathComplete({ id, item, children })),
               catchAjaxError(pathNavigatorFetchPathFailed)
             );
           }
@@ -169,11 +165,11 @@ export default [
         ([
           {
             type,
-            payload: { id, response }
+            payload: { id, children }
           },
           state
         ]) => {
-          if (response?.length > 0 || type === pathNavigatorSetCollapsed.type) {
+          if (children?.length > 0 || type === pathNavigatorSetCollapsed.type) {
             setStoredPathNavigator(state.sites.active, state.user.username, id, {
               currentPath: state.pathNavigator[id].currentPath,
               collapsed: state.pathNavigator[id].collapsed
