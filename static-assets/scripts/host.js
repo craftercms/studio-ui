@@ -660,11 +660,13 @@
 
     path = path.replace('//', '/');
 
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-      success: function(content) {
-        CStudioAuthoring.SelectedContent.setContent(content.item);
-        selectContentSet(content.item, false);
-      }
+    CrafterCMSNext.system.getStore().subscribe(() => {
+      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
+        success: function(content) {
+          CStudioAuthoring.SelectedContent.setContent(content.item);
+          selectContentSet(content.item, false);
+        }
+      });
     });
   }
 

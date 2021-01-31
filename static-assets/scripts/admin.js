@@ -833,7 +833,9 @@
       var publish = $scope.publish;
       publish.error = '';
 
-      publish.maxCommentLength = CrafterCMSNext.system.store.getState().configuration.publishing.submission.commentMaxLength;
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        publish.maxCommentLength = store.getState().configuration.publishing.submission.commentMaxLength;
+      });
 
       publish.initQueque = function() {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
@@ -978,7 +980,9 @@
         );
       };
 
-      publish.getPublishingChannels();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        publish.getPublishingChannels();
+      });
 
       publish.bulkPublish = function() {
         $scope.adminModal = publish.showModal('confirmationModal.html', 'md');
