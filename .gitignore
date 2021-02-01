@@ -118,6 +118,7 @@ static-assets/scripts/craftercms-guest.umd.js
 static-assets/scripts/preview-landing.umd.js
 ui/app/public/craftercms-guest.umd.js
 ui/app/public/preview-landing.umd.js
+ui/app/public/shared-worker.js
 ui/guest/dist
 ui/app/src/test
 ui/app/src/tests

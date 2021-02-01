@@ -41,7 +41,7 @@ ncp(`${PATH_BUILD}/shared-worker.js`, `${DEST}/shared-worker.js`, (err) => {
   if (err) {
     console.error(err);
   } else {
-    console.log('Service worker script copied.');
+    console.log('Worker script copied.');
   }
 });
 

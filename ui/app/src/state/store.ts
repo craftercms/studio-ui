@@ -34,6 +34,12 @@ import { storeInitialized } from './actions/system';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import User from '../models/User';
 import { Site } from '../models/Site';
+import {
+  sharedWorkerConnect,
+  sharedWorkerDisconnect,
+  sharedWorkerToken,
+  sharedWorkerUnauthenticated
+} from './actions/auth';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -83,7 +89,7 @@ function registerServiceWorker(): Observable<ObtainAuthTokenResponse> {
     switchMap((registration) => {
       const begin = () => {
         navigator.serviceWorker.startMessages();
-        registration.active.postMessage({ type: 'CONNECT' });
+        registration.active.postMessage(sharedWorkerConnect());
       };
       if (registration.active) {
         begin();
@@ -101,11 +107,11 @@ function registerServiceWorker(): Observable<ObtainAuthTokenResponse> {
       return fromEvent<MessageEvent>(navigator.serviceWorker, 'message').pipe(
         tap((e) => {
           console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
-          if (e.data?.type === 'SW_UNAUTHENTICATED') {
+          if (e.data?.type === sharedWorkerUnauthenticated.type) {
             throw new Error('User not authenticated.');
           }
         }),
-        filter((e) => e.data?.type === 'SW_TOKEN'),
+        filter((e) => e.data?.type === sharedWorkerToken.type),
         take(1),
         pluck('data', 'payload')
       );
@@ -119,18 +125,18 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     credentials: 'same-origin'
   });
   worker.port.start();
-  worker.port.postMessage({ type: 'CONNECT' });
+  worker.port.postMessage(sharedWorkerConnect());
   window.addEventListener('beforeunload', function() {
-    worker.port.postMessage({ type: 'DISCONNECT' });
+    worker.port.postMessage(sharedWorkerDisconnect());
   });
   return fromEvent<MessageEvent>(worker.port, 'message').pipe(
     tap((e) => {
       console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
-      if (e.data?.type === 'SW_UNAUTHENTICATED') {
+      if (e.data?.type === sharedWorkerUnauthenticated.type) {
         throw new Error('User not authenticated.');
       }
     }),
-    filter((e) => e.data?.type === 'SW_TOKEN'),
+    filter((e) => e.data?.type === sharedWorkerToken.type),
     take(1),
     pluck('data', 'payload'),
     map((response) => ({ ...response, worker }))

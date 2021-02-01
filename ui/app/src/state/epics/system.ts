@@ -20,7 +20,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
-  messageServiceWorker,
+  messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
@@ -229,7 +229,7 @@ const systemEpics: CrafterCMSEpic[] = [
     ),
   (action$, state$, { worker }) =>
     action$.pipe(
-      ofType(messageServiceWorker.type),
+      ofType(messageSharedWorker.type),
       tap((action) => {
         worker.port.postMessage(action.payload);
       }),

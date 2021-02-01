@@ -79,4 +79,4 @@ export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
 
 export const storeInitialized = createAction<{ auth: ObtainAuthTokenResponse }>('STORE_INITIALIZED');
 
-export const messageServiceWorker = createAction<StandardAction>('MESSAGE_SERVICE_WORKER');
+export const messageSharedWorker = createAction<StandardAction>('MESSAGE_SHARED_WORKER');

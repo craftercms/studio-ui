@@ -67,9 +67,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "run-s build:install build:app",
+    "build": "run-s build:app build:worker deploy:app",
     "build:install": "yarn",
-    "build:app": "react-scripts --max_old_space_size=4096 build && node scripts/build.js",
+    "build:app": "react-scripts --max_old_space_size=4096 build",
+    "deploy:app": "node scripts/deploy.js",
+    "build:worker": "rollup -c rollup.config.js --environment PRODUCTION",
+    "watch:worker": "rollup -w -c rollup.config.js --environment PRODUCTION:false",
     "compile": "tsc -p tsconfig.json",
     "build:tsc": "tsc -p tsconfig.build.json",
     "format:npm": "prettier --config ../../prettier.config.js ./build_tsc/**/*.{js,ts} --write",
@@ -152,7 +155,12 @@
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
     "react-intl-translations-manager": "^5.0.3",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "rollup": "^2.3.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-ts-treeshaking": "^1.0.2",
+    "rollup-plugin-typescript2": "^0.29.0",
+    "typescript": "^4.1.2"
   },
   "bic": {
     "skip": [

@@ -3,7 +3,16 @@
 
 import { obtainAuthToken, ObtainAuthTokenResponse } from './services/auth';
 import StandardAction from './models/StandardAction';
-import { sharedWorkerError, sharedWorkerToken, sharedWorkerUnauthenticated } from './state/actions/auth';
+import {
+  logout,
+  refreshAuthToken,
+  sharedWorkerConnect,
+  sharedWorkerDisconnect,
+  sharedWorkerError,
+  sharedWorkerTimeout,
+  sharedWorkerToken,
+  sharedWorkerUnauthenticated
+} from './state/actions/auth';
 import { AjaxError } from 'rxjs/ajax';
 
 declare const self: SharedWorkerGlobalScope;
@@ -18,13 +27,15 @@ let current: ObtainAuthTokenResponse = {
   token: null
 };
 
-// TODO: consider using the name as a security mechanism?
-
 function onmessage(event) {
   log('Message received from page', event.data);
+  if (self.name !== 'authWorker') {
+    // Using name as an additional security mechanism
+    return;
+  }
   const type = event.data?.type;
   switch (type) {
-    case 'CONNECT':
+    case sharedWorkerConnect.type:
       log(`Status: "${status}"`);
       if (status === 'active') {
         event.target.postMessage(sharedWorkerToken(current));
@@ -35,23 +46,24 @@ function onmessage(event) {
         retrieve();
       }
       break;
-    case 'REFRESH':
+    case refreshAuthToken.type:
       retrieve();
       break;
-    case 'TIMEOUT':
+    case sharedWorkerTimeout.type:
       clearTimeout(timeout);
       status = 'expired';
       break;
-    case 'LOGOUT':
+    case logout.type:
       clearTimeout(timeout);
       status = 'expired';
       broadcast(sharedWorkerUnauthenticated(), event.target);
       break;
-    case 'DISCONNECT':
+    case sharedWorkerDisconnect.type:
       log('Client disconnected');
       clients = clients.filter((client) => client !== event.target);
       break;
     default:
+      log(`Received unknown action: "${type}"`);
       break;
   }
 }

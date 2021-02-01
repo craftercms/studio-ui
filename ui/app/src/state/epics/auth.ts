@@ -20,7 +20,9 @@ import {
   loginComplete,
   loginFailed,
   logout,
+  refreshAuthToken,
   refreshAuthTokenComplete,
+  sharedWorkerTimeout,
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from '../actions/auth';
@@ -29,7 +31,7 @@ import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
-import { messageServiceWorker, storeInitialized } from '../actions/system';
+import { messageSharedWorker, storeInitialized } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
 import Cookies from 'js-cookie';
 import { fetchAuthenticationType } from '../../services/auth';
@@ -61,13 +63,13 @@ const epics: CrafterCMSEpic[] = [
         // the logout message from getting to the Service Worker
         setTimeout(() => form.submit());
       }),
-      map(() => messageServiceWorker(logout()))
+      map(() => messageSharedWorker(logout()))
     ),
   (action$) =>
     action$.pipe(
       ofType(sessionTimeout.type),
       tap(() => setRequestForgeryToken()),
-      map(() => messageServiceWorker({ type: 'TIMEOUT' }))
+      map(() => messageSharedWorker(sharedWorkerTimeout()))
     ),
   (action$) =>
     action$.pipe(
@@ -98,7 +100,7 @@ const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(loginComplete.type),
-      map(() => messageServiceWorker({ type: 'REFRESH' }))
+      map(() => messageSharedWorker(refreshAuthToken()))
     )
 ];
 

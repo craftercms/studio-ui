@@ -40,8 +40,14 @@ export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
 export const refreshAuthTokenComplete = createAction<ObtainAuthTokenResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
 
+// Worker => Tabs
 export const sharedWorkerToken = createAction<ObtainAuthTokenResponse>('SHARED_WORKER_TOKEN');
 export const sharedWorkerUnauthenticated = createAction('SHARED_WORKER_UNAUTHENTICATED');
 export const sharedWorkerError = createAction<{ status: number; message: string }>('SHARED_WORKER_ERROR');
+
+// Tabs => Worker
+export const sharedWorkerConnect = createAction('CONNECT');
+export const sharedWorkerDisconnect = createAction('DISCONNECT');
+export const sharedWorkerTimeout = createAction('TIMEOUT');
 
 // endregion
