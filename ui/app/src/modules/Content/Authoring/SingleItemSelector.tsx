@@ -35,7 +35,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
 import { fetchItemsByPath, fetchItemWithChildrenByPath, getChildrenByPath } from '../../../services/content';
-import { getIndividualPaths, withIndex, withoutIndex } from '../../../utils/path';
+import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
@@ -369,7 +369,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
-    exec(fetchParentsItems(item?.path ?? rootPath));
+    let nextPath = withoutIndex(item.path) === withoutIndex(rootPath) ? item.path : getParentPath(item.path);
+    exec(fetchParentsItems(nextPath));
   };
 
   const onPathSelected = (item: DetailedItem) => {
