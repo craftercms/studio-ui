@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { SystemType } from './SystemType';
+
 type States =
   | 'new'
   | 'modified'
@@ -35,7 +37,7 @@ export interface BaseItem {
   contentTypeId: string;
   path: string;
   previewUrl: string;
-  systemType: string;
+  systemType: SystemType;
   mimeType: string;
   state: number;
   stateMap: { [key in States]?: boolean };
