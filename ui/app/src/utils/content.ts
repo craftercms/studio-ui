@@ -123,7 +123,7 @@ export function getSystemTypeFromPath(path: string): string {
 function getLegacyItemSystemType(item: LegacyItem) {
   switch (true) {
     case item.contentType === 'renderingTemplate': {
-      return 'template';
+      return 'renderingTemplate';
     }
     case item.contentType === 'script': {
       return 'script';

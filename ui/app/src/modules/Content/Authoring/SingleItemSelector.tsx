@@ -30,13 +30,12 @@ import PaginationOptions from '../../../models/PaginationOptions';
 import { LookupTable } from '../../../models/LookupTable';
 import ApiResponse from '../../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
-import { fetchItemsByPath, fetchItemWithPath, getChildrenByPath } from '../../../services/content';
-import { getIndividualPaths, withIndex, withoutIndex } from '../../../utils/path';
+import { fetchItemsByPath, fetchItemWithChildrenByPath, getChildrenByPath } from '../../../services/content';
+import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
@@ -45,6 +44,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { translations } from '../../../components/Navigation/PathNavigator/translations';
 import { useIntl } from 'react-intl';
 import { parseSandBoxItemToDetailedItem } from '../../../utils/content';
+import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -202,7 +202,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     }
     case fetchChildrenByPathComplete.type: {
       const { currentPath, rootPath, leaves, byId } = state;
-      const { children, item } = payload;
+      const { children, parent } = payload;
       if (children.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
         return {
           ...state,
@@ -214,7 +214,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       } else {
         const nextItems = {
           ...{ ...state.byId, ...createLookupTable(children, 'path') },
-          [item.path]: item
+          [parent.path]: parent
         };
 
         return {
@@ -266,25 +266,25 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
   return nextPath;
 }
 
-export const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
+const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
-export const setKeyword = createAction<string>('SET_KEYWORD');
+const setKeyword = createAction<string>('SET_KEYWORD');
 
-export const changePage = createAction<number>('CHANGE_PAGE');
+const changePage = createAction<number>('CHANGE_PAGE');
 
-export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
+const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
 
-export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
+const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
 
-export const fetchParentsItemsComplete = createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+const fetchParentsItemsComplete = createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
   'FETCH_PARENTS_ITEMS_COMPLETE'
 );
 
-export const fetchChildrenByPathComplete = createAction<{ item?: DetailedItem; children: GetChildrenResponse }>(
+const fetchChildrenByPathComplete = createAction<{ parent?: DetailedItem; children: GetChildrenResponse }>(
   'FETCH_CHILDREN_BY_PATH_COMPLETE'
 );
 
-export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
+const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
@@ -329,8 +329,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           break;
         }
         case fetchChildrenByPath.type:
-          fetchItemWithPath(site, payload, { limit: state.limit }).subscribe(
-            ({ item, children }) => exec(fetchChildrenByPathComplete({ item, children })),
+          fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
+            ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
@@ -348,8 +348,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           } else {
-            fetchItemWithPath(site, payload, { limit: state.limit }).subscribe(
-              ({ item, children }) => exec(fetchChildrenByPathComplete({ item, children })),
+            fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
+              ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           }
@@ -369,7 +369,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
-    exec(fetchParentsItems(item?.path ?? rootPath));
+    let nextPath = withoutIndex(item.path) === withoutIndex(rootPath) ? item.path : getParentPath(item.path);
+    exec(fetchParentsItems(nextPath));
   };
 
   const onPathSelected = (item: DetailedItem) => {

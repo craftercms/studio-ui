@@ -29,6 +29,7 @@ import {
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
+  pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
@@ -167,7 +168,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          keyword
+          keyword,
+          isFetching: true
         }
       };
     },
@@ -206,11 +208,15 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [payload.id]: { ...state[payload.id], ...payload }
     }),
-    [changeSite.type]: () => ({}),
+    [pathNavigatorRefresh.type]: (state, { payload: { id } }) => ({
+      ...state,
+      [id]: { ...state[id], isFetching: true }
+    }),
     [pathNavigatorChangePage.type]: (state, { payload: { id } }) => ({
       ...state,
       [id]: { ...state[id], isFetching: true }
-    })
+    }),
+    [changeSite.type]: () => ({})
   }
 );
 

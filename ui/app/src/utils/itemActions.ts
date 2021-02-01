@@ -293,7 +293,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
     }
     case 'taxonomy':
     case 'component':
-    case 'template':
+    case 'renderingTemplate':
     case 'script':
     case 'asset': {
       let _optionsA = [];

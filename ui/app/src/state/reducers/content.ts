@@ -55,7 +55,7 @@ const initialState: ContentState = {
   clipboard: null
 };
 
-const updateItemByPath = (state, { payload: { item, children } }) => {
+const updateItemByPath = (state, { payload: { parent, children } }) => {
   const nextByPath = {
     ...state.items.byPath,
     ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path')
@@ -63,8 +63,8 @@ const updateItemByPath = (state, { payload: { item, children } }) => {
   if (children.levelDescriptor) {
     nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
   }
-  if (item) {
-    nextByPath[item.path] = item;
+  if (parent) {
+    nextByPath[parent.path] = parent;
   }
   return {
     ...state,

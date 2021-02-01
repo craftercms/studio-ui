@@ -15,9 +15,9 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { DetailedItem } from '../../models/Item';
 import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -46,7 +46,7 @@ export const pathNavigatorConditionallySetPath = createAction<PayloadWithId<{ pa
 );
 
 export const pathNavigatorConditionallySetPathComplete = createAction<
-  PayloadWithId<{ path: string; item?: DetailedItem; children: GetChildrenResponse }>
+  PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_COMPLETE');
 
 export const pathNavigatorConditionallySetPathFailed = createAction('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED');
@@ -68,7 +68,7 @@ export const pathNavigatorFetchParentItems = createAction<
 >('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPathComplete = createAction<
-  PayloadWithId<{ item?: DetailedItem; children: GetChildrenResponse }>
+  PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
 
 export const pathNavigatorFetchParentItemsComplete = createAction<
