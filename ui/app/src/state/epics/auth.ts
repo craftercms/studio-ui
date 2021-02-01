@@ -24,7 +24,7 @@ import {
   serviceWorkerToken,
   serviceWorkerUnauthenticated
 } from '../actions/auth';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
@@ -32,6 +32,7 @@ import { CrafterCMSEpic } from '../store';
 import { messageServiceWorker, storeInitialized } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
 import Cookies from 'js-cookie';
+import { fetchAuthenticationType } from '../../services/auth';
 
 const epics: CrafterCMSEpic[] = [
   (action$) =>
@@ -76,6 +77,10 @@ const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(serviceWorkerUnauthenticated.type),
+      // This call will fail. We need the new set of auth cookies to be set
+      // on this window so that if login attempted from the re-login dialog,
+      // it won't fail due to outdated XSRF/auth cookies.
+      switchMap(() => fetchAuthenticationType().pipe(catchError(() => []))),
       tap(() => setRequestForgeryToken()),
       ignoreElements()
     ),
