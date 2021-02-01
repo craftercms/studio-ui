@@ -21,8 +21,8 @@ import {
   loginFailed,
   logout,
   refreshAuthTokenComplete,
-  serviceWorkerToken,
-  serviceWorkerUnauthenticated
+  sharedWorkerToken,
+  sharedWorkerUnauthenticated
 } from '../actions/auth';
 import { catchError, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
@@ -71,12 +71,12 @@ const epics: CrafterCMSEpic[] = [
     ),
   (action$) =>
     action$.pipe(
-      ofType(serviceWorkerToken.type),
+      ofType(sharedWorkerToken.type),
       map(({ payload }) => refreshAuthTokenComplete(payload))
     ),
   (action$) =>
     action$.pipe(
-      ofType(serviceWorkerUnauthenticated.type),
+      ofType(sharedWorkerUnauthenticated.type),
       // This call will fail. We need the new set of auth cookies to be set
       // on this window so that if login attempted from the re-login dialog,
       // it won't fail due to outdated XSRF/auth cookies.

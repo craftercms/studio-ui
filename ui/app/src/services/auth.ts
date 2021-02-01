@@ -87,13 +87,18 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
   );
 }
 
-export type RefreshSessionResponse = { expiresAt: string; token: string };
+export type ObtainAuthTokenResponse = { expiresAt: number; token: string };
 
-export function obtainAuthToken(): Observable<RefreshSessionResponse> {
-  return get('/studio/refresh.json').pipe(pluck('response'));
+export function obtainAuthToken(): Observable<ObtainAuthTokenResponse> {
+  return get('/studio/refresh.json').pipe(
+    pluck('response'),
+    map((auth) => ({ token: auth.token, expiresAt: new Date(auth.expiresAt).getTime() }))
+  );
 }
 
-export function fetchAuthenticationType(): Observable<'db' | 'ldap' | 'headers' | 'saml'> {
+export type FetchAuthTypeResponse = 'db' | 'ldap' | 'headers' | 'saml';
+
+export function fetchAuthenticationType(): Observable<FetchAuthTypeResponse> {
   return get('/studio/authType.json').pipe(
     pluck('response', 'authType'),
     map((value) => value?.toLowerCase() ?? 'db')

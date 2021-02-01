@@ -28,7 +28,7 @@ import LookupTable from '../models/LookupTable';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
-import { RefreshSessionResponse } from '../services/auth';
+import { ObtainAuthTokenResponse } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
 import { fromPromise } from 'rxjs/internal-compatibility';
@@ -77,7 +77,7 @@ export function getStore(): Observable<CrafterCMSStore> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function registerServiceWorker(): Observable<RefreshSessionResponse> {
+function registerServiceWorker(): Observable<ObtainAuthTokenResponse> {
   return fromPromise(navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/service-worker.js`)).pipe(
     switchMap((registration) => registration.update().then(() => registration)),
     switchMap((registration) => {
@@ -113,7 +113,7 @@ function registerServiceWorker(): Observable<RefreshSessionResponse> {
   );
 }
 
-function registerSharedWorker(): Observable<RefreshSessionResponse & { worker: SharedWorker }> {
+function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
   const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
     name: 'authWorker',
     credentials: 'same-origin'

@@ -16,7 +16,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { Credentials } from '../../models/Credentials';
-import { RefreshSessionResponse } from '../../services/auth';
+import { ObtainAuthTokenResponse } from '../../services/auth';
 
 // region Login
 
@@ -37,10 +37,11 @@ export const logoutFailed = createAction('LOGOUT_FAILED');
 // region User Session control
 
 export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
-export const refreshAuthTokenComplete = createAction<RefreshSessionResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
+export const refreshAuthTokenComplete = createAction<ObtainAuthTokenResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
 
-export const serviceWorkerToken = createAction<RefreshSessionResponse>('SW_TOKEN');
-export const serviceWorkerUnauthenticated = createAction<RefreshSessionResponse>('SW_UNAUTHENTICATED');
+export const sharedWorkerToken = createAction<ObtainAuthTokenResponse>('SHARED_WORKER_TOKEN');
+export const sharedWorkerUnauthenticated = createAction('SHARED_WORKER_UNAUTHENTICATED');
+export const sharedWorkerError = createAction<{ status: number; message: string }>('SHARED_WORKER_ERROR');
 
 // endregion
