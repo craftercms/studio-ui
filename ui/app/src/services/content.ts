@@ -29,9 +29,8 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { DetailedItem, ItemWithChildren, LegacyItem, SandboxItem } from '../models/Item';
+import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
-import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { createItemStateMap, parseContentXML, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
@@ -40,6 +39,8 @@ import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
 import { getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
+import { GetChildrenResponse } from '../models/GetChildrenResponse';
+import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -825,11 +826,11 @@ export function fetchItemsByPath(
   return forkJoin(requests);
 }
 
-export function fetchItemWithPath(
+export function fetchItemWithChildrenByPath(
   siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
-): Observable<ItemWithChildren> {
+): Observable<GetItemWithChildrenResponse> {
   const requests = [
     getDetailedItem(
       siteId,

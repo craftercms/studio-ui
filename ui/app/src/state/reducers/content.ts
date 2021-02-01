@@ -55,19 +55,22 @@ const initialState: ContentState = {
   clipboard: null
 };
 
-const updateItemByPath = (state, { payload: { item, children } }) => {
+const updateItemByPath = (state, { payload: { parent, children } }) => {
+  const nextByPath = {
+    ...state.items.byPath,
+    ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path')
+  };
+  if (children.levelDescriptor) {
+    nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+  }
+  if (parent) {
+    nextByPath[parent.path] = parent;
+  }
   return {
     ...state,
     items: {
       ...state.items,
-      byPath: {
-        [item.path]: item,
-        ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'),
-        ...(children.levelDescriptor && {
-          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
-        }),
-        ...state.items.byPath
-      }
+      byPath: nextByPath
     }
   };
 };

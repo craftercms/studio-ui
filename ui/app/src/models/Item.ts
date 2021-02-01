@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { GetChildrenResponse } from './GetChildrenResponse';
-
 type States =
   | 'new'
   | 'modified'
@@ -108,9 +106,4 @@ export interface LegacyItem {
 export interface PasteItem {
   path: string;
   children?: PasteItem[];
-}
-
-export interface ItemWithChildren {
-  item: DetailedItem;
-  children: GetChildrenResponse;
 }

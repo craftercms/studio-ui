@@ -19,6 +19,7 @@ import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigat
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
+  pathNavigatorChangePage,
   pathNavigatorClearChecked,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
@@ -122,7 +123,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           total: children.total,
           offset: children.offset,
           limit: children.limit,
-          leaves: children.length === 0 ? state[id].leaves.concat(path) : state[id].leaves
+          leaves: children.length === 0 ? state[id].leaves.concat(path) : state[id].leaves,
+          isFetching: false
         }
       };
     },
@@ -204,7 +206,11 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [payload.id]: { ...state[payload.id], ...payload }
     }),
-    [changeSite.type]: () => ({})
+    [changeSite.type]: () => ({}),
+    [pathNavigatorChangePage.type]: (state, { payload: { id } }) => ({
+      ...state,
+      [id]: { ...state[id], isFetching: true }
+    })
   }
 );
 
