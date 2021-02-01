@@ -63,6 +63,6 @@ export function fetchInstalledMarketplacePlugins(siteId: string): Observable<Plu
   return get(`/studio/api/2/marketplace/installed?siteId=${siteId}`).pipe(pluck('response', 'plugins'));
 }
 
-export function createSite(site: MarketplaceSite): Observable<Boolean> {
+export function createSite(site: MarketplaceSite): Observable<boolean> {
   return postJSON('/studio/api/2/sites/create_site_from_marketplace', site).pipe(mapTo(true));
 }
