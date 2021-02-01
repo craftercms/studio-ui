@@ -55,7 +55,7 @@ export function installMarketplacePlugin(
   siteId: string,
   pluginId: string,
   pluginVersion: MarketplacePluginVersion
-): Observable<Boolean> {
+): Observable<boolean> {
   return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion }).pipe(mapTo(true));
 }
 
