@@ -56,18 +56,21 @@ const initialState: ContentState = {
 };
 
 const updateItemByPath = (state, { payload: { item, children } }) => {
+  const nextByPath = {
+    ...state.items.byPath,
+    ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path')
+  };
+  if (children.levelDescriptor) {
+    nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+  }
+  if (item) {
+    nextByPath[item.path] = item;
+  }
   return {
     ...state,
     items: {
       ...state.items,
-      byPath: {
-        [item.path]: item,
-        ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'),
-        ...(children.levelDescriptor && {
-          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
-        }),
-        ...state.items.byPath
-      }
+      byPath: nextByPath
     }
   };
 };
