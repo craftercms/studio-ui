@@ -17,7 +17,7 @@
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
@@ -33,8 +33,7 @@ import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
-import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const messages = defineMessages({
   ok: {
@@ -106,7 +105,7 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
-  const dispatch = useDispatch();
+  const [error, setError] = useState<Partial<ApiResponse>>(null);
 
   useUnmount(onClosed);
 
@@ -170,13 +169,7 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
               setTreeNodes({ ...rootNode });
             },
             (response) => {
-              dispatch(
-                showErrorDialog({
-                  error: {
-                    message: response.message
-                  }
-                })
-              );
+              setError(response);
             }
           );
         }
@@ -184,13 +177,16 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
     }
   }, [currentPath, rootPath, site]);
 
-  const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
-    shouldResolve: (treeNodes) => Boolean(treeNodes),
-    shouldReject: (treeNodes) => false,
-    shouldRenew: (treeNodes, resource) => treeNodes === null && resource.complete,
-    resultSelector: (treeNodes) => treeNodes,
-    errorSelector: (treeNodes) => null
-  });
+  const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
+    useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
+    {
+      shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: ({ treeNodes }, resource) => treeNodes === null && resource.complete,
+      resultSelector: ({ treeNodes }) => treeNodes,
+      errorSelector: ({ error }) => error
+    }
+  );
 
   const onCreateFolder = () => {
     setCreateFolder(true);
