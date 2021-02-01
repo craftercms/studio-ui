@@ -195,7 +195,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
   const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
-  const isImage = item.mimeType.startsWith('image/');
+  const isImage = item.mimeType?.startsWith('image/');
   const isRootFolder = isRootPath(item.path);
   const translation = false;
   const isLocked = item.lockOwner;

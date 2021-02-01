@@ -134,6 +134,14 @@ const useStyles = makeStyles((theme) => ({
   },
   listItemPath: {
     padding: 0
+  },
+  secondaryAction: {
+    padding: '0 80px 0 5px'
+  },
+  overflowText: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis'
   }
 }));
 
@@ -376,11 +384,13 @@ function SelectionList(props: SelectionListProps) {
                   id={labelId}
                   primary={<h4>{item.label}</h4>}
                   primaryTypographyProps={{
-                    className: classes.listItemTitle
+                    title: item.label,
+                    className: clsx(classes.listItemTitle, classes.overflowText)
                   }}
                   secondary={<React.Fragment>{item.path}</React.Fragment>}
                   secondaryTypographyProps={{
-                    className: classes.listItemPath
+                    title: item.path,
+                    className: clsx(classes.listItemPath, classes.overflowText)
                   }}
                 />
               </ListItem>
@@ -396,6 +406,7 @@ function SelectionList(props: SelectionListProps) {
             return (
               <ListItem
                 className={classes.listItem}
+                classes={{ secondaryAction: classes.secondaryAction }}
                 key={uri}
                 role={undefined}
                 dense
@@ -419,7 +430,14 @@ function SelectionList(props: SelectionListProps) {
                     />
                   </ListItemIcon>
                 )}
-                <ListItemText id={labelId} primary={uri} />
+                <ListItemText
+                  id={labelId}
+                  primary={uri}
+                  primaryTypographyProps={{
+                    title: uri,
+                    classes: { root: classes.overflowText }
+                  }}
+                />
                 {showEdit && (
                   <ListItemSecondaryAction>
                     <Button
