@@ -79,36 +79,38 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
     bar.id = 'controls-overlay';
     bar.innerHTML = navHtmlContent;
 
-    CStudioAuthoring.Service.retrieveContextNavConfiguration('default', {
-      success: function(config) {
-        var me = this;
-        var $ =
-          jQuery ||
-          function(fn) {
-            fn();
-          };
-        $(function() {
-          document.body.appendChild(bar);
+    CrafterCMSNext.system.getStore().subscribe(() => {
+      CStudioAuthoring.Service.retrieveContextNavConfiguration('default', {
+        success: function(config) {
+          var me = this;
+          var $ =
+            jQuery ||
+            function(fn) {
+              fn();
+            };
+          $(function() {
+            document.body.appendChild(bar);
 
-          CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '/', {
-            success: function(data) {
-              var globalAdmin = false;
-              for (var i = 0; i < data.permissions.length; i++) {
-                if (data.permissions[i] === 'create-site') {
-                  globalAdmin = true;
+            CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '/', {
+              success: function(data) {
+                var globalAdmin = false;
+                for (var i = 0; i < data.permissions.length; i++) {
+                  if (data.permissions[i] === 'create-site') {
+                    globalAdmin = true;
+                  }
+                }
+                if (globalAdmin) {
+                  $('#studioBar .navbar-right .users-link').removeClass('hidden');
                 }
               }
-              if (globalAdmin) {
-                $('#studioBar .navbar-right .users-link').removeClass('hidden');
-              }
-            }
-          });
+            });
 
-          me.context.buildModules(config, bar);
-        });
-      },
-      failure: function() {},
-      context: this
+            me.context.buildModules(config, bar);
+          });
+        },
+        failure: function() {},
+        context: this
+      });
     });
   },
   /**
