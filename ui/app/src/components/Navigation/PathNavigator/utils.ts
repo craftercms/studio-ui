@@ -25,6 +25,7 @@ export function isPreviewable(item: DetailedItem): boolean {
     item.systemType === 'component' ||
     item.systemType === 'asset' ||
     item.systemType === 'template' ||
+    item.systemType === 'renderingTemplate' ||
     item.systemType === 'script' ||
     item.systemType === 'taxonomy'
   );
