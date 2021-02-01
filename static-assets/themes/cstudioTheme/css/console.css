@@ -571,7 +571,7 @@ input[type='checkbox'].content-type-selector--checkbox {
   border-right: 1px solid #a0a0a0;
 }
 
-.property-label + input {
+.property-label + input, .property-label + div .text-prop {
   border: 0 none;
   border-left: 1px solid #a0a0a0;
   margin-left: -1px;

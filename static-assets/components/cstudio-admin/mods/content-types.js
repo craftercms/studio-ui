@@ -2635,7 +2635,13 @@
             sheetEl,
             function(e, el) {
               updatePropertyFn(el.fieldName, el.value);
-            }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            property
           );
         }
 
@@ -2823,6 +2829,77 @@
 
       getValue: function() {
         return '';
+      },
+
+      handleDependencyPopover: function(element, dependency, show) {
+        if (show) {
+          $(element)
+            .parent()
+            .popover({
+              content: formatMessage(contentTypesMessages.dependsOn, { dependency }),
+              container: 'body',
+              placement: 'left',
+              trigger: 'hover'
+            });
+        } else {
+          $(element)
+            .parent()
+            .popover('destroy');
+        }
+      },
+
+      // TODO: handle validations with other types
+      dependencyStatus: function(dependencyEl) {
+        const status = {
+          dependencyMet: false,
+          supported: true
+        };
+
+        if (dependencyEl && dependencyEl.type) {
+          switch (dependencyEl.type) {
+            case 'text':
+              status.dependencyMet = dependencyEl.value !== '';
+              break;
+            case 'checkbox':
+              status.dependencyMet = dependencyEl.checked;
+              break;
+            default:
+              status.supported = false;
+              break;
+          }
+        } else {
+          status.supported = false;
+        }
+
+        return status;
+      },
+
+      handleDependency: function(dependency, valueEl, properties, fieldToUpdate, emptyValue, updateFieldFn) {
+        const _self = this;
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        const isDependencyMet = dependencyStatus.dependencyMet;
+
+        if (dependencyStatus.supported) {
+          valueEl.disabled = !isDependencyMet;
+          this.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+          dependency.addEventListener('propertyUpdate', (e) => {
+            const isDependencyMet = _self.dependencyStatus(dependency).dependencyMet;
+
+            const dependencyLabel = e.target.getAttribute('data-label')
+              ? e.target.getAttribute('data-label')
+              : properties.dependsOn;
+
+            valueEl.disabled = !isDependencyMet;
+            valueEl[fieldToUpdate] = !isDependencyMet ? emptyValue : valueEl[fieldToUpdate];
+            _self.handleDependencyPopover(valueEl, dependencyLabel, !isDependencyMet);
+
+            updateFieldFn(e, valueEl);
+          });
+        } else {
+          console.log(
+            `[content-types.js] Control dependency not implemented for input of type "${properties.dependsOn}". Dependency will be ignored.`
+          );
+        }
       }
     };
 
