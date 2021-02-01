@@ -94,8 +94,13 @@ function retrieve() {
     },
     (e: AjaxError) => {
       log('Error retrieving token', e);
-      status = 'error';
-      broadcast(sharedWorkerError({ status: e.status, message: e.message }));
+      if (e.status === 401) {
+        status = 'expired';
+        broadcast(sharedWorkerUnauthenticated());
+      } else {
+        status = 'error';
+        broadcast(sharedWorkerError({ status: e.status, message: e.message }));
+      }
     }
   );
 }
