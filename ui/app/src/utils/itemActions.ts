@@ -294,7 +294,6 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
     case 'taxonomy':
     case 'component':
     case 'renderingTemplate':
-    case 'template':
     case 'script':
     case 'asset': {
       let _optionsA = [];

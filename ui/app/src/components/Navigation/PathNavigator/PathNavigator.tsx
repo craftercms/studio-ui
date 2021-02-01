@@ -306,7 +306,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
       getContentXML(site, item.path).subscribe((content) => {
         let mode = 'txt';
 
-        if (item.systemType === 'template' || item.systemType === 'renderingTemplate') {
+        if (item.systemType === 'renderingTemplate') {
           mode = 'ftl';
         } else if (item.systemType === 'script') {
           mode = 'groovy';
