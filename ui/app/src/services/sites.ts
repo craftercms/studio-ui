@@ -20,10 +20,10 @@ import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
-import { Blueprint } from '../models/Blueprint';
+import { MarketplacePlugin } from '../models/MarketplacePlugin';
 import { underscore } from '../utils/string';
 
-export function fetchBlueprints(): Observable<Blueprint[]> {
+export function fetchBlueprints(): Observable<MarketplacePlugin[]> {
   return get('/studio/api/2/sites/available_blueprints').pipe(pluck('response', 'blueprints'));
 }
 

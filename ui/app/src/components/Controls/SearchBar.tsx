@@ -27,7 +27,6 @@ import { Paper } from '@material-ui/core';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     search: {
-      flex: 1,
       position: 'relative',
       background: (props: any) => props.background ?? theme.palette.background.default,
       display: 'flex',

@@ -44,16 +44,16 @@ import * as aws from '../services/aws';
 import * as cmis from '../services/cmis';
 import * as webdav from '../services/webdav';
 import * as box from '../services/box';
-import { forkJoin, fromEvent, Observable, Subject } from 'rxjs';
-import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { IntlShape } from 'react-intl/src/types';
-import * as messages from './i18n-legacy';
-import { translateElements } from './i18n-legacy';
 import * as babel from './babelHelpers-legacy';
 import * as security from '../services/security';
 import * as authService from '../services/auth';
 import * as translation from '../services/translation';
 import * as monitoring from '../services/monitoring';
+import { forkJoin, fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { IntlShape } from 'react-intl/src/types';
+import * as messages from './i18n-legacy';
+import { translateElements } from './i18n-legacy';
 import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
@@ -170,7 +170,8 @@ export function createCodebaseBridge() {
           default: module.CharCountStatusContainer
         }))
       ),
-      TokenManagement: lazy(() => import('../components/TokenManagement'))
+      TokenManagement: lazy(() => import('../components/TokenManagement')),
+      PluginManagement: lazy(() => import('../components/PluginManagement'))
     },
 
     system: {
