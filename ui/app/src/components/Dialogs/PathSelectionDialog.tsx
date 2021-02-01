@@ -33,6 +33,8 @@ import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const messages = defineMessages({
   ok: {
@@ -104,6 +106,7 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
+  const dispatch = useDispatch();
 
   useUnmount(onClosed);
 
@@ -128,43 +131,54 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
 
         if (requests.length) {
           setIsFetching(true);
-          forkJoin(requests).subscribe((responses) => {
-            let rootNode;
-            setIsFetching(false);
-            responses.forEach(({ response: { item } }, i) => {
-              let parent;
+          forkJoin(requests).subscribe(
+            (responses) => {
+              let rootNode;
+              setIsFetching(false);
+              responses.forEach(({ response: { item } }, i) => {
+                let parent;
 
-              if (i === requests.length - 1) {
-                setInvalidPath(item.deleted);
-              }
+                if (i === requests.length - 1) {
+                  setInvalidPath(item.deleted);
+                }
 
-              if (item.deleted) {
-                return;
-              }
+                if (item.deleted) {
+                  return;
+                }
 
-              if (!nodesLookup['root']) {
-                parent = {
-                  id: item.path,
-                  name: item.name ? item.name : 'root',
-                  fetched: true,
-                  children: legacyItemsToTreeNodes(item.children)
-                };
-                rootNode = parent;
-                nodesLookup[item.path] = parent;
-                nodesLookup['root'] = parent;
-              } else {
-                rootNode = nodesLookup['root'];
-                parent = nodesLookup[item.path];
-                parent.fetched = true;
-                parent.children = legacyItemsToTreeNodes(item.children);
-              }
+                if (!nodesLookup['root']) {
+                  parent = {
+                    id: item.path,
+                    name: item.name ? item.name : 'root',
+                    fetched: true,
+                    children: legacyItemsToTreeNodes(item.children)
+                  };
+                  rootNode = parent;
+                  nodesLookup[item.path] = parent;
+                  nodesLookup['root'] = parent;
+                } else {
+                  rootNode = nodesLookup['root'];
+                  parent = nodesLookup[item.path];
+                  parent.fetched = true;
+                  parent.children = legacyItemsToTreeNodes(item.children);
+                }
 
-              parent.children.forEach((child) => {
-                nodesLookup[child.id] = child;
+                parent.children.forEach((child) => {
+                  nodesLookup[child.id] = child;
+                });
               });
-            });
-            setTreeNodes({ ...rootNode });
-          });
+              setTreeNodes({ ...rootNode });
+            },
+            (response) => {
+              dispatch(
+                showErrorDialog({
+                  error: {
+                    message: response.message
+                  }
+                })
+              );
+            }
+          );
         }
       }
     }

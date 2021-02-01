@@ -34,13 +34,22 @@
       onChange(value ? path : defaultValue);
     };
 
+    const checkForMacros = (value) => {
+      let isMacro = value.indexOf('{');
+      if (isMacro !== -1) {
+        value = value.substring(0, isMacro);
+        value = value.endsWith('/') ? value.substring(0, value.length - 1) : value;
+      }
+      return value;
+    };
+
     const openPathBrowser = () => {
       let unmount;
       const dialogContainer = document.createElement('div');
       CrafterCMSNext.render(dialogContainer, 'PathSelectionDialog', {
         open: true,
         rootPath,
-        initialPath: value ? value : rootPath,
+        initialPath: value ? checkForMacros(value) : rootPath,
         onClose: () => unmount(),
         onOk: ({ path }) => {
           unmount();
