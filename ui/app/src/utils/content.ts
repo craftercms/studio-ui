@@ -39,6 +39,7 @@ import {
   STATE_MASK_TRANSLATION_PENDING_MASK,
   STATE_MASK_TRANSLATION_UP_TO_DATE_MASK
 } from './constants';
+import { SystemType } from '../models/SystemType';
 
 export function isEditableAsset(path: string) {
   return (
@@ -99,28 +100,26 @@ export function isImage(path: string): boolean {
   );
 }
 
-export function getSystemTypeFromPath(path: string): string {
+export function getSystemTypeFromPath(path: string): SystemType {
   const rootPath = getRootPath(path);
   if (rootPath.includes('/site/website')) {
     return 'page';
   } else if (rootPath.includes('/components')) {
-    return 'taxonomy';
-  } else if (rootPath.includes('/taxonomy')) {
     return 'component';
+  } else if (rootPath.includes('/taxonomy')) {
+    return 'taxonomy';
   } else if (rootPath.includes('/templates')) {
-    return 'template';
+    return 'renderingTemplate';
   } else if (rootPath.includes('/static-assets')) {
     return 'asset';
   } else if (rootPath.includes('script')) {
     return 'script';
-  } else if (rootPath.includes('config')) {
-    return 'config';
   } else {
     return 'unknown';
   }
 }
 
-function getLegacyItemSystemType(item: LegacyItem) {
+function getLegacyItemSystemType(item: LegacyItem): SystemType {
   switch (true) {
     case item.contentType === 'renderingTemplate': {
       return 'renderingTemplate';
@@ -148,7 +147,7 @@ function getLegacyItemSystemType(item: LegacyItem) {
       return 'taxonomy';
     }
     default: {
-      return null;
+      return 'unknown';
     }
   }
 }

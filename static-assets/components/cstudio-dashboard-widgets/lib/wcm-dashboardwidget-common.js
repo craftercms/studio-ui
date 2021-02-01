@@ -974,7 +974,7 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
         unsubscribe();
       });
     });
-  } else if (['config', 'template', 'asset', 'script'].includes(type)) {
+  } else if (['unknown', 'template', 'asset', 'script'].includes(type)) {
     const src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(path)}&type=asset`;
     CrafterCMSNext.system.store.dispatch({
       type: 'SHOW_CODE_EDITOR_DIALOG',
