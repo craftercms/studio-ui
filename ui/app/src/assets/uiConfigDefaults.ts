@@ -564,6 +564,26 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
                     }
                   }
                 }
+              },
+              {
+                id: 'craftercms.components.ToolsPanelEmbeddedAppViewButton',
+                uiKey: count++,
+                configuration: {
+                  title: {
+                    id: 'PluginManagement.title',
+                    defaultMessage: 'Plugin Management'
+                  },
+                  icon: {
+                    baseClass: 'fa fa-puzzle-piece'
+                  },
+                  widget: {
+                    id: 'craftercms.components.PluginManagement',
+                    uiKey: count++,
+                    configuration: {
+                      embedded: true
+                    }
+                  }
+                }
               }
             ]
           }

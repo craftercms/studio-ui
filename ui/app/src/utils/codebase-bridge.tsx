@@ -154,7 +154,8 @@ export function createCodebaseBridge() {
         import('../components/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
         }))
-      )
+      ),
+      PluginManagement: lazy(() => import('../components/PluginManagement'))
     },
 
     system: {

@@ -14,35 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Image {
+export interface MarketplacePluginImage {
   url: string;
   title: string;
   description: string;
 }
 
-export interface Video {
+export interface MarketplacePluginVideo {
   title: string;
   description: string;
   url: string;
 }
 
-interface Media {
-  screenshots: [Image];
-  videos?: [Video] | [];
+interface MarketplacePluginMedia {
+  screenshots: [MarketplacePluginImage];
+  videos?: [MarketplacePluginVideo] | [];
 }
 
-interface Version {
+export interface MarketplacePluginVersion {
   major: number;
   minor: number;
   patch: number;
 }
 
-interface License {
-  name: string;
-  url: string;
-}
-
-export interface Parameter {
+export interface MarketplacePluginParameter {
   label: string;
   name: string;
   required: boolean;
@@ -51,20 +46,40 @@ export interface Parameter {
   defaultValue: string;
 }
 
-export interface Blueprint {
+export interface MarketplacePlugin {
   id: string;
+  type?: string;
   name: string;
-  version?: Version;
-  license?: License;
-  crafterCmsVersions?: [Version];
+  tags?: string[];
+  version?: MarketplacePluginVersion;
   description: string;
-  media: Media;
-  developer?: any;
-  website?: any;
-  searchEngine?: string;
+  website?: {
+    name: string;
+    url: string;
+  };
+  media: MarketplacePluginMedia;
+  developer?: {
+    people: any;
+    company?: {
+      name: string;
+      url: string;
+    };
+  };
+  build?: {
+    id: string;
+    url: string;
+  };
+  license?: {
+    name: string;
+    url: string;
+  };
+  crafterCmsVersions?: [MarketplacePluginVersion];
+  crafterCmsEditions?: string[];
+  parameters?: [MarketplacePluginParameter];
+  status?: string;
   source?: string;
+  compatible?: boolean;
+  searchEngine?: string;
   url?: string;
   ref?: string;
-  parameters?: [Parameter];
-  compatible?: boolean;
 }
