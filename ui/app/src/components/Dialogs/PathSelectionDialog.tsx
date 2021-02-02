@@ -17,7 +17,7 @@
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, usePossibleTranslation, useUnmount } from '../../utils/hooks';
@@ -33,6 +33,7 @@ import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
+import { ApiResponse } from '../../models/ApiResponse';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -61,6 +62,7 @@ export type PathSelectionDialogBodyProps = PathSelectionDialogBaseProps &
 
 export interface PathSelectionDialogBodyUIProps {
   title?: string | MessageDescriptor;
+  error?: ApiResponse;
   treeNodes: TreeNode;
   isInvalidPath: boolean;
   rootPath: string;
@@ -95,7 +97,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export function PathSelectionDialog(props: PathSelectionDialogProps) {
+export default function PathSelectionDialog(props: PathSelectionDialogProps) {
   const site = useActiveSiteId();
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
@@ -114,6 +116,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
+  const [error, setError] = useState<Partial<ApiResponse>>(null);
 
   useUnmount(onClosed);
 
@@ -138,43 +141,48 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
 
         if (requests.length) {
           setIsFetching(true);
-          forkJoin(requests).subscribe((responses) => {
-            let rootNode;
-            setIsFetching(false);
-            responses.forEach(({ response: { item } }, i) => {
-              let parent;
+          forkJoin(requests).subscribe(
+            (responses) => {
+              let rootNode;
+              setIsFetching(false);
+              responses.forEach(({ response: { item } }, i) => {
+                let parent;
 
-              if (i === requests.length - 1) {
-                setInvalidPath(item.deleted);
-              }
+                if (i === requests.length - 1) {
+                  setInvalidPath(item.deleted);
+                }
 
-              if (item.deleted) {
-                return;
-              }
+                if (item.deleted) {
+                  return;
+                }
 
-              if (!nodesLookup['root']) {
-                parent = {
-                  id: item.path,
-                  name: item.name ? item.name : 'root',
-                  fetched: true,
-                  children: legacyItemsToTreeNodes(item.children)
-                };
-                rootNode = parent;
-                nodesLookup[item.path] = parent;
-                nodesLookup['root'] = parent;
-              } else {
-                rootNode = nodesLookup['root'];
-                parent = nodesLookup[item.path];
-                parent.fetched = true;
-                parent.children = legacyItemsToTreeNodes(item.children);
-              }
+                if (!nodesLookup['root']) {
+                  parent = {
+                    id: item.path,
+                    name: item.name ? item.name : 'root',
+                    fetched: true,
+                    children: legacyItemsToTreeNodes(item.children)
+                  };
+                  rootNode = parent;
+                  nodesLookup[item.path] = parent;
+                  nodesLookup['root'] = parent;
+                } else {
+                  rootNode = nodesLookup['root'];
+                  parent = nodesLookup[item.path];
+                  parent.fetched = true;
+                  parent.children = legacyItemsToTreeNodes(item.children);
+                }
 
-              parent.children.forEach((child) => {
-                nodesLookup[child.id] = child;
+                parent.children.forEach((child) => {
+                  nodesLookup[child.id] = child;
+                });
               });
-            });
-            setTreeNodes({ ...rootNode });
-          });
+              setTreeNodes({ ...rootNode });
+            },
+            (response) => {
+              setError(response);
+            }
+          );
         }
       }
     }
@@ -229,6 +237,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
       title={title}
       showCreateFolderOption={showCreateFolderOption}
       onOk={onOk}
+      error={error}
       onClose={onClose}
       expandedItemPaths={expanded}
       isInvalidPath={invalidPath}
@@ -251,6 +260,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
 
 export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps) {
   const {
+    error,
     treeNodes,
     isInvalidPath,
     rootPath,
@@ -272,13 +282,16 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
   } = props;
   const classes = useStyles({});
   const title = usePossibleTranslation(props.title);
-  const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
-    shouldResolve: (treeNodes) => Boolean(treeNodes),
-    shouldReject: () => false,
-    shouldRenew: (treeNodes, resource) => treeNodes === null && resource.complete,
-    resultSelector: (treeNodes) => treeNodes,
-    errorSelector: () => null
-  });
+  const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
+    useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
+    {
+      shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: ({ treeNodes }, resource) => treeNodes === null && resource.complete,
+      resultSelector: ({ treeNodes }) => treeNodes,
+      errorSelector: ({ error }) => error
+    }
+  );
   return (
     <>
       <DialogHeader
