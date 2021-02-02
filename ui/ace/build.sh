@@ -20,7 +20,4 @@ rm -rf $ACE/
 cp -r ../../node_modules/ace-builds/src-min-noconflict $ACE
 cat src/ace-append.js >> $ACE/ace.js
 
-cp src/mode-yaml/mode-yaml.js $ACE/
-cp src/mode-yaml/worker-yaml.js $ACE/
-cp src/mode-yaml/yaml_parse.js $ACE/
-cp src/mode-yaml/js-yaml.min.js $ACE/
+cp src/mode-yaml/* $ACE/
