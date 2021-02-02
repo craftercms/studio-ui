@@ -18,6 +18,7 @@ declare const self: SharedWorkerGlobalScope;
 
 export type SharedWorkerStatus = '' | 'active' | 'expired' | 'error';
 
+const refreshAtFactor = 0.5;
 let clients: MessagePort[] = [];
 let status: SharedWorkerStatus = '';
 let timeout: number;
@@ -76,7 +77,7 @@ function retrieve() {
         status = 'active';
         current = response;
         broadcast(sharedWorkerToken(current));
-        const ms = Math.floor((current.expiresAt - Date.now()) * 0.8);
+        const ms = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
         if (clients.length) {
           // If there are clients connected, keep the token refresh going
           timeout = self.setTimeout(retrieve, ms);

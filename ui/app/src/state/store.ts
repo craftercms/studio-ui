@@ -106,7 +106,7 @@ function registerServiceWorker(): Observable<ObtainAuthTokenResponse> {
       }
       return fromEvent<MessageEvent>(navigator.serviceWorker, 'message').pipe(
         tap((e) => {
-          console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
+          console.log('%c[page] Message received from worker', 'color: #AF52DE');
           if (e.data?.type === sharedWorkerUnauthenticated.type) {
             throw new Error('User not authenticated.');
           }
