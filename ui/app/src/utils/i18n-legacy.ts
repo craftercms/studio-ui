@@ -548,6 +548,10 @@ const globalConfigMessages = defineMessages({
   unSavedConfirmationTitle: {
     id: 'globalConfig.unsavedConfirmationTitle',
     defaultMessage: 'Unsaved changes'
+  },
+  documentError: {
+    id: 'globalConfig.documentError',
+    defaultMessage: 'The document contains an error, please check the error on the editor.'
   }
 });
 
