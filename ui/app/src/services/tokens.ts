@@ -16,7 +16,7 @@
 
 import { Observable } from 'rxjs';
 import { del, get, postJSON } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
+import { mapTo, pluck } from 'rxjs/operators';
 import { Token } from '../models/Token';
 
 export function getTokens(): Observable<Token[]> {
@@ -27,13 +27,13 @@ export function createToken(label: string, expiresAt?: string): Observable<Token
   return postJSON('/studio/api/2/security/tokens', {
     label,
     ...(expiresAt && { expiresAt })
-  }).pipe(pluck('response', 'tokens'));
+  }).pipe(pluck('response', 'token'));
 }
 
 export function updateToken(id: number, properties: Object): Observable<Token> {
   return postJSON(`/studio/api/2/security/tokens/${id}`, properties).pipe(pluck('response', 'token'));
 }
 
-export function deleteToken(id: number): Observable<any> {
-  return del(`/studio/api/2/security/tokens/${id}`).pipe(pluck('response'));
+export function deleteToken(id: number): Observable<boolean> {
+  return del(`/studio/api/2/security/tokens/${id}`).pipe(mapTo(true));
 }
