@@ -40,6 +40,7 @@ import {
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from './actions/auth';
+import FakeSharedWorker from './FakeSharedWorker';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -120,27 +121,37 @@ function registerServiceWorker(): Observable<ObtainAuthTokenResponse> {
 }
 
 function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
-  const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
-    name: 'authWorker',
-    credentials: 'same-origin'
-  });
-  worker.port.start();
-  worker.port.postMessage(sharedWorkerConnect());
-  window.addEventListener('beforeunload', function() {
-    worker.port.postMessage(sharedWorkerDisconnect());
-  });
-  return fromEvent<MessageEvent>(worker.port, 'message').pipe(
-    tap((e) => {
-      console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
-      if (e.data?.type === sharedWorkerUnauthenticated.type) {
-        throw new Error('User not authenticated.');
-      }
-    }),
-    filter((e) => e.data?.type === sharedWorkerToken.type),
-    take(1),
-    pluck('data', 'payload'),
-    map((response) => ({ ...response, worker }))
-  );
+  if ('SharedWorker' in window) {
+    const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
+      name: 'authWorker',
+      credentials: 'same-origin'
+    });
+    worker.port.start();
+    worker.port.postMessage(sharedWorkerConnect());
+    window.addEventListener('beforeunload', function() {
+      worker.port.postMessage(sharedWorkerDisconnect());
+    });
+    return fromEvent<MessageEvent>(worker.port, 'message').pipe(
+      tap((e) => {
+        console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
+        if (e.data?.type === sharedWorkerUnauthenticated.type) {
+          throw new Error('User not authenticated.');
+        }
+      }),
+      filter((e) => e.data?.type === sharedWorkerToken.type),
+      take(1),
+      pluck('data', 'payload'),
+      map((response) => ({ ...response, worker }))
+    );
+  } else {
+    return new Observable((observer) => {
+      observer.error(
+        ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform)
+          ? 'iOS is not supported as it lacks essential features. Please use Chrome or Firefox browsers on your desktop.'
+          : 'Your browser is not supported as it lacks essential features. Please use Chrome or Firefox.'
+      );
+    });
+  }
 }
 
 export function getStoreSync(): CrafterCMSStore {
