@@ -95,10 +95,10 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
-  const [permissions, setPermissions] = useState(null);
+  const [permissions, setPermissions] = useState<string[]>(null);
   const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(false);
-  const listPlugins = permissions?.['list_plugins'] ?? false;
-  const installPlugins = permissions?.['install_plugins'] ?? false;
+  const listPluginsPermission = permissions?.includes('list_plugins');
+  const installPluginsPermission = permissions?.includes('install_plugins');
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
 
@@ -109,7 +109,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   });
 
   useEffect(() => {
-    if (listPlugins && siteId) {
+    if (listPluginsPermission && siteId) {
       fetchInstalledMarketplacePlugins(siteId).subscribe(
         (plugins) => {
           setPlugins(plugins);
@@ -123,10 +123,10 @@ export const PluginManagement = (props: PluginManagementProps) => {
         }
       );
     }
-  }, [dispatch, listPlugins, siteId]);
+  }, [dispatch, listPluginsPermission, siteId]);
 
   const onSearchPlugin = () => {
-    if (installPlugins) {
+    if (installPluginsPermission) {
       setOpenMarketPlaceDialog(true);
     }
   };
@@ -160,12 +160,12 @@ export const PluginManagement = (props: PluginManagementProps) => {
         startIcon={<AddIcon />}
         className={clsx(classes.createToken, embedded && 'embedded')}
         onClick={onSearchPlugin}
-        disabled={installPlugins === false}
+        disabled={installPluginsPermission === false}
       >
         <FormattedMessage id="PluginManagement.searchPlugin" defaultMessage="Search & install" />
       </SecondaryButton>
       <Divider />
-      {permissions && listPlugins === false ? (
+      {permissions && listPluginsPermission === false ? (
         <EmptyState
           title={
             <FormattedMessage

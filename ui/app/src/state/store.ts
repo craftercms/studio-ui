@@ -40,7 +40,6 @@ import {
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from './actions/auth';
-import FakeSharedWorker from './FakeSharedWorker';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
