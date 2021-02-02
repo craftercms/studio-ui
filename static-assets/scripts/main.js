@@ -1387,28 +1387,43 @@
       $scope.save = function() {
         enableUI(false);
         const value = aceEditor.getValue();
-        configurationApi
-          .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
-          .subscribe(
-            () => {
-              enableUI(true);
-              defaultValue = value;
-              aceEditor.focus();
-              globalConfig.isModified = false;
-              $element.notify(formatMessage(globalConfigMessages.successfulSave), {
-                position: 'top left',
-                className: 'success'
-              });
-              $scope.$apply();
-            },
-            () => {
-              $element.notify(formatMessage(globalConfigMessages.failedSave), {
-                position: 'top left',
-                className: 'error'
-              });
-              $scope.$apply();
+        const errors = fileErrors(aceEditor);
+
+        if (errors.length) {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_SYSTEM_NOTIFICATION',
+            payload: {
+              message: formatMessage(globalConfigMessages.documentError),
+              options: {
+                variant: 'error'
+              }
             }
-          );
+          });
+          enableUI(true);
+        } else {
+          configurationApi
+            .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
+            .subscribe(
+              () => {
+                enableUI(true);
+                defaultValue = value;
+                aceEditor.focus();
+                globalConfig.isModified = false;
+                $element.notify(formatMessage(globalConfigMessages.successfulSave), {
+                  position: 'top left',
+                  className: 'success'
+                });
+                $scope.$apply();
+              },
+              () => {
+                $element.notify(formatMessage(globalConfigMessages.failedSave), {
+                  position: 'top left',
+                  className: 'error'
+                });
+                $scope.$apply();
+              }
+            );
+        }
       };
 
       $scope.reset = function() {
