@@ -1293,6 +1293,7 @@ var CStudioForms =
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
+            // TODO make Buttons Disabled/Progress
             setButtonsEnabled(false);
 
             var entityId = buildEntityIdFn(draft);
@@ -1378,141 +1379,169 @@ var CStudioForms =
                 edit
               });
             } else {
-              CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(serviceUrl), xml).subscribe(
-                function() {
-                  YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
+              const saveContent = () => {
+                CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(serviceUrl), xml).subscribe(
+                  function() {
+                    YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
-                  var getContentItemCb = {
-                    success: function(contentTO) {
-                      var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
-                      path = entityId;
-                      var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
-                      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                    var getContentItemCb = {
+                      success: function(contentTO) {
+                        var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
+                        path = entityId;
+                        var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
+                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
-                      setButtonsEnabled(true);
-                      sendMessage({ type: CHILD_FORM_DRAFT_COMPLETE });
+                        //TODO: We need a method to set disable the .render Buttons;
+                        setButtonsEnabled(true);
+                        sendMessage({ type: CHILD_FORM_DRAFT_COMPLETE });
 
-                      if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
-                        for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
-                          window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = '';
+                        if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
+                          for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
+                            window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = '';
+                          }
+                          window.parent.CStudioAuthoring.editDisabled = [];
                         }
-                        window.parent.CStudioAuthoring.editDisabled = [];
-                      }
 
-                      if (iceWindowCallback && iceWindowCallback.success) {
-                        var value = form.model['internal-name'];
-                        var name = entityId;
+                        if (iceWindowCallback && iceWindowCallback.success) {
+                          var value = form.model['internal-name'];
+                          var name = entityId;
 
-                        contentTO.initialModel = CStudioForms.initialModel;
-                        contentTO.updatedModel = CStudioForms.updatedModel;
+                          contentTO.initialModel = CStudioForms.initialModel;
+                          contentTO.updatedModel = CStudioForms.updatedModel;
 
-                        iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
-                        if (draft) {
-                          CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
+                          iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
+                          if (draft) {
+                            CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
+                          } else {
+                            CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
+                            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                            CStudioAuthoring.Operations.refreshPreview();
+                          }
                         } else {
-                          CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
-                          CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                          CStudioAuthoring.Operations.refreshPreview();
+                          if (draft) {
+                            CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
+                            CStudioAuthoring.Operations.refreshPreview();
+                          } else {
+                            CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
+                            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                            CStudioAuthoring.Operations.refreshPreview();
+                          }
                         }
-                      } else {
-                        if (draft) {
-                          CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
-                          CStudioAuthoring.Operations.refreshPreview();
-                        } else {
-                          CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
-                          CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                          CStudioAuthoring.Operations.refreshPreview();
+                        var page = CStudioAuthoring.Utils.getQueryParameterURLParentWindow('page');
+                        var currentPage = page.split('/')[page.split('/').length - 1];
+                        var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
+                        if (acnDraftContent && !saveDraft) {
+                          acnDraftContent.parentNode.removeChild(acnDraftContent);
                         }
-                      }
-                      var page = CStudioAuthoring.Utils.getQueryParameterURLParentWindow('page');
-                      var currentPage = page.split('/')[page.split('/').length - 1];
-                      var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
-                      if (acnDraftContent && !saveDraft) {
-                        acnDraftContent.parentNode.removeChild(acnDraftContent);
-                      }
-                      if (!acnDraftContent && saveDraft && contentTO.item.browserUri == page) {
-                        var noticeEl = document.createElement('div');
-                        parent.document.querySelector('#studioBar nav .container-fluid').appendChild(noticeEl);
-                        YDom.addClass(noticeEl, 'acnDraftContent');
-                        noticeEl.innerHTML = CMgs.format(formsLangBundle, 'wcmContentSavedAsDraft');
-                      }
+                        if (!acnDraftContent && saveDraft && contentTO.item.browserUri == page) {
+                          var noticeEl = document.createElement('div');
+                          parent.document.querySelector('#studioBar nav .container-fluid').appendChild(noticeEl);
+                          YDom.addClass(noticeEl, 'acnDraftContent');
+                          noticeEl.innerHTML = CMgs.format(formsLangBundle, 'wcmContentSavedAsDraft');
+                        }
 
-                      if (embeddedIceDraft) {
-                        //close parent form when embeddedIce is saved as draft
-                        sendMessage({ type: FORM_CANCEL_REQUEST });
+                        if (embeddedIceDraft) {
+                          //close parent form when embeddedIce is saved as draft
+                          sendMessage({ type: FORM_CANCEL_REQUEST });
+                        }
+                      },
+                      failure: function(err) {
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                          'error-dialog',
+                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                          CMgs.format(formsLangBundle, 'notification'),
+                          err,
+                          [
+                            {
+                              text: 'OK',
+                              handler: function() {
+                                this.hide();
+                                form.onAfterSave();
+                                setButtonsEnabled(true);
+                              },
+                              isDefault: false
+                            }
+                          ],
+                          YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                          'studioDialog'
+                        );
                       }
-                    },
-                    failure: function(err) {
+                    };
+
+                    if (entityId === path) {
+                      CStudioAuthoring.Service.lookupContentItem(
+                        CStudioAuthoringContext.site,
+                        entityId,
+                        getContentItemCb,
+                        false,
+                        false
+                      );
+                    } else {
+                      CStudioAuthoring.Service.lookupSiteContent(
+                        CStudioAuthoringContext.site,
+                        entityId,
+                        1,
+                        'default',
+                        getContentItemCb
+                      );
+                    }
+                  },
+                  function(err) {
+                    try {
                       CStudioAuthoring.Operations.showSimpleDialog(
                         'error-dialog',
                         CStudioAuthoring.Operations.simpleDialogTypeINFO,
                         CMgs.format(formsLangBundle, 'notification'),
-                        err,
-                        [
-                          {
-                            text: 'OK',
-                            handler: function() {
-                              this.hide();
-                              form.onAfterSave();
-                              setButtonsEnabled(true);
-                            },
-                            isDefault: false
-                          }
-                        ],
+                        YAHOO.lang.JSON.parse(err.responseText).callstack[1].substring(
+                          YAHOO.lang.JSON.parse(err.responseText).callstack[1].indexOf(':') + 1
+                        ),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        'studioDialog'
+                      );
+                    } catch (e) {
+                      var error = eval('(' + err.responseText + ')'),
+                        errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, 'errSaveFailed');
+
+                      CStudioAuthoring.Operations.showSimpleDialog(
+                        'error-dialog',
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(formsLangBundle, 'notification'),
+                        errorMessage,
+                        null,
                         YAHOO.widget.SimpleDialog.ICON_BLOCK,
                         'studioDialog'
                       );
                     }
-                  };
-
-                  if (entityId == path) {
-                    CStudioAuthoring.Service.lookupContentItem(
-                      CStudioAuthoringContext.site,
-                      entityId,
-                      getContentItemCb,
-                      false,
-                      false
-                    );
+                    setButtonsEnabled(true);
+                  }
+                );
+              };
+              CrafterCMSNext.services.sites
+                .validateActionPolicy(CStudioAuthoringContext.site, {
+                  type: 'CREATE',
+                  target: entityId
+                })
+                .subscribe(({ allowed, modifiedValue, target }) => {
+                  if (allowed) {
+                    if (modifiedValue === null) {
+                      CStudioAuthoring.Utils.showConfirmDialog(
+                        null,
+                        formatMessage(formEngineMessages.createPolicy, { originalPath: entityId, path: modifiedValue }),
+                        () => {
+                          saveContent();
+                        }
+                      );
+                    } else {
+                      saveContent();
+                    }
                   } else {
-                    CStudioAuthoring.Service.lookupSiteContent(
-                      CStudioAuthoringContext.site,
-                      entityId,
-                      1,
-                      'default',
-                      getContentItemCb
+                    CStudioAuthoring.Utils.showConfirmDialog(
+                      null,
+                      formatMessage(formEngineMessages.policyError, { path: target })
                     );
                   }
-                },
-                function(err) {
-                  try {
-                    CStudioAuthoring.Operations.showSimpleDialog(
-                      'error-dialog',
-                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                      CMgs.format(formsLangBundle, 'notification'),
-                      YAHOO.lang.JSON.parse(err.responseText).callstack[1].substring(
-                        YAHOO.lang.JSON.parse(err.responseText).callstack[1].indexOf(':') + 1
-                      ),
-                      null,
-                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                      'studioDialog'
-                    );
-                  } catch (e) {
-                    var error = eval('(' + err.responseText + ')'),
-                      errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, 'errSaveFailed');
-
-                    CStudioAuthoring.Operations.showSimpleDialog(
-                      'error-dialog',
-                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                      CMgs.format(formsLangBundle, 'notification'),
-                      errorMessage,
-                      null,
-                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                      'studioDialog'
-                    );
-                  }
-                  setButtonsEnabled(true);
-                }
-              );
+                });
             }
           };
 
