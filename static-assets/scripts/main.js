@@ -529,7 +529,7 @@
       };
 
       this.removeSite = function(site) {
-        return sitesApi.deleteSite(site).toPromise();
+        return sitesApi.trash(site).toPromise();
       };
 
       this.getPermissions = function(siteId, path) {
