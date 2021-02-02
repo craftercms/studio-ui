@@ -1524,7 +1524,7 @@ var CStudioForms =
                 })
                 .subscribe(({ allowed, modifiedValue, target }) => {
                   if (allowed) {
-                    if (modifiedValue === null) {
+                    if (modifiedValue) {
                       CStudioAuthoring.Utils.showConfirmDialog(
                         null,
                         formatMessage(formEngineMessages.createPolicy, { originalPath: entityId, path: modifiedValue }),
