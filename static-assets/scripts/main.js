@@ -1543,6 +1543,15 @@
 
       const aceEditor = ace.edit('globalConfigAceEditor');
 
+      const fileErrors = (editor) => {
+        const editorAnnotations = editor.getSession().getAnnotations();
+        const errors = editorAnnotations.filter((annotation) => {
+          return annotation.type === 'error';
+        });
+
+        return errors;
+      };
+
       aceEditor.setOptions({
         readOnly: true,
         value: defaultValue,
@@ -1589,29 +1598,49 @@
       $scope.save = function() {
         enableUI(false);
         const value = aceEditor.getValue();
-        $http
-          .post('/studio/api/2/configuration/write_configuration', {
-            siteId: 'studio_root',
-            module: 'studio',
-            path: '/configuration/studio-config-override.yaml',
-            content: value
-          })
-          .then(() => {
-            enableUI(true);
-            defaultValue = value;
-            aceEditor.focus();
-            $element.notify(formatMessage(globalConfigMessages.successfulSave), {
-              position: 'top left',
-              className: 'success'
-            });
-            globalConfig.isModified = false;
-          })
-          .catch(() => {
-            $element.notify(formatMessage(globalConfigMessages.failedSave), {
-              position: 'top left',
-              className: 'error'
-            });
+
+        const errors = fileErrors(aceEditor);
+
+        if (errors.length) {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_SYSTEM_NOTIFICATION',
+            payload: {
+              message: formatMessage(globalConfigMessages.documentError),
+              options: {
+                variant: 'error'
+              }
+            }
           });
+          enableUI(true);
+        } else {
+          $http
+            .post('/studio/api/2/configuration/write_configuration', {
+              siteId: 'studio_root',
+              module: 'studio',
+              path: '/configuration/studio-config-override.yaml',
+              content: value
+            })
+            .then(() => {
+              enableUI(true);
+              defaultValue = value;
+              aceEditor.focus();
+
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_SYSTEM_NOTIFICATION',
+                payload: {
+                  message: formatMessage(globalConfigMessages.successfulSave)
+                }
+              });
+
+              globalConfig.isModified = false;
+            })
+            .catch(() => {
+              $element.notify(formatMessage(globalConfigMessages.failedSave), {
+                position: 'top left',
+                className: 'error'
+              });
+            });
+        }
       };
 
       $scope.reset = function() {

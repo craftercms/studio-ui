@@ -14,10 +14,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ACE=../../static-assets/libs/ace
+LIBS_BASE=../../static-assets/libs
 
-rm -rf $ACE/
-cp -r ../../node_modules/ace-builds/src-min-noconflict $ACE
-cat src/ace-append.js >> $ACE/ace.js
+rm -rf $LIBS_BASE/ace/
+cp -r ../../node_modules/ace-builds/src-min-noconflict $LIBS_BASE/ace
+cat src/ace-append.js >> $LIBS_BASE/ace/ace.js
 
-cp src/mode-yaml/* $ACE/
+cp src/mode-yaml/* $LIBS_BASE/ace/
+
+rm -rf $LIBS_BASE/js-yaml
+mkdir $LIBS_BASE/js-yaml
+cp ../../node_modules/js-yaml/dist/js-yaml.min.js $LIBS_BASE/js-yaml/js-yaml-4.0.0.min.js
