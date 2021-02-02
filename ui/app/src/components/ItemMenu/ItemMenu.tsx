@@ -112,7 +112,7 @@ export default function ItemMenu(props: ItemMenuProps) {
     {
       shouldResolve: ({ item, open }) => Boolean(item) && open,
       shouldReject: (source) => false,
-      shouldRenew: (source, resource) => resource.complete,
+      shouldRenew: ({ open }, resource) => open && resource.complete,
       resultSelector: ({ item }) => item,
       errorSelector: (source) => null
     }
@@ -126,7 +126,7 @@ export default function ItemMenu(props: ItemMenuProps) {
     {
       shouldResolve: ({ itemPermissions, open }) => Boolean(itemPermissions) && open,
       shouldReject: (source) => false,
-      shouldRenew: (source, resource) => resource.complete,
+      shouldRenew: ({ open }, resource) => open && resource.complete,
       resultSelector: ({ itemPermissions }) => itemPermissions,
       errorSelector: (source) => null
     }
