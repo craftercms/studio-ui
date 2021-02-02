@@ -51,6 +51,7 @@ import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
 import { itemDuplicated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 
 const drawerWidth = 300;
 let unsubscribeOnActionSuccess;
@@ -648,7 +649,11 @@ export default function Search(props: SearchProps) {
       showItemMenu({
         path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX }
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        loaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
       })
     );
   };
