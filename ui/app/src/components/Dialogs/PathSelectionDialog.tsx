@@ -177,7 +177,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
                   nodesLookup[child.id] = child;
                 });
               });
-              setTreeNodes({ ...rootNode });
+              rootNode && setTreeNodes({ ...rootNode });
             },
             (response) => {
               setError(response);
@@ -228,7 +228,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
     setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
   };
 
-  const onPathInputKeyPress = (event: React.KeyboardEvent) => {
+  const onPathInputKeyPress = () => {
     setDirtyInput(true);
   };
 
