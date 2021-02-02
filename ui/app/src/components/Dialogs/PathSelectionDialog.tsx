@@ -97,7 +97,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PathSelectionDialog(props: PathSelectionDialogProps) {
+export function PathSelectionDialog(props: PathSelectionDialogProps) {
   const site = useActiveSiteId();
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
