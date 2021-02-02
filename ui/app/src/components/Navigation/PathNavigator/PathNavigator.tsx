@@ -69,7 +69,7 @@ import PathNavigatorUI from './PathNavigatorUI';
 
 interface Menu {
   path?: string;
-  sections: SectionItem[][];
+  sections?: SectionItem[][];
   anchorEl: Element;
   loaderItems?: number;
   emptyState?: {
@@ -110,6 +110,7 @@ export interface PathNavigatorStateProps {
   limit: number;
   offset: number;
   collapsed?: boolean;
+  isFetching: boolean;
 }
 
 const menuOptions = {
@@ -148,7 +149,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   });
   const [itemMenu, setItemMenu] = useSpreadState<Menu>({
     path,
-    sections: [],
     anchorEl: null,
     loaderItems: null
   });
@@ -306,7 +306,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
       getContentXML(site, item.path).subscribe((content) => {
         let mode = 'txt';
 
-        if (item.systemType === 'template') {
+        if (item.systemType === 'renderingTemplate') {
           mode = 'ftl';
         } else if (item.systemType === 'script') {
           mode = 'groovy';
@@ -399,7 +399,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
-  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, anchorEl: null });
+  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
 
   const onItemClicked = onItemClickedProp
     ? onItemClickedProp
@@ -420,7 +420,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
       onItemClicked(item);
     } else {
-      dispatch(pathNavigatorSetCurrentPath({ id, path: item.path }));
+      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }
   };
 

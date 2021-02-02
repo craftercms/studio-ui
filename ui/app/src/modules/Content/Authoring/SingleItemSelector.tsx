@@ -30,20 +30,21 @@ import PaginationOptions from '../../../models/PaginationOptions';
 import { LookupTable } from '../../../models/LookupTable';
 import ApiResponse from '../../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
-import { getChildrenByPath } from '../../../services/content';
-import { getIndividualPaths, withIndex, withoutIndex } from '../../../utils/path';
+import { fetchItemsByPath, fetchItemWithChildrenByPath, getChildrenByPath } from '../../../services/content';
+import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
 import { isFolder } from '../../../components/Navigation/PathNavigator/utils';
 import TablePagination from '@material-ui/core/TablePagination';
 import { translations } from '../../../components/Navigation/PathNavigator/translations';
 import { useIntl } from 'react-intl';
+import { parseSandBoxItemToDetailedItem } from '../../../utils/content';
+import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -201,79 +202,49 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     }
     case fetchChildrenByPathComplete.type: {
       const { currentPath, rootPath, leaves, byId } = state;
-      if (payload.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
+      const { children, parent } = payload;
+      if (children.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
         return {
           ...state,
           currentPath: getNextPath(currentPath, byId),
           leaves: leaves.concat(currentPath),
-          total: payload.total,
+          total: children.total,
           isFetching: false
         };
       } else {
         const nextItems = {
-          ...{ ...state.byId, ...createLookupTable(payload, 'path') },
-          [payload.parent.path]: payload.parent
+          ...{ ...state.byId, ...createLookupTable(children, 'path') },
+          [parent.path]: parent
         };
 
         return {
           ...state,
           byId: nextItems,
-          items: payload.map((item) => item.path),
+          items: children.map((item) => item.path),
           isFetching: false,
-          total: payload.total,
-          offset: payload.offset,
-          limit: payload.limit,
+          total: children.total,
+          offset: children.offset,
+          limit: children.limit,
           breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
         };
       }
     }
     case fetchParentsItemsComplete.type: {
-      const { currentPath, rootPath, byId, leaves } = state;
-      let nextItems: any = { ...byId };
-      let items = [];
-      let total;
-      let offset;
-      let limit;
-
-      payload.forEach((response: GetChildrenResponse, i: number) => {
-        if (i === payload.length - 1) {
-          items = response.map((item) => item.path);
-          total = response.total;
-          offset = response.offset;
-          limit = response.limit;
-        }
-        nextItems = {
-          ...nextItems,
-          ...createLookupTable(response, 'path'),
-          [response.parent.path]: response.parent
-        };
-      });
-
-      if (items.length === 0) {
-        let prevPath = getNextPath(currentPath, nextItems);
-        let prevResponse = payload.find((response) => response.parent.path === prevPath);
-        return {
-          ...state,
-          byId: nextItems,
-          currentPath: prevPath,
-          leaves: leaves.concat(currentPath),
-          items: prevResponse.map((item) => item.path),
-          isFetching: false,
-          limit: prevResponse.limit,
-          total: prevResponse.total,
-          offset: prevResponse.offset,
-          breadcrumb: getIndividualPaths(withoutIndex(prevPath), withoutIndex(rootPath))
-        };
-      }
+      const { currentPath, rootPath, byId } = state;
+      const { children, items } = payload;
 
       return {
         ...state,
-        byId: nextItems,
-        items: items,
+        byId: {
+          ...byId,
+          ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+          ...createLookupTable(items, 'path')
+        },
+        items: children.map((item) => item.path),
         isFetching: false,
-        limit,
-        total,
-        offset,
+        limit: children.limit,
+        total: children.total,
+        offset: children.offset,
         breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
       };
     }
@@ -295,21 +266,25 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
   return nextPath;
 }
 
-export const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
+const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
-export const setKeyword = createAction<string>('SET_KEYWORD');
+const setKeyword = createAction<string>('SET_KEYWORD');
 
-export const changePage = createAction<number>('CHANGE_PAGE');
+const changePage = createAction<number>('CHANGE_PAGE');
 
-export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
+const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
 
-export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
+const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
 
-export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>('FETCH_PARENTS_ITEMS_COMPLETE');
+const fetchParentsItemsComplete = createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+  'FETCH_PARENTS_ITEMS_COMPLETE'
+);
 
-export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>('FETCH_CHILDREN_BY_PATH_COMPLETE');
+const fetchChildrenByPathComplete = createAction<{ parent?: DetailedItem; children: GetChildrenResponse }>(
+  'FETCH_CHILDREN_BY_PATH_COMPLETE'
+);
 
-export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
+const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
@@ -341,41 +316,40 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       switch (type) {
         case setKeyword.type: {
           getChildrenByPath(site, state.currentPath, { limit: state.limit, keyword: payload }).subscribe(
-            (response) => exec(fetchChildrenByPathComplete(response)),
+            (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         }
         case changePage.type: {
           getChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
-            (response) => exec(fetchChildrenByPathComplete(response)),
+            (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         }
         case fetchChildrenByPath.type:
-          getChildrenByPath(site, payload, { limit: state.limit }).subscribe(
-            (response) => exec(fetchChildrenByPathComplete(response)),
+          fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
+            ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         case fetchParentsItems.type:
           const parentsPath = getIndividualPaths(payload, state.rootPath);
-          const requests: Observable<GetChildrenResponse>[] = [];
 
-          if (parentsPath.length) {
-            parentsPath.forEach((parentPath) => {
-              if (!state.items[parentPath] && !state.items[withIndex(parentPath)]) {
-                requests.push(getChildrenByPath(site, parentPath, { limit: state.limit }));
-              }
-            });
-            forkJoin(requests).subscribe(
-              (response) => exec(fetchParentsItemsComplete(response)),
+          if (parentsPath.length > 1) {
+            forkJoin([
+              fetchItemsByPath(site, parentsPath),
+              getChildrenByPath(site, payload, {
+                limit: state.limit
+              })
+            ]).subscribe(
+              ([items, children]) => exec(fetchParentsItemsComplete({ items, children })),
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           } else {
-            getChildrenByPath(site, payload, { limit: state.limit }).subscribe(
-              (response) => exec(fetchChildrenByPathComplete(response)),
+            fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
+              ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           }
@@ -395,7 +369,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
-    exec(fetchParentsItems(item?.path ?? rootPath));
+    let nextPath = withoutIndex(item.path) === withoutIndex(rootPath) ? item.path : getParentPath(item.path);
+    exec(fetchParentsItems(nextPath));
   };
 
   const onPathSelected = (item: DetailedItem) => {

@@ -91,12 +91,21 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
 
 export function getIndividualPaths(path: string, rootPath?: string): string[] {
   let paths = [];
-  let array = path.replace(/^\/|\/$/g, '').split('/');
+  // adding withoutIndex to avoid duplicates paths
+  let array = withoutIndex(path)
+    .replace(/^\/|\/$/g, '')
+    .split('/');
   do {
-    paths.push('/' + array.join('/'));
+    // validation to add .index.xml to the current path;
+    if ('/' + array.join('/') === withoutIndex(path) && path.endsWith('index.xml')) {
+      paths.push(path);
+    } else {
+      paths.push('/' + array.join('/'));
+    }
     array.pop();
   } while (array.length);
   if (rootPath) {
+    // validation to remove previous path before the rootPath, example 'site' when rootPath is /site/website
     if (paths.indexOf(withIndex(rootPath)) >= 0) {
       return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1).reverse();
     } else {
