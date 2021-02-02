@@ -96,7 +96,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const siteId = useActiveSiteId();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
   const [permissions, setPermissions] = useState<string[]>(null);
-  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<boolean>(false);
+  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState(null);
   const listPluginsPermission = permissions?.includes('list_plugins');
   const installPluginsPermission = permissions?.includes('install_plugins');
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -108,33 +108,40 @@ export const PluginManagement = (props: PluginManagementProps) => {
     });
   });
 
+  const refresh = () => {
+    fetchInstalledMarketplacePlugins(siteId).subscribe(
+      (plugins) => {
+        setPlugins(plugins);
+      },
+      (error) => {
+        dispatch(
+          showErrorDialog({
+            error
+          })
+        );
+      }
+    );
+  };
+
   useEffect(() => {
     if (listPluginsPermission && siteId) {
-      fetchInstalledMarketplacePlugins(siteId).subscribe(
-        (plugins) => {
-          setPlugins(plugins);
-        },
-        (error) => {
-          dispatch(
-            showErrorDialog({
-              error
-            })
-          );
-        }
-      );
+      setPlugins([]);
+      refresh();
     }
   }, [dispatch, listPluginsPermission, siteId]);
 
   const onSearchPlugin = () => {
-    if (installPluginsPermission) {
-      setOpenMarketPlaceDialog(true);
-    }
+    setOpenMarketPlaceDialog({
+      installPermission: installPluginsPermission
+    });
   };
 
-  const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {};
+  const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {
+    refresh();
+  };
 
   const onCloseMarketplaceDialog = () => {
-    setOpenMarketPlaceDialog(false);
+    setOpenMarketPlaceDialog(null);
   };
 
   const showPluginFiles = (event: React.MouseEvent<HTMLButtonElement>, plugin: PluginRecord) => {
@@ -160,9 +167,13 @@ export const PluginManagement = (props: PluginManagementProps) => {
         startIcon={<AddIcon />}
         className={clsx(classes.createToken, embedded && 'embedded')}
         onClick={onSearchPlugin}
-        disabled={installPluginsPermission === false}
+        disabled={permissions === null || listPluginsPermission === false}
       >
-        <FormattedMessage id="PluginManagement.searchPlugin" defaultMessage="Search & install" />
+        {installPluginsPermission ? (
+          <FormattedMessage id="PluginManagement.searchPlugin" defaultMessage="Search & install" />
+        ) : (
+          <FormattedMessage id="words.search" defaultMessage="Search" />
+        )}
       </SecondaryButton>
       <Divider />
       {permissions && listPluginsPermission === false ? (
@@ -233,12 +244,21 @@ export const PluginManagement = (props: PluginManagementProps) => {
               </TableBody>
             </Table>
           </TableContainer>
+          {plugins?.length === 0 && (
+            <EmptyState
+              title={
+                <FormattedMessage id="PluginManagement.emptyList" defaultMessage="There are not plugins installed" />
+              }
+            />
+          )}
         </ConditionalLoadingState>
       )}
       <InstallPluginDialog
-        open={openMarketPlaceDialog}
+        open={Boolean(openMarketPlaceDialog)}
         onClose={onCloseMarketplaceDialog}
         onInstall={onInstallMarketplacePlugin}
+        installedPlugins={plugins?.map((plugin) => plugin.id)}
+        installPermission={openMarketPlaceDialog?.installPermission}
       />
       <Popover
         open={Boolean(anchorEl)}

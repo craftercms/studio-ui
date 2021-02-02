@@ -179,6 +179,9 @@ interface PluginDetailsViewProps {
   selectedIndex?: number;
   interval?: number;
   marketplace?: boolean;
+  actionLabel?: string | JSX.Element;
+  installPermission?: boolean;
+  isInstalled?: boolean;
 
   onCloseDetails(event: any): any;
 
@@ -190,7 +193,17 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
-  const { plugin, interval = 5000, onBlueprintSelected, onCloseDetails, selectedIndex = 0, marketplace = true } = props;
+  const {
+    plugin,
+    interval = 5000,
+    onBlueprintSelected,
+    onCloseDetails,
+    selectedIndex = 0,
+    marketplace = true,
+    isInstalled = false,
+    installPermission = true,
+    actionLabel
+  } = props;
   const [index, setIndex] = useState(selectedIndex);
   const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
@@ -263,9 +276,10 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
             variant="contained"
             color="primary"
             className={classes.useBtn}
+            disabled={!installPermission || isInstalled}
             onClick={() => onBlueprintSelected(plugin, 1)}
           >
-            {formatMessage(messages.use)}
+            {actionLabel ? actionLabel : formatMessage(messages.use)}
           </Button>
         )}
       </div>

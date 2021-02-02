@@ -38,6 +38,9 @@ interface PluginCardProps {
   plugin: MarketplacePlugin;
   interval?: number;
   marketplace?: boolean;
+  isInstalled?: boolean;
+  installPermission?: boolean;
+  actionLabel?: string | JSX.Element;
 
   onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 
@@ -188,7 +191,16 @@ function PluginCard(props: PluginCardProps) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
-  const { onPluginSelected, plugin, interval = 5000, marketplace = true, onDetails } = props;
+  const {
+    onPluginSelected,
+    plugin,
+    interval = 5000,
+    marketplace = true,
+    onDetails,
+    isInstalled = false,
+    installPermission = true,
+    actionLabel
+  } = props;
   const { media, name, license, id, developer } = plugin;
   const { formatMessage } = useIntl();
 
@@ -358,10 +370,11 @@ function PluginCard(props: PluginCardProps) {
             <Button
               variant="outlined"
               color="primary"
+              disabled={!installPermission || isInstalled}
               onClick={() => onPluginSelected(plugin, 1)}
               className={classes.use}
             >
-              {formatMessage(messages.use)}
+              {actionLabel ? actionLabel : formatMessage(messages.use)}
             </Button>
           )}
           <Button className={classes.more} onClick={() => onDetails(plugin)}>
