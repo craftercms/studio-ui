@@ -136,7 +136,6 @@ export const PluginManagement = (props: PluginManagementProps) => {
 
   useEffect(() => {
     if (listPluginsPermission && siteId) {
-      setPlugins([]);
       refresh();
     }
   }, [dispatch, listPluginsPermission, refresh, siteId]);
