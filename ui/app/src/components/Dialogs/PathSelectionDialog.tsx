@@ -17,7 +17,7 @@
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
@@ -33,6 +33,7 @@ import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const messages = defineMessages({
   ok: {
@@ -104,6 +105,7 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
+  const [error, setError] = useState<Partial<ApiResponse>>(null);
 
   useUnmount(onClosed);
 
@@ -128,55 +130,63 @@ function PathSelectionDialogBody(props: PathSelectionDialogProps) {
 
         if (requests.length) {
           setIsFetching(true);
-          forkJoin(requests).subscribe((responses) => {
-            let rootNode;
-            setIsFetching(false);
-            responses.forEach(({ response: { item } }, i) => {
-              let parent;
+          forkJoin(requests).subscribe(
+            (responses) => {
+              let rootNode;
+              setIsFetching(false);
+              responses.forEach(({ response: { item } }, i) => {
+                let parent;
 
-              if (i === requests.length - 1) {
-                setInvalidPath(item.deleted);
-              }
+                if (i === requests.length - 1) {
+                  setInvalidPath(item.deleted);
+                }
 
-              if (item.deleted) {
-                return;
-              }
+                if (item.deleted) {
+                  return;
+                }
 
-              if (!nodesLookup['root']) {
-                parent = {
-                  id: item.path,
-                  name: item.name ? item.name : 'root',
-                  fetched: true,
-                  children: legacyItemsToTreeNodes(item.children)
-                };
-                rootNode = parent;
-                nodesLookup[item.path] = parent;
-                nodesLookup['root'] = parent;
-              } else {
-                rootNode = nodesLookup['root'];
-                parent = nodesLookup[item.path];
-                parent.fetched = true;
-                parent.children = legacyItemsToTreeNodes(item.children);
-              }
+                if (!nodesLookup['root']) {
+                  parent = {
+                    id: item.path,
+                    name: item.name ? item.name : 'root',
+                    fetched: true,
+                    children: legacyItemsToTreeNodes(item.children)
+                  };
+                  rootNode = parent;
+                  nodesLookup[item.path] = parent;
+                  nodesLookup['root'] = parent;
+                } else {
+                  rootNode = nodesLookup['root'];
+                  parent = nodesLookup[item.path];
+                  parent.fetched = true;
+                  parent.children = legacyItemsToTreeNodes(item.children);
+                }
 
-              parent.children.forEach((child) => {
-                nodesLookup[child.id] = child;
+                parent.children.forEach((child) => {
+                  nodesLookup[child.id] = child;
+                });
               });
-            });
-            setTreeNodes({ ...rootNode });
-          });
+              setTreeNodes({ ...rootNode });
+            },
+            (response) => {
+              setError(response);
+            }
+          );
         }
       }
     }
   }, [currentPath, rootPath, site]);
 
-  const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
-    shouldResolve: (treeNodes) => Boolean(treeNodes),
-    shouldReject: (treeNodes) => false,
-    shouldRenew: (treeNodes, resource) => treeNodes === null && resource.complete,
-    resultSelector: (treeNodes) => treeNodes,
-    errorSelector: (treeNodes) => null
-  });
+  const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
+    useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
+    {
+      shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: ({ treeNodes }, resource) => treeNodes === null && resource.complete,
+      resultSelector: ({ treeNodes }) => treeNodes,
+      errorSelector: ({ error }) => error
+    }
+  );
 
   const onCreateFolder = () => {
     setCreateFolder(true);
