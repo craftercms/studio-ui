@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -30,22 +30,26 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { useEnv, useMount, usePossibleTranslation, useSiteUIConfig } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  useMount,
+  usePossibleTranslation,
+  usePreviewState,
+  useSiteUIConfig
+} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
-import { logout } from '../../services/auth';
-import Cookies from 'js-cookie';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
-import { User } from '../../models/User';
+import { EnhancedUser } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
-import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
@@ -57,6 +61,27 @@ import PreviewIcon from '../Icons/Preview';
 import { components } from '../../services/plugin';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { renderWidgets } from '../Widget';
+import { logout } from '../../state/actions/auth';
+
+interface TileProps {
+  icon: SystemIconDescriptor;
+  title: string;
+  link?: string;
+  target?: string;
+  disabled?: any;
+  onClick?(id?: string, type?: string): any;
+}
+
+interface GlobalNavProps {
+  user: EnhancedUser;
+  site: string;
+  sites: Site[];
+  anchor: Element;
+  version: string;
+  logoutUrl: string;
+  authoringUrl: string;
+  onMenuClose: (e: any) => void;
+}
 
 const useTileStyles = makeStyles((theme) =>
   createStyles({
@@ -164,8 +189,12 @@ const messages = defineMessages({
     defaultMessage: 'Global Config'
   },
   encryptionTool: {
-    id: 'GlobalMenu.EncryptionToolEntryLabel',
+    id: 'GlobalMenu.EncryptionTool',
     defaultMessage: 'Encryption Tool'
+  },
+  tokenManagement: {
+    id: 'GlobalMenu.TokenManagement',
+    defaultMessage: 'Token Management'
   },
   dashboard: {
     id: 'words.dashboard',
@@ -200,15 +229,6 @@ const messages = defineMessages({
     defaultMessage: 'Settings'
   }
 });
-
-interface TileProps {
-  icon: SystemIconDescriptor;
-  title: string;
-  link?: string;
-  target?: string;
-  disabled?: any;
-  onClick?(id?: string, type?: string): any;
-}
 
 function Tile(props: TileProps) {
   const { title, icon, link, target, onClick, disabled = false } = props;
@@ -330,20 +350,10 @@ const globalNavStyles = makeStyles((theme) =>
   })
 );
 
-interface GlobalNavProps {
-  user: User;
-  site: string;
-  sites: Site[];
-  anchor: Element;
-  version: string;
-  logoutUrl: string;
-  authoringUrl: string;
-  onMenuClose: (e: any) => void;
-}
-
 export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles();
+  const { previewChoice } = usePreviewState();
   const [menuItems, setMenuItems] = useState(null);
   const siteNav = useSiteUIConfig().siteNav;
   const [apiState, setApiState] = useState({
@@ -365,7 +375,7 @@ export default function GlobalNav(props: GlobalNavProps) {
       {
         name: formatMessage(messages.preview),
         href(site) {
-          return getLink(getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview', authoringUrl);
+          return getLink(previewChoice[site] === '2' ? 'preview' : 'legacy.preview', authoringUrl);
         },
         onClick(site) {
           setSiteCookie(site);
@@ -382,15 +392,15 @@ export default function GlobalNav(props: GlobalNavProps) {
     ],
     // Disable exhaustive hooks check since only need to create on mount
     // eslint-disable-next-line
-    []
+    [previewChoice]
   );
 
   const handleErrorBack = () => setApiState({ ...apiState, error: false });
 
-  const onSiteCardClick = (id: string) => {
-    dispatch(changeSite(id));
+  const onSiteCardClick = (site: string) => {
+    dispatch(changeSite(site));
     if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
-      navigateTo(getStoredPreviewChoice(id) === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
+      navigateTo(previewChoice[site] === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
     } else {
       setTimeout(() => {
         window.location.reload();
@@ -400,8 +410,8 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   useMount(() => {
     getGlobalMenuItems().subscribe(
-      ({ response }) => {
-        setMenuItems(response.menuItems);
+      (menuItems) => {
+        setMenuItems(menuItems);
       },
       (error) => {
         if (error.response) {
@@ -549,8 +559,9 @@ export default function GlobalNav(props: GlobalNavProps) {
                     />
                   }
                   action={
+                    // TODO: what will happen with logoutUrl now that we're always just posting back to /studio/logout?
                     logoutUrl && (
-                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => onLogout(logoutUrl)}>
+                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => dispatch(logout())}>
                         <ExitToAppRoundedIcon />
                       </IconButton>
                     )
@@ -586,27 +597,26 @@ function navigateTo(link: string): void {
   window.location.href = link;
 }
 
-function onLogout(url) {
-  logout().subscribe(() => {
-    Cookies.set('userSession', null);
-    window.location.href = url;
-  });
-}
-
 const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
+  const site = useActiveSiteId();
   return (
     <Tile
       icon={icon}
       title={usePossibleTranslation(title)}
       link={
         link ??
-        {
-          preview: `${authoringBase}/next/preview`,
-          siteTools: `${authoringBase}/site-config`,
-          siteSearch: `${authoringBase}/search`,
-          siteDashboard: `${authoringBase}/site-dashboard`
-        }[systemLinkId]
+        (systemLinkId === 'preview'
+          ? // Preview is a special "dynamic case"
+            previewChoice[site] === '2'
+            ? `${authoringBase}/next/preview`
+            : `${authoringBase}/preview`
+          : {
+              siteTools: `${authoringBase}/site-config`,
+              siteSearch: `${authoringBase}/search`,
+              siteDashboard: `${authoringBase}/site-dashboard`
+            }[systemLinkId])
       }
     />
   );

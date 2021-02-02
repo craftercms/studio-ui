@@ -238,7 +238,7 @@ CStudioAuthoring.Module.requireModule(
           editor.contentWindow.frameElement.focus();
           tinymce2.activeEditor.getBody().focus();
 
-          //iefix - when an element with focus disappears programatically focus does not work unless another item is focused
+          // iefix - when an element with focus disappears programatically focus does not work unless another item is focused
           $(editor.codeTextArea)
             .show()
             .focus();

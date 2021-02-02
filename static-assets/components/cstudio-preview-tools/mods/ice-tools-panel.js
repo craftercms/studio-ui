@@ -163,7 +163,6 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
       var controllerIconEl = document.createElement('i');
       var controllerLabelEl = document.createElement('span');
 
-      //controllerImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
       YDom.addClass(controllerIconEl, 'fa fa-code f14');
       controllerLabelEl.innerHTML = CMgs.format(previewLangBundle, 'editController');
 

@@ -109,7 +109,7 @@ export default function PathSelector(props: PathSelectorProps) {
       showPathSelectionDialog({
         rootPath: rootPath ?? '/',
         initialPath: rootPath ? keyword : null,
-        showCreateFolder: false,
+        showCreateFolderOption: false,
         onClosed: {
           type: 'BATCH_ACTIONS',
           payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]

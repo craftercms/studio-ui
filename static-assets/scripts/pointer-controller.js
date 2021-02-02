@@ -240,7 +240,6 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       }
     });
 
-    //$.notify("Please click specific zone to attach the item. \n Click Esc to finish the event", {autoHide: false, autoHideDelay: 6000, className: 'studio-notify'});
     $.notify.addStyle('studio-notify', {
       html: '<div><span data-notify-text/></div>',
       classes: {

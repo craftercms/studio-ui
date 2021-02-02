@@ -96,6 +96,11 @@ interface CreateFileUIProps extends CreateFileProps {
   setState(values: object): void;
 }
 
+const getExtension = (type: string) => (type === 'controller' ? `.groovy` : `.ftl`);
+
+const getName = (type: string, name: string) =>
+  `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3');
+
 function CreateFileUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
   const [name, setName] = useState('');
@@ -121,7 +126,6 @@ function CreateFileUI(props: CreateFileUIProps) {
 
   const onCreate = () => {
     setState({ inProgress: true, submitted: true });
-
     if (name) {
       validateActionPolicy(site, {
         type: 'CREATE',
@@ -133,7 +137,7 @@ function CreateFileUI(props: CreateFileUIProps) {
               body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
             });
           } else {
-            const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
+            const fileName = getName(type, name);
             onCreateFile(site, path, fileName);
           }
         } else {
@@ -146,7 +150,7 @@ function CreateFileUI(props: CreateFileUIProps) {
   };
 
   const onConfirm = () => {
-    const fileName = type === 'controller' ? `${name}.groovy` : `${name}.ftl`;
+    const fileName = getName(type, name);
     onCreateFile(site, path, fileName);
   };
 
@@ -208,7 +212,11 @@ function CreateFileUI(props: CreateFileUIProps) {
               shrink: true
             }}
             onChange={(event) =>
-              setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+              setName(
+                event.target.value
+                  .replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '')
+                  .replace(/\.{1,}/g, '.')
+              )
             }
           />
         </form>

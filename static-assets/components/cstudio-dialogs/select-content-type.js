@@ -210,16 +210,17 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
               ? contentTypes[k].image
               : contentTypes[k].imageThumbnail;
 
-          contentTypePreviewImg.src =
-            CStudioAuthoringContext.baseUri +
-            '/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-            CStudioAuthoringContext.site +
-            '&path=' +
-            configFilesPath +
-            '/content-types' +
-            contentTypesSelect.value +
-            '/' +
-            imageName;
+          const extensionRegex = /(?:\.([^.]+))?$/;
+          const extension = extensionRegex.exec(imageName)[1];
+
+          this.getImage(
+            `${configFilesPath}/content-types${contentTypesSelect.value}/${imageName}`,
+            imageName
+          ).subscribe((response) => {
+            contentTypePreviewImg.src = URL.createObjectURL(
+              new Blob([response.response], { type: `image/${extension}` })
+            );
+          });
         } else {
           contentTypePreviewImg.src = defaultSrc + defaultImg;
         }
@@ -231,6 +232,8 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
    * update the content types
    */
   updateAvailableTemplates(dialog, contentTypes) {
+    const me = this;
+
     $('#wcm-content-types-dropdown').hide();
 
     // simple sort for content types, list should be pretty small
@@ -257,7 +260,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       var option = document.createElement('option');
       option.text = contentTypes[j].label;
       option.value = contentTypes[j].form;
-      if (j == 0) option.selected = 'selected'; //first template will be selected.
+      if (j == 0) option.selected = 'selected'; // first template will be selected.
       contentTypesSelect.options.add(option);
     }
 
@@ -280,16 +283,17 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
                 ? contentTypes[k].image
                 : contentTypes[k].imageThumbnail;
 
-            contentTypePreviewImg.src =
-              CStudioAuthoringContext.baseUri +
-              '/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-              CStudioAuthoringContext.site +
-              '&path=' +
-              configFilesPath +
-              '/content-types' +
-              contentTypesSelect.value +
-              '/' +
-              imageName;
+            const extensionRegex = /(?:\.([^.]+))?$/;
+            const extension = extensionRegex.exec(imageName)[1];
+
+            me.getImage(
+              `${configFilesPath}/content-types${contentTypesSelect.value}/${imageName}`,
+              imageName
+            ).subscribe((response) => {
+              contentTypePreviewImg.src = URL.createObjectURL(
+                new Blob([response.response], { type: `image/${extension}` })
+              );
+            });
           } else {
             contentTypePreviewImg.src = defaultSrc + defaultImg;
           }
@@ -298,6 +302,15 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
     });
 
     $('#wcm-content-types-dropdown').fadeIn('fast');
+  },
+
+  getImage(path) {
+    const qs = CrafterCMSNext.util.object.toQueryString({
+      site: CStudioAuthoringContext.site,
+      path
+    });
+
+    return CrafterCMSNext.util.ajax.getBinary(`/studio/api/1/services/api/1/content/get-content-at-path.bin${qs}`);
   },
 
   closeDialog() {
@@ -314,16 +327,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
      * EMO-8604, calling closeDialog to remove pop up from DOM.
      */
     CStudioAuthoring.Dialogs.DialogSelectContentType.closeDialog();
-    if (CStudioAuthoring.Dialogs.DialogSelectContentType.changeTemplateCalled == true) {
-      CStudioAuthoring.Service.changeContentType(
-        CStudioAuthoringContext.site,
-        oCurrentTextNode.data.uri,
-        selectedType,
-        args.self.onSaveCallback
-      );
-    } else {
-      args.self.onSaveCallback.success(selectedType);
-    }
+    args.self.onSaveCallback.success(selectedType);
   },
 
   /**

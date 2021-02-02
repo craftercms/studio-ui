@@ -455,11 +455,13 @@
     document.querySelector('#expand-all-recentlyMadeLive').innerHTML = loc(langBundle, 'dashletRecentDeployCollapseAll');
     document.querySelector('#expand-all-approvedScheduledItems').innerHTML = loc(langBundle, 'approvedScheduledCollapseAll');
 
-    new CStudioAuthoringWidgets.GoLiveQueueDashboard('GoLiveQueue', 'site/rosie/dashboard');
-    new CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard('approvedScheduledItems', 'site/rosie/dashboard');
-    new CStudioAuthoringWidgets.RecentlyMadeLiveDashboard('recentlyMadeLive', 'site/rosie/dashboard');
-    new CStudioAuthoringWidgets.MyRecentActivityDashboard('MyRecentActivity', 'site/rosie/dashboard');
-    new CStudioAuthoringWidgets.IconGuideDashboard('icon-guide', 'site/rosie/dashboard');
+    CrafterCMSNext.system.getStore().subscribe(() => {
+      new CStudioAuthoringWidgets.GoLiveQueueDashboard('GoLiveQueue', 'site/rosie/dashboard');
+      new CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard('approvedScheduledItems', 'site/rosie/dashboard');
+      new CStudioAuthoringWidgets.RecentlyMadeLiveDashboard('recentlyMadeLive', 'site/rosie/dashboard');
+      new CStudioAuthoringWidgets.MyRecentActivityDashboard('MyRecentActivity', 'site/rosie/dashboard');
+      new CStudioAuthoringWidgets.IconGuideDashboard('icon-guide', 'site/rosie/dashboard');
+    });
 
     const reveal = () => {
       document.querySelector('.site-dashboard').style.visibility = '';

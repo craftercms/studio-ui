@@ -20,7 +20,7 @@ import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 const useBroadcastChannel = window.parent === window && window.BroadcastChannel !== undefined;
 if (window.parent === window && window.BroadcastChannel === undefined) {
-  console.warn(`Browser does not support BroadcastChannel API. ` + `Communication with host will be impaired.`);
+  console.warn(`Browser does not support BroadcastChannel API. Communication with host will be impaired.`);
 }
 
 const broadcastChannel = useBroadcastChannel ? new BroadcastChannel('org.craftercms.accommodationChannel') : null;

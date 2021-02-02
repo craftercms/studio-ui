@@ -32,9 +32,7 @@ CStudioForms.Controls.RTE.InsertStub = CStudioForms.Controls.RTE.InsertStub || {
         if (layouts.length > 0) {
           var c = cm.createMenuButton('insertStub', {
             title: 'Insert Stub',
-            //image : 'img/example.gif',
             style: 'mce_insertComponentPencil'
-            //	                    icons : false
           });
 
           c.layouts = layouts;

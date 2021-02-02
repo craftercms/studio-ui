@@ -112,7 +112,7 @@ YAHOO.extend(
 
       YAHOO.util.Event.on(switchCtrl, 'click', switchFn, switchCtrl);
 
-      //Update the model with the same value but with the correct format ( see valueToJsonString )
+      // Update the model with the same value but with the correct format ( see valueToJsonString )
       updateFn(null, { fieldName: this.fieldName, value: this.valueToJsonString(this.fieldValue) });
     },
 

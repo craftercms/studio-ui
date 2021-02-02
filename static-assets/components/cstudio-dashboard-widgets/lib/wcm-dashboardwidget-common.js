@@ -26,7 +26,6 @@ if (typeof WcmDashboardWidgetCommon == 'undefined' || !WcmDashboardWidgetCommon)
 WcmDashboardWidgetCommon.dashboards = new Array();
 
 WcmDashboardWidgetCommon.sortClick = function(event, matchedEl, el, params) {
-  //var eventId='sorteventDate-component-1-1';
   var eventId = matchedEl.id;
   var sortBy = eventId.substring(4, eventId.indexOf('-'));
   var Widget = WcmDashboardWidgetCommon.dashboards[params.widgetId];
@@ -111,7 +110,7 @@ WcmDashboardWidgetCommon.insertViewLink = function(item, viewLinkId) {
 
 WcmDashboardWidgetCommon.convertDate = function(dateString) {
   if (!dateString) return 0;
-  //our eventDate are passing in the format "YYYY-MM-DDTHH:MM:SS;"
+  // our eventDate are passing in the format "YYYY-MM-DDTHH:MM:SS;"
   var dateObj = null;
   var dateArray = dateString.split('T');
   if (dateArray && dateArray.length == 2) {
@@ -215,13 +214,12 @@ WcmDashboardWidgetCommon.getSubSubChilderen = function(table, parentClass, items
 
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    //rowHtml += "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
 
     var itemRowStart = "<tr class='" + parentClass + "'>";
 
     var itemRowEnd = '</tr>';
 
-    //create table row for this item
+    // create table row for this item
     var itemRow = WcmDashboardWidgetCommon.buildItemTableRow(item, instance, false, i, depth);
 
     rowHtml += itemRowStart + itemRow + itemRowEnd;
@@ -273,7 +271,6 @@ WcmDashboardWidgetCommon.Ajax = {
       backgroundColor = '#FFFFFF';
       opacity = '0';
       position = 'absolute';
-      //display = "block";
       width = YDom.getDocumentWidth() + 'px';
       height = YDom.getDocumentHeight() + 'px';
       top = '0';
@@ -332,9 +329,9 @@ WcmDashboardWidgetCommon.init = function(instance) {
   var pageId = instance.pageId;
   var hideEmptyRow = instance.hideEmptyRow;
 
-  /////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////
   // added to protect un wanted values in text boxes //
-  ////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////
   if (YDom.get('widget-showitems-' + widgetId) != null) {
     YDom.get('widget-showitems-' + widgetId).value = 10;
     YDom.get('widget-showitems-' + widgetId + '-label').innerHTML = CMgs.format(langBundle, 'showNumItems');
@@ -500,7 +497,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
             YDom.setStyle(YAHOO.util.Selector.query('#' + widgetId + ' .widget-FilterBy')[0], 'display', 'none');
           }
 
-          //attach keydown event to search limit input
+          // attach keydown event to search limit input
           if (searchLimitInput) {
             var isInt = function(val) {
               var parsedVal = parseInt(val);
@@ -511,17 +508,17 @@ WcmDashboardWidgetCommon.init = function(instance) {
             var searchLimitInputEvent = function(event) {
               var searchNumber = searchLimitInput.value;
 
-              //added to protect non numeric input.
+              // added to protect non numeric input.
               if (event.keyCode == '13' || event.type === 'blur') {
                 if (!isInt(searchNumber)) {
-                  //execute the ajax only if its a number
+                  // execute the ajax only if its a number
                   searchLimitInput.value = instance.defaultSearchNumber;
                   searchNumber = searchLimitInput.value;
                 }
 
-                //var searchNumber=searchLimitInput.value;
+                // var searchNumber=searchLimitInput.value;
                 if (isInt(searchNumber)) {
-                  //execute the ajax only if its a integer number.
+                  // execute the ajax only if its a integer number.
                   searchNumber = searchNumber.replace(/\+/g, '').replace(/\-/g, '');
                   searchLimitInput.value = searchNumber;
                   CStudioAuthoring.Service.setWindowState(
@@ -552,7 +549,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
 
             var validateSearchLimitInputValue = function(event) {
               var searchNum = searchLimitInput.value;
-              //insert default value if invalid
+              // insert default value if invalid
               if (!isInt(searchNum)) {
                 searchLimitInput.value = instance.defaultSearchNumber;
               } else {
@@ -1158,9 +1155,9 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
 
       if (sortFromCachedData && sortDocuments.length > 1) {
         if (instance.skipComponentSort) {
-          //Don't sort by components
+          // Don't sort by components
         } else {
-          //if skipComponentSort flag not available
+          // if skipComponentSort flag not available
           sortDocuments = WcmDashboardWidgetCommon.sortItems(sortDocuments, currentSortBy, currentSortType);
         }
       }
@@ -1187,7 +1184,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
 
           for (var i = 0; i < items.length; i++) {
             var item = items[i];
-            //table = table + "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
+            // table = table + "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
             var itemRowStart = "<tr class='" + parentClass + ' ' + items[i].path + "'>";
             var itemRowEnd = '</tr>';
 
@@ -1196,7 +1193,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
               parentClass +
               "'><td><span class='wcm-widget-margin'></span><span class='ttFirstCol128'><input title='All' class='dashlet-item-check1' id=tableName + 'CheckAll'  type='checkbox' /></span><span class='wcm-widget-margin'></span>";
 
-            //create table row for this item
+            // create table row for this item
             var itemRow = WcmDashboardWidgetCommon.buildItemTableRow(item, instance, false, i, 0);
             table += itemRowStart + itemRow + itemRowEnd;
 
@@ -1206,7 +1203,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
               WcmDashboardWidgetCommon.getChilderenRecursive(subItems);
               subChildren = WcmDashboardWidgetCommon.sortItems(subChildren, currentSortBy, currentSortType);
               table += WcmDashboardWidgetCommon.getSubSubChilderen(table, parentClass, subChildren, widgetId, 1);
-              //table += WcmDashboardWidgetCommon.getSubSubChilderenRecursive(table, parentClass, subItems, widgetId, 1);
+              // table += WcmDashboardWidgetCommon.getSubSubChilderenRecursive(table, parentClass, subItems, widgetId, 1);
             }
           }
           newtable += table;
@@ -1225,8 +1222,8 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
       var tbodyContent = '<tbody id="' + tableName + '-tbody" class="ttTbody">' + newtable + '</tbody>';
       var tableContentEnd = '</table>';
 
-      //Check for already checked items,
-      //un-check then to remove those items from selected items list.
+      // Check for already checked items,
+      // un-check then to remove those items from selected items list.
       var checkboxArray = YDom.getElementsBy(
         function(el) {
           return el.type === 'checkbox' && el.checked === true;
@@ -1379,7 +1376,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
   }
 };
 
-/////For filtering Widgets
+// For filtering Widgets
 
 WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widgetId, filterByNumber, filterBy) {
   var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
@@ -1400,7 +1397,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
       var sortDocuments = results.documents;
       instance.tooltipLabels = new Array();
       var newtable = '';
-      var blankRow = ''; //"<tr class='avoid'><td class='ttBlankRow' colspan='5'>&nbsp;</td></tr>";
+      var blankRow = ''; // "<tr class='avoid'><td class='ttBlankRow' colspan='5'>&nbsp;</td></tr>";
       var count = 0;
       var sortedByValue = results.sortedBy;
       var sortType = results.sortType;
@@ -1442,7 +1439,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
 
           for (var i = 0; i < items.length; i++) {
             var item = items[i];
-            //table = table + "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
+            // table = table + "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
             var itemRowStart = "<tr class='" + parentClass + "'>";
             var itemRowEnd = '</tr>';
 
@@ -1451,7 +1448,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
               parentClass +
               "'><td><span class='wcm-widget-margin'></span><span class='ttFirstCol128'><input type='checkbox'/></span><span class='wcm-widget-margin'></span>";
 
-            //create table row for this item
+            // create table row for this item
             var itemRow = WcmDashboardWidgetCommon.buildItemTableRow(item, instance, false, i, 0);
             table += itemRowStart + itemRow + itemRowEnd;
 
@@ -1476,8 +1473,8 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
       var tbodyContent = '<tbody class="ttTbody" id="' + tableName + '-tbody" class="ttTbody">' + newtable + '</tbody>';
       var tableContentEnd = '</table>';
 
-      //Check for already checked items,
-      //un-check then to remove those items from selected items list.
+      // Check for already checked items,
+      // un-check then to remove those items from selected items list.
       var checkboxArray = YDom.getElementsBy(
         function(el) {
           return el.type === 'checkbox' && el.checked === true;
@@ -1625,13 +1622,12 @@ WcmDashboardWidgetCommon.getSubSubChilderenRecursive = function(table, parentCla
 
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    //rowHtml += "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
 
     var itemRowStart = "<tr class='" + parentClass + "'>";
 
     var itemRowEnd = '</tr>';
 
-    //create table row for this item
+    // create table row for this item
     var itemRow = WcmDashboardWidgetCommon.buildItemTableRow(item, instance, false, i, depth);
 
     rowHtml += itemRowStart + itemRow + itemRowEnd;

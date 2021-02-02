@@ -94,7 +94,7 @@ CStudioAuthoring.Module.requireModule(
                     beforeUiRefresh: function() {
                       var content = tinymce2.activeEditor.getContent({ format: 'raw' });
                       if (content != '') {
-                        //Could be that the model hasn't been loaded yet
+                        // Could be that the model hasn't been loaded yet
                         tinymce2.activeEditor.contextControl.updateModel(content);
                       }
                     },
@@ -254,8 +254,8 @@ CStudioAuthoring.Module.requireModule(
           } else {
             rootEl.appendChild(caretEl);
           }
-          this.editor.selection.select(this.editor.dom.select('#caret_pos_holder')[0]); //select the span
-          this.editor.dom.remove(this.editor.dom.select('#caret_pos_holder')[0]); //remove the span
+          this.editor.selection.select(this.editor.dom.select('#caret_pos_holder')[0]); // select the span
+          this.editor.dom.remove(this.editor.dom.select('#caret_pos_holder')[0]); // remove the span
         },
 
         focusIn: function() {
@@ -412,7 +412,6 @@ CStudioAuthoring.Module.requireModule(
             if (elements['rte-container']) {
               if (rteContainerWidth < fieldContainerWidth - rteMarginLeft) {
                 YDom.setStyle(elements['rte-container'], 'margin-left', 27 + '%');
-                //YDom.setStyle(elements['rte-container'], "width", rteContainerWidth + "px");
                 if (elements['rte-table']) {
                   YDom.setStyle(elements['rte-table'], 'width', rteWidth + 'px');
                 }
@@ -650,8 +649,8 @@ CStudioAuthoring.Module.requireModule(
                   ed.save();
                   var value = ed.contextControl.inputEl.value;
                   if (value != '')
-                    //Could be that the model hasn't been loaded yet(Fix the repeat group issue)
-                    ed.contextControl.updateModel(value); //Should we really update the model here?
+                    // Could be that the model hasn't been loaded yet(Fix the repeat group issue)
+                    ed.contextControl.updateModel(value); // Should we really update the model here?
                   ed.contextControl._onChange(null, ed.contextControl);
                 });
                 ed.onChange.add(function(ed, l) {
@@ -764,7 +763,7 @@ CStudioAuthoring.Module.requireModule(
           // Update all content before saving the form (all content is automatically updated on focusOut)
           var callback = {};
           callback.beforeSave = function() {
-            //if codeView has changes - update rte.
+            // if codeView has changes - update rte.
             if (!YDom.hasClass(_thisControl.containerEl, 'text-mode')) {
               _thisControl.editor.setContent(_thisControl.editor.codeView.getValue()); // Transfer content in codeView to RTE
             }
@@ -812,7 +811,7 @@ CStudioAuthoring.Module.requireModule(
           var ss = dom.doc.createElement('style'),
             tt = dom.doc.createTextNode(styleOverrides);
 
-          //First add the currentStyleSheets
+          // First add the currentStyleSheets
           var styleSheets = tinymce2.explode(this._getContentCSS(editor) + ',' + this._getCurrentStyleSheets());
 
           tinymce2.each(styleSheets, function(u) {
@@ -821,7 +820,6 @@ CStudioAuthoring.Module.requireModule(
 
           if (configuration && styleOverrides) {
             ss.setAttribute('type', 'text/css');
-            //ss.setAttribute('title', channel);
             dom.doc.head.appendChild(ss);
 
             if (ss.styleSheet) {

@@ -99,24 +99,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
         var environment = envSelectEl[envSelectEl.selectedIndex].value;
         var path = document.getElementById('bulk-golive-path').value;
         if (path) {
-          var serviceUri =
-            '/api/1/services/api/1/deployment/bulk-golive.json?site=' +
-            CStudioAuthoringContext.site +
-            '&path=' +
-            path +
-            '&environment=' +
-            escape(environment);
           var goLiveOpMessage = document.getElementById('bulk-golive-message');
-          var cb = {
-            success: function() {},
-            failure: function(err) {}
-          };
 
-          YConnect.initHeader(
-            CStudioAuthoringContext.xsrfHeaderName,
-            CrafterCMSNext.util.auth.getRequestForgeryToken()
-          );
-          YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
+          CrafterCMSNext.services.publishing.bulkGoLive(CStudioAuthoring.site, path, environment).subscribe();
+
           goLiveOpMessage.innerHTML = CMgs.format(langBundle, 'publishStarted');
         }
       };
@@ -173,24 +159,18 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
       '</div>';
 
     var channelsSelect = document.getElementById('go-pub-channel');
-    var publishingOptionsCB = {
-      success: function(channels) {
+
+    CrafterCMSNext.services.publishing
+      .fetchPublishingTargets(CStudioAuthoringContext.site)
+      .subscribe(function(channels) {
         var publishingOptions = '';
         var channel_index = 0;
-        for (idx in channels.availablePublishChannels) {
-          publishingOptions +=
-            "<option value='" +
-            channels.availablePublishChannels[idx].name +
-            "'>" +
-            channels.availablePublishChannels[idx].name +
-            '</option>';
+        for (idx in channels) {
+          const name = CrafterCMSNext.util.string.escapeHTML(channels[idx].name);
+          publishingOptions += `<option value="${name}">${name}</option>`;
         }
         channelsSelect.innerHTML = publishingOptions;
-      },
-      failure: function() {}
-    };
-
-    CStudioAuthoring.Service.retrievePublishingChannels(CStudioAuthoringContext.site, publishingOptionsCB);
+      });
   },
 
   renderJobsList: function() {

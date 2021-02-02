@@ -52,6 +52,7 @@ const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemMenu/ItemMenu'));
+const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -293,7 +294,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Auth Monitor */}
-      {/* TODO: Move auth monitor here */}
+      <AuthMonitor />
       {/* endregion */}
 
       {/* region Workflow Cancellation */}
@@ -396,7 +397,7 @@ function GlobalDialogManager() {
         open={state.pathSelection.open}
         rootPath={state.pathSelection.rootPath}
         initialPath={state.pathSelection.initialPath}
-        showCreateFolder={state.pathSelection.showCreateFolder}
+        showCreateFolderOption={state.pathSelection.showCreateFolderOption}
         title={state.pathSelection.title}
         onClose={createCallback(state.pathSelection.onClose, dispatch)}
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}

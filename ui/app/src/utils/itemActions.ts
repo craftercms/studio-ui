@@ -293,12 +293,13 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
     }
     case 'taxonomy':
     case 'component':
+    case 'levelDescriptor':
     case 'renderingTemplate':
     case 'script':
     case 'asset': {
       let _optionsA = [];
       if (write) {
-        if (type === 'taxonomy' || type === 'component') {
+        if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
           _optionsA.push(menuOptions.edit);
           if (read) {
             _optionsA.push(menuOptions.view);
@@ -314,7 +315,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         }
         _optionsA.push(menuOptions.cut);
         _optionsA.push(menuOptions.copy);
-        if (type === 'taxonomy' || type === 'component') {
+        if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
           _optionsA.push(menuOptions.duplicate);
           _optionsA.push(menuOptions.changeContentType);
         } else {

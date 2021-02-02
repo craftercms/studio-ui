@@ -24,7 +24,6 @@
 
   CStudioBrowseS3.init = function() {
     var me = this;
-    console.log('here');
 
     this.repoBaseUrl = CStudioAuthoring.Utils.getQueryParameterByName('baseUrl');
 
@@ -65,7 +64,7 @@
     var me = this,
       $tree = $('#data');
 
-    //tree related events
+    // tree related events
 
     $tree.on('ready.jstree', function(event, data) {
       var tree = data.instance;
@@ -88,7 +87,7 @@
         }
       };
 
-      //get cookie - last browsed item
+      // get cookie - last browsed item
       if (storage.read('S3-browse-path')) {
         var nodes = storage.read('S3-browse-path');
         nodes = nodes.split(',');
@@ -114,7 +113,7 @@
         me.renderSiteContent(path);
         me.currentSelection = data.node.id;
 
-        //create cookie with current selected node
+        // create cookie with current selected node
         var nodes = [data.node.id],
           currentNode = data.node,
           finished = false,
@@ -249,9 +248,9 @@
   CStudioBrowseS3.renderSiteFolders = function(items) {
     var me = this;
 
-    //Removes jstree cached state from localStorage
+    // Removes jstree cached state from localStorage
     localStorage.removeItem('jstree');
-    //Tree - default closed
+    // Tree - default closed
     $.jstree.defaults.core.expand_selected_onload = false;
     $('#data').jstree({
       core: {
@@ -337,7 +336,7 @@
     $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
     if ('S3-root' === path && this.rootItems) {
-      //root - we already have the items
+      // root - we already have the items
 
       var filesPresent = false,
         items = this.rootItems;
@@ -444,11 +443,11 @@
       site = CStudioAuthoring.Utils.getQueryParameterByName('site'),
       filter = CStudioAuthoring.Utils.getQueryParameterByName('filter');
 
-    var callbackContent = {
-      success: function(response) {
-        cb.success(response.items);
+    CrafterCMSNext.services.aws.list(site, profileId, { path, filter }).subscribe(
+      function(response) {
+        cb.success(response);
       },
-      failure: function(response) {
+      function(response) {
         var message = CMgs.format(browseLangBundle, '' + response.status + '');
         var error = JSON.parse(response.responseText),
           errorMessage = error.errors[0];
@@ -493,9 +492,7 @@
           }
         });
       }
-    };
-
-    CStudioAuthoring.Service.getS3ContentByBrowser(site, profileId, path, callbackContent, filter);
+    );
   };
 
   CStudioBrowseS3.uploadContent = function(site, path) {
@@ -512,7 +509,7 @@
     return d.promise();
   };
 
-  //Cleans url by removing baseUrl for getContent to work (needs relative url)
+  // Cleans url by removing baseUrl for getContent to work (needs relative url)
   CStudioBrowseS3.cleanUrl = function(url) {
     return encodeURI(url.replace(this.repoBaseUrl, ''));
   };

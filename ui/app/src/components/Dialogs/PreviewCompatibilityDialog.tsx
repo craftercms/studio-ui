@@ -22,8 +22,6 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 
@@ -56,8 +54,8 @@ const translations = defineMessages({
 
 interface PreviewCompatibilityDialogProps {
   open: boolean;
-  onOk: (...args) => any;
-  onCancel: (...args) => any;
+  onOk: () => any;
+  onCancel: () => any;
   onClose?: () => any;
   onClosed?: () => any;
   isPreviewNext: boolean;
@@ -94,7 +92,6 @@ export function PreviewCompatibilityDialogContainer(props: PreviewCompatibilityD
 export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProps) {
   const { onOk, onCancel, isPreviewNext } = props;
   const { formatMessage } = useIntl();
-  const [remember, setRemember] = useState(false);
   useUnmount(props.onClosed);
   return (
     <>
@@ -104,19 +101,13 @@ export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProp
           {formatMessage(isPreviewNext ? translations.nextCompatibility : translations.legacyCompatibility)}
         </DialogContentText>
       </DialogBody>
-      <DialogFooter style={{ width: '100%', display: 'flex', placeContent: 'center space-between' }}>
-        <FormControlLabel
-          label={formatMessage(translations.rememberChoice)}
-          control={<Checkbox color="primary" checked={remember} onChange={(e) => setRemember(e.target.checked)} />}
-        />
-        <div>
-          <SecondaryButton onClick={() => onCancel({ remember })} style={{ marginRight: 5 }}>
-            {formatMessage(translations.stay)}
-          </SecondaryButton>
-          <PrimaryButton onClick={() => onOk({ remember })} autoFocus>
-            {formatMessage(translations.go)}
-          </PrimaryButton>
-        </div>
+      <DialogFooter>
+        <SecondaryButton onClick={onCancel} style={{ marginRight: 5 }}>
+          {formatMessage(translations.stay)}
+        </SecondaryButton>
+        <PrimaryButton onClick={onOk} autoFocus>
+          {formatMessage(translations.go)}
+        </PrimaryButton>
       </DialogFooter>
     </>
   );

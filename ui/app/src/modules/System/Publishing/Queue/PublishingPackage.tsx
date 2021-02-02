@@ -70,14 +70,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   checkbox: {
     marginRight: 'auto'
   },
+  thRow: {
+    background: theme.palette.background.default
+  },
+  th: {
+    fontWeight: 600
+  },
   list: {
     '& li': {
       display: 'flex',
       justifyContent: 'space-between'
-    },
-    '& li:nth-child(odd)': {
-      background: '#f9f9f9',
-      borderBottom: '1px solid #dedede'
     }
   },
   spinner: {
@@ -146,6 +148,42 @@ const translations = defineMessages({
   filesList: {
     id: 'publishingDashboard.filesList',
     defaultMessage: 'files list'
+  },
+  path: {
+    id: 'words.path',
+    defaultMessage: 'Path'
+  },
+  type: {
+    id: 'words.type',
+    defaultMessage: 'Type'
+  },
+  item: {
+    id: 'words.item',
+    defaultMessage: 'Item'
+  },
+  asset: {
+    id: 'words.asset',
+    defaultMessage: 'Asset'
+  },
+  script: {
+    id: 'words.script',
+    defaultMessage: 'Script'
+  },
+  page: {
+    id: 'words.page',
+    defaultMessage: 'Page'
+  },
+  renderingTemplate: {
+    id: 'words.template',
+    defaultMessage: 'Template'
+  },
+  component: {
+    id: 'words.component',
+    defaultMessage: 'Component'
+  },
+  unknown: {
+    id: 'words.unknown',
+    defaultMessage: 'Unknown'
   }
 });
 
@@ -240,9 +278,13 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   function renderFiles(files: [File]) {
     return files.map((file: any, index: number) => {
       return (
-        <ListItem key={index}>
+        <ListItem key={index} divider>
           <Typography variant="body2">{file.path}</Typography>
-          <Typography variant="body2">{file.contentTypeClass}</Typography>
+          <Typography variant="body2" color="textSecondary">
+            {file.contentTypeClass in translations
+              ? formatMessage(translations[file.contentTypeClass])
+              : file.contentTypeClass}
+          </Typography>
         </ListItem>
       );
     });
@@ -312,6 +354,14 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       <div className="files">
         {filesPerPackage && filesPerPackage[id] && (
           <List aria-label={formatMessage(translations.filesList)} className={classes.list}>
+            <ListItem className={classes.thRow} divider>
+              <Typography variant="caption" className={classes.th}>
+                {formatMessage(translations.item)} ({formatMessage(translations.path).toLowerCase()})
+              </Typography>
+              <Typography variant="caption" className={classes.th}>
+                {formatMessage(translations.type)}
+              </Typography>
+            </ListItem>
             {renderFiles(filesPerPackage[id])}
           </List>
         )}

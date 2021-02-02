@@ -117,14 +117,14 @@
      * get the content from the input and send it back to the server
      */
     updateContentActionClicked: function(buttonEl, evt) {
-      //not used
+      // not used
     },
 
     /**
      * cancel the dialog
      */
     cancelActionClicked: function(buttonEl, evt) {
-      //not used
+      // not used
     },
 
     /**

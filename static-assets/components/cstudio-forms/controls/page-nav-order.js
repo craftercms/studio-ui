@@ -46,7 +46,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
   },
 
   _onChange: function(evt, obj) {
-    obj.value = obj.dropdownEl.value; //value from the dropdown
+    obj.value = obj.dropdownEl.value; // value from the dropdown
 
     obj.owner.notifyValidation();
     obj.form.updateModel(obj.id, obj.getValue(), true);
@@ -84,7 +84,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
   showEditPositionDialog: function() {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
-    //Disable Edit Position button to not allow double clicks
+    // Disable Edit Position button to not allow double clicks
     this.editPositionEl.disabled = true;
 
     var query = location.search.substring(1);
@@ -125,12 +125,12 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
           CStudioAuthoringContext.site,
           this.parentControl
         );
-        //Enable Edit Position button
+        // Enable Edit Position button
         this.parentControl.editPositionEl.disabled = false;
       },
 
       failure: function() {
-        //Enable Edit Position button
+        // Enable Edit Position button
         this.parentControl.editPositionEl.disabled = false;
       }
     };
@@ -265,7 +265,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
       this.dropdownEl.value = 'true';
       this.editPositionEl.style.display = 'inline';
 
-      //Takes the value of the orderDefault if exists
+      // Takes the value of the orderDefault if exists
       this.orderValue = this.form.getModelValue(this.orderDefault);
       if (!this.orderValue || this.orderValue === -1 || this.orderValue === 0) {
         this.setOrderValue();

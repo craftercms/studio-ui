@@ -22,4 +22,5 @@ export type SystemType =
   | 'component'
   | 'page'
   | 'taxonomy'
+  | 'levelDescriptor'
   | 'unknown';

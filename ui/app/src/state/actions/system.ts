@@ -18,6 +18,7 @@ import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { OptionsObject } from 'notistack';
 import { Clipboard } from '../../models/GlobalState';
+import { ObtainAuthTokenResponse } from '../../services/auth';
 
 // region Item Events
 
@@ -75,3 +76,7 @@ export const showSystemNotification = createAction<{
 // endregion
 
 export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
+
+export const storeInitialized = createAction<{ auth: ObtainAuthTokenResponse }>('STORE_INITIALIZED');
+
+export const messageSharedWorker = createAction<StandardAction>('MESSAGE_SHARED_WORKER');

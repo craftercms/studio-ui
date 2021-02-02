@@ -59,8 +59,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
 
           el = YDom.get('acn-status');
 
-          CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
-            success: function(response) {
+          CrafterCMSNext.services.publishing.status(CStudioAuthoringContext.site).subscribe(
+            (response) => {
               dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
               dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
@@ -89,11 +89,11 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
                 dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, response.status);
               }
             },
-            failure: function(response) {
+            (response) => {
               el = YDom.get('acn-status');
               YDom.setStyle(el.children[0], 'color', '#777');
             }
-          });
+          );
         },
 
         render: function() {
@@ -112,8 +112,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
           function statusLoop(extDelay) {
             var delay = extDelay ? extDelay : 60000;
 
-            CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
-              success: function(response) {
+            CrafterCMSNext.services.publishing.status(CStudioAuthoringContext.site).subscribe(
+              (response) => {
                 dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
                 dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
@@ -154,7 +154,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
                   }, delay);
                 }
               },
-              failure: function(response) {
+              (response) => {
                 el = YDom.get('acn-status');
                 YDom.setStyle(el.children[0], 'color', '#777');
 
@@ -170,7 +170,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
                   }, delay);
                 }
               }
-            });
+            );
           }
 
           statusLoop();
@@ -178,8 +178,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
           el.onclick = function() {
             var dialogOpenDelay = 3000;
 
-            CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
-              success: function(response) {
+            CrafterCMSNext.services.publishing.status(CStudioAuthoringContext.site).subscribe(
+              (response) => {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'status-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -228,7 +228,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
                 me.dialogOpen = true;
                 statusLoop(dialogOpenDelay);
               },
-              failure: function(response) {
+              (response) => {
                 let message;
                 try {
                   message = JSON.parse(response.responseText).message;
@@ -261,7 +261,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
                 me.dialogOpen = true;
                 statusLoop(dialogOpenDelay);
               }
-            });
+            );
           };
         },
 

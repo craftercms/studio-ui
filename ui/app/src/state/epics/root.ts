@@ -33,6 +33,7 @@ import configuration from './configuration';
 import pathNavigator from './pathNavigator';
 import misc from './misc';
 import system from './system';
+import users from './users';
 import { CrafterCMSEpic } from '../store';
 
 const epic: CrafterCMSEpic = combineEpics.apply(this, [
@@ -56,7 +57,8 @@ const epic: CrafterCMSEpic = combineEpics.apply(this, [
   ...configuration,
   ...pathNavigator,
   ...misc,
-  ...system
+  ...system,
+  ...users
 ]);
 
 export default epic;

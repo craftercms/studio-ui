@@ -95,6 +95,10 @@ export const usersAdminMessages = defineMessages({
   userDeleted: {
     id: 'usersAdmin.userDeleted',
     defaultMessage: '{username} deleted.'
+  },
+  passwordChangeSuccess: {
+    id: 'usersAdmin.passwordChangeSuccessMessage',
+    defaultMessage: 'Password changed successfully'
   }
 });
 
@@ -847,6 +851,10 @@ export const globalMenuMessages = defineMessages({
   'home.globalMenu.encryptionTool': {
     id: 'GlobalMenu.EncryptionTool',
     defaultMessage: 'Encryption Tool'
+  },
+  'home.globalMenu.tokenManagement': {
+    id: 'GlobalMenu.TokenManagement',
+    defaultMessage: 'Token Management'
   },
   'home.about-us': {
     id: 'GlobalMenu.AboutUs',

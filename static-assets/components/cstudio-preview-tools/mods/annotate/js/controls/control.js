@@ -41,7 +41,7 @@ DrawingBoard.Control.prototype = {
   onBoardReset: function(opts) {}
 };
 
-//extend directly taken from backbone.js
+// extend directly taken from backbone.js
 DrawingBoard.Control.extend = function(protoProps, staticProps) {
   var parent = this;
   var child;

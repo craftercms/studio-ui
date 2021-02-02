@@ -39,6 +39,9 @@ export function getGlobalHeaders(): object {
   return { ...HEADERS };
 }
 
+/**
+ * Merges the supplied `headers` object with the current global headers and returns the resulting object.
+ **/
 function mergeHeaders(headers: object | typeof OMIT_GLOBAL_HEADERS = {}): object {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;
@@ -60,16 +63,28 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
+export function getBinary(url: string, headers?: object): Observable<AjaxResponse> {
+  return ajax({
+    url,
+    responseType: 'arraybuffer',
+    headers: mergeHeaders(headers)
+  });
+}
+
 export function post(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders(headers));
 }
 
-export function postJSON(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
+export function postJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
 export function patch(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.patch(url, body, mergeHeaders(headers));
+}
+
+export function patchJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
+  return ajax.patch(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
 export function put(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {

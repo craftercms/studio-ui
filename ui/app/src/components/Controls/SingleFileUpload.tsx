@@ -26,6 +26,7 @@ import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { getGlobalHeaders } from '../../utils/ajax';
 
 const messages = defineMessages({
   chooseFile: {
@@ -108,7 +109,8 @@ export default function SingleFileUpload(props: UppyProps) {
         endpoint: url,
         formData: true,
         fieldName: 'file',
-        timeout: 0
+        timeout: 0,
+        headers: getGlobalHeaders()
       });
 
     uppy.on('file-added', (file) => {

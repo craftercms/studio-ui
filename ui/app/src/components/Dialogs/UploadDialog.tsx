@@ -52,6 +52,7 @@ import palette from '../../styles/palette';
 import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { PrimaryButton } from '../PrimaryButton';
+import { getGlobalHeaders } from '../../utils/ajax';
 
 const translations = defineMessages({
   title: {
@@ -415,7 +416,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         endpoint: getBulkUploadUrl(site, path),
         formData: true,
         fieldName: 'file',
-        limit: maxSimultaneousUploads
+        limit: maxSimultaneousUploads,
+        headers: getGlobalHeaders()
       })
       .setMeta({ site });
     return () => {

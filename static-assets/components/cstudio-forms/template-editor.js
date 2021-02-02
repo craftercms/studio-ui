@@ -622,13 +622,6 @@ CStudioAuthoring.Module.requireModule(
                     }
 
                     var cancelEdit = function() {
-                      var cancelEditServiceUrl =
-                        '/api/1/services/api/1/content/unlock-content.json' +
-                        '?site=' +
-                        CStudioAuthoringContext.site +
-                        '&path=' +
-                        encodeURI(templatePath);
-
                       var cancelEditCb = {
                         success: function(response) {
                           // dispatch legacyTemplateEditor.opened
@@ -646,9 +639,9 @@ CStudioAuthoring.Module.requireModule(
                         window.parent.CStudioAuthoring.editDisabled = [];
                       }
 
-                      YAHOO.util.Connect.asyncRequest(
-                        'GET',
-                        CStudioAuthoring.Service.createServiceUri(cancelEditServiceUrl),
+                      CStudioAuthoring.Service.unlockContentItem(
+                        CStudioAuthoringContext.site,
+                        templatePath,
                         cancelEditCb
                       );
                     };
@@ -857,19 +850,13 @@ CStudioAuthoring.Module.requireModule(
                 // prettier-ignore
                 const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
 
-                fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
-                  method: 'POST',
-                  credentials: 'same-origin',
-                  headers: {
-                    'Content-Type': `text/plain; charset=utf-8`,
-                    [CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken()
-                  },
-                  body: value
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
+                CrafterCMSNext.util.ajax
+                  .post(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), value)
+                  .subscribe(function(response) {
+                    const data = response.response;
+
                     if (data && data.result && data.result.success) {
-                      //update pending changes state;
+                      // update pending changes state;
                       aceEditor.isModified = false;
                       CStudioAuthoring.Utils.showNotification(formatMessage(messages.saved));
                       if (type === 'saveAndClose') {

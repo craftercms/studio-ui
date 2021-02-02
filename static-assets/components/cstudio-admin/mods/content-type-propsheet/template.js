@@ -55,7 +55,6 @@ YAHOO.extend(
         },
         valueEl
       );
-      //YAHOO.util.Event.on(valueEl, 'blur', function(evt) { _self.hideTemplateEdit();  }, valueEl);
 
       if (updateFn) {
         var updateFieldFn = function(event, el) {};

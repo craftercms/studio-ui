@@ -102,9 +102,7 @@ CStudioForms.Controls.RTE.InsertLinkBrowse =
           if (rteWidgets.length > 0) {
             var c = cm.createMenuButton('insertComponent', {
               title: 'Insert Link',
-              //image : 'img/example.gif',
               style: 'mce_insertLinkBrowse'
-              //	                    icons : false
             });
 
             c.rteWidgets = rteWidgets;

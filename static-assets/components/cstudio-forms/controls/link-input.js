@@ -51,7 +51,6 @@ YAHOO.extend(CStudioForms.Controls.LinkInput, CStudioForms.CStudioFormField, {
         validationResult = false;
       } else {
         obj.clearError('required');
-        //validationExist = true;
       }
     } else {
       var id = obj.id;

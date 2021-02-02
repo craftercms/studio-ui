@@ -24,7 +24,7 @@ if (typeof CStudioAuthoringWidgets == 'undefined' || !CStudioAuthoringWidgets) {
 /**
  * approved scheduled items
  */
-CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pageId) {
+CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pageId) {
   this.widgetId = widgetId;
   this.pageId = pageId;
   this._self = this;
@@ -41,7 +41,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
   /**
    * get table data
    */
-  this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
+  this.retrieveTableData = function(sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
     sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
     CStudioAuthoring.Service.getScheduledItems(CStudioAuthoringContext.site, sortBy, sortAscDesc, filterBy, callback);
   };
@@ -49,7 +49,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
   /**
    * callback to render the table headings
    */
-  this.renderItemsHeading = function () {
+  this.renderItemsHeading = function() {
     var widgetId = this._self.widgetId;
     var header =
       WcmDashboardWidgetCommon.getSimpleRow(
@@ -100,7 +100,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
     return header;
   };
 
-  this.renderAuxControls = function (containerEl) {
+  this.renderAuxControls = function(containerEl) {
     var liLoadingEl = document.createElement('li');
     liLoadingEl.id = 'loading-' + widgetId;
     var imgEl = document.createElement('i');
@@ -123,7 +123,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
 
     filterByEl._self = this;
 
-    filterByEl.onchange = function () {
+    filterByEl.onchange = function() {
       var _self = this._self;
       var selectedItems = filterByEl.selectedIndex;
       filterByEl.options[0] = new Option(
@@ -165,7 +165,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
   /**
    * Call back to render each line item of the table
    */
-  this.renderLineItem = function (item, isFirst, count) {
+  this.renderLineItem = function(item, isFirst, count) {
     if (!item.folder) {
       var html = [],
         name = item.internalName,

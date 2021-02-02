@@ -2979,7 +2979,6 @@ span.acn-canned-search {
 
   .persona-container {
     max-height: 463px;
-    //overflow-y: scroll;
   }
 
   img {
@@ -3135,7 +3134,14 @@ span.acn-canned-search {
 }
 
 #preview-tools-panel-container_c.yui-panel-container {
-  div#preview-tools-panel-container.yui-module div div.expanded div.acn-accordion-panel div div#container.yui-carousel-visible div.yui-carousel-nav ul {
+  div#preview-tools-panel-container.yui-module
+    div
+    div.expanded
+    div.acn-accordion-panel
+    div
+    div#container.yui-carousel-visible
+    div.yui-carousel-nav
+    ul {
     display: none;
   }
 }

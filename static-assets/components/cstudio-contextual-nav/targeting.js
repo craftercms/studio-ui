@@ -156,9 +156,9 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
                 controlContainer;
 
               me.initModel(properties, {
-                //update model and properties with current profile
+                // update model and properties with current profile
                 success: function(properties) {
-                  //Create and append the options
+                  // Create and append the options
                   for (var i = 0; i < properties.length; i++) {
                     currentProp = properties[i];
 
@@ -439,16 +439,16 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
             properties = properties;
 
           if (!properties.forEach) {
-            //if only 1 item - returns item, not in array
+            // if only 1 item - returns item, not in array
             properties = [properties];
           }
 
-          //properties from xml
+          // properties from xml
           properties.forEach(function(item) {
             me.model[item.name] = item.default_value ? item.default_value : '';
           });
 
-          //properties from profile
+          // properties from profile
           var serviceUri = '/api/1/profile/get?time=' + new Date();
           YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(serviceUri), {
             success: function(oResponse) {

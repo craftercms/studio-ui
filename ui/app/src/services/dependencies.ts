@@ -14,17 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, post } from '../utils/ajax';
 import { catchError, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LegacyItem } from '../models/Item';
 
-export function fetchDependencies(siteId: string, items: any) {
+export function fetchDependencies(
+  siteId: string,
+  items: any
+): Observable<{ hardDependencies: string[]; softDependencies: string[] }> {
   return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`).pipe(pluck('response', 'items'));
 }
 
 export function getSimpleDependencies(siteId: string, path: string): Observable<LegacyItem> {
-  return postJSON(
+  return post(
     `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${encodeURIComponent(
       path
     )}`
@@ -32,7 +35,7 @@ export function getSimpleDependencies(siteId: string, path: string): Observable<
 }
 
 export function getDependant(siteId: string, path: string): Observable<LegacyItem> {
-  return postJSON(
+  return post(
     `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${encodeURIComponent(path)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }

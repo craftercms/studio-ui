@@ -776,7 +776,7 @@ CStudioAuthoring.Module.requireModule(
           controlWidgetContainerEl = document.createElement('div');
           YDom.addClass(controlWidgetContainerEl, 'cstudio-form-control-rte-container rte2-container');
 
-          //TODO: move to stylesheet
+          // TODO: move to stylesheet
           controlWidgetContainerEl.style.paddingLeft = '28%';
 
           // Control validation element (its state  is set by control constraints)

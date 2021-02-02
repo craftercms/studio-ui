@@ -209,7 +209,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       ),
       fmt = CStudioAuthoring.Utils.formatDateFromString;
 
-    //reducing max character length to support 1024 screen resolution
+    // reducing max character length to support 1024 screen resolution
     var removeCharCount = window.innerWidth <= 1024 ? 5 : 0;
     var displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80 - removeCharCount);
     var itemNameForDisplay = CrafterCMSNext.util.string.escapeHTML(

@@ -19,10 +19,11 @@ import Button, { ButtonTypeMap } from '@material-ui/core/Button';
 import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -45,7 +46,7 @@ const useStyles = makeStyles(() =>
 );
 
 interface ConfirmDropdownProps {
-  text: string;
+  text?: string;
   cancelText: string;
   confirmText: string;
   confirmHelperText?: string;
@@ -55,6 +56,7 @@ interface ConfirmDropdownProps {
     button?: string;
     menuPaper?: string;
   };
+  icon?: any;
   onConfirm(): any;
 }
 
@@ -68,7 +70,8 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     confirmText,
     confirmHelperText,
     disabled = false,
-    buttonVariant = 'outlined'
+    buttonVariant = 'outlined',
+    icon: Icon
   } = props;
 
   const handleClick = (event: any) => {
@@ -86,9 +89,15 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
 
   return (
     <>
-      <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>
-        {text} <ArrowDown />
-      </Button>
+      {Icon ? (
+        <IconButton onClick={handleClick}>
+          <Icon color="primary" />
+        </IconButton>
+      ) : (
+        <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>
+          {text} <ArrowDown />
+        </Button>
+      )}
       <Menu
         anchorEl={anchorEl}
         getContentAnchorEl={null}
@@ -107,8 +116,8 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
         <Typography variant="body1" className={classes.helperText}>
           {confirmHelperText}
         </Typography>
-        <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
         <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
+        <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
       </Menu>
     </>
   );
