@@ -21,7 +21,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../styles/palette';
 import AuthBoundary from './AuthBoundary';
 
-// eslint-disable-next-line
 const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
 
 export default function App() {

@@ -1,5 +1,4 @@
 /// <reference lib="webworker" />
-/* eslint-disable no-restricted-globals */
 
 import { obtainAuthToken, ObtainAuthTokenResponse } from './services/auth';
 import StandardAction from './models/StandardAction';

@@ -34,8 +34,8 @@
       return undefined;
     }
 
-    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+    (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+    return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
   });
 
   function moduleLoaded() {
@@ -188,7 +188,7 @@
           if (properties[i].name == 'display-template' && properties[i].value !== '') {
             flagTemplateError = true;
           }
-          //if no-template-required property exists and has value "true"
+          // if no-template-required property exists and has value "true"
           if (properties[i].name == 'no-template-required' && properties[i].value === 'true') {
             flagTemplateError = true;
           }
@@ -324,7 +324,6 @@
                                   );
                                 }
                               );
-
                           }
                         });
                       }

@@ -23,7 +23,7 @@ export type Snack = PropsWithChildren<{
   onClose: () => void;
 }>;
 
-export default function(props: Snack) {
+function SnackBar(props: Snack) {
   const { open, duration, message, children, onClose } = props;
   const onCloseRef = useRef(onClose);
   const timeoutRef = useRef<any>();
@@ -36,3 +36,5 @@ export default function(props: Snack) {
   }, [open, duration]);
   return open ? <craftercms-snackbar>{message || children}</craftercms-snackbar> : null;
 }
+
+export default SnackBar;

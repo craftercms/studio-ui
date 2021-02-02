@@ -260,7 +260,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       var option = document.createElement('option');
       option.text = contentTypes[j].label;
       option.value = contentTypes[j].form;
-      if (j == 0) option.selected = 'selected'; //first template will be selected.
+      if (j == 0) option.selected = 'selected'; // first template will be selected.
       contentTypesSelect.options.add(option);
     }
 

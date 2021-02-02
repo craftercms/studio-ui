@@ -52,7 +52,6 @@ YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
         validationResult = false;
       } else {
         obj.clearError('required');
-        //validationExist = true;
       }
     }
 
@@ -136,9 +135,7 @@ YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
   },
 
   getSupportedConstraints: function() {
-    return [
-      //{ label: "Required", name: "required", type: "boolean" },
-    ];
+    return [];
   },
   generateUUID: function() {
     var d = new Date().getTime();

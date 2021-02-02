@@ -248,7 +248,6 @@
     .dependencies-option {
       width: initial;
       min-width: 160px;
-      //margin-top: 10px;
       margin-bottom: 10px;
       margin-left: 10px;
       display: inline-block;
@@ -273,8 +272,6 @@
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-
-          //border-right: solid 10px white;
 
           .in {
             overflow: hidden;

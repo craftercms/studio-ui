@@ -1621,7 +1621,7 @@
       groups.members.itemsPerPage = 10;
       $scope.groupsCollection = [];
 
-      /// //////////////// MULTIPLE GROUPS VIEW ////////////////////
+      // //////////////// MULTIPLE GROUPS VIEW ////////////////////
 
       var getGroups = function() {
         groups.totalLogs = 0;
@@ -1767,7 +1767,7 @@
         $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
       };
 
-      /// //////////////// SINGLE GROUP VIEW ////////////////////
+      /////////////////// SINGLE GROUP VIEW ////////////////////
 
       groups.viewGroup = function(group) {
         groups.selectedGroup = group;

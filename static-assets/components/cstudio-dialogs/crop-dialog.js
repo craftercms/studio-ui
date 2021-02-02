@@ -256,12 +256,10 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             $('#zoomMessage').removeClass('hidden');
             $dataWidth.addClass('error');
             $dataHeight.addClass('error');
-            //$('#cropButton').prop('disabled',true);
           } else {
             $('#zoomMessage').addClass('hidden');
             $dataWidth.removeClass('error');
             $dataHeight.removeClass('error');
-            //$('#cropButton').prop('disabled',false);
           }
         } else {
           inputValidation(parseInt(minHeightCropBox), parseInt(maxHeightCropBox), $dataHeight, $dataWidth);
@@ -278,7 +276,6 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         $('#zoomMessage').addClass('hidden');
         $dataHeight.removeClass('error');
         $dataWidth.removeClass('error');
-        //$('#cropButton').prop('disabled',false);
       }
     });
 
@@ -303,14 +300,13 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       ) {
         $('#zoomMessage').addClass('hidden');
         input.removeClass('error');
-        //$('#cropButton').prop('disabled',false);
+        // $('#cropButton').prop('disabled',false);
       } else {
         $('#zoomMessage').removeClass('hidden');
         input.addClass('error');
         // $('#cropButton').prop('disabled',true);
       }
       if (input.hasClass('error') || auxInput.hasClass('error')) {
-        //$('#cropButton').prop('disabled',true);
         $('#zoomMessage').removeClass('hidden');
       }
     }
@@ -342,7 +338,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
       if (newName) {
         var re = /(?:\.([^.]+))?$/,
-          ext = re.exec(imageData.relativeUrl)[1], //get original image extension
+          ext = re.exec(imageData.relativeUrl)[1], // get original image extension
           relativeUrlLastSlashIndex = imageData.relativeUrl.lastIndexOf('/'),
           previewUrlLastSlashIndex = imageData.previewUrl.lastIndexOf('/'),
           relativeFolder = imageData.relativeUrl.substring(0, relativeUrlLastSlashIndex + 1),

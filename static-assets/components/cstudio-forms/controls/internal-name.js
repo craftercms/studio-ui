@@ -60,7 +60,6 @@
           validationResult = false;
         } else {
           obj.clearError('required');
-          //validationExist = true;
         }
       }
 

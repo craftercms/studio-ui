@@ -70,7 +70,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
   _onChange: function() {
     if (this.minSize > 0) {
-      //Needs validation
+      // Needs validation
       if (this.items.length < this.minSize) {
         this.setError('minCount', '# items are required');
         this.renderValidation(true, false);
@@ -523,7 +523,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
       item.datasource = datasource;
       if (order != null) {
-        //insert on specific order
+        // insert on specific order
         this.items.splice(order, 0, item);
       } else {
         this.items[this.items.length] = item;
@@ -612,7 +612,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this.edited = false;
 
     if (typeof this.items == 'string') {
-      //Check if the current value is the default value, split it by comma and load it using key/value pair
+      // Check if the current value is the default value, split it by comma and load it using key/value pair
       if (this.items === this.defaultValue && this.items != '') {
         this.items = [];
         var defaultItems = this.defaultValue.split(',');
@@ -639,7 +639,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     this.updateItems();
     this._onChange();
-    //this._onChangeVal();
     this.count();
   },
 

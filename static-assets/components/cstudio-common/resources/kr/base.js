@@ -213,7 +213,7 @@ CStudioAuthoring.Messages.registerBundle('previewTools', 'kr', {
   general: '일반',
   text: '본문',
 
-  //login
+  // login
   login: '로그인',
   emailUsername: '이메일 / 사용자 이름',
   password: '이메일 비밀번호',

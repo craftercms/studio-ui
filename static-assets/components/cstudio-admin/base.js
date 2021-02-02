@@ -269,14 +269,14 @@
       var span = document.createElement('span');
 
       if (tool.config.icon && tool.config.icon.class) {
-        //custom icon
+        // custom icon
         span.className = 'mr10 fa ' + tool.config.icon.class;
       } else {
         span.className = 'mr10 fa ' + tool.config.label.toLowerCase().replace(/ /g, '');
       }
 
       if (tool.config.icon && tool.config.icon.styles) {
-        //custom styling
+        // custom styling
         var styles = tool.config.icon.styles;
 
         if (styles) {

@@ -319,8 +319,6 @@ var nodeOpen = false,
        * Context must be available
        */
       loadContextNavCss: function() {
-        //CStudioAuthoring.Utils.addCss('/overlay-css?baseUrl=' +
-        //                           CStudioAuthoringContext.baseUri);'
         CSA.Utils.addCss('/static-assets/styles/temp.css');
         CSA.Utils.addCss('/static-assets/styles/forms-engine.css');
       },
@@ -558,7 +556,7 @@ var nodeOpen = false,
           dialogue.render(document.body);
           dialogue.centreY();
 
-          //set z-index to 101 so that dialog will display over context nav bar
+          // set z-index to 101 so that dialog will display over context nav bar
           if (setZIndex && dialogue.element && dialogue.element.style.zIndex != '') {
             dialogue.element.style.setProperty('z-index', '1040', 'important');
             dialogue.mask.style.zIndex = '1030';
@@ -908,7 +906,7 @@ var nodeOpen = false,
       },
 
       viewDependencies: function(site, items, approveType, defaultSelection) {
-        //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
+        // defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
         const dependenciesShown = defaultSelection ? defaultSelection : 'depends-on';
 
         CrafterCMSNext.system.store.dispatch({
@@ -4817,7 +4815,7 @@ var nodeOpen = false,
                 if (itemTime[0] == 0) itemTime[0] = 12;
               }
 
-              var myDate = new Date(itemDate); //TODO: Needs to be checked!!!
+              var myDate = new Date(itemDate); // TODO: Needs to be checked!!!
               var d = myDate.getDate();
               var m = myDate.getMonth() + 1;
               var y = myDate.getFullYear();
@@ -7186,7 +7184,7 @@ var nodeOpen = false,
           newWindow = document.location = childSearchConfig.searchUrl;
         } else {
           var newWindow;
-          CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId, false); //TODO: test name on iframe
+          CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId, false); // TODO: test name on iframe
         }
       }
     },

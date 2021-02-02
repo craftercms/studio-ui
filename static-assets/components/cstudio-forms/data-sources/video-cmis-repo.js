@@ -78,13 +78,13 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
               previewUrl;
 
             if (item.clone) {
-              //clone
+              // clone
               relativeUrl = _self.studioPath.endsWith('/')
                 ? _self.studioPath + fileName
                 : _self.studioPath + '/' + fileName;
               previewUrl = CStudioAuthoringContext.previewAppBaseUri + relativeUrl;
             } else {
-              //link
+              // link
               previewUrl = repo['download-url-regex'].replace('{item_id}', item.itemId);
               relativeUrl = repo['download-url-regex'].replace('{item_id}', item.itemId) + '?crafterCMIS=true';
             }

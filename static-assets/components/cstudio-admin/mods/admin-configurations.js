@@ -279,7 +279,7 @@
               editor.clearSelection(); // This will remove the highlight over the text
               CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
-              //add history
+              // add history
 
               var siteDropdownLangBundle = CMgs.getBundle('siteDropdown', CStudioAuthoringContext.lang);
 
@@ -310,7 +310,7 @@
             }
           );
 
-          //sample
+          // sample
           var sampleTextEl = document.getElementById('sample-text');
           // load sample configuration into view sample area
           var samplePath = `${configSampleFilesPath}/${itemSelectEl[selectedIndex].getAttribute('sample')}`;

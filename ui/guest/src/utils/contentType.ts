@@ -47,7 +47,8 @@ export function isGroup(contentType: ContentType, fieldId: string): boolean {
 }
 
 export function doesFieldAccept(contentType: ContentType, fieldId: string) {
-  const field = getField(contentType, fieldId);
+  // const field = getField(contentType, fieldId);
+  throw new Error('Not implemented.');
 }
 
 export function getField(type: ContentType, fieldId: string): ContentTypeField {

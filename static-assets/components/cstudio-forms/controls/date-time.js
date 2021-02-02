@@ -330,7 +330,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   },
 
   updateTime: function(evt, param) {
-    //patterns to match the time format
+    // patterns to match the time format
     var timeParsePatterns = [
       // Now
       {
@@ -470,7 +470,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
     ];
 
-    //Parses a string to figure out the time it represents
+    // Parses a string to figure out the time it represents
     function parseTimeString(s) {
       for (var i = 0; i < timeParsePatterns.length; i++) {
         var re = timeParsePatterns[i].re;
@@ -482,7 +482,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
     }
 
-    //parse the value using patterns and retrive the date with format
+    // parse the value using patterns and retrive the date with format
     if (this.timeEl) {
       var inputTime = parseTimeString(this.timeEl.value);
     }
@@ -517,7 +517,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     } else {
       var finalTimeFormat = inputTime.split('~');
       var timeStamp = this.setTimeStamp.call(this, new Date(finalTimeFormat[0]), finalTimeFormat[1]);
-      //Check for 12 hours format time
+      // Check for 12 hours format time
       var timeSplit = timeStamp.split(':');
       if (timeSplit.length == 3) {
         var hours = parseInt(timeSplit[0], 10);
@@ -544,7 +544,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           );
         }
       }
-      //set the value
+      // set the value
       this.timeEl.value = timeStamp;
       this.setDateTime(timeStamp, 'time');
     }
@@ -942,7 +942,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         timeEl.disabled = true;
       }
 
-      //Subscriptions
+      // Subscriptions
       YAHOO.util.Event.addListener(timeEl, 'blur', this.updateTime, this, true);
 
       YAHOO.util.Event.addListener(
@@ -1224,7 +1224,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       // If a value already exists for the date/time field, then convert this value (in UTC) to the site's timezone
       cb = {
         success: function(response) {
-          //Set date and time values in the UI
+          // Set date and time values in the UI
           var timezoneTime = response,
             tzDateTimeObj = _self.getFormattedDateTimeObject(timezoneTime, true),
             res,
@@ -1300,7 +1300,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
       this.convertDateTime(dateVal, timeVal, this.timezone, false, cb);
     } else {
-      //No value exists yet
+      // No value exists yet
       if (this.populate) {
         var res = this.startTzDateTimeStr.split(' ');
         var currentDate = res[0] + ' ' + res[1];
@@ -1410,7 +1410,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           context: this,
 
           success: function(config) {
-            //config['default-timezone'] = null;
+            // config['default-timezone'] = null;
             if (config['default-timezone']) {
               this.context.timezone = config['default-timezone'];
             } else {
@@ -1467,7 +1467,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     } else {
       var date = new Date(),
         dd = date.getDate(),
-        mm = date.getMonth() + 1, //January is 0!
+        mm = date.getMonth() + 1, // January is 0!
         yyyy = date.getFullYear(),
         hh = date.getHours(),
         m = date.getMinutes();

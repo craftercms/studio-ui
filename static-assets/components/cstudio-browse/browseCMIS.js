@@ -69,7 +69,7 @@
     var me = this,
       $tree = $('#data');
 
-    //tree related events
+    // tree related events
 
     $tree.on('ready.jstree', function(event, data) {
       var tree = data.instance;
@@ -92,7 +92,7 @@
         }
       };
 
-      //get cookie - last browsed item
+      // get cookie - last browsed item
       if (storage.read('cmis-browse-path')) {
         var nodes = storage.read('cmis-browse-path');
         nodes = nodes.split(',');
@@ -118,7 +118,7 @@
         me.renderSiteContent(path);
         me.currentSelection = data.node.id;
 
-        //create cookie with current selected node
+        // create cookie with current selected node
         var nodes = [data.node.id],
           currentNode = data.node,
           finished = false,
@@ -234,7 +234,7 @@
       }
     });
 
-    //results related events
+    // results related events
 
     // $resultsContainer.on('change', 'input[name=result-select]', function(){
     //     var contentTO = $(this.parentElement.parentElement).data("item");
@@ -449,7 +449,7 @@
     $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
     if ('cmis-root' === path && this.rootItems) {
-      //root - we already have the items
+      // root - we already have the items
 
       var filesPresent = false,
         items = this.rootItems;
@@ -587,7 +587,7 @@
         .subscribe(callbackContent.success, callbackContent.failure);
     } else {
       if (!searchTerm || '' === searchTerm) {
-        //TODO: ask if this is correct
+        // TODO: ask if this is correct
         searchTerm = '*';
       }
 

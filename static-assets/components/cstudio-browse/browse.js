@@ -40,7 +40,7 @@
       $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
       searchContext = this.searchContext;
 
-    //tree related events
+    // tree related events
 
     $tree.on('ready.jstree', function(event, data) {
       var tree = data.instance;
@@ -74,11 +74,11 @@
     });
 
     $tree.on('open_node.jstree', function(event, node) {
-      // $tree.trigger('select_node.jstree', [node])  //TODO: find out how to show node as selected
+      // TODO: find out how to show node as selected
       $('#' + node.node.id + '_anchor').click();
     });
 
-    //results related events
+    // results related events
 
     $resultsContainer.on('change', 'input[name=result-select]', function() {
       var contentTO = $(this.parentElement.parentElement).data('item');
@@ -116,7 +116,7 @@
       $(window.frameElement.parentElement)
         .closest('.studio-ice-dialog')
         .parent()
-        .remove(); //TODO: find a better way
+        .remove(); // TODO: find a better way
     });
 
     $('#cstudio-command-controls').on('click', '#colExpButtonBtn', function() {
@@ -142,7 +142,7 @@
     });
   };
 
-  //Utilities
+  // Utilities
 
   CStudioBrowse.determineSearchContextFromUrl = function() {
     var searchContext = {};
@@ -157,10 +157,9 @@
     var path = pathURL.slice(-1) == '/' ? pathURL.substring(0, pathURL.length - 1) : pathURL;
     var site = CStudioAuthoring.Utils.getQueryVariable(queryString, 'site');
 
-    //TODO: check what are all of those for
-    /* configre search context */
+    // TODO: check what are all of those for config search context
     searchContext.contextName = paramContext ? paramContext : 'default';
-    searchContext.searchId = searchId ? searchId : null; //TODO: what is this ID for?
+    searchContext.searchId = searchId ? searchId : null; // TODO: what is this ID for?
     searchContext.interactMode = paramMode;
     searchContext.presearch = true;
     searchContext.path = path;
@@ -378,15 +377,15 @@
 
               openerChildSearchMgr.signalSearchClose(searchId, selectedContentTOs);
             } else {
-              //TODO PUT THIS BACK
-              //alert("no success callback provided for seach: " + searchId);
+              // TODO PUT THIS BACK
+              // alert("no success callback provided for seach: " + searchId);
             }
 
             window.close();
             $(window.frameElement.parentElement)
               .closest('.studio-ice-dialog')
               .parent()
-              .remove(); //TODO: find a better way
+              .remove(); // TODO: find a better way
           } else {
             CStudioAuthoring.Operations.showSimpleDialog(
               'lookUpChildError-dialog',
@@ -402,7 +401,7 @@
                     $(window.frameElement.parentElement)
                       .closest('.studio-ice-dialog')
                       .parent()
-                      .remove(); //TODO: find a better way
+                      .remove(); // TODO: find a better way
                   },
                   isDefault: false
                 }
@@ -426,7 +425,7 @@
                   $(window.frameElement.parentElement)
                     .closest('.studio-ice-dialog')
                     .parent()
-                    .remove(); //TODO: find a better way
+                    .remove(); // TODO: find a better way
                 },
                 isDefault: false
               }
@@ -443,7 +442,7 @@
       $(window.frameElement.parentElement)
         .closest('.studio-ice-dialog')
         .parent()
-        .remove(); //TODO: find a better way
+        .remove(); // TODO: find a better way
     }
   };
 
@@ -465,21 +464,21 @@
             });
           },
           items: {
-            upload: { name: CMgs.format(browseLangBundle, 'uploadLabel') } //TODO: change to resources
+            upload: { name: CMgs.format(browseLangBundle, 'uploadLabel') } // TODO: change to resources
           }
         });
       }
     });
   };
 
-  //Services
+  // Services
 
   CStudioBrowse.renderSiteFolders = function(site, path) {
     var me = this;
 
-    //Removes jstree cached state from localStorage
+    // Removes jstree cached state from localStorage
     localStorage.removeItem('jstree');
-    //Tree - default closed
+    // Tree - default closed
     $.jstree.defaults.core.expand_selected_onload = false;
     $('#data').jstree({
       core: {
@@ -513,11 +512,11 @@
 
     CStudioAuthoring.Service.lookupSiteFolders(site, path, 2, 'default', {
       success: function(treeData) {
-        //done (?)
+        // done (?)
         d.resolve(treeData);
       },
       failure: function() {
-        //fail (?)
+        // fail (?)
       }
     });
 

@@ -51,7 +51,6 @@ export function sendPasswordRecovery(username: string): Observable<ApiResponse> 
   return get(`/studio/api/2/users/forgot_password?username=${username}`).pipe(
     pluck('response', 'response'),
     catchError((error: AjaxError) => {
-      // eslint-disable-next-line no-throw-literal
       throw error.response?.response ?? error;
     })
   );

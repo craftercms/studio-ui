@@ -38,12 +38,8 @@ export default function DropMarker(props: DropMarkerProps) {
     [style, setStyle] = useState({}),
     { element } = over;
 
-  useEffect(() => {
-    // setTimeout(() => {
-    //   debugger;
-    // }, 1000);
-  }, []);
-
+  // TODO: Check missing reason for missing dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(dragOver, [prev, next, coordinates.x, coordinates.y]);
 
   return (

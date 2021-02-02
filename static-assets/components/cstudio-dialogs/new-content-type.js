@@ -182,9 +182,6 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
       document.getElementById('contentTypeName').value = value;
     });
-    //YEvent.on("contentTypeName", "keyup", function() {
-    //    YAHOO.Bubbling.fire("content-type.values.changed");
-    //});
 
     YEvent.addListener('createButton', 'click', this.createClick, eventParams);
 

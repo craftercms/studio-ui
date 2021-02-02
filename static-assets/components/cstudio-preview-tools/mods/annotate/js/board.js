@@ -575,16 +575,16 @@ DrawingBoard.Board.prototype = {
   },
 
   draw: function() {
-    //if the pencil size is big (>10), the small crosshair makes a friend: a circle of the size of the pencil
-    //todo: have the circle works on every browser - it currently should be added only when CSS pointer-events are supported
-    //we assume that if requestAnimationFrame is supported, pointer-events is too, but this is terribad.
+    // if the pencil size is big (>10), the small crosshair makes a friend: a circle of the size of the pencil
+    // TODO: have the circle works on every browser - it currently should be added only when CSS pointer-events are supported
+    // we assume that if requestAnimationFrame is supported, pointer-events is too, but this is terribad.
     if (window.requestAnimationFrame && this.ctx.lineWidth > 10 && this.isMouseHovering) {
       this.dom.$cursor.css({ width: this.ctx.lineWidth + 'px', height: this.ctx.lineWidth + 'px' });
       var transform = DrawingBoard.Utils.tpl('translateX({{x}}px) translateY({{y}}px)', {
         x: this.coords.current.x - this.ctx.lineWidth / 2,
         y: this.coords.current.y - this.ctx.lineWidth / 2
       });
-      this.dom.$cursor.css({ 'transform': transform, '-webkit-transform': transform, '-ms-transform': transform });
+      this.dom.$cursor.css({ transform: transform, '-webkit-transform': transform, '-ms-transform': transform });
       this.dom.$cursor.removeClass('drawing-board-utils-hidden');
     } else {
       this.dom.$cursor.addClass('drawing-board-utils-hidden');

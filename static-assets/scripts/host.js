@@ -329,8 +329,6 @@
 
   amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function(config) {
     sessionStorage.setItem('pto-on', '');
-    /*var PreviewToolsOffEvent = new YAHOO.util.CustomEvent("cstudio-preview-tools-off", CStudioAuthoring);
-    PreviewToolsOffEvent.fire();*/
     var el = YDom.get('acn-preview-tools-container');
     YDom.removeClass(el.children[0], 'icon-light-blue');
     YDom.addClass(el.children[0], 'icon-default');
