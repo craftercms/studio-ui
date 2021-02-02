@@ -14,47 +14,94 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import {
-  LOG_IN,
-  LOG_OUT,
+  login,
   loginComplete,
   loginFailed,
-  logoutComplete,
-  logoutFailed,
-  VALIDATE_SESSION,
-  validateSessionComplete,
-  validateSessionFailed
+  logout,
+  refreshAuthToken,
+  refreshAuthTokenComplete,
+  sharedWorkerTimeout,
+  sharedWorkerToken,
+  sharedWorkerUnauthenticated
 } from '../actions/auth';
-import { map, switchMap, tap } from 'rxjs/operators';
-import { StandardAction } from '../../models/StandardAction';
-import GlobalState from '../../models/GlobalState';
+import { catchError, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
-import { setRequestForgeryToken } from '../../utils/auth';
+import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
+import { CrafterCMSEpic } from '../store';
+import { messageSharedWorker, storeInitialized } from '../actions/system';
+import { sessionTimeout } from '../actions/user';
+import Cookies from 'js-cookie';
+import { fetchAuthenticationType } from '../../services/auth';
 
-const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) =>
-  action$.pipe(
-    ofType(LOG_IN),
-    switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
-  );
-
-const logout: Epic = (action$) =>
-  action$.pipe(
-    ofType(LOG_OUT),
-    switchMap(() => auth.logout().pipe(map(logoutComplete), catchAjaxError(logoutFailed)))
-  );
-
-const validateSession: Epic = (action$) =>
-  action$.pipe(
-    ofType(VALIDATE_SESSION),
-    switchMap(() =>
-      auth.validateSession().pipe(
-        tap((isValid) => !isValid && setRequestForgeryToken()),
-        map(validateSessionComplete),
-        catchAjaxError(validateSessionFailed)
-      )
+const epics: CrafterCMSEpic[] = [
+  (action$) =>
+    action$.pipe(
+      ofType(login.type),
+      switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(logout.type),
+      withLatestFrom(state$),
+      // Spring requires regular post for logout....
+      // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
+      tap(([, state]) => {
+        Cookies.set('userSession', null);
+        const tokenField = document.createElement('input');
+        tokenField.type = 'hidden';
+        tokenField.name = state.env.xsrfArgument;
+        tokenField.value = getRequestForgeryToken();
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = state.env.logoutUrl;
+        form.appendChild(tokenField);
+        document.body.appendChild(form);
+        // The timeout purpose is to avoid immediate submission stopping
+        // the logout message from getting to the Service Worker
+        setTimeout(() => form.submit());
+      }),
+      map(() => messageSharedWorker(logout()))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(sessionTimeout.type),
+      tap(() => setRequestForgeryToken()),
+      map(() => messageSharedWorker(sharedWorkerTimeout()))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(sharedWorkerToken.type),
+      map(({ payload }) => refreshAuthTokenComplete(payload))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(sharedWorkerUnauthenticated.type),
+      // This call will fail. We need the new set of auth cookies to be set
+      // on this window so that if login attempted from the re-login dialog,
+      // it won't fail due to outdated XSRF/auth cookies.
+      switchMap(() => fetchAuthenticationType().pipe(catchError(() => []))),
+      tap(() => setRequestForgeryToken()),
+      ignoreElements()
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
+      // Note refreshAuthTokenComplete & storeInitialized payload signatures are different.
+      tap(({ payload }) => {
+        const auth = payload.auth ?? payload;
+        const token = auth.token;
+        setJwt(token);
+      }),
+      ignoreElements()
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(loginComplete.type),
+      map(() => messageSharedWorker(refreshAuthToken()))
     )
-  );
+];
 
-export default [login, logout, validateSession] as Epic[];
+export default epics;

@@ -156,14 +156,10 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     // Render the Dialog
     upload_dialog.render();
 
-    var filenameInput = document.getElementById('uploadFileNameId');
-    YAHOO.util.Event.addListener(filenameInput, 'change', this.uploadFileEvent);
-
     var eventParams = {
       self: this
     };
 
-    YAHOO.util.Event.addListener('uploadButton', 'click', this.uploadPopupSubmit, eventParams);
     YAHOO.util.Event.addListener('uploadCancelButton', 'click', this.uploadPopupCancel);
 
     $('body').on('keyup', '#cstudio-wcm-popup-div', function(e) {
@@ -226,123 +222,6 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     });
 
     return upload_dialog;
-  },
-
-  /**
-   * event fired when the uploadFileNameId is changed
-   */
-  uploadFileEvent: function(event) {
-    var uploadButton = document.getElementById('uploadButton');
-    if (this.value != '') {
-      uploadButton.disabled = false;
-    } else {
-      uploadButton.disabled = true;
-    }
-  },
-
-  /**
-   * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
-   * by using the getPermissions Service call
-   */
-  uploadPopupSubmit: function(event, args) {
-    var path = args.self.path;
-    var filename = document.getElementById('uploadFileNameId').value.replace('C:\\fakepath\\', '');
-    if (filename.split('\\').length > 1) {
-      filename = filename.split('\\')[filename.split('\\').length - 1];
-    }
-    var basePath = path;
-    path = basePath ? basePath + '/' + filename : filename;
-
-    CStudioAuthoring.Dialogs.UploadS3Dialog.uploadFile(args);
-
-    YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
-  },
-
-  /**
-   * upload file when upload pressed
-   */
-  uploadFile: function(args) {
-    var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
-    var form = $('#asset_upload_form')[0];
-    var data = new FormData(form);
-
-    serviceUri +=
-      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
-    $.ajax({
-      enctype: 'multipart/form-data',
-      processData: false, // Important!
-      contentType: false,
-      cache: false,
-      type: 'POST',
-      url: serviceUri,
-      data: data,
-      success: function(item) {
-        var r = item.item,
-          response = r.url ? r.url : r;
-
-        CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
-        if (r.fileExtension) {
-          r.fileExtension = r.fileExtension ? r.fileExtension.substring(r.fileExtension.lastIndexOf('.') + 1) : null;
-        }
-        args.self.callback.success(response);
-      },
-      error: function(err) {
-        CStudioAuthoring.Operations.showSimpleDialog(
-          'error-dialog',
-          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          'Notification',
-          err.response.message,
-          null,
-          YAHOO.widget.SimpleDialog.ICON_BLOCK,
-          'studioDialog'
-        );
-      }
-    });
-  },
-
-  /**
-   *
-   */
-  overwritePopupSubmit: function(event, args) {
-    var callback = {
-      success: function(response) {
-        var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
-        var form = $('#asset_upload_form')[0];
-        var data = new FormData(form);
-
-        serviceUri +=
-          '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
-
-        $.ajax({
-          enctype: 'multipart/form-data',
-          processData: false, // Important!
-          contentType: false,
-          cache: false,
-          type: 'POST',
-          url: serviceUri,
-          data: data,
-          success: function(item) {
-            CStudioAuthoring.Operations.showSimpleDialog(
-              'upload-dialog',
-              CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              'Notification',
-              item.response.message,
-              null,
-              YAHOO.widget.SimpleDialog.ICON_INFO,
-              'success studioDialog'
-            );
-          },
-          error: function(err) {
-            CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
-            args.self.callback.success(err.item);
-          }
-        });
-      },
-
-      failure: function() {}
-    };
-
-    CStudioAuthoring.Service.deleteContentForPathService(args.self.site, args.self.path, callback);
   },
 
   /**

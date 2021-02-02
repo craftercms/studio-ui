@@ -14,19 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy } from 'react';
+import React, { lazy, Suspense } from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 import crafterIconUrl from '../assets/crafter-icon.svg';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../styles/palette';
 import AuthBoundary from './AuthBoundary';
 
-// eslint-disable-next-line
 const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
 
 export default function App() {
   return Boolean(process.env.REACT_APP_OMIT_BRIDGE) ? (
-    <DevServerRoot />
+    <Suspense fallback="">
+      <DevServerRoot />
+    </Suspense>
   ) : (
     <AuthBoundary>
       <CrafterCMSNextBridge>

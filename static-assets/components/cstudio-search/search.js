@@ -55,7 +55,7 @@
       $(window.frameElement.parentElement)
         .closest('.studio-ice-dialog')
         .parent()
-        .remove(); //TODO: find a better way
+        .remove(); // TODO: find a better way
     });
   };
 
@@ -117,15 +117,15 @@
               var selectedContentTOs = CStudioAuthoring.SelectedContent.getSelectedContent();
               openerChildSearchMgr.signalSearchClose(searchId, selectedContentTOs);
             } else {
-              //TODO PUT THIS BACK
-              //alert("no success callback provided for seach: " + searchId);
+              // TODO PUT THIS BACK
+              // alert("no success callback provided for seach: " + searchId);
             }
 
             window.close();
             $(window.frameElement.parentElement)
               .closest('.studio-ice-dialog')
               .parent()
-              .remove(); //TODO: find a better way
+              .remove(); // TODO: find a better way
           } else {
             CStudioAuthoring.Operations.showSimpleDialog(
               'lookUpChildError-dialog',
@@ -143,7 +143,7 @@
                     $(window.frameElement.parentElement)
                       .closest('.studio-ice-dialog')
                       .parent()
-                      .remove(); //TODO: find a better way
+                      .remove(); // TODO: find a better way
                   },
                   isDefault: false
                 }
@@ -168,7 +168,7 @@
                   $(window.frameElement.parentElement)
                     .closest('.studio-ice-dialog')
                     .parent()
-                    .remove(); //TODO: find a better way
+                    .remove(); // TODO: find a better way
                 },
                 isDefault: false
               }
@@ -185,7 +185,7 @@
       $(window.frameElement.parentElement)
         .closest('.studio-ice-dialog')
         .parent()
-        .remove(); //TODO: find a better way
+        .remove(); // TODO: find a better way
     }
   };
 })(window, jQuery, Handlebars);

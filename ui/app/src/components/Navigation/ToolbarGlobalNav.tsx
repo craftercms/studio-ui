@@ -20,7 +20,6 @@ import CrafterChevron from '../Icons/CrafterChevron';
 import GlobalNav from './GlobalNav';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
-import { getLogoutInfoURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
 import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList, useSystemVersion } from '../../utils/hooks';
 import palette from '../../styles/palette';
@@ -76,10 +75,7 @@ const messages = defineMessages({
   }
 });
 
-interface ToolBarGlobalNavProps {
-  authHeaders?: string;
-  authSaml?: string;
-}
+interface ToolBarGlobalNavProps {}
 
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const user = useSelection<GlobalState['user']>((state) => state.user);
@@ -88,19 +84,12 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const onMenuClose = () => setAnchor(null);
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
-  const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
-  const { authoringBase } = useEnv();
+  const { authoringBase, logoutUrl } = useEnv();
   const version = useSystemVersion();
   const sites = useSiteList();
   const dispatch = useDispatch();
 
   useMount(() => {
-    if (user.authType === authHeaders || user.authType === authSaml) {
-      getLogoutInfoURL().subscribe((response) => {
-        setLogoutUrl(response.logoutUrl ?? null);
-      });
-    }
     if (sites === null) {
       dispatch(fetchSites());
     }

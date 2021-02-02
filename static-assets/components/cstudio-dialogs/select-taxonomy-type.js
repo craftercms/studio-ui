@@ -126,7 +126,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
             dialogWraper.style.width = newWidth + 10 + 'px';
             dialogWraper.style.height = newHeight + 10 + 'px';
 
-            //reset content type drop down and preview image size
+            // reset content type drop down and preview image size
             var widthDiff = parseInt((newWidth - 600) / 2, 10);
             var heightDiff = newHeight - 440;
             var oDivTmpName = YDom.get('templateName');
@@ -158,7 +158,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
         YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
 
-      //set focus on OK Button.
+      // set focus on OK Button.
       if (YDom.get('submitWCMPopup')) {
         YDom.get('submitWCMPopup').focus();
       }
@@ -212,7 +212,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
       var option = document.createElement('option');
       option.text = contentTypes[j].label;
       option.value = contentTypes[j].type;
-      if (j == 0) option.selected = 'selected'; //first template will be selected.
+      if (j == 0) option.selected = 'selected'; // first template will be selected.
       contentTypesSelect.options.add(option);
     }
 

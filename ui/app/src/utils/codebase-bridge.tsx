@@ -31,18 +31,32 @@ import * as sites from '../services/sites';
 import * as marketplace from '../services/marketplace';
 import * as publishing from '../services/publishing';
 import * as content from '../services/content';
-import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
-import { IntlShape } from 'react-intl/src/types';
-import * as messages from './i18n-legacy';
-import { translateElements } from './i18n-legacy';
+import * as users from '../services/users';
+import * as groups from '../services/groups';
+import * as clusters from '../services/clusters';
+import * as audit from '../services/audit';
+import * as logs from '../services/logs';
+import * as repositories from '../services/repositories';
+import * as contentTypes from '../services/contentTypes';
+import * as environment from '../services/environment';
+import * as dashboard from '../services/dashboard';
+import * as aws from '../services/aws';
+import * as cmis from '../services/cmis';
+import * as webdav from '../services/webdav';
+import * as box from '../services/box';
 import * as babel from './babelHelpers-legacy';
 import * as security from '../services/security';
 import * as authService from '../services/auth';
 import * as translation from '../services/translation';
+import * as monitoring from '../services/monitoring';
+import { forkJoin, fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { IntlShape } from 'react-intl/src/types';
+import * as messages from './i18n-legacy';
+import { translateElements } from './i18n-legacy';
 import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
-import createStore, { CrafterCMSStore } from '../state/store';
+import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
@@ -94,6 +108,7 @@ interface CodebaseBridge {
     palette: any;
     store: CrafterCMSStore;
     getHostToHostBus(): Subject<StandardAction>;
+    getStore(): Observable<CrafterCMSStore>;
   };
 }
 
@@ -115,7 +130,7 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { debounceTime, filter, map, switchMap, take }
+      operators: { debounceTime, filter, map, switchMap, take, tap }
     },
 
     components: {
@@ -155,6 +170,7 @@ export function createCodebaseBridge() {
           default: module.CharCountStatusContainer
         }))
       ),
+      TokenManagement: lazy(() => import('../components/TokenManagement')),
       PluginManagement: lazy(() => import('../components/PluginManagement'))
     },
 
@@ -163,7 +179,8 @@ export function createCodebaseBridge() {
       defaultThemeOptions,
       palette,
       store: null,
-      getHostToHostBus
+      getHostToHostBus,
+      getStore
     },
 
     mui: {
@@ -205,10 +222,23 @@ export function createCodebaseBridge() {
       content,
       auth: authService,
       security,
-      translation
+      translation,
+      monitoring,
+      users,
+      groups,
+      clusters,
+      audit,
+      logs,
+      repositories,
+      contentTypes,
+      environment,
+      dashboard,
+      aws,
+      cmis,
+      webdav,
+      box
     },
 
-    // Mechanics
     render(
       container: string | Element,
       component: string | JSXElementConstructor<any>,
@@ -321,9 +351,13 @@ export function createCodebaseBridge() {
   // @ts-ignore
   window.CrafterCMSNext = Bridge;
 
-  createStore().subscribe((store) => {
-    Bridge.system.store = store;
-  });
+  // The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
+  // and the store creation is dependant on successfully retrieving the JWT.
+  if (!window.location.pathname.includes('/studio/login')) {
+    getStore().subscribe((store) => {
+      Bridge.system.store = store;
+    });
+  }
 }
 
 intl$.subscribe(updateIntl);

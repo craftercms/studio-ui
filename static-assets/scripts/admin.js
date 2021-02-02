@@ -32,126 +32,83 @@
   app.service('adminService', [
     '$http',
     'Constants',
-    '$cookies',
-    '$timeout',
-    '$window',
-    function($http, Constants, $cookies, $timeout, $window) {
-      var me = this;
+    function($http, Constants) {
+      let usersApi = CrafterCMSNext.services.users;
+
       this.maxInt = 32000;
 
-      this.getSites = function() {
-        return $http.get(users('get-sites-3'));
-      };
+      // USERS
 
-      //USERS
-
-      this.getUsers = function(params, isNewApi) {
-        if (params) {
-          return $http.get(users2(), {
-            params: params
-          });
-        } else {
-          return $http.get(users2());
-        }
+      this.getUsers = function(params) {
+        return usersApi.fetchAll(params).toPromise();
       };
 
       this.getUser = function(id) {
-        return $http.get(usersActions(id));
+        return usersApi.fetchByUsername(id).toPromise();
       };
 
       this.createUser = function(user) {
         delete user.passwordVerification;
-        return $http.post(users2(), user);
+        return usersApi.create(user).toPromise();
       };
 
       this.editUser = function(user) {
-        return $http.patch(users2(), user);
+        return usersApi.update(user).toPromise();
       };
 
       this.deleteUser = function(user) {
-        return $http.delete(users2('id=' + user.id));
-      };
-
-      this.getUserStatus = function(username) {
-        return $http.get(users('status', 'username=' + username));
+        return usersApi.trash(user.username).toPromise();
       };
 
       this.toggleUserStatus = function(user, action) {
-        var body = {
-          ids: [user.id],
-          usernames: [user.username]
-        };
-        //return $http.patch(users(status), user);
-        return $http.patch(usersActions(action), body);
+        return (action === 'enable' ? usersApi.enable(user.username) : usersApi.disable(user.username)).toPromise();
       };
 
-      this.getSitesPerUser = function(id, params) {
-        return $http.get(
-          usersActions(
-            id + '/sites',
-            'id=' + params.id + '&offset=' + params.offset + '&limit=' + params.limit + '&sort=' + params.sort
-          )
-        );
-      };
-
-      this.setPassword = function(data) {
-        return $http.post(usersActions('/set_password'), data);
-      };
-
-      //Allow the administrator to reset Crafter Studio’s user password provided.
+      // Allow the administrator to reset Crafter Studio’s user password provided.
       this.resetPassword = function(data) {
-        return $http.post(usersActions(data.username + '/reset_password'), data);
+        return usersApi.setPassword(data.username, data.new).toPromise();
       };
 
       this.changePassword = function(data) {
-        return $http.post(usersActions('/me/change_password'), data);
+        return usersApi.setMyPassword(data.username, data.current, data.new).toPromise();
       };
 
-      this.forgotPassword = function(username) {
-        return $http.get(usersActions('/forgot_password', 'username=' + username));
-      };
+      // CLUSTERS
+      let clustersApi = CrafterCMSNext.services.clusters;
 
-      //CLUSTERS
-      this.getClusterMembers = function(id) {
-        return $http.get(cluster(id));
+      this.getClusterMembers = function() {
+        return clustersApi.fetchMembers().toPromise();
       };
 
       this.deleteClusterMember = function(clusterParam) {
-        return $http.delete(cluster('id=' + clusterParam.id));
+        return clustersApi.deleteMember(clusterParam.id).toPromise();
       };
 
-      //GROUPS
+      // GROUPS
+      let groupsApi = CrafterCMSNext.services.groups;
 
       this.getGroups = function(params) {
-        return $http.get(groups2(), {
-          params: params
-        });
-      };
-
-      this.getGroup = function(group) {
-        return $http.get(groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id));
+        return groupsApi.fetchAll(params).toPromise();
       };
 
       this.getUsersFromGroup = function(group, params) {
-        return $http.get(groupsMembers(group.id, true), { params });
+        return groupsApi.fetchUsersFromGroup(group.id, params).toPromise();
       };
 
       this.deleteUserFromGroup = function(groupId, params) {
-        return $http.delete(groupsMembers(groupId, true), {
-          params: params
-        });
+        return groupsApi.deleteUserFromGroup(groupId, params.userId, params.username).toPromise();
       };
 
       this.createGroup = function(group) {
-        return $http.post(groups2(), group);
+        return groupsApi.create(group).toPromise();
       };
 
       this.editGroup = function(group) {
-        return $http.patch(groups2(), group);
+        return groupsApi.update(group).toPromise();
       };
 
       this.deleteGroup = function(group) {
-        return $http.delete(groups2('id=' + group.id));
+        return groupsApi.trash(group.id).toPromise();
       };
 
       this.addUserToGroup = function(data) {
@@ -159,88 +116,77 @@
           ids: [data.userId.toString()],
           usernames: [data.username]
         };
-        return $http.post(groupsMembers(data.groupId, true), body);
+        return groupsApi.addUsersToGroup(data.groupId, body).toPromise();
       };
 
-      //REPOSITORIES
+      // REPOSITORIES
+      let repositoriesApi = CrafterCMSNext.services.repositories;
 
       this.getRepositories = function(data) {
-        return $http.get(repositories('list_remotes', 'siteId=' + data.site));
+        return repositoriesApi.fetchRepositories(data.site).toPromise();
       };
 
       this.createRepository = function(data) {
-        return $http.post(repositories('add_remote'), data);
+        return repositoriesApi.addRemote(data).toPromise();
       };
 
       this.deleteRepository = function(data) {
-        return $http.post(repositories('remove_remote'), data);
+        return repositoriesApi.deleteRemote(data.siteId, data.remoteName).toPromise();
       };
 
       this.pullRepository = function(data) {
-        return $http.post(repositories('pull_from_remote'), data);
+        return repositoriesApi.pull(data).toPromise();
       };
 
       this.pushRepository = function(data) {
-        return $http.post(repositories('push_to_remote'), data);
+        return repositoriesApi.push(data).toPromise();
       };
 
-      this.repositoryStatus = function(data) {
-        return $http.get(repositories('status', 'siteId=' + data));
+      this.repositoryStatus = function(site) {
+        return repositoriesApi.status(site).toPromise();
       };
 
       this.resolveConflict = function(data) {
-        return $http.post(repositories('resolve_conflict'), data);
+        return repositoriesApi.resolveConflict(data.siteId, data.path, data.resolution).toPromise();
       };
 
       this.diffConflictedFile = function(data) {
-        return $http.get(repositories('diff_conflicted_file'), {
-          params: data
-        });
+        return repositoriesApi.diffConflictedFile(data.siteId, data.path).toPromise();
       };
 
       this.commitResolution = function(data) {
-        return $http.post(repositories('commit_resolution'), data);
+        return repositoriesApi.commitResolution(data.siteId, data.commitMessage).toPromise();
       };
 
       this.cancelFailedPull = function(data) {
-        return $http.post(repositories('cancel_failed_pull'), data);
+        return repositoriesApi.cancelFailedPull(data.siteId).toPromise();
       };
 
-      //AUDIT
+      // AUDIT
+      let auditApi = CrafterCMSNext.services.audit;
 
       this.getAudit = function(data) {
-        return $http.get(audit(), {
-          params: data
-        });
+        return auditApi.fetchAudit(data).toPromise();
       };
 
       this.getSpecificAudit = function(auditId) {
-        return $http.get(audit(auditId));
+        return auditApi.fetchSpecificAudit(auditId).toPromise();
       };
 
-      this.getTimeZone = function(data) {
-        return $http.get(api('get-configuration'), {
-          params: data
-        });
-      };
-
-      //LOGGING
+      // LOGGING
+      let logsApi = CrafterCMSNext.services.logs;
 
       this.getLoggers = function() {
-        return $http.get(Constants.SERVICE + 'server/get-loggers.json');
+        return logsApi.fetchLoggers().toPromise();
       };
 
       this.setLogger = function(data) {
-        return $http.get(Constants.SERVICE + 'server/set-logger-state.json', {
-          params: data
-        });
+        return logsApi.setLogger(data.logger, data.level).toPromise();
       };
 
       // LOG CONSOLE
       this.getLogStudio = function(data) {
-        return $http.get(Constants.SERVICE2 + 'monitoring/log', {
-          params: data
-        });
+        return logsApi.fetchLogs(data.since).toPromise();
       };
 
       this.getLogPreview = function(data) {
@@ -249,133 +195,52 @@
         });
       };
 
-      //PUBLISHING
+      // PUBLISHING
+      let publishingApi = CrafterCMSNext.services.publishing;
+
       this.getPublishStatus = function(site) {
-        return $http.get(publish('status', 'site_id=' + site));
+        return publishingApi.status(site).toPromise();
       };
 
       this.startPublishStatus = function(site) {
-        return $http.post(publish('start'), site);
+        return publishingApi.start(site.site_id).toPromise();
       };
 
       this.stopPublishStatus = function(site) {
-        return $http.post(publish('stop'), site);
+        return publishingApi.stop(site.site_id).toPromise();
       };
 
-      //BULKPUBLISH
+      this.getTimeZone = function(data) {
+        return CrafterCMSNext.util.ajax
+          .get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${data.site}&path=${data.path}`)
+          .toPromise();
+      };
+
+      // BULKPUBLISH
       this.getPublishingChannels = function(site) {
-        return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
+        return publishingApi.fetchPublishingTargets(site).toPromise();
       };
 
-      this.bulkGoLive = function(site, path, environmet, submissionComment) {
-        environmet = environmet ? environmet : Constants.BULK_ENVIRONMENT;
+      this.bulkGoLive = function(site, path, environment, submissionComment) {
+        environment = environment ? environment : Constants.BULK_ENVIRONMENT;
         submissionComment = submissionComment ? submissionComment : '';
-        return $http.post(
-          bulkPublish(
-            'bulk-golive',
-            'site_id=' + site + '&path=' + path + '&environment=' + environmet + '&comment=' + submissionComment
-          )
-        );
+
+        return publishingApi.bulkGoLive(site, path, environment, submissionComment).toPromise();
       };
 
-      //COMMITSPUBLISH
+      // COMMITSPUBLISH
 
       this.commitsPublish = function(data) {
-        //return $http.post(publish('commits', 'site_id=' + site + "&commit_ids=" + commitIds + "&environment=" + environmet));
-        return $http.post(publish('commits'), data);
+        return publishingApi
+          .publishByCommits(data.site_id, data.commit_ids, data.environment, data.comment)
+          .toPromise();
       };
-
-      function api(action) {
-        return Constants.SERVICE + 'site/' + action + '.json';
-      }
-
-      function users(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'user/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'user/' + action + '.json';
-        }
-      }
-
-      function users2(params) {
-        if (params) {
-          return Constants.SERVICE2 + 'users?' + params;
-        } else {
-          return Constants.SERVICE2 + 'users';
-        }
-      }
-
-      function usersActions(action, params) {
-        if (params) {
-          return Constants.SERVICE2 + 'users/' + action + params;
-        } else {
-          return Constants.SERVICE2 + 'users/' + action;
-        }
-      }
-
-      function cluster(params) {
-        if (params) {
-          return Constants.SERVICE2 + 'cluster?' + params;
-        } else {
-          return Constants.SERVICE2 + 'cluster';
-        }
-      }
-
-      function publish(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'publish/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'publish/' + action + '.json';
-        }
-      }
-
-      function bulkPublish(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'deployment/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'deployment/' + action + '.json';
-        }
-      }
-
-      function groups(action, params) {
-        if (params) {
-          return Constants.SERVICE + 'group/' + action + '.json?' + params;
-        } else {
-          return Constants.SERVICE + 'group/' + action + '.json';
-        }
-      }
-      function groups2(params) {
-        if (params) {
-          return Constants.SERVICE2 + 'groups?' + params;
-        } else {
-          return Constants.SERVICE2 + 'groups';
-        }
-      }
-      function groupsMembers(id, isMember, params) {
-        var url = Constants.SERVICE2 + 'groups/' + id;
-        if (isMember) {
-          url += '/members';
-        }
-        if (params) {
-          url += '?' + params;
-        }
-        return url;
-        //'/members.json?offset=0&limit=1000&sort=desc';
-      }
 
       function repositories(action, params) {
         if (params) {
           return Constants.SERVICE2 + 'repository/' + action + '?' + params;
         } else {
           return Constants.SERVICE2 + 'repository/' + action;
-        }
-      }
-
-      function audit(id) {
-        if (id) {
-          return Constants.SERVICE2 + 'audit/' + id;
-        } else {
-          return Constants.SERVICE2 + 'audit';
         }
       }
 
@@ -423,7 +288,6 @@
       audit.allTimeZones = moment.tz.names();
       audit.sort = 'date';
       $scope.originValues = [$translate.instant('admin.audit.ALL_ORIGINS'), 'API', 'GIT'];
-      $scope.sites = CrafterCMSNext.system.store.getState().sites.byId;
 
       var delayTimer;
 
@@ -438,15 +302,15 @@
       };
 
       var getUsers = function(site) {
-        adminService
-          .getUsers(site)
-          .success(function(data) {
+        adminService.getUsers(site).then(
+          function(data) {
             audit.users = data.users;
             audit.userSelected = '';
-          })
-          .error(function() {
+          },
+          function() {
             audit.users = null;
-          });
+          }
+        );
       };
 
       var getAudit = function(site) {
@@ -529,27 +393,27 @@
             params.limit = audit.logsPerPage;
           }
 
-          adminService
-            .getAudit(params)
-            .success(function(data) {
+          adminService.getAudit(params).then(
+            function(data) {
               audit.totalLogs = data.total;
-              audit.logs = data.auditLog;
-            })
-            .error(function(err) {
+              audit.logs = data;
+              $scope.$apply();
+            },
+            function(err) {
               audit.totalLogs = 0;
               audit.logs = '';
-            });
+            }
+          );
         }
       };
 
       var getSpecificAudit = function(id) {
         var collapseContainer = $('#collapseContainer' + id);
         var html;
-        adminService
-          .getSpecificAudit(id)
-          .success(function(data) {
-            var parameters = data.auditLog.parameters;
-            //parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
+        adminService.getSpecificAudit(id).then(
+          function(data) {
+            var parameters = data.parameters;
+            // parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
 
             if (parameters.length > 0) {
               html = "<div class='mt10 has-children'>";
@@ -615,13 +479,14 @@
 
             collapseContainer.append(html);
             collapseMethod(id);
-          })
-          .error(function(err) {
+          },
+          function(err) {
             html =
               "<div class='mt10 has-children'><span>" + $translate.instant('admin.audit.ERROR_PARAM') + '</span></div>';
             collapseContainer.append(html);
             collapseMethod(id);
-          });
+          }
+        );
       };
 
       audit.initCalendar = function() {
@@ -731,18 +596,10 @@
         }
       };
 
-      if (!$scope.sites) {
-        let unsubscribe;
-        unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
-          $scope.sites = CrafterCMSNext.system.store.getState().sites.byId;
-          if ($scope.sites) {
-            unsubscribe();
-            audit.getAuditInfo();
-          }
-        });
-      } else {
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        $scope.sites = store.getState().sites.byId;
         audit.getAuditInfo();
-      }
+      });
     }
   ]);
 
@@ -756,8 +613,11 @@
       $scope.logging = {};
       var logging = $scope.logging;
 
-      adminService.getLoggers().success(function(data) {
-        logging.levels = data;
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        adminService.getLoggers().then(function(data) {
+          logging.levels = data;
+          $scope.$apply();
+        });
       });
 
       logging.setLevel = function(log, level) {
@@ -766,9 +626,10 @@
             logger: log,
             level: level
           })
-          .success(function() {
-            adminService.getLoggers().success(function(data) {
+          .then(function() {
+            adminService.getLoggers().then(function(data) {
               logging.levels = data;
+              $scope.$apply();
             });
           });
       };
@@ -806,7 +667,7 @@
       };
 
       logs.stopTimer = function() {
-        //Cancel the Timer.
+        // Cancel the Timer.
         if (angular.isDefined(logs.timer)) {
           $interval.cancel(logs.timer);
         }
@@ -842,10 +703,11 @@
           data.crafterSite = data.site;
         }
 
-        logService(data).success(function(data) {
-          var events = data.events ? data.events : data;
+        logService(data).then(function(data) {
+          var events = data;
           if (events.length > 0) {
             logs.entries = logs.entries.concat(events);
+            $scope.$apply();
 
             $timeout(
               function() {
@@ -871,7 +733,9 @@
         logs.running = !logs.running;
       };
 
-      logs.getLogs(logs.since);
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        logs.getLogs(logs.since);
+      });
 
       $scope.$on('$viewContentLoaded', function() {
         logs.startTimer();
@@ -960,16 +824,18 @@
       $location,
       moment
     ) {
-      //PUBLISHING
+      // PUBLISHING
 
-      //MODAL
+      // MODAL
 
       $scope.publish = {};
       var currentIconColor;
       var publish = $scope.publish;
       publish.error = '';
 
-      publish.maxCommentLength = CrafterCMSNext.system.store.getState().configuration.publishing.submission.commentMaxLength;
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        publish.maxCommentLength = store.getState().configuration.publishing.submission.commentMaxLength;
+      });
 
       publish.initQueque = function() {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
@@ -983,7 +849,7 @@
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
           backdrop: 'static',
           keyboard: true,
-          //controller: 'PublishingCtrl',
+          // controller: 'PublishingCtrl',
           scope: $scope,
           size: size ? size : ''
         });
@@ -1009,36 +875,9 @@
       publish.isValidateCommentOn = false;
       publish.isValidateCommitPublishCommentOn = false;
 
-      adminService
-        .getTimeZone({
-          site: publish.site,
-          path: '/site-config.xml'
-        })
-        .success(function(data) {
-          var publishing = data['publishing'];
-          publish.timeZone = data['default-timezone'];
-          publish.isValidateCommentOn =
-            publishing && publishing['comments']
-              ? (publishing['comments']['required'] === 'true' &&
-                  publishing['comments']['bulk-publish-required'] !== 'false') ||
-                publishing['comments']['bulk-publish-required'] === 'true'
-                ? true
-                : false
-              : false;
-          publish.isValidateCommitPublishCommentOn =
-            publishing && publishing['comments']
-              ? (publishing['comments']['required'] === 'true' &&
-                  publishing['comments']['publish-by-commit-required'] !== 'false') ||
-                publishing['comments']['publish-by-commit-required'] === 'true'
-                ? true
-                : false
-              : false;
-        });
-
       publish.getPublish = function() {
-        adminService
-          .getPublishStatus(publish.site)
-          .success(function(data) {
+        adminService.getPublishStatus(publish.site).then(
+          function(data) {
             publish.stopDisabled = false;
             publish.startDisabled = false;
             switch (data.status.toLowerCase()) {
@@ -1064,8 +903,10 @@
             publish.iconColor = currentIconColor;
             publish.message = data.message;
             publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
-          })
-          .error(function(err) {});
+            $scope.$apply();
+          },
+          function(err) {}
+        );
       };
 
       var renderStatusView = function() {
@@ -1078,45 +919,44 @@
           false
         );
       };
-      renderStatusView();
 
       publish.startPublish = function() {
         var requestAsString = { site_id: publish.site };
-        adminService
-          .startPublishStatus(requestAsString)
-          .success(function(data) {
+        adminService.startPublishStatus(requestAsString).then(
+          function(data) {
             publish.getPublish(requestAsString);
             getTopLegacyWindow().postMessage('status-changed', '*');
-          })
-          .error(function(err) {
+          },
+          function(err) {
             if (err.message) {
               publish.error = err.message;
             } else {
               publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
             }
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
-          });
+          }
+        );
       };
 
       publish.stopPublish = function() {
         var requestAsString = { site_id: publish.site };
-        adminService
-          .stopPublishStatus(requestAsString)
-          .success(function(data) {
+        adminService.stopPublishStatus(requestAsString).then(
+          function(data) {
             publish.getPublish(requestAsString);
             getTopLegacyWindow().postMessage('status-changed', '*');
-          })
-          .error(function(err) {
+          },
+          function(err) {
             if (err.message) {
               publish.error = err.message;
             } else {
               publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
             }
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
-          });
+          }
+        );
       };
 
-      //BULK PUBLISH
+      // BULK PUBLISH
 
       var currentIconColor;
       publish.channels;
@@ -1128,19 +968,21 @@
       publish.pathPublish = '';
 
       publish.getPublishingChannels = function() {
-        adminService
-          .getPublishingChannels(publish.site)
-          .success(function(data) {
-            publish.channels = data.availablePublishChannels;
+        adminService.getPublishingChannels(publish.site).then(
+          function(data) {
+            publish.channels = data;
             publish.selectedChannel = publish.channels[0].name.toString();
             publish.selectedChannelCommit = publish.channels[0].name.toString();
-          })
-          .error(function() {
+          },
+          function() {
             publish.channels = [];
-          });
+          }
+        );
       };
 
-      publish.getPublishingChannels();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        publish.getPublishingChannels();
+      });
 
       publish.bulkPublish = function() {
         $scope.adminModal = publish.showModal('confirmationModal.html', 'md');
@@ -1153,17 +995,19 @@
 
         adminService
           .bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
-          .success(function(data) {
-            publish.disable = false;
-            spinnerOverlay.close();
-            $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
-          })
-          .error(function(err) {
-            publish.error = err.message;
-            $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
-            spinnerOverlay.close();
-            publish.disable = false;
-          });
+          .then(
+            function() {
+              publish.disable = false;
+              spinnerOverlay.close();
+              $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
+            },
+            function(err) {
+              publish.error = err.message;
+              $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
+              spinnerOverlay.close();
+              publish.disable = false;
+            }
+          );
       };
 
       angular.element(document).ready(function() {
@@ -1174,12 +1018,12 @@
 
         document.getElementById('submissionComment').addEventListener('keyup', function(e) {
           CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-            commentLength: publish.submissionComment.length
+            commentLength: publish.submissionComment.length ? publish.submissionComment.length : 0
           });
         });
       });
 
-      //COMMITS PUBLISH
+      // COMMITS PUBLISH
 
       publish.commitIds;
       publish.publishComment = '';
@@ -1195,19 +1039,19 @@
         publish.commitIdsDisable = true;
         spinnerOverlay = $scope.spinnerOverlay();
 
-        adminService
-          .commitsPublish(data)
-          .success(function(data) {
+        adminService.commitsPublish(data).then(
+          function(data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
             $rootScope.showNotification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'));
-          })
-          .error(function(err) {
+          },
+          function(err) {
             publish.error = err.message;
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
             spinnerOverlay.close();
             publish.commitIdsDisable = false;
-          });
+          }
+        );
       };
 
       angular.element(document).ready(function() {
@@ -1218,9 +1062,38 @@
 
         document.getElementById('publishComment').addEventListener('keyup', function(e) {
           CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-            commentLength: publish.publishComment.length ?? 0
+            commentLength: publish.publishComment.length || 0
           });
         });
+      });
+
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        adminService
+          .getTimeZone({
+            site: publish.site,
+            path: '/site-config.xml'
+          })
+          .then(function(data) {
+            var publishing = data['publishing'];
+            publish.timeZone = data['default-timezone'];
+            publish.isValidateCommentOn =
+              publishing && publishing['comments']
+                ? (publishing['comments']['required'] === 'true' &&
+                    publishing['comments']['bulk-publish-required'] !== 'false') ||
+                  publishing['comments']['bulk-publish-required'] === 'true'
+                  ? true
+                  : false
+                : false;
+            publish.isValidateCommitPublishCommentOn =
+              publishing && publishing['comments']
+                ? (publishing['comments']['required'] === 'true' &&
+                    publishing['comments']['publish-by-commit-required'] !== 'false') ||
+                  publishing['comments']['publish-by-commit-required'] === 'true'
+                  ? true
+                  : false
+                : false;
+          });
+        renderStatusView();
       });
     }
   ]);
@@ -1327,7 +1200,7 @@
 
       this.init();
 
-      //table setup
+      // table setup
       users.itemsPerPage = 10;
       $scope.usersCollection = [];
 
@@ -1364,14 +1237,17 @@
           }
           params.sort = 'desc';
 
-          adminService.getUsers(params).success(function(data) {
+          adminService.getUsers(params).then(function(data) {
             users.totalLogs = data.total;
-            $scope.usersCollection = data.users;
+            $scope.usersCollection = data;
+            $scope.$apply();
           });
         }
       };
 
-      getUsers();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        getUsers();
+      });
 
       users.searchUser = function(query) {
         if ('' === query) {
@@ -1382,11 +1258,12 @@
           if (!users.searchdirty) {
             users.searchdirty = true;
 
-            adminService.getUsers().success(function(data) {
+            adminService.getUsers().then(function(data) {
               users.usersCollectionBackup = $scope.usersCollection;
               users.itemsPerPageBackup = users.itemsPerPage;
-              $scope.usersCollection = data.users;
+              $scope.usersCollection = data;
               users.itemsPerPage = adminService.maxInt;
+              $scope.$apply();
             });
           }
         }
@@ -1401,25 +1278,25 @@
         $scope.dialogEdit = false;
       };
       users.createUser = function(user) {
-        adminService
-          .createUser(user)
-          .success(function(data) {
+        adminService.createUser(user).then(
+          function(data) {
             $scope.hideModal();
-            user = data.user;
+            user = data;
             $scope.usersCollection.push(user);
             $scope.users.totalLogs++;
             $scope.users.pagination.goToLast();
-
             $rootScope.showNotification(formatMessage(usersAdminMessages.userCreated, { username: user.username }));
-          })
-          .error(function(response) {
+            $scope.$apply();
+          },
+          function(response) {
             $rootScope.showNotification(
               response.response.message + '. ' + response.response.remedialAction,
               null,
               null,
               'error'
             );
-          });
+          }
+        );
       };
       users.resetPasswordDialog = function(user) {
         $scope.editedUser = user;
@@ -1428,15 +1305,17 @@
 
         $scope.adminModal = $scope.showModal('resetPassword.html', null, null, 'modal-top-override modal-reset-pass');
 
-        adminService
-          .getUser(encodeURIComponent(user.username) + '.json')
-          .success(function(data) {
+        adminService.getUser(user.username).then(
+          function(data) {
+            data = { user: data };
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
-          })
-          .error(function(error) {
+            $scope.$apply();
+          },
+          function(error) {
             console.log(error);
-          });
+          }
+        );
       };
       users.editPassword = function(user) {
         user.password = user.newPassword;
@@ -1445,18 +1324,20 @@
             username: user.username,
             new: user.newPassword
           })
-          .success(function() {
-            $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
-            $scope.hideModal();
-          })
-          .error(function(error) {
-            $rootScope.showNotification(
-              error.response.message + '. ' + error.response.remedialAction,
-              null,
-              null,
-              'error'
-            );
-          });
+          .then(
+            function() {
+              $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
+              $scope.hideModal();
+            },
+            function(error) {
+              $rootScope.showNotification(
+                error.response.message + '. ' + error.response.remedialAction,
+                null,
+                null,
+                'error'
+              );
+            }
+          );
         delete user.newPassword;
       };
       users.editUserDialog = function(user) {
@@ -1468,16 +1349,18 @@
         $scope.dialogMode = 'EDIT';
         $scope.dialogEdit = true;
 
-        adminService
-          .getUser(encodeURIComponent(user.username) + '.json')
-          .success(function(data) {
+        adminService.getUser(user.username).then(
+          function(data) {
+            data = { user: data };
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
-          })
-          .error(function(error) {
+            $scope.$apply();
+          },
+          function(error) {
             console.log(error);
-            //TODO: properly display error
-          });
+            // TODO: properly display error
+          }
+        );
       };
       users.editUser = function(user) {
         var currentUser = {};
@@ -1490,9 +1373,8 @@
         currentUser.enabled = user.enabled;
         currentUser.externallyManaged = user.externallyManaged;
 
-        adminService
-          .editUser(currentUser)
-          .success(function(data) {
+        adminService.editUser(currentUser).then(
+          function(data) {
             var index = $scope.usersCollection.indexOf($scope.editedUser);
 
             if (index != -1) {
@@ -1502,15 +1384,16 @@
 
             $scope.hideModal();
             $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
-          })
-          .error(function(error) {
+          },
+          function(error) {
             $rootScope.showNotification(
               error.response.message + '. ' + error.response.remedialAction,
               null,
               null,
               'error'
             );
-          });
+          }
+        );
 
         users.toggleUserStatus(user);
       };
@@ -1521,39 +1404,41 @@
 
         $scope.adminModal = $scope.showModal('modalView.html');
 
-        adminService
-          .getUser(encodeURIComponent(user.username) + '.json')
-          .success(function(data) {
+        adminService.getUser(user.username).then(
+          function(data) {
+            data = { user: data };
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
-          })
-          .error(function(error) {
+            $scope.$apply();
+          },
+          function(error) {
             console.log(error);
-            //TODO: properly display error
-          });
+            // TODO: properly display error
+          }
+        );
       };
       users.toggleUserStatus = function(user) {
         var newStatus = $('#enabled').is(':checked') ? 'enable' : 'disable';
-        //user.status.enabled = $('#enabled').is(':checked');
+        // user.status.enabled = $('#enabled').is(':checked');
 
         adminService.toggleUserStatus(user, newStatus);
       };
       users.removeUser = function(user) {
         var deleteUser = function() {
-          adminService
-            .deleteUser(user)
-            .success(function(data) {
+          adminService.deleteUser(user).then(
+            function(data) {
               var index = $scope.usersCollection.indexOf(user);
               if (index !== -1) {
                 $scope.usersCollection.splice(index, 1);
                 $scope.users.totalLogs--;
               }
               $rootScope.showNotification(formatMessage(usersAdminMessages.userDeleted, { username: user.username }));
-            })
-            .error(function(data) {
+            },
+            function(data) {
               $scope.error = data.response.message;
               $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteUser;
@@ -1619,16 +1504,19 @@
       };
       this.init();
 
-      //table setup
+      // table setup
       $scope.membersCollection = [];
 
       clusters.getClusters = function() {
-        adminService.getClusterMembers().success(function(data) {
-          $scope.membersCollection = data.clusterMembers;
+        adminService.getClusterMembers().then(function(data) {
+          $scope.membersCollection = data;
+          $scope.$apply();
         });
       };
 
-      clusters.getClusters();
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        clusters.getClusters();
+      });
 
       clusters.viewClusterMember = function(clusterMember) {
         $scope.clusterMember = clusterMember;
@@ -1639,9 +1527,8 @@
       };
       clusters.removeClusterMember = function(clusterMember) {
         var deleteClusterMember = function() {
-          adminService
-            .deleteClusterMember(clusterMember)
-            .success(function(data) {
+          adminService.deleteClusterMember(clusterMember).then(
+            function(data) {
               var index = $scope.membersCollection.indexOf(clusterMember);
               if (index !== -1) {
                 $scope.membersCollection.splice(index, 1);
@@ -1651,11 +1538,12 @@
                   cluster: clusterMember.gitUrl
                 })
               );
-            })
-            .error(function(data) {
+            },
+            function(data) {
               $scope.error = data.response.message;
               $scope.adminModal = $scope.showModal('deleteClusterError.html', 'md', true);
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteClusterMember;
@@ -1728,12 +1616,12 @@
       };
       this.init();
 
-      //table setup
+      // table setup
       groups.itemsPerPage = 10;
       groups.members.itemsPerPage = 10;
       $scope.groupsCollection = [];
 
-      /////////////////// MULTIPLE GROUPS VIEW ////////////////////
+      // //////////////// MULTIPLE GROUPS VIEW ////////////////////
 
       var getGroups = function() {
         groups.totalLogs = 0;
@@ -1756,7 +1644,7 @@
         function getResultsPage(pageNumber) {
           var params = {};
 
-          //params.site_id = site;
+          // params.site_id = site;
 
           if (groups.totalLogs && groups.totalLogs > 0) {
             var offset = (pageNumber - 1) * groups.itemsPerPage,
@@ -1768,13 +1656,17 @@
             params.limit = groups.itemsPerPage;
           }
 
-          adminService.getGroups(params).success(function(data) {
+          adminService.getGroups(params).then(function(data) {
             groups.totalLogs = data.total;
-            $scope.groupsCollection = data.groups;
+            $scope.groupsCollection = data;
+            $scope.$apply();
           });
         }
       };
-      getGroups();
+
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        getGroups();
+      });
 
       groups.searchGroup = function(query) {
         if ('' === query) {
@@ -1785,10 +1677,10 @@
           if (!groups.searchdirty) {
             groups.searchdirty = true;
 
-            adminService.getGroups().success(function(data) {
+            adminService.getGroups().then(function(data) {
               groups.groupsCollectionBackup = $scope.groupsCollection;
               groups.itemsPerPageBackup = groups.itemsPerPage;
-              $scope.groupsCollection = data.groups;
+              $scope.groupsCollection = data;
               groups.itemsPerPage = adminService.maxInt;
             });
           }
@@ -1805,62 +1697,49 @@
         $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
       };
       $scope.createGroup = function(group) {
-        //group.site_id = groups.site;
+        // group.site_id = groups.site;
 
-        adminService
-          .createGroup(group)
-          .success(function(data) {
+        adminService.createGroup(group).then(
+          function(data) {
             $scope.hideModal();
-            $scope.groupsCollection.push(data.group);
+            $scope.groupsCollection.push(data);
             $scope.groups.totalLogs++;
             $scope.groups.pagination.goToLast();
             $rootScope.showNotification(formatMessage(groupsAdminMessages.groupCreated, { group: group.name }));
-          })
-          .error(function(error) {
+          },
+          function(error) {
             $scope.groupsError = `${error.response.message}. ${error.response.remedialAction}`;
-          });
-      };
-      $scope.editGroupDialog = function(group) {
-        $scope.editedGroup = group;
-        $scope.group = {};
-        $scope.okModalFunction = $scope.editGroup;
-
-        $scope.adminModal = $scope.showModal('modalView.html');
-        $scope.dialogMode = 'EDIT';
-        $scope.dialogTitle = $translate.instant('admin.groups.EDIT_GROUP');
-
-        adminService
-          .getGroup(group)
-          .success(function(data) {
-            $scope.group = data;
-          })
-          .error(function() {
-            //TODO: properly display error.
-          });
+          }
+        );
       };
       $scope.editGroup = function(group) {
-        //group.site_id = groups.site;
+        // group.site_id = groups.site;
 
         adminService
-          .editGroup(group)
-          .success(function(data) {
-            $rootScope.showNotification(formatMessage(groupsAdminMessages.groupEdited, { group: group.name }));
+          .editGroup({
+            id: group.id,
+            name: group.name,
+            desc: group.desc
           })
-          .error(function(error) {
-            if ('Unauthorized' === error.response.message) {
-              $rootScope.showNotification($translate.instant('admin.groups.UNAUTHORIZED'), null, null, 'error');
-            } else {
-              $rootScope.showNotification(error.response.message, null, null, 'error');
+          .then(
+            function(data) {
+              $rootScope.showNotification(formatMessage(groupsAdminMessages.groupEdited, { group: group.name }));
+            },
+            function(error) {
+              if ('Unauthorized' === error.response.message) {
+                $rootScope.showNotification($translate.instant('admin.groups.UNAUTHORIZED'), null, null, 'error');
+              } else {
+                $rootScope.showNotification(error.response.message, null, null, 'error');
+              }
             }
-          });
+          );
       };
       $scope.removeGroup = function(group) {
         var deleteGroup = function() {
-          //group.site_id = groups.site;
+          // group.site_id = groups.site;
 
-          adminService
-            .deleteGroup(group)
-            .success(function(data) {
+          adminService.deleteGroup(group).then(
+            function(data) {
               var index = $scope.groupsCollection.indexOf(group);
               if (index !== -1) {
                 $scope.groupsCollection.splice(index, 1);
@@ -1871,14 +1750,15 @@
               $scope.noGroupSelected = true;
 
               $rootScope.showNotification(formatMessage(groupsAdminMessages.groupDeleted, { group: group.name }));
-            })
-            .error(function(error) {
+            },
+            function(error) {
               if ('Unauthorized' === error.response.message) {
                 $rootScope.showNotification($translate.instant('admin.groups.UNAUTHORIZED'), null, null, 'error');
               } else {
                 $rootScope.showNotification(error.response.message, null, null, 'error');
               }
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteGroup;
@@ -1910,10 +1790,9 @@
       groups.getUsersAutocomplete = function() {
         var params = {};
         params.limit = 1000;
-        adminService.getUsers(params).success(function(data) {
+        adminService.getUsers(params).then(function(data) {
           groups.usersAutocomplete = [];
-
-          data.users.forEach(function(user) {
+          data.forEach(function(user) {
             var added = false;
             groups.usersFromGroupCollection.forEach(function(userCompare) {
               if (user.username == userCompare.username) {
@@ -1925,6 +1804,7 @@
               groups.usersAutocomplete.push(user);
             }
           });
+          $scope.$apply();
         });
       };
 
@@ -1991,16 +1871,17 @@
             params.limit = groups.members.itemsPerPage;
           }
 
-          adminService
-            .getUsersFromGroup(group, params)
-            .success(function(data) {
+          adminService.getUsersFromGroup(group, params).then(
+            function(data) {
               groups.members.totalLogs = data.total;
-              groups.usersFromGroupCollection = data.users;
+              groups.usersFromGroupCollection = data;
               groups.getUsersAutocomplete();
-            })
-            .error(function(e) {
+              $scope.$apply();
+            },
+            function(e) {
               groups.members.getMembersError = e.response.message + '. ' + e.response.remedialAction;
-            });
+            }
+          );
         }
 
         getResultsPage(1);
@@ -2015,7 +1896,7 @@
           if (!groups.members.searchdirty) {
             groups.members.searchdirty = true;
 
-            adminService.getGroups().success(function(data) {
+            adminService.getGroups().then(function(data) {
               groups.usersFromGroupCollectionBackup = groups.usersFromGroupCollection;
               groups.members.itemsPerPageBackup = groups.members.itemsPerPage;
               $scope.usersFromGroupCollection = data.users;
@@ -2029,12 +1910,11 @@
         var deleteUserFromGroupParams = {};
         deleteUserFromGroupParams.userId = user.id;
         deleteUserFromGroupParams.username = user.username;
-        //user.site_id = groups.site;
+        // user.site_id = groups.site;
 
         var removeUserFromGroup = function() {
-          adminService
-            .deleteUserFromGroup(group.id, deleteUserFromGroupParams)
-            .success(function() {
+          adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).then(
+            function() {
               $scope.getGroupMembers(group);
               $rootScope.showNotification(
                 formatMessage(groupsAdminMessages.userRemoved, {
@@ -2042,10 +1922,11 @@
                   group: group.name
                 })
               );
-            })
-            .error(function(error) {
+            },
+            function(error) {
               $rootScope.showNotification(error.response.message, null, null, 'error');
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = removeUserFromGroup;
@@ -2065,10 +1946,9 @@
             userId: user.id,
             groupId: activeGroup.id
           })
-          .success(function(data) {
+          .then(function(data) {
             $scope.getGroupMembers(activeGroup);
-          })
-          .error(function() {});
+          });
       };
     }
   ]);
@@ -2127,8 +2007,8 @@
       });
 
       repositories.getRepositoryStatus = function() {
-        adminService.repositoryStatus($location.search().site).success(function(data) {
-          repositories.status = data.repositoryStatus;
+        adminService.repositoryStatus($location.search().site).then(function(data) {
+          repositories.status = data;
         });
       };
       repositories.getFileName = function(filePath) {
@@ -2138,7 +2018,7 @@
       function repositoriesReceived(data) {
         const reachable = [],
           unreachable = [];
-        data.remotes.forEach((remote) => {
+        data.forEach((remote) => {
           if (remote.reachable) {
             reachable.push(remote);
           } else {
@@ -2181,15 +2061,15 @@
         };
 
         repositories.spinnerOverlay = $scope.spinnerOverlay();
-        repositories.getRepositoryStatus();
 
-        adminService
-          .getRepositories(repositories)
-          .success(repositoriesReceived)
-          .error(function(error) {
+        CrafterCMSNext.system.getStore().subscribe(() => {
+          repositories.getRepositoryStatus();
+          adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
             $scope.showError(error.response);
           });
+        });
       };
+
       this.init();
 
       $scope.createGroupDialog = function() {
@@ -2207,22 +2087,19 @@
         repo.siteId = repositories.site;
         repo.authenticationType = repo.authenticationType ? repo.authenticationType : 'none';
 
-        adminService
-          .createRepository(repo)
-          .success(function(data) {
+        adminService.createRepository(repo).then(
+          function(data) {
             $scope.hideModal();
-            adminService
-              .getRepositories(repositories)
-              .success(repositoriesReceived)
-              .error(function(error) {
-                $scope.showError(error.response);
-                repositories.spinnerOverlay.close();
-              });
-          })
-          .error(function(error) {
+            adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
+              $scope.showError(error.response);
+              repositories.spinnerOverlay.close();
+            });
+          },
+          function(error) {
             $scope.showError(error.response);
             repositories.spinnerOverlay.close();
-          });
+          }
+        );
       };
 
       $scope.removeRepo = function(repo) {
@@ -2230,16 +2107,16 @@
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          adminService
-            .deleteRepository(currentRepo)
-            .success(function(data) {
+          adminService.deleteRepository(currentRepo).then(
+            function(data) {
               repositories.repositories.reachable = repositories.repositories.reachable.filter((r) => r !== repo);
               repositories.repositories.unreachable = repositories.repositories.unreachable.filter((r) => r !== repo);
               $rootScope.showNotification(`'${repo.name}' ${$translate.instant('admin.repositories.REPO_DELETED')}.`);
-            })
-            .error(function(error) {
+            },
+            function(error) {
               $scope.showError(error.response);
-            });
+            }
+          );
         };
 
         $scope.confirmationAction = deleteRepo;
@@ -2258,18 +2135,18 @@
           currentRepo.remoteBranch = branch;
           currentRepo.mergeStrategy = repositories.mergeStrategy;
 
-          adminService
-            .pullRepository(currentRepo)
-            .success(function(data) {
+          adminService.pullRepository(currentRepo).then(
+            function(data) {
               repositories.spinnerOverlay.close();
               repositories.getRepositoryStatus();
               $rootScope.showNotification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'));
-            })
-            .error(function(error) {
+            },
+            function(error) {
               repositories.getRepositoryStatus();
               repositories.spinnerOverlay.close();
               $scope.showError(error.response);
-            });
+            }
+          );
         };
 
         repositories.repoAction = 'pull';
@@ -2290,16 +2167,16 @@
           currentRepo.remoteName = repo.name;
           currentRepo.remoteBranch = branch;
 
-          adminService
-            .pushRepository(currentRepo)
-            .success(function(data) {
+          adminService.pushRepository(currentRepo).then(
+            function(data) {
               repositories.spinnerOverlay.close();
               $rootScope.showNotification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'));
-            })
-            .error(function(error) {
+            },
+            function(error) {
               repositories.spinnerOverlay.close();
               $scope.showError(error.response);
-            });
+            }
+          );
         };
 
         repositories.repoAction = 'push';
@@ -2322,7 +2199,7 @@
             siteId: repositories.site,
             commitMessage: repositories.commitMsg
           })
-          .success(function(data) {
+          .then(function(data) {
             repositories.status = data.repositoryStatus;
             repositories.commitMsg = '';
           });
@@ -2336,7 +2213,7 @@
             siteId: repositories.site,
             path: path
           })
-          .success(function(data) {
+          .then(function(data) {
             repositories.diff = {
               diff: data.diff.diff,
               studioVersion: data.diff.studioVersion,
@@ -2357,8 +2234,9 @@
             path,
             resolution
           })
-          .success(function(data) {
-            repositories.status = data.repositoryStatus;
+          .then(function(data) {
+            repositories.status = data;
+            $scope.$apply();
           });
       };
 
@@ -2367,7 +2245,7 @@
           .cancelFailedPull({
             siteId: repositories.site
           })
-          .success(function(data) {
+          .then(function(data) {
             repositories.status = data.repositoryStatus;
           });
       };

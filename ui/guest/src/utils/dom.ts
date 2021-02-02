@@ -195,8 +195,6 @@ export function insertDropMarker({
 }
 
 export function getDistanceBetweenPoints(p1: Coordinates, p2: Coordinates): number {
-  const div = document.createElement('div');
-
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 }
 
@@ -375,20 +373,17 @@ export function scrollToReceptacle(
   getElementRegistry: (id: number) => Element
 ) {
   let elementInView: boolean;
-  let element: Element;
   elementInView = forEach(
     receptacles,
     ({ id }) => {
       let elem = getElementRegistry(id);
       if (isElementInView(elem)) {
         elementInView = true;
-        element = elem;
         return 'break';
       }
     },
     false
   );
-
   if (!elementInView) {
     // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
     let element = getElementRegistry(receptacles[0].id);

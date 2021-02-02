@@ -82,7 +82,7 @@ export function register(registration: ICERecordRegistration): number {
 
   if (isNullOrUndefined(data.modelId)) {
     throw new Error(
-      'ICE component registration requires a model ID to be supplied. ' + `Supplied model id was ${data.modelId}.`
+      `ICE component registration requires a model ID to be supplied. Supplied model id was ${data.modelId}.`
     );
   } else if (
     notNullOrUndefined(data.fieldId) &&

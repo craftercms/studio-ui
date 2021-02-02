@@ -19,9 +19,6 @@ CStudioAuthoring.Utils.addJavascript(
 );
 CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-preview-tools/mods/annotate/dist/drawingboard.css');
 
-//CStudioAuthoring.Utils.addJavascript("http://127.0.0.1:8080/static-assets/sui/scripts/social.js");
-//CStudioAuthoring.Utils.addCss("http://127.0.0.1:8080/static-assets/sui/styles/main.css");
-
 var crafterSocial_cfg = {
   // The SUI base URL
   'url.base': '/static-assets/sui/',

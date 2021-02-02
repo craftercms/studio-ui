@@ -79,7 +79,7 @@ export type GuestStyles<RuleName extends GuestRules | string | number | symbol =
 };
 
 export interface GuestStyleSheetConfig<RuleName extends string | number | symbol = string> {
-  styles: GuestStyles;
+  styles: GuestStyles<RuleName>;
   assetUploadMaskZIndex: number;
   assetUploadMaskBackgroundColor: string;
   zoneLabelBackground: string;

@@ -231,6 +231,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             id="siteName"
             name="siteName"
             label={formatMessage(messages.siteName)}
+            placeholder="e.g. Corporate Website"
             required
             autoFocus
             fullWidth
@@ -255,6 +256,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             id="siteId"
             name="siteId"
             label={formatMessage(messages.siteId)}
+            placeholder="e.g. corporate-website"
             required
             fullWidth
             onBlur={() => onCheckNameExist(inputs.siteId)}

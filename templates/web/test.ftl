@@ -31,8 +31,6 @@
             display: block;
             padding: 10px;
             margin: 10px;
-            //width: 800px;
-            //max-height: 100px;
             overflow: scroll;
         }
     </style>

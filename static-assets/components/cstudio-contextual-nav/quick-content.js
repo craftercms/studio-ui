@@ -44,8 +44,6 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
       'font-weight: bold; list-style: none outside none; position: relative; ' +
       "text-align: start; top: 4px; width: 100px; z-index: 100; position: fixed; margin-top: 46px;'>" +
       "<ul id='quick-content-options' style='list-style:none;'>" +
-      //"<li style='cursor:pointer; margin:10px; padding: 2px;' id='qc-article'>Article</li>"+
-      //"<li style='cursor:pointer; margin:10px; padding: 2px;'  id='qc-movie'>Movie</li>" +
       '</ul>' +
       '</div>' +
       '</div>';
