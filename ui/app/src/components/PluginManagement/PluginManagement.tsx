@@ -16,8 +16,8 @@
 
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useCallback, useEffect, useState } from 'react';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
 import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
@@ -45,6 +45,14 @@ import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
 import clsx from 'clsx';
+import { showSystemNotification } from '../../state/actions/system';
+
+const messages = defineMessages({
+  pluginInstalled: {
+    id: 'PluginManagement.pluginInstalled',
+    defaultMessage: 'Plugin installed successfully'
+  }
+});
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -94,6 +102,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const classes = styles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
+  const { formatMessage } = useIntl();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
   const [permissions, setPermissions] = useState<string[]>(null);
   const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState(null);
@@ -108,27 +117,29 @@ export const PluginManagement = (props: PluginManagementProps) => {
     });
   });
 
-  const refresh = () => {
-    fetchInstalledMarketplacePlugins(siteId).subscribe(
-      (plugins) => {
-        setPlugins(plugins);
-      },
-      (error) => {
-        dispatch(
-          showErrorDialog({
-            error
-          })
-        );
-      }
-    );
-  };
+  const refresh = useCallback(
+    () =>
+      fetchInstalledMarketplacePlugins(siteId).subscribe(
+        (plugins) => {
+          setPlugins(plugins);
+        },
+        (error) => {
+          dispatch(
+            showErrorDialog({
+              error
+            })
+          );
+        }
+      ),
+    [dispatch, siteId]
+  );
 
   useEffect(() => {
     if (listPluginsPermission && siteId) {
       setPlugins([]);
       refresh();
     }
-  }, [dispatch, listPluginsPermission, siteId]);
+  }, [dispatch, listPluginsPermission, refresh, siteId]);
 
   const onSearchPlugin = () => {
     setOpenMarketPlaceDialog({
@@ -137,6 +148,11 @@ export const PluginManagement = (props: PluginManagementProps) => {
   };
 
   const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(messages.pluginInstalled)
+      })
+    );
     refresh();
   };
 
