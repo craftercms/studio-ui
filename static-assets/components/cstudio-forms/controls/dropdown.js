@@ -68,7 +68,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
   },
 
   onDatasourceLoaded: function(data) {
-    //TODO: is this being called? forms-engine 1439
+    // TODO: is this being called? forms-engine 1439
     if (this.datasourceName === data.name && !this.datasource) {
       var datasource = this.form.datasourceMap[this.datasourceName];
       this.datasource = datasource;
@@ -218,7 +218,6 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
     var datasource = datasources[0];
     if (datasource) {
       this.datasource = datasource;
-      //datasource.getList(cb);
     } else {
       this.callback = cb;
     }

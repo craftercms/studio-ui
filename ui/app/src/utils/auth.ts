@@ -17,17 +17,33 @@
 import Cookies from 'js-cookie';
 import { setGlobalHeaders } from './ajax';
 
-const siteCookie = 'crafterSite';
-const xsrfTokenHeader = 'X-XSRF-TOKEN';
-const xsrfTokenCookie = 'XSRF-TOKEN';
+const SITE_COOKIE_NAME = 'crafterSite';
+const XSRF_TOKEN_HEADER_NAME = 'X-XSRF-TOKEN';
+const XSRF_TOKEN_COOKIE_NAME = 'XSRF-TOKEN';
 
-export function getRequestForgeryToken(cookieName = xsrfTokenCookie): string {
+export function getRequestForgeryToken(cookieName = XSRF_TOKEN_COOKIE_NAME): string {
   return Cookies.get(cookieName);
 }
 
-export function setRequestForgeryToken(headerName = xsrfTokenHeader): void {
+export function getRequestForgeryTokenHeaderName(): string {
+  return XSRF_TOKEN_HEADER_NAME;
+}
+
+export function getRequestForgeryTokenParamName(): string {
+  return '_csrf';
+}
+
+export function setRequestForgeryToken(headerName = XSRF_TOKEN_HEADER_NAME): void {
   const token = getRequestForgeryToken();
   setGlobalHeaders({ [headerName]: token });
+}
+
+export function setJwt(token: string): void {
+  setGlobalHeaders(getJwtHeaders(token));
+}
+
+export function getJwtHeaders(token: string): object {
+  return { Authorization: `Bearer ${token}` };
 }
 
 export function getCookieDomain(): string {
@@ -47,6 +63,6 @@ export function setSiteCookie(value: string, cookieName: string = 'crafterSite')
   });
 }
 
-export function getSiteCookie(cookieName: string = siteCookie): string {
+export function getSiteCookie(cookieName: string = SITE_COOKIE_NAME): string {
   return Cookies.get(cookieName) || null;
 }

@@ -310,7 +310,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
             if (!valid) {
               this.imagePicker.showAlert(message);
-              //this.imagePicker.deleteImage();
             } else {
               var image = new Image();
               var imagePicker = this.imagePicker;
@@ -324,7 +323,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                   var widthConstrains = JSON.parse(self.width);
                   var heightConstrains = JSON.parse(self.height);
                   message = 'The uploaded file does not meet the specified width & height constraints';
-                  //imagePicker.deleteImage();
                   if (
                     (widthConstrains.min && imagePicker.originalWidth < widthConstrains.min) ||
                     (heightConstrains.min && imagePicker.originalHeight < heightConstrains.min) ||
@@ -364,11 +362,8 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                       );
                     })(self);
                   }
-
-                  //this.isUploadOverwrite = isUploadOverwrite;
                 } else {
                   var formContainer = this.form ? this.form.containerEl : self.form.containerEl;
-                  // $(self.form.containerEl).find("#ice-body .cstudio-form-field-container")
                   if ($(formContainer).find('#ice-body .cstudio-form-field-container').length > 1) {
                     if (this.setImageData) {
                       this.setImageData(imagePicker, imageData);

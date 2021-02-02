@@ -120,7 +120,6 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function(widgetId, pageId) {
     liLoadingEl.appendChild(imgEl);
     containerEl.appendChild(liLoadingEl);
     var filterBydiv = document.createElement('li');
-    //YDom.addClass(filterBydiv, "widget-FilterBy");
 
     var widgetFilterBy = CStudioAuthoring.Service.getWindowState(
       CStudioAuthoringContext.user,

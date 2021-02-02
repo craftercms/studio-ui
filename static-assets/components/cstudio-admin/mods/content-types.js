@@ -34,8 +34,8 @@
       return undefined;
     }
 
-    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+    (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+    return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
   });
 
   function moduleLoaded() {
@@ -188,7 +188,7 @@
           if (properties[i].name == 'display-template' && properties[i].value !== '') {
             flagTemplateError = true;
           }
-          //if no-template-required property exists and has value "true"
+          // if no-template-required property exists and has value "true"
           if (properties[i].name == 'no-template-required' && properties[i].value === 'true') {
             flagTemplateError = true;
           }
@@ -280,102 +280,50 @@
                               }
                             }
 
-                            var cb = {
-                              success: function() {
-                                var callBack = {
-                                  success: function() {
-                                    CStudioAdminConsole.isDirty = false;
-                                    CStudioAuthoring.Utils.showNotification(
-                                      CMgs.format(langBundle, 'saved'),
-                                      'top',
-                                      'left',
-                                      'success',
-                                      48,
-                                      197,
-                                      'saveContentType'
-                                    );
-                                    _self.clearCache();
-                                  },
-                                  failure: function() {
-                                    CStudioAuthoring.Operations.showSimpleDialog(
-                                      'errorDialog-dialog',
-                                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                      CMgs.format(langBundle, 'notification'),
-                                      CMgs.format(langBundle, 'saveFailed'),
-                                      null, // use default button
-                                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                      'studioDialog'
-                                    );
-                                  },
-                                  CMgs: CMgs,
-                                  langBundle: langBundle
-                                };
+                            var defPath = '/content-types' + formDef.contentType + '/form-definition.xml';
+                            var confPath = configFilesPath + '/content-types' + formDef.contentType + '/config.xml';
 
-                                var confPath = configFilesPath + '/content-types' + formDef.contentType + '/config.xml';
-
-                                var url =
-                                  '/api/1/services/api/1/site/write-configuration.json' +
-                                  '?site=' +
-                                  CStudioAuthoringContext.site +
-                                  '&path=' +
-                                  confPath;
-
-                                YAHOO.util.Connect.resetFormState();
-                                YAHOO.util.Connect.setDefaultPostHeader(false);
-                                YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
-                                YAHOO.util.Connect.initHeader(
-                                  CStudioAuthoringContext.xsrfHeaderName,
-                                  CrafterCMSNext.util.auth.getRequestForgeryToken()
-                                );
-                                YAHOO.util.Connect.asyncRequest(
-                                  'POST',
-                                  CStudioAuthoring.Service.createServiceUri(url),
-                                  callBack,
+                            CrafterCMSNext.rxjs
+                              .forkJoin({
+                                formDef: CrafterCMSNext.services.configuration.writeConfiguration(
+                                  CStudioAuthoringContext.site,
+                                  defPath,
+                                  'studio',
+                                  xmlFormDef
+                                ),
+                                config: CrafterCMSNext.services.configuration.writeConfiguration(
+                                  CStudioAuthoringContext.site,
+                                  confPath,
+                                  'studio',
                                   xmlConfig
-                                );
-                              },
-                              failure: function() {
-                                CStudioAuthoring.Operations.showSimpleDialog(
-                                  'errorDialog-dialog',
-                                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                  CMgs.format(langBundle, 'notification'),
-                                  CMgs.format(langBundle, 'saveFailed'),
-                                  null, // use default button
-                                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                  'studioDialog'
-                                );
-                              },
-                              CMgs: CMgs,
-                              langBundle: langBundle
-                            };
-
-                            var defPath =
-                              configFilesPath + '/content-types' + formDef.contentType + '/form-definition.xml';
-
-                            var url =
-                              '/api/1/services/api/1/site/write-configuration.json' +
-                              '?site=' +
-                              CStudioAuthoringContext.site +
-                              '&path=' +
-                              defPath;
-
-                            YAHOO.util.Connect.resetFormState();
-                            YAHOO.util.Connect.setDefaultPostHeader(false);
-                            YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
-                            YAHOO.util.Connect.initHeader(
-                              CStudioAuthoringContext.xsrfHeaderName,
-                              CrafterCMSNext.util.auth.getRequestForgeryToken()
-                            );
-                            YAHOO.util.Connect.asyncRequest(
-                              'POST',
-                              CStudioAuthoring.Service.createServiceUri(url),
-                              cb,
-                              xmlFormDef
-                            );
-
-                            document.getElementById(
-                              'cstudio-admin-console-command-bar'
-                            ).children[1].value = CMgs.format(langBundle, 'close');
+                                )
+                              })
+                              .subscribe(
+                                () => {
+                                  CStudioAdminConsole.isDirty = false;
+                                  CStudioAuthoring.Utils.showNotification(
+                                    CMgs.format(langBundle, 'saved'),
+                                    'top',
+                                    'left',
+                                    'success',
+                                    48,
+                                    197,
+                                    'saveContentType'
+                                  );
+                                  _self.clearCache();
+                                },
+                                () => {
+                                  CStudioAuthoring.Operations.showSimpleDialog(
+                                    'errorDialog-dialog',
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(langBundle, 'notification'),
+                                    CMgs.format(langBundle, 'saveFailed'),
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    'studioDialog'
+                                  );
+                                }
+                              );
                           }
                         });
                       }
@@ -516,14 +464,9 @@
       },
 
       clearCache: function() {
-        var serviceUri =
-          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' + CStudioAuthoringContext.site;
-
-        var clearCacheCb = {
-          success: function() {}
-        };
-
-        YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), clearCacheCb);
+        CrafterCMSNext.util.ajax
+          .get(`/studio/api/1/services/api/1/site/clear-configuration-cache.json?site=${CStudioAuthoringContext.site}`)
+          .subscribe();
       },
 
       /**
@@ -2639,7 +2582,13 @@
             sheetEl,
             function(e, el) {
               updatePropertyFn(el.fieldName, el.value);
-            }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            property
           );
         }
 
@@ -2827,6 +2776,77 @@
 
       getValue: function() {
         return '';
+      },
+
+      handleDependencyPopover: function(element, dependency, show) {
+        if (show) {
+          $(element)
+            .parent()
+            .popover({
+              content: formatMessage(contentTypesMessages.dependsOn, { dependency }),
+              container: 'body',
+              placement: 'left',
+              trigger: 'hover'
+            });
+        } else {
+          $(element)
+            .parent()
+            .popover('destroy');
+        }
+      },
+
+      // TODO: handle validations with other types
+      dependencyStatus: function(dependencyEl) {
+        const status = {
+          dependencyMet: false,
+          supported: true
+        };
+
+        if (dependencyEl && dependencyEl.type) {
+          switch (dependencyEl.type) {
+            case 'text':
+              status.dependencyMet = dependencyEl.value !== '';
+              break;
+            case 'checkbox':
+              status.dependencyMet = dependencyEl.checked;
+              break;
+            default:
+              status.supported = false;
+              break;
+          }
+        } else {
+          status.supported = false;
+        }
+
+        return status;
+      },
+
+      handleDependency: function(dependency, valueEl, properties, fieldToUpdate, emptyValue, updateFieldFn) {
+        const _self = this;
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        const isDependencyMet = dependencyStatus.dependencyMet;
+
+        if (dependencyStatus.supported) {
+          valueEl.disabled = !isDependencyMet;
+          this.handleDependencyPopover(valueEl, properties.dependsOn, !isDependencyMet);
+          dependency.addEventListener('propertyUpdate', (e) => {
+            const isDependencyMet = _self.dependencyStatus(dependency).dependencyMet;
+
+            const dependencyLabel = e.target.getAttribute('data-label')
+              ? e.target.getAttribute('data-label')
+              : properties.dependsOn;
+
+            valueEl.disabled = !isDependencyMet;
+            valueEl[fieldToUpdate] = !isDependencyMet ? emptyValue : valueEl[fieldToUpdate];
+            _self.handleDependencyPopover(valueEl, dependencyLabel, !isDependencyMet);
+
+            updateFieldFn(e, valueEl);
+          });
+        } else {
+          console.log(
+            `[content-types.js] Control dependency not implemented for input of type "${properties.dependsOn}". Dependency will be ignored.`
+          );
+        }
       }
     };
 

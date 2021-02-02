@@ -23,7 +23,7 @@ import { setRequestForgeryToken } from '../../utils/auth';
 import { ElasticParams, Filter, MediaItem } from '../../models/Search';
 import Spinner from '../../components/SystemStatus/Spinner';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import queryString from 'query-string';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -49,6 +49,9 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { DetailedItem } from '../../models/Item';
 import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
+import { itemDuplicated } from '../../state/actions/system';
+import { getHostToHostBus } from '../Preview/previewContext';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 
 const drawerWidth = 300;
 let unsubscribeOnActionSuccess;
@@ -404,6 +407,23 @@ export default function Search(props: SearchProps) {
   }, [onSelect, selected]);
 
   useEffect(() => {
+    const events = [itemDuplicated.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case itemDuplicated.type: {
+          handleClearSelected();
+          refreshSearch();
+          break;
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [handleClearSelected, refreshSearch]);
+
+  useEffect(() => {
     if (selected.length === 1) {
       unsubscribeOnActionSuccess = createCallbackListener(idActionSuccess, function() {
         handleClearSelected();
@@ -629,7 +649,11 @@ export default function Search(props: SearchProps) {
       showItemMenu({
         path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX }
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        loaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
       })
     );
   };

@@ -171,7 +171,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
         name = item.internalName,
         editLinkId;
 
-      //reducing max character length to support 1024 screen resolution
+      // reducing max character length to support 1024 screen resolution
       var removeCharCount = window.innerWidth <= 1024 ? 5 : 0;
       var displayName = CrafterCMSNext.util.string.escapeHTML(
         WcmDashboardWidgetCommon.getFormattedString(name, 80 - removeCharCount, item.newFile)
@@ -323,7 +323,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
     WcmDashboardWidgetCommon.selectItem(matchedEl, matchedEl.checked);
 
     if (isChecked) {
-      //check all parents
+      // check all parents
       var parentURI = item.mandatoryParent;
       if (parentURI) {
         var parentInputElement = YDom.get(parentURI);
@@ -333,7 +333,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
         }
       }
     } else {
-      //deselect all children
+      // deselect all children
       var children = CStudioAuthoring.Service.getChildren(item, CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap);
       if (children.length > 0) {
         for (var i = 0; i < children.length; i++) {

@@ -17,7 +17,8 @@
     "prettier:changed": "node scripts/prettier.js changed",
     "prettier:certify": "node scripts/prettier.js check",
     "prettier:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
-    "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'"
+    "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
+    "lint:ci": "eslint --report-unused-disable-directives --ext .ts,.tsx ."
   },
   "eslintConfig": {
     "extends": [
@@ -40,9 +41,7 @@
               "#"
             ]
           },
-          "block": {
-            "balanced": true
-          }
+          "block": false
         }
       ]
     },

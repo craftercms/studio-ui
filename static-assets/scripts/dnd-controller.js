@@ -37,7 +37,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
   ].join('');
   var COMPONENT_TPL =
     '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@"><span class="status-icon fa fa-puzzle-piece"></span>%@</sa></sli>';
-  //var BROWSE_TPL = '<button class="btn btn-primary add-component" data-path="%@">Browse %@</button>';
   var BROWSE_TPL =
     '<sdiv class="studio-category"><sh2 class="studio-category-name add-existing-component pointer" id="%@" data-path="%@">Browse %@</sh2><sul></sul></sdiv>';
   var DRAGGABLE_SELECTION = '.studio-components-container .studio-component-drag-target';
@@ -277,7 +276,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
 
       var sameDropZone = currentTrackingNumber === destTrackingNumber;
 
-      //checking if both have contentType
+      // checking if both have contentType
       if (!DestContentType || !currentContentType) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
@@ -316,11 +315,11 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         }
       }
 
-      //if it is a move it is doing 2 calls
+      // if it is a move it is doing 2 calls
       if (!isNew) {
         dndInProgress = valid;
       }
-      //if it is a move within the same dropzone is doing 1 call
+      // if it is a move within the same dropzone is doing 1 call
       if (sameDropZone) {
         dndInProgress = null;
       }
@@ -411,7 +410,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
           };
           communicator.on(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
 
-          //Validation with cache avoiding doble validation...
+          // Validation with cache avoiding doble validation...
           let key = `${zone}-${componentType}`;
           if (cacheValidation[key] && cacheValidation[key].supported) {
             communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
@@ -466,7 +465,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     $('[data-studio-components-target]').each(function(i) {
       var $me = $(this);
       $me.attr('data-studio-zone-tracking', crafter.guid());
-      //$me.attr('data-studio-components-target', i + '_' + $me.attr('data-studio-components-target'));
     });
 
     componentsModelLoad.call(me, initialComponentModel);
@@ -685,13 +683,13 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       if (!$el.attr('data-studio-zone-content-type')) {
         noContentType++;
       }
-      //avoid searching if the item is embedded;
+      // avoid searching if the item is embedded;
       if (!$el.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id')) {
         if (name.indexOf('.') < 0) {
           if (objectId) {
             if (!found[id] || objectId == data['objectId']) {
               if ((data[name] || data[name] == '') && objectId == data['objectId']) {
-                ///objid?
+                // objid?
                 found[id] = true;
                 $el.find('> [data-studio-component]').each(function(i, el) {
                   $(this).data('model', data[name][i]);
@@ -724,7 +722,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
                 (data[structure1][index][structure2] || data[structure1][index][structure2] == '') &&
                 objectId == data['objectId']
               ) {
-                ///objid?
+                // /objid?
                 found[id] = true;
                 $el.find('> [data-studio-component]').each(function(i, el) {
                   $(this).data('model', data[structure1][index][structure2][i]);
@@ -836,7 +834,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       browseId = browse.label.replace(/\s|-|_|\/\./g, '').toLowerCase();
       html.push(crafter.String(BROWSE_TPL).fmt(browseId, browse.path, browse.label));
     });
-    //html.push('<button class="btn btn-primary add-component" data-translation="addComponent">Add Component</button>');
     $c.html(html.join(''));
 
     $('.add-existing-component').on('click', function(e) {
@@ -864,9 +861,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
 
   function removeComponent(srcEl, callback) {
     srcEl.parentNode.remove();
-
-    //Utility.refreshPlaceholderHeight(srcContainer);
-
     if (typeof callback == 'function') {
       callback();
     }

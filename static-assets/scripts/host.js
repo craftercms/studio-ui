@@ -82,9 +82,6 @@
         origin: origin,
         window: getEngineWindow().contentWindow
       });
-      const handleRemember = (remember, goOrStay) => {
-        CrafterCMSNext.util.state.setStoredPreviewChoice(CStudioAuthoringContext.siteId, remember ? goOrStay : 'ask');
-      };
       const doGo = () => {
         const state = CrafterCMSNext.system.store.getState();
         window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
@@ -92,13 +89,9 @@
       const showCompatDialog = () => {
         let unmount;
         CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
-          data,
-          onOk({ remember }) {
-            handleRemember(remember, '2');
-            doGo();
-          },
-          onCancel({ remember }) {
-            handleRemember(remember, '1');
+          onOk: doGo,
+          onCancel() {
+            unmount({ removeContainer: true });
           },
           onClosed() {
             unmount({ removeContainer: true });
@@ -107,18 +100,33 @@
           unmount = args.unmount;
         });
       };
-      let previousChoice = CrafterCMSNext.util.state.getStoredPreviewChoice(CStudioAuthoringContext.siteId);
-      if (previousChoice === null) {
-        CrafterCMSNext.util.state.setStoredPreviewChoice(CStudioAuthoringContext.siteId, (previousChoice = '2'));
-      }
-      if (previousChoice && !compatibilityAsk) {
+      let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
+      if (compatibilityAsk) {
+        showCompatDialog();
+      } else if (previousChoice) {
         if (previousChoice === '2') {
           doGo();
         } else if (previousChoice === 'ask') {
           showCompatDialog();
         }
-      } else {
-        showCompatDialog();
+      } /* if (!previousChoice) */ else {
+        const usersService = CrafterCMSNext.services.users;
+        usersService
+          .fetchGlobalProperties()
+          .pipe(
+            CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
+              usersService.setProperties({
+                previewChoice: JSON.stringify(
+                  Object.assign(JSON.parse(prefs.previewChoice || '{}'), {
+                    [CStudioAuthoringContext.siteId]: '2'
+                  })
+                )
+              })
+            )
+          )
+          .subscribe(() => {
+            doGo();
+          });
       }
     }
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
@@ -321,8 +329,6 @@
 
   amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function(config) {
     sessionStorage.setItem('pto-on', '');
-    /*var PreviewToolsOffEvent = new YAHOO.util.CustomEvent("cstudio-preview-tools-off", CStudioAuthoring);
-    PreviewToolsOffEvent.fire();*/
     var el = YDom.get('acn-preview-tools-container');
     YDom.removeClass(el.children[0], 'icon-light-blue');
     YDom.addClass(el.children[0], 'icon-default');
@@ -652,11 +658,13 @@
 
     path = path.replace('//', '/');
 
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-      success: function(content) {
-        CStudioAuthoring.SelectedContent.setContent(content.item);
-        selectContentSet(content.item, false);
-      }
+    CrafterCMSNext.system.getStore().subscribe(() => {
+      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
+        success: function(content) {
+          CStudioAuthoring.SelectedContent.setContent(content.item);
+          selectContentSet(content.item, false);
+        }
+      });
     });
   }
 

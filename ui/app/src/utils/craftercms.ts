@@ -21,7 +21,7 @@ import * as MaterialUI from '@material-ui/core';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import { IntlShape } from 'react-intl';
-import { CrafterCMSStore, getStore } from '../state/store';
+import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { getCurrentIntl } from './i18n';
 import { ComponentRecord, components, PluginDescriptor, plugins, registerPlugin } from '../services/plugin';
 
@@ -111,14 +111,14 @@ export const define = function(id, deps, factory) {
 
 define.amd = true;
 
-export { getCurrentIntl as getIntl, plugins, components, getStore };
+export { getCurrentIntl as getIntl, plugins, components, getStoreSync as getStore };
 
 const craftercms: CrafterCMSGlobal = {
   libs,
   plugins,
   components,
   define,
-  getStore,
+  getStore: getStoreSync,
   getIntl: getCurrentIntl
 };
 

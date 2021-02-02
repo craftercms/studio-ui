@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { del, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
+import { del, errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -31,15 +31,16 @@ import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
-import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { parseContentXML, parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
+import { createItemStateMap, parseContentXML, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
 import { getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
+import { GetChildrenResponse } from '../models/GetChildrenResponse';
+import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -84,8 +85,12 @@ export function getSandboxItem(site: string, path: string): Observable<SandboxIt
   return getLegacyItem(site, path).pipe(map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem));
 }
 
-export function getDetailedItem(site: string, path: string): Observable<DetailedItem> {
-  return getLegacyItem(site, path).pipe(map<LegacyItem, DetailedItem>(parseLegacyItemToDetailedItem));
+export function getDetailedItem(siteId: string, path: string): Observable<DetailedItem> {
+  const qs = toQueryString({ siteId, path });
+  return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
+    pluck('response', 'item'),
+    map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))
+  );
 }
 
 export function getContentInstanceLookup(
@@ -567,7 +572,7 @@ function insertCollectionItem(
   }
 }
 
-function createFileUpload(
+export function createFileUpload(
   uploadUrl: string,
   file: any,
   path: string,
@@ -577,7 +582,7 @@ function createFileUpload(
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
-    uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}` });
+    uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
     uppy.setMeta(metaData);
 
     const blob = dataUriToBlob(file.dataUrl);
@@ -774,15 +779,70 @@ export function getVersions(
 }
 
 export function getChildrenByPath(
-  site: string,
+  siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const qs = toQueryString({ order: 'ASC', sortStrategy: 'default', siteId: site, path, ...options });
+  const qs = toQueryString({ siteId, path, ...options });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
-    map(({ children, parent, levelDescriptor }) => Object.assign(children, { parent, levelDescriptor })),
-    catchError(errorSelectorApi1)
+    map(({ children, levelDescriptor, total, offset, limit }) =>
+      Object.assign(
+        children
+          ? children.map((child) => ({
+              ...child,
+              stateMap: createItemStateMap(child.state)
+            }))
+          : [],
+        {
+          ...(levelDescriptor && {
+            levelDescriptor: { ...levelDescriptor, stateMap: createItemStateMap(levelDescriptor.state) }
+          }),
+          total,
+          offset,
+          limit
+        }
+      )
+    )
+  );
+}
+
+export function fetchItemsByPath(
+  site: string,
+  paths: string[],
+  options?: {
+    skipHomePathOverride?: boolean;
+  }
+): Observable<DetailedItem[]> {
+  const requests: Observable<DetailedItem>[] = [];
+  paths.forEach((path) =>
+    requests.push(
+      getDetailedItem(
+        site,
+        path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
+      )
+    )
+  );
+  return forkJoin(requests);
+}
+
+export function fetchItemWithChildrenByPath(
+  siteId: string,
+  path: string,
+  options?: Partial<GetChildrenOptions>
+): Observable<GetItemWithChildrenResponse> {
+  const requests = [
+    getDetailedItem(
+      siteId,
+      path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
+    ),
+    getChildrenByPath(siteId, path, options)
+  ];
+  return forkJoin(requests).pipe(
+    map(([item, children]: any) => ({
+      item,
+      children
+    }))
   );
 }
 
@@ -827,7 +887,9 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
   return post(
-    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
+    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&name=${encodeURIComponent(name)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
@@ -841,7 +903,9 @@ export function createFile(site: string, path: string, fileName: string): Observ
 
 export function renameFolder(site: string, path: string, name: string) {
   return post(
-    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${encodeURIComponent(path)}&name=${name}`
+    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${encodeURIComponent(
+      path
+    )}&name=${encodeURIComponent(name)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 

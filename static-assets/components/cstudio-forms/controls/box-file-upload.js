@@ -86,54 +86,41 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
       self = this;
     if (value && value.length > 0) {
       value.forEach(function(element, index, array) {
-        var callbackContent = {
-          success: function(response) {
-            value[index].url = response.url;
+        CrafterCMSNext.services.box
+          .fetchBoxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, value[index].name)
+          .subscribe(
+            (url) => {
+              value[index].url = url;
 
-            if (index === value.length - 1) {
-              self.value = value;
-              self.form.updateModel(self.id, self.value);
-              self.fileEl.innerHTML = value
-                .map(function(f) {
-                  return (
-                    "<span id='" +
-                    f.name +
-                    "'>" +
-                    f.name +
-                    '*' +
-                    "<a class='removeItemBox' data-id='" +
-                    f.id +
-                    "' ><i class='fa fa-trash'></i></a></span>"
-                  );
-                })
-                .join('<br/>');
-              self.clearError('required');
-              var _self;
-              var removeItems = document.getElementsByClassName('removeItemBox');
-              for (var i = 0; i < removeItems.length; i++) {
-                removeItems[i].addEventListener('click', function() {
-                  _self = this;
-                  self.value = self.value.filter(function(el) {
-                    return el.id !== _self.getAttribute('data-id');
+              if (index === value.length - 1) {
+                self.value = value;
+                self.form.updateModel(self.id, self.value);
+                self.fileEl.innerHTML = value
+                  .map(function(f) {
+                    const name = CrafterCMSNext.util.string.escapeHTML(f.name);
+                    return `<span id="${f.name}">${name}*<a class="removeItemBox" data-id="${f.id}"<i class='fa fa-trash'></i></span>`;
+                  })
+                  .join('<br/>');
+                self.clearError('required');
+                var _self;
+                var removeItems = document.getElementsByClassName('removeItemBox');
+                for (var i = 0; i < removeItems.length; i++) {
+                  removeItems[i].addEventListener('click', function() {
+                    _self = this;
+                    self.value = self.value.filter(function(el) {
+                      return el.id !== _self.getAttribute('data-id');
+                    });
+                    self.setValue(self.value);
                   });
-                  self.setValue(self.value);
-                });
+                }
               }
+              self.renderValidation(true, validationResult);
+              self.owner.notifyValidation();
+            },
+            (response) => {
+              console.log(response);
             }
-            self.renderValidation(true, validationResult);
-            self.owner.notifyValidation();
-          },
-          failure: function(response) {
-            console.log(response);
-          }
-        };
-        CStudioAuthoring.Service.getBoxURL(
-          CStudioAuthoringContext.site,
-          self.profile_id,
-          value[index].id,
-          value[index].name,
-          callbackContent
-        );
+          );
       });
     } else {
       self.value = value;
@@ -197,49 +184,40 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     containerEl.appendChild(controlWidgetContainerEl);
 
     var self = this;
-    var tokenUri = CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/box/token.json');
-    tokenUri += '&site=' + CStudioAuthoringContext.site;
-    tokenUri += '&profileId=' + this.profile_id;
-    tokenUri +=
-      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
-    YAHOO.util.Connect.asyncRequest('GET', tokenUri, {
-      success: function(o) {
-        var data = JSON.parse(o.responseText);
-        var folderId = '0';
-        var accessToken = data.accessToken;
-        var filePicker = new Box.FilePicker();
-        filePicker.addListener('choose', function(evt) {
-          self.edited = true;
-          var value = evt.map(function(e) {
-            return { id: e.id, name: e.name };
-          });
+    CrafterCMSNext.services.box.fetchToken(CStudioAuthoringContext.site, this.profile_id).subscribe((accessToken) => {
+      var folderId = '0';
+      var filePicker = new Box.FilePicker();
+      filePicker.addListener('choose', function(evt) {
+        self.edited = true;
+        var value = evt.map(function(e) {
+          return { id: e.id, name: e.name };
+        });
 
-          if (Array.isArray(self.value) && self.value.length > 0) {
-            var flag = true;
-            for (var i = 0; i < self.value.length; i++) {
-              flag = true;
-              for (var j = 0; j < value.length; j++) {
-                if (self.value[i].id == value[j].id) {
-                  flag = false;
-                }
-              }
-              if (flag == true) {
-                value.push(self.value[i]);
+        if (Array.isArray(self.value) && self.value.length > 0) {
+          var flag = true;
+          for (var i = 0; i < self.value.length; i++) {
+            flag = true;
+            for (var j = 0; j < value.length; j++) {
+              if (self.value[i].id == value[j].id) {
+                flag = false;
               }
             }
+            if (flag == true) {
+              value.push(self.value[i]);
+            }
           }
+        }
 
-          self.setValue(value);
-        });
-        filePicker.show(folderId, accessToken, {
-          logoUrl: self.logo,
-          container: '#box-picker-' + self.id.replace(/\|/g, '-'),
-          maxSelectable: self.enable_multi !== 'false' ? Infinity : 1,
-          canUpload: self.enable_upload,
-          canSetShareAccess: false,
-          canCreateNewFolder: self.enable_upload
-        });
-      }
+        self.setValue(value);
+      });
+      filePicker.show(folderId, accessToken, {
+        logoUrl: self.logo,
+        container: '#box-picker-' + self.id.replace(/\|/g, '-'),
+        maxSelectable: self.enable_multi !== 'false' ? Infinity : 1,
+        canUpload: self.enable_upload,
+        canSetShareAccess: false,
+        canCreateNewFolder: self.enable_upload
+      });
     });
   }
 });

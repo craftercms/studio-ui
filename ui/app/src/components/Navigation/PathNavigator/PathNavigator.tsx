@@ -18,13 +18,23 @@ import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../../models/Item';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
-import { useActiveSiteId, useEnv, useMount, useSelection, useSiteLocales, useSpreadState } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  useMount,
+  usePreviewState,
+  useSelection,
+  useSiteLocales,
+  useSpreadState,
+  useSubject
+} from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../../SystemStatus/Suspencified';
 import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { translations } from './translations';
 import { languages } from '../../../utils/i18n-legacy';
 import {
+  pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
@@ -36,7 +46,6 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
-import { getStoredPreviewChoice } from '../../../utils/state';
 import ItemMenu from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
@@ -45,7 +54,7 @@ import { isFolder, isNavigable, isPreviewable } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import { StateStylingProps } from '../../../models/UiConfig';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
-import { filter } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 import {
   folderCreated,
   folderRenamed,
@@ -60,7 +69,7 @@ import PathNavigatorUI from './PathNavigatorUI';
 
 interface Menu {
   path?: string;
-  sections: SectionItem[][];
+  sections?: SectionItem[][];
   anchorEl: Element;
   loaderItems?: number;
   emptyState?: {
@@ -75,6 +84,7 @@ export interface PathNavigatorProps {
   rootPath: string;
   excludes?: string[];
   locale?: string;
+  limit?: number;
   showChildrenRail?: boolean;
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
@@ -96,10 +106,11 @@ export interface PathNavigatorStateProps {
   breadcrumb: string[];
   selectedItems: string[];
   leaves: string[];
-  count: number; // Number of items in the current path
+  total: number; // Number of items in the current path
   limit: number;
   offset: number;
   collapsed?: boolean;
+  isFetching: boolean;
 }
 
 const menuOptions = {
@@ -116,6 +127,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     container,
     rootPath: path,
     id = label.replace(/\s/g, ''),
+    limit = 10,
     locale,
     excludes,
     showChildrenRail = true,
@@ -127,6 +139,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -137,18 +150,28 @@ export default function PathNavigator(props: PathNavigatorProps) {
   });
   const [itemMenu, setItemMenu] = useSpreadState<Menu>({
     path,
-    sections: [],
     anchorEl: null,
     loaderItems: null
   });
+  const [keyword, setKeyword] = useState('');
+  const onSearch$ = useSubject<string>();
 
   const siteLocales = useSiteLocales();
 
   useMount(() => {
     if (!state) {
-      dispatch(pathNavigatorInit({ id, path, locale, excludes }));
+      dispatch(pathNavigatorInit({ id, path, locale, excludes, limit }));
     }
   });
+
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
+      dispatch(pathNavigatorSetKeyword({ id, keyword }));
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, id, onSearch$]);
 
   useEffect(() => {
     if (siteLocales.defaultLocaleCode && state?.localeCode !== siteLocales.defaultLocaleCode) {
@@ -284,7 +307,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
       getContentXML(site, item.path).subscribe((content) => {
         let mode = 'txt';
 
-        if (item.systemType === 'template') {
+        if (item.systemType === 'renderingTemplate') {
           mode = 'ftl';
         } else if (item.systemType === 'script') {
           mode = 'groovy';
@@ -308,7 +331,15 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   // TODO: Implement pagination when get_children api is ready.
-  const onPageChanged = (page: number) => void 0;
+  const onPageChanged = (page: number) => {
+    const offset = page * state.limit;
+    dispatch(
+      pathNavigatorChangePage({
+        id,
+        offset
+      })
+    );
+  };
 
   const onSelectItem = (item: DetailedItem, checked: boolean) => {
     dispatch(
@@ -369,14 +400,14 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
-  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, anchorEl: null });
+  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
 
   const onItemClicked = onItemClickedProp
     ? onItemClickedProp
     : createItemClickedHandler((item: DetailedItem) => {
         if (isNavigable(item)) {
           if (item.previewUrl) {
-            let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
+            let previewBase = previewChoice[site] === '2' ? 'next/preview' : 'preview';
             window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
           }
         } else if (isFolder(item)) {
@@ -390,7 +421,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
       onItemClicked(item);
     } else {
-      dispatch(pathNavigatorSetCurrentPath({ id, path: item.path }));
+      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }
   };
 
@@ -410,7 +441,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   const onSearch = (keyword: string) => {
-    dispatch(pathNavigatorSetKeyword({ id, keyword }));
+    setKeyword(keyword);
+    onSearch$.next(keyword);
   };
 
   return (
@@ -427,6 +459,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
         onHeaderButtonClick={onHeaderButtonClick}
         onCurrentParentMenu={onCurrentParentMenu}
         siteLocales={siteLocales}
+        keyword={keyword}
         onSearch={onSearch}
         onBreadcrumbSelected={onBreadcrumbSelected}
         onSelectItem={onSelectItem}

@@ -20,6 +20,7 @@ import {
   completeDetailedItem,
   duplicateAsset,
   duplicateItem,
+  duplicateWithPolicyValidation,
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
@@ -30,6 +31,7 @@ import {
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
   pasteItem,
+  pasteItemWithPolicyValidation,
   reloadDetailedItem,
   unlockItem,
   unSetClipBoard
@@ -41,21 +43,42 @@ import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
-import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
+import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
   emitSystemEvent,
   itemDuplicated,
   itemsPasted,
   itemUnlocked,
+  showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
-import { isValidCutPastePath } from '../../utils/path';
+import { getParentPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { itemFailureMessages } from '../../utils/i18n-legacy';
+import { validateActionPolicy } from '../../services/sites';
+import { defineMessages } from 'react-intl';
+
+export const sitePolicyMessages = defineMessages({
+  itemPastePolicyConfirm: {
+    id: 'pastePolicy.confirm',
+    defaultMessage:
+      'The selected {action} target goes against site policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
+  },
+  itemPastePolicyError: {
+    id: 'pastePolicy.error',
+    defaultMessage: 'The selected {action} target goes against site policies for the destination directory.'
+  }
+});
+
+export const itemFailureMessages = defineMessages({
+  itemPasteToChildNotAllowed: {
+    id: 'item.itemPasteToChildNotAllowed',
+    defaultMessage: 'Pasting to a child item is not allowed for cut'
+  }
+});
 
 const content = [
   // region Quick Create
@@ -178,13 +201,70 @@ const content = [
       })
     ),
   // endregion
-  // region Item Pasted
+  // region Duplicate with validation policy
+  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+    action$.pipe(
+      ofType(duplicateWithPolicyValidation.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return validateActionPolicy(state.sites.active, {
+          type: 'COPY',
+          target: payload.path,
+          source: getParentPath(withoutIndex(payload.path))
+        }).pipe(
+          map(({ allowed, modifiedValue, target }) => {
+            if (allowed && modifiedValue) {
+              return showConfirmDialog({
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+                  action: 'duplicate',
+                  path: target,
+                  modifiedPath: modifiedValue
+                }),
+                onCancel: closeConfirmDialog(),
+                onOk: batchActions([
+                  ...(payload.type === 'item'
+                    ? [
+                        duplicateItem({
+                          path: payload.path,
+                          onSuccess: showDuplicatedItemSuccessNotification()
+                        })
+                      ]
+                    : [
+                        duplicateAsset({
+                          path: payload.path,
+                          onSuccess: showDuplicatedItemSuccessNotification()
+                        })
+                      ]),
+                  closeConfirmDialog()
+                ])
+              });
+            } else if (allowed) {
+              return payload.type === 'item'
+                ? duplicateItem({
+                    path: payload.path,
+                    onSuccess: showDuplicatedItemSuccessNotification()
+                  })
+                : duplicateAsset({
+                    path: payload.path,
+                    onSuccess: showDuplicatedItemSuccessNotification()
+                  });
+            } else {
+              return showConfirmDialog({
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, { action: duplicate })
+              });
+            }
+          })
+        );
+      })
+    ),
+  // endregion
+  // region Item Paste
   (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        if (isValidCutPastePath) {
+        if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
           return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
             map(({ items }) => {
               return batchActions([
@@ -206,6 +286,44 @@ const content = [
           );
           return NEVER;
         }
+      })
+    ),
+  // endregion
+  // region Item Paste with validation policy
+  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+    action$.pipe(
+      ofType(pasteItemWithPolicyValidation.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return validateActionPolicy(state.sites.active, {
+          type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
+          target: payload.path,
+          source: state.content.clipboard.sourcePath
+        }).pipe(
+          map(({ allowed, modifiedValue, target }) => {
+            if (allowed && modifiedValue) {
+              return showConfirmDialog({
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+                  path: target,
+                  modifiedPath: modifiedValue
+                }),
+                onCancel: closeConfirmDialog(),
+                onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+              });
+            } else if (allowed) {
+              return pasteItem({
+                path: payload.path
+              });
+            } else {
+              return showConfirmDialog({
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                })
+              });
+            }
+          })
+        );
       })
     )
   // endregion

@@ -346,5 +346,8 @@ export function usePossibleTranslation(descriptor: MessageDescriptor): string;
 export function usePossibleTranslation(titleOrDescriptor: string | MessageDescriptor): string;
 export function usePossibleTranslation(titleOrDescriptor: string | MessageDescriptor): string {
   const { formatMessage } = useIntl();
+  if (!titleOrDescriptor) {
+    return titleOrDescriptor as null;
+  }
   return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
 }

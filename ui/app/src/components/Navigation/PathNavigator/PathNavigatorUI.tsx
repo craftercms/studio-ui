@@ -35,6 +35,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import List from '@material-ui/core/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../../models/GlobalState';
+import { PathNavigatorStateProps } from './PathNavigator';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -45,24 +46,6 @@ export type PathNavigatorUIClassKey =
   | 'paginationRoot';
 
 // export type PathNavigatorUIStyles = Partial<Record<PathNavigatorUIClassKey, CSSProperties>>;
-
-export interface PathNavigatorStateProps {
-  rootPath: string;
-  currentPath: string;
-  localeCode: string;
-  keyword: '';
-  isSelectMode: boolean;
-  hasClipboard: boolean;
-  levelDescriptor: string;
-  itemsInPath: string[];
-  breadcrumb: string[];
-  selectedItems: string[];
-  leaves: string[];
-  count: number; // Number of items in the current path
-  limit: number;
-  offset: number;
-  collapsed?: boolean;
-}
 
 export interface PathNavigatorUIProps {
   state: PathNavigatorStateProps;
@@ -82,6 +65,10 @@ export interface PathNavigatorUIProps {
    * Widget's top title/label
    **/
   title: string;
+  /**
+   * Widget's search keyword
+   **/
+  keyword: string;
   /**
    * Indents all items of the widget wrapping them with a border on the left of the widget
    **/
@@ -173,6 +160,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onCurrentParentMenu,
     siteLocales,
     onSearch,
+    keyword,
     onBreadcrumbSelected,
     onSelectItem,
     onPathSelected,
@@ -185,16 +173,22 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
   // endregion
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<DetailedItem[], { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
+  const resource = useLogicResource<
+    DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem>; isFetching: boolean }
+  >(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath }), [state.itemsInPath]),
+    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath, isFetching: state.isFetching }), [
+      state.itemsInPath,
+      state.isFetching
+    ]),
     {
-      shouldResolve: ({ itemsInPath, itemsByPath }) => {
-        return Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
+      shouldResolve: ({ itemsInPath, itemsByPath, isFetching }) => {
+        return !isFetching && Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
       },
-      shouldRenew: (items, resource) => resource.complete,
+      shouldRenew: ({ isFetching }, resource) => isFetching && resource.complete,
       shouldReject: () => false,
       resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
       errorSelector: null
@@ -245,7 +239,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         className={clsx(classes.accordionDetails, showChildrenRail && classes.childrenRail, props.classes?.body)}
       >
         <Breadcrumbs
-          keyword={state.keyword}
+          keyword={keyword}
           breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
           onMenu={onCurrentParentMenu}
           onSearch={onSearch}
@@ -264,7 +258,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             }
           }}
           suspenseProps={{
-            fallback: <NavLoader numOfItems={state.limit} />
+            fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
           }}
         >
           {levelDescriptor && (
@@ -288,7 +282,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             computeActiveItems={computeActiveItems}
           />
         </SuspenseWithEmptyState>
-        {state.count !== null && (
+        {state.total !== null && (
           <TablePagination
             classes={{
               root: clsx(classes.pagination, props.classes?.paginationRoot),
@@ -297,7 +291,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             }}
             component="div"
             labelRowsPerPage=""
-            count={state.count}
+            count={state.total}
             rowsPerPage={state.limit}
             page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}

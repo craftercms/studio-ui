@@ -279,6 +279,10 @@ export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOO
 
 export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
 
+export const setPreviewChoice = createAction<{ site: string; choice: string }>('SET_PREVIEW_CHOICE');
+
+export const setPreviewChoiceComplete = createAction('SET_PREVIEW_CHOICE_COMPLETE');
+
 // endregion
 
 // region toolsPanelPageStack

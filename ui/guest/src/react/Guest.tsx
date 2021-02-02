@@ -377,7 +377,7 @@ function Guest(props: GuestProps) {
         });
       };
     }
-  }, [dispatch, dragContextDropZoneIceId]);
+  }, [dispatch, dragContextDropZoneElementRecordId, dragContextDropZoneIceId]);
 
   const draggableItemElemRecId = Object.entries(state.draggable ?? {}).find(([, ice]) => ice !== false)?.[0];
 

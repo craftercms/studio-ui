@@ -20,6 +20,7 @@ import { StandardAction } from '../../models/StandardAction';
 import { Site } from '../../models/Site';
 import { createLookupTable } from '../../utils/object';
 import { getSiteCookie } from '../../utils/auth';
+import { storeInitialized } from '../actions/system';
 
 const CHANGE_SITE = 'CHANGE_SITE';
 
@@ -43,7 +44,7 @@ export const initialState: GlobalState['sites'] = {
 };
 
 const reducer = createReducer<GlobalState['sites']>(initialState, {
-  INITIAL_STATE: (state, { payload: { sites } }) => ({ ...state, byId: createLookupTable(sites) }),
+  [storeInitialized.type]: (state, { payload }) => ({ ...state, byId: createLookupTable(payload.sites) }),
   [CHANGE_SITE]: (state, { payload }) =>
     payload.nextSite === state.active
       ? state

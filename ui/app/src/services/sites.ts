@@ -15,15 +15,15 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { CreateSiteMeta, Site } from '../models/Site';
+import { Action, ContentValidationResult, CreateSiteMeta, Site } from '../models/Site';
 import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
-import { Blueprint } from '../models/Blueprint';
+import { MarketplacePlugin } from '../models/MarketplacePlugin';
 import { underscore } from '../utils/string';
 
-export function fetchBlueprints(): Observable<Blueprint[]> {
+export function fetchBlueprints(): Observable<MarketplacePlugin[]> {
   return get('/studio/api/2/sites/available_blueprints').pipe(pluck('response', 'blueprints'));
 }
 
@@ -83,4 +83,18 @@ export function update(site: Site): Observable<Site> {
 
 export function exists(siteId: string): Observable<boolean> {
   return get(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(pluck('response', 'exists'));
+}
+
+export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult>;
+export function validateActionPolicy(site: string, actions: Action[]): Observable<ContentValidationResult[]>;
+export function validateActionPolicy(
+  site: string,
+  action: Action | Action[]
+): Observable<ContentValidationResult | ContentValidationResult[]> {
+  const multi = Array.isArray(action);
+  const actions = multi ? action : [action];
+  const toPluck = ['response', 'results', !multi && '0'].filter(Boolean);
+  return postJSON(`/studio/api/2/sites/${site}/policy/validate`, {
+    actions
+  }).pipe(pluck(...toPluck));
 }

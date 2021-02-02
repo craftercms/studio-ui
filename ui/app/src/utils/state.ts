@@ -27,63 +27,55 @@ export function getStateMapFromLegacyItem(item: LegacyItem) {
   };
 }
 
-export function getStoredPreviewChoice(site: string) {
-  return window.localStorage.getItem(`craftercms.previewCompatChoice.${site}`);
+export function getStoredEditModeChoice(user: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.editModeChoice`);
 }
 
-export function setStoredPreviewChoice(site: string, value: string) {
-  return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
+export function setStoredEditModeChoice(value: string, user: string) {
+  return window.localStorage.setItem(`craftercms.${user}.editModeChoice`, value);
 }
 
-export function getStoredEditModeChoice(): string {
-  return window.localStorage.getItem(`craftercms.editModeChoice`);
+export function getStoredHighlightModeChoice(user: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`);
 }
 
-export function setStoredEditModeChoice(value: string) {
-  return window.localStorage.setItem(`craftercms.editModeChoice`, value);
+export function setStoredHighlightModeChoice(value: string, user: string) {
+  return window.localStorage.setItem(`craftercms.${user}.highlightModeChoice`, value);
 }
 
-export function getStoredhighlightModeChoice(): string {
-  return window.localStorage.getItem(`craftercms.highlightModeChoice`);
-}
-
-export function setStoredhighlightModeChoice(value: string) {
-  return window.localStorage.setItem(`craftercms.highlightModeChoice`, value);
-}
-
-export function setStoredClipboard(site: string, value: object) {
+export function setStoredClipboard(site: string, user: string, value: object) {
   return window.localStorage.setItem(
-    `craftercms.clipboard.${site}`,
+    `craftercms.${user}.clipboard.${site}`,
     JSON.stringify({ ...value, timestamp: Date.now() })
   );
 }
 
-export function getStoredClipboard(site: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.clipboard.${site}`));
+export function getStoredClipboard(site: string, user: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.clipboard.${site}`));
 }
 
-export function removeStoredClipboard(site: string) {
-  return window.localStorage.removeItem(`craftercms.clipboard.${site}`);
+export function removeStoredClipboard(site: string, user: string) {
+  return window.localStorage.removeItem(`craftercms.${user}.clipboard.${site}`);
 }
 
-export function setStoredPreviewToolsPanelPage(site: string, value: object) {
-  return window.localStorage.setItem(`craftercms.previewToolsPanelPage.${site}`, JSON.stringify(value));
+export function setStoredPreviewToolsPanelPage(site: string, user: string, value: object) {
+  return window.localStorage.setItem(`craftercms.${user}.previewToolsPanelPage.${site}`, JSON.stringify(value));
 }
 
-export function getStoredPreviewToolsPanelPage(site: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.previewToolsPanelPage.${site}`));
+export function getStoredPreviewToolsPanelPage(site: string, user: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelPage.${site}`));
 }
 
-export function removeStoredPreviewToolsPanelPage(site: string) {
-  return window.localStorage.removeItem(`craftercms.previewToolsPanelPage.${site}`);
+export function removeStoredPreviewToolsPanelPage(site: string, user: string) {
+  return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${site}`);
 }
 
-export function setStoredPathNavigator(site: string, id: string, value: object) {
-  return window.localStorage.setItem(`craftercms.pathNavigator.${site}.${id}`, JSON.stringify(value));
+export function setStoredPathNavigator(site: string, user: string, id: string, value: object) {
+  return window.localStorage.setItem(`craftercms.${user}.pathNavigator.${site}.${id}`, JSON.stringify(value));
 }
 
-export function getStoredPathNavigator(site: string, id: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`));
+export function getStoredPathNavigator(site: string, user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${site}.${id}`));
 }
 
 export function createToolsPanelPage(title: string | MessageDescriptor, widgets: WidgetDescriptor[]): WidgetDescriptor {

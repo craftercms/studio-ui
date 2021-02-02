@@ -127,8 +127,6 @@ YAHOO.extend(
                     heightConstrains = _self.HEIGHTCONSTRAINS;
                   message = CMgs.format(langBundle, 'constraintsError');
 
-                  //valid = _self.isImageValid(widthConstrains, originalWidth, heightConstrains, originalHeight);
-
                   if (
                     widthConstrains &&
                     originalWidth <= widthConstrains &&

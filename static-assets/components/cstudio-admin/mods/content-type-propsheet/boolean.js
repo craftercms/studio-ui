@@ -26,15 +26,16 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Bool,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function(value, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
       var _self = this;
       var containerEl = this.containerEl,
         wrapperEl = document.createElement('div'),
         valueEl = document.createElement('input');
 
       valueEl.type = 'checkbox';
-      valueEl.checked = value == 'true';
       valueEl.fieldName = this.fieldName;
+      properties && valueEl.setAttribute('data-id', properties.name);
+      properties && valueEl.setAttribute('data-label', properties.label);
 
       wrapperEl.appendChild(valueEl);
       containerEl.appendChild(wrapperEl);
@@ -44,9 +45,24 @@ YAHOO.extend(
           _self.value = _self.getValue();
           updateFn(event, _self);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+          valueEl.dispatchEvent(new Event('propertyUpdate', { event }));
         };
 
         YAHOO.util.Event.on(valueEl, 'change', updateFieldFn, valueEl);
+      }
+
+      if (properties && properties.dependsOn) {
+        const dependency = document.querySelector(`[data-id="${properties.dependsOn}"]`);
+        const dependencyStatus = _self.dependencyStatus(dependency);
+        valueEl.checked = dependencyStatus.supported
+          ? dependencyStatus.dependencyMet
+            ? value == 'true'
+            : false
+          : value == 'true';
+
+        _self.handleDependency(dependency, valueEl, properties, 'checked', false, updateFieldFn);
+      } else {
+        valueEl.checked = value == 'true';
       }
 
       this.valueEl = valueEl;

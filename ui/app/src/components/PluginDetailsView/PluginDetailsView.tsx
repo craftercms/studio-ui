@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -21,16 +21,16 @@ import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import MobileStepper from '../../../../components/MobileStepper';
+import MobileStepper from '../MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Blueprint } from '../../../../models/Blueprint';
+import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from '@material-ui/core/Grid';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import Alert from '@material-ui/lab/Alert';
-import { backgroundColor } from '../../../../styles/theme';
+import { backgroundColor } from '../../styles/theme';
 import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
@@ -175,14 +175,14 @@ const messages = defineMessages({
 });
 
 interface PluginDetailsViewProps {
+  plugin: MarketplacePlugin;
   selectedIndex?: number;
-  blueprint: Blueprint;
-  interval: number;
-  marketplace: boolean;
+  interval?: number;
+  marketplace?: boolean;
 
   onCloseDetails(event: any): any;
 
-  onBlueprintSelected(blueprint: Blueprint, view: number): any;
+  onBlueprintSelected(blueprint: MarketplacePlugin, view: number): any;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -190,9 +190,9 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
-  const { blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex, marketplace } = props;
-  const [index, setIndex] = useState(selectedIndex || 0);
-  const { media, name, description, version, license, developer, website, searchEngine, compatible } = blueprint;
+  const { plugin, interval = 5000, onBlueprintSelected, onCloseDetails, selectedIndex = 0, marketplace = true } = props;
+  const [index, setIndex] = useState(selectedIndex);
+  const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
 
   const { formatMessage } = useIntl();
@@ -246,8 +246,8 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   }
 
   let steps = 0;
-  blueprint.media && blueprint.media.screenshots ? (steps = blueprint.media.screenshots.length) : (steps = 0);
-  blueprint.media && blueprint.media.videos ? (steps += blueprint.media.videos.length) : (steps += 0);
+  plugin.media && plugin.media.screenshots ? (steps = plugin.media.screenshots.length) : (steps = 0);
+  plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
     <div className={clsx(classes.detailsView, classes.fadeIn)}>
@@ -263,7 +263,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
             variant="contained"
             color="primary"
             className={classes.useBtn}
-            onClick={() => onBlueprintSelected(blueprint, 1)}
+            onClick={() => onBlueprintSelected(plugin, 1)}
           >
             {formatMessage(messages.use)}
           </Button>

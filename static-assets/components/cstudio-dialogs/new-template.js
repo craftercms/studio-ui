@@ -175,37 +175,26 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
       CStudioAuthoringContext.user +
       '&unlock=true';
 
-    var saveSvcCb = {
-      success: function() {
-        CStudioAuthoring.Dialogs.NewTemplate.closeDialog();
+    CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(writeServiceUrl)).subscribe(() => {
+      CStudioAuthoring.Dialogs.NewTemplate.closeDialog();
 
-        CStudioAuthoring.Operations.openTemplateEditor(
-          templatePath + '/' + name,
-          'default',
-          {
-            success: function() {
-              if (_self.cb.success) {
-                _self.cb.success(templatePath + '/' + name);
-              } else {
-                _self.cb(templatePath + '/' + name);
-              }
-            },
-            failure: function() {}
+      CStudioAuthoring.Operations.openTemplateEditor(
+        templatePath + '/' + name,
+        'default',
+        {
+          success: function() {
+            if (_self.cb.success) {
+              _self.cb.success(templatePath + '/' + name);
+            } else {
+              _self.cb(templatePath + '/' + name);
+            }
           },
-          null,
-          null
-        );
-      },
-      failure: function() {}
-    };
-
-    YAHOO.util.Connect.setDefaultPostHeader(false);
-    YAHOO.util.Connect.initHeader('Content-Type', 'text/pain; charset=utf-8');
-    YAHOO.util.Connect.initHeader(
-      CStudioAuthoringContext.xsrfHeaderName,
-      CrafterCMSNext.util.auth.getRequestForgeryToken()
-    );
-    YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, '');
+          failure: function() {}
+        },
+        null,
+        null
+      );
+    });
   },
 
   /**

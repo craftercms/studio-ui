@@ -95,6 +95,10 @@ export const usersAdminMessages = defineMessages({
   userDeleted: {
     id: 'usersAdmin.userDeleted',
     defaultMessage: '{username} deleted.'
+  },
+  passwordChangeSuccess: {
+    id: 'usersAdmin.passwordChangeSuccessMessage',
+    defaultMessage: 'Password changed successfully'
   }
 });
 
@@ -413,6 +417,10 @@ export const contentTypesMessages = defineMessages({
   toolNotFound: {
     id: 'siteConfig.toolNotFound',
     defaultMessage: '"{tool}" tool not found.'
+  },
+  dependsOn: {
+    id: 'contentType.dependsOn',
+    defaultMessage: 'This property depends on "{dependency}"'
   }
 });
 
@@ -839,6 +847,10 @@ export const globalMenuMessages = defineMessages({
   'home.globalMenu.encryptionTool': {
     id: 'GlobalMenu.EncryptionTool',
     defaultMessage: 'Encryption Tool'
+  },
+  'home.globalMenu.tokenManagement': {
+    id: 'GlobalMenu.TokenManagement',
+    defaultMessage: 'Token Management'
   },
   'home.about-us': {
     id: 'GlobalMenu.AboutUs',
@@ -1462,13 +1474,6 @@ export const itemSuccessMessages = defineMessages({
   itemSavedAsDraft: {
     id: 'item.savedAsDraft',
     defaultMessage: 'Item draft saved'
-  }
-});
-
-export const itemFailureMessages = defineMessages({
-  itemPasteToChildNotAllowed: {
-    id: 'item.itemPasteToChildNotAllowed',
-    defaultMessage: 'Pasting to a child item is not allowed for cut'
   }
 });
 

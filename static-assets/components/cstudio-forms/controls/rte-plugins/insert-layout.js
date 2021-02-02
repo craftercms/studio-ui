@@ -32,9 +32,7 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
         if (layouts.length > 0) {
           var c = cm.createMenuButton('insertLayout', {
             title: 'Insert Layout',
-            //image : 'img/example.gif',
             style: 'mce_insertLayout'
-            //	                    icons : false
           });
 
           c.layouts = layouts;

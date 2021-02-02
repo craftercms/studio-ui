@@ -40,7 +40,7 @@ const messages = defineMessages({
   }
 });
 
-type ConfirmDialogStateClassKey = 'dialog' | 'dialogBody' | 'dialogTitle' | 'dialogFooter';
+type ConfirmDialogStateClassKey = 'dialog' | 'dialogImage' | 'dialogBody' | 'dialogTitle' | 'dialogFooter';
 
 type ConfirmDialogStateStyles = Partial<Record<ConfirmDialogStateClassKey, CSSProperties>>;
 
@@ -52,13 +52,16 @@ const useStyles = makeStyles(() =>
       },
       ...styles.dialog
     }),
+    dialogImage: (styles) => ({
+      paddingBottom: '35px',
+      ...styles.dialogImage
+    }),
     dialogBody: (styles) => ({
       textAlign: 'center',
       padding: '40px 20px 0 !important',
       ...styles.dialogBody
     }),
     dialogTitle: (styles) => ({
-      paddingTop: '35px',
       paddingBottom: '5px',
       ...styles.dialogTitle
     }),
@@ -139,7 +142,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
   return (
     <>
       <DialogContent id="confirmDialogBody" className={classes.dialogBody}>
-        <img src={imageUrl} alt="" />
+        <img src={imageUrl} alt="" className={classes.dialogImage} />
         {title && (
           <Typography variant="body1" component="h2" className={classes.dialogTitle}>
             {title}

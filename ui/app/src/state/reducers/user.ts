@@ -15,18 +15,16 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import { User } from '../../models/User';
-import { LOG_OUT_COMPLETE } from '../actions/auth';
+import { EnhancedUser } from '../../models/User';
+import { storeInitialized } from '../actions/system';
 
-const reducer = createReducer<User>(null, {
-  // Service doesn't return the "right" user. For now just keeping the one that
-  // would have originally come from the FTL pre-loaded state.
-  // [LOG_IN_COMPLETE]: (state, action) => {
-  //   return {
-  //     ...action.payload
-  //   };
-  // },
-  [LOG_OUT_COMPLETE]: () => null
+const reducer = createReducer<EnhancedUser>(null, {
+  [storeInitialized.type]: (state, { payload }) => ({
+    ...payload.user,
+    rolesBySite: payload.rolesBySite,
+    sites: payload.sites.map((id) => id),
+    preferences: null // TODO: is this needed?
+  })
 });
 
 export default reducer;

@@ -30,17 +30,21 @@ import PaginationOptions from '../../../models/PaginationOptions';
 import { LookupTable } from '../../../models/LookupTable';
 import ApiResponse from '../../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
-import { getChildrenByPath } from '../../../services/content';
-import { getParentPath, getParentsFromPath, itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
+import { fetchItemsByPath, fetchItemWithChildrenByPath, getChildrenByPath } from '../../../services/content';
+import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
 import { isFolder } from '../../../components/Navigation/PathNavigator/utils';
+import TablePagination from '@material-ui/core/TablePagination';
+import { translations } from '../../../components/Navigation/PathNavigator/translations';
+import { useIntl } from 'react-intl';
+import { parseSandBoxItemToDetailedItem } from '../../../utils/content';
+import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -83,7 +87,34 @@ const useStyles = makeStyles((theme) => ({
     fill: palette.teal.main,
     marginRight: 10
   },
-  selectIcon: {}
+  selectIcon: {},
+  // region Pagination
+  pagination: {
+    '& p': {
+      padding: 0
+    },
+    '& svg': {
+      top: 'inherit'
+    },
+    '& .hidden': {
+      display: 'none'
+    }
+  },
+  paginationToolbar: {
+    padding: '0 0 0 12px',
+    minHeight: '30px !important',
+    justifyContent: 'space-between',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
+      display: 'none'
+    },
+    '& .MuiButtonBase-root': {
+      padding: 0
+    }
+  }
+  // endregion
 }));
 
 interface SingleItemSelectorProps {
@@ -119,7 +150,10 @@ interface SingleItemSelectorState extends PaginationOptions {
   currentPath: string;
   keywords: string;
   pageNumber: number;
-  breadcrumb: DetailedItem[];
+  offset: number;
+  total: number;
+  limit: number;
+  breadcrumb: string[];
 }
 
 const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props: SingleItemSelectorProps) => ({
@@ -131,8 +165,9 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   keywords: '',
   pageNumber: 0,
   breadcrumb: [],
-  offset: null,
-  limit: null,
+  offset: 0,
+  limit: 10,
+  total: 0,
   rootPath: props.rootPath,
   currentPath: props.selectedItem?.path ?? props.rootPath
 });
@@ -150,8 +185,12 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     case setKeyword.type: {
       return {
         ...state,
-        keywords: payload
+        keywords: payload,
+        isFetching: true
       };
+    }
+    case changePage.type: {
+      return { ...state, isFetching: true };
     }
     case fetchParentsItems.type:
     case fetchChildrenByPath.type: {
@@ -163,51 +202,50 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     }
     case fetchChildrenByPathComplete.type: {
       const { currentPath, rootPath, leaves, byId } = state;
-      if (payload.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
+      const { children, parent } = payload;
+      if (children.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
         return {
           ...state,
           currentPath: getNextPath(currentPath, byId),
           leaves: leaves.concat(currentPath),
+          total: children.total,
           isFetching: false
         };
       } else {
         const nextItems = {
-          ...{ ...state.byId, ...createLookupTable(payload) },
-          [payload.parent.id]: payload.parent
+          ...{ ...state.byId, ...createLookupTable(children, 'path') },
+          [parent.path]: parent
         };
 
         return {
           ...state,
           byId: nextItems,
-          items: payload.map((item) => item.id),
+          items: children.map((item) => item.path),
           isFetching: false,
-          breadcrumb: itemsFromPath(currentPath, rootPath, nextItems)
+          total: children.total,
+          offset: children.offset,
+          limit: children.limit,
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
         };
       }
     }
     case fetchParentsItemsComplete.type: {
       const { currentPath, rootPath, byId } = state;
-      let nextItems: any = { ...byId };
-      let items = [];
-      let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
-
-      payload.forEach((response: GetChildrenResponse, i: number) => {
-        if (i === payload.length - 1) {
-          items = response.map((item) => item.id);
-        }
-        nextItems = {
-          ...nextItems,
-          ...createLookupTable(response),
-          [response.parent.id]: response.parent
-        };
-      });
+      const { children, items } = payload;
 
       return {
         ...state,
-        byId: nextItems,
-        items: items,
+        byId: {
+          ...byId,
+          ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+          ...createLookupTable(items, 'path')
+        },
+        items: children.map((item) => item.path),
         isFetching: false,
-        breadcrumb: itemsFromPath(parentPath, rootPath, nextItems)
+        limit: children.limit,
+        total: children.total,
+        offset: children.offset,
+        breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
       };
     }
     default:
@@ -228,19 +266,25 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
   return nextPath;
 }
 
-export const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
+const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
-export const setKeyword = createAction<string>('SET_KEYWORD');
+const setKeyword = createAction<string>('SET_KEYWORD');
 
-export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
+const changePage = createAction<number>('CHANGE_PAGE');
 
-export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
+const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
 
-export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>('FETCH_PARENTS_ITEMS_COMPLETE');
+const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
 
-export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>('FETCH_CHILDREN_BY_PATH_COMPLETE');
+const fetchParentsItemsComplete = createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+  'FETCH_PARENTS_ITEMS_COMPLETE'
+);
 
-export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
+const fetchChildrenByPathComplete = createAction<{ parent?: DetailedItem; children: GetChildrenResponse }>(
+  'FETCH_CHILDREN_BY_PATH_COMPLETE'
+);
+
+const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
@@ -262,6 +306,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const classes = useStyles();
   const anchorEl = useRef();
   const [state, _dispatch] = useReducer(reducer, props, init);
+  const { formatMessage } = useIntl();
   const site = useActiveSiteId();
 
   const exec = useCallback(
@@ -270,35 +315,41 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       const { type, payload } = action;
       switch (type) {
         case setKeyword.type: {
-          getChildrenByPath(site, state.currentPath, { keyword: payload }).subscribe(
-            (response) => exec(fetchChildrenByPathComplete(response)),
+          getChildrenByPath(site, state.currentPath, { limit: state.limit, keyword: payload }).subscribe(
+            (children) => exec(fetchChildrenByPathComplete({ children })),
+            (response) => exec(fetchChildrenByPathFailed(response))
+          );
+          break;
+        }
+        case changePage.type: {
+          getChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
+            (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         }
         case fetchChildrenByPath.type:
-          getChildrenByPath(site, payload).subscribe(
-            (response) => exec(fetchChildrenByPathComplete(response)),
+          fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
+            ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         case fetchParentsItems.type:
-          const parentsPath = getParentsFromPath(payload, state.rootPath);
-          const requests: Observable<GetChildrenResponse>[] = [];
+          const parentsPath = getIndividualPaths(payload, state.rootPath);
 
-          if (parentsPath.length) {
-            parentsPath.forEach((parentPath) => {
-              if (!state.items[parentPath] && !state.items[withIndex(parentPath)]) {
-                requests.push(getChildrenByPath(site, parentPath));
-              }
-            });
-            forkJoin(requests).subscribe(
-              (response) => exec(fetchParentsItemsComplete(response)),
+          if (parentsPath.length > 1) {
+            forkJoin([
+              fetchItemsByPath(site, parentsPath),
+              getChildrenByPath(site, payload, {
+                limit: state.limit
+              })
+            ]).subscribe(
+              ([items, children]) => exec(fetchParentsItemsComplete({ items, children })),
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           } else {
-            getChildrenByPath(site, payload).subscribe(
-              (response) => exec(fetchChildrenByPathComplete(response)),
+            fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
+              ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           }
@@ -312,15 +363,14 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
     shouldReject: (consumer) => Boolean(consumer.error),
     shouldRenew: (consumer, resource) => consumer.isFetching && resource.complete,
-    resultSelector: (consumer) => {
-      return consumer.items.map((id) => consumer.byId[id]);
-    },
+    resultSelector: (consumer) => consumer.items.map((id) => consumer.byId[id]),
     errorSelector: (consumer) => consumer.error
   });
 
   const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
-    exec(fetchParentsItems(item?.path ?? rootPath));
+    let nextPath = withoutIndex(item.path) === withoutIndex(rootPath) ? item.path : getParentPath(item.path);
+    exec(fetchParentsItems(nextPath));
   };
 
   const onPathSelected = (item: DetailedItem) => {
@@ -348,6 +398,11 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       exec(changeCurrentPath(item));
       onItemClicked(item);
     }
+  };
+
+  const onPageChanged = (page: number) => {
+    const offset = page * state.limit;
+    exec(changePage(offset));
   };
 
   const Wrapper = hideUI ? React.Fragment : Paper;
@@ -401,7 +456,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       >
         <Breadcrumbs
           keyword={state?.keywords}
-          breadcrumb={state?.breadcrumb ?? []}
+          breadcrumb={state.breadcrumb.map((path) => state.byId[path] ?? state.byId[withIndex(path)])}
           onSearch={onSearch}
           onCrumbSelected={onCrumbSelected}
         />
@@ -412,6 +467,21 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
             resource={itemsResource}
             onPathSelected={onPathSelected}
             onItemClicked={handleItemClicked}
+          />
+          <TablePagination
+            classes={{
+              root: classes.pagination,
+              selectRoot: 'hidden',
+              toolbar: classes.paginationToolbar
+            }}
+            component="div"
+            labelRowsPerPage=""
+            count={state.total}
+            rowsPerPage={state.limit}
+            page={state && Math.ceil(state.offset / state.limit)}
+            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onChangePage={(e, page: number) => onPageChanged(page)}
           />
         </SuspenseWithEmptyState>
       </Popover>

@@ -21,7 +21,7 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from './GitForm';
-import { Blueprint } from '../../../../models/Blueprint';
+import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import FormBuilder from './FormBuilder';
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface BlueprintFormProps {
   inputs: SiteState;
-  blueprint: Blueprint;
+  blueprint: MarketplacePlugin;
   classes?: {
     root?: string;
   };
@@ -231,6 +231,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             id="siteName"
             name="siteName"
             label={formatMessage(messages.siteName)}
+            placeholder="e.g. Corporate Website"
             required
             autoFocus
             fullWidth
@@ -255,6 +256,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             id="siteId"
             name="siteId"
             label={formatMessage(messages.siteId)}
+            placeholder="e.g. corporate-website"
             required
             fullWidth
             onBlur={() => onCheckNameExist(inputs.siteId)}

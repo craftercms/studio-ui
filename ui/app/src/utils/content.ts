@@ -24,6 +24,22 @@ import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument
 import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
+import {
+  STATE_MASK_DELETED_MASK,
+  STATE_MASK_IN_WORKFLOW_MASK,
+  STATE_MASK_LIVE_MASK,
+  STATE_MASK_LOCKED_MASK,
+  STATE_MASK_MODIFIED_MASK,
+  STATE_MASK_NEW_MASK,
+  STATE_MASK_SCHEDULED_MASK,
+  STATE_MASK_STAGED_MASK,
+  STATE_MASK_SUBMITTED_MASK,
+  STATE_MASK_SYSTEM_PROCESSING_MASK,
+  STATE_MASK_TRANSLATION_IN_PROGRESS_MASK,
+  STATE_MASK_TRANSLATION_PENDING_MASK,
+  STATE_MASK_TRANSLATION_UP_TO_DATE_MASK
+} from './constants';
+import { SystemType } from '../models/SystemType';
 
 export function isEditableAsset(path: string) {
   return (
@@ -84,31 +100,29 @@ export function isImage(path: string): boolean {
   );
 }
 
-export function getSystemTypeFromPath(path: string): string {
+export function getSystemTypeFromPath(path: string): SystemType {
   const rootPath = getRootPath(path);
   if (rootPath.includes('/site/website')) {
     return 'page';
   } else if (rootPath.includes('/components')) {
-    return 'taxonomy';
-  } else if (rootPath.includes('/taxonomy')) {
     return 'component';
+  } else if (rootPath.includes('/taxonomy')) {
+    return 'taxonomy';
   } else if (rootPath.includes('/templates')) {
-    return 'template';
+    return 'renderingTemplate';
   } else if (rootPath.includes('/static-assets')) {
     return 'asset';
   } else if (rootPath.includes('script')) {
     return 'script';
-  } else if (rootPath.includes('config')) {
-    return 'config';
   } else {
     return 'unknown';
   }
 }
 
-function getLegacyItemSystemType(item: LegacyItem) {
+function getLegacyItemSystemType(item: LegacyItem): SystemType {
   switch (true) {
     case item.contentType === 'renderingTemplate': {
-      return 'template';
+      return 'renderingTemplate';
     }
     case item.contentType === 'script': {
       return 'script';
@@ -133,7 +147,7 @@ function getLegacyItemSystemType(item: LegacyItem) {
       return 'taxonomy';
     }
     default: {
-      return null;
+      return 'unknown';
     }
   }
 }
@@ -565,9 +579,46 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   if (isNavigable(item)) {
     return isRootPath(item.path) ? 11 : 16;
   } else if (isFolder(item)) {
-    return isRootPath(item.path) ? 3 : item.path.startsWith('/templates') || item.path.startsWith('/scripts') ? 7 : 6;
+    return isRootPath(item.path)
+      ? item.path.startsWith('/templates') || item.path.startsWith('/scripts')
+        ? 4
+        : 3
+      : item.path.startsWith('/templates') || item.path.startsWith('/scripts')
+      ? 7
+      : 6;
   } else if (isPreviewable(item)) {
-    // TODO: Unsure if the BE will return taxonomy as a systemType
     return item.systemType === 'component' || item.systemType === 'taxonomy' ? 11 : 10;
   }
 }
+
+export const isNewState = (value: number) => Boolean(value & STATE_MASK_NEW_MASK);
+export const isModifiedState = (value: number) => Boolean(value & STATE_MASK_MODIFIED_MASK);
+export const isDeletedState = (value: number) => Boolean(value & STATE_MASK_DELETED_MASK);
+export const isLockedState = (value: number) => Boolean(value & STATE_MASK_LOCKED_MASK);
+export const isSystemProcessingState = (value: number) => Boolean(value & STATE_MASK_SYSTEM_PROCESSING_MASK);
+export const isInWorkflowState = (value: number) => Boolean(value & STATE_MASK_IN_WORKFLOW_MASK);
+export const isScheduledState = (value: number) => Boolean(value & STATE_MASK_SCHEDULED_MASK);
+export const isStagedState = (value: number) => Boolean(value & STATE_MASK_STAGED_MASK);
+export const isLiveState = (value: number) => Boolean(value & STATE_MASK_LIVE_MASK);
+export const isSubmittedState = (value: number) => Boolean(value & STATE_MASK_SUBMITTED_MASK);
+export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_UP_TO_DATE_MASK);
+export const isTranslationPendingState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_PENDING_MASK);
+export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_IN_PROGRESS_MASK);
+
+export const createItemStateMap = (status: number) => {
+  return {
+    new: isNewState(status),
+    modified: isModifiedState(status),
+    deleted: isDeletedState(status),
+    userLocked: isLockedState(status),
+    systemProcessing: isSystemProcessingState(status),
+    inWorkflow: isInWorkflowState(status),
+    scheduled: isScheduledState(status),
+    staged: isStagedState(status),
+    live: isLiveState(status),
+    submitted: isSubmittedState(status),
+    translationUpToDate: isTranslationUpToDateState(status),
+    translationPending: isTranslationPendingState(status),
+    translationInProgress: isTranslationInProgressState(status)
+  };
+};

@@ -126,7 +126,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
             dialogWraper.style.width = newWidth + 10 + 'px';
             dialogWraper.style.height = newHeight + 10 + 'px';
 
-            //reset content type drop down and preview image size
+            // reset content type drop down and preview image size
             var widthDiff = parseInt((newWidth - 600) / 2, 10);
             var heightDiff = newHeight - 240;
 
@@ -147,7 +147,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
         YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
 
-      //set focus on OK Button.
+      // set focus on OK Button.
       if (YDom.get('submitWCMPopup')) {
         YDom.get('submitWCMPopup').focus();
       }
@@ -172,7 +172,6 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
     var taxonomyType = document.getElementById('taxonomyTypeVal').value;
     var taxonomyPath = document.getElementById('taxonomyPathVal').value;
     var taxonomyLabel = document.getElementById('taxonomyLabelVal').value;
-    //var taxonomyDisabled = document.getElementById("taxonomyDisabled").checked;
 
     var createCb = {
       success: function(response) {

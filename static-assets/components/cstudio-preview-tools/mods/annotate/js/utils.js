@@ -74,7 +74,7 @@ DrawingBoard.Utils.MicroEvent.prototype = {
   }
 };
 
-//I know.
+// I know.
 DrawingBoard.Utils._boxBorderSize = function($el, withPadding, withMargin, direction) {
   withPadding = !!withPadding || true;
   withMargin = !!withMargin || false;

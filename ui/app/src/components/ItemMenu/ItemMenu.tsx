@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, Suspense } from 'react';
+import React, { PropsWithChildren, Suspense, useMemo } from 'react';
 import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem } from '../../models/Item';
@@ -107,21 +107,30 @@ export default function ItemMenu(props: ItemMenuProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const resourceItem = useLogicResource<DetailedItem, DetailedItem>(item, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
-  });
+  const resourceItem = useLogicResource<DetailedItem, { item: DetailedItem; open: boolean }>(
+    useMemo(() => ({ item, open }), [item, open]),
+    {
+      shouldResolve: ({ item, open }) => Boolean(item) && open,
+      shouldReject: (source) => false,
+      shouldRenew: ({ open }, resource) => open && resource.complete,
+      resultSelector: ({ item }) => item,
+      errorSelector: (source) => null
+    }
+  );
 
-  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(itemPermissions, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
-  });
+  const resourcePermissions = useLogicResource<
+    LookupTable<boolean>,
+    { itemPermissions: LookupTable<boolean>; open: boolean }
+  >(
+    useMemo(() => ({ itemPermissions, open }), [itemPermissions, open]),
+    {
+      shouldResolve: ({ itemPermissions, open }) => Boolean(itemPermissions) && open,
+      shouldReject: (source) => false,
+      shouldRenew: ({ open }, resource) => open && resource.complete,
+      resultSelector: ({ itemPermissions }) => itemPermissions,
+      errorSelector: (source) => null
+    }
+  );
 
   const onMenuItemClicked = (option: SectionItem) => {
     itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard);
@@ -159,7 +168,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
     isValidCutPastePath(item.path, clipboard.sourcePath);
   const options = generateSingleItemOptions(item, { hasClipboard, ...permissions });
-  const noOptions = options.length === 1 && options[0].length === 0;
+  const noOptions = options.flatMap((i) => i).length === 0;
 
   return noOptions ? (
     <div className={emptyClasses.root}>

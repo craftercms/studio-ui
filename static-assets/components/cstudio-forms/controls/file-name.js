@@ -49,7 +49,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   },
 
   getRequirementCount: function() {
-    //2 Requirement:
+    // 2 Requirement:
     // 1. The field is required
     // 2. The Path must be valid
     return 2;
@@ -68,7 +68,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var oldValue = obj.value;
     obj.value = obj.inputEl.value;
     if (obj.value != '' && oldValue != obj.value)
-      //Just check if the value was changed
+      // Just check if the value was changed
       obj.filenameAvailable();
 
     if (obj.required) {
@@ -152,10 +152,10 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
    */
   processKey: function(evt, el) {
     var invalid = new RegExp('[.!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\/\\{\\}|":<>\\?~ ]', 'g');
-    //Prevent the use of non english characters
+    // Prevent the use of non english characters
     var nonEnglishChar = new RegExp('[^\x00-\x80]', 'g');
     var cursorPosition = el.selectionStart;
-    //change url to lower case
+    // change url to lower case
     if (el.value != '' && el.value != el.value.toLowerCase()) {
       el.value = el.value.toLowerCase();
       if (cursorPosition && typeof cursorPosition == 'number') {
@@ -246,7 +246,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
 
     var path = this._getPath();
-    path = path.replace(/^\/site\/website/, ''); //From Pages
+    path = path.replace(/^\/site\/website/, ''); // From Pages
     if (path.match(/^\/site\/components\//)) path = path.replace(/^\/site/, ''); // From Components
     path = path + '/';
     path = path.replace('//', '/');

@@ -54,15 +54,14 @@ import {
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
-  showDuplicatedItemSuccessNotification,
   showEditItemSuccessNotification,
   showPublishItemSuccessNotification,
   showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
-  duplicateAsset,
-  duplicateItem,
+  duplicateWithPolicyValidation,
   pasteItem,
+  pasteItemWithPolicyValidation,
   reloadDetailedItem,
   setClipBoard,
   unlockItem
@@ -196,7 +195,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
   const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
-  const isImage = item.mimeType.startsWith('image/');
+  const isImage = item.mimeType?.startsWith('image/');
   const isRootFolder = isRootPath(item.path);
   const translation = false;
   const isLocked = item.lockOwner;
@@ -294,7 +293,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
     }
     case 'taxonomy':
     case 'component':
-    case 'template':
+    case 'renderingTemplate':
     case 'script':
     case 'asset': {
       let _optionsA = [];
@@ -313,12 +312,14 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
         if (deleteItem) {
           _optionsA.push(menuOptions.delete);
         }
-        if (type === 'taxonomy' || type === 'component') {
-          _optionsA.push(menuOptions.changeContentType);
-        }
         _optionsA.push(menuOptions.cut);
         _optionsA.push(menuOptions.copy);
-        _optionsA.push(menuOptions.duplicateAsset);
+        if (type === 'taxonomy' || type === 'component') {
+          _optionsA.push(menuOptions.duplicate);
+          _optionsA.push(menuOptions.changeContentType);
+        } else {
+          _optionsA.push(menuOptions.duplicateAsset);
+        }
         if (hasClipboard) {
           _optionsA.push(menuOptions.paste);
         }
@@ -344,6 +345,7 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
       return options;
     }
     default: {
+      console.error(`[itemActions.ts] Unknown system type ${item.systemType} for item ${item.path}`);
       return options;
     }
   }
@@ -570,7 +572,7 @@ export const itemActionDispatcher = (
             }
           });
         } else {
-          dispatch(pasteItem({ path: item.path }));
+          dispatch(pasteItemWithPolicyValidation({ path: item.path }));
         }
         break;
       }
@@ -582,12 +584,9 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateAsset({
+              duplicateWithPolicyValidation({
                 path: item.path,
-                onSuccess: batchActions([
-                  showDuplicatedItemSuccessNotification(),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
+                type: 'asset'
               })
             ])
           })
@@ -602,12 +601,9 @@ export const itemActionDispatcher = (
             onCancel: closeConfirmDialog(),
             onOk: batchActions([
               closeConfirmDialog(),
-              duplicateItem({
+              duplicateWithPolicyValidation({
                 path: item.path,
-                onSuccess: batchActions([
-                  showDuplicatedItemSuccessNotification(),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
+                type: 'item'
               })
             ])
           })

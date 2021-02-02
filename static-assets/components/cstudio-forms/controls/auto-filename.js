@@ -65,7 +65,6 @@ YAHOO.extend(CStudioForms.Controls.AutoFilename, CStudioForms.CStudioFormField, 
     if (this.contentAsFolder == true || this.contentAsFolder == 'true') {
       this.form.updateModel('file-name', 'index.xml');
       this.form.updateModel('folder-name', this.form.model['objectId']);
-      //this.value = "index.xml";
     } else if (changeTemplate == 'true') {
       this.form.updateModel('file-name', this.form.model['objectId'] + '.xml');
       obj.form.updateModel('folder-name', '');

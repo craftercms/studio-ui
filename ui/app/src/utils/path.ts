@@ -15,8 +15,7 @@
  */
 
 import { parse, ParsedQuery } from 'query-string';
-import { LookupTable } from '../models/LookupTable';
-import { DetailedItem, PasteItem } from '../models/Item';
+import { PasteItem } from '../models/Item';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -57,29 +56,6 @@ export function parseQueryString(): ParsedQuery {
   return parse(window.location.search);
 }
 
-// TODO: an initial path with trailing `/` breaks
-export function itemsFromPath(path: string, root: string, items: LookupTable<DetailedItem>): DetailedItem[] {
-  const rootWithIndex = withIndex(root);
-  const rootWithoutIndex = withoutIndex(root);
-  const rootItem = items[rootWithIndex] ?? items[root];
-  if (path === rootWithIndex || path === root) {
-    return [rootItem];
-  }
-  const regExp = new RegExp(`${rootWithIndex}|${rootWithoutIndex}|\\/index\\.xml|/$`, 'g');
-  const pathWithoutRoot = path.replace(regExp, '');
-  let accum = rootWithoutIndex;
-  return [
-    rootItem,
-    ...pathWithoutRoot
-      .split('/')
-      .slice(1)
-      .map((folder) => {
-        accum += `/${folder}`;
-        return items[accum] ?? items[withIndex(accum)];
-      })
-  ];
-}
-
 export function withoutIndex(path: string): string {
   return path.replace('/index.xml', '');
 }
@@ -115,16 +91,25 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
 
 export function getIndividualPaths(path: string, rootPath?: string): string[] {
   let paths = [];
-  let array = path.replace(/^\/|\/$/g, '').split('/');
+  // adding withoutIndex to avoid duplicates paths
+  let array = withoutIndex(path)
+    .replace(/^\/|\/$/g, '')
+    .split('/');
   do {
-    paths.push('/' + array.join('/'));
+    // validation to add .index.xml to the current path;
+    if ('/' + array.join('/') === withoutIndex(path) && path.endsWith('index.xml')) {
+      paths.push(path);
+    } else {
+      paths.push('/' + array.join('/'));
+    }
     array.pop();
   } while (array.length);
   if (rootPath) {
+    // validation to remove previous path before the rootPath, example 'site' when rootPath is /site/website
     if (paths.indexOf(withIndex(rootPath)) >= 0) {
       return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1).reverse();
     } else {
-      return paths.slice(0, paths.indexOf(rootPath) + 1).reverse();
+      return paths.slice(0, paths.indexOf(withoutIndex(rootPath)) + 1).reverse();
     }
   } else {
     return paths.reverse();

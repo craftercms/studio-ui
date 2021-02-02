@@ -135,7 +135,7 @@ YAHOO.extend(
     },
 
     renderText: function() {
-      //TODO: Add rte control
+      // TODO: Add rte control
       var richTextDialogEl = document.getElementById('richTextDialog');
       var dialogContainerEl = document.getElementById('richTextBodyDialog');
       YDom.setStyle(dialogContainerEl, 'text-align', 'center');

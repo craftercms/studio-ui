@@ -20,6 +20,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
+  messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
@@ -223,6 +224,14 @@ const systemEpics: CrafterCMSEpic[] = [
             message: getIntl().formatMessage(itemSuccessMessages.itemRejected, { count: payload?.count ?? 1 })
           })
         );
+      }),
+      ignoreElements()
+    ),
+  (action$, state$, { worker }) =>
+    action$.pipe(
+      ofType(messageSharedWorker.type),
+      tap((action) => {
+        worker.port.postMessage(action.payload);
       }),
       ignoreElements()
     )
