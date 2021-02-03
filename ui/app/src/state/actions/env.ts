@@ -19,6 +19,6 @@ import { Version } from '../../models/monitoring/Version';
 import { AjaxError } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 
-export const fetchSystemVersion = createAction<StandardAction>('FETCH_SYSTEM_VERSION');
-export const fetchSystemVersionComplete = createAction<Version>('FETCH_SYSTEM_VERSION_COMPLETE');
-export const fetchSystemVersionFailed = createAction<AjaxError>('FETCH_SYSTEM_VERSION_FAILED');
+export const fetchSystemVersion = /*#__PURE__*/ createAction<StandardAction>('FETCH_SYSTEM_VERSION');
+export const fetchSystemVersionComplete = /*#__PURE__*/ createAction<Version>('FETCH_SYSTEM_VERSION_COMPLETE');
+export const fetchSystemVersionFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SYSTEM_VERSION_FAILED');

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,12 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction } from '@reduxjs/toolkit';
+function yaml_parse(require, exports, module) {
+  'use strict';
 
-// region Supported Locales
+  const yaml = require(self.location.origin + '/studio/static-assets/libs/js-yaml/js-yaml-4.0.0.min.js');
 
-export const fetchSiteLocales = /*#__PURE__*/ createAction('FETCH_SITE_LOCALES');
-export const fetchSiteLocalesComplete = /*#__PURE__*/ createAction('FETCH_SITE_LOCALES_COMPLETE');
-export const fetchSiteLocalesFailed = /*#__PURE__*/ createAction('FETCH_SITE_LOCALES_FAILED');
-
-// endregion
+  return function(source, reviver) {
+    try {
+      yaml.load(source);
+    } catch (error) {
+      if (error instanceof yaml.YAMLException) {
+        throw {
+          name: 'SyntaxError',
+          message: error.message,
+          at: error.mark.position,
+          text: source
+        };
+      }
+    }
+  };
+}

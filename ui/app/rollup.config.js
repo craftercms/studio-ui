@@ -32,7 +32,10 @@ const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 const plugins = [
   typescript(),
   treeshaking(),
-  replace({ 'process.env.NODE_ENV': isProd ? '"production"' : '"development"' }),
+  replace({
+    'process.env.NODE_ENV': isProd ? '"production"' : '"development"',
+    'process.env.PRODUCTION': isProd ? '"production"' : '"development"'
+  }),
   resolve({
     extensions,
     mainFields: ['module', 'main', 'browser']

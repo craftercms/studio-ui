@@ -96,10 +96,10 @@ interface CreateFileUIProps extends CreateFileProps {
   setState(values: object): void;
 }
 
-const getExtension = (type: string) => (type === 'controller' ? `.groovy` : `.ftl`);
+const getExtension = (type: string) => (type === 'controller' ? `groovy` : `ftl`);
 
 const getName = (type: string, name: string) =>
-  `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3');
+  `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3').replace(/\.{2,}/g, '.');
 
 function CreateFileUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;

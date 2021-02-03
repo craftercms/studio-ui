@@ -40,148 +40,168 @@ import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemMenu/ItemMenu';
 
 // region History
-export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
-export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
-export const historyDialogClosed = createAction('HISTORY_DIALOG_CLOSED');
+export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
+export const closeHistoryDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
+export const historyDialogClosed = /*#__PURE__*/ createAction('HISTORY_DIALOG_CLOSED');
 // endregion
 
 // region View Versions
-export const showViewVersionDialog = createAction<Partial<ViewVersionDialogStateProps>>('SHOW_VIEW_VERSION_DIALOG');
-export const closeViewVersionDialog = createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
-export const viewVersionDialogClosed = createAction<StandardAction>('VERSION_DIALOG_CLOSED');
+export const showViewVersionDialog = /*#__PURE__*/ createAction<Partial<ViewVersionDialogStateProps>>(
+  'SHOW_VIEW_VERSION_DIALOG'
+);
+export const closeViewVersionDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
+export const viewVersionDialogClosed = /*#__PURE__*/ createAction<StandardAction>('VERSION_DIALOG_CLOSED');
 // endregion
 
 // region Fetch content
-export const fetchContentVersion = createAction<FetchContentVersion>('FETCH_CONTENT_VERSION');
-export const fetchContentVersionComplete = createAction<any>('FETCH_CONTENT_VERSION_COMPLETE');
-export const fetchContentVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
+export const fetchContentVersion = /*#__PURE__*/ createAction<FetchContentVersion>('FETCH_CONTENT_VERSION');
+export const fetchContentVersionComplete = /*#__PURE__*/ createAction<any>('FETCH_CONTENT_VERSION_COMPLETE');
+export const fetchContentVersionFailed = /*#__PURE__*/ createAction<any>('FETCH_CONTENT_VERSION_FAILED');
 // endregion
 
 // region Compare Versions
-export const showCompareVersionsDialog = createAction<Partial<CompareVersionsDialogStateProps>>(
+export const showCompareVersionsDialog = /*#__PURE__*/ createAction<Partial<CompareVersionsDialogStateProps>>(
   'SHOW_COMPARE_VERSIONS_DIALOG'
 );
-export const closeCompareVersionsDialog = createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
-export const compareVersionsDialogClosed = createAction('COMPARE_VERSIONS_DIALOG_CLOSED');
+export const closeCompareVersionsDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
+export const compareVersionsDialogClosed = /*#__PURE__*/ createAction('COMPARE_VERSIONS_DIALOG_CLOSED');
 // endregion
 
 // region Confirm
-export const showConfirmDialog = createAction<Partial<ConfirmDialogStateProps>>('SHOW_CONFIRM_DIALOG');
-export const closeConfirmDialog = createAction<StandardAction>('CLOSE_CONFIRM_DIALOG');
-export const confirmDialogClosed = createAction('CONFIRM_DIALOG_CLOSED');
+export const showConfirmDialog = /*#__PURE__*/ createAction<Partial<ConfirmDialogStateProps>>('SHOW_CONFIRM_DIALOG');
+export const closeConfirmDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CONFIRM_DIALOG');
+export const confirmDialogClosed = /*#__PURE__*/ createAction('CONFIRM_DIALOG_CLOSED');
 // endregion
 
 // region Publish
-export const showPublishDialog = createAction<Partial<PublishDialogStateProps>>('SHOW_PUBLISH_DIALOG');
-export const closePublishDialog = createAction<StandardAction>('CLOSE_PUBLISH_DIALOG');
-export const publishDialogClosed = createAction('PUBLISH_DIALOG_CLOSED');
+export const showPublishDialog = /*#__PURE__*/ createAction<Partial<PublishDialogStateProps>>('SHOW_PUBLISH_DIALOG');
+export const closePublishDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PUBLISH_DIALOG');
+export const publishDialogClosed = /*#__PURE__*/ createAction('PUBLISH_DIALOG_CLOSED');
 // endregion
 
 // region Delete
-export const showDeleteDialog = createAction<Partial<DeleteDialogStateProps>>('SHOW_DELETE_DIALOG');
-export const closeDeleteDialog = createAction<StandardAction>('CLOSE_DELETE_DIALOG');
-export const deleteDialogClosed = createAction('DELETE_DIALOG_CLOSED');
-export const fetchDeleteDependencies = createAction<string[]>('FETCH_DELETE_DEPENDENCIES');
-export const fetchDeleteDependenciesComplete = createAction('FETCH_DELETE_DEPENDENCIES_COMPLETE');
-export const fetchDeleteDependenciesFailed = createAction('FETCH_DELETE_DEPENDENCIES_FAILED');
+export const showDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogStateProps>>('SHOW_DELETE_DIALOG');
+export const closeDeleteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_DELETE_DIALOG');
+export const deleteDialogClosed = /*#__PURE__*/ createAction('DELETE_DIALOG_CLOSED');
+export const fetchDeleteDependencies = /*#__PURE__*/ createAction<string[]>('FETCH_DELETE_DEPENDENCIES');
+export const fetchDeleteDependenciesComplete = /*#__PURE__*/ createAction('FETCH_DELETE_DEPENDENCIES_COMPLETE');
+export const fetchDeleteDependenciesFailed = /*#__PURE__*/ createAction('FETCH_DELETE_DEPENDENCIES_FAILED');
 // endregion
 
 // region New Content
-export const showNewContentDialog = createAction<Partial<NewContentDialogStateProps>>('SHOW_NEW_CONTENT_DIALOG');
-export const closeNewContentDialog = createAction<StandardAction>('CLOSE_NEW_CONTENT_DIALOG');
-export const newContentDialogClosed = createAction('NEW_CONTENT_DIALOG_CLOSED');
+export const showNewContentDialog = /*#__PURE__*/ createAction<Partial<NewContentDialogStateProps>>(
+  'SHOW_NEW_CONTENT_DIALOG'
+);
+export const closeNewContentDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_NEW_CONTENT_DIALOG');
+export const newContentDialogClosed = /*#__PURE__*/ createAction('NEW_CONTENT_DIALOG_CLOSED');
 // endregion
 
 // region Change ContentType
-export const showChangeContentTypeDialog = createAction<Partial<ChangeContentTypeDialogStateProps>>(
+export const showChangeContentTypeDialog = /*#__PURE__*/ createAction<Partial<ChangeContentTypeDialogStateProps>>(
   'SHOW_CHANGE_CONTENT_TYPE_DIALOG'
 );
-export const CloseChangeContentTypeDialog = createAction<StandardAction>('CLOSE_CHANGE_CONTENT_TYPE_DIALOG');
-export const ChangeContentTypeDialogClosed = createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
+export const CloseChangeContentTypeDialog = /*#__PURE__*/ createAction<StandardAction>(
+  'CLOSE_CHANGE_CONTENT_TYPE_DIALOG'
+);
+export const ChangeContentTypeDialogClosed = /*#__PURE__*/ createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
 // endregion
 
 // region Dependencies
-export const showDependenciesDialog = createAction<Partial<DependenciesDialogStateProps>>('SHOW_DEPENDENCIES_DIALOG');
-export const closeDependenciesDialog = createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
-export const dependenciesDialogClosed = createAction('DEPENDENCIES_DIALOG_CLOSED');
+export const showDependenciesDialog = /*#__PURE__*/ createAction<Partial<DependenciesDialogStateProps>>(
+  'SHOW_DEPENDENCIES_DIALOG'
+);
+export const closeDependenciesDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
+export const dependenciesDialogClosed = /*#__PURE__*/ createAction('DEPENDENCIES_DIALOG_CLOSED');
 // endregion
 
 // region Workflow Cancellation
-export const showWorkflowCancellationDialog = createAction<Partial<WorkflowCancellationDialogStateProps>>(
+export const showWorkflowCancellationDialog = /*#__PURE__*/ createAction<Partial<WorkflowCancellationDialogStateProps>>(
   'SHOW_WORKFLOW_CANCELLATION_DIALOG'
 );
-export const closeWorkflowCancellationDialog = createAction<StandardAction>('CLOSE_WORKFLOW_CANCELLATION_DIALOG');
-export const workflowCancellationDialogClosed = createAction('WORKFLOW_CANCELLATION_DIALOG_CLOSED');
+export const closeWorkflowCancellationDialog = /*#__PURE__*/ createAction<StandardAction>(
+  'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+);
+export const workflowCancellationDialogClosed = /*#__PURE__*/ createAction('WORKFLOW_CANCELLATION_DIALOG_CLOSED');
 
 // region Reject
-export const showRejectDialog = createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
-export const closeRejectDialog = createAction<StandardAction>('CLOSE_REJECT_DIALOG');
-export const rejectDialogClosed = createAction('REJECT_DIALOG_CLOSED');
+export const showRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
+export const closeRejectDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_REJECT_DIALOG');
+export const rejectDialogClosed = /*#__PURE__*/ createAction('REJECT_DIALOG_CLOSED');
 // endregion
 
 // region Legacy Form
-export const showEditDialog = createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
-export const closeEditDialog = createAction<StandardAction>('CLOSE_EDIT_DIALOG');
-export const editDialogClosed = createAction<StandardAction>('EDIT_DIALOG_CLOSED');
-export const newContentCreationComplete = createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
-export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');
+export const showEditDialog = /*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
+export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
+export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
+export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
+export const updateEditConfig = /*#__PURE__*/ createAction<any>('UPDATE_EDIT_CONFIG');
 // endregion
 
 // region Legacy Code Editor
-export const showCodeEditorDialog = createAction<Partial<LegacyCodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
-export const closeCodeEditorDialog = createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
-export const codeEditorDialogClosed = createAction('CODE_EDITOR_DIALOG_CLOSED');
-export const updateCodeEditorDialog = createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
+export const showCodeEditorDialog = /*#__PURE__*/ createAction<Partial<LegacyCodeEditorDialogStateProps>>(
+  'SHOW_CODE_EDITOR_DIALOG'
+);
+export const closeCodeEditorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
+export const codeEditorDialogClosed = /*#__PURE__*/ createAction('CODE_EDITOR_DIALOG_CLOSED');
+export const updateCodeEditorDialog = /*#__PURE__*/ createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
 // endregion
 
 // region Create Folder Dialog
-export const showCreateFolderDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
-export const closeCreateFolderDialog = createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
-export const createFolderDialogClosed = createAction('CREATE_FOLDER_DIALOG_CLOSED');
+export const showCreateFolderDialog = /*#__PURE__*/ createAction<Partial<CreateFolderStateProps>>(
+  'SHOW_CREATE_FOLDER_DIALOG'
+);
+export const closeCreateFolderDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
+export const createFolderDialogClosed = /*#__PURE__*/ createAction('CREATE_FOLDER_DIALOG_CLOSED');
 // endregion
 
 // region Create File Dialog
-export const showCreateFileDialog = createAction<Partial<CreateFileStateProps>>('SHOW_CREATE_FILE_DIALOG');
-export const closeCreateFileDialog = createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
-export const createFileDialogClosed = createAction('CREATE_FILE_DIALOG_CLOSED');
+export const showCreateFileDialog = /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>(
+  'SHOW_CREATE_FILE_DIALOG'
+);
+export const closeCreateFileDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
+export const createFileDialogClosed = /*#__PURE__*/ createAction('CREATE_FILE_DIALOG_CLOSED');
 // endregion
 
 // region Copy Dialog
-export const showCopyDialog = createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
-export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');
-export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
+export const showCopyDialog = /*#__PURE__*/ createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
+export const closeCopyDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_COPY_DIALOG');
+export const copyDialogClosed = /*#__PURE__*/ createAction('COPY_DIALOG_CLOSED');
 // endregion
 
 // region Upload Dialog
-export const showUploadDialog = createAction<Partial<UploadDialogStateProps>>('SHOW_UPLOAD_DIALOG');
-export const closeUploadDialog = createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
-export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
+export const showUploadDialog = /*#__PURE__*/ createAction<Partial<UploadDialogStateProps>>('SHOW_UPLOAD_DIALOG');
+export const closeUploadDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
+export const uploadDialogClosed = /*#__PURE__*/ createAction('UPLOAD_DIALOG_CLOSED');
 // endregion
 
 // region Preview Dialog
-export const showPreviewDialog = createAction<Partial<PreviewDialogStateProps>>('SHOW_PREVIEW_DIALOG');
-export const updatePreviewDialog = createAction<Partial<PreviewDialogStateProps>>('UPDATE_PREVIEW_DIALOG');
-export const closePreviewDialog = createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
-export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');
+export const showPreviewDialog = /*#__PURE__*/ createAction<Partial<PreviewDialogStateProps>>('SHOW_PREVIEW_DIALOG');
+export const updatePreviewDialog = /*#__PURE__*/ createAction<Partial<PreviewDialogStateProps>>(
+  'UPDATE_PREVIEW_DIALOG'
+);
+export const closePreviewDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
+export const previewDialogClosed = /*#__PURE__*/ createAction('PREVIEW_DIALOG_CLOSED');
 // endregion
 
 // region Edit Site
-export const showEditSiteDialog = createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
-export const closeEditSiteDialog = createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
-export const editSiteDialogClosed = createAction('EDIT_SITE_DIALOG_CLOSED');
+export const showEditSiteDialog = /*#__PURE__*/ createAction<Partial<EditSiteDialogStateProps>>(
+  'SHOW_EDIT_SITE_DIALOG'
+);
+export const closeEditSiteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
+export const editSiteDialogClosed = /*#__PURE__*/ createAction('EDIT_SITE_DIALOG_CLOSED');
 // endregion
 
 // region Path Selection Dialog
-export const showPathSelectionDialog = createAction<Partial<PathSelectionDialogStateProps>>(
+export const showPathSelectionDialog = /*#__PURE__*/ createAction<Partial<PathSelectionDialogStateProps>>(
   'SHOW_PATH_SELECTION_DIALOG'
 );
-export const closePathSelectionDialog = createAction<StandardAction>('CLOSE_PATH_SELECTION_DIALOG');
-export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
+export const closePathSelectionDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PATH_SELECTION_DIALOG');
+export const pathSelectionDialogClosed = /*#__PURE__*/ createAction('PATH_SELECTION_CLOSED');
 // endregion
 
 // region Item Menu
-export const showItemMenu = createAction<Partial<ItemMenuStateProps>>('SHOW_ITEM_MENU');
-export const closeItemMenu = createAction<StandardAction>('CLOSE_ITEM_MENU');
-export const itemMenuClosed = createAction('ITEM_MENU_CLOSED');
+export const showItemMenu = /*#__PURE__*/ createAction<Partial<ItemMenuStateProps>>('SHOW_ITEM_MENU');
+export const closeItemMenu = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ITEM_MENU');
+export const itemMenuClosed = /*#__PURE__*/ createAction('ITEM_MENU_CLOSED');
 
 // endregion

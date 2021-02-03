@@ -29,35 +29,35 @@ interface HistoryConfigProps {
   config?: boolean;
 }
 
-export const fetchItemVersions = createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
+export const fetchItemVersions = /*#__PURE__*/ createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
 
-export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
+export const fetchItemVersionsComplete = /*#__PURE__*/ createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
 
-export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
+export const fetchItemVersionsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
-export const versionsChangePage = createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
+export const versionsChangePage = /*#__PURE__*/ createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
 
-export const versionsChangeItem = createAction<{ item: DetailedItem }>('VERSIONS_CHANGE_ITEM');
+export const versionsChangeItem = /*#__PURE__*/ createAction<{ item: DetailedItem }>('VERSIONS_CHANGE_ITEM');
 
-export const compareVersion = createAction<{ id: string }>('COMPARE_VERSIONS');
+export const compareVersion = /*#__PURE__*/ createAction<{ id: string }>('COMPARE_VERSIONS');
 
-export const compareToPreviousVersion = createAction<{ id: string }>('COMPARE_TO_PREVIOUS_VERSION');
+export const compareToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('COMPARE_TO_PREVIOUS_VERSION');
 
-export const resetVersionsState = createAction('RESET_VERSIONS_STATE');
+export const resetVersionsState = /*#__PURE__*/ createAction('RESET_VERSIONS_STATE');
 
-export const compareBothVersions = createAction<{ versions: string[] }>('COMPARE_BOTH_VERSIONS');
+export const compareBothVersions = /*#__PURE__*/ createAction<{ versions: string[] }>('COMPARE_BOTH_VERSIONS');
 
-export const compareBothVersionsComplete = createAction<any>('COMPARE_BOTH_VERSIONS_COMPLETE');
+export const compareBothVersionsComplete = /*#__PURE__*/ createAction<any>('COMPARE_BOTH_VERSIONS_COMPLETE');
 
-export const compareBothVersionsFailed = createAction<any>('COMPARE_BOTH_VERSIONS_FAILED');
+export const compareBothVersionsFailed = /*#__PURE__*/ createAction<any>('COMPARE_BOTH_VERSIONS_FAILED');
 
-export const revertContent = createAction<FetchContentVersion>('REVERT_CONTENT');
+export const revertContent = /*#__PURE__*/ createAction<FetchContentVersion>('REVERT_CONTENT');
 
-export const revertContentComplete = createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
+export const revertContentComplete = /*#__PURE__*/ createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
 
-export const revertContentFailed = createAction<AjaxResponse>('REVERT_CONTENT_FAILED');
+export const revertContentFailed = /*#__PURE__*/ createAction<AjaxResponse>('REVERT_CONTENT_FAILED');
 
-export const revertToPreviousVersion = createAction<{ id: string }>('REVERT_TO_PREVIOUS_VERSION');
+export const revertToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('REVERT_TO_PREVIOUS_VERSION');
 
 const initialState: VersionsStateProps = {
   byId: null,
