@@ -551,7 +551,7 @@ const globalConfigMessages = defineMessages({
   },
   documentError: {
     id: 'globalConfig.documentError',
-    defaultMessage: 'The document contains an error, please check the error on the editor.'
+    defaultMessage: 'The document contains errors. Check for error markers on side of the editor.'
   }
 });
 
