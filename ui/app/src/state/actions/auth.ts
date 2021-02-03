@@ -20,34 +20,36 @@ import { ObtainAuthTokenResponse } from '../../services/auth';
 
 // region Login
 
-export const login = createAction<Credentials>('LOGIN');
-export const loginComplete = createAction('LOGIN_COMPLETE');
-export const loginFailed = createAction('LOGIN_FAILED');
+export const login = /*#__PURE__*/ createAction<Credentials>('LOGIN');
+export const loginComplete = /*#__PURE__*/ createAction('LOGIN_COMPLETE');
+export const loginFailed = /*#__PURE__*/ createAction('LOGIN_FAILED');
 
 // endregion
 
 // region Log Out
 
-export const logout = createAction('LOGOUT');
-export const logoutComplete = createAction<boolean>('LOGOUT_COMPLETE');
-export const logoutFailed = createAction('LOGOUT_FAILED');
+export const logout = /*#__PURE__*/ createAction('LOGOUT');
+export const logoutComplete = /*#__PURE__*/ createAction<boolean>('LOGOUT_COMPLETE');
+export const logoutFailed = /*#__PURE__*/ createAction('LOGOUT_FAILED');
 
 // endregion
 
 // region User Session control
 
-export const refreshAuthToken = createAction('REFRESH_AUTH_TOKEN');
-export const refreshAuthTokenComplete = createAction<ObtainAuthTokenResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
-export const refreshAuthTokenFailed = createAction('REFRESH_AUTH_TOKEN_FAILED');
+export const refreshAuthToken = /*#__PURE__*/ createAction('REFRESH_AUTH_TOKEN');
+export const refreshAuthTokenComplete = /*#__PURE__*/ createAction<ObtainAuthTokenResponse>(
+  'REFRESH_AUTH_TOKEN_COMPLETE'
+);
+export const refreshAuthTokenFailed = /*#__PURE__*/ createAction('REFRESH_AUTH_TOKEN_FAILED');
 
 // Worker => Tabs
-export const sharedWorkerToken = createAction<ObtainAuthTokenResponse>('SHARED_WORKER_TOKEN');
-export const sharedWorkerUnauthenticated = createAction('SHARED_WORKER_UNAUTHENTICATED');
-export const sharedWorkerError = createAction<{ status: number; message: string }>('SHARED_WORKER_ERROR');
+export const sharedWorkerToken = /*#__PURE__*/ createAction<ObtainAuthTokenResponse>('SHARED_WORKER_TOKEN');
+export const sharedWorkerUnauthenticated = /*#__PURE__*/ createAction('SHARED_WORKER_UNAUTHENTICATED');
+export const sharedWorkerError = /*#__PURE__*/ createAction<{ status: number; message: string }>('SHARED_WORKER_ERROR');
 
 // Tabs => Worker
-export const sharedWorkerConnect = createAction('CONNECT');
-export const sharedWorkerDisconnect = createAction('DISCONNECT');
-export const sharedWorkerTimeout = createAction('TIMEOUT');
+export const sharedWorkerConnect = /*#__PURE__*/ createAction('CONNECT');
+export const sharedWorkerDisconnect = /*#__PURE__*/ createAction('DISCONNECT');
+export const sharedWorkerTimeout = /*#__PURE__*/ createAction('TIMEOUT');
 
 // endregion

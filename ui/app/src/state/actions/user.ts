@@ -16,16 +16,18 @@
 
 import { createAction } from '@reduxjs/toolkit';
 
-export const sessionTimeout = createAction('SESSION_TIMEOUT');
+export const sessionTimeout = /*#__PURE__*/ createAction('SESSION_TIMEOUT');
 
-export const fetchGlobalProperties = createAction('FETCH_GLOBAL_PROPERTIES');
+export const fetchGlobalProperties = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES');
 
-export const fetchGlobalPropertiesComplete = createAction('FETCH_GLOBAL_PROPERTIES_COMPLETE');
+export const fetchGlobalPropertiesComplete = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES_COMPLETE');
 
-export const fetchSiteProperties = createAction('FETCH_SITE_PROPERTIES');
+export const fetchSiteProperties = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES');
 
-export const fetchSitePropertiesComplete = createAction('FETCH_SITE_PROPERTIES_COMPLETE');
+export const fetchSitePropertiesComplete = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES_COMPLETE');
 
-export const deleteProperties = createAction<{ properties: string[]; siteId?: string }>('DELETE_PROPERTIES');
+export const deleteProperties = /*#__PURE__*/ createAction<{ properties: string[]; siteId?: string }>(
+  'DELETE_PROPERTIES'
+);
 
-export const deletePropertiesComplete = createAction('DELETE_PROPERTIES_COMPLETE');
+export const deletePropertiesComplete = /*#__PURE__*/ createAction('DELETE_PROPERTIES_COMPLETE');

@@ -23,15 +23,15 @@ interface Payload {
   id: string;
 }
 
-export const pushDialog = createAction<MinimizedDialog>('PUSH_DIALOG');
+export const pushDialog = /*#__PURE__*/ createAction<MinimizedDialog>('PUSH_DIALOG');
 
-export const popDialog = createAction<Payload>('POP_DIALOG');
+export const popDialog = /*#__PURE__*/ createAction<Payload>('POP_DIALOG');
 
-export const minimizeDialog = createAction<Payload>('MINIMIZE_DIALOG');
+export const minimizeDialog = /*#__PURE__*/ createAction<Payload>('MINIMIZE_DIALOG');
 
-export const maximizeDialog = createAction<Payload>('MAXIMIZE_DIALOG');
+export const maximizeDialog = /*#__PURE__*/ createAction<Payload>('MAXIMIZE_DIALOG');
 
-export const updateDialog = createAction<Partial<MinimizedDialog> & Payload>('UPDATE_DIALOG');
+export const updateDialog = /*#__PURE__*/ createAction<Partial<MinimizedDialog> & Payload>('UPDATE_DIALOG');
 
 export default createReducer<GlobalState['dialogs']['minimizedDialogs']>(
   {},

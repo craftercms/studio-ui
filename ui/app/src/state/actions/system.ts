@@ -22,61 +22,65 @@ import { ObtainAuthTokenResponse } from '../../services/auth';
 
 // region Item Events
 
-export const itemUpdated = createAction<{ target: string }>('ITEM_UPDATED');
+export const itemUpdated = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UPDATED');
 
-export const itemCreated = createAction<{ target: string }>('ITEM_CREATED');
+export const itemCreated = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CREATED');
 
-export const itemCut = createAction<{ target: string }>('ITEM_CUT');
+export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
-export const folderCreated = createAction<{ target: string; name: string }>('FOLDER_CREATED');
+export const folderCreated = /*#__PURE__*/ createAction<{ target: string; name: string }>('FOLDER_CREATED');
 
-export const folderRenamed = createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
+export const folderRenamed = /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>(
+  'FOLDER_RENAMED'
+);
 
-export const itemsPasted = createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
+export const itemsPasted = /*#__PURE__*/ createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
 
-export const itemsDeleted = createAction<{ targets: string[] }>('ITEMS_DELETED');
+export const itemsDeleted = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_DELETED');
 
-export const itemDuplicated = createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
+export const itemDuplicated = /*#__PURE__*/ createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
 
-export const itemUnlocked = createAction<{ target: string }>('ITEM_UNLOCKED');
+export const itemUnlocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UNLOCKED');
 
 // endregion
 
 // region Notifications
 
-export const showDeleteItemSuccessNotification = createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
+export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
 
-export const showPublishItemSuccessNotification = createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
+export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 
-export const showCreateItemSuccessNotification = createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
+export const showCreateItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
 
-export const showEditItemSuccessNotification = createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
+export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showCopyItemSuccessNotification = createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
 
-export const showCutItemSuccessNotification = createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
+export const showCutItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showPasteItemSuccessNotification = createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
+export const showPasteItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_PASTE_ITEM_SUCCESS_NOTIFICATION');
 
-export const showUnlockItemSuccessNotification = createAction('SHOW_UNLOCK_ITEM_SUCCESS_NOTIFICATION');
+export const showUnlockItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_UNLOCK_ITEM_SUCCESS_NOTIFICATION');
 
-export const showDuplicatedItemSuccessNotification = createAction('SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION');
+export const showDuplicatedItemSuccessNotification = /*#__PURE__*/ createAction(
+  'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
+);
 
-export const showRevertItemSuccessNotification = createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
+export const showRevertItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showRejectItemSuccessNotification = createAction<{ count?: number }>(
+export const showRejectItemSuccessNotification = /*#__PURE__*/ createAction<{ count?: number }>(
   'SHOW_REJECT_ITEM_SUCCESS_NOTIFICATION'
 );
 
-export const showSystemNotification = createAction<{
+export const showSystemNotification = /*#__PURE__*/ createAction<{
   message: string;
   options?: OptionsObject;
 }>('SHOW_SYSTEM_NOTIFICATION');
 
 // endregion
 
-export const emitSystemEvent = createAction<StandardAction>('SYSTEM_EVENT');
+export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTEM_EVENT');
 
-export const storeInitialized = createAction<{ auth: ObtainAuthTokenResponse }>('STORE_INITIALIZED');
+export const storeInitialized = /*#__PURE__*/ createAction<{ auth: ObtainAuthTokenResponse }>('STORE_INITIALIZED');
 
-export const messageSharedWorker = createAction<StandardAction>('MESSAGE_SHARED_WORKER');
+export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('MESSAGE_SHARED_WORKER');

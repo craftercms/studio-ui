@@ -18,18 +18,18 @@ import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 
 // region Batch Actions
-export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
+export const batchActions = /*#__PURE__*/ createAction<StandardAction[]>('BATCH_ACTIONS');
 // endregion
 
 // region dispatch DOM Event
-export const dispatchDOMEvent = createAction<{ id: string }>('DISPATCH_DOM_EVENT');
+export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string }>('DISPATCH_DOM_EVENT');
 // endregion
 
 // region TemplateActions
-export const changeContentType = createAction<{
+export const changeContentType = /*#__PURE__*/ createAction<{
   originalContentTypeId: string;
   path: string;
   newContentTypeId?: string;
 }>('CHANGE_CONTENT_TYPE');
-export const editTemplate = createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
+export const editTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
 // endregion

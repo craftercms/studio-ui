@@ -33,9 +33,9 @@ export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAct
 
 changeSite.type = CHANGE_SITE;
 
-export const fetchSites = createAction('FETCH_SITES');
-export const fetchSitesComplete = createAction<Site[]>('FETCH_SITES_COMPLETE');
-export const fetchSitesFailed = createAction('FETCH_SITES_FAILED');
+export const fetchSites = /*#__PURE__*/ createAction('FETCH_SITES');
+export const fetchSitesComplete = /*#__PURE__*/ createAction<Site[]>('FETCH_SITES_COMPLETE');
+export const fetchSitesFailed = /*#__PURE__*/ createAction('FETCH_SITES_FAILED');
 
 export const initialState: GlobalState['sites'] = {
   byId: {},

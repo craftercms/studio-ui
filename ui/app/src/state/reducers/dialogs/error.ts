@@ -19,10 +19,10 @@ import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
 import { ErrorDialogStateProps } from '../../../components/SystemStatus/ErrorDialog';
 
-export const showErrorDialog = createAction<Partial<ErrorDialogStateProps>>('SHOW_ERROR_DIALOG');
+export const showErrorDialog = /*#__PURE__*/ createAction<Partial<ErrorDialogStateProps>>('SHOW_ERROR_DIALOG');
 
-export const closeErrorDialog = createAction<StandardAction>('CLOSE_ERROR_DIALOG');
-export const errorDialogClosed = createAction<StandardAction>('ERROR_DIALOG_CLOSED');
+export const closeErrorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ERROR_DIALOG');
+export const errorDialogClosed = /*#__PURE__*/ createAction<StandardAction>('ERROR_DIALOG_CLOSED');
 
 const initialState: ErrorDialogStateProps = {
   open: false,

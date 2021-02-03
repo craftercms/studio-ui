@@ -140,7 +140,7 @@ export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   };
 }
 
-export const fetchContentTypes = createAction(FETCH_CONTENT_TYPES);
+export const fetchContentTypes = /*#__PURE__*/ createAction(FETCH_CONTENT_TYPES);
 
 export function fetchContentTypesComplete(contentTypes: ContentType[]): StandardAction {
   return {
@@ -178,7 +178,7 @@ export function checkOutGuest(): StandardAction {
 
 // This action is meant for the primary Guest model. The reducer
 // should set the guest.modelId of the model that comes in payload.
-export const fetchPrimaryGuestModelComplete = createAction<{
+export const fetchPrimaryGuestModelComplete = /*#__PURE__*/ createAction<{
   model: ContentInstance;
   modelLookup: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
@@ -186,14 +186,14 @@ export const fetchPrimaryGuestModelComplete = createAction<{
 
 // This action is meant for the other Guest models that aren't the main.
 // The reducer will shouldn't set the guest.modelId.
-export const fetchGuestModelComplete = createAction<{
+export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
   modelLookup: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
 }>('FETCH_GUEST_MODELS_COMPLETE');
 
-export const guestModelUpdated = createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
+export const guestModelUpdated = /*#__PURE__*/ createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
 
-export const guestPathUpdated = createAction<{ path: string }>('GUEST_PATH_UPDATED');
+export const guestPathUpdated = /*#__PURE__*/ createAction<{ path: string }>('GUEST_PATH_UPDATED');
 
 export function changeCurrentUrl(nextValue: string): StandardAction {
   return {
@@ -209,13 +209,15 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelModel = createAction<{ fields: LookupTable<ContentTypeField> }>(
+export const fetchAudiencesPanelModel = /*#__PURE__*/ createAction<{ fields: LookupTable<ContentTypeField> }>(
   'FETCH_AUDIENCES_PANEL_MODEL'
 );
 
-export const fetchAudiencesPanelModelComplete = createAction<ContentInstance>('FETCH_AUDIENCES_PANEL_MODEL_COMPLETE');
+export const fetchAudiencesPanelModelComplete = /*#__PURE__*/ createAction<ContentInstance>(
+  'FETCH_AUDIENCES_PANEL_MODEL_COMPLETE'
+);
 
-export const fetchAudiencesPanelModelFailed = createAction('FETCH_AUDIENCES_PANEL_MODEL_FAILED');
+export const fetchAudiencesPanelModelFailed = /*#__PURE__*/ createAction('FETCH_AUDIENCES_PANEL_MODEL_FAILED');
 
 export function updateAudiencesPanelModel(data): StandardAction {
   return {
@@ -244,11 +246,13 @@ export function setActiveTargetingModelFailed(error): StandardAction {
   };
 }
 
-export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
+export const fetchAssetsPanelItems = /*#__PURE__*/ createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
 
-export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
+export const fetchAssetsPanelItemsComplete = /*#__PURE__*/ createAction<SearchResult>(
+  FETCH_ASSETS_PANEL_ITEMS_COMPLETE
+);
 
-export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
+export const fetchAssetsPanelItemsFailed = /*#__PURE__*/ createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
 export function fetchComponentsByContentType(
   contentTypeFilter?: string,
@@ -260,39 +264,39 @@ export function fetchComponentsByContentType(
   };
 }
 
-export const fetchComponentsByContentTypeComplete = createAction<ContentInstancePage>(
+export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<ContentInstancePage>(
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE
 );
 
-export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
+export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
+export const clearReceptacles = /*#__PURE__*/ createAction(CLEAR_RECEPTACLES);
 
-export const setContentTypeReceptacles = createAction<{
+export const setContentTypeReceptacles = /*#__PURE__*/ createAction<{
   contentType: string;
   receptacle: ContentTypeReceptacle;
 }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
-export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
+export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTENT_TYPE_FILTER);
 
-export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
+export const updateToolsPanelWidth = /*#__PURE__*/ createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
-export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
 
-export const setPreviewChoice = createAction<{ site: string; choice: string }>('SET_PREVIEW_CHOICE');
+export const setPreviewChoice = /*#__PURE__*/ createAction<{ site: string; choice: string }>('SET_PREVIEW_CHOICE');
 
-export const setPreviewChoiceComplete = createAction('SET_PREVIEW_CHOICE_COMPLETE');
+export const setPreviewChoiceComplete = /*#__PURE__*/ createAction('SET_PREVIEW_CHOICE_COMPLETE');
 
 // endregion
 
 // region toolsPanelPageStack
 
-export const pushToolsPanelPage = createAction<WidgetDescriptor>('PUSH_TOOLS_PANEL_PAGE');
+export const pushToolsPanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_TOOLS_PANEL_PAGE');
 
-export const popToolsPanelPage = createAction('POP_TOOLS_PANEL_PAGE');
+export const popToolsPanelPage = /*#__PURE__*/ createAction('POP_TOOLS_PANEL_PAGE');
 
 // endregion
 
 // settings Mode
 
-export const setHighlightMode = createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');
+export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');
