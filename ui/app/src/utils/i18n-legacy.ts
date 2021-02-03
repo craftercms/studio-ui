@@ -646,6 +646,10 @@ export const globalConfigMessages = defineMessages({
   unSavedConfirmationTitle: {
     id: 'globalConfig.unsavedConfirmationTitle',
     defaultMessage: 'Unsaved changes'
+  },
+  documentError: {
+    id: 'globalConfig.documentError',
+    defaultMessage: 'The document contains errors. Check for error markers on side of the editor.'
   }
 });
 
