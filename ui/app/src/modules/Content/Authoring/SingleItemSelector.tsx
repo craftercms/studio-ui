@@ -266,25 +266,26 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
   return nextPath;
 }
 
-const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
+const changeCurrentPath = /*#__PURE__*/ createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
-const setKeyword = createAction<string>('SET_KEYWORD');
+const setKeyword = /*#__PURE__*/ createAction<string>('SET_KEYWORD');
 
-const changePage = createAction<number>('CHANGE_PAGE');
+const changePage = /*#__PURE__*/ createAction<number>('CHANGE_PAGE');
 
-const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
+const fetchChildrenByPath = /*#__PURE__*/ createAction<string>('FETCH_CHILDREN_BY_PATH');
 
-const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
+const fetchParentsItems = /*#__PURE__*/ createAction<string>('FETCH_PARENTS_ITEMS');
 
-const fetchParentsItemsComplete = createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+const fetchParentsItemsComplete = /*#__PURE__*/ createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
   'FETCH_PARENTS_ITEMS_COMPLETE'
 );
 
-const fetchChildrenByPathComplete = createAction<{ parent?: DetailedItem; children: GetChildrenResponse }>(
-  'FETCH_CHILDREN_BY_PATH_COMPLETE'
-);
+const fetchChildrenByPathComplete = /*#__PURE__*/ createAction<{
+  parent?: DetailedItem;
+  children: GetChildrenResponse;
+}>('FETCH_CHILDREN_BY_PATH_COMPLETE');
 
-const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
+const fetchChildrenByPathFailed = /*#__PURE__*/ createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {

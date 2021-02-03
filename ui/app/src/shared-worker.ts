@@ -27,6 +27,11 @@ let current: ObtainAuthTokenResponse = {
   token: null
 };
 
+const log =
+  process.env.PRODUCTION === 'development'
+    ? (message, ...args) => console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args)
+    : () => void 0;
+
 function onmessage(event) {
   log('Message received from page', event.data);
   if (self.name !== 'authWorker') {
@@ -82,8 +87,8 @@ function retrieve() {
           // If there are clients connected, keep the token refresh going
           timeout = self.setTimeout(retrieve, ms);
         } else {
-          // Assuming SharedWorker auto-dies when all connections are terminated.
-          timeout = self.setTimeout(retrieve, ms);
+          // Do SharedWorkers stop as soon as all their tabs are terminated?
+          clearTimeout(timeout);
         }
       } else {
         log(`Auth has expired`);
@@ -109,10 +114,6 @@ function broadcast(message: StandardAction, excludedClient?: MessagePort) {
   (excludedClient ? clients.filter((client) => client !== excludedClient) : clients).forEach((client) => {
     client.postMessage(message);
   });
-}
-
-function log(message, ...args) {
-  console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args);
 }
 
 self.onconnect = (e) => {

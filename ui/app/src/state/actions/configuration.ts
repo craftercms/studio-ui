@@ -17,6 +17,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { AjaxError } from 'rxjs/ajax';
 
-export const fetchSiteUiConfig = createAction<{ site: string }>('FETCH_SITE_UI_CONFIG');
-export const fetchSiteUiConfigComplete = createAction<any>('FETCH_SITE_UI_CONFIG_COMPLETE');
-export const fetchSiteUiConfigFailed = createAction<AjaxError>('FETCH_SITE_UI_CONFIG_FAILED');
+export const fetchSiteUiConfig = /*#__PURE__*/ createAction<{ site: string }>('FETCH_SITE_UI_CONFIG');
+export const fetchSiteUiConfigComplete = /*#__PURE__*/ createAction<any>('FETCH_SITE_UI_CONFIG_COMPLETE');
+export const fetchSiteUiConfigFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SITE_UI_CONFIG_FAILED');

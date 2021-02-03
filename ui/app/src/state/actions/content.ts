@@ -21,50 +21,56 @@ import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 
 // region Quick Create
-export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
-export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>('FETCH_QUICK_CREATE_LIST_COMPLETE');
-export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_FAILED');
+export const fetchQuickCreateList = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST');
+export const fetchQuickCreateListComplete = /*#__PURE__*/ createAction<QuickCreateItem[]>(
+  'FETCH_QUICK_CREATE_LIST_COMPLETE'
+);
+export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
 // region Permissions
-export const fetchUserPermissions = createAction<{ path: string }>('FETCH_USER_PERMISSIONS');
-export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: string[] }>(
+export const fetchUserPermissions = /*#__PURE__*/ createAction<{ path: string }>('FETCH_USER_PERMISSIONS');
+export const fetchUserPermissionsComplete = /*#__PURE__*/ createAction<{ path: string; permissions: string[] }>(
   'FETCH_USER_PERMISSIONS_COMPLETE'
 );
-export const fetchUserPermissionsFailed = createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
+export const fetchUserPermissionsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
 // endregion
 
 // region Items
-export const fetchDetailedItem = createAction<{ path: string }>('FETCH_DETAILED_ITEM');
-export const reloadDetailedItem = createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
-export const completeDetailedItem = createAction<{ path: string }>('COMPLETE_DETAILED_ITEM');
-export const fetchDetailedItemComplete = createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
-export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
+export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_DETAILED_ITEM');
+export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
+export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('COMPLETE_DETAILED_ITEM');
+export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
+export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
 // endregion
 
 // region clipboard
-export const setClipBoard = createAction<{
+export const setClipBoard = /*#__PURE__*/ createAction<{
   type: 'CUT' | 'COPY';
   paths?: string[];
   sourcePath: string;
 }>('SET_CLIPBOARD');
 
-export const restoreClipBoard = createAction<{
+export const restoreClipBoard = /*#__PURE__*/ createAction<{
   type: 'CUT' | 'COPY';
   paths?: string[];
   sourcePath: string;
 }>('SET_CLIPBOARD');
 
-export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
+export const unSetClipBoard = /*#__PURE__*/ createAction('UNSET_CLIPBOARD');
 // endregion
 
 // region item
-export const duplicateItem = createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ITEM');
-export const duplicateAsset = createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ASSET');
-export const duplicateWithPolicyValidation = createAction<{ path: string; type: 'item' | 'asset' }>(
+export const duplicateItem = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ITEM');
+export const duplicateAsset = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>(
+  'DUPLICATE_ASSET'
+);
+export const duplicateWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string; type: 'item' | 'asset' }>(
   'DUPLICATE_WITH_POLICY_VALIDATION'
 );
-export const pasteItem = createAction<{ path: string }>('PASTE_ITEM');
-export const pasteItemWithPolicyValidation = createAction<{ path: string }>('PASTE_ITEM_WITH_POLICY_VALIDATION');
-export const unlockItem = createAction<{ path: string }>('UNLOCK_ITEM');
+export const pasteItem = /*#__PURE__*/ createAction<{ path: string }>('PASTE_ITEM');
+export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string }>(
+  'PASTE_ITEM_WITH_POLICY_VALIDATION'
+);
+export const unlockItem = /*#__PURE__*/ createAction<{ path: string }>('UNLOCK_ITEM');
 // endregion

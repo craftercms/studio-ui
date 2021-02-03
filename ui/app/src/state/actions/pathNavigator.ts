@@ -21,62 +21,68 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit = createAction<
+export const pathNavigatorInit = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; locale: string; collapsed?: boolean; excludes?: string[]; limit: number }>
 >('PATH_NAVIGATOR_INIT');
 
-export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>(
+export const pathNavigatorSetLocaleCode = /*#__PURE__*/ createAction<PayloadWithId<{ locale: string }>>(
   'PATH_NAVIGATOR_SET_LOCALE_CODE'
 );
 
-export const pathNavigatorUpdate = createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>(
+export const pathNavigatorUpdate = /*#__PURE__*/ createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>(
   'PATH_NAVIGATOR_UPDATE'
 );
 
-export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed: boolean }>>(
+export const pathNavigatorSetCollapsed = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
   'PATH_NAVIGATOR_SET_COLLAPSED'
 );
 
-export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>(
+export const pathNavigatorSetCurrentPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
   'PATH_NAVIGATOR_SET_CURRENT_PATH'
 );
 
-export const pathNavigatorConditionallySetPath = createAction<PayloadWithId<{ path: string }>>(
+export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
   'PATH_NAVIGATOR_CONDITIONALLY_SET_PATH'
 );
 
-export const pathNavigatorConditionallySetPathComplete = createAction<
+export const pathNavigatorConditionallySetPathComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_COMPLETE');
 
-export const pathNavigatorConditionallySetPathFailed = createAction('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED');
+export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createAction(
+  'PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED'
+);
 
-export const pathNavigatorRefresh = createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
+export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
 
-export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: DetailedItem }>>(
+export const pathNavigatorItemChecked = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_ITEM_CHECKED'
 );
 
-export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: DetailedItem }>>(
+export const pathNavigatorItemUnchecked = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_ITEM_UNCHECKED'
 );
 
-export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
+export const pathNavigatorClearChecked = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
 
-export const pathNavigatorFetchParentItems = createAction<
+export const pathNavigatorFetchParentItems = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; excludes?: string[]; limit: number }>
 >('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
-export const pathNavigatorFetchPathComplete = createAction<
+export const pathNavigatorFetchPathComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
 
-export const pathNavigatorFetchParentItemsComplete = createAction<
+export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ items: DetailedItem[]; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_FETCH_PARENT_ITEMS_COMPLETE');
 
-export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
+export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
 
-export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
+export const pathNavigatorSetKeyword = /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>(
+  'PATH_NAVIGATOR_SET_KEYWORD'
+);
 
-export const pathNavigatorChangePage = createAction<PayloadWithId<{ offset: number }>>('PATH_NAVIGATOR_CHANGE_PAGE');
+export const pathNavigatorChangePage = /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>(
+  'PATH_NAVIGATOR_CHANGE_PAGE'
+);

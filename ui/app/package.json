@@ -115,22 +115,21 @@
             "markers": [
               "!",
               "*",
+              "#",
               "function",
               "const",
               "if",
               "export",
-              "interface"
+              "interface",
+              "#__PURE__",
+              "@__PURE__"
             ],
             "exceptions": [
               "!",
               "*",
-              "function",
-              "const",
-              "if",
-              "export",
-              "interface"
+              "#"
             ],
-            "balanced": true
+            "balanced": false
           }
         }
       ]
