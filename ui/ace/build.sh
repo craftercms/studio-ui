@@ -1,5 +1,7 @@
+#!/usr/bin/env bash
+
 #
-# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -14,14 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-LIBS_BASE=../../static-assets/libs
+libsDirectory=../../static-assets/libs
 
-rm -rf $LIBS_BASE/ace/
-cp -r ../../node_modules/ace-builds/src-min-noconflict $LIBS_BASE/ace
-cat src/ace-append.js >> $LIBS_BASE/ace/ace.js
+rm -rf "$libsDirectory/ace"
+cp -r ../../node_modules/ace-builds/src-min-noconflict "$libsDirectory/ace"
+cat src/ace-append.js >> "$libsDirectory/ace/ace.js"
 
-cp src/mode-yaml/* $LIBS_BASE/ace/
+cp src/mode-yaml/* "$libsDirectory/ace"
 
-rm -rf $LIBS_BASE/js-yaml
-mkdir $LIBS_BASE/js-yaml
-cp ../../node_modules/js-yaml/dist/js-yaml.min.js $LIBS_BASE/js-yaml/js-yaml-4.0.0.min.js
+rm -rf "$libsDirectory/js-yaml"
+mkdir "$libsDirectory/js-yaml"
+cp ../../node_modules/js-yaml/dist/js-yaml.min.js "$libsDirectory/js-yaml/js-yaml-4.0.0.min.js"
