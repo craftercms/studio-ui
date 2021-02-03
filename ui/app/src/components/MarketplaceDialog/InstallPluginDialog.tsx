@@ -169,8 +169,15 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
         <DialogBody style={{ minHeight: '60vh', padding: 0 }}>
           <PluginDetailsView
             plugin={selectedDetailsPlugin}
-            installPermission={installPermission}
-            actionLabel={<FormattedMessage id="words.install" defaultMessage="Install" />}
+            usePermission={installPermission}
+            inUse={installedPlugins.includes(selectedDetailsPlugin.id)}
+            useLabel={
+              installedPlugins.includes(selectedDetailsPlugin.id) ? (
+                <FormattedMessage id="words.installed" defaultMessage="Installed" />
+              ) : (
+                <FormattedMessage id="words.install" defaultMessage="Install" />
+              )
+            }
             onCloseDetails={onPluginDetailsClose}
             onBlueprintSelected={onPluginDetailsSelected}
           />
@@ -228,9 +235,15 @@ function PluginList(props: PluginListProps) {
         <Grid item xs={12} sm={6} md={4} lg={3} key={plugin.id}>
           <PluginCard
             plugin={plugin}
-            isInstalled={installedPlugins.includes(plugin.id)}
-            installPermission={installPermission}
-            actionLabel={<FormattedMessage id="words.install" defaultMessage="Install" />}
+            inUse={installedPlugins.includes(plugin.id)}
+            usePermission={installPermission}
+            useLabel={
+              installedPlugins.includes(plugin.id) ? (
+                <FormattedMessage id="words.installed" defaultMessage="Installed" />
+              ) : (
+                <FormattedMessage id="words.install" defaultMessage="Install" />
+              )
+            }
             onDetails={onPluginDetails}
             onPluginSelected={onPluginSelected}
           />

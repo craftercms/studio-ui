@@ -36,11 +36,11 @@ import cardTitleStyles from '../../styles/card';
 
 interface PluginCardProps {
   plugin: MarketplacePlugin;
-  interval?: number;
-  marketplace?: boolean;
-  isInstalled?: boolean;
-  installPermission?: boolean;
-  actionLabel?: string | JSX.Element;
+  changeImageSlideInterval?: number;
+  isMarketplacePlugin?: boolean;
+  inUse?: boolean;
+  usePermission?: boolean;
+  useLabel?: string | JSX.Element;
 
   onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 
@@ -194,12 +194,12 @@ function PluginCard(props: PluginCardProps) {
   const {
     onPluginSelected,
     plugin,
-    interval = 5000,
-    marketplace = true,
+    changeImageSlideInterval = 5000,
+    isMarketplacePlugin = true,
     onDetails,
-    isInstalled = false,
-    installPermission = true,
-    actionLabel
+    inUse = false,
+    usePermission = true,
+    useLabel
   } = props;
   const { media, name, license, id, developer } = plugin;
   const { formatMessage } = useIntl();
@@ -308,7 +308,7 @@ function PluginCard(props: PluginCardProps) {
       {id !== 'GIT' && (
         <CardActionArea
           onClick={(e) => {
-            if (marketplace && !plugin.compatible) {
+            if (isMarketplacePlugin && !plugin.compatible) {
               onImageClick(e);
             } else {
               onPluginSelected(plugin, 1);
@@ -336,7 +336,7 @@ function PluginCard(props: PluginCardProps) {
       <CardActionArea onClick={() => onPluginSelected(plugin, 1)}>
         <AutoPlaySwipeableViews
           index={index}
-          interval={interval}
+          interval={changeImageSlideInterval}
           autoplay={false}
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
@@ -366,15 +366,15 @@ function PluginCard(props: PluginCardProps) {
       )}
       {id !== 'GIT' && (
         <CardActions className={'cardActions'}>
-          {((marketplace && plugin.compatible) || !marketplace) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
+          {((isMarketplacePlugin && plugin.compatible) || !isMarketplacePlugin) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
             <Button
               variant="outlined"
               color="primary"
-              disabled={!installPermission || isInstalled}
+              disabled={!usePermission || inUse}
               onClick={() => onPluginSelected(plugin, 1)}
               className={classes.use}
             >
-              {actionLabel ? actionLabel : formatMessage(messages.use)}
+              {useLabel ? useLabel : formatMessage(messages.use)}
             </Button>
           )}
           <Button className={classes.more} onClick={() => onDetails(plugin)}>

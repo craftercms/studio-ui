@@ -734,8 +734,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           <PluginCard
             plugin={item}
             onPluginSelected={handleBlueprintSelected}
-            interval={5000}
-            marketplace={tab === 1}
+            changeImageSlideInterval={5000}
+            isMarketplacePlugin={tab === 1}
             onDetails={onDetails}
           />
         </Grid>
@@ -786,11 +786,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         (site.details && (
           <PluginDetailsView
             plugin={site.details.blueprint}
-            selectedIndex={site.details.index}
+            selectedSlideImage={site.details.index}
             onBlueprintSelected={handleBlueprintSelected}
             onCloseDetails={handleCloseDetails}
-            interval={5000}
-            marketplace={tab === 1}
+            changeImageSlideInterval={5000}
+            isMarketplacePlugin={tab === 1}
           />
         ))
       ) : (
