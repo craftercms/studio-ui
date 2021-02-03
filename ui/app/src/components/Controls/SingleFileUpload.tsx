@@ -30,6 +30,8 @@ import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';
 import { UppyFile } from '../Dialogs/UploadDialog';
+import { emitSystemEvent, itemCreated } from '../../state/actions/system';
+import { useDispatch } from 'react-redux';
 
 const messages = defineMessages({
   chooseFile: {
@@ -86,8 +88,8 @@ interface UppyProps {
 
 export default function SingleFileUpload(props: UppyProps) {
   const { url, formTarget, onUploadStart, onComplete, onError, fileTypes, path, site } = props;
-
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
   const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
   const [file, setFile] = useState<UppyFile>(null);
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
@@ -167,7 +169,8 @@ export default function SingleFileUpload(props: UppyProps) {
       });
     });
 
-    uppy.on('upload-success', (file) => {
+    uppy.on('upload-success', (file, response) => {
+      dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
       setDescription(`${formatMessage(messages.uploadedFile)}:`);
       uploadBtn.disabled = false;
     });
@@ -186,7 +189,7 @@ export default function SingleFileUpload(props: UppyProps) {
       instance.reset();
       instance.close();
     };
-  }, [uppy, fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, path, site, url]);
+  }, [uppy, fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, path, site, url, dispatch]);
 
   const onConfirm = () => {
     uppy.upload().then(() => {});
