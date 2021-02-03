@@ -164,6 +164,8 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
         if (isWrite == true) {
           CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
             formTarget: '#asset_upload_form',
+            site: site,
+            path: path,
             url: url,
             fileTypes: me.fileTypes,
             onUploadStart: function() {

@@ -206,7 +206,7 @@ const UppyItemStyles = makeStyles((theme) =>
 
 const uppy = Core({ debug: false, autoProceed: true });
 
-interface UppyFile {
+export interface UppyFile {
   source: string;
   id: string;
   name: string;
