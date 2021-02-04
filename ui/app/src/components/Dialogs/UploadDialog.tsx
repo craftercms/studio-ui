@@ -177,6 +177,9 @@ const useStyles = makeStyles((theme) =>
     },
     status: {
       marginLeft: 'auto'
+    },
+    subtitlePolicyError: {
+      color: theme.palette.error.main
     }
   })
 );
@@ -473,6 +476,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     file.progress.status = 'uploading';
     if (file.meta.suggestedName) {
       file.meta.suggestedName = null;
+      uppy.setFileMeta(file.id, { suggestedName: null });
     }
     setFiles({ [file.id]: file });
     uppy.retryUpload(file.id);
@@ -493,7 +497,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const handleOnDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    getDroppedFiles(event.dataTransfer).then((files) => addFiles(files));
+    getDroppedFiles(event.dataTransfer).then((fileList) => {
+      const files = fileList.filter((file) => checkFileExist(file));
+      if (files.length) {
+        addFiles(files);
+      }
+    });
     setDragOver(false);
     removeDragData(event);
   };
@@ -505,8 +514,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = toArray(event.target.files);
-    addFiles(files);
+    const files = toArray(event.target.files).filter((file) => checkFileExist(file));
+    if (files.length) {
+      addFiles(files);
+    }
     event.target.value = null;
   };
 
@@ -521,26 +532,22 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       })) as Action[]
     ).subscribe((response) => {
       onStatusChange({ status: 'adding' });
-
       interval(50)
         .pipe(takeUntil(cancelRequestObservable$), take(response.length))
         .subscribe((index) => {
           const { allowed, modifiedValue, target } = response[index];
           const fileName = target.replace(`${path}/`, '');
           const file: File & { relativePath?: string } = files.find((file) => file.name === fileName);
-          const validFile = checkFileExist(file);
-          if (validFile) {
-            uppy.addFile({
-              name: file.name,
-              type: file.type,
-              data: file,
-              meta: {
-                allowed: allowed,
-                ...(modifiedValue && { suggestedName: modifiedValue.replace(`${path}/`, '') }),
-                relativePath: file.relativePath || null
-              }
-            });
-          }
+          uppy.addFile({
+            name: file.name,
+            type: file.type,
+            data: file,
+            meta: {
+              allowed: allowed,
+              ...(modifiedValue && { suggestedName: modifiedValue.replace(`${path}/`, '') }),
+              relativePath: file.relativePath || null
+            }
+          });
         });
     });
   }
@@ -697,13 +704,18 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     if (files !== null) {
       let filesPerPath: any = {};
+      let count = 0;
       Object.values(files).forEach((file: UppyFile) => {
         if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
         }
+        if (file.meta.suggestedName || !file.meta.allowed) {
+          count++;
+        }
         filesPerPath[file.meta.path].push(file.id);
       });
+      onStatusChange({ sitePolicyFileCount: count });
       setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
     }
   }, [files, onStatusChange]);
@@ -771,13 +783,15 @@ export interface DropZoneStatus {
   files?: number;
   uploadedFiles?: number;
   progress?: number;
+  sitePolicyFileCount?: number;
 }
 
 const initialDropZoneStatus: DropZoneStatus = {
   status: 'idle',
   files: null,
   uploadedFiles: 0,
-  progress: 0
+  progress: 0,
+  sitePolicyFileCount: null
 };
 
 interface UploadDialogBaseProps {
@@ -928,13 +942,26 @@ function UploadDialogUI(props: UploadDialogUIProps) {
 
   useUnmount(onClosed);
 
-  console.log(dropZoneStatus.status);
-
   return (
     <>
       <DialogHeader
         title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
+        subtitle={
+          Boolean(dropZoneStatus.sitePolicyFileCount) ? (
+            <FormattedMessage
+              id="sitePolicy.subtitle"
+              defaultMessage="{count, plural, one {{count} file name present a issue. Please review the item.} other {{count} file names present issues. Please review the list.}}"
+              values={{
+                count: dropZoneStatus.sitePolicyFileCount
+              }}
+            />
+          ) : (
+            formatMessage(translations.subtitle)
+          )
+        }
+        subtitleTypographyProps={{
+          ...(Boolean(dropZoneStatus.sitePolicyFileCount) && { classes: { root: classes.subtitlePolicyError } })
+        }}
         onDismiss={
           dropZoneStatus.status === 'uploading'
             ? onMinimized
