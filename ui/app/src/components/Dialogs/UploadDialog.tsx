@@ -57,16 +57,15 @@ import { validateActionPolicy } from '../../services/sites';
 import { Action } from '../../models/Site';
 import WarningIcon from '@material-ui/icons/WarningRounded';
 import ForwardIcon from '@material-ui/icons/ForwardRounded';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDownRounded';
 import SecondaryButton from '../SecondaryButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const translations = defineMessages({
   title: {
     id: 'uploadDialog.title',
     defaultMessage: 'Upload'
-  },
-  subtitle: {
-    id: 'uploadDialog.subtitle',
-    defaultMessage: 'Drop the desired files from your desktop into space below.'
   },
   close: {
     id: 'words.close',
@@ -177,6 +176,16 @@ const useStyles = makeStyles((theme) =>
     },
     status: {
       marginLeft: 'auto'
+    },
+    subtitle: {
+      fontSize: '14px',
+      lineHeight: '18px'
+    },
+    subtitleWrapper: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
     },
     subtitlePolicyError: {
       color: theme.palette.error.main
@@ -915,8 +924,17 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   } = props;
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const cancelRequestObservable$ = useSubject<void>();
+
+  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
 
   const onBrowse = () => {
     inputRef.current.click();
@@ -924,6 +942,11 @@ function UploadDialogUI(props: UploadDialogUIProps) {
 
   const onCancel = () => {
     cancelRequestObservable$.next();
+  };
+
+  const onOptionMenuClicked = (option: string) => {
+    closeMenu();
+    // TODO: create Observable.next(option);
   };
 
   useEffect(() => {
@@ -946,21 +969,8 @@ function UploadDialogUI(props: UploadDialogUIProps) {
     <>
       <DialogHeader
         title={formatMessage(translations.title)}
-        subtitle={
-          Boolean(dropZoneStatus.sitePolicyFileCount) ? (
-            <FormattedMessage
-              id="sitePolicy.subtitle"
-              defaultMessage="{count, plural, one {{count} file name present a issue. Please review the item.} other {{count} file names present issues. Please review the list.}}"
-              values={{
-                count: dropZoneStatus.sitePolicyFileCount
-              }}
-            />
-          ) : (
-            formatMessage(translations.subtitle)
-          )
-        }
-        subtitleTypographyProps={{
-          ...(Boolean(dropZoneStatus.sitePolicyFileCount) && { classes: { root: classes.subtitlePolicyError } })
+        classes={{
+          subtitleWrapper: classes.subtitleWrapper
         }}
         onDismiss={
           dropZoneStatus.status === 'uploading'
@@ -972,7 +982,53 @@ function UploadDialogUI(props: UploadDialogUIProps) {
                 })
         }
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
-      />
+      >
+        {Boolean(dropZoneStatus.sitePolicyFileCount) ? (
+          <>
+            <Typography className={clsx(classes.subtitle, classes.subtitlePolicyError)}>
+              <FormattedMessage
+                id="sitePolicy.subtitle"
+                defaultMessage="{count, plural, one {{count} file name present a issue. Please review the item.} other {{count} file names present issues. Please review the list.}}"
+                values={{
+                  count: dropZoneStatus.sitePolicyFileCount
+                }}
+              />
+            </Typography>
+            <Button size="small" onClick={openMenu} color="primary">
+              <FormattedMessage id="words.options" defaultMessage="Options" />
+              <ArrowDropDownIcon />
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              getContentAnchorEl={null}
+              open={Boolean(anchorEl)}
+              onClose={closeMenu}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+            >
+              <MenuItem onClick={() => onOptionMenuClicked('accept')}>
+                <FormattedMessage id="sitePolicyOptionAcceptAll" defaultMessage="Accept all changes" />
+              </MenuItem>
+              <MenuItem onClick={() => onOptionMenuClicked('reject')}>
+                <FormattedMessage id="sitePolicyOptionRejectAll" defaultMessage="Reject all changes" />
+              </MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <Typography className={classes.subtitle}>
+            <FormattedMessage
+              id="uploadDialog.subtitle"
+              defaultMessage="Drop the desired files from your desktop into space below."
+            />
+          </Typography>
+        )}
+      </DialogHeader>
       <DialogBody className={classes.dialogContent}>
         <DropZone
           onFileUploaded={onFileUploaded}
