@@ -16,7 +16,7 @@
 
 import '../styles/index.scss';
 
-import React, { PropsWithChildren, Suspense, useLayoutEffect, useState } from 'react';
+import React, { PropsWithChildren, ReactNode, Suspense, useLayoutEffect, useState } from 'react';
 import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, getStore } from '../state/store';
@@ -92,11 +92,21 @@ export default function CrafterCMSNextBridge(
     mountSnackbarProvider?: boolean;
     mountLegacyConcierge?: boolean;
     generateClassName?: GenerateId;
+    suspenseFallback?: ReactNode;
   }>
 ) {
   const [storeResource] = useState(() => createResource(() => getStore().toPromise()));
+  console.log(props.suspenseFallback);
   return (
-    <Suspencified>
+    <Suspencified
+      suspenseProps={
+        props.suspenseFallback === void 0
+          ? void 0
+          : {
+              fallback: props.suspenseFallback
+            }
+      }
+    >
       <Bridge
         generateClassName={props.generateClassName}
         mountGlobalDialogManager={props.mountGlobalDialogManager}

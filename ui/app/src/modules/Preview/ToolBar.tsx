@@ -66,6 +66,10 @@ const translations = defineMessages({
     id: 'previewToolbar.toggleEditMode',
     defaultMessage: 'Toggle edit mode'
   },
+  toggleSidebarTooltip: {
+    id: 'common.toggleSidebarTooltip',
+    defaultMessage: 'Toggle sidebar'
+  },
   editModeOn: {
     id: 'previewToolbar.editModeOn',
     defaultMessage: 'Edit mode switched on'
@@ -282,25 +286,18 @@ export default function ToolBar() {
   return (
     <ViewToolbar>
       <section>
-        <IconButton
-          aria-label={formatMessage(translations.openToolsPanel)}
-          onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
-        >
-          <CustomMenu />
-        </IconButton>
-        <section className={!createContent ? classes.hidden : ''}>
-          <QuickCreate />
-        </section>
-        <Tooltip title={formatMessage(translations.toggleEditMode)} className={!write ? classes.hidden : ''}>
-          <EditSwitch
-            color="default"
-            checked={editMode}
-            onChange={(e) => {
-              enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
-              dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-            }}
-          />
+        <ToolbarGlobalNav />
+        <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
+          <IconButton
+            aria-label={formatMessage(translations.openToolsPanel)}
+            onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
+          >
+            <CustomMenu />
+          </IconButton>
         </Tooltip>
+        <span className={clsx(!createContent && classes.hidden)}>
+          <QuickCreate />
+        </span>
       </section>
       <section>
         <AddressBar
@@ -314,7 +311,16 @@ export default function ToolBar() {
         />
       </section>
       <div>
-        <ToolbarGlobalNav />
+        <Tooltip title={formatMessage(translations.toggleEditMode)} className={clsx(!write && classes.hidden)}>
+          <EditSwitch
+            color="default"
+            checked={editMode}
+            onChange={(e) => {
+              enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
+              dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+            }}
+          />
+        </Tooltip>
       </div>
     </ViewToolbar>
   );

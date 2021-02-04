@@ -98,6 +98,7 @@ function retrieve() {
       return current;
     },
     (e: AjaxError) => {
+      clearTimeout(timeout);
       log('Error retrieving token', e);
       if (e.status === 401) {
         status = 'expired';
