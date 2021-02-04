@@ -1446,42 +1446,47 @@
           });
       });
 
-      $scope.save = function () {
-        enableUI(false);
-        const value = aceEditor.getValue();
-
+      $scope.checkDocumentErrors = function() {
         const errors = fileErrors(aceEditor);
+
         if (errors.length) {
+          $scope.documentHasErrors = true;
           $element.notify(formatMessage(globalConfigMessages.documentError), {
             position: 'top left',
             className: 'error'
           });
-          enableUI(true);
         } else {
-          $http
-            .post('/studio/api/2/configuration/write_configuration', {
-              siteId: 'studio_root',
-              module: 'studio',
-              path: '/configuration/studio-config-override.yaml',
-              content: value
-            })
-            .then(() => {
-              enableUI(true);
-              defaultValue = value;
-              aceEditor.focus();
-              $element.notify(formatMessage(globalConfigMessages.successfulSave), {
-                position: 'top left',
-                className: 'success'
-              });
-              globalConfig.isModified = false;
-            })
-            .catch(() => {
-              $element.notify(formatMessage(globalConfigMessages.failedSave), {
-                position: 'top left',
-                className: 'error'
-              });
-            });
+          $scope.documentHasErrors = false;
         }
+      };
+
+      $scope.save = function () {
+        enableUI(false);
+        const value = aceEditor.getValue();
+
+        $http
+          .post('/studio/api/2/configuration/write_configuration', {
+            siteId: 'studio_root',
+            module: 'studio',
+            path: '/configuration/studio-config-override.yaml',
+            content: value
+          })
+          .then(() => {
+            enableUI(true);
+            defaultValue = value;
+            aceEditor.focus();
+            $element.notify(formatMessage(globalConfigMessages.successfulSave), {
+              position: 'top left',
+              className: 'success'
+            });
+            globalConfig.isModified = false;
+          })
+          .catch(() => {
+            $element.notify(formatMessage(globalConfigMessages.failedSave), {
+              position: 'top left',
+              className: 'error'
+            });
+          });
       };
 
       $scope.reset = function () {
