@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
@@ -53,6 +53,11 @@ import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { PrimaryButton } from '../PrimaryButton';
 import { getGlobalHeaders } from '../../utils/ajax';
+import { validateActionPolicy } from '../../services/sites';
+import { Action } from '../../models/Site';
+import WarningIcon from '@material-ui/icons/WarningRounded';
+import ForwardIcon from '@material-ui/icons/ForwardRounded';
+import SecondaryButton from '../SecondaryButton';
 
 const translations = defineMessages({
   title: {
@@ -91,6 +96,15 @@ const translations = defineMessages({
     id: 'uploadDialog.uploadInProgress',
     defaultMessage:
       'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+  },
+  createPolicy: {
+    id: 'uploadDialog.createPolicy',
+    defaultMessage:
+      'The supplied file path goes against site policies. Suggested file path is: "{path}". Would you like to use the suggested path?'
+  },
+  policyError: {
+    id: 'uploadDialog.policyError',
+    defaultMessage: 'The following files paths goes against site policies: {paths}'
   }
 });
 
@@ -187,24 +201,75 @@ const UppyItemStyles = makeStyles((theme) =>
     cardContent: {
       display: 'flex'
     },
-    cardContentText: {},
+    cardContentWrapper: {
+      width: '100%'
+    },
+    cardContentText: {
+      marginRight: 'auto'
+    },
+    cardContentFlexWrapper: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
     cardMedia: {
-      width: '80px'
+      width: '100px',
+      backgroundColor: theme.palette.background.default,
+      backgroundSize: 'contain'
     },
     caption: {
       color: palette.gray.medium5
     },
+    sitePolicySuggestion: {
+      color: palette.red.main,
+      display: 'flex',
+      marginBottom: '10px',
+      alignItems: 'center',
+      '& svg': {
+        marginRight: '10px'
+      }
+    },
+    sitePolicySuggestionFileName: {
+      display: 'flex',
+      '& svg': {
+        margin: '0 10px',
+        color: theme.palette.text.primary
+      }
+    },
+    sitePolicySuggestionActions: {
+      marginTop: '10px',
+      '& button:first-child': {
+        marginRight: '15px'
+      }
+    },
+    textAccepted: {
+      color: theme.palette.success.main
+    },
     textFailed: {
-      color: palette.red.main
+      color: theme.palette.error.main
+    },
+    textUnderlined: {
+      textDecoration: 'line-through'
     },
     iconRetry: {
-      marginLeft: 'auto',
       height: '48px'
     }
   })
 );
 
-const uppy = Core({ debug: false, autoProceed: true });
+const uppy = Core({
+  debug: false,
+  autoProceed: false,
+  onBeforeUpload: (files) => {
+    const allowedFiles = {};
+    Object.keys(files).forEach((key) => {
+      // @ts-ignore
+      if (files[key].meta.allowed && !files[key].meta.suggestedName) {
+        allowedFiles[key] = files[key];
+      }
+    });
+    return Object.keys(allowedFiles).length ? allowedFiles : false;
+  }
+});
 
 export interface UppyFile {
   source: string;
@@ -213,6 +278,8 @@ export interface UppyFile {
   extension: string;
   meta: {
     site?: string;
+    allowed?: boolean;
+    suggestedName?: string;
     relativePath?: string;
     name: string;
     type: string;
@@ -238,7 +305,7 @@ export interface UppyFile {
 }
 
 interface UppyItemProps {
-  file: any;
+  file: UppyFile;
 
   retryFileUpload(file: UppyFile): void;
 
@@ -266,33 +333,113 @@ function UppyItem(props: UppyItemProps) {
       {file.preview && <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />}
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
-          <div className={classes.cardContentText}>
-            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
-              {file.name}
-            </Typography>
-            <Typography variant="caption" className={classes.caption}>
-              {file.type} @ {bytesToSize(file.size)}
-            </Typography>
-          </div>
-          {file.progress.percentage !== 100 && (
-            <IconButton
-              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                handleRemove(event, file);
-              }}
-              className={classes.iconRetry}
-            >
-              <DeleteRoundedIcon />
-            </IconButton>
+          {file.meta.allowed && file.meta.suggestedName && (
+            <div className={classes.cardContentWrapper}>
+              <div className={classes.sitePolicySuggestion}>
+                <WarningIcon />
+                <Typography variant="body2">
+                  <FormattedMessage
+                    id="uploadDialog.sitePolicySuggestion"
+                    defaultMessage="File name “{name}” requires changes to comply with site policies."
+                    values={{ name: file.name }}
+                  />
+                </Typography>
+              </div>
+              <div className={classes.sitePolicySuggestionFileName}>
+                <Typography variant="body2" className={classes.textUnderlined}>
+                  {file.name}
+                </Typography>
+                <ForwardIcon fontSize="small" />
+                <Typography variant="body2" className={classes.textAccepted}>
+                  {file.meta.suggestedName}
+                </Typography>
+              </div>
+              <Typography variant="caption" className={classes.caption}>
+                {file.type} @ {bytesToSize(file.size)}
+              </Typography>
+              <div className={classes.sitePolicySuggestionActions}>
+                <SecondaryButton
+                  size="small"
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRemove(event, file);
+                  }}
+                >
+                  <FormattedMessage id="sitePolicy.cancelUpload" defaultMessage="Cancel Upload" />
+                </SecondaryButton>
+                <PrimaryButton
+                  size="small"
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRetry(event, file);
+                  }}
+                >
+                  <FormattedMessage id="sitePolicy.acceptChanges" defaultMessage="Accept Changes" />
+                </PrimaryButton>
+              </div>
+            </div>
           )}
-          {file.progress.status === 'failed' && (
-            <IconButton
-              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                handleRetry(event, file);
-              }}
-              className={classes.iconRetry}
-            >
-              <ReplayIcon />
-            </IconButton>
+          {file.meta.allowed && !file.meta.suggestedName && (
+            <>
+              <div className={classes.cardContentText}>
+                <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+                  {file.name}
+                </Typography>
+                <Typography variant="caption" className={classes.caption}>
+                  {file.type} @ {bytesToSize(file.size)}
+                </Typography>
+              </div>
+              {file.progress.percentage !== 100 && (
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRemove(event, file);
+                  }}
+                  className={classes.iconRetry}
+                >
+                  <DeleteRoundedIcon />
+                </IconButton>
+              )}
+              {file.progress.status === 'failed' && (
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRetry(event, file);
+                  }}
+                  className={classes.iconRetry}
+                >
+                  <ReplayIcon />
+                </IconButton>
+              )}
+            </>
+          )}
+          {file.meta.allowed === false && (
+            <div className={classes.cardContentWrapper}>
+              <div className={classes.sitePolicySuggestion}>
+                <WarningIcon />
+                <Typography variant="body2">
+                  <FormattedMessage
+                    id="uploadDialog.sitePolicySuggestion"
+                    defaultMessage="File name “{name}” doesn't comply with site policies and can’t be uploaded."
+                    values={{ name: file.name }}
+                  />
+                </Typography>
+              </div>
+              <div className={classes.cardContentFlexWrapper}>
+                <div>
+                  <Typography variant="body2" className={classes.textUnderlined}>
+                    {file.name}
+                  </Typography>
+                  <Typography variant="caption" className={classes.caption}>
+                    {file.type} @ {bytesToSize(file.size)}
+                  </Typography>
+                </div>
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRemove(event, file);
+                  }}
+                  className={classes.iconRetry}
+                >
+                  <DeleteRoundedIcon />
+                </IconButton>
+              </div>
+            </div>
           )}
         </div>
         <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
@@ -323,6 +470,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [totalFiles, setTotalFiles] = useState(null);
 
   const retryFileUpload = (file: UppyFile) => {
+    file.progress.status = 'uploading';
+    if (file.meta.suggestedName) {
+      file.meta.suggestedName = null;
+    }
+    setFiles({ [file.id]: file });
     uppy.retryUpload(file.id);
   };
 
@@ -360,21 +512,37 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
   function addFiles(files: File[]) {
     setTotalFiles(totalFiles + files.length);
-    onStatusChange({ status: 'adding', files: totalFiles + files.length });
-    interval(50)
-      .pipe(takeUntil(cancelRequestObservable$), take(files.length))
-      .subscribe((index) => {
-        const file: File & { relativePath?: string } = files[index];
-        checkFileExist(file) &&
-          uppy.addFile({
-            name: file.name,
-            type: file.type,
-            data: file,
-            meta: {
-              relativePath: file.relativePath || null
-            }
-          });
-      });
+    onStatusChange({ status: 'validating', files: totalFiles + files.length });
+    validateActionPolicy(
+      site,
+      files.map((file) => ({
+        type: 'CREATE',
+        target: `${path}/${file.name}`
+      })) as Action[]
+    ).subscribe((response) => {
+      onStatusChange({ status: 'adding' });
+
+      interval(50)
+        .pipe(takeUntil(cancelRequestObservable$), take(response.length))
+        .subscribe((index) => {
+          const { allowed, modifiedValue, target } = response[index];
+          const fileName = target.replace(`${path}/`, '');
+          const file: File & { relativePath?: string } = files.find((file) => file.name === fileName);
+          const validFile = checkFileExist(file);
+          if (validFile) {
+            uppy.addFile({
+              name: file.name,
+              type: file.type,
+              data: file,
+              meta: {
+                allowed: allowed,
+                ...(modifiedValue && { suggestedName: modifiedValue.replace(`${path}/`, '') }),
+                relativePath: file.relativePath || null
+              }
+            });
+          }
+        });
+    });
   }
 
   function checkFileExist(newFile: File) {
@@ -457,13 +625,24 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           file.preview = e.target.result;
           try {
             uppy.setFileState(file.id, { preview: e.target.result });
+            file.preview = e.target.result;
             setFiles({ [file.id]: file });
+            if (file.meta.allowed && !file.meta.suggestedName) {
+              uppy.retryUpload(file.id);
+            } else {
+              onStatusChange({ status: 'pending' });
+            }
           } catch (error) {
             console.error(error);
           }
         };
         reader.readAsDataURL(file.data);
       } else {
+        if (file.meta.allowed && !file.meta.suggestedName) {
+          uppy.retryUpload(file.id);
+        } else {
+          onStatusChange({ status: 'pending' });
+        }
         setFiles({ [file.id]: file });
       }
     };
@@ -486,9 +665,16 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       onStatusChange({ uploadedFiles: uploadedFiles + 1 });
     };
 
+    const handleFileRemoved = (file: UppyFile) => {
+      setTotalFiles(totalFiles - 1);
+      onStatusChange({ ...(uploadedFiles === totalFiles - 1 && { status: 'complete' }), files: totalFiles - 1 });
+    };
+
     const handleComplete = () => {
       if (uploadedFiles === totalFiles) {
         onStatusChange({ status: 'complete', progress: 100 });
+      } else {
+        onStatusChange({ status: 'pending' });
       }
     };
 
@@ -497,10 +683,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     };
 
     uppy.on('upload-success', handleUploadSuccess);
+    uppy.on('file-removed', handleFileRemoved);
     uppy.on('complete', handleComplete);
     uppy.on('error', handleError);
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
+      uppy.off('file-removed', handleFileRemoved);
       uppy.off('complete', handleComplete);
       uppy.off('error', handleError);
     };
@@ -576,8 +764,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   );
 });
 
+type status = 'adding' | 'validating' | 'pending' | 'uploading' | 'failed' | 'complete' | 'idle';
+
 export interface DropZoneStatus {
-  status?: string;
+  status?: status;
   files?: number;
   uploadedFiles?: number;
   progress?: number;
@@ -675,7 +865,7 @@ export default function UploadDialog(props: UploadDialogProps) {
       }
       onClose={() => onClose({ dropZoneStatus, path })}
       fullWidth
-      maxWidth="sm"
+      maxWidth={dropZoneStatus.files ? 'md' : 'sm'}
     >
       <UploadDialogUI
         {...props}
@@ -738,6 +928,8 @@ function UploadDialogUI(props: UploadDialogUIProps) {
 
   useUnmount(onClosed);
 
+  console.log(dropZoneStatus.status);
+
   return (
     <>
       <DialogHeader
@@ -767,7 +959,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
       </DialogBody>
       {dropZoneStatus.status !== 'idle' && (
         <DialogFooter>
-          {dropZoneStatus.status === 'uploading' && (
+          {['pending', 'uploading', 'validating', 'adding'].includes(dropZoneStatus.status) && (
             <Button
               id="cancelBtn"
               onClick={onCancel}
@@ -778,7 +970,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
               children={formatMessage(translations.cancelAll)}
             />
           )}
-          {dropZoneStatus.files && (
+          {Boolean(dropZoneStatus.files) && (
             <Typography variant="caption" className={classes.status}>
               {formatMessage(translations.filesProgression, {
                 start: dropZoneStatus.uploadedFiles,
