@@ -37,11 +37,16 @@ import { Resource } from '../../models/Resource';
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import { getSimplifiedVersion } from '../../utils/string';
 import palette from '../../styles/palette';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
     id: 'quickCreateBtnLabel.label',
     defaultMessage: 'Open quick create menu'
+  },
+  quickCreateMenuTooltip: {
+    id: 'previewToolbar.quickCreateMenuTooltip',
+    defaultMessage: 'Quick create menu'
   }
 });
 
@@ -194,22 +199,25 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
   );
 }
 
-function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
+const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMenuButtonProps>(function(props, ref) {
   const { onMenuBtnClick } = props;
   const { formatMessage } = useIntl();
   return (
-    <IconButton
-      size="small"
-      color="primary"
-      onClick={onMenuBtnClick}
-      aria-label={formatMessage(translations.quickCreateBtnLabel)}
-    >
-      <AddCircleIcon fontSize="large" />
-    </IconButton>
+    <Tooltip title={formatMessage(translations.quickCreateMenuTooltip)}>
+      <IconButton
+        ref={ref}
+        size="small"
+        color="primary"
+        onClick={onMenuBtnClick}
+        aria-label={formatMessage(translations.quickCreateBtnLabel)}
+      >
+        <AddCircleIcon fontSize="large" />
+      </IconButton>
+    </Tooltip>
   );
-}
+});
 
-export default function QuickCreate() {
+const QuickCreate = React.forwardRef<HTMLButtonElement, {}>(function(props, ref) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
@@ -258,7 +266,7 @@ export default function QuickCreate() {
 
   return (
     <>
-      <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
+      <QuickCreateMenuButton ref={ref} onMenuBtnClick={onMenuBtnClick} />
       <QuickCreateMenu
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -269,4 +277,6 @@ export default function QuickCreate() {
       />
     </>
   );
-}
+});
+
+export default QuickCreate;

@@ -60,7 +60,14 @@ import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
-import { getCurrentIntl, intl$ } from './i18n';
+import {
+  getCurrentIntl,
+  intl$,
+  getStoredLanguage,
+  setStoredLanguage,
+  buildStoredLanguageKey,
+  dispatchLanguageChange
+} from './i18n';
 import { getHostToHostBus } from '../modules/Preview/previewContext';
 import { StandardAction } from '../models/StandardAction';
 
@@ -98,7 +105,11 @@ interface CodebaseBridge {
   i18n: {
     intl: IntlShape;
     messages: object;
-    translateElements: Function;
+    translateElements: typeof translateElements;
+    getStoredLanguage: typeof getStoredLanguage;
+    setStoredLanguage: typeof setStoredLanguage;
+    buildStoredLanguageKey: typeof buildStoredLanguageKey;
+    dispatchLanguageChange: typeof dispatchLanguageChange;
   };
   services: object;
   mui: object;
@@ -211,7 +222,11 @@ export function createCodebaseBridge() {
     i18n: {
       intl: getCurrentIntl(),
       messages,
-      translateElements
+      translateElements,
+      getStoredLanguage,
+      setStoredLanguage,
+      dispatchLanguageChange,
+      buildStoredLanguageKey
     },
 
     services: {
@@ -275,10 +290,12 @@ export function createCodebaseBridge() {
             ReactDOM.unmountComponentAtNode(element);
             options.removeContainer && element.parentNode.removeChild(element);
           };
-          // @ts-ignore
           ReactDOM.render(
-            // @ts-ignore
-            <CrafterCMSNextBridge mountGlobalDialogManager={!isLegacy} mountSnackbarProvider={!isLegacy}>
+            <CrafterCMSNextBridge
+              mountGlobalDialogManager={!isLegacy}
+              mountSnackbarProvider={!isLegacy}
+              suspenseFallback={isLegacy ? '' : void 0}
+            >
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,
@@ -317,17 +334,20 @@ export function createCodebaseBridge() {
             ReactDOM.unmountComponentAtNode(element);
             document.body.removeChild(element);
           };
-          ReactDOM.render(<CrafterCMSNextBridge mountLegacyConcierge={mountLegacyConcierge} />, element, () =>
-            resolve({
-              unmount: (options) => {
-                options = Object.assign({ delay: false }, options || {});
-                if (options.delay) {
-                  setTimeout(unmount, options.delay);
-                } else {
-                  unmount();
+          ReactDOM.render(
+            <CrafterCMSNextBridge mountLegacyConcierge={mountLegacyConcierge} suspenseFallback="" />,
+            element,
+            () =>
+              resolve({
+                unmount: (options) => {
+                  options = Object.assign({ delay: false }, options || {});
+                  if (options.delay) {
+                    setTimeout(unmount, options.delay);
+                  } else {
+                    unmount();
+                  }
                 }
-              }
-            })
+              })
           );
         } catch (e) {
           reject(e);

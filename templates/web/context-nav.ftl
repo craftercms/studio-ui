@@ -19,6 +19,7 @@
     <div class="container-fluid navbar-items-wrapper">
 
       <ul class="nav navbar-nav">
+        <li><div id="toolbarGlobalNav"></div></li>
         <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
         <li>
           <a id="navbar-site-name" class="site-name trim" href="/studio/site-dashboard"></a>
@@ -42,7 +43,6 @@
       <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
       <div class="navbar-right-wrapper navbar-right">
-        <div id="toolbarGlobalNav"></div>
         <div id="acn-status">
           <span class="nav-icon fa fa-cloud-upload f18" data-title="publishingStatus"></span>
         </div>
