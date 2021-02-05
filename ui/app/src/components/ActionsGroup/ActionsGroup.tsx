@@ -88,7 +88,7 @@ const ActionsGroup = forwardRef<HTMLDivElement, ActionsGroupProps>(function Acti
         </Fab>
       ) : null}
       <Menu open={Boolean(showMenu)} anchorEl={showMenu} onClose={() => setShowMenu(void 0)}>
-        {actions.slice(actions.length - extraActions + 1).map((child, index) => (
+        {actions.slice(actions.length - extraActions).map((child, index) => (
           <MenuItem onClick={() => onActionClicked?.(child.id)} key={child.id}>
             {child.label}
           </MenuItem>

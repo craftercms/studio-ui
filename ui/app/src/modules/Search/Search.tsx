@@ -54,8 +54,11 @@ import { getHostToHostBus } from '../Preview/previewContext';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 
 const drawerWidth = 300;
+
 let unsubscribeOnActionSuccess;
+
 const idActionSuccess = 'actionSuccess';
+
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
     margin: 'auto',
@@ -354,7 +357,6 @@ export default function Search(props: SearchProps) {
         dispatch(completeDetailedItem({ path: item.path }));
       });
     },
-
     [dispatch]
   );
 

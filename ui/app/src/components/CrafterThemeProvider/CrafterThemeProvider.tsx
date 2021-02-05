@@ -51,6 +51,9 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         info: {
           main: prefersDarkMode ? palette.teal.tint : palette.teal.main
         },
+        secondary: {
+          main: prefersDarkMode ? palette.indigo.tint : palette.purple.tint
+        },
         ...props.themeOptions?.palette
       },
       overrides: extend(

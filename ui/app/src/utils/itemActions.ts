@@ -422,16 +422,25 @@ export function generateMultipleItemOptions(
   return options;
 }
 
-export const itemActionDispatcher = (
-  site: string,
-  item: DetailedItem | DetailedItem[],
-  option: string,
-  legacyFormSrc: string,
+export const itemActionDispatcher = ({
+  site,
+  item,
+  option,
+  legacyFormSrc,
   dispatch,
   formatMessage,
   clipboard,
-  onActionSuccess?: any
-) => {
+  onActionSuccess
+}: {
+  site: string;
+  item: DetailedItem | DetailedItem[];
+  option: string;
+  legacyFormSrc: string;
+  dispatch;
+  formatMessage;
+  clipboard;
+  onActionSuccess?: any;
+}) => {
   // actions that support only one item
   if (!Array.isArray(item)) {
     switch (option) {
@@ -442,11 +451,11 @@ export const itemActionDispatcher = (
         break;
       }
       case 'edit': {
+        // TODO: Editing embedded components is not currently supported as to edit them,
+        //  we need the modelId that's not supplied to this function.
+        // const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
         const path = item.path;
         const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-        // TODO: open a embedded form needs the following:
-        // src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
-
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(

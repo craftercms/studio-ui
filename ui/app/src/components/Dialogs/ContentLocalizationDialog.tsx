@@ -23,7 +23,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
-import ContextMenu, { ContextMenuOption } from '../ContextMenu';
+import ContextMenu from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';

@@ -96,7 +96,7 @@ const actions = [
 
 export default function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
   const { open, selectedItems, handleClearSelected, onActionSuccess, mode = 'default', onAcceptSelection } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
   const { formatMessage } = useIntl();
   const permissions = usePermissions();
   const items = useSelection((state) => state.content.items);
@@ -140,22 +140,22 @@ export default function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
     if (selectedItems.length > 1) {
       const detailedItems = [];
       selectedItems.forEach((path) => {
-        detailedItems.push(items.byPath?.[path]);
+        items.byPath?.[path] && detailedItems.push(items.byPath[path]);
       });
-      itemActionDispatcher(
+      itemActionDispatcher({
         site,
-        detailedItems,
+        item: detailedItems,
         option,
         legacyFormSrc,
         dispatch,
         formatMessage,
         clipboard,
         onActionSuccess
-      );
+      });
     } else {
       const path = selectedItems[0];
       const item = items.byPath?.[path];
-      itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, onActionSuccess);
+      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, onActionSuccess });
     }
   };
 
@@ -172,7 +172,7 @@ export default function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
             <List className={classes.actionsList}>
               {selectionOptions.map((option) => (
                 <ListItem button key={option.id} onClick={() => onActionItemClicked(option.id)}>
-                  <ListItemText primary={formatMessage(option.label)} />
+                  <ListItemText primary={option.label} />
                 </ListItem>
               ))}
             </List>

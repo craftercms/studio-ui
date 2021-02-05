@@ -188,26 +188,18 @@ export function AddressBar(props: AddressBarProps) {
   }, [isSmallScreen, isMediumScreen, isLargeScreen]);
 
   const onSiteChangeInternal = (value) => !isBlank(value) && value !== site && onSiteChange(value);
+
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const clipboard = useSelection((state) => state.content.clipboard);
   const onMenuItemClicked = (option: string) =>
-    itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard);
+    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
   const permissions = usePermissions()?.[path];
   const actions = generateSingleItemOptions(item, permissions, formatMessage)?.flatMap((options) => options);
 
   return (
     <>
-      {/*
-      TODO: Disabled. To be implemented at a later release or discarded. Browser back button suffices?
-      <IconButton className={classes.iconButton} aria-label="Back">
-        <KeyboardArrowLeftRounded />
-      </IconButton>
-      <IconButton className={classes.iconButton} aria-label="Forward">
-        <KeyboardArrowRightRounded />
-      </IconButton>
-      */}
       <IconButton className={classes.iconButton} title={formatMessage(translations.reload)} onClick={onRefresh}>
         <RefreshRounded />
       </IconButton>
