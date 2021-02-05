@@ -123,7 +123,6 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
   useEffect(() => {
     if (currentPath) {
       let nodesLookup = nodesLookupRef.current;
-
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
