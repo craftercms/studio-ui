@@ -268,7 +268,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     }
   };
 
-  const onOptionClicked = (option: ContextMenuOption) => {
+  const onOptionClicked = (option: string) => {
     // TODO: Widget menu option clicked
   };
 
