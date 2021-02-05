@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { translations } from '../components/ItemMenu/translations';
+import { translations } from '../components/ItemActionsMenu/translations';
 import { DetailedItem, LegacyItem } from '../models/Item';
 import LookupTable from '../models/LookupTable';
-import { SectionItem } from '../components/ContextMenu';
+import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, isRootPath, withoutIndex } from './path';
 import {
   CloseChangeContentTypeDialog,
@@ -69,8 +69,11 @@ import {
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
+import { IntlFormatters, MessageDescriptor } from 'react-intl';
 
-const menuOptions = {
+export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
+
+const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   edit: {
     id: 'edit',
     label: translations.edit
@@ -181,8 +184,29 @@ const menuOptions = {
   }
 };
 
-export function generateSingleItemOptions(item: DetailedItem, permissions: LookupTable<boolean>): SectionItem[][] {
-  let options: SectionItem[][] = [];
+export function toContextMenuOptionsLookup(
+  menuOptionDescriptors: LookupTable<ContextMenuOptionDescriptor>,
+  formatMessage: IntlFormatters['formatMessage']
+): { [prop: string]: ContextMenuOption } {
+  const menuOptions: { [prop: string]: ContextMenuOption } = {};
+  Object.entries(unparsedMenuOptions).forEach(([key, value]) => {
+    menuOptions[key] = {
+      id: value.id,
+      label: formatMessage(value.label)
+    };
+  });
+  return menuOptions;
+}
+
+export function generateSingleItemOptions(
+  item: DetailedItem,
+  permissions: LookupTable<boolean>,
+  formatMessage: IntlFormatters['formatMessage']
+): ContextMenuOption[][] {
+  let sections: ContextMenuOption[][] = [];
+  if (!item || !permissions) {
+    return sections;
+  }
   const write = permissions.write;
   const read = permissions.read;
   const publish = permissions.publish;
@@ -199,97 +223,100 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
   const isRootFolder = isRootPath(item.path);
   const translation = false;
   const isLocked = item.lockOwner;
-  let type = item.systemType;
-
+  const type = item.systemType;
+  const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
+    unparsedMenuOptions,
+    formatMessage
+  );
   switch (type) {
     case 'page': {
-      let _optionsA = [];
+      let options = [];
       if (write) {
-        _optionsA.push(menuOptions.edit);
+        options.push(menuOptions.edit);
         if (read) {
-          _optionsA.push(menuOptions.view);
+          options.push(menuOptions.view);
         }
         if (createFolder) {
-          _optionsA.push(menuOptions.createFolder);
+          options.push(menuOptions.createFolder);
         }
         if (createContent) {
-          _optionsA.push(menuOptions.createContent);
+          options.push(menuOptions.createContent);
         }
         if (deleteItem && !isRootFolder) {
-          _optionsA.push(menuOptions.delete);
+          options.push(menuOptions.delete);
         }
         if (changeContentType && !isRootFolder) {
-          _optionsA.push(menuOptions.changeContentType);
+          options.push(menuOptions.changeContentType);
         }
         if (!isRootFolder) {
-          _optionsA.push(menuOptions.cut);
-          _optionsA.push(menuOptions.copy);
-          _optionsA.push(menuOptions.duplicate);
+          options.push(menuOptions.cut);
+          options.push(menuOptions.copy);
+          options.push(menuOptions.duplicate);
         }
         if (hasClipboard) {
-          _optionsA.push(menuOptions.paste);
+          options.push(menuOptions.paste);
         }
         if (isLocked) {
-          _optionsA.push(menuOptions.unlock);
+          options.push(menuOptions.unlock);
         }
         if (publish && !isLocked && !item.stateMap.live) {
-          _optionsA.push(menuOptions.schedule);
+          options.push(menuOptions.schedule);
         }
         if (!isLocked && !item.stateMap.live) {
-          _optionsA.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
+          options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
         }
         if (
           reject &&
           (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
         ) {
-          _optionsA.push(menuOptions.reject);
+          options.push(menuOptions.reject);
         }
-        _optionsA.push(menuOptions.history);
-        _optionsA.push(menuOptions.dependencies);
+        options.push(menuOptions.history);
+        options.push(menuOptions.dependencies);
         if (translation) {
-          _optionsA.push(menuOptions.translation);
+          options.push(menuOptions.translation);
         }
-        _optionsA.push(menuOptions.editTemplate);
-        _optionsA.push(menuOptions.editController);
+        options.push(menuOptions.editTemplate);
+        options.push(menuOptions.editController);
       } else if (read) {
-        _optionsA.push(menuOptions.view);
-        _optionsA.push(menuOptions.history);
+        options.push(menuOptions.view);
+        options.push(menuOptions.history);
       }
-      options.push(_optionsA);
-      return options;
+      sections.push(options);
+      return sections;
     }
     case 'folder': {
-      let _optionsA = [];
+      let options = [];
       if (write) {
         if (createContent && !isAsset) {
-          _optionsA.push(menuOptions.createContent);
+          options.push(menuOptions.createContent);
         }
         if (createFolder) {
-          _optionsA.push(menuOptions.createFolder);
+          options.push(menuOptions.createFolder);
         }
         if (!isRootFolder) {
-          _optionsA.push(menuOptions.renameFolder);
+          options.push(menuOptions.renameFolder);
         }
         if (deleteItem && !isRootFolder) {
-          _optionsA.push(menuOptions.delete);
-          _optionsA.push(menuOptions.cut);
+          options.push(menuOptions.delete);
+          options.push(menuOptions.cut);
         }
-        _optionsA.push(menuOptions.copy);
+        options.push(menuOptions.copy);
         if (hasClipboard) {
-          _optionsA.push(menuOptions.paste);
+          options.push(menuOptions.paste);
         }
         if (isAsset) {
-          _optionsA.push(menuOptions.upload);
+          options.push(menuOptions.upload);
         }
         if (isTemplate) {
-          _optionsA.push(menuOptions.createTemplate);
+          options.push(menuOptions.createTemplate);
         }
         if (isController) {
-          _optionsA.push(menuOptions.createController);
+          options.push(menuOptions.createController);
         }
       }
-      options.push(_optionsA);
-      return options;
+      sections.push(options);
+      return sections;
     }
     case 'taxonomy':
     case 'component':
@@ -297,62 +324,65 @@ export function generateSingleItemOptions(item: DetailedItem, permissions: Looku
     case 'renderingTemplate':
     case 'script':
     case 'asset': {
-      let _optionsA = [];
+      let options = [];
       if (write) {
         if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
-          _optionsA.push(menuOptions.edit);
+          options.push(menuOptions.edit);
           if (read) {
-            _optionsA.push(menuOptions.view);
+            options.push(menuOptions.view);
           }
         } else if (isImage) {
-          _optionsA.push(menuOptions.viewImage);
+          options.push(menuOptions.viewImage);
         } else {
-          _optionsA.push(menuOptions.codeEditor);
-          _optionsA.push(menuOptions.viewCodeEditor);
+          options.push(menuOptions.codeEditor);
+          options.push(menuOptions.viewCodeEditor);
         }
         if (deleteItem) {
-          _optionsA.push(menuOptions.delete);
+          options.push(menuOptions.delete);
         }
-        _optionsA.push(menuOptions.cut);
-        _optionsA.push(menuOptions.copy);
+        options.push(menuOptions.cut);
+        options.push(menuOptions.copy);
         if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
-          _optionsA.push(menuOptions.duplicate);
-          _optionsA.push(menuOptions.changeContentType);
+          options.push(menuOptions.duplicate);
+          options.push(menuOptions.changeContentType);
         } else {
-          _optionsA.push(menuOptions.duplicateAsset);
+          options.push(menuOptions.duplicateAsset);
         }
         if (hasClipboard) {
-          _optionsA.push(menuOptions.paste);
+          options.push(menuOptions.paste);
         }
         if (publish && !item.lockOwner && !item.stateMap.live) {
-          _optionsA.push(menuOptions.schedule);
+          options.push(menuOptions.schedule);
         }
         if (!isLocked && !item.stateMap.live) {
-          _optionsA.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
+          options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
         }
         if (
           reject &&
           (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
         ) {
-          _optionsA.push(menuOptions.reject);
+          options.push(menuOptions.reject);
         }
-        _optionsA.push(menuOptions.history);
-        _optionsA.push(menuOptions.dependencies);
+        options.push(menuOptions.history);
+        options.push(menuOptions.dependencies);
       } else if (read) {
-        _optionsA.push(menuOptions.view);
-        _optionsA.push(menuOptions.history);
+        options.push(menuOptions.view);
+        options.push(menuOptions.history);
       }
-      options.push(_optionsA);
-      return options;
+      sections.push(options);
+      return sections;
     }
     default: {
-      console.error(`[itemActions.ts] Unknown system type ${item.systemType} for item ${item.path}`);
-      return options;
+      console.error(`[itemActions.ts] Unknown system type "${item.systemType}" for item ${item.path}`, item);
+      return sections;
     }
   }
 }
 
-export function generateMultipleItemOptions(itemsDetails): SectionItem[] {
+export function generateMultipleItemOptions(
+  itemsDetails: { permissions: LookupTable<boolean>; item: DetailedItem }[],
+  formatMessage: IntlFormatters['formatMessage']
+): ContextMenuOption[] {
   let publish = true;
   let deleteItem = true;
   let reject = true;
@@ -365,28 +395,25 @@ export function generateMultipleItemOptions(itemsDetails): SectionItem[] {
     reject = reject ? permissions.cancel_publish : reject;
   });
 
-  if (publish) {
-    const itemsPublish = itemsDetails.filter(({ item }) => {
-      return !item.isLocked && !item.stateMap.live;
-    });
+  const menuOptions = toContextMenuOptionsLookup(unparsedMenuOptions, formatMessage);
 
+  if (publish) {
+    const itemsPublish = itemsDetails.filter(({ item }) => !item.stateMap.userLocked && !item.stateMap.live);
     if (itemsPublish.length === itemsDetails.length) {
       options.push(menuOptions.publish);
       options.push(menuOptions.schedule);
     }
   }
   if (deleteItem) {
-    const itemsDelete = itemsDetails.filter(({ item }) => !item.isRootFolder);
-
+    const itemsDelete = itemsDetails.filter(({ item }) => withoutIndex(item.path) !== '/site/website');
     if (itemsDelete.length === itemsDetails.length) {
       options.push(menuOptions.delete);
     }
   }
   if (reject) {
-    const itemsReject = itemsDetails.filter(({ item }) => {
-      return item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted;
-    });
-
+    const itemsReject = itemsDetails.filter(
+      ({ item }) => item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted
+    );
     if (itemsReject.length === itemsDetails.length) {
       options.push(menuOptions.reject);
     }
@@ -398,7 +425,7 @@ export function generateMultipleItemOptions(itemsDetails): SectionItem[] {
 export const itemActionDispatcher = (
   site: string,
   item: DetailedItem | DetailedItem[],
-  option: SectionItem,
+  option: string,
   legacyFormSrc: string,
   dispatch,
   formatMessage,
@@ -407,7 +434,7 @@ export const itemActionDispatcher = (
 ) => {
   // actions that support only one item
   if (!Array.isArray(item)) {
-    switch (option.id) {
+    switch (option) {
       case 'view': {
         const path = item.path;
         const src = `${legacyFormSrc}site=${site}&path=${path}&type=form&readonly=true`;
@@ -715,9 +742,8 @@ export const itemActionDispatcher = (
         break;
     }
   }
-
   // actions that support multiple items
-  switch (option.id) {
+  switch (option) {
     case 'delete': {
       let items = Array.isArray(item) ? item : [item];
       dispatch(

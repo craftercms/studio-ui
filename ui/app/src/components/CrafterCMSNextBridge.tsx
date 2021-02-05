@@ -96,7 +96,6 @@ export default function CrafterCMSNextBridge(
   }>
 ) {
   const [storeResource] = useState(() => createResource(() => getStore().toPromise()));
-  console.log(props.suspenseFallback);
   return (
     <Suspencified
       suspenseProps={

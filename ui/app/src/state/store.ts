@@ -130,7 +130,9 @@ export function createStoreSync(
   const store = configureStore<GlobalState, StandardAction, Middleware[]>({
     reducer,
     middleware,
-    preloadedState
+    preloadedState,
+    devTools: { name: 'Studio Store' }
+    // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }
   });
   epicMiddleware.run(epic);
   return store;

@@ -58,7 +58,7 @@ import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import ItemMenu from '../ItemMenu/ItemMenu';
+import ItemActionsMenu from '../ItemActionsMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import SearchBar from '../Controls/SearchBar';
 import Divider from '@material-ui/core/Divider';
@@ -877,7 +877,7 @@ function PageExplorerUI(props: PageExplorerUIProps) {
         />
       )}
       {Boolean(optionsMenu.anchorEl) && (
-        <ItemMenu
+        <ItemActionsMenu
           path={optionsMenu.path}
           open={Boolean(optionsMenu.anchorEl)}
           anchorEl={optionsMenu.anchorEl}

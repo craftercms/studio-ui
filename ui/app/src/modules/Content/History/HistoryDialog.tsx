@@ -15,10 +15,10 @@
  */
 
 import React, { PropsWithChildren, useCallback, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
-import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
@@ -109,9 +109,6 @@ const historyStyles = makeStyles(() =>
     dialogFooter: {
       padding: 0
     },
-    menuList: {
-      padding: 0
-    },
     singleItemSelector: {
       marginBottom: '10px'
     }
@@ -149,7 +146,7 @@ const paginationStyles = makeStyles((theme) =>
   })
 );
 
-const menuOptions: LookupTable<SectionItem> = {
+const menuOptions: LookupTable<{ id: string; label: MessageDescriptor; values?: any }> = {
   view: {
     id: 'view',
     label: translations.view
@@ -169,12 +166,12 @@ const menuOptions: LookupTable<SectionItem> = {
   revertToPrevious: {
     id: 'revertToPrevious',
     label: translations.revertToPrevious,
-    values: { b: (msg) => <b key={'bold'}>&nbsp;{msg}</b> }
+    values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
   },
   revertToThisVersion: {
     id: 'revertToThisVersion',
     label: translations.revertToThisVersion,
-    values: { b: (msg) => <b key={'bold'}>&nbsp;{msg}</b> }
+    values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
   }
 };
 
@@ -185,7 +182,7 @@ const menuInitialState = {
 };
 
 interface Menu {
-  sections: SectionItem[][];
+  sections: ContextMenuOption[][];
   anchorEl: Element;
   activeItem: LegacyVersion;
 }
@@ -251,36 +248,39 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     (anchorEl, version, isCurrent = false, permissions, initialCommit) => {
       const write = permissions?.write;
       const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
-      let sections = [];
-      sections.push([menuOptions.view]);
-
+      const contextMenuOptions: { [prop in keyof typeof menuOptions]: ContextMenuOption } = {};
+      Object.entries(menuOptions).forEach(([key, value]) => {
+        contextMenuOptions[key] = {
+          id: value.id,
+          label: formatMessage(value.label, value.values)
+        };
+      });
+      const sections: ContextMenuOption[][] = [[contextMenuOptions.view]];
       if (count > 1) {
         if (hasOptions) {
           if (initialCommit) {
-            sections.push([menuOptions.compareTo, menuOptions.compareToCurrent]);
+            sections.push([contextMenuOptions.compareTo, contextMenuOptions.compareToCurrent]);
           } else if (isCurrent) {
-            sections.push([menuOptions.compareTo, menuOptions.compareToPrevious]);
+            sections.push([contextMenuOptions.compareTo, contextMenuOptions.compareToPrevious]);
           } else {
-            sections.push([menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious]);
+            sections.push([
+              contextMenuOptions.compareTo,
+              contextMenuOptions.compareToCurrent,
+              contextMenuOptions.compareToPrevious
+            ]);
           }
         }
-
         if (write) {
-          if (isCurrent) {
-            sections.push([menuOptions.revertToPrevious]);
-          } else {
-            sections.push([menuOptions.revertToThisVersion]);
-          }
+          sections.push([isCurrent ? contextMenuOptions.revertToPrevious : contextMenuOptions.revertToThisVersion]);
         }
       }
-
       setMenu({
         sections,
         anchorEl,
         activeItem: version
       });
     },
-    [count, item.systemType, setMenu]
+    [count, item.systemType, setMenu, formatMessage]
   );
 
   const compareVersionDialogWithActions = () =>
@@ -380,10 +380,10 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     });
   };
 
-  const handleContextMenuItemClicked = (section: SectionItem) => {
+  const handleContextMenuItemClicked = (option: string) => {
     const activeItem = menu.activeItem;
     setMenu(menuInitialState);
-    switch (section.id) {
+    switch (option) {
       case 'view': {
         handleViewItem(activeItem);
         break;
@@ -456,9 +456,8 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           open={true}
           anchorEl={menu.anchorEl}
           onClose={handleContextMenuClose}
-          sections={menu.sections}
+          options={menu.sections}
           onMenuItemClicked={handleContextMenuItemClicked}
-          classes={{ menuList: classes.menuList }}
         />
       )}
     </>

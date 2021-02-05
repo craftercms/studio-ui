@@ -37,7 +37,7 @@ import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog'
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
-import { ItemMenuStateProps } from '../../components/ItemMenu/ItemMenu';
+import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
