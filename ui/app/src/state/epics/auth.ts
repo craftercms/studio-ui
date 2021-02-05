@@ -28,13 +28,12 @@ import {
 } from '../actions/auth';
 import { catchError, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
+import { fetchAuthenticationType } from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
-import { messageSharedWorker, storeInitialized } from '../actions/system';
+import { messageSharedWorker } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
-import Cookies from 'js-cookie';
-import { fetchAuthenticationType } from '../../services/auth';
 
 const epics: CrafterCMSEpic[] = [
   (action$) =>
@@ -49,7 +48,6 @@ const epics: CrafterCMSEpic[] = [
       // Spring requires regular post for logout....
       // tap(([, state]) => (window.location.href = `${state.env.authoringBase}/logout`)),
       tap(([, state]) => {
-        Cookies.set('userSession', null);
         const tokenField = document.createElement('input');
         tokenField.type = 'hidden';
         tokenField.name = state.env.xsrfArgument;
@@ -88,13 +86,8 @@ const epics: CrafterCMSEpic[] = [
     ),
   (action$) =>
     action$.pipe(
-      ofType(refreshAuthTokenComplete.type, storeInitialized.type),
-      // Note refreshAuthTokenComplete & storeInitialized payload signatures are different.
-      tap(({ payload }) => {
-        const auth = payload.auth ?? payload;
-        const token = auth.token;
-        setJwt(token);
-      }),
+      ofType(refreshAuthTokenComplete.type),
+      tap(({ payload }) => setJwt(payload.token)),
       ignoreElements()
     ),
   (action$) =>

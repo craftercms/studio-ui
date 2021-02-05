@@ -879,20 +879,14 @@
 
       $scope.setLangCookie = function() {
         try {
+          CrafterCMSNext.i18n.setStoredLanguage($scope.langSelected, $scope.user.username);
+          CrafterCMSNext.i18n.dispatchLanguageChange($scope.langSelected);
           $translate.use($scope.langSelected);
-          // set max-age of language cookie to one year
-          // set both cookies, on login (on user) it will get last selected
-          localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-          localStorage.setItem($scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
-          $scope.isModified = false;
-
-          let loginSuccess = new CustomEvent('setlocale', { detail: $scope.langSelected });
-          document.dispatchEvent(loginSuccess);
-
           $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
             position: 'top left',
             className: 'success'
           });
+          $scope.isModified = false;
         } catch (err) {
           $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
             position: 'top left',
@@ -1384,12 +1378,11 @@
         });
       });
 
-      $scope.save = function() {
-        enableUI(false);
-        const value = aceEditor.getValue();
+      $scope.checkDocumentErrors = function() {
         const errors = fileErrors(aceEditor);
 
         if (errors.length) {
+          $scope.documentHasErrors = true;
           CrafterCMSNext.system.store.dispatch({
             type: 'SHOW_SYSTEM_NOTIFICATION',
             payload: {
@@ -1399,31 +1392,46 @@
               }
             }
           });
-          enableUI(true);
         } else {
-          configurationApi
-            .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
-            .subscribe(
-              () => {
-                enableUI(true);
-                defaultValue = value;
-                aceEditor.focus();
-                globalConfig.isModified = false;
-                $element.notify(formatMessage(globalConfigMessages.successfulSave), {
-                  position: 'top left',
-                  className: 'success'
-                });
-                $scope.$apply();
-              },
-              () => {
-                $element.notify(formatMessage(globalConfigMessages.failedSave), {
-                  position: 'top left',
-                  className: 'error'
-                });
-                $scope.$apply();
-              }
-            );
+          $scope.documentHasErrors = false;
         }
+      };
+
+      $scope.save = function() {
+        enableUI(false);
+        const value = aceEditor.getValue();
+
+        configurationApi
+          .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
+          .subscribe(
+            () => {
+              enableUI(true);
+              defaultValue = value;
+              aceEditor.focus();
+              globalConfig.isModified = false;
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_SYSTEM_NOTIFICATION',
+                payload: {
+                  message: formatMessage(globalConfigMessages.successfulSave)
+                }
+              });
+
+              $scope.$apply();
+            },
+            () => {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_SYSTEM_NOTIFICATION',
+                payload: {
+                  message: formatMessage(globalConfigMessages.failedSave),
+                  options: {
+                    variant: 'error'
+                  }
+                }
+              });
+
+              $scope.$apply();
+            }
+          );
       };
 
       $scope.reset = function() {

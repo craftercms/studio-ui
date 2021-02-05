@@ -82,10 +82,8 @@ export function getPossibleTranslation(titleOrDescriptor: string | MessageDescri
 }
 
 export function getCurrentLocale(): string {
-  const username = localStorage.getItem('userName');
-  const locale = username
-    ? localStorage.getItem(`${username}_crafterStudioLanguage`)
-    : localStorage.getItem(`crafterStudioLanguage`);
+  const username = localStorage.getItem('username');
+  const locale = getStoredLanguage(username);
   return locale ? locale : 'en';
 }
 
@@ -95,6 +93,26 @@ export function getCurrentIntl(): IntlShape {
 
 export function getBundledTranslations(): BundledTranslations {
   return bundledTranslations;
+}
+
+export function buildStoredLanguageKey(username: string): string {
+  return `${username}_crafterStudioLanguage`;
+}
+
+export function getStoredLanguage(username?: string): string {
+  return localStorage.getItem(buildStoredLanguageKey(username)) ?? localStorage.getItem(`crafterStudioLanguage`);
+}
+
+export function setStoredLanguage(language: string, username?: string): void {
+  if (username) {
+    localStorage.setItem(buildStoredLanguageKey(username), language);
+  }
+  localStorage.setItem('crafterStudioLanguage', language);
+}
+
+export function dispatchLanguageChange(language: string): void {
+  let event = new CustomEvent('setlocale', { detail: language });
+  document.dispatchEvent(event);
 }
 
 // @ts-ignore

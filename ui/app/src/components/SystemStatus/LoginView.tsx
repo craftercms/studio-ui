@@ -47,7 +47,7 @@ import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
 import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
-import { getCurrentLocale } from '../../utils/i18n';
+import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import FormControl from '@material-ui/core/FormControl';
 
@@ -212,15 +212,8 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const dispatchLanguageChange = (language: string) => {
-  let event = new CustomEvent('setlocale', { detail: language });
-  document.dispatchEvent(event);
-};
-
 const retrieveStoredLangPreferences = () =>
   Object.keys(window.localStorage).filter((key) => key.includes('_crafterStudioLanguage'));
-
-const buildKey = (username: string) => `${username}_crafterStudioLanguage`;
 
 function LoginView(props: SubViewProps) {
   const {
@@ -232,16 +225,17 @@ function LoginView(props: SubViewProps) {
     onRecover,
     formatMessage,
     xsrfParamName,
-    xsrfToken
+    xsrfToken,
+    language
   } = props;
-  const [username, setUsername] = useState(() => localStorage.getItem('userName') ?? '');
+  const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [storedLangPreferences] = useState(retrieveStoredLangPreferences);
   const username$ = useDebouncedInput(
     useCallback(
       (user: string) => {
-        const key = buildKey(user);
+        const key = buildStoredLanguageKey(user);
         if (storedLangPreferences.includes(key)) {
           setLanguage(window.localStorage.getItem(key));
         }
@@ -257,13 +251,19 @@ function LoginView(props: SubViewProps) {
   useEffect(() => {
     if (qsError) {
       setError(formatMessage(translations.incorrectCredentialsMessage));
+      // This avoids keeping a stored language for a username that is incorrect.
+      // e.g. wrong username submitted.
+      localStorage.removeItem(buildStoredLanguageKey(username));
+      localStorage.removeItem('username');
     }
-  }, [formatMessage, qsError]);
+  }, [formatMessage, qsError, username]);
   const handleSubmit = (e: any) => {
     if (isBlank(password) || isBlank(username)) {
       e.preventDefault();
       e.stopPropagation();
     } else {
+      localStorage.setItem('username', username);
+      setStoredLanguage(language, username);
       setError('');
       onSubmit(true);
     }
@@ -296,7 +296,7 @@ function LoginView(props: SubViewProps) {
 
 function RecoverView(props: SubViewProps) {
   const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode } = props;
-  const [username, setUsername] = useState(() => localStorage.getItem('userName') ?? '');
+  const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [error, setError] = useState('');
   const onSubmitRecover = (e: any) => {
     e.preventDefault();
@@ -734,7 +734,10 @@ export default function LoginViewContainer(props: LoginViewProps) {
 
   // Dispatch custom event when language is changed.
   useEffect(() => {
-    language && dispatchLanguageChange(language);
+    if (language) {
+      setStoredLanguage(language);
+      dispatchLanguageChange(language);
+    }
   }, [language]);
 
   return (

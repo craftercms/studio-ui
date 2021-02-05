@@ -31,7 +31,6 @@ import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
 import { setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
-import { fromPromise } from 'rxjs/internal-compatibility';
 import User from '../models/User';
 import { Site } from '../models/Site';
 import {
@@ -67,7 +66,7 @@ export function getStore(): Observable<CrafterCMSStore> {
                 store.dispatch(storeInitialized({ auth, ...requirements }));
                 worker.port.onmessage = (e) => {
                   if (e.data?.type) {
-                    console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
+                    console.log('%c[page] Message received from worker', 'color: #AF52DE');
                     store.dispatch(e.data);
                   }
                 };
@@ -80,43 +79,6 @@ export function getStore(): Observable<CrafterCMSStore> {
       switchMap(() => store$.pipe(take(1)))
     );
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function registerServiceWorker(): Observable<ObtainAuthTokenResponse> {
-  return fromPromise(navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/service-worker.js`)).pipe(
-    switchMap((registration) => registration.update().then(() => registration)),
-    switchMap((registration) => {
-      const begin = () => {
-        navigator.serviceWorker.startMessages();
-        registration.active.postMessage(sharedWorkerConnect());
-      };
-      if (registration.active) {
-        begin();
-      } else {
-        registration.onupdatefound = () => {
-          if (registration.installing) {
-            registration.installing.onstatechange = () => {
-              if (registration.active?.state === 'activated') {
-                begin();
-              }
-            };
-          }
-        };
-      }
-      return fromEvent<MessageEvent>(navigator.serviceWorker, 'message').pipe(
-        tap((e) => {
-          console.log('%c[page] Message received from worker', 'color: #AF52DE');
-          if (e.data?.type === sharedWorkerUnauthenticated.type) {
-            throw new Error('User not authenticated.');
-          }
-        }),
-        filter((e) => e.data?.type === sharedWorkerToken.type),
-        take(1),
-        pluck('data', 'payload')
-      );
-    })
-  );
 }
 
 function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
@@ -132,7 +94,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     });
     return fromEvent<MessageEvent>(worker.port, 'message').pipe(
       tap((e) => {
-        console.log('%c[page] Message received from worker', 'color: #AF52DE', e.data);
+        console.log('%c[page] Message received from worker', 'color: #AF52DE');
         if (e.data?.type === sharedWorkerUnauthenticated.type) {
           throw new Error('User not authenticated.');
         }

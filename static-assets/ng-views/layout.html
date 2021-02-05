@@ -14,38 +14,21 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class='ccms-iewarning'>Your browser is currently not supported, please use <a style='color: #24ddff;' target="_blank" href="https://www.google.com/chrome/browser/desktop/index.html">Chrome</a> or <a style='color: #24ddff;' target="_blank" href="https://www.mozilla.org/en-US/firefox/new/?scene=2">Firefox</a>.</div>
-
+<div class="ccms-iewarning">
+  Your browser is currently not supported, please use
+  <a style="color: #24ddff;" target="_blank" href="https://www.google.com/chrome/browser/desktop/index.html">Chrome</a>
+  or <a style="color: #24ddff;" target="_blank" href="https://www.mozilla.org/en-US/firefox/new/?scene=2">Firefox</a>.
+</div>
 <header class="{{ isIframeClass }}">
-    <nav class="navbar navbar-default navbar-static-top cstudio-navbar" role="navigation">
-        <div class="container-fluid">
-
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">{{ 'dashboard.sites.TOGGLE_NAV' | translate }}</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" ng-click='loadHomeState()'>
-                  <img class="craftercms-logo" src="/studio/static-assets/images/logo.svg" alt="Crafter CMS"/>
-                  <img class="craftercms-logo-dark" src="/studio/static-assets/images/logo-dark.svg" alt="Crafter CMS"/>
-                </a>
-            </div>
-
-            <div ng-show="authenticated" class="collapse navbar-collapse">
-              <div id="toolbarGlobalNav"></div>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-default navbar-static-top cstudio-navbar" role="navigation">
+    <div class="container-fluid">
+      <div id="toolbarGlobalNav"></div>
+    </div>
+  </nav>
 </header>
 <section class="clearfix" id="container" ui-view="content"></section>
-
 <script type="text/ng-template" id="spinnerModal.html">
-
-    <div class="modal-body">
-        <i class="fa fa-spinner fa-spin spinner" aria-hidden="true"></i>
-    </div>
-
+  <div class="modal-body">
+      <i class="fa fa-spinner fa-spin spinner" aria-hidden="true"></i>
+  </div>
 </script>

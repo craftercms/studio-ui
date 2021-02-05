@@ -66,8 +66,8 @@ const useStyles = makeStyles((theme) =>
 
 const messages = defineMessages({
   menu: {
-    id: 'words.menu',
-    defaultMessage: 'Menu'
+    id: 'toolbarGlobalNav.menuTooltip',
+    defaultMessage: 'Navigation Menu'
   },
   openDrawer: {
     id: 'toolbarGlobalNav.openMenuButtonText',

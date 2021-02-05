@@ -93,7 +93,6 @@ export default function PreviewComponentsPanel() {
   );
 }
 
-// export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
 export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const { resource } = props;
 
