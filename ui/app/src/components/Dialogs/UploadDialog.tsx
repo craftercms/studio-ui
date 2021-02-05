@@ -596,6 +596,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         const successFiles = { ...files };
         let count = 0;
         Object.values(files).forEach((file) => {
+          if (!file) return;
           if ((file.meta.allowed && file.meta.suggestedName) || !file.meta.allowed) {
             uppy.removeFile(file.id);
             successFiles[file.id] = null;
@@ -609,6 +610,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       } else {
         const successFiles = { ...files };
         Object.values(files).forEach((file) => {
+          if (!file) return;
           if (file.meta.allowed && file.meta.suggestedName) {
             successFiles[file.id] = {
               ...file,
