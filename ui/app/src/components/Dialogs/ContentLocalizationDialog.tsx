@@ -23,7 +23,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
-import ContextMenu, { Option, SectionItem } from '../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
@@ -220,8 +220,8 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     });
   };
 
-  const onMenuItemClicked = (section: SectionItem) => {
-    switch (section.id) {
+  const onMenuItemClicked = (option: string) => {
+    switch (option) {
       case 'mark': {
         markForTranslation(site, menu.activeItem.path, menu.activeItem.localeCode).subscribe(
           () => {
@@ -268,7 +268,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     }
   };
 
-  const onOptionClicked = (option: Option) => {
+  const onOptionClicked = (option: string) => {
     // TODO: Widget menu option clicked
   };
 
@@ -348,7 +348,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
           paper: classes.menuPaper
         }}
         onClose={onCloseCustomMenu}
-        sections={[menuSections]}
+        options={[menuSections]}
         onMenuItemClicked={onMenuItemClicked}
       />
     </>

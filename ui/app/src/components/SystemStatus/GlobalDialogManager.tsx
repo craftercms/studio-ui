@@ -51,7 +51,7 @@ const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
-const ItemMenu = lazy(() => import('../ItemMenu/ItemMenu'));
+const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
 
 // @formatter:off
@@ -409,7 +409,7 @@ function GlobalDialogManager() {
       <ItemMenu
         open={state.itemMenu.open}
         path={state.itemMenu.path}
-        loaderItems={state.itemMenu.loaderItems}
+        numOfLoaderItems={state.itemMenu.numOfLoaderItems}
         onClose={createCallback(state.itemMenu.onClose, dispatch)}
         anchorReference={state.itemMenu.anchorReference}
         anchorPosition={state.itemMenu.anchorPosition}

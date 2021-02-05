@@ -110,6 +110,7 @@ interface QuickCreateMenuProps {
 }
 
 interface QuickCreateMenuButtonProps {
+  disabled?: boolean;
   onMenuBtnClick(e): void;
 }
 
@@ -200,11 +201,12 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
 }
 
 const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMenuButtonProps>(function(props, ref) {
-  const { onMenuBtnClick } = props;
+  const { onMenuBtnClick, disabled = false } = props;
   const { formatMessage } = useIntl();
   return (
     <Tooltip title={formatMessage(translations.quickCreateMenuTooltip)}>
       <IconButton
+        disabled={disabled}
         ref={ref}
         size="small"
         color="primary"
@@ -217,7 +219,8 @@ const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMen
   );
 });
 
-const QuickCreate = React.forwardRef<HTMLButtonElement, {}>(function(props, ref) {
+const QuickCreate = React.forwardRef<HTMLButtonElement, { disabled?: boolean }>(function(props, ref) {
+  const { disabled = false } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
@@ -266,7 +269,7 @@ const QuickCreate = React.forwardRef<HTMLButtonElement, {}>(function(props, ref)
 
   return (
     <>
-      <QuickCreateMenuButton ref={ref} onMenuBtnClick={onMenuBtnClick} />
+      <QuickCreateMenuButton disabled={disabled} ref={ref} onMenuBtnClick={onMenuBtnClick} />
       <QuickCreateMenu
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}

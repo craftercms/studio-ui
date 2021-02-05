@@ -19,10 +19,9 @@ import IconButton from '@material-ui/core/IconButton';
 import ViewToolbar from '../../components/ViewToolbar';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import CustomMenu from '../../components/Icons/CustomMenu';
 import {
@@ -35,6 +34,7 @@ import {
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
+  useEnv,
   usePermissions,
   usePreviewGuest,
   usePreviewState,
@@ -52,10 +52,13 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
-import { DetailedItem, SandboxItem } from '../../models/Item';
-import ItemMenu from '../../components/ItemMenu/ItemMenu';
+import { DetailedItem } from '../../models/Item';
 import PagesSearchAhead from '../../components/Navigation/PagesSearchAhead';
 import clsx from 'clsx';
+import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import ActionsGroup from '../../components/ActionsGroup';
+import Skeleton from '@material-ui/lab/Skeleton';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -96,7 +99,7 @@ export const EditSwitch = withStyles({
   }
 })(Switch);
 
-const useStyles = makeStyles((theme: Theme) =>
+const useAddressBarStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbar: {
       placeContent: 'center space-between'
@@ -143,6 +146,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     hidden: {
       visibility: 'hidden'
+    },
+    itemActionSkeleton: {
+      width: 40,
+      margin: '0 5px'
     }
   })
 );
@@ -150,7 +157,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface AddressBarProps {
   site: string;
   url: string;
-  item?: Partial<SandboxItem>;
+  item?: DetailedItem;
   onSiteChange: (siteId: string) => any;
   onUrlChange: (value: string) => any;
   onRefresh: (e) => any;
@@ -158,12 +165,11 @@ interface AddressBarProps {
 }
 
 export function AddressBar(props: AddressBarProps) {
-  const classes = useStyles();
+  const classes = useAddressBarStyles();
   const { formatMessage } = useIntl();
   const { site, url = '', sites = [], item, onSiteChange = foo, onUrlChange = foo, onRefresh = foo } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
-  const [anchorEl, setAnchorEl] = useState(null);
   const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -172,15 +178,24 @@ export function AddressBar(props: AddressBarProps) {
     url && setInternalUrl(url);
   }, [url]);
 
+  const theme = useTheme();
+  const [numOfVisibleActions, setNumOfVisibleActions] = useState(5);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.only('sm'));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.only('md'));
+  const isLargeScreen = useMediaQuery(theme.breakpoints.only('lg'));
+  useEffect(() => {
+    setNumOfVisibleActions(isSmallScreen ? 3 : isMediumScreen ? 5 : isLargeScreen ? 9 : 15);
+  }, [isSmallScreen, isMediumScreen, isLargeScreen]);
+
   const onSiteChangeInternal = (value) => !isBlank(value) && value !== site && onSiteChange(value);
-
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const { authoringBase } = useEnv();
+  const dispatch = useDispatch();
+  const legacyFormSrc = `${authoringBase}/legacy/form?`;
+  const clipboard = useSelection((state) => state.content.clipboard);
+  const onMenuItemClicked = (option: string) =>
+    itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard);
+  const permissions = usePermissions()?.[path];
+  const actions = generateSingleItemOptions(item, permissions, formatMessage)?.flatMap((options) => options);
 
   return (
     <>
@@ -247,11 +262,16 @@ export function AddressBar(props: AddressBarProps) {
           }}
         />
       </Paper>
-      <IconButton className={classes.iconButton} title={formatMessage(translations.itemMenu)} onClick={handleClick}>
-        <MoreVertRounded />
-      </IconButton>
-      {Boolean(anchorEl) && (
-        <ItemMenu open={true} anchorEl={anchorEl} onClose={handleClose} path={path} loaderItems={13} />
+      {item ? (
+        <ActionsGroup max={numOfVisibleActions} actions={actions} onActionClicked={onMenuItemClicked} />
+      ) : (
+        <>
+          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
+          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
+          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
+          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
+          <Skeleton animation="pulse" variant="circle" width="25px" height="25px" />
+        </>
       )}
     </>
   );
@@ -259,7 +279,6 @@ export function AddressBar(props: AddressBarProps) {
 
 export default function ToolBar() {
   const { formatMessage } = useIntl();
-  const classes = useStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const editMode = useSelection((state) => state.preview.editMode);
@@ -268,13 +287,8 @@ export default function ToolBar() {
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
-  const item = models?.[modelId]
-    ? {
-        id: models[modelId].craftercms.id,
-        path: models[modelId].craftercms.path,
-        label: models[modelId].craftercms.label
-      }
-    : null;
+  const items = useSelection((state) => state.content.items.byPath);
+  const item = items?.[models?.[modelId]?.craftercms.path];
   const { enqueueSnackbar } = useSnackbar();
 
   // region permissions
@@ -295,11 +309,18 @@ export default function ToolBar() {
             <CustomMenu />
           </IconButton>
         </Tooltip>
-        <span className={clsx(!createContent && classes.hidden)}>
-          <QuickCreate />
-        </span>
-      </section>
-      <section>
+        <QuickCreate disabled={!createContent} />
+        <Tooltip title={formatMessage(translations.toggleEditMode)}>
+          <EditSwitch
+            disabled={!write}
+            color="default"
+            checked={editMode}
+            onChange={(e) => {
+              enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
+              dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+            }}
+          />
+        </Tooltip>
         <AddressBar
           site={site ?? ''}
           sites={sites}
@@ -310,18 +331,6 @@ export default function ToolBar() {
           onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
         />
       </section>
-      <div>
-        <Tooltip title={formatMessage(translations.toggleEditMode)} className={clsx(!write && classes.hidden)}>
-          <EditSwitch
-            color="default"
-            checked={editMode}
-            onChange={(e) => {
-              enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
-              dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-            }}
-          />
-        </Tooltip>
-      </div>
     </ViewToolbar>
   );
 }

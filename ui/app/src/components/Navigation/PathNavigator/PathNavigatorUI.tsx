@@ -137,7 +137,7 @@ const NavLoader = React.memo((props: { numOfItems?: number }) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
   return (
-    <List component="nav" disablePadding={true}>
+    <List component="nav" disablePadding>
       {items.map((value, i) => (
         <PathNavigatorSkeletonItem key={i} />
       ))}

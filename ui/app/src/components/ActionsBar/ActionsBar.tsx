@@ -45,7 +45,7 @@ interface ActionsBarProps {
   isIndeterminate: boolean;
   isChecked: boolean;
   classes?: Partial<Record<'root', string>>;
-  onOptionClicked(option: Action): void;
+  onOptionClicked(option: string): void;
   toggleSelectAll(): void;
 }
 
@@ -64,7 +64,7 @@ export default function ActionsBar(props: ActionsBarProps) {
         onChange={toggleSelectAll}
       />
       {options.map((option: Action) => (
-        <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option)}>
+        <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
           {getPossibleTranslation(option.label, formatMessage)}
         </Button>
       ))}
