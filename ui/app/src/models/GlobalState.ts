@@ -51,7 +51,7 @@ import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteD
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
-import { ItemMenuStateProps } from '../components/ItemMenu/ItemMenu';
+import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { MessageDescriptor } from 'react-intl';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {

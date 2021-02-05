@@ -24,6 +24,7 @@ import {
   refreshAuthToken,
   refreshAuthTokenComplete,
   refreshAuthTokenFailed,
+  sharedWorkerError,
   sharedWorkerUnauthenticated
 } from '../actions/auth';
 import { storeInitialized } from '../actions/system';
@@ -58,6 +59,7 @@ const reducer = createReducer<GlobalState['auth']>(initialState, {
   }),
   [sessionTimeout.type]: () => initialState,
   [sharedWorkerUnauthenticated.type]: () => initialState,
+  [sharedWorkerError.type]: () => initialState,
   [login.type]: (state) => ({ ...state, isFetching: true }),
   [loginFailed.type]: (state, action) => ({
     ...state,

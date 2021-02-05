@@ -24,10 +24,18 @@ import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../utils/hooks';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
-import { SectionItem } from '../ContextMenu';
 import { useDispatch } from 'react-redux';
 import StandardAction from '../../models/StandardAction';
 import { DetailedItem } from '../../models/Item';
+
+export interface ItemActionsSnackbarProps {
+  open: boolean;
+  selectedItems: string[];
+  mode?: string;
+  handleClearSelected(): void;
+  onActionSuccess?: StandardAction;
+  onAcceptSelection?(items: DetailedItem[]): any;
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionsBar: {
@@ -86,16 +94,7 @@ const actions = [
   'history'
 ];
 
-interface ActionsBarProps {
-  open: boolean;
-  selectedItems: string[];
-  mode?: string;
-  handleClearSelected(): void;
-  onActionSuccess?: StandardAction;
-  onAcceptSelection?(items: DetailedItem[]): any;
-}
-
-export default function ItemActionsSnackBar(props: ActionsBarProps) {
+export default function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
   const { open, selectedItems, handleClearSelected, onActionSuccess, mode = 'default', onAcceptSelection } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
@@ -115,7 +114,7 @@ export default function ItemActionsSnackBar(props: ActionsBarProps) {
         const item = items.byPath?.[path];
 
         if (item) {
-          const options = generateSingleItemOptions(item, permissions[path]);
+          const options = generateSingleItemOptions(item, permissions[path], formatMessage);
           setSelectionOptions(options[0].filter((option) => actions.includes(option.id)));
         }
       } else {
@@ -132,15 +131,14 @@ export default function ItemActionsSnackBar(props: ActionsBarProps) {
           }
         });
 
-        setSelectionOptions(generateMultipleItemOptions(itemsDetails));
+        setSelectionOptions(generateMultipleItemOptions(itemsDetails, formatMessage));
       }
     }
-  }, [permissions, items, selectedItems]);
+  }, [permissions, items, selectedItems, formatMessage]);
 
-  const onActionItemClicked = (option: SectionItem) => {
+  const onActionItemClicked = (option: string) => {
     if (selectedItems.length > 1) {
       const detailedItems = [];
-
       selectedItems.forEach((path) => {
         detailedItems.push(items.byPath?.[path]);
       });
@@ -173,7 +171,7 @@ export default function ItemActionsSnackBar(props: ActionsBarProps) {
           {mode === 'default' ? (
             <List className={classes.actionsList}>
               {selectionOptions.map((option) => (
-                <ListItem button key={option.id} onClick={() => onActionItemClicked(option)}>
+                <ListItem button key={option.id} onClick={() => onActionItemClicked(option.id)}>
                   <ListItemText primary={formatMessage(option.label)} />
                 </ListItem>
               ))}
@@ -196,7 +194,6 @@ export default function ItemActionsSnackBar(props: ActionsBarProps) {
           )}
         </>
       }
-      key={'topcenter'}
     />
   );
 }

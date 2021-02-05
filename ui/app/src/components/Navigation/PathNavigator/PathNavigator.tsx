@@ -17,7 +17,7 @@
 import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../../models/Item';
-import ContextMenu, { SectionItem } from '../../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../../ContextMenu';
 import {
   useActiveSiteId,
   useEnv,
@@ -29,7 +29,6 @@ import {
   useSubject
 } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import Suspencified from '../../SystemStatus/Suspencified';
 import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { translations } from './translations';
 import { languages } from '../../../utils/i18n-legacy';
@@ -46,7 +45,7 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../../state/actions/pathNavigator';
-import ItemMenu from '../../ItemMenu/ItemMenu';
+import ItemActionsMenu from '../../ItemActionsMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
@@ -66,10 +65,12 @@ import {
 } from '../../../state/actions/system';
 import { getNumOfMenuOptionsForItem } from '../../../utils/content';
 import PathNavigatorUI from './PathNavigatorUI';
+import LookupTable from '../../../models/LookupTable';
+import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../../utils/itemActions';
 
 interface Menu {
   path?: string;
-  sections?: SectionItem[][];
+  sections?: ContextMenuOption[][];
   anchorEl: Element;
   loaderItems?: number;
   emptyState?: {
@@ -113,7 +114,7 @@ export interface PathNavigatorStateProps {
   isFetching: boolean;
 }
 
-const menuOptions = {
+const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   refresh: {
     id: 'refresh',
     label: translations.refresh
@@ -392,7 +393,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
       });
     } else {
       setWidgetMenu({
-        sections: [[menuOptions.refresh]],
+        sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
         anchorEl
       });
     }
@@ -425,9 +426,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
     }
   };
 
-  const onSimpleMenuClick = (section: SectionItem) => {
+  const onSimpleMenuClick = (option: string) => {
     onCloseWidgetMenu();
-    if (section.id === 'refresh') {
+    if (option === 'refresh') {
       dispatch(
         pathNavigatorRefresh({
           id
@@ -446,7 +447,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   return (
-    <Suspencified>
+    <>
       <PathNavigatorUI
         state={state}
         classes={props.classes}
@@ -470,21 +471,21 @@ export default function PathNavigator(props: PathNavigatorProps) {
         onPageChanged={onPageChanged}
         computeActiveItems={computeActiveItems}
       />
-      <ItemMenu
+      <ItemActionsMenu
         open={Boolean(itemMenu.anchorEl)}
         path={itemMenu.path}
-        loaderItems={itemMenu.loaderItems}
+        numOfLoaderItems={itemMenu.loaderItems}
         anchorEl={itemMenu.anchorEl}
         onClose={onCloseItemMenu}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}
-        sections={widgetMenu.sections}
+        options={widgetMenu.sections}
         emptyState={widgetMenu.emptyState}
         open={Boolean(widgetMenu.anchorEl)}
         onClose={onCloseWidgetMenu}
         onMenuItemClicked={onSimpleMenuClick}
       />
-    </Suspencified>
+    </>
   );
 }
