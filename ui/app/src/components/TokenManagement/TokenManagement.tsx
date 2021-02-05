@@ -16,7 +16,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, darken, lighten, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
+import { createStyles, darken, lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
@@ -27,7 +27,7 @@ import CreateTokenDialog from '../CreateTokenDialog/CreateTokenDialog';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import ActionsBar, { Action } from '../ActionsBar';
+import ActionsBar from '../ActionsBar';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
 import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';
@@ -98,7 +98,7 @@ const styles = makeStyles((theme) =>
   })
 );
 
-const StyledTableCell = withStyles((theme: Theme) =>
+const StyledTableCell = withStyles(() =>
   createStyles({
     root: {
       padding: '5px'
@@ -273,8 +273,8 @@ export default function TokenManagement() {
     );
   };
 
-  const onOptionClicked = (action: Action) => {
-    switch (action.id) {
+  const onOptionClicked = (action: string) => {
+    switch (action) {
       case 'delete': {
         const requests = [];
         let checkedIds = [];
