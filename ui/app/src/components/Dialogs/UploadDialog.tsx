@@ -188,7 +188,12 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'center'
     },
     subtitlePolicyError: {
-      color: theme.palette.error.main
+      color: theme.palette.error.main,
+      display: 'flex',
+      alignItems: 'center',
+      '& svg': {
+        marginRight: '5px'
+      }
     }
   })
 );
@@ -232,12 +237,12 @@ const UppyItemStyles = makeStyles((theme) =>
       color: palette.gray.medium5
     },
     sitePolicySuggestion: {
-      color: palette.red.main,
+      color: theme.palette.error.main,
       display: 'flex',
       marginBottom: '10px',
       alignItems: 'center',
       '& svg': {
-        marginRight: '10px'
+        marginRight: '5px'
       }
     },
     sitePolicySuggestionFileName: {
@@ -399,7 +404,7 @@ function UppyItem(props: UppyItemProps) {
                   {file.type} @ {bytesToSize(file.size)}
                 </Typography>
               </div>
-              {file.progress.percentage !== 100 && (
+              {(file.progress.percentage !== 100 || file.progress.status === 'failed') && (
                 <IconButton
                   onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                     handleRemove(event, file);
@@ -465,6 +470,7 @@ interface DropZoneProps {
   site: string;
   maxSimultaneousUploads: number;
   cancelRequestObservable$: Observable<any>;
+  policyOptionRequestObservable$: Observable<'accept' | 'reject'>;
 
   onStatusChange(status: DropZoneStatus): void;
   onFileUploaded(path: string): void;
@@ -473,7 +479,15 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads, onFileUploaded, cancelRequestObservable$ } = props;
+  const {
+    onStatusChange,
+    path,
+    site,
+    maxSimultaneousUploads,
+    onFileUploaded,
+    cancelRequestObservable$,
+    policyOptionRequestObservable$
+  } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
@@ -493,6 +507,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
   const onRemove = (file: UppyFile) => {
     uppy.removeFile(file.id);
+    setTotalFiles(totalFiles - 1);
+    onStatusChange({ ...(uploadedFiles === totalFiles - 1 && { status: 'complete' }), files: totalFiles - 1 });
     setFiles({ [file.id]: null });
   };
 
@@ -573,14 +589,50 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     }
   }
 
+  // Listening sitePolicyOptions: acceptAll or rejectAll
+  useEffect(() => {
+    const subs = policyOptionRequestObservable$.subscribe((option) => {
+      if (option === 'reject') {
+        const successFiles = { ...files };
+        let count = 0;
+        Object.values(files).forEach((file) => {
+          if ((file.meta.allowed && file.meta.suggestedName) || !file.meta.allowed) {
+            uppy.removeFile(file.id);
+            successFiles[file.id] = null;
+          } else {
+            count++;
+          }
+        });
+        setFiles(successFiles);
+        setTotalFiles(count);
+        onStatusChange({ ...(uploadedFiles === count && { status: 'complete' }), files: count });
+      } else {
+        const successFiles = { ...files };
+        Object.values(files).forEach((file) => {
+          if (file.meta.allowed && file.meta.suggestedName) {
+            successFiles[file.id] = {
+              ...file,
+              meta: { ...file.meta, suggestedName: null },
+              progress: { ...file.progress, status: 'uploading' }
+            };
+            uppy.setFileMeta(file.id, { suggestedName: null });
+            uppy.retryUpload(file.id);
+          }
+        });
+        setFiles(successFiles);
+      }
+    });
+    return () => subs.unsubscribe();
+  }, [files, onStatusChange, policyOptionRequestObservable$, setFiles, uploadedFiles]);
+
   useEffect(() => {
     if (cancelRequestObservable$) {
       const subs = cancelRequestObservable$.subscribe(() => {
         uppy.cancelAll();
-        let successFiles = { ...files };
+        const successFiles = { ...files };
         let count = 0;
         Object.values(files).forEach((file: UppyFile) => {
-          if (file?.progress?.percentage < 100) {
+          if (file?.progress?.percentage < 100 || file?.progress?.status === 'failed') {
             successFiles[file.id] = null;
           } else {
             count++;
@@ -681,11 +733,6 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       onStatusChange({ uploadedFiles: uploadedFiles + 1 });
     };
 
-    const handleFileRemoved = (file: UppyFile) => {
-      setTotalFiles(totalFiles - 1);
-      onStatusChange({ ...(uploadedFiles === totalFiles - 1 && { status: 'complete' }), files: totalFiles - 1 });
-    };
-
     const handleComplete = () => {
       if (uploadedFiles === totalFiles) {
         onStatusChange({ status: 'complete', progress: 100 });
@@ -699,12 +746,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     };
 
     uppy.on('upload-success', handleUploadSuccess);
-    uppy.on('file-removed', handleFileRemoved);
     uppy.on('complete', handleComplete);
     uppy.on('error', handleError);
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
-      uppy.off('file-removed', handleFileRemoved);
       uppy.off('complete', handleComplete);
       uppy.off('error', handleError);
     };
@@ -724,6 +769,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         }
         filesPerPath[file.meta.path].push(file.id);
       });
+
       onStatusChange({ sitePolicyFileCount: count });
       setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
     }
@@ -927,6 +973,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const cancelRequestObservable$ = useSubject<void>();
+  const policyOptionRequestObservable$ = useSubject<'accept' | 'reject'>();
 
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -944,9 +991,9 @@ function UploadDialogUI(props: UploadDialogUIProps) {
     cancelRequestObservable$.next();
   };
 
-  const onOptionMenuClicked = (option: string) => {
+  const onOptionMenuClicked = (option: 'accept' | 'reject') => {
     closeMenu();
-    // TODO: create Observable.next(option);
+    policyOptionRequestObservable$.next(option);
   };
 
   useEffect(() => {
@@ -985,15 +1032,18 @@ function UploadDialogUI(props: UploadDialogUIProps) {
       >
         {Boolean(dropZoneStatus.sitePolicyFileCount) ? (
           <>
-            <Typography className={clsx(classes.subtitle, classes.subtitlePolicyError)}>
-              <FormattedMessage
-                id="sitePolicy.subtitle"
-                defaultMessage="{count, plural, one {{count} file name present a issue. Please review the item.} other {{count} file names present issues. Please review the list.}}"
-                values={{
-                  count: dropZoneStatus.sitePolicyFileCount
-                }}
-              />
-            </Typography>
+            <div className={classes.subtitlePolicyError}>
+              <WarningIcon />
+              <Typography className={classes.subtitle}>
+                <FormattedMessage
+                  id="sitePolicy.subtitle"
+                  defaultMessage="{count, plural, one {{count} file name present a issue. Please review the item.} other {{count} file names present issues. Please review the list.}}"
+                  values={{
+                    count: dropZoneStatus.sitePolicyFileCount
+                  }}
+                />
+              </Typography>
+            </div>
             <Button size="small" onClick={openMenu} color="primary">
               <FormattedMessage id="words.options" defaultMessage="Options" />
               <ArrowDropDownIcon />
@@ -1038,6 +1088,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
           maxSimultaneousUploads={maxSimultaneousUploads}
           ref={inputRef}
           cancelRequestObservable$={cancelRequestObservable$}
+          policyOptionRequestObservable$={policyOptionRequestObservable$}
         />
       </DialogBody>
       {dropZoneStatus.status !== 'idle' && (
