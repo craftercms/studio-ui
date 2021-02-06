@@ -97,10 +97,7 @@ export default function ContextMenu(props: ContextMenuProps) {
               dense
               key={option.id}
               divider={i !== options.length - 1 && y === section.length - 1}
-              onClick={(e) => {
-                onMenuItemClicked(option.id);
-                menuProps.onClose?.(e, null);
-              }}
+              onClick={() => onMenuItemClicked(option.id)}
               className={propClasses?.menuItem}
               children={option.label}
             />
