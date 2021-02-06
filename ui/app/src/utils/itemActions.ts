@@ -46,7 +46,13 @@ import {
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
 import { fetchWorkflowAffectedItems, getLegacyItemsTree } from '../services/content';
-import { batchActions, changeContentType, editTemplate } from '../state/actions/misc';
+import {
+  batchActions,
+  changeContentType,
+  editContentTypeTemplate,
+  editController,
+  editTemplate
+} from '../state/actions/misc';
 import {
   emitSystemEvent,
   itemCut,
@@ -667,44 +673,30 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editTemplate': {
-        dispatch(editTemplate({ contentTypeId: item.contentTypeId }));
+        dispatch(editContentTypeTemplate({ contentTypeId: item.contentTypeId }));
         break;
       }
       case 'editController': {
-        const path = `/scripts/pages/${popPiece(item.contentTypeId, '/')}.groovy`;
-        let src = `${legacyFormSrc}site=${site}&path=${path}&type=controller`;
-
-        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-          if (items?.length > 0) {
-            dispatch(
-              showWorkflowCancellationDialog({
-                items,
-                onContinue: showCodeEditorDialog({ src })
-              })
-            );
-          } else {
-            dispatch(showCodeEditorDialog({ src }));
-          }
-        });
-        break;
-      }
-      case 'createTemplate': {
         dispatch(
-          showCreateFileDialog({
-            path: withoutIndex(item.path),
-            type: 'template',
-            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()])
+          editController({
+            path: '/scripts/pages',
+            fileName: `${popPiece(item.contentTypeId, '/')}.groovy`
           })
         );
         break;
       }
+      case 'createTemplate':
       case 'createController': {
         dispatch(
           showCreateFileDialog({
             path: withoutIndex(item.path),
-            type: 'controller',
-            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()]),
-            allowBraces: item.path.startsWith('/scripts/rest')
+            type: option === 'createController' ? 'controller' : 'template',
+            allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
+            onCreated: batchActions([
+              closeCreateFileDialog(),
+              showCreateItemSuccessNotification(),
+              option === 'createController' ? editController() : editTemplate()
+            ])
           })
         );
         break;

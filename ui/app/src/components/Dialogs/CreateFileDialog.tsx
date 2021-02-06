@@ -32,6 +32,7 @@ import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from './ConfirmDialog';
+import { Checkbox, FormControlLabel } from '@material-ui/core';
 
 interface CreateFileBaseProps {
   open: boolean;
@@ -44,9 +45,15 @@ export type CreateFileProps = PropsWithChildren<
   CreateFileBaseProps & {
     onClose(): void;
     onClosed?(): void;
-    onCreated?(response: { path: string; fileName: string; type: string }): void;
+    onCreated?(response: { path: string; fileName: string; type: string; openOnSuccess: boolean }): void;
   }
 >;
+
+export interface CreateFileUIProps extends CreateFileProps {
+  submitted: boolean;
+  inProgress: boolean;
+  setState(values: object): void;
+}
 
 export interface CreateFileStateProps extends CreateFileBaseProps {
   onClose?: StandardAction;
@@ -56,17 +63,25 @@ export interface CreateFileStateProps extends CreateFileBaseProps {
 
 export const translations = defineMessages({
   placeholder: {
-    id: 'createFile.placeholder',
+    id: 'createFileDialog.placeholder',
     defaultMessage: 'Please type a name'
   },
   createPolicy: {
-    id: 'createFile.createPolicy',
+    id: 'createFileDialog.createPolicy',
     defaultMessage:
       'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
   },
   policyError: {
-    id: 'createFile.policyError',
+    id: 'createFileDialog.policyError',
     defaultMessage: 'The supplied name goes against site policies.'
+  },
+  openOnSuccess: {
+    id: 'createFileDialog.openOnSuccess',
+    defaultMessage: 'Open file'
+  },
+  openOnSuccessTitle: {
+    id: 'createFileDialog.openOnSuccessTip',
+    defaultMessage: 'Open for edit after creation'
   }
 });
 
@@ -85,15 +100,9 @@ export default function CreateFileDialog(props: CreateFileProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateFileUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
+      <CreateFileDialogUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>
   );
-}
-
-interface CreateFileUIProps extends CreateFileProps {
-  submitted: boolean;
-  inProgress: boolean;
-  setState(values: object): void;
 }
 
 const getExtension = (type: string) => (type === 'controller' ? `groovy` : `ftl`);
@@ -101,10 +110,11 @@ const getExtension = (type: string) => (type === 'controller' ? `groovy` : `ftl`
 const getName = (type: string, name: string) =>
   `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3').replace(/\.{2,}/g, '.');
 
-function CreateFileUI(props: CreateFileUIProps) {
+function CreateFileDialogUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
   const [name, setName] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const [openOnSuccess, setOpenOnSuccess] = useState(true);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -114,7 +124,7 @@ function CreateFileUI(props: CreateFileUIProps) {
   const onCreateFile = (site: string, path: string, fileName: string) => {
     createFile(site, path, fileName).subscribe(
       () => {
-        onCreated?.({ path, fileName, type });
+        onCreated?.({ path, fileName, type, openOnSuccess });
         dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
       },
       (response) => {
@@ -164,9 +174,9 @@ function CreateFileUI(props: CreateFileUIProps) {
       <DialogHeader
         title={
           type === 'controller' ? (
-            <FormattedMessage id="newFile.controller" defaultMessage="Create a New Controller" />
+            <FormattedMessage id="createFileDialog.controller" defaultMessage="New Controller" />
           ) : (
-            <FormattedMessage id="newFile.template" defaultMessage="Create a New Template" />
+            <FormattedMessage id="createFileDialog.template" defaultMessage="New Template" />
           )
         }
         onDismiss={inProgress === null ? onClose : null}
@@ -179,13 +189,7 @@ function CreateFileUI(props: CreateFileUIProps) {
           }}
         >
           <TextField
-            label={
-              type === 'controller' ? (
-                <FormattedMessage id="newFile.controllerName" defaultMessage="Controller Name" />
-              ) : (
-                <FormattedMessage id="newFile.templateName" defaultMessage="Template Name" />
-              )
-            }
+            label={<FormattedMessage id="createFileDialog.fileName" defaultMessage="File Name" />}
             value={name}
             fullWidth
             autoFocus
@@ -194,15 +198,11 @@ function CreateFileUI(props: CreateFileUIProps) {
             placeholder={formatMessage(translations.placeholder)}
             helperText={
               !name && submitted ? (
-                type === 'controller' ? (
-                  <FormattedMessage id="newFile.controllerRequired" defaultMessage="Controller name is required." />
-                ) : (
-                  <FormattedMessage id="newFile.templateRequired" defaultMessage="Template name is required." />
-                )
+                <FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
               ) : (
                 <FormattedMessage
-                  id="newFile.helperText"
-                  defaultMessage="Consisting of: letters, numbers, dot (.), dash (-) and underscore (_)."
+                  id="createFileDialog.helperText"
+                  defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
                 />
               )
             }
@@ -222,6 +222,14 @@ function CreateFileUI(props: CreateFileUIProps) {
         </form>
       </DialogBody>
       <DialogFooter>
+        <FormControlLabel
+          style={{ marginRight: 'auto' }}
+          label={formatMessage(translations.openOnSuccess)}
+          title={formatMessage(translations.openOnSuccessTitle)}
+          control={
+            <Checkbox checked={openOnSuccess} onChange={(e) => setOpenOnSuccess(e.target.checked)} color="primary" />
+          }
+        />
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
