@@ -195,7 +195,7 @@ export function toContextMenuOptionsLookup(
   formatMessage: IntlFormatters['formatMessage']
 ): { [prop: string]: ContextMenuOption } {
   const menuOptions: { [prop: string]: ContextMenuOption } = {};
-  Object.entries(unparsedMenuOptions).forEach(([key, value]) => {
+  Object.entries(menuOptionDescriptors).forEach(([key, value]) => {
     menuOptions[key] = {
       id: value.id,
       label: formatMessage(value.label)
