@@ -127,15 +127,10 @@ interface MediaCardProps {
     media?: any;
     mediaIcon?: any;
   };
-
   onHeaderButtonClick?(...props: any): any;
-
   onPreview?(item: MediaItem): any;
-
   onSelect?(path: string, selected: boolean): any;
-
   onDragStart?(...args: any): any;
-
   onDragEnd?(...args: any): any;
 }
 

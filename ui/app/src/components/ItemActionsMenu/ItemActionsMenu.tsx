@@ -68,7 +68,7 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const onMenuItemClicked = (option: string) => {
-    itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard);
+    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
     onClose();
   };
   const hasClipboard =

@@ -378,18 +378,15 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
-    const locales = siteLocales.localeCodes?.map((code) => ({
-      id: `locale.${code}`,
-      label: {
-        id: `locale.${code}`,
-        defaultMessage: formatMessage(languages[code.toLowerCase()])
-      }
-    }));
     if (type === 'language') {
+      const locales = siteLocales.localeCodes?.map((code) => ({
+        id: `locale.${code}`,
+        label: formatMessage(languages[code.toLowerCase()])
+      }));
       setWidgetMenu({
         sections: locales.length ? [locales] : [],
         anchorEl,
-        emptyState: locales.length === 0 ? { message: formatMessage(translations.noLocales) } : null
+        emptyState: { message: formatMessage(translations.noLocales) }
       });
     } else {
       setWidgetMenu({
