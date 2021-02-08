@@ -104,7 +104,7 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
     }
     array.pop();
   } while (array.length);
-  if (rootPath) {
+  if (rootPath && rootPath !== '/') {
     // validation to remove previous path before the rootPath, example 'site' when rootPath is /site/website
     if (paths.indexOf(withIndex(rootPath)) >= 0) {
       return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1).reverse();
