@@ -32,7 +32,12 @@ import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { createItemStateMap, parseContentXML, parseLegacyItemToSandBoxItem } from '../utils/content';
+import {
+  createItemStateMap,
+  parseContentXML,
+  parseLegacyItemToSandBoxItem,
+  parseSandBoxItemToDetailedItem
+} from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -807,23 +812,14 @@ export function getChildrenByPath(
   );
 }
 
-export function fetchItemsByPath(
-  site: string,
-  paths: string[],
-  options?: {
-    skipHomePathOverride?: boolean;
-  }
-): Observable<DetailedItem[]> {
-  const requests: Observable<DetailedItem>[] = [];
-  paths.forEach((path) =>
-    requests.push(
-      getDetailedItem(
-        site,
-        path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
-      )
+export function fetchItemsByPath(siteId: string, paths: string[], preferContent = true): Observable<DetailedItem[]> {
+  const qs = toQueryString({ siteId, paths, preferContent });
+  return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
+    pluck('response', 'items'),
+    map((items) =>
+      items.map((item) => ({ ...parseSandBoxItemToDetailedItem(item), stateMap: createItemStateMap(item.state) }))
     )
   );
-  return forkJoin(requests);
 }
 
 export function fetchItemWithChildrenByPath(
