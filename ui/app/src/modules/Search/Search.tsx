@@ -43,7 +43,7 @@ import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
 import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
-import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
+import ItemActionsSnackbar from '../../components/ItemActionsSnackBar';
 import { dispatchDOMEvent } from '../../state/actions/misc';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { DetailedItem } from '../../models/Item';

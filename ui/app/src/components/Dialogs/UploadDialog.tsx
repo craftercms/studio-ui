@@ -472,7 +472,7 @@ function UppyItem(props: UppyItemProps) {
   );
 }
 
-type actionBus = 'accept' | 'reject' | 'next' | 'previous' | 'cancel';
+type actionBus = 'accept' | 'reject' | 'next' | 'previous' | 'cancel' | 'showAll' | 'showIssuesOnly';
 
 interface DropZoneProps {
   path: string;
@@ -499,12 +499,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
+  const [filesPerPathFilteredByIssues, setFilesPerPathFilteredByIssues] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
   const [issueIdPerFileId, setIssueIdPerFileId] = useState<LookupTable<number>>(null);
   const [selectedIssueId, setSelectedIssueId] = useState(0);
+  const [showIssuesOnly, setShowIssuesOnly] = useState(false);
 
   const onPrevIssue = useCallback(() => {
     if (selectedIssueId > 0) {
@@ -536,6 +538,9 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const onRemove = (file: UppyFile) => {
     if (selectedIssueId > 0 && selectedIssueId === issueIdPerFileId[file.id]) {
       setSelectedIssueId(selectedIssueId - 1);
+    }
+    if (uploadedFiles === totalFiles - 1) {
+      setShowIssuesOnly(false);
     }
     uppy.removeFile(file.id);
     setTotalFiles(totalFiles - 1);
@@ -661,6 +666,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         onNextIssue();
       } else if (option === 'previous') {
         onPrevIssue();
+      } else if (option === 'showAll' || option === 'showIssuesOnly') {
+        setShowIssuesOnly(option === 'showIssuesOnly');
       }
     });
     return () => subs.unsubscribe();
@@ -682,6 +689,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         setFiles(successFiles);
         setTotalFiles(count);
         setSelectedIssueId(0);
+        setShowIssuesOnly(false);
         onStatusChange({ status: 'complete', files: count });
       });
       return () => subs.unsubscribe();
@@ -800,23 +808,29 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     if (files !== null) {
       let filesPerPath: any = {};
-      let issuePerFileId: any = {};
+      let filesPerPathFilteredByIssues: any = {};
+      let issueNumberPerFileId: any = {};
       let count = 0;
       Object.values(files).forEach((file: UppyFile) => {
         if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
+          filesPerPathFilteredByIssues[file.meta.path] = [];
         }
         if (file.meta.suggestedName || !file.meta.allowed) {
-          issuePerFileId[file.id] = count;
+          filesPerPathFilteredByIssues[file.meta.path].push(file.id);
+          issueNumberPerFileId[file.id] = count;
           count++;
         }
         filesPerPath[file.meta.path].push(file.id);
       });
 
       onStatusChange({ sitePolicyFileCount: count });
-      setIssueIdPerFileId(issuePerFileId);
+      setIssueIdPerFileId(issueNumberPerFileId);
       setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
+      setFilesPerPathFilteredByIssues(
+        Object.keys(filesPerPathFilteredByIssues).length ? filesPerPathFilteredByIssues : null
+      );
     }
   }, [files, onStatusChange]);
 
@@ -831,13 +845,13 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         onClick={() => !filesPerPath && ref.current?.click()}
       >
         {filesPerPath && files ? (
-          Object.keys(filesPerPath).map((fileId, x) => (
+          Object.keys(showIssuesOnly ? filesPerPathFilteredByIssues : filesPerPath).map((fileId, x) => (
             <div key={fileId} className={classes.sectionFiles}>
               <Typography variant="subtitle2" className={classes.sectionTitle}>
                 {fileId}:
               </Typography>
               {files &&
-                filesPerPath[fileId].map(
+                (showIssuesOnly ? filesPerPathFilteredByIssues : filesPerPath)[fileId].map(
                   (id: string, y) =>
                     files[id] && (
                       <UppyItem
@@ -1027,6 +1041,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [showAll, setShowAll] = useState<boolean>(true);
 
   const cancelRequestObservable$ = useSubject<void>();
   const actionBus$ = useSubject<actionBus>();
@@ -1131,6 +1146,18 @@ function UploadDialogUI(props: UploadDialogUIProps) {
               </MenuItem>
               <MenuItem onClick={() => onOptionMenuClicked('reject')}>
                 <FormattedMessage id="sitePolicyOptionRejectAll" defaultMessage="Reject all changes" />
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onOptionMenuClicked(showAll ? 'showIssuesOnly' : 'showAll');
+                  setShowAll(!showAll);
+                }}
+              >
+                {showAll ? (
+                  <FormattedMessage id="sitePolicyOptionIssuesOnly" defaultMessage="Show issues only" />
+                ) : (
+                  <FormattedMessage id="sitePolicyOptionShowAll" defaultMessage="Show all files" />
+                )}
               </MenuItem>
             </Menu>
           </>
