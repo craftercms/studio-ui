@@ -23,6 +23,7 @@ import {
   pathNavigatorClearChecked,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
+  pathNavigatorConditionallySetPathFailed,
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete,
@@ -112,6 +113,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         };
       }
     },
+    [pathNavigatorConditionallySetPathFailed.type]: (state, { payload }) => ({
+      ...state,
+      [payload.id]: { ...state[payload.id], isFetching: false }
+    }),
     [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children } }) => {
       const path = state[id].currentPath;
       return {

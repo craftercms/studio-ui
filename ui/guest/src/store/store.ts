@@ -45,7 +45,9 @@ export function createGuestStore(): GuestStore {
   ];
   store = configureStore<GuestState, GuestStandardAction, Middleware[]>({
     reducer,
-    middleware
+    middleware,
+    devTools: { name: 'Guest Store' }
+    // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Guest Store' }
   });
   epicMiddleware.run(epic);
   return store;

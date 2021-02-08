@@ -21,7 +21,7 @@ import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom }
 import * as iceRegistry from '../classes/ICERegistry';
 import { contentTypes$ } from '../classes/ContentController';
 import * as elementRegistry from '../classes/ElementRegistry';
-import { GuestContextProvider } from './GuestContext';
+import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
@@ -60,7 +60,7 @@ import {
   TRASHED
 } from '../constants';
 import { createGuestStore } from '../store/store';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { isNullOrUndefined, nnou } from '../utils/object';
@@ -459,7 +459,7 @@ export default function CrafterCMSGuest(props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   return isAuthoring ? (
-    <Provider store={store}>
+    <Provider store={store} context={GuestReduxContext}>
       <Guest {...props} />
     </Provider>
   ) : (
