@@ -20,6 +20,7 @@ import { reversePluckProps } from './object';
 import { Observable, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
 import { ObservableInput } from 'rxjs';
+import StandardAction from '../models/StandardAction';
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
@@ -95,7 +96,10 @@ export function del(url: string, headers: object = {}): Observable<AjaxResponse>
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-export const catchAjaxError = (fetchFailedCreator, ...moreActionCreators) =>
+export const catchAjaxError = (
+  fetchFailedCreator: any,
+  ...moreActionCreators: Array<(error: Partial<AjaxError>) => StandardAction>
+) =>
   catchError((error: any) => {
     if (error.name === 'AjaxError') {
       const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
