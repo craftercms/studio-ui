@@ -176,7 +176,7 @@ const messages = defineMessages({
 
 interface PluginDetailsViewProps {
   plugin: MarketplacePlugin;
-  selectedSlideImage?: number;
+  selectedImageSlideIndex?: number;
   changeImageSlideInterval?: number;
   isMarketplacePlugin?: boolean;
   useLabel?: string | JSX.Element;
@@ -198,13 +198,13 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
     changeImageSlideInterval = 5000,
     onBlueprintSelected,
     onCloseDetails,
-    selectedSlideImage = 0,
+    selectedImageSlideIndex = 0,
     isMarketplacePlugin = true,
     inUse = false,
     usePermission = true,
     useLabel
   } = props;
-  const [index, setIndex] = useState(selectedSlideImage);
+  const [index, setIndex] = useState(selectedImageSlideIndex);
   const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
 

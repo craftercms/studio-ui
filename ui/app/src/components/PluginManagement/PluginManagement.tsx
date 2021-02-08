@@ -46,6 +46,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
+import LookupTable from '../../models/LookupTable';
+import { createLookupTable } from '../../utils/object';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -110,6 +112,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const installPluginsPermission = permissions?.includes('install_plugins');
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
+  const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<PluginRecord>>();
 
   useMount(() => {
     getUserPermissions(siteId, '/').subscribe((permissions) => {
@@ -122,6 +125,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
       fetchInstalledMarketplacePlugins(siteId).subscribe(
         (plugins) => {
           setPlugins(plugins);
+          setInstalledPluginsLookup(createLookupTable(plugins, 'id'));
         },
         (error) => {
           dispatch(
@@ -272,7 +276,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         open={Boolean(openMarketPlaceDialog)}
         onClose={onCloseMarketplaceDialog}
         onInstall={onInstallMarketplacePlugin}
-        installedPlugins={plugins?.map((plugin) => plugin.id)}
+        installedPlugins={installedPluginsLookup}
         installPermission={openMarketPlaceDialog?.installPermission}
       />
       <Popover

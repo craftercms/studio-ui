@@ -786,7 +786,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         (site.details && (
           <PluginDetailsView
             plugin={site.details.blueprint}
-            selectedSlideImage={site.details.index}
+            selectedImageSlideIndex={site.details.index}
             onBlueprintSelected={handleBlueprintSelected}
             onCloseDetails={handleCloseDetails}
             changeImageSlideInterval={5000}

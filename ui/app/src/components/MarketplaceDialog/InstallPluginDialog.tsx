@@ -34,6 +34,8 @@ import { debounceTime } from 'rxjs/operators';
 import PluginDetailsView from '../PluginDetailsView';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import LookupTable from '../../models/LookupTable';
+import { PluginRecord } from '../../models/Plugin';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -49,7 +51,7 @@ const useStyles = makeStyles((theme) =>
 
 interface InstallPluginDialogBaseProps {
   open: boolean;
-  installedPlugins: string[];
+  installedPlugins: LookupTable<PluginRecord>;
   installPermission?: boolean;
 }
 
@@ -71,7 +73,7 @@ export default function InstallPluginDialog(props: InstallPluginDialogProps) {
 
 function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
-  const { installPermission = false, onInstall, installedPlugins = [] } = props;
+  const { installPermission = false, onInstall, installedPlugins = {} } = props;
   const [keyword, setKeyword] = useState('');
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
@@ -170,9 +172,9 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
           <PluginDetailsView
             plugin={selectedDetailsPlugin}
             usePermission={installPermission}
-            inUse={installedPlugins.includes(selectedDetailsPlugin.id)}
+            inUse={Boolean(installedPlugins[selectedDetailsPlugin.id])}
             useLabel={
-              installedPlugins.includes(selectedDetailsPlugin.id) ? (
+              Boolean(installedPlugins[selectedDetailsPlugin.id]) ? (
                 <FormattedMessage id="words.installed" defaultMessage="Installed" />
               ) : (
                 <FormattedMessage id="words.install" defaultMessage="Install" />
@@ -220,13 +222,13 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
 interface PluginListProps {
   resource: Resource<MarketplacePlugin[]>;
   installPermission: boolean;
-  installedPlugins: string[];
+  installedPlugins: LookupTable<PluginRecord>;
   onPluginDetails(plugin: MarketplacePlugin): void;
   onPluginSelected(plugin: MarketplacePlugin): void;
 }
 
 function PluginList(props: PluginListProps) {
-  const { resource, onPluginDetails, onPluginSelected, installedPlugins, installPermission } = props;
+  const { resource, onPluginDetails, onPluginSelected, installedPlugins = {}, installPermission } = props;
   const plugins = resource.read();
 
   return (
@@ -235,10 +237,10 @@ function PluginList(props: PluginListProps) {
         <Grid item xs={12} sm={6} md={4} lg={3} key={plugin.id}>
           <PluginCard
             plugin={plugin}
-            inUse={installedPlugins.includes(plugin.id)}
+            inUse={Boolean(installedPlugins[plugin.id])}
             usePermission={installPermission}
             useLabel={
-              installedPlugins.includes(plugin.id) ? (
+              Boolean(installedPlugins[plugin.id]) ? (
                 <FormattedMessage id="words.installed" defaultMessage="Installed" />
               ) : (
                 <FormattedMessage id="words.install" defaultMessage="Install" />
