@@ -339,7 +339,8 @@ export default function Search(props: SearchProps) {
     error: false,
     errorResponse: null
   });
-  const [drawerOpen, setDrawerOpen] = useState(!embedded);
+  // current window's width - useMediaQuery starts in false, causing drawer to close/open when loading
+  const [drawerOpen, setDrawerOpen] = useState(!embedded && window.innerWidth > 960);
   const [checkedFilters, setCheckedFilters] = React.useState({});
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
