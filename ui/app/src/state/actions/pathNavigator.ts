@@ -18,7 +18,6 @@ import { createAction } from '@reduxjs/toolkit';
 import { DetailedItem } from '../../models/Item';
 import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { AjaxError } from 'rxjs/ajax';
 
 type PayloadWithId<P> = P & { id: string };
 
