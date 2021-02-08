@@ -95,7 +95,7 @@ export default [
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, path } }, state]) =>
+      mergeMap(([{ payload: { id, path } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, path).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
           catchAjaxError(pathNavigatorFetchPathFailed)

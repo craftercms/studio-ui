@@ -258,6 +258,7 @@ const globalNavUrlMapping = {
   'home.globalMenu.globalConfig': '#/globalMenu/global-config',
   'home.globalMenu.cluster': '#/globalMenu/cluster',
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
+  'home.globalMenu.tokenManagement': '#/globalMenu/token-management',
   'legacy.preview': '/preview/',
   preview: '/next/preview',
   about: '#/about-us',
