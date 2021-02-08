@@ -18,6 +18,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { DetailedItem } from '../../models/Item';
 import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import { AjaxError } from 'rxjs/ajax';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -49,9 +50,10 @@ export const pathNavigatorConditionallySetPathComplete = /*#__PURE__*/ createAct
   PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_COMPLETE');
 
-export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createAction(
-  'PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED'
-);
+export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createAction<{
+  id: string;
+  error: { status: number; message: string };
+}>('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED');
 
 export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
 

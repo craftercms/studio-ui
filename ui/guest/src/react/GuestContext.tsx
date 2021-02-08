@@ -16,6 +16,7 @@
 
 import React, { useContext, useMemo } from 'react';
 import { GuestState } from '../store/models/GuestStore';
+import { createDispatchHook, createSelectorHook, createStoreHook, ReactReduxContextValue } from 'react-redux';
 
 export type GuestContextProps = {
   hasHost: boolean;
@@ -25,7 +26,18 @@ export type GuestContextProps = {
   onEvent: (event, elementRegistryId?: number) => any;
 };
 
-const GuestContext = React.createContext<GuestContextProps>(undefined);
+export const GuestReduxContext = React.createContext<ReactReduxContextValue>(null);
+if (process.env.NODE_ENV !== 'production') {
+  GuestReduxContext.displayName = 'GuestRedux';
+}
+
+export const useDispatch = createDispatchHook(GuestReduxContext);
+
+export const useSelector = createSelectorHook(GuestReduxContext);
+
+export const useStore = createStoreHook(GuestReduxContext);
+
+const GuestContext = React.createContext<GuestContextProps>(null);
 
 export function useGuestContext(): GuestContextProps {
   return useContext(GuestContext);

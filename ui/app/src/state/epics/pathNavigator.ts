@@ -38,8 +38,10 @@ import {
 } from '../actions/pathNavigator';
 import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
+import { showErrorDialog } from '../reducers/dialogs/error';
 
 export default [
+  // region pathNavigatorInit
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorInit.type),
@@ -58,6 +60,8 @@ export default [
         ].filter(Boolean);
       })
     ),
+  // endregion
+  // region pathNavigatorRefresh
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorRefresh.type),
@@ -69,6 +73,8 @@ export default [
         )
       )
     ),
+  // endregion
+  // region pathNavigatorConditionallySetPath
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorConditionallySetPath.type),
@@ -76,10 +82,15 @@ export default [
       mergeMap(([{ type, payload: { id, path } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, path).pipe(
           map(({ item, children }) => pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })),
-          catchAjaxError(pathNavigatorConditionallySetPathFailed)
+          catchAjaxError(
+            (error) => pathNavigatorConditionallySetPathFailed({ id, error }),
+            (error) => showErrorDialog({ error: error.response ?? error })
+          )
         )
       )
     ),
+  // endregion
+  // region pathNavigatorSetCurrentPath
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type),
@@ -91,6 +102,8 @@ export default [
         )
       )
     ),
+  // endregion
+  // region pathNavigatorSetKeyword
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorSetKeyword.type),
@@ -105,6 +118,8 @@ export default [
         )
       )
     ),
+  // endregion
+  // region pathNavigatorChangePage
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorChangePage.type),
@@ -119,6 +134,8 @@ export default [
         )
       )
     ),
+  // endregion
+  // region pathNavigatorFetchParentItems
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorFetchParentItems.type),
@@ -153,6 +170,8 @@ export default [
         }
       )
     ),
+  // endregion
+  // region pathNavigatorFetchPathComplete, pathNavigatorConditionallySetPathComplete, pathNavigatorSetCollapsed
   (action$, state$) =>
     action$.pipe(
       ofType(
@@ -179,4 +198,5 @@ export default [
       ),
       ignoreElements()
     )
+  // endregion
 ] as CrafterCMSEpic[];

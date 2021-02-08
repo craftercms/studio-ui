@@ -24,16 +24,6 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { useUnmount } from '../../utils/hooks';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1)
-    }
-  })
-);
-
 interface ErrorDialogBaseProps {
   open: boolean;
   error: ApiResponse;
@@ -53,25 +43,37 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1)
+    },
+    body: {
+      padding: theme.spacing(2)
+    }
+  })
+);
+
+function ErrorDialogBody(props: ErrorDialogProps) {
+  const { onDismiss, error } = props;
+  const classes = useStyles();
+  useUnmount(props.onClosed);
+  return (
+    <div className={classes.body}>
+      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()}>
+        <CloseIcon />
+      </IconButton>
+      {error && <ApiResponseErrorState error={error} />}
+    </div>
+  );
+}
+
 export default function ErrorDialog(props: ErrorDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <ErrorDialogBody {...props} />
     </Dialog>
-  );
-}
-
-function ErrorDialogBody(props: ErrorDialogProps) {
-  const { onDismiss, error } = props;
-  const classes = useStyles({});
-  useUnmount(props.onClosed);
-
-  return (
-    <>
-      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()}>
-        <CloseIcon />
-      </IconButton>
-      {error && <ApiResponseErrorState error={error} />}
-    </>
   );
 }
