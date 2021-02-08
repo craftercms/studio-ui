@@ -93,12 +93,16 @@ export default function AuthMonitor() {
     if (firstRender.current) {
       firstRender.current = false;
     } else if (active) {
-      me().subscribe((user) => {
-        if (user.username !== username) {
-          alert(formatMessage(translations.postSSOLoginMismatch));
-          window.location.reload();
-        }
-      });
+      // Move this call to the next tick to avoid it getting dispatched
+      // before the epics set the new JWT hearer.
+      setTimeout(() => {
+        me().subscribe((user) => {
+          if (user.username !== username) {
+            alert(formatMessage(translations.postSSOLoginMismatch));
+            window.location.reload();
+          }
+        });
+      }, 0);
     }
   }, [active, dispatch, formatMessage, username]);
   return (

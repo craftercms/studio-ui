@@ -15,11 +15,10 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
-import { setRequestForgeryToken } from '../../utils/auth';
 import { ElasticParams, Filter, MediaItem } from '../../models/Search';
 import Spinner from '../../components/SystemStatus/Spinner';
 import { Subject } from 'rxjs';
@@ -36,30 +35,38 @@ import { History, Location } from 'history';
 import { getContentXML } from '../../services/content';
 import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../utils/hooks';
 import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import { Drawer } from '@material-ui/core';
+import { Drawer, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
-import { dispatchDOMEvent } from '../../state/actions/misc';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { DetailedItem } from '../../models/Item';
 import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
-import { itemDuplicated } from '../../state/actions/system';
+import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
+import IconButton from '@material-ui/core/IconButton';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+
+interface SearchProps {
+  history: History;
+  location: Location;
+  mode?: 'default' | 'select';
+  embedded?: boolean;
+  onClose?(): void;
+  onSelect?(path: string, selected: boolean): any;
+  onAcceptSelection?(items: DetailedItem[]): any;
+}
 
 const drawerWidth = 300;
 
-let unsubscribeOnActionSuccess;
-
-const idActionSuccess = 'actionSuccess';
-
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     margin: 'auto',
     display: 'flex',
@@ -305,94 +312,95 @@ const messages = defineMessages({
   acceptSelection: {
     id: 'search.acceptSelection',
     defaultMessage: 'Accept Selection'
+  },
+  selectionCount: {
+    id: 'search.selectionCount',
+    defaultMessage: '{count} selected'
+  },
+  nextPage: {
+    id: 'pagination.nextPage',
+    defaultMessage: 'Next page'
+  },
+  previousPage: {
+    id: 'pagination.previousPage',
+    defaultMessage: 'Previous page'
   }
 });
 
-interface SearchProps {
-  history: History;
-  location: Location;
-  mode?: string;
-  embedded?: boolean;
-  onClose?(): void;
-  onSelect?(path: string, selected: boolean): any;
-  onAcceptSelection?(items: DetailedItem[]): any;
-}
+const actionsToBeShown = [
+  'edit',
+  'publish',
+  'delete',
+  'reject',
+  'schedule',
+  'duplicate,',
+  'duplicateAsset',
+  'dependencies',
+  'history'
+];
 
 export default function Search(props: SearchProps) {
-  const classes = useStyles({});
-  const { current: refs } = useRef<any>({});
+  const classes = useStyles();
+  const refs = useRef({ unsubscribeOnActionSuccess: null, createQueryString: null });
   const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
-  const [currentView, setCurrentView] = useState('grid');
+  const [currentView, setCurrentView] = useState<'grid' | 'list'>('grid');
   const [searchResults, setSearchResults] = useState(null);
   const [selected, setSelected] = useState([]);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const site = useActiveSiteId();
-  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
+  const { authoringBase } = useEnv();
+  const clipboard = useSelection((state) => state.content.clipboard);
   const guestBase = useSelection<string>((state) => state.env.guestBase);
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
+  const permissions = usePermissions();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
   });
-  // current window's width - useMediaQuery starts in false, causing drawer to close/open when loading
   const [drawerOpen, setDrawerOpen] = useState(!embedded && window.innerWidth > 960);
-  const [checkedFilters, setCheckedFilters] = React.useState({});
+  const [checkedFilters, setCheckedFilters] = useState({});
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
   const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
   const items = useSelection((state) => state.content.items);
-
-  refs.createQueryString = createQueryString;
-
-  setRequestForgeryToken();
-
-  const getItemsDetails = useCallback(
-    (items) => {
-      items.forEach((item) => {
-        dispatch(fetchUserPermissions({ path: item.path }));
-        dispatch(completeDetailedItem({ path: item.path }));
-      });
-    },
-    [dispatch]
-  );
-
-  useEffect(() => {
-    search(site, searchParameters).subscribe(
-      (result) => {
-        setSearchResults(result);
-        getItemsDetails(result.items);
-      },
-      ({ response }) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: response.response });
+  const selectionOptions = useMemo(() => {
+    if (selected.length === 0) {
+      return null;
+    } else if (permissions && selected.length) {
+      if (selected.length === 1) {
+        const path = selected[0];
+        const item = items.byPath?.[path];
+        if (item) {
+          const options = generateSingleItemOptions(item, permissions[path], formatMessage);
+          return options[0].filter((option) => actionsToBeShown.includes(option.id));
         }
+      } else {
+        let itemsDetails = [];
+        selected.forEach((itemPath) => {
+          const itemPermissions = permissions[itemPath];
+          const item = items.byPath?.[itemPath];
+          if (itemPermissions && item) {
+            itemsDetails.push({
+              permissions: itemPermissions,
+              item
+            });
+          }
+        });
+        return generateMultipleItemOptions(itemsDetails, formatMessage);
       }
-    );
-    return () => setApiState({ error: false, errorResponse: null });
-  }, [searchParameters, site, getItemsDetails]);
+    }
+  }, [formatMessage, items.byPath, permissions, selected]);
 
-  useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
-      if (!keywords) keywords = undefined;
-      let qs = refs.createQueryString({ name: 'keywords', value: keywords });
-      history.push({
-        pathname: '/',
-        search: `?${qs}`
-      });
-    });
-    return () => subscription.unsubscribe();
-  }, [history, onSearch$, refs]);
+  refs.current.createQueryString = createQueryString;
 
   const refreshSearch = useCallback(() => {
     search(site, searchParameters).subscribe(
       (result) => {
         setSearchResults(result);
-        getItemsDetails(result.items);
       },
       ({ response }) => {
         if (response) {
@@ -400,7 +408,7 @@ export default function Search(props: SearchProps) {
         }
       }
     );
-  }, [searchParameters, site, getItemsDetails]);
+  }, [searchParameters, site]);
 
   const handleClearSelected = useCallback(() => {
     selected.forEach((path) => {
@@ -410,72 +418,39 @@ export default function Search(props: SearchProps) {
   }, [onSelect, selected]);
 
   useEffect(() => {
-    const events = [itemDuplicated.type];
+    refreshSearch();
+    return () => setApiState({ error: false, errorResponse: null });
+  }, [refreshSearch]);
+
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
+      if (!keywords) keywords = undefined;
+      let qs = refs.current.createQueryString({ name: 'keywords', value: keywords });
+      history.push({
+        pathname: '/',
+        search: `?${qs}`
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [history, onSearch$]);
+
+  useEffect(() => {
+    const eventsThatNeedReaction = [
+      itemDuplicated.type,
+      itemsDeleted.type,
+      itemCreated.type,
+      itemUpdated.type,
+      itemsPasted.type
+    ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      switch (type) {
-        case itemDuplicated.type: {
-          handleClearSelected();
-          refreshSearch();
-          break;
-        }
-      }
+    const subscription = hostToHost$.pipe(filter((e) => eventsThatNeedReaction.includes(e.type))).subscribe(() => {
+      handleClearSelected();
+      refreshSearch();
     });
     return () => {
       subscription.unsubscribe();
     };
   }, [handleClearSelected, refreshSearch]);
-
-  useEffect(() => {
-    if (selected.length === 1) {
-      unsubscribeOnActionSuccess = createCallbackListener(idActionSuccess, function() {
-        handleClearSelected();
-        refreshSearch();
-      });
-    } else if (!selected.length) {
-      unsubscribeOnActionSuccess?.();
-    }
-  }, [selected, handleClearSelected, refreshSearch]);
-
-  function renderMediaCards(items: [MediaItem], currentView: string) {
-    if (items.length > 0) {
-      return items.map((item: MediaItem, i: number) => {
-        return currentView === 'grid' ? (
-          <Grid key={i} item xs={12} sm={6} md={4} lg={4} xl={3}>
-            <MediaCard
-              item={item}
-              onPreview={onPreview}
-              onSelect={handleSelect}
-              selected={selected}
-              previewAppBaseUri={guestBase}
-              onHeaderButtonClick={onHeaderButtonClick}
-            />
-          </Grid>
-        ) : (
-          <Grid key={i} item xs={12}>
-            <MediaCard
-              item={item}
-              isList={true}
-              onPreview={onPreview}
-              onSelect={handleSelect}
-              classes={{
-                root: classes.mediaCardListRoot,
-                checkbox: classes.mediaCardListCheckbox,
-                header: classes.mediaCardListHeader,
-                media: classes.mediaCardListMedia,
-                mediaIcon: classes.mediaCardListMediaIcon
-              }}
-              selected={selected}
-              previewAppBaseUri={guestBase}
-              onHeaderButtonClick={onHeaderButtonClick}
-            />
-          </Grid>
-        );
-      });
-    } else {
-      return <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)} />;
-    }
-  }
 
   function handleSearchKeyword(keyword: string) {
     setKeyword(keyword);
@@ -589,7 +564,7 @@ export default function Search(props: SearchProps) {
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     let offset = newPage * searchParameters.limit;
-    let qs = refs.createQueryString({ name: 'offset', value: offset });
+    let qs = refs.current.createQueryString({ name: 'offset', value: offset });
     history.push({
       pathname: '/',
       search: `?${qs}`
@@ -597,7 +572,7 @@ export default function Search(props: SearchProps) {
   }
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    let qs = refs.createQueryString({ name: 'limit', value: parseInt(event.target.value, 10) });
+    let qs = refs.current.createQueryString({ name: 'limit', value: parseInt(event.target.value, 10) });
     history.push({
       pathname: '/',
       search: `?${qs}`
@@ -606,6 +581,8 @@ export default function Search(props: SearchProps) {
 
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
+      dispatch(fetchUserPermissions({ path }));
+      dispatch(completeDetailedItem({ path }));
       setSelected([...selected, path]);
     } else {
       let selectedItems = [...selected];
@@ -686,7 +663,7 @@ export default function Search(props: SearchProps) {
       }
       case 'Component':
       case 'Taxonomy': {
-        const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
+        const src = `${authoringBase}/legacy/form?site=${site}&path=${item.path}&type=form&readonly=true`;
         dispatch(showEditDialog({ src }));
         break;
       }
@@ -724,6 +701,29 @@ export default function Search(props: SearchProps) {
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
+  };
+
+  const onActionClicked = (option: string) => {
+    const legacyFormSrc = `${authoringBase}/legacy/form?`;
+    if (selected.length > 1) {
+      const detailedItems = [];
+      selected.forEach((path) => {
+        items.byPath?.[path] && detailedItems.push(items.byPath[path]);
+      });
+      itemActionDispatcher({
+        site,
+        item: detailedItems,
+        option,
+        legacyFormSrc,
+        dispatch,
+        formatMessage,
+        clipboard
+      });
+    } else {
+      const path = selected[0];
+      const item = items.byPath?.[path];
+      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
+    }
   };
 
   return (
@@ -828,10 +828,10 @@ export default function Search(props: SearchProps) {
             rowsPerPage={searchParameters.limit}
             page={Math.ceil(searchParameters.offset / searchParameters.limit)}
             backIconButtonProps={{
-              'aria-label': 'previous page'
+              'aria-label': formatMessage(messages.previousPage)
             }}
             nextIconButtonProps={{
-              'aria-label': 'next page'
+              'aria-label': formatMessage(messages.nextPage)
             }}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
@@ -849,8 +849,33 @@ export default function Search(props: SearchProps) {
             <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
               {searchResults === null ? (
                 <Spinner background="inherit" />
+              ) : searchResults.items.length > 0 ? (
+                searchResults.items.map((item: MediaItem, i) => (
+                  <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
+                    <MediaCard
+                      isList={currentView === 'list'}
+                      classes={
+                        currentView === 'list'
+                          ? {
+                              root: classes.mediaCardListRoot,
+                              checkbox: classes.mediaCardListCheckbox,
+                              header: classes.mediaCardListHeader,
+                              media: classes.mediaCardListMedia,
+                              mediaIcon: classes.mediaCardListMediaIcon
+                            }
+                          : void 0
+                      }
+                      item={item}
+                      onPreview={onPreview}
+                      onSelect={handleSelect}
+                      selected={selected}
+                      previewAppBaseUri={guestBase}
+                      onHeaderButtonClick={onHeaderButtonClick}
+                    />
+                  </Grid>
+                ))
               ) : (
-                renderMediaCards(searchResults.items, currentView)
+                <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)} />
               )}
             </Grid>
           )}
@@ -859,11 +884,24 @@ export default function Search(props: SearchProps) {
       {mode === 'default' && (
         <ItemActionsSnackbar
           open={selected.length > 0}
-          mode={mode}
-          selectedItems={selected}
-          handleClearSelected={handleClearSelected}
-          onActionSuccess={dispatchDOMEvent({ id: idActionSuccess })}
-          onAcceptSelection={onAcceptSelection}
+          options={selectionOptions}
+          onActionClicked={onActionClicked}
+          append={
+            <ListItem>
+              <ListItemText
+                style={{ textAlign: 'center', minWidth: '65px' }}
+                primaryTypographyProps={{ variant: 'caption' }}
+                primary={formatMessage(messages.selectionCount, {
+                  count: selected.length
+                })}
+              />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" size="small" onClick={handleClearSelected}>
+                  <HighlightOffIcon color="primary" />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          }
         />
       )}
       {mode === 'select' && (
@@ -883,16 +921,4 @@ export default function Search(props: SearchProps) {
       )}
     </>
   );
-}
-
-function createCallbackListener(id: string, listener: EventListener): Function {
-  let callback;
-  callback = (e) => {
-    listener(e.detail);
-    document.removeEventListener(id, callback, false);
-  };
-  document.addEventListener(id, callback, false);
-  return () => {
-    document.removeEventListener(id, callback, false);
-  };
 }

@@ -70,6 +70,7 @@ import {
 } from './i18n';
 import { getHostToHostBus } from '../modules/Preview/previewContext';
 import { StandardAction } from '../models/StandardAction';
+import { createCustomDocumentEventListener } from './dom';
 
 const ErrorState = lazy(() => import('../components/ErrorState/ErrorState'));
 
@@ -355,17 +356,7 @@ export function createCodebaseBridge() {
       });
     },
 
-    createLegacyCallbackListener(id: string, listener: EventListener): Function {
-      let callback;
-      callback = (e) => {
-        listener(e.detail);
-        document.removeEventListener(id, callback, false);
-      };
-      document.addEventListener(id, callback, false);
-      return () => {
-        document.removeEventListener(id, callback, false);
-      };
-    }
+    createLegacyCallbackListener: createCustomDocumentEventListener
   };
 
   // @ts-ignore
