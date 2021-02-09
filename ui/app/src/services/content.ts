@@ -822,13 +822,13 @@ export function fetchItemsByPath(
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
-  options: FetchItemsByPathOptions
-): Observable<SandboxItem[]>;
+  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
+): Observable<DetailedItem[]>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
-  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
-): Observable<DetailedItem[]>;
+  options: FetchItemsByPathOptions
+): Observable<SandboxItem[]>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
