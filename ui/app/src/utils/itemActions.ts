@@ -62,7 +62,8 @@ import {
   showDeleteItemSuccessNotification,
   showEditItemSuccessNotification,
   showPublishItemSuccessNotification,
-  showRejectItemSuccessNotification
+  showRejectItemSuccessNotification,
+  showSystemNotification
 } from '../state/actions/system';
 import {
   duplicateWithPolicyValidation,
@@ -283,15 +284,17 @@ export function generateSingleItemOptions(
     if (type === 'page' || (type === 'folder' && !isAsset)) {
       sectionA.push(menuOptions.createContent);
       sectionA.push(menuOptions.createFolder);
-    }
-
-    if (type === 'folder') {
+    } else if (type === 'folder') {
       sectionA.push(menuOptions.createFolder);
     }
   }
 
   if (hasDeleteAction(item.availableActions)) {
     sectionA.push(menuOptions.delete);
+  }
+
+  if (type !== 'folder') {
+    sectionA.push(menuOptions.dependencies);
   }
 
   if (hasRenameAction(item.availableActions)) {
@@ -330,10 +333,7 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
-  if (hasApprovePublishAction(item.availableActions)) {
-    sectionC.push(menuOptions.publish);
-  }
-  if (hasRequestPublishAction(item.availableActions)) {
+  if (hasRequestPublishAction(item.availableActions) || hasApprovePublishAction(item.availableActions)) {
     sectionC.push(menuOptions.publish);
   }
   if (hasRejectPublishAction(item.availableActions)) {
@@ -902,6 +902,11 @@ export const itemActionDispatcher = ({
         break;
       }
       default:
+        dispatch(
+          showSystemNotification({
+            message: `${option} not implemented.`
+          })
+        );
         break;
     }
   }

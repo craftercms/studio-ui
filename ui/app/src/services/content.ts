@@ -95,7 +95,10 @@ export function getDetailedItem(siteId: string, path: string): Observable<Detail
   const qs = toQueryString({ siteId, path });
   return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
     pluck('response', 'item'),
-    map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))
+    map((item: DetailedItem) => ({
+      ...item,
+      stateMap: createItemStateMap(item.state)
+    }))
   );
 }
 
