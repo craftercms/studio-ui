@@ -336,6 +336,11 @@ CStudioAuthoring.Module.requireModule(
               imageDatasources.includes(datasource.id)
           );
 
+          // TODO: default value pending
+          const codeEditorWrap = rteConfig.codeEditorWrap
+            ? rteConfig.codeEditorWrap === 'true'
+            : true;
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -397,6 +402,8 @@ CStudioAuthoring.Module.requireModule(
 
             content_css: rteStylesheets,
             content_style: rteStyleOverride,
+
+            code_editor_wrap: codeEditorWrap,
 
             setup: function(editor) {
               editor.on('init', function(e) {
