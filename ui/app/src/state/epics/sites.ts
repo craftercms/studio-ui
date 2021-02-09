@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
+import { ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { setSiteCookie } from '../../utils/auth';
 import { fetchAll } from '../../services/sites';
 import { catchAjaxError } from '../../utils/ajax';
 import { changeSite, fetchSites as fetchSitesAction, fetchSitesComplete, fetchSitesFailed } from '../reducers/sites';
 import GlobalState from '../../models/GlobalState';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   // region Change site
@@ -39,4 +40,4 @@ export default [
       switchMap(() => fetchAll().pipe(map(fetchSitesComplete), catchAjaxError(fetchSitesFailed)))
     )
   // endregion
-] as Epic[];
+] as CrafterCMSEpic[];

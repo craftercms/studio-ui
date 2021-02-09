@@ -22,7 +22,7 @@ import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { BehaviorSubject, forkJoin, fromEvent, Observable, of } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
-import { fetchGlobalProperties, fetchMyRolesInSite, me } from '../services/users';
+import { fetchGlobalProperties, me } from '../services/users';
 import { fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { Middleware } from 'redux';
@@ -140,7 +140,6 @@ export function createStoreSync(
 
 export function fetchStateInitialization(): Observable<{
   user: User;
-  rolesBySite: LookupTable<string[]>;
   sites: Site[];
   properties: LookupTable<any>;
 }> {
@@ -148,31 +147,7 @@ export function fetchStateInitialization(): Observable<{
     user: me(),
     sites: fetchAll(),
     properties: fetchGlobalProperties()
-  }).pipe(
-    switchMap(({ user, sites, properties }) =>
-      sites.length
-        ? forkJoin<LookupTable<Observable<string[]>>, ''>(
-            // creates an object like `{ [siteId]: Observable<roleName[]> }`
-            sites.reduce((lookup, site) => {
-              lookup[site.id] = fetchMyRolesInSite(site.id);
-              return lookup;
-            }, {})
-          ).pipe(
-            map((rolesBySite) => ({
-              user,
-              rolesBySite,
-              sites,
-              properties
-            }))
-          )
-        : of({
-            user,
-            sites,
-            properties,
-            rolesBySite: {}
-          })
-    )
-  );
+  });
 }
 
 export default getStore;
