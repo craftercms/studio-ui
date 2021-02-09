@@ -32,7 +32,8 @@ import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from './ConfirmDialog';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface CreateFileBaseProps {
   open: boolean;
