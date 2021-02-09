@@ -195,8 +195,7 @@ export function AddressBar(props: AddressBarProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const onMenuItemClicked = (option: string) =>
     itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
-  const permissions = usePermissions()?.[path];
-  const actions = generateSingleItemOptions(item, permissions, formatMessage)?.flatMap((options) => options);
+  const actions = generateSingleItemOptions(item, formatMessage)?.flatMap((options) => options);
 
   return (
     <>

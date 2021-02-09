@@ -25,6 +25,10 @@ export const translations = defineMessages({
     id: 'words.view',
     defaultMessage: 'View'
   },
+  viewForm: {
+    id: 'words.view',
+    defaultMessage: 'View Form'
+  },
   createContent: {
     id: 'itemMenu.newContent',
     defaultMessage: 'New Content'
@@ -130,5 +134,17 @@ export const translations = defineMessages({
   unlock: {
     id: 'words.unlock',
     defaultMessage: 'Unlock'
+  },
+  preview: {
+    id: 'words.preview',
+    defaultMessage: 'Preview'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
+  },
+  bulkPublish: {
+    id: 'itemMenu.bulkPublish',
+    defaultMessage: 'Bulk Publish'
   }
 });

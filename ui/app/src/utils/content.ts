@@ -26,6 +26,8 @@ import { getRootPath, isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
 import {
   APPROVE_PUBLISH_ACTION_MASK,
+  BULK_PUBLISH_ACTION_MASK,
+  CANCEL_PUBLISH_ACTION_MASK,
   COPY_ACTION_MASK,
   CREATE_ACTION_MASK,
   CUT_ACTION_MASK,
@@ -179,6 +181,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     systemType: getLegacyItemSystemType(item),
     mimeType: item.mimeType,
     state: null,
+    availableActions: null,
     stateMap: getStateMapFromLegacyItem(item),
     lockOwner: null,
     disabled: null,
@@ -654,5 +657,7 @@ export const hasEditTemplateAction = (value: number) => Boolean(value & EDIT_TEM
 export const hasEditTranslateAction = (value: number) => Boolean(value & TRANSLATE_ACTION_MASK);
 export const hasHistoryAction = (value: number) => Boolean(value & HISTORY_ACTION_MASK);
 export const hasRequestPublishAction = (value: number) => Boolean(value & REQUEST_PUBLISH_ACTION_MASK);
-export const hasAPPROVEPublishAction = (value: number) => Boolean(value & APPROVE_PUBLISH_ACTION_MASK);
+export const hasApprovePublishAction = (value: number) => Boolean(value & APPROVE_PUBLISH_ACTION_MASK);
 export const hasRejectPublishAction = (value: number) => Boolean(value & REJECT_PUBLISH_ACTION_MASK);
+export const hasCancelPublishAction = (value: number) => Boolean(value & CANCEL_PUBLISH_ACTION_MASK);
+export const hasBulkPublishAction = (value: number) => Boolean(value & BULK_PUBLISH_ACTION_MASK);

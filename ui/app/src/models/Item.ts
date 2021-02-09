@@ -45,6 +45,7 @@ export interface BaseItem {
   disabled: boolean;
   localeCode: string;
   translationSourceId: string;
+  availableActions: number;
 }
 
 interface SandboxEnvProps {

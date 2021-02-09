@@ -18,7 +18,7 @@ import { translations } from '../components/ItemActionsMenu/translations';
 import { DetailedItem, LegacyItem } from '../models/Item';
 import LookupTable from '../models/LookupTable';
 import { ContextMenuOption } from '../components/ContextMenu';
-import { getRootPath, isRootPath, withoutIndex } from './path';
+import { getRootPath, withoutIndex } from './path';
 import {
   CloseChangeContentTypeDialog,
   closeConfirmDialog,
@@ -76,6 +76,24 @@ import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
+import {
+  hasBulkPublishAction,
+  hasCancelPublishAction,
+  hasCopyAction,
+  hasCreateAction,
+  hasCutAction,
+  hasDeleteAction,
+  hasDuplicateAction,
+  hasEditControllerAction,
+  hasEditTemplateAction,
+  hasHistoryAction,
+  hasPasteAction,
+  hasReadAction,
+  hasRejectPublishAction,
+  hasRenameAction,
+  hasRequestPublishAction,
+  hasUpdateAction
+} from './content';
 
 export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
 
@@ -90,7 +108,7 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   },
   view: {
     id: 'view',
-    label: translations.view
+    label: translations.viewForm
   },
   viewCodeEditor: {
     id: 'viewCodeEditor',
@@ -156,6 +174,14 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'reject',
     label: translations.reject
   },
+  cancel: {
+    id: 'cancel',
+    label: translations.cancel
+  },
+  bulkPublish: {
+    id: 'bulkPublish',
+    label: translations.bulkPublish
+  },
   history: {
     id: 'history',
     label: translations.history
@@ -187,6 +213,10 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   unlock: {
     id: 'unlock',
     label: translations.unlock
+  },
+  preview: {
+    id: 'preview',
+    label: translations.preview
   }
 };
 
@@ -206,183 +236,310 @@ export function toContextMenuOptionsLookup(
 
 export function generateSingleItemOptions(
   item: DetailedItem,
-  permissions: LookupTable<boolean>,
-  formatMessage: IntlFormatters['formatMessage']
+  formatMessage: IntlFormatters['formatMessage'],
+  options?: {
+    hasClipboard: boolean;
+  }
 ): ContextMenuOption[][] {
   let sections: ContextMenuOption[][] = [];
-  if (!item || !permissions) {
+  let sectionA: ContextMenuOption[] = [];
+  let sectionB: ContextMenuOption[] = [];
+  let sectionC: ContextMenuOption[] = [];
+  let sectionD: ContextMenuOption[] = [];
+  if (!item) {
     return sections;
   }
-  const write = permissions.write;
-  const read = permissions.read;
-  const publish = permissions.publish;
-  const reject = permissions.cancel_publish;
-  const deleteItem = permissions.delete;
-  const createFolder = permissions.create_folder;
-  const createContent = permissions.create_content;
-  const changeContentType = permissions.change_content_type;
-  const hasClipboard = permissions.hasClipboard;
-  const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
-  const isTemplate = item.path.includes('/templates');
-  const isController = item.path.includes('/scripts');
-  const isImage = item.mimeType?.startsWith('image/');
-  const isRootFolder = isRootPath(item.path);
-  const translation = false;
-  const isLocked = item.lockOwner;
+
   const type = item.systemType;
+  const isImage = item.mimeType?.startsWith('image/');
+  const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
   const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
     unparsedMenuOptions,
     formatMessage
   );
-  switch (type) {
-    case 'page': {
-      let options = [];
-      if (write) {
-        options.push(menuOptions.edit);
-        if (read) {
-          options.push(menuOptions.view);
-        }
-        if (createFolder) {
-          options.push(menuOptions.createFolder);
-        }
-        if (createContent) {
-          options.push(menuOptions.createContent);
-        }
-        if (deleteItem && !isRootFolder) {
-          options.push(menuOptions.delete);
-        }
-        if (changeContentType && !isRootFolder) {
-          options.push(menuOptions.changeContentType);
-        }
-        if (!isRootFolder) {
-          options.push(menuOptions.cut);
-          options.push(menuOptions.copy);
-          options.push(menuOptions.duplicate);
-        }
-        if (hasClipboard) {
-          options.push(menuOptions.paste);
-        }
-        if (isLocked) {
-          options.push(menuOptions.unlock);
-        }
-        if (publish && !isLocked && !item.stateMap.live) {
-          options.push(menuOptions.schedule);
-        }
-        if (!isLocked && !item.stateMap.live) {
-          options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
-        }
-        if (
-          reject &&
-          (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
-        ) {
-          options.push(menuOptions.reject);
-        }
-        options.push(menuOptions.history);
-        options.push(menuOptions.dependencies);
-        if (translation) {
-          options.push(menuOptions.translation);
-        }
-        options.push(menuOptions.editTemplate);
-        options.push(menuOptions.editController);
-      } else if (read) {
-        options.push(menuOptions.view);
-        options.push(menuOptions.history);
-      }
-      sections.push(options);
-      return sections;
-    }
-    case 'folder': {
-      let options = [];
-      if (write) {
-        if (createContent && !isAsset) {
-          options.push(menuOptions.createContent);
-        }
-        if (createFolder) {
-          options.push(menuOptions.createFolder);
-        }
-        if (!isRootFolder) {
-          options.push(menuOptions.renameFolder);
-        }
-        if (deleteItem && !isRootFolder) {
-          options.push(menuOptions.delete);
-          options.push(menuOptions.cut);
-        }
-        options.push(menuOptions.copy);
-        if (hasClipboard) {
-          options.push(menuOptions.paste);
-        }
-        if (isAsset) {
-          options.push(menuOptions.upload);
-        }
-        if (isTemplate) {
-          options.push(menuOptions.createTemplate);
-        }
-        if (isController) {
-          options.push(menuOptions.createController);
-        }
-      }
-      sections.push(options);
-      return sections;
-    }
-    case 'taxonomy':
-    case 'component':
-    case 'levelDescriptor':
-    case 'renderingTemplate':
-    case 'script':
-    case 'asset': {
-      let options = [];
-      if (write) {
-        if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
-          options.push(menuOptions.edit);
-          if (read) {
-            options.push(menuOptions.view);
-          }
-        } else if (isImage) {
-          options.push(menuOptions.viewImage);
-        } else {
-          options.push(menuOptions.codeEditor);
-          options.push(menuOptions.viewCodeEditor);
-        }
-        if (deleteItem) {
-          options.push(menuOptions.delete);
-        }
-        options.push(menuOptions.cut);
-        options.push(menuOptions.copy);
-        if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
-          options.push(menuOptions.duplicate);
-          options.push(menuOptions.changeContentType);
-        } else {
-          options.push(menuOptions.duplicateAsset);
-        }
-        if (hasClipboard) {
-          options.push(menuOptions.paste);
-        }
-        if (publish && !item.lockOwner && !item.stateMap.live) {
-          options.push(menuOptions.schedule);
-        }
-        if (!isLocked && !item.stateMap.live) {
-          options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
-        }
-        if (
-          reject &&
-          (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
-        ) {
-          options.push(menuOptions.reject);
-        }
-        options.push(menuOptions.history);
-        options.push(menuOptions.dependencies);
-      } else if (read) {
-        options.push(menuOptions.view);
-        options.push(menuOptions.history);
-      }
-      sections.push(options);
-      return sections;
-    }
-    default: {
-      console.error(`[itemActions.ts] Unknown system type "${item.systemType}" for item ${item.path}`, item);
-      return sections;
+
+  // region Section A
+  if (hasUpdateAction(item.availableActions)) {
+    if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
+      sectionA.push(menuOptions.edit);
+    } else {
+      sectionA.push(menuOptions.codeEditor);
     }
   }
+
+  if (hasReadAction(item.availableActions)) {
+    if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
+      sectionA.push(menuOptions.view);
+    } else if (isImage) {
+      sectionA.push(menuOptions.viewImage);
+    } else {
+      sectionA.push(menuOptions.viewCodeEditor);
+    }
+  }
+
+  if (hasCreateAction(item.availableActions)) {
+    if (type === 'page' || (type === 'folder' && !isAsset)) {
+      sectionA.push(menuOptions.createContent);
+      sectionA.push(menuOptions.createFolder);
+    }
+
+    if (type === 'folder') {
+      sectionA.push(menuOptions.createFolder);
+    }
+  }
+
+  if (hasDeleteAction(item.availableActions)) {
+    sectionA.push(menuOptions.delete);
+  }
+
+  if (hasRenameAction(item.availableActions)) {
+    if (type === 'folder') {
+      sectionA.push(menuOptions.renameFolder);
+    }
+  }
+
+  if (hasHistoryAction(item.availableActions)) {
+    sectionA.push(menuOptions.history);
+  }
+
+  if (hasReadAction(item.availableActions)) {
+    // TODO: Not Implemented
+    sectionA.push(menuOptions.preview);
+  }
+  // endregion
+
+  // region Section B
+  if (hasCutAction(item.availableActions)) {
+    sectionB.push(menuOptions.cut);
+  }
+  if (hasCopyAction(item.availableActions)) {
+    sectionB.push(menuOptions.copy);
+  }
+  if (hasPasteAction(item.availableActions) && options.hasClipboard) {
+    sectionB.push(menuOptions.paste);
+  }
+  if (hasDuplicateAction(item.availableActions)) {
+    if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
+      sectionA.push(menuOptions.duplicate);
+    } else {
+      sectionA.push(menuOptions.duplicateAsset);
+    }
+  }
+  // endregion
+
+  // region Section C
+  if (hasRequestPublishAction(item.availableActions)) {
+    sectionA.push(menuOptions.publish);
+  }
+  if (hasRejectPublishAction(item.availableActions)) {
+    sectionA.push(menuOptions.reject);
+  }
+  if (hasCancelPublishAction(item.availableActions)) {
+    // TODO: Not Implemented
+    sectionA.push(menuOptions.cancel);
+  }
+  if (hasBulkPublishAction(item.availableActions)) {
+    // TODO: Not Implemented
+    sectionA.push(menuOptions.bulkPublish);
+  }
+  // endregion
+
+  // region Section D
+  if (hasEditControllerAction(item.availableActions)) {
+    sectionA.push(menuOptions.editController);
+  }
+
+  if (hasEditTemplateAction(item.availableActions)) {
+    sectionA.push(menuOptions.editTemplate);
+  }
+  // endregion
+
+  if (sectionA.length) {
+    sections.push(sectionA);
+  }
+
+  if (sectionB.length) {
+    sections.push(sectionB);
+  }
+  if (sectionC.length) {
+    sections.push(sectionB);
+  }
+  if (sectionD.length) {
+    sections.push(sectionB);
+  }
+
+  return sections;
+
+  // const write = permissions.write;
+  // const read = permissions.read;
+  // const publish = permissions.publish;
+  // const reject = permissions.cancel_publish;
+  // const deleteItem = permissions.delete;
+  // const createFolder = permissions.create_folder;
+  // const createContent = permissions.create_content;
+  // const changeContentType = permissions.change_content_type;
+  // const hasClipboard = permissions.hasClipboard;
+  // const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
+  // const isTemplate = item.path.includes('/templates');
+  // const isController = item.path.includes('/scripts');
+  // const isImage = item.mimeType?.startsWith('image/');
+  // const isRootFolder = isRootPath(item.path);
+  // const translation = false;
+  // const isLocked = item.lockOwner;
+  // const type = item.systemType;
+  // const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
+  //   unparsedMenuOptions,
+  //   formatMessage
+  // );
+  // switch (type) {
+  //   case 'page': {
+  //     let options = [];
+  //     if (write) {
+  //       options.push(menuOptions.edit);
+  //       if (read) {
+  //         options.push(menuOptions.view);
+  //       }
+  //       if (createFolder) {
+  //         options.push(menuOptions.createFolder);
+  //       }
+  //       if (createContent) {
+  //         options.push(menuOptions.createContent);
+  //       }
+  //       if (deleteItem && !isRootFolder) {
+  //         options.push(menuOptions.delete);
+  //       }
+  //       if (changeContentType && !isRootFolder) {
+  //         options.push(menuOptions.changeContentType);
+  //       }
+  //       if (!isRootFolder) {
+  //         options.push(menuOptions.cut);
+  //         options.push(menuOptions.copy);
+  //         options.push(menuOptions.duplicate);
+  //       }
+  //       if (hasClipboard) {
+  //         options.push(menuOptions.paste);
+  //       }
+  //       if (isLocked) {
+  //         options.push(menuOptions.unlock);
+  //       }
+  //       if (publish && !isLocked && !item.stateMap.live) {
+  //         options.push(menuOptions.schedule);
+  //       }
+  //       if (!isLocked && !item.stateMap.live) {
+  //         options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
+  //       }
+  //       if (
+  //         reject &&
+  //         (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
+  //       ) {
+  //         options.push(menuOptions.reject);
+  //       }
+  //       options.push(menuOptions.history);
+  //       options.push(menuOptions.dependencies);
+  //       if (translation) {
+  //         options.push(menuOptions.translation);
+  //       }
+  //       options.push(menuOptions.editTemplate);
+  //       options.push(menuOptions.editController);
+  //     } else if (read) {
+  //       options.push(menuOptions.view);
+  //       options.push(menuOptions.history);
+  //     }
+  //     sections.push(options);
+  //     return sections;
+  //   }
+  //   case 'folder': {
+  //     let options = [];
+  //     if (write) {
+  //       if (createContent && !isAsset) {
+  //         options.push(menuOptions.createContent);
+  //       }
+  //       if (createFolder) {
+  //         options.push(menuOptions.createFolder);
+  //       }
+  //       if (!isRootFolder) {
+  //         options.push(menuOptions.renameFolder);
+  //       }
+  //       if (deleteItem && !isRootFolder) {
+  //         options.push(menuOptions.delete);
+  //         options.push(menuOptions.cut);
+  //       }
+  //       options.push(menuOptions.copy);
+  //       if (hasClipboard) {
+  //         options.push(menuOptions.paste);
+  //       }
+  //       if (isAsset) {
+  //         options.push(menuOptions.upload);
+  //       }
+  //       if (isTemplate) {
+  //         options.push(menuOptions.createTemplate);
+  //       }
+  //       if (isController) {
+  //         options.push(menuOptions.createController);
+  //       }
+  //     }
+  //     sections.push(options);
+  //     return sections;
+  //   }
+  //   case 'taxonomy':
+  //   case 'component':
+  //   case 'levelDescriptor':
+  //   case 'renderingTemplate':
+  //   case 'script':
+  //   case 'asset': {
+  //     let options = [];
+  //     if (write) {
+  //       if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
+  //         options.push(menuOptions.edit);
+  //         if (read) {
+  //           options.push(menuOptions.view);
+  //         }
+  //       } else if (isImage) {
+  //         options.push(menuOptions.viewImage);
+  //       } else {
+  //         options.push(menuOptions.codeEditor);
+  //         options.push(menuOptions.viewCodeEditor);
+  //       }
+  //       if (deleteItem) {
+  //         options.push(menuOptions.delete);
+  //       }
+  //       options.push(menuOptions.cut);
+  //       options.push(menuOptions.copy);
+  //       if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
+  //         options.push(menuOptions.duplicate);
+  //         options.push(menuOptions.changeContentType);
+  //       } else {
+  //         options.push(menuOptions.duplicateAsset);
+  //       }
+  //       if (hasClipboard) {
+  //         options.push(menuOptions.paste);
+  //       }
+  //       if (publish && !item.lockOwner && !item.stateMap.live) {
+  //         options.push(menuOptions.schedule);
+  //       }
+  //       if (!isLocked && !item.stateMap.live) {
+  //         options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
+  //       }
+  //       if (
+  //         reject &&
+  //         (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
+  //       ) {
+  //         options.push(menuOptions.reject);
+  //       }
+  //       options.push(menuOptions.history);
+  //       options.push(menuOptions.dependencies);
+  //     } else if (read) {
+  //       options.push(menuOptions.view);
+  //       options.push(menuOptions.history);
+  //     }
+  //     sections.push(options);
+  //     return sections;
+  //   }
+  //   default: {
+  //     console.error(`[itemActions.ts] Unknown system type "${item.systemType}" for item ${item.path}`, item);
+  //     return sections;
+  //   }
+  // }
 }
 
 export function generateMultipleItemOptions(
