@@ -834,7 +834,7 @@ export function fetchItemsByPath(
   paths: string[],
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem[] | DetailedItem[]> {
-  const { castAsDetailedItem = false, preferContent = true } = options;
+  const { castAsDetailedItem = false, preferContent = true } = options ?? {};
   const qs = toQueryString({ siteId, paths, preferContent });
   return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
     pluck('response', 'items'),
