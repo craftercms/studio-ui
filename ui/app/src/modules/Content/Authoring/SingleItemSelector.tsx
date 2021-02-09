@@ -340,7 +340,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
           if (parentsPath.length > 1) {
             forkJoin([
-              fetchItemsByPath(site, parentsPath),
+              fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
               getChildrenByPath(site, payload, {
                 limit: state.limit
               })
