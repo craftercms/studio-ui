@@ -34,6 +34,8 @@ import { debounceTime } from 'rxjs/operators';
 import PluginDetailsView from '../PluginDetailsView';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import LookupTable from '../../models/LookupTable';
+import { PluginRecord } from '../../models/Plugin';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -49,6 +51,8 @@ const useStyles = makeStyles((theme) =>
 
 interface InstallPluginDialogBaseProps {
   open: boolean;
+  installedPlugins: LookupTable<PluginRecord>;
+  installPermission?: boolean;
 }
 
 export type InstallPluginDialogProps = PropsWithChildren<
@@ -69,6 +73,7 @@ export default function InstallPluginDialog(props: InstallPluginDialogProps) {
 
 function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
+  const { installPermission = false, onInstall, installedPlugins = {} } = props;
   const [keyword, setKeyword] = useState('');
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
@@ -79,7 +84,11 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const dispatch = useDispatch();
 
   useMount(() => {
-    refresh();
+    setIsFetching(true);
+    fetchMarketplacePlugins('site').subscribe((plugins) => {
+      setIsFetching(false);
+      setPlugins(plugins);
+    });
   });
 
   useEffect(() => {
@@ -107,14 +116,6 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
     }
   );
 
-  const refresh = () => {
-    setIsFetching(true);
-    fetchMarketplacePlugins('site').subscribe((plugins) => {
-      setIsFetching(false);
-      setPlugins(plugins);
-    });
-  };
-
   const onToggleSearchBar = () => {
     setShowSearchBar(!showSearchBar);
   };
@@ -135,7 +136,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
     installMarketplacePlugin(siteId, plugin.id, plugin.version).subscribe(
       () => {
-        refresh();
+        onInstall(plugin);
       },
       (response) => {
         dispatch(
@@ -150,7 +151,13 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   return (
     <>
       <DialogHeader
-        title={<FormattedMessage id="InstallPluginDialog.title" defaultMessage="Search & install plugin" />}
+        title={
+          installPermission ? (
+            <FormattedMessage id="InstallPluginDialog.title" defaultMessage="Search & install plugin" />
+          ) : (
+            <FormattedMessage id="words.search" defaultMessage="Search" />
+          )
+        }
         onDismiss={props.onClose}
         rightActions={[
           {
@@ -164,6 +171,15 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
         <DialogBody style={{ minHeight: '60vh', padding: 0 }}>
           <PluginDetailsView
             plugin={selectedDetailsPlugin}
+            usePermission={installPermission}
+            inUse={Boolean(installedPlugins[selectedDetailsPlugin.id])}
+            useLabel={
+              Boolean(installedPlugins[selectedDetailsPlugin.id]) ? (
+                <FormattedMessage id="words.installed" defaultMessage="Installed" />
+              ) : (
+                <FormattedMessage id="words.install" defaultMessage="Install" />
+              )
+            }
             onCloseDetails={onPluginDetailsClose}
             onBlueprintSelected={onPluginDetailsSelected}
           />
@@ -191,6 +207,8 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
           >
             <PluginList
               resource={resource}
+              installPermission={installPermission}
+              installedPlugins={installedPlugins}
               onPluginDetails={onPluginDetails}
               onPluginSelected={onPluginDetailsSelected}
             />
@@ -203,19 +221,34 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
 
 interface PluginListProps {
   resource: Resource<MarketplacePlugin[]>;
+  installPermission: boolean;
+  installedPlugins: LookupTable<PluginRecord>;
   onPluginDetails(plugin: MarketplacePlugin): void;
   onPluginSelected(plugin: MarketplacePlugin): void;
 }
 
 function PluginList(props: PluginListProps) {
-  const { resource, onPluginDetails, onPluginSelected } = props;
+  const { resource, onPluginDetails, onPluginSelected, installedPlugins = {}, installPermission } = props;
   const plugins = resource.read();
 
   return (
     <Grid container spacing={3}>
       {plugins.map((plugin) => (
         <Grid item xs={12} sm={6} md={4} lg={3} key={plugin.id}>
-          <PluginCard plugin={plugin} onDetails={onPluginDetails} onPluginSelected={onPluginSelected} />
+          <PluginCard
+            plugin={plugin}
+            inUse={Boolean(installedPlugins[plugin.id])}
+            usePermission={installPermission}
+            useLabel={
+              Boolean(installedPlugins[plugin.id]) ? (
+                <FormattedMessage id="words.installed" defaultMessage="Installed" />
+              ) : (
+                <FormattedMessage id="words.install" defaultMessage="Install" />
+              )
+            }
+            onDetails={onPluginDetails}
+            onPluginSelected={onPluginSelected}
+          />
         </Grid>
       ))}
     </Grid>
