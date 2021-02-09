@@ -25,6 +25,8 @@ import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
 import {
+  CREATE_ACTION_MASK,
+  READ_ACTION_MASK,
   STATE_MASK_DELETED_MASK,
   STATE_MASK_IN_WORKFLOW_MASK,
   STATE_MASK_LIVE_MASK,
@@ -37,7 +39,8 @@ import {
   STATE_MASK_SYSTEM_PROCESSING_MASK,
   STATE_MASK_TRANSLATION_IN_PROGRESS_MASK,
   STATE_MASK_TRANSLATION_PENDING_MASK,
-  STATE_MASK_TRANSLATION_UP_TO_DATE_MASK
+  STATE_MASK_TRANSLATION_UP_TO_DATE_MASK,
+  UPDATE_ACTION_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
 
@@ -622,3 +625,7 @@ export const createItemStateMap = (status: number) => {
     translationInProgress: isTranslationInProgressState(status)
   };
 };
+
+export const hasReadAction = (value: number) => Boolean(value & READ_ACTION_MASK);
+export const hasCreateOAction = (value: number) => Boolean(value & CREATE_ACTION_MASK);
+export const hasUpdateOAction = (value: number) => Boolean(value & UPDATE_ACTION_MASK);
