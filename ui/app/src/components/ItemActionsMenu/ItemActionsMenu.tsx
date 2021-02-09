@@ -84,7 +84,7 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
       classes={classes}
       options={options}
       onMenuItemClicked={onMenuItemClicked}
-      isLoading={!item}
+      isLoading={!item && open}
       numOfLoaderItems={numOfLoaderItems}
       anchorEl={anchorEl}
       anchorOrigin={anchorOrigin}

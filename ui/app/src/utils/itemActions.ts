@@ -77,6 +77,7 @@ import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
+  hasApprovePublishAction,
   hasBulkPublishAction,
   hasCancelPublishAction,
   hasCopyAction,
@@ -246,6 +247,7 @@ export function generateSingleItemOptions(
   let sectionB: ContextMenuOption[] = [];
   let sectionC: ContextMenuOption[] = [];
   let sectionD: ContextMenuOption[] = [];
+
   if (!item) {
     return sections;
   }
@@ -315,7 +317,7 @@ export function generateSingleItemOptions(
   if (hasCopyAction(item.availableActions)) {
     sectionB.push(menuOptions.copy);
   }
-  if (hasPasteAction(item.availableActions) && options.hasClipboard) {
+  if (hasPasteAction(item.availableActions) && options?.hasClipboard) {
     sectionB.push(menuOptions.paste);
   }
   if (hasDuplicateAction(item.availableActions)) {
@@ -328,6 +330,9 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
+  if (hasApprovePublishAction(item.availableActions)) {
+    sectionC.push(menuOptions.publish);
+  }
   if (hasRequestPublishAction(item.availableActions)) {
     sectionC.push(menuOptions.publish);
   }

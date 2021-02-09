@@ -369,7 +369,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
     dispatch(completeDetailedItem({ path: item.path }));
-    // dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
       anchorEl: element,
