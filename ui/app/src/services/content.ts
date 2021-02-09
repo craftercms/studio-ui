@@ -32,7 +32,12 @@ import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { createItemStateMap, parseContentXML, parseLegacyItemToSandBoxItem } from '../utils/content';
+import {
+  createItemStateMap,
+  parseContentXML,
+  parseLegacyItemToSandBoxItem,
+  parseSandBoxItemToDetailedItem
+} from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -41,6 +46,7 @@ import { getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
+import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -807,23 +813,29 @@ export function getChildrenByPath(
   );
 }
 
+export function fetchItemsByPath(siteId: string, paths: string[]): Observable<SandboxItem[]>;
 export function fetchItemsByPath(
-  site: string,
+  siteId: string,
   paths: string[],
-  options?: {
-    skipHomePathOverride?: boolean;
-  }
-): Observable<DetailedItem[]> {
-  const requests: Observable<DetailedItem>[] = [];
-  paths.forEach((path) =>
-    requests.push(
-      getDetailedItem(
-        site,
-        path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
-      )
+  options: FetchItemsByPathOptions
+): Observable<DetailedItem[]>;
+export function fetchItemsByPath(
+  siteId: string,
+  paths: string[],
+  options?: FetchItemsByPathOptions
+): Observable<SandboxItem[] | DetailedItem[]> {
+  const { castAsDetailedItem = false, preferContent = true } = options;
+  const qs = toQueryString({ siteId, paths, preferContent });
+  return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
+    pluck('response', 'items'),
+    map(
+      (items: SandboxItem[]) =>
+        items.map((item) => ({
+          ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
+          stateMap: createItemStateMap(item.state)
+        })) as SandboxItem[] | DetailedItem[]
     )
   );
-  return forkJoin(requests);
 }
 
 export function fetchItemWithChildrenByPath(

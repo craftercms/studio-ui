@@ -94,7 +94,7 @@ export default function AuthMonitor() {
       firstRender.current = false;
     } else if (active) {
       // Move this call to the next tick to avoid it getting dispatched
-      // before the epics set the new JWT hearer.
+      // before the epics set the new JWT header.
       setTimeout(() => {
         me().subscribe((user) => {
           if (user.username !== username) {
