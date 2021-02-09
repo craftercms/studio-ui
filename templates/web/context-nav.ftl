@@ -19,18 +19,18 @@
     <div class="container-fluid navbar-items-wrapper">
 
       <ul class="nav navbar-nav">
-        <li><div id="toolbarGlobalNav"></div></li>
+        <li><div id="brandGlobalNavOpenerButton"></div></li>
         <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
         <li>
           <a id="navbar-site-name" class="site-name trim" href="/studio/site-dashboard"></a>
         </li>
         <li class="dropdown quick-create hide" dropdown>
           <button
-                  id="quick-create-dropdown"
-                  class="dropdown-toggle nav-link ng-binding"
-                  dropdown-toggle=""
-                  aria-haspopup="true"
-                  aria-expanded="true"
+            id="quick-create-dropdown"
+            class="dropdown-toggle nav-link ng-binding"
+            dropdown-toggle=""
+            aria-haspopup="true"
+            aria-expanded="true"
           >
             <span class="fa fa-plus-circle pointer quick-create-button-icon" data-title="quickCreate"></span>
           </button>
@@ -43,6 +43,7 @@
       <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
       <div class="navbar-right-wrapper navbar-right">
+        <div id="appsIconGlobalNav"></div>
         <div id="acn-status">
           <span class="nav-icon fa fa-cloud-upload f18" data-title="publishingStatus"></span>
         </div>

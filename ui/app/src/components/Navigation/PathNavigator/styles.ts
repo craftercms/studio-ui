@@ -180,8 +180,7 @@ export const useStyles = makeStyles(
       // region Nav Item Styles
       levelDescriptorIcon: {
         marginRight: 5,
-        fontSize: '1.2rem',
-        color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade
+        fontSize: '1.2rem'
       },
       icon: {
         fontSize: '1.2rem'

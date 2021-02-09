@@ -722,6 +722,15 @@ export const formEngineMessages = defineMessages({
   saveAndPreview: {
     id: 'formEngine.saveAndPreview',
     defaultMessage: 'Save & Preview'
+  },
+  createPolicy: {
+    id: 'formEngine.createPolicy',
+    defaultMessage:
+      'The {originalPath} path goes against site policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
+  },
+  policyError: {
+    id: 'formEngine.policyError',
+    defaultMessage: 'The {path} path goes against site policies.'
   }
 });
 

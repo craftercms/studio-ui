@@ -169,6 +169,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           }
         } else {
           setConfirm({
+            error: true,
             body: formatMessage(translations.policyError)
           });
         }
@@ -256,7 +257,12 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           )}
         </PrimaryButton>
       </DialogFooter>
-      <ConfirmDialog open={Boolean(confirm)} body={confirm?.body} onOk={onConfirm} onCancel={onConfirmCancel} />
+      <ConfirmDialog
+        open={Boolean(confirm)}
+        body={confirm?.body}
+        onOk={confirm?.error ? onConfirmCancel : onConfirm}
+        onCancel={confirm?.error ? null : onConfirmCancel}
+      />
     </>
   );
 }

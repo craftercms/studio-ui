@@ -32,7 +32,8 @@ import { SecondaryButton } from '../SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from './ConfirmDialog';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface CreateFileBaseProps {
   open: boolean;
@@ -152,6 +153,7 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
           }
         } else {
           setConfirm({
+            error: true,
             body: formatMessage(translations.policyError)
           });
         }
@@ -237,7 +239,12 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
           {inProgress ? <CircularProgress size={15} /> : <FormattedMessage id="words.create" defaultMessage="Create" />}
         </PrimaryButton>
       </DialogFooter>
-      <ConfirmDialog open={Boolean(confirm)} body={confirm?.body} onOk={onConfirm} onCancel={onConfirmCancel} />
+      <ConfirmDialog
+        open={Boolean(confirm)}
+        body={confirm?.body}
+        onOk={confirm?.error ? onConfirmCancel : onConfirm}
+        onCancel={confirm?.error ? null : onConfirmCancel}
+      />
     </>
   );
 }

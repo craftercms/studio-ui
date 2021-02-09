@@ -253,15 +253,8 @@ export function PreviewConcierge(props: any) {
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
-            let choice = previewChoice[site];
             if (compatibilityAsk) {
               setPreviewCompatibilityDialogOpen(true);
-            } else if (choice) {
-              if (choice === '2') {
-                handlePreviewCompatibilityDialogGo();
-              } else if (choice === 'ask') {
-                setPreviewCompatibilityDialogOpen(true);
-              }
             }
           }
           if (previewChoice[site] !== '1') {
