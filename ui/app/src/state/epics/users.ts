@@ -16,7 +16,7 @@
 
 import { ofType } from 'redux-observable';
 import { storeInitialized } from '../actions/system';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   deleteProperties,
   fetchGlobalProperties,
@@ -62,6 +62,7 @@ export default [
     action$.pipe(
       ofType(fetchMyRolesInSite.type),
       withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active) && state.user.rolesBySite[state.sites.active] === void 0),
       switchMap(([, state]) =>
         fetchMyRolesInSiteService(state.sites.active).pipe(
           map((roles) => fetchMyRolesInSiteComplete({ site: state.sites.active, roles })),
