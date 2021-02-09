@@ -817,7 +817,17 @@ export function fetchItemsByPath(siteId: string, paths: string[]): Observable<Sa
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
+  options: FetchItemsByPathOptions & { castAsDetailedItem: false }
+): Observable<SandboxItem[]>;
+export function fetchItemsByPath(
+  siteId: string,
+  paths: string[],
   options: FetchItemsByPathOptions
+): Observable<SandboxItem[]>;
+export function fetchItemsByPath(
+  siteId: string,
+  paths: string[],
+  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
 ): Observable<DetailedItem[]>;
 export function fetchItemsByPath(
   siteId: string,
