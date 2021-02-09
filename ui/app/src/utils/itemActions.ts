@@ -329,28 +329,28 @@ export function generateSingleItemOptions(
 
   // region Section C
   if (hasRequestPublishAction(item.availableActions)) {
-    sectionA.push(menuOptions.publish);
+    sectionC.push(menuOptions.publish);
   }
   if (hasRejectPublishAction(item.availableActions)) {
-    sectionA.push(menuOptions.reject);
+    sectionC.push(menuOptions.reject);
   }
   if (hasCancelPublishAction(item.availableActions)) {
     // TODO: Not Implemented
-    sectionA.push(menuOptions.cancel);
+    sectionC.push(menuOptions.cancel);
   }
   if (hasBulkPublishAction(item.availableActions)) {
     // TODO: Not Implemented
-    sectionA.push(menuOptions.bulkPublish);
+    sectionC.push(menuOptions.bulkPublish);
   }
   // endregion
 
   // region Section D
   if (hasEditControllerAction(item.availableActions)) {
-    sectionA.push(menuOptions.editController);
+    sectionD.push(menuOptions.editController);
   }
 
   if (hasEditTemplateAction(item.availableActions)) {
-    sectionA.push(menuOptions.editTemplate);
+    sectionD.push(menuOptions.editTemplate);
   }
   // endregion
 
@@ -362,10 +362,10 @@ export function generateSingleItemOptions(
     sections.push(sectionB);
   }
   if (sectionC.length) {
-    sections.push(sectionB);
+    sections.push(sectionC);
   }
   if (sectionD.length) {
-    sections.push(sectionB);
+    sections.push(sectionD);
   }
 
   return sections;
