@@ -53,10 +53,10 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
           function() {
             document.domain = CStudioAuthoringContext.cookieDomain;
             CStudioAuthoring.Events.contextNavReady.fire();
-            const container = document.querySelector('#toolbarGlobalNav');
-            CrafterCMSNext.render(container, 'ToolbarGlobalNav', {
-              authHeaders: CStudioAuthoring.Constants.AUTH_HEADERS,
-              authSaml: CStudioAuthoring.Constants.SAML
+            CrafterCMSNext.render('#brandGlobalNavOpenerButton', 'GlobalNavOpenerButton');
+            CrafterCMSNext.render('#appsIconGlobalNav', 'GlobalNavOpenerButton', {
+              sitesRailPosition: 'left',
+              icon: 'apps'
             });
             me.addResizeEventToNavbar();
           },

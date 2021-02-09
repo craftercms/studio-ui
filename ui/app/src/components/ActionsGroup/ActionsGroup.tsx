@@ -15,13 +15,14 @@
  */
 
 import * as React from 'react';
-import { forwardRef, ReactNode, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { MenuItem, StandardProps } from '@material-ui/core';
 import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { ContextMenuOption } from '../ContextMenu';
 
 export type ActionsGroupPropsClassKey = 'root' | 'action' | 'more';
 
@@ -30,10 +31,7 @@ export interface ActionsGroupProps
   max?: number;
   spacing?: 'small' | 'medium' | number;
   onActionClicked(id: string): void;
-  actions: Array<{
-    id: string;
-    label: ReactNode;
-  }>;
+  actions: Array<ContextMenuOption>;
 }
 
 const SPACINGS = {

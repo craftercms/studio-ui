@@ -829,11 +829,15 @@
         $rootScope.isFooter = false;
       }
 
-      const container = document.querySelector('#toolbarGlobalNav');
+      let container = document.querySelector('#brandGlobalNavOpenerButton');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'ToolbarGlobalNav', {
-        authHeaders: Constants.AUTH_HEADERS,
-        authSaml: Constants.SAML
+      CrafterCMSNext.render(container, 'GlobalNavOpenerButton');
+
+      container = document.querySelector('#appsIconGlobalNav');
+      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
+      CrafterCMSNext.render(container, 'GlobalNavOpenerButton', {
+        sitesRailPosition: 'left',
+        icon: 'apps'
       });
 
       function changePassword() {

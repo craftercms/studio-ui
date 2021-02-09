@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
@@ -32,15 +32,19 @@ import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import {
   useActiveSiteId,
+  useActiveUser,
   useEnv,
   useMount,
   usePossibleTranslation,
   usePreviewState,
-  useSiteUIConfig
+  useSelection,
+  useSiteList,
+  useSiteUIConfig,
+  useSystemVersion
 } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
-import { changeSite } from '../../state/reducers/sites';
+import { changeSite, fetchSites } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
@@ -48,7 +52,6 @@ import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
-import { EnhancedUser } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
@@ -62,6 +65,13 @@ import { components } from '../../services/plugin';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { renderWidgets } from '../Widget';
 import { logout } from '../../state/actions/auth';
+import { Tooltip } from '@material-ui/core';
+import StandardAction from '../../models/StandardAction';
+import ApiResponse from '../../models/ApiResponse';
+import { closeGlobalNav } from '../../state/actions/dialogs';
+import GlobalState from '../../models/GlobalState';
+import { EnhancedUser } from '../../models/User';
+import LookupTable from '../../models/LookupTable';
 
 interface TileProps {
   icon: SystemIconDescriptor;
@@ -72,15 +82,17 @@ interface TileProps {
   onClick?(id?: string, type?: string): any;
 }
 
-interface GlobalNavProps {
-  user: EnhancedUser;
-  site: string;
-  sites: Site[];
+export interface GlobalNavProps {
   anchor: Element;
-  version: string;
-  logoutUrl: string;
-  authoringUrl: string;
   onMenuClose: (e: any) => void;
+  sitesRailPosition?: 'left' | 'right' | 'hidden';
+}
+
+export interface GlobalNavStateProps {
+  open: boolean;
+  anchor: string;
+  onMenuClose: StandardAction;
+  sitesRailPosition?: 'left' | 'right' | 'hidden';
 }
 
 const useTileStyles = makeStyles((theme) =>
@@ -221,12 +233,20 @@ const messages = defineMessages({
     defaultMessage: 'Do you want to remove {site}?'
   },
   signOut: {
-    id: 'toolbarGlobalNav.signOut',
+    id: 'globalNavOpenerButton.signOut',
     defaultMessage: 'Sign Out'
   },
   settings: {
     id: 'words.settings',
     defaultMessage: 'Settings'
+  },
+  closeMenu: {
+    id: 'globalMenu.closeMenu',
+    defaultMessage: 'Close menu'
+  },
+  logout: {
+    id: 'words.logout',
+    defaultMessage: 'Logout'
   }
 });
 
@@ -268,18 +288,18 @@ const globalNavUrlMapping = {
   settings: '#/settings'
 };
 
-const globalNavStyles = makeStyles((theme) =>
+const useGlobalNavStyles = makeStyles((theme) =>
   createStyles({
     popover: {
       maxWidth: 990,
       height: '100%',
       borderRadius: '10px'
     },
-    leftRail: {
+    sitesRail: {
       height: '100%',
       backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark1 : palette.gray.light1
     },
-    rightRail: {
+    appsRail: {
       height: '100%'
     },
     railTop: {
@@ -306,7 +326,7 @@ const globalNavStyles = makeStyles((theme) =>
     titleCard: {
       marginBottom: '20px'
     },
-    sitesApps: {
+    navItemsWrapper: {
       display: 'flex',
       flexWrap: 'wrap'
     },
@@ -351,24 +371,187 @@ const globalNavStyles = makeStyles((theme) =>
   })
 );
 
-export default function GlobalNav(props: GlobalNavProps) {
-  const { anchor, onMenuClose, logoutUrl, authoringUrl, version, site, sites, user } = props;
-  const classes = globalNavStyles();
-  const { previewChoice } = usePreviewState();
-  const [menuItems, setMenuItems] = useState(null);
-  const siteNav = useSiteUIConfig().siteNav;
-  const [apiState, setApiState] = useState({
-    error: false,
-    errorResponse: null
-  });
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
+interface AppsRailProps {
+  classes: LookupTable<string>;
+  site: string;
+  siteNav: GlobalState['uiConfig']['siteNav'];
+  menuItems: Array<{ id: string; icon: string; label: string }>;
+  formatMessage: IntlShape['formatMessage'];
+  authoringBase: string;
+  version: string;
+  user: EnhancedUser;
+  onMenuClose(): void;
+  onLogout(): void;
+}
 
-  const cardActions = useMemo(
+const AppsRail = ({
+  classes,
+  site,
+  siteNav,
+  menuItems,
+  formatMessage,
+  onMenuClose,
+  authoringBase,
+  version,
+  user,
+  onLogout
+}: AppsRailProps) => (
+  <Grid item xs={12} md={8} className={classes.appsRail}>
+    <div className={classes.railTop}>
+      {/* region Site */}
+      {site && siteNav && (
+        <>
+          {siteNav.title && (
+            <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
+              {typeof siteNav.title === 'string' ? siteNav.title : formatMessage(siteNav.title)}
+            </Typography>
+          )}
+          <nav className={classes.navItemsWrapper}>{renderWidgets(siteNav.widgets, user.rolesBySite[site])}</nav>
+        </>
+      )}
+      {/* endregion */}
+      <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
+        {formatMessage(messages.global)}
+      </Typography>
+      <nav className={classes.navItemsWrapper}>
+        {menuItems.map((item) => (
+          <Tile
+            key={item.id}
+            title={formatMessage(messages[popPiece(camelize(item.id))])}
+            icon={{ baseClass: `fa ${item.icon}` }}
+            link={getLink(item.id, authoringBase)}
+            onClick={onMenuClose}
+          />
+        ))}
+        <Tile
+          title={formatMessage(messages.docs)}
+          icon={{ id: 'craftercms.icons.Docs' }}
+          link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
+          target="_blank"
+        />
+        <Tile
+          title={formatMessage(messages.settings)}
+          icon={{ id: '@material-ui/icons/SettingsRounded' }}
+          link={getLink('settings', authoringBase)}
+        />
+        <Tile
+          icon={{ id: 'craftercms.icons.CrafterIcon' }}
+          link={getLink('about', authoringBase)}
+          title={formatMessage(messages.about)}
+        />
+      </nav>
+    </div>
+    <div className={classes.railBottom}>
+      <Card className={classes.userCardRoot}>
+        <CardHeader
+          classes={{
+            action: classes.userCardActions
+          }}
+          className={classes.userCardHeader}
+          avatar={
+            <Avatar
+              aria-hidden="true"
+              className={classes.userCardAvatar}
+              children={getInitials(`${user.firstName} ${user.lastName}`)}
+            />
+          }
+          action={
+            <Tooltip title={formatMessage(messages.logout)}>
+              <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
+                <ExitToAppRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          }
+          title={`${user.firstName} ${user.lastName}`}
+          subheader={user.username || user.email}
+          subheaderTypographyProps={{
+            className: classes.username
+          }}
+        />
+      </Card>
+    </div>
+  </Grid>
+);
+
+interface SitesRailProps {
+  classes: LookupTable<string>;
+  formatMessage: IntlShape['formatMessage'];
+  sites: Site[];
+  site: string;
+  version: string;
+  cardActions: Array<{
+    name: string;
+    href: string | ((id: string) => string);
+    onClick(site): void;
+  }>;
+  onSiteCardClick(id: string): void;
+}
+
+const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardActions, version }: SitesRailProps) => (
+  <Hidden only={['xs', 'sm']}>
+    <Grid item md={4} className={classes.sitesRail}>
+      <div className={classes.railTop}>
+        <Typography variant="subtitle1" component="h2" className={classes.title} style={{ marginBottom: '24px' }}>
+          {formatMessage(messages.mySites)}
+        </Typography>
+        {sites.length ? (
+          <List>
+            {sites.map((item, i) => (
+              <SiteCard
+                key={i}
+                options
+                selected={item.id === site}
+                title={item.name}
+                value={item.id}
+                classes={{ root: classes.titleCard }}
+                onCardClick={() => onSiteCardClick(item.id)}
+                cardActions={cardActions}
+              />
+            ))}
+          </List>
+        ) : (
+          <EmptyState
+            title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No sites to display." />}
+          />
+        )}
+      </div>
+      <div className={classes.railBottom}>
+        <CrafterCMSLogo width={115} />
+        <Typography className={classes.versionText} color="textSecondary" variant="caption">
+          {version}
+        </Typography>
+      </div>
+    </Grid>
+  </Hidden>
+);
+
+export default function GlobalNav() {
+  const classes = useGlobalNavStyles();
+  const site = useActiveSiteId();
+  const sites = useSiteList();
+  const user = useActiveUser();
+  const dispatch = useDispatch();
+  const version = useSystemVersion();
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
+  const { open, anchor: anchorSelector, sitesRailPosition = 'left' } = useSelection((state) => state.dialogs.globalNav);
+  const { siteNav } = useSiteUIConfig();
+  const [menuItems, setMenuItems] = useState(null);
+  const [error, setError] = useState<ApiResponse>(null);
+  const anchor = useMemo(() => (anchorSelector ? document.querySelector(anchorSelector) : null), [anchorSelector]);
+
+  const cardActions = useMemo<
+    Array<{
+      name: string;
+      href: string | ((id: string) => string);
+      onClick(site): void;
+    }>
+  >(
     () => [
       {
         name: formatMessage(messages.dashboard),
-        href: getLink('siteDashboard', authoringUrl),
+        href: getLink('siteDashboard', authoringBase),
         onClick(site) {
           setSiteCookie(site);
         }
@@ -376,7 +559,7 @@ export default function GlobalNav(props: GlobalNavProps) {
       {
         name: formatMessage(messages.preview),
         href(site) {
-          return getLink(previewChoice[site] === '2' ? 'preview' : 'legacy.preview', authoringUrl);
+          return getLink(previewChoice[site] === '2' ? 'preview' : 'legacy.preview', authoringBase);
         },
         onClick(site) {
           setSiteCookie(site);
@@ -391,48 +574,74 @@ export default function GlobalNav(props: GlobalNavProps) {
       //   }
       // }
     ],
-    // Disable exhaustive hooks check since only need to create on mount
-    // eslint-disable-next-line
-    [previewChoice]
+    [formatMessage, authoringBase, previewChoice]
   );
 
-  const handleErrorBack = () => setApiState({ ...apiState, error: false });
+  const onErrorStateBackClicked = () => setError(error);
 
   const onSiteCardClick = (site: string) => {
     dispatch(changeSite(site));
-    if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
-      navigateTo(previewChoice[site] === '2' ? `${authoringUrl}/next/preview` : `${authoringUrl}/preview`);
-    } else {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
+        navigateTo(previewChoice[site] === '2' ? `${authoringBase}/next/preview` : `${authoringBase}/preview`);
+      } else {
         window.location.reload();
-      });
-    }
+      }
+    });
   };
 
+  const onMenuClose = () => dispatch(closeGlobalNav());
+
+  const onLogout = () => dispatch(logout());
+
+  const sitesRail = () => (
+    <SitesRail
+      classes={classes}
+      formatMessage={formatMessage}
+      sites={sites}
+      site={site}
+      version={version}
+      cardActions={cardActions}
+      onSiteCardClick={onSiteCardClick}
+    />
+  );
+
+  const appsRail = () => (
+    <AppsRail
+      classes={classes}
+      site={site}
+      siteNav={siteNav}
+      menuItems={menuItems}
+      formatMessage={formatMessage}
+      authoringBase={authoringBase}
+      version={version}
+      user={user}
+      onMenuClose={onMenuClose}
+      onLogout={onLogout}
+    />
+  );
+
   useMount(() => {
-    getGlobalMenuItems().subscribe(
-      (menuItems) => {
-        setMenuItems(menuItems);
-      },
-      (error) => {
-        if (error.response) {
-          const _response = {
-            ...error.response,
-            code: '',
-            documentationUrl: '',
-            remedialAction: ''
-          };
-          setApiState({ error: true, errorResponse: _response });
-        }
+    if (sites === null) {
+      dispatch(fetchSites());
+    }
+    getGlobalMenuItems().subscribe(setMenuItems, (error) => {
+      if (error.response) {
+        setError({
+          ...error.response,
+          code: '',
+          documentationUrl: '',
+          remedialAction: ''
+        });
       }
-    );
+    });
   });
 
   return (
     <Popover
-      open={Boolean(anchor)}
+      open={open && Boolean(anchor)}
       anchorEl={anchor}
-      onClose={(e) => onMenuClose(e)}
+      onClose={onMenuClose}
       classes={{ paper: classes.popover }}
       anchorOrigin={{
         vertical: 'bottom',
@@ -443,139 +652,37 @@ export default function GlobalNav(props: GlobalNavProps) {
         horizontal: 'right'
       }}
     >
-      {apiState.error ? (
+      {/* Close button (x) */}
+      <Tooltip title={formatMessage(messages.closeMenu)}>
+        <IconButton
+          aria-label={formatMessage(messages.closeMenu)}
+          className={classes.closeButton}
+          onClick={onMenuClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Tooltip>
+      {error ? (
         <ApiResponseErrorState
           classes={{ root: classes.errorPaperRoot }}
-          error={apiState.errorResponse}
-          onButtonClick={handleErrorBack}
+          error={error}
+          onButtonClick={onErrorStateBackClicked}
         />
       ) : menuItems !== null ? (
         <Grid container spacing={0} className={classes.gridContainer}>
-          <Hidden only={['xs', 'sm']}>
-            <Grid item md={4} className={classes.leftRail}>
-              <div className={classes.railTop}>
-                <Typography
-                  variant="subtitle1"
-                  component="h2"
-                  className={classes.title}
-                  style={{ marginBottom: '24px' }}
-                >
-                  {formatMessage(messages.mySites)}
-                </Typography>
-                {sites.length ? (
-                  <List>
-                    {sites.map((item, i) => (
-                      <SiteCard
-                        key={i}
-                        options
-                        selected={item.id === site}
-                        title={item.name}
-                        value={item.id}
-                        classes={{ root: classes.titleCard }}
-                        onCardClick={() => onSiteCardClick(item.id)}
-                        cardActions={cardActions}
-                      />
-                    ))}
-                  </List>
-                ) : (
-                  <EmptyState
-                    title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No sites to display." />}
-                  />
-                )}
-              </div>
-              <div className={classes.railBottom}>
-                <CrafterCMSLogo width={115} />
-                <Typography className={classes.versionText} color="textSecondary" variant="caption">
-                  {version}
-                </Typography>
-              </div>
-            </Grid>
-          </Hidden>
-          <Grid item xs={12} md={8} className={classes.rightRail}>
-            <IconButton aria-label="close" className={classes.closeButton} onClick={(event) => onMenuClose(event)}>
-              <CloseIcon />
-            </IconButton>
-            <div className={classes.railTop}>
-              <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
-                {formatMessage(messages.global)}
-              </Typography>
-              <nav className={classes.sitesApps}>
-                {menuItems.map((item) => (
-                  <Tile
-                    key={item.id}
-                    title={formatMessage(messages[popPiece(camelize(item.id))])}
-                    icon={{ baseClass: `fa ${item.icon}` }}
-                    link={getLink(item.id, authoringUrl)}
-                    onClick={onMenuClose}
-                  />
-                ))}
-                {/* prettier-ignore */}
-                <Tile
-                  title={formatMessage(messages.docs)}
-                  icon={{ id: 'craftercms.icons.Docs' }}
-                  link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
-                  target="_blank"
-                />
-                <Tile
-                  title={formatMessage(messages.settings)}
-                  icon={{ id: '@material-ui/icons/SettingsRounded' }}
-                  link={getLink('settings', authoringUrl)}
-                />
-                <Tile
-                  icon={{ id: 'craftercms.icons.CrafterIcon' }}
-                  link={getLink('about', authoringUrl)}
-                  title={formatMessage(messages.about)}
-                />
-              </nav>
-              {/* region Site */}
-              {site && siteNav && (
-                <>
-                  {siteNav.title && (
-                    <Typography
-                      variant="subtitle1"
-                      component="h2"
-                      className={classes.title}
-                      style={{ margin: '0 0 10px 0' }}
-                    >
-                      {typeof siteNav.title === 'string' ? siteNav.title : formatMessage(siteNav.title)}
-                    </Typography>
-                  )}
-                  <nav className={classes.sitesApps}>{renderWidgets(siteNav.widgets, user.rolesBySite[site])}</nav>
-                </>
-              )}
-              {/* endregion */}
-            </div>
-            <div className={classes.railBottom}>
-              <Card className={classes.userCardRoot}>
-                <CardHeader
-                  classes={{
-                    action: classes.userCardActions
-                  }}
-                  className={classes.userCardHeader}
-                  avatar={
-                    <Avatar
-                      aria-hidden="true"
-                      className={classes.userCardAvatar}
-                      children={getInitials(`${user.firstName} ${user.lastName}`)}
-                    />
-                  }
-                  action={
-                    // TODO: what will happen with logoutUrl now that we're always just posting back to /studio/logout?
-                    logoutUrl && (
-                      <IconButton aria-label={formatMessage(messages.signOut)} onClick={() => dispatch(logout())}>
-                        <ExitToAppRoundedIcon />
-                      </IconButton>
-                    )
-                  }
-                  title={`${user.firstName} ${user.lastName}`}
-                  subheader={user.username || user.email}
-                  subheaderTypographyProps={{
-                    className: classes.username
-                  }}
-                />
-              </Card>
-            </div>
-          </Grid>
+          {sitesRailPosition === 'left' ? (
+            <>
+              {sitesRail()}
+              {appsRail()}
+            </>
+          ) : sitesRailPosition === 'right' ? (
+            <>
+              {appsRail()}
+              {sitesRail()}
+            </>
+          ) : (
+            sitesRail()
+          )}
         </Grid>
       ) : (
         <div className={classes.loadingContainer}>

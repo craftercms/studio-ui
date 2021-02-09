@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
-import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
+import GlobalNavOpenerButton from '../../components/Navigation/GlobalNavOpenerButton';
 import CustomMenu from '../../components/Icons/CustomMenu';
 import {
   changeCurrentUrl,
@@ -184,7 +184,7 @@ export function AddressBar(props: AddressBarProps) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.only('md'));
   const isLargeScreen = useMediaQuery(theme.breakpoints.only('lg'));
   useEffect(() => {
-    setNumOfVisibleActions(isSmallScreen ? 3 : isMediumScreen ? 5 : isLargeScreen ? 9 : 15);
+    setNumOfVisibleActions(isSmallScreen ? 1 : isMediumScreen ? 4 : isLargeScreen ? 8 : 15);
   }, [isSmallScreen, isMediumScreen, isLargeScreen]);
 
   const onSiteChangeInternal = (value) => !isBlank(value) && value !== site && onSiteChange(value);
@@ -292,7 +292,7 @@ export default function ToolBar() {
   return (
     <ViewToolbar>
       <section>
-        <ToolbarGlobalNav />
+        <GlobalNavOpenerButton />
         <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
           <IconButton
             aria-label={formatMessage(translations.openToolsPanel)}
@@ -302,7 +302,7 @@ export default function ToolBar() {
           </IconButton>
         </Tooltip>
         <QuickCreate disabled={!createContent} />
-        <Tooltip title={formatMessage(translations.toggleEditMode)}>
+        <Tooltip title={!write ? '' : formatMessage(translations.toggleEditMode)}>
           <EditSwitch
             disabled={!write}
             color="default"
@@ -322,6 +322,9 @@ export default function ToolBar() {
           onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
           onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
         />
+      </section>
+      <section>
+        <GlobalNavOpenerButton sitesRailPosition="left" icon="apps" />
       </section>
     </ViewToolbar>
   );

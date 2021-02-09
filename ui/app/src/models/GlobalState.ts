@@ -53,6 +53,7 @@ import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { MessageDescriptor } from 'react-intl';
+import { GlobalNavStateProps } from '../components/Navigation/GlobalNav';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -124,7 +125,7 @@ export interface GlobalState {
   preview: {
     editMode: boolean;
     highlightMode: string;
-    previewChoice: LookupTable<string>;
+    previewChoice: LookupTable<'1' | '2'>;
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
@@ -171,6 +172,7 @@ export interface GlobalState {
     pathSelection: PathSelectionDialogStateProps;
     changeContentType: ChangeContentTypeDialogStateProps;
     itemMenu: ItemMenuStateProps;
+    globalNav: GlobalNavStateProps;
   };
   translation: {
     siteLocales: {

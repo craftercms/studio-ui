@@ -25,9 +25,11 @@ import { rand } from './Navigation/PathNavigator/utils';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { MenuProps } from '@material-ui/core/Menu/Menu';
 import clsx from 'clsx';
+import { SystemIconDescriptor } from './SystemIcon';
 
 export interface ContextMenuOption {
   id: string;
+  icon?: SystemIconDescriptor;
   label: ReactNode;
 }
 

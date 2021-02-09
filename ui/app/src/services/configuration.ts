@@ -19,7 +19,13 @@ import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
-import { applyDeserializedXMLTransforms, createLookupTable, reversePluckProps, toQueryString } from '../utils/object';
+import {
+  applyDeserializedXMLTransforms,
+  createLookupTable,
+  deepCopy,
+  reversePluckProps,
+  toQueryString
+} from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
@@ -204,7 +210,7 @@ export function getSiteUiConfig(
 ): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
   return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
-      const config = uiConfigDefaults;
+      const config = deepCopy(uiConfigDefaults);
       if (xml) {
         const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
         const renameTable = { permittedRoles: 'roles' };
