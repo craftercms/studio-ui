@@ -19,6 +19,9 @@ import StandardAction from '../../models/StandardAction';
 import { OptionsObject } from 'notistack';
 import { Clipboard } from '../../models/GlobalState';
 import { ObtainAuthTokenResponse } from '../../services/auth';
+import User from '../../models/User';
+import { Site } from '../../models/Site';
+import LookupTable from '../../models/LookupTable';
 
 // region Item Events
 
@@ -81,6 +84,11 @@ export const showSystemNotification = /*#__PURE__*/ createAction<{
 
 export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTEM_EVENT');
 
-export const storeInitialized = /*#__PURE__*/ createAction<{ auth: ObtainAuthTokenResponse }>('STORE_INITIALIZED');
+export const storeInitialized = /*#__PURE__*/ createAction<{
+  auth: ObtainAuthTokenResponse;
+  user: User;
+  sites: Array<Site>;
+  properties: LookupTable<any>;
+}>('STORE_INITIALIZED');
 
 export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('MESSAGE_SHARED_WORKER');
