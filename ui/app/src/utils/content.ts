@@ -25,8 +25,20 @@ import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
 import {
+  APPROVE_PUBLISH_ACTION_MASK,
+  COPY_ACTION_MASK,
   CREATE_ACTION_MASK,
+  CUT_ACTION_MASK,
+  DELETE_ACTION_MASK,
+  DUPLICATE_ACTION_MASK,
+  EDIT_CONTROLLER_ACTION_MASK,
+  EDIT_TEMPLATE_ACTION_MASK,
+  HISTORY_ACTION_MASK,
+  MOVE_RENAME_ACTION_MASK,
+  PASTE_ACTION_MASK,
   READ_ACTION_MASK,
+  REJECT_PUBLISH_ACTION_MASK,
+  REQUEST_PUBLISH_ACTION_MASK,
   STATE_MASK_DELETED_MASK,
   STATE_MASK_IN_WORKFLOW_MASK,
   STATE_MASK_LIVE_MASK,
@@ -40,6 +52,7 @@ import {
   STATE_MASK_TRANSLATION_IN_PROGRESS_MASK,
   STATE_MASK_TRANSLATION_PENDING_MASK,
   STATE_MASK_TRANSLATION_UP_TO_DATE_MASK,
+  TRANSLATE_ACTION_MASK,
   UPDATE_ACTION_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
@@ -627,5 +640,19 @@ export const createItemStateMap = (status: number) => {
 };
 
 export const hasReadAction = (value: number) => Boolean(value & READ_ACTION_MASK);
-export const hasCreateOAction = (value: number) => Boolean(value & CREATE_ACTION_MASK);
-export const hasUpdateOAction = (value: number) => Boolean(value & UPDATE_ACTION_MASK);
+export const hasCreateAction = (value: number) => Boolean(value & CREATE_ACTION_MASK);
+export const hasUpdateAction = (value: number) => Boolean(value & UPDATE_ACTION_MASK);
+export const hasDeleteAction = (value: number) => Boolean(value & DELETE_ACTION_MASK);
+export const hasCutAction = (value: number) => Boolean(value & CUT_ACTION_MASK);
+export const hasCopyAction = (value: number) => Boolean(value & COPY_ACTION_MASK);
+export const hasPasteAction = (value: number) => Boolean(value & PASTE_ACTION_MASK);
+export const hasMoveAction = (value: number) => Boolean(value & MOVE_RENAME_ACTION_MASK);
+export const hasRenameAction = (value: number) => Boolean(value & MOVE_RENAME_ACTION_MASK);
+export const hasDuplicateAction = (value: number) => Boolean(value & DUPLICATE_ACTION_MASK);
+export const hasEditControllerAction = (value: number) => Boolean(value & EDIT_CONTROLLER_ACTION_MASK);
+export const hasEditTemplateAction = (value: number) => Boolean(value & EDIT_TEMPLATE_ACTION_MASK);
+export const hasEditTranslateAction = (value: number) => Boolean(value & TRANSLATE_ACTION_MASK);
+export const hasHistoryAction = (value: number) => Boolean(value & HISTORY_ACTION_MASK);
+export const hasRequestPublishAction = (value: number) => Boolean(value & REQUEST_PUBLISH_ACTION_MASK);
+export const hasAPPROVEPublishAction = (value: number) => Boolean(value & APPROVE_PUBLISH_ACTION_MASK);
+export const hasRejectPublishAction = (value: number) => Boolean(value & REJECT_PUBLISH_ACTION_MASK);
