@@ -813,20 +813,27 @@ export function getChildrenByPath(
   );
 }
 
+export function fetchItemsByPath(siteId: string, paths: string[]): Observable<SandboxItem[]>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
   options: FetchItemsByPathOptions
-): Observable<DetailedItem[]> {
+): Observable<DetailedItem[]>;
+export function fetchItemsByPath(
+  siteId: string,
+  paths: string[],
+  options?: FetchItemsByPathOptions
+): Observable<SandboxItem[] | DetailedItem[]> {
   const { castAsDetailedItem = false, preferContent = true } = options;
   const qs = toQueryString({ siteId, paths, preferContent });
   return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
     pluck('response', 'items'),
-    map((items) =>
-      items.map((item) => ({
-        ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
-        stateMap: createItemStateMap(item.state)
-      }))
+    map(
+      (items: SandboxItem[]) =>
+        items.map((item) => ({
+          ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
+          stateMap: createItemStateMap(item.state)
+        })) as SandboxItem[] | DetailedItem[]
     )
   );
 }
