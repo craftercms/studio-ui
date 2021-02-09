@@ -46,6 +46,7 @@ import { getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
+import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -812,12 +813,20 @@ export function getChildrenByPath(
   );
 }
 
-export function fetchItemsByPath(siteId: string, paths: string[], preferContent = true): Observable<DetailedItem[]> {
+export function fetchItemsByPath(
+  siteId: string,
+  paths: string[],
+  options: FetchItemsByPathOptions
+): Observable<DetailedItem[]> {
+  const { castAsDetailedItem = false, preferContent = true } = options;
   const qs = toQueryString({ siteId, paths, preferContent });
   return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
     pluck('response', 'items'),
     map((items) =>
-      items.map((item) => ({ ...parseSandBoxItemToDetailedItem(item), stateMap: createItemStateMap(item.state) }))
+      items.map((item) => ({
+        ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
+        stateMap: createItemStateMap(item.state)
+      }))
     )
   );
 }
