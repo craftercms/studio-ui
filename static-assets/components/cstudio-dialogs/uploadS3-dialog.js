@@ -175,6 +175,8 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 
     CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
       formTarget: '#asset_upload_form',
+      site: site,
+      path: path,
       url: url,
       fileTypes: me.fileTypes,
       onUploadStart: function() {

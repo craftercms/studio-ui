@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
@@ -53,15 +53,21 @@ import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { PrimaryButton } from '../PrimaryButton';
 import { getGlobalHeaders } from '../../utils/ajax';
+import { validateActionPolicy } from '../../services/sites';
+import { Action } from '../../models/Site';
+import WarningIcon from '@material-ui/icons/WarningRounded';
+import ForwardIcon from '@material-ui/icons/ForwardRounded';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDownRounded';
+import ArrowRightRoundedIcon from '@material-ui/icons/ArrowRightRounded';
+import ArrowLeftRoundedIcon from '@material-ui/icons/ArrowLeftRounded';
+import SecondaryButton from '../SecondaryButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const translations = defineMessages({
   title: {
     id: 'uploadDialog.title',
     defaultMessage: 'Upload'
-  },
-  subtitle: {
-    id: 'uploadDialog.subtitle',
-    defaultMessage: 'Drop the desired files from your desktop into space below.'
   },
   close: {
     id: 'words.close',
@@ -91,6 +97,15 @@ const translations = defineMessages({
     id: 'uploadDialog.uploadInProgress',
     defaultMessage:
       'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+  },
+  createPolicy: {
+    id: 'uploadDialog.createPolicy',
+    defaultMessage:
+      'The supplied file path goes against site policies. Suggested file path is: "{path}". Would you like to use the suggested path?'
+  },
+  policyError: {
+    id: 'uploadDialog.policyError',
+    defaultMessage: 'The following files paths goes against site policies: {paths}'
   }
 });
 
@@ -163,12 +178,33 @@ const useStyles = makeStyles((theme) =>
     },
     status: {
       marginLeft: 'auto'
+    },
+    subtitle: {
+      fontSize: '14px',
+      lineHeight: '18px'
+    },
+    subtitleWrapper: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    subtitlePolicyError: {
+      color: theme.palette.error.main,
+      display: 'flex',
+      alignItems: 'center',
+      '& svg': {
+        marginRight: '5px'
+      }
     }
   })
 );
 
 const UppyItemStyles = makeStyles((theme) =>
   createStyles({
+    cardActive: {
+      border: `1px solid ${theme.palette.primary.main}`
+    },
     cardRoot: {
       display: 'flex',
       backgroundColor: theme.palette.background.paper,
@@ -187,32 +223,85 @@ const UppyItemStyles = makeStyles((theme) =>
     cardContent: {
       display: 'flex'
     },
-    cardContentText: {},
+    cardContentWrapper: {
+      width: '100%'
+    },
+    cardContentText: {
+      marginRight: 'auto'
+    },
+    cardContentFlexWrapper: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
     cardMedia: {
-      width: '80px'
+      width: '100px',
+      backgroundColor: theme.palette.background.default,
+      backgroundSize: 'contain'
     },
     caption: {
       color: palette.gray.medium5
     },
+    sitePolicySuggestion: {
+      color: theme.palette.error.main,
+      display: 'flex',
+      marginBottom: '10px',
+      alignItems: 'center',
+      '& svg': {
+        marginRight: '5px'
+      }
+    },
+    sitePolicySuggestionFileName: {
+      display: 'flex',
+      '& svg': {
+        margin: '0 10px',
+        color: theme.palette.text.primary
+      }
+    },
+    sitePolicySuggestionActions: {
+      marginTop: '10px',
+      '& button:first-child': {
+        marginRight: '15px'
+      }
+    },
+    textAccepted: {
+      color: theme.palette.success.main
+    },
     textFailed: {
-      color: palette.red.main
+      color: theme.palette.error.main
+    },
+    textUnderlined: {
+      textDecoration: 'line-through'
     },
     iconRetry: {
-      marginLeft: 'auto',
       height: '48px'
     }
   })
 );
 
-const uppy = Core({ debug: false, autoProceed: true });
+const uppy = Core({
+  debug: false,
+  autoProceed: false,
+  onBeforeUpload: (files) => {
+    const allowedFiles = {};
+    Object.keys(files).forEach((key) => {
+      // @ts-ignore
+      if (files[key].meta.allowed && !files[key].meta.suggestedName) {
+        allowedFiles[key] = files[key];
+      }
+    });
+    return Object.keys(allowedFiles).length ? allowedFiles : false;
+  }
+});
 
-interface UppyFile {
+export interface UppyFile {
   source: string;
   id: string;
   name: string;
   extension: string;
   meta: {
     site?: string;
+    allowed?: boolean;
+    suggestedName?: string;
     relativePath?: string;
     name: string;
     type: string;
@@ -238,7 +327,9 @@ interface UppyFile {
 }
 
 interface UppyItemProps {
-  file: any;
+  file: UppyFile;
+  issueId?: number;
+  active?: boolean;
 
   retryFileUpload(file: UppyFile): void;
 
@@ -247,7 +338,7 @@ interface UppyItemProps {
 
 function UppyItem(props: UppyItemProps) {
   const classes = UppyItemStyles({});
-  const { file, retryFileUpload, onRemove } = props;
+  const { file, retryFileUpload, onRemove, issueId, active } = props;
 
   const handleRetry = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: UppyFile) => {
     event.preventDefault();
@@ -262,37 +353,117 @@ function UppyItem(props: UppyItemProps) {
   };
 
   return (
-    <Card className={classes.cardRoot}>
+    <Card className={clsx(classes.cardRoot, active && classes.cardActive)} data-issue-id={issueId}>
       {file.preview && <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />}
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
-          <div className={classes.cardContentText}>
-            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
-              {file.name}
-            </Typography>
-            <Typography variant="caption" className={classes.caption}>
-              {file.type} @ {bytesToSize(file.size)}
-            </Typography>
-          </div>
-          {file.progress.percentage !== 100 && (
-            <IconButton
-              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                handleRemove(event, file);
-              }}
-              className={classes.iconRetry}
-            >
-              <DeleteRoundedIcon />
-            </IconButton>
+          {file.meta.allowed && file.meta.suggestedName && (
+            <div className={classes.cardContentWrapper}>
+              <div className={classes.sitePolicySuggestion}>
+                <WarningIcon />
+                <Typography variant="body2">
+                  <FormattedMessage
+                    id="uploadDialog.sitePolicySuggestion"
+                    defaultMessage="File name “{name}” requires changes to comply with site policies."
+                    values={{ name: file.name }}
+                  />
+                </Typography>
+              </div>
+              <div className={classes.sitePolicySuggestionFileName}>
+                <Typography variant="body2" className={classes.textUnderlined}>
+                  {file.name}
+                </Typography>
+                <ForwardIcon fontSize="small" />
+                <Typography variant="body2" className={classes.textAccepted}>
+                  {file.meta.suggestedName}
+                </Typography>
+              </div>
+              <Typography variant="caption" className={classes.caption}>
+                {file.type} @ {bytesToSize(file.size)}
+              </Typography>
+              <div className={classes.sitePolicySuggestionActions}>
+                <SecondaryButton
+                  size="small"
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRemove(event, file);
+                  }}
+                >
+                  <FormattedMessage id="sitePolicy.cancelUpload" defaultMessage="Cancel Upload" />
+                </SecondaryButton>
+                <PrimaryButton
+                  size="small"
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRetry(event, file);
+                  }}
+                >
+                  <FormattedMessage id="sitePolicy.acceptChanges" defaultMessage="Accept Changes" />
+                </PrimaryButton>
+              </div>
+            </div>
           )}
-          {file.progress.status === 'failed' && (
-            <IconButton
-              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                handleRetry(event, file);
-              }}
-              className={classes.iconRetry}
-            >
-              <ReplayIcon />
-            </IconButton>
+          {file.meta.allowed && !file.meta.suggestedName && (
+            <>
+              <div className={classes.cardContentText}>
+                <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+                  {file.name}
+                </Typography>
+                <Typography variant="caption" className={classes.caption}>
+                  {file.type} @ {bytesToSize(file.size)}
+                </Typography>
+              </div>
+              {(file.progress.percentage !== 100 || file.progress.status === 'failed') && (
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRemove(event, file);
+                  }}
+                  className={classes.iconRetry}
+                >
+                  <DeleteRoundedIcon />
+                </IconButton>
+              )}
+              {file.progress.status === 'failed' && (
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRetry(event, file);
+                  }}
+                  className={classes.iconRetry}
+                >
+                  <ReplayIcon />
+                </IconButton>
+              )}
+            </>
+          )}
+          {file.meta.allowed === false && (
+            <div className={classes.cardContentWrapper}>
+              <div className={classes.sitePolicySuggestion}>
+                <WarningIcon />
+                <Typography variant="body2">
+                  <FormattedMessage
+                    id="uploadDialog.sitePolicySuggestion"
+                    defaultMessage="File name “{name}” doesn't comply with site policies and can’t be uploaded."
+                    values={{ name: file.name }}
+                  />
+                </Typography>
+              </div>
+              <div className={classes.cardContentFlexWrapper}>
+                <div>
+                  <Typography variant="body2" className={classes.textUnderlined}>
+                    {file.name}
+                  </Typography>
+                  <Typography variant="caption" className={classes.caption}>
+                    {file.type} @ {bytesToSize(file.size)}
+                  </Typography>
+                </div>
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    handleRemove(event, file);
+                  }}
+                  className={classes.iconRetry}
+                >
+                  <DeleteRoundedIcon />
+                </IconButton>
+              </div>
+            </div>
           )}
         </div>
         <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
@@ -301,11 +472,14 @@ function UppyItem(props: UppyItemProps) {
   );
 }
 
+type actionBus = 'accept' | 'reject' | 'next' | 'previous' | 'cancel' | 'showAll' | 'showIssuesOnly';
+
 interface DropZoneProps {
   path: string;
   site: string;
   maxSimultaneousUploads: number;
   cancelRequestObservable$: Observable<any>;
+  actionBus$: Observable<actionBus>;
 
   onStatusChange(status: DropZoneStatus): void;
   onFileUploaded(path: string): void;
@@ -314,20 +488,63 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads, onFileUploaded, cancelRequestObservable$ } = props;
+  const {
+    onStatusChange,
+    path,
+    site,
+    maxSimultaneousUploads,
+    onFileUploaded,
+    cancelRequestObservable$,
+    actionBus$
+  } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
+  const [filesPerPathFilteredByIssues, setFilesPerPathFilteredByIssues] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
+  const [issueIdPerFileId, setIssueIdPerFileId] = useState<LookupTable<number>>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState(0);
+  const [showIssuesOnly, setShowIssuesOnly] = useState(false);
+
+  const onPrevIssue = useCallback(() => {
+    if (selectedIssueId > 0) {
+      let prev = selectedIssueId - 1;
+      setSelectedIssueId(prev);
+      document.querySelector(`[data-issue-id="${prev}"]`)?.scrollIntoView();
+    }
+  }, [selectedIssueId]);
+
+  const onNextIssue = useCallback(() => {
+    let next = selectedIssueId + 1;
+    const issue = document.querySelector(`[data-issue-id="${selectedIssueId}"]`);
+    if (issue) {
+      setSelectedIssueId(next);
+      document.querySelector(`[data-issue-id="${selectedIssueId}"]`).scrollIntoView();
+    }
+  }, [selectedIssueId]);
 
   const retryFileUpload = (file: UppyFile) => {
+    file.progress.status = 'uploading';
+    if (file.meta.suggestedName) {
+      file.meta.suggestedName = null;
+      uppy.setFileMeta(file.id, { suggestedName: null });
+    }
+    setFiles({ [file.id]: file });
     uppy.retryUpload(file.id);
   };
 
   const onRemove = (file: UppyFile) => {
+    if (selectedIssueId > 0 && selectedIssueId === issueIdPerFileId[file.id]) {
+      setSelectedIssueId(selectedIssueId - 1);
+    }
+    if (uploadedFiles === totalFiles - 1) {
+      setShowIssuesOnly(false);
+    }
     uppy.removeFile(file.id);
+    setTotalFiles(totalFiles - 1);
+    onStatusChange({ ...(uploadedFiles === totalFiles - 1 && { status: 'complete' }), files: totalFiles - 1 });
     setFiles({ [file.id]: null });
   };
 
@@ -341,7 +558,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const handleOnDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    getDroppedFiles(event.dataTransfer).then((files) => addFiles(files));
+    getDroppedFiles(event.dataTransfer).then((fileList) => {
+      const files = fileList.filter((file) => checkFileExist(file));
+      if (files.length) {
+        addFiles(files);
+      }
+    });
     setDragOver(false);
     removeDragData(event);
   };
@@ -353,32 +575,48 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = toArray(event.target.files);
-    addFiles(files);
+    const files = toArray(event.target.files).filter((file) => checkFileExist(file));
+    if (files.length) {
+      addFiles(files);
+    }
     event.target.value = null;
   };
 
   function addFiles(files: File[]) {
     setTotalFiles(totalFiles + files.length);
-    onStatusChange({ status: 'adding', files: totalFiles + files.length });
-    interval(50)
-      .pipe(takeUntil(cancelRequestObservable$), take(files.length))
-      .subscribe((index) => {
-        const file: File & { relativePath?: string } = files[index];
-        checkFileExist(file) &&
+    onStatusChange({ status: 'validating', files: totalFiles + files.length });
+    validateActionPolicy(
+      site,
+      files.map((file) => ({
+        type: 'CREATE',
+        target: `${path}/${file.name}`
+      })) as Action[]
+    ).subscribe((response) => {
+      onStatusChange({ status: 'adding' });
+      interval(50)
+        .pipe(takeUntil(cancelRequestObservable$), take(response.length))
+        .subscribe((index) => {
+          const { allowed, modifiedValue, target } = response[index];
+          const fileName = target.replace(`${path}/`, '');
+          const file: File & { relativePath?: string } = files.find((file) => file.name === fileName);
           uppy.addFile({
             name: file.name,
             type: file.type,
             data: file,
             meta: {
+              allowed: allowed,
+              ...(modifiedValue && { suggestedName: modifiedValue.replace(`${path}/`, '') }),
               relativePath: file.relativePath || null
             }
           });
-      });
+        });
+    });
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
+    return (
+      !files || !Object.values(files).some((file) => file && file.name === newFile.name && file.type === newFile.type)
+    );
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -389,14 +627,16 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     }
   }
 
+  // Listening sitePolicyOptions: acceptAll or rejectAll
   useEffect(() => {
-    if (cancelRequestObservable$) {
-      const subs = cancelRequestObservable$.subscribe(() => {
-        uppy.cancelAll();
-        let successFiles = { ...files };
+    const subs = actionBus$.subscribe((option) => {
+      if (option === 'reject') {
+        const successFiles = { ...files };
         let count = 0;
-        Object.values(files).forEach((file: UppyFile) => {
-          if (file?.progress?.percentage < 100) {
+        Object.values(files).forEach((file) => {
+          if (!file) return;
+          if ((file.meta.allowed && file.meta.suggestedName) || !file.meta.allowed) {
+            uppy.removeFile(file.id);
             successFiles[file.id] = null;
           } else {
             count++;
@@ -404,6 +644,52 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         });
         setFiles(successFiles);
         setTotalFiles(count);
+        setSelectedIssueId(0);
+        onStatusChange({ ...(uploadedFiles === count && { status: 'complete' }), files: count });
+      } else if (option === 'accept') {
+        const successFiles = { ...files };
+        Object.values(files).forEach((file) => {
+          if (!file) return;
+          if (file.meta.allowed && file.meta.suggestedName) {
+            successFiles[file.id] = {
+              ...file,
+              meta: { ...file.meta, suggestedName: null },
+              progress: { ...file.progress, status: 'uploading' }
+            };
+            uppy.setFileMeta(file.id, { suggestedName: null });
+            uppy.retryUpload(file.id);
+          }
+        });
+        setFiles(successFiles);
+        setSelectedIssueId(0);
+      } else if (option === 'next') {
+        onNextIssue();
+      } else if (option === 'previous') {
+        onPrevIssue();
+      } else if (option === 'showAll' || option === 'showIssuesOnly') {
+        setShowIssuesOnly(option === 'showIssuesOnly');
+      }
+    });
+    return () => subs.unsubscribe();
+  }, [files, onStatusChange, actionBus$, setFiles, uploadedFiles, onNextIssue, onPrevIssue]);
+
+  useEffect(() => {
+    if (cancelRequestObservable$) {
+      const subs = cancelRequestObservable$.subscribe(() => {
+        uppy.cancelAll();
+        const successFiles = { ...files };
+        let count = 0;
+        Object.values(files).forEach((file: UppyFile) => {
+          if (file?.progress?.percentage < 100 || file?.progress?.status === 'failed') {
+            successFiles[file.id] = null;
+          } else {
+            count++;
+          }
+        });
+        setFiles(successFiles);
+        setTotalFiles(count);
+        setSelectedIssueId(0);
+        setShowIssuesOnly(false);
         onStatusChange({ status: 'complete', files: count });
       });
       return () => subs.unsubscribe();
@@ -457,13 +743,24 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           file.preview = e.target.result;
           try {
             uppy.setFileState(file.id, { preview: e.target.result });
+            file.preview = e.target.result;
             setFiles({ [file.id]: file });
+            if (file.meta.allowed && !file.meta.suggestedName) {
+              uppy.retryUpload(file.id);
+            } else {
+              onStatusChange({ status: 'pending' });
+            }
           } catch (error) {
             console.error(error);
           }
         };
         reader.readAsDataURL(file.data);
       } else {
+        if (file.meta.allowed && !file.meta.suggestedName) {
+          uppy.retryUpload(file.id);
+        } else {
+          onStatusChange({ status: 'pending' });
+        }
         setFiles({ [file.id]: file });
       }
     };
@@ -489,6 +786,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     const handleComplete = () => {
       if (uploadedFiles === totalFiles) {
         onStatusChange({ status: 'complete', progress: 100 });
+      } else {
+        onStatusChange({ status: 'pending' });
       }
     };
 
@@ -509,14 +808,29 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     if (files !== null) {
       let filesPerPath: any = {};
+      let filesPerPathFilteredByIssues: any = {};
+      let issueNumberPerFileId: any = {};
+      let count = 0;
       Object.values(files).forEach((file: UppyFile) => {
         if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
+          filesPerPathFilteredByIssues[file.meta.path] = [];
+        }
+        if (file.meta.suggestedName || !file.meta.allowed) {
+          filesPerPathFilteredByIssues[file.meta.path].push(file.id);
+          issueNumberPerFileId[file.id] = count;
+          count++;
         }
         filesPerPath[file.meta.path].push(file.id);
       });
+
+      onStatusChange({ sitePolicyFileCount: count });
+      setIssueIdPerFileId(issueNumberPerFileId);
       setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
+      setFilesPerPathFilteredByIssues(
+        Object.keys(filesPerPathFilteredByIssues).length ? filesPerPathFilteredByIssues : null
+      );
     }
   }, [files, onStatusChange]);
 
@@ -531,16 +845,27 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         onClick={() => !filesPerPath && ref.current?.click()}
       >
         {filesPerPath && files ? (
-          Object.keys(filesPerPath).map((fileId) => (
+          Object.keys(showIssuesOnly ? filesPerPathFilteredByIssues : filesPerPath).map((fileId, x) => (
             <div key={fileId} className={classes.sectionFiles}>
               <Typography variant="subtitle2" className={classes.sectionTitle}>
                 {fileId}:
               </Typography>
               {files &&
-                filesPerPath[fileId].map(
-                  (id: string) =>
+                (showIssuesOnly ? filesPerPathFilteredByIssues : filesPerPath)[fileId].map(
+                  (id: string, y) =>
                     files[id] && (
-                      <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} onRemove={onRemove} />
+                      <UppyItem
+                        issueId={
+                          (files[id].meta.allowed && files[id].meta.suggestedName) || !files[id].meta.allowed
+                            ? issueIdPerFileId[id]
+                            : null
+                        }
+                        active={selectedIssueId === issueIdPerFileId[id]}
+                        file={files[id]}
+                        key={id}
+                        retryFileUpload={retryFileUpload}
+                        onRemove={onRemove}
+                      />
                     )
                 )}
             </div>
@@ -576,18 +901,22 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   );
 });
 
+type status = 'adding' | 'validating' | 'pending' | 'uploading' | 'failed' | 'complete' | 'idle';
+
 export interface DropZoneStatus {
-  status?: string;
+  status?: status;
   files?: number;
   uploadedFiles?: number;
   progress?: number;
+  sitePolicyFileCount?: number;
 }
 
 const initialDropZoneStatus: DropZoneStatus = {
   status: 'idle',
   files: null,
   uploadedFiles: 0,
-  progress: 0
+  progress: 0,
+  sitePolicyFileCount: null
 };
 
 interface UploadDialogBaseProps {
@@ -675,7 +1004,7 @@ export default function UploadDialog(props: UploadDialogProps) {
       }
       onClose={() => onClose({ dropZoneStatus, path })}
       fullWidth
-      maxWidth="sm"
+      maxWidth={dropZoneStatus.files ? 'md' : 'sm'}
     >
       <UploadDialogUI
         {...props}
@@ -711,8 +1040,19 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   } = props;
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [showAll, setShowAll] = useState<boolean>(true);
 
   const cancelRequestObservable$ = useSubject<void>();
+  const actionBus$ = useSubject<actionBus>();
+
+  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
 
   const onBrowse = () => {
     inputRef.current.click();
@@ -720,6 +1060,11 @@ function UploadDialogUI(props: UploadDialogUIProps) {
 
   const onCancel = () => {
     cancelRequestObservable$.next();
+  };
+
+  const onOptionMenuClicked = (option: actionBus) => {
+    closeMenu();
+    actionBus$.next(option);
   };
 
   useEffect(() => {
@@ -742,7 +1087,9 @@ function UploadDialogUI(props: UploadDialogUIProps) {
     <>
       <DialogHeader
         title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
+        classes={{
+          subtitleWrapper: classes.subtitleWrapper
+        }}
         onDismiss={
           dropZoneStatus.status === 'uploading'
             ? onMinimized
@@ -753,7 +1100,76 @@ function UploadDialogUI(props: UploadDialogUIProps) {
                 })
         }
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
-      />
+      >
+        {Boolean(dropZoneStatus.sitePolicyFileCount) ? (
+          <>
+            <div className={classes.subtitlePolicyError}>
+              <WarningIcon />
+              <Typography className={classes.subtitle}>
+                <FormattedMessage
+                  id="sitePolicy.subtitle"
+                  defaultMessage="{count, plural, one {{count} file name present a issue. Please review the item.} other {{count} file names present issues. Please review the list.}}"
+                  values={{
+                    count: dropZoneStatus.sitePolicyFileCount
+                  }}
+                />
+              </Typography>
+            </div>
+            <div>
+              <IconButton size="small" color="primary" onClick={() => onOptionMenuClicked('previous')}>
+                <ArrowLeftRoundedIcon />
+              </IconButton>
+              <IconButton size="small" color="primary" onClick={() => onOptionMenuClicked('next')}>
+                <ArrowRightRoundedIcon />
+              </IconButton>
+              <Button size="small" onClick={openMenu} color="primary">
+                <FormattedMessage id="words.options" defaultMessage="Options" />
+                <ArrowDropDownIcon />
+              </Button>
+            </div>
+            <Menu
+              anchorEl={anchorEl}
+              getContentAnchorEl={null}
+              open={Boolean(anchorEl)}
+              onClose={closeMenu}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+            >
+              <MenuItem onClick={() => onOptionMenuClicked('accept')}>
+                <FormattedMessage id="sitePolicyOptionAcceptAll" defaultMessage="Accept all changes" />
+              </MenuItem>
+              <MenuItem onClick={() => onOptionMenuClicked('reject')}>
+                <FormattedMessage id="sitePolicyOptionRejectAll" defaultMessage="Reject all changes" />
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onOptionMenuClicked(showAll ? 'showIssuesOnly' : 'showAll');
+                  setShowAll(!showAll);
+                }}
+              >
+                {showAll ? (
+                  <FormattedMessage id="sitePolicyOptionIssuesOnly" defaultMessage="Show issues only" />
+                ) : (
+                  <FormattedMessage id="sitePolicyOptionShowAll" defaultMessage="Show all files" />
+                )}
+              </MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <Typography className={classes.subtitle}>
+            <FormattedMessage
+              id="uploadDialog.subtitle"
+              defaultMessage="Drop the desired files from your desktop into space below."
+            />
+          </Typography>
+        )}
+      </DialogHeader>
       <DialogBody className={classes.dialogContent}>
         <DropZone
           onFileUploaded={onFileUploaded}
@@ -763,11 +1179,12 @@ function UploadDialogUI(props: UploadDialogUIProps) {
           maxSimultaneousUploads={maxSimultaneousUploads}
           ref={inputRef}
           cancelRequestObservable$={cancelRequestObservable$}
+          actionBus$={actionBus$}
         />
       </DialogBody>
       {dropZoneStatus.status !== 'idle' && (
         <DialogFooter>
-          {dropZoneStatus.status === 'uploading' && (
+          {['pending', 'uploading', 'validating', 'adding'].includes(dropZoneStatus.status) && (
             <Button
               id="cancelBtn"
               onClick={onCancel}
@@ -778,7 +1195,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
               children={formatMessage(translations.cancelAll)}
             />
           )}
-          {dropZoneStatus.files && (
+          {Boolean(dropZoneStatus.files) && (
             <Typography variant="caption" className={classes.status}>
               {formatMessage(translations.filesProgression, {
                 start: dropZoneStatus.uploadedFiles,
