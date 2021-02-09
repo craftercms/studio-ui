@@ -169,12 +169,67 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     }
   };
 
+  const filterToFacet = (filterKey, filterValue) => {
+    const multiple = typeof filterValue === 'object';
+    const date = !multiple && filterValue.includes('TODATE');
+    const range = !multiple && !date && filterValue.includes('TO');
+    const name = filterKey;
+    let values = {};
+
+    if (multiple) {
+      Object.keys(filterValue).forEach((value) => {
+        values[value] = 0;
+      });
+    } else {
+      if (date) {
+        const facetDetails = filterValue.split('ID');
+        const id = facetDetails[1].replace(filterKey, '');
+        const dateDetails = facetDetails[0].split('TODATE');
+        const from = dateDetails[0] === 'null' ? null : dateDetails[0];
+        const to = dateDetails[1] === 'null' ? null : dateDetails[1];
+
+        values[id] = {
+          count: 0,
+          from,
+          to
+        };
+      } else {
+        const rangeDetails = filterValue.split('TO');
+        const rangeStart = filterValue.startsWith('TO') ? null : rangeDetails[0];
+        const rangeEnd = filterValue.endsWith('TO') ? null : rangeDetails[1];
+        const id = `${rangeStart ?? '*'}-${rangeEnd ?? '*'}`;
+
+        values[id] = {
+          count: 0,
+          from: rangeStart ?? '-Infinity',
+          to: rangeStart ?? 'Infinity'
+        };
+      }
+    }
+
+    return {
+      date,
+      multiple,
+      name,
+      range,
+      values
+    };
+  };
+
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
 
   facets.forEach((facet) => {
     filterKeys.push(facet.name);
     facetsLookupTable[facet.name] = facet;
+  });
+
+  // Add filters already selected not coming from facets
+  Object.keys(checkedFilters).forEach((filterKey) => {
+    if (!filterKeys.includes(filterKey)) {
+      filterKeys.push(filterKey);
+      facetsLookupTable[filterKey] = filterToFacet(filterKey, checkedFilters[filterKey]);
+    }
   });
 
   const handleExpandClick = (item: string) => {
@@ -256,14 +311,16 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <SiteSearchFilter
-              facet={key}
-              handleFilterChange={handleFilterChange}
-              checkedFilters={checkedFilters}
-              setCheckedFilters={setCheckedFilters}
-              facetsLookupTable={facetsLookupTable}
-              handleClearClick={handleClearClick}
-            />
+            {facetsLookupTable[key] && (
+              <SiteSearchFilter
+                facet={key}
+                handleFilterChange={handleFilterChange}
+                checkedFilters={checkedFilters}
+                setCheckedFilters={setCheckedFilters}
+                facetsLookupTable={facetsLookupTable}
+                handleClearClick={handleClearClick}
+              />
+            )}
           </AccordionDetails>
         </Accordion>
       ))}
