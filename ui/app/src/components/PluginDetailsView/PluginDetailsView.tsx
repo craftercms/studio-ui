@@ -176,9 +176,12 @@ const messages = defineMessages({
 
 interface PluginDetailsViewProps {
   plugin: MarketplacePlugin;
-  selectedIndex?: number;
-  interval?: number;
-  marketplace?: boolean;
+  selectedImageSlideIndex?: number;
+  changeImageSlideInterval?: number;
+  isMarketplacePlugin?: boolean;
+  useLabel?: string | JSX.Element;
+  usePermission?: boolean;
+  inUse?: boolean;
 
   onCloseDetails(event: any): any;
 
@@ -190,8 +193,18 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
-  const { plugin, interval = 5000, onBlueprintSelected, onCloseDetails, selectedIndex = 0, marketplace = true } = props;
-  const [index, setIndex] = useState(selectedIndex);
+  const {
+    plugin,
+    changeImageSlideInterval = 5000,
+    onBlueprintSelected,
+    onCloseDetails,
+    selectedImageSlideIndex = 0,
+    isMarketplacePlugin = true,
+    inUse = false,
+    usePermission = true,
+    useLabel
+  } = props;
+  const [index, setIndex] = useState(selectedImageSlideIndex);
   const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
 
@@ -258,21 +271,22 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         <Typography variant="h5" component="h1">
           {name}
         </Typography>
-        {((marketplace && compatible) || !marketplace) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
+        {((isMarketplacePlugin && compatible) || !isMarketplacePlugin) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
           <Button
             variant="contained"
             color="primary"
             className={classes.useBtn}
+            disabled={!usePermission || inUse}
             onClick={() => onBlueprintSelected(plugin, 1)}
           >
-            {formatMessage(messages.use)}
+            {useLabel ? useLabel : formatMessage(messages.use)}
           </Button>
         )}
       </div>
       <AutoPlaySwipeableViews
         index={index}
         autoplay={!play}
-        interval={interval}
+        interval={changeImageSlideInterval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
         slideStyle={{ height: '340px' }}
@@ -292,7 +306,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
       <div className={classes.detailsContainer}>
         <Grid container spacing={3}>
           <Grid item xs={8}>
-            {marketplace && !compatible && (
+            {isMarketplacePlugin && !compatible && (
               <Alert severity="error" className={classes.detailsNotCompatible}>
                 <FormattedMessage
                   id="pluginDetails.notCompatible"

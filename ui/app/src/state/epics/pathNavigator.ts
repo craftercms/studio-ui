@@ -152,7 +152,7 @@ export default [
           const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
           if (parentsPath.length > 1) {
             return forkJoin([
-              fetchItemsByPath(site, parentsPath),
+              fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
               getChildrenByPath(site, path, {
                 excludes,
                 limit

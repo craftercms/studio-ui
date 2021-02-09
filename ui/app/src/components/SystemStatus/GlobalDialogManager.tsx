@@ -30,6 +30,7 @@ import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
+import GlobalNav from '../Navigation/GlobalNav';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -414,6 +415,10 @@ function GlobalDialogManager() {
         anchorReference={state.itemMenu.anchorReference}
         anchorPosition={state.itemMenu.anchorPosition}
       />
+      {/* endregion */}
+
+      {/* region Global Navigation */}
+      <GlobalNav />
       {/* endregion */}
     </Suspense>
   );

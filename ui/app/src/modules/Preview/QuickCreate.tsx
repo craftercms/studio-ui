@@ -204,7 +204,7 @@ const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMen
   const { onMenuBtnClick, disabled = false } = props;
   const { formatMessage } = useIntl();
   return (
-    <Tooltip title={formatMessage(translations.quickCreateMenuTooltip)}>
+    <Tooltip title={disabled ? '' : formatMessage(translations.quickCreateMenuTooltip)}>
       <IconButton
         disabled={disabled}
         ref={ref}

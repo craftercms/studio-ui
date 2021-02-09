@@ -38,6 +38,7 @@ import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSele
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
+import { GlobalNavStateProps } from '../../components/Navigation/GlobalNav';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -115,13 +116,18 @@ export const dependenciesDialogClosed = /*#__PURE__*/ createAction('DEPENDENCIES
 // endregion
 
 // region Workflow Cancellation
+
 export const showWorkflowCancellationDialog = /*#__PURE__*/ createAction<Partial<WorkflowCancellationDialogStateProps>>(
   'SHOW_WORKFLOW_CANCELLATION_DIALOG'
 );
+
 export const closeWorkflowCancellationDialog = /*#__PURE__*/ createAction<StandardAction>(
   'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
 );
+
 export const workflowCancellationDialogClosed = /*#__PURE__*/ createAction('WORKFLOW_CANCELLATION_DIALOG_CLOSED');
+
+// endregion
 
 // region Reject
 export const showRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
@@ -200,8 +206,17 @@ export const pathSelectionDialogClosed = /*#__PURE__*/ createAction('PATH_SELECT
 // endregion
 
 // region Item Menu
+
 export const showItemMenu = /*#__PURE__*/ createAction<Partial<ItemMenuStateProps>>('SHOW_ITEM_MENU');
 export const closeItemMenu = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ITEM_MENU');
 export const itemMenuClosed = /*#__PURE__*/ createAction('ITEM_MENU_CLOSED');
+
+// endregion
+
+// region Global Nav
+
+export const showGlobalNav = /*#__PURE__*/ createAction<Partial<GlobalNavStateProps>>('SHOW_GLOBAL_NAV');
+
+export const closeGlobalNav = /*#__PURE__*/ createAction('CLOSE_GLOBAL_NAV');
 
 // endregion

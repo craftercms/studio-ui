@@ -52,13 +52,14 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 
     var callback = {
       success: function(imageData) {
-        var topWin = window.top.CStudioAuthoring.ContextualNav
-          ? window.top.CStudioAuthoring.ContextualNav.WcmRootFolder
-          : null;
-
-        if (topWin && topWin.currentTextNode && topWin.myTreeAssets) {
-          topWin.refreshNodes(topWin.currentTextNode, false, false, topWin.myTreeAssets, null, true);
-        }
+        // Using emitSystemEvent on fileUpload avoid to use this to refresh the pathNavigator
+        // var topWin = window.top.CStudioAuthoring.ContextualNav
+        //   ? window.top.CStudioAuthoring.ContextualNav.WcmRootFolder
+        //   : null;
+        //
+        // if (topWin && topWin.currentTextNode && topWin.myTreeAssets) {
+        //   topWin.refreshNodes(topWin.currentTextNode, false, false, topWin.myTreeAssets, null, true);
+        // }
         var relativeUrl = path.endsWith('/') ? path + imageData.fileName : path + '/' + imageData.fileName;
         var url = this.context.createPreviewUrl(relativeUrl);
         imageData.previewUrl = url + '?' + new Date().getTime();

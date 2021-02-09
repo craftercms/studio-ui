@@ -38,6 +38,8 @@ const useStyles = makeStyles((theme) =>
       ...styles.appBar
     }),
     toolbar: (styles) => ({
+      paddingLeft: theme.spacing(1.5),
+      paddingRight: theme.spacing(1.5),
       placeContent: 'center space-between',
       '& > section': {
         display: 'flex',

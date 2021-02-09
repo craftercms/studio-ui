@@ -199,7 +199,13 @@
   text-overflow: ellipsis;
 }
 
-#toolbarGlobalNav {
+#appsIconGlobalNav {
+  float: right;
+  border-left: 1px solid #eee;
+}
+
+#appsIconGlobalNav,
+#brandGlobalNavOpenerButton {
   height: 52px;
   display: flex;
   align-items: center;

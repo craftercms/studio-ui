@@ -6507,6 +6507,65 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
+      showConfirmDialog: function(title, body, callback) {
+        const onOk = 'confirmDialogOnOk';
+        const onCancel = 'confirmDialogOnCancel';
+        let unsubscribe, cancelUnsubscribe;
+
+        if (callback) {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_CONFIRM_DIALOG',
+            payload: {
+              open: true,
+              title,
+              body,
+              onOk: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: onOk }
+                  },
+                  {
+                    type: 'CLOSE_CONFIRM_DIALOG'
+                  }
+                ]
+              },
+              onCancel: {
+                type: 'CONFIRM_DIALOG_CLOSED'
+              },
+              onClosed: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: onCancel }
+                  },
+                  { type: 'CONFIRM_DIALOG_CLOSED' }
+                ]
+              }
+            }
+          });
+
+          unsubscribe = CrafterCMSNext.createLegacyCallbackListener(onOk, () => {
+            callback();
+            cancelUnsubscribe();
+          });
+          cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(onCancel, () => {
+            unsubscribe();
+          });
+        } else {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_CONFIRM_DIALOG',
+            payload: {
+              open: true,
+              title,
+              body
+            }
+          });
+        }
+      },
+
       addPopover: function($element, title, content) {
         $element
           .popover({

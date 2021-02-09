@@ -106,8 +106,6 @@
       } else if (previousChoice) {
         if (previousChoice === '2') {
           doGo();
-        } else if (previousChoice === 'ask') {
-          showCompatDialog();
         }
       } /* if (!previousChoice) */ else {
         const usersService = CrafterCMSNext.services.users;
