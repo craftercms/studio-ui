@@ -16,15 +16,16 @@
 
 import React from 'react';
 import MuiDialogActions, { DialogActionsProps } from '@material-ui/core/DialogActions';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-const styles = makeStyles((theme: Theme) =>
+const styles = makeStyles((theme) =>
   createStyles({
     root: {
       minHeight: '50px',
       backgroundColor: theme.palette.background.paper,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)'
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+      padding: `${theme.spacing(1)}px ${theme.spacing(1.8)}px`
     }
   })
 );

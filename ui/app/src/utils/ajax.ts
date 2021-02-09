@@ -20,6 +20,7 @@ import { reversePluckProps } from './object';
 import { Observable, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
 import { ObservableInput } from 'rxjs';
+import StandardAction from '../models/StandardAction';
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
@@ -95,18 +96,22 @@ export function del(url: string, headers: object = {}): Observable<AjaxResponse>
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-export const catchAjaxError = (fetchFailedCreator) =>
+export const catchAjaxError = (
+  fetchFailedCreator: any,
+  ...moreActionCreators: Array<(error: Partial<AjaxError>) => StandardAction>
+) =>
   catchError((error: any) => {
     if (error.name === 'AjaxError') {
       const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
-      ajaxError.response = {
-        message: ajaxError.response?.message ?? 'An unknown error has occurred.'
+      ajaxError.response = ajaxError.response?.response ?? {
+        code: ajaxError.status,
+        message: 'An unknown error has occurred.'
       };
+      const actions = [fetchFailedCreator(ajaxError), ...moreActionCreators.map((ac) => ac(ajaxError))];
       if (ajaxError.status === 401) {
-        return of(fetchFailedCreator(ajaxError), sessionTimeout());
-      } else {
-        return of(fetchFailedCreator(ajaxError));
+        actions.push(sessionTimeout());
       }
+      return of(...actions);
     } else {
       console.error('[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.', error);
       throw error;

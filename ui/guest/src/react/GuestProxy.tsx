@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { useGuestContext } from './GuestContext';
+import { useGuestContext, useSelector } from './GuestContext';
 import * as ElementRegistry from '../classes/ElementRegistry';
 import { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import * as iceRegistry from '../classes/ICERegistry';
@@ -43,7 +43,6 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { useSelector } from 'react-redux';
 import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';

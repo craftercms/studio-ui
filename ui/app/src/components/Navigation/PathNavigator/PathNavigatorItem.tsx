@@ -50,12 +50,12 @@ interface NavItemProps {
 }
 
 const translations = defineMessages({
-  view: {
-    id: 'words.view',
-    defaultMessage: 'View'
+  viewChildren: {
+    id: 'pathNavigator.viewChildren',
+    defaultMessage: 'View children'
   },
   noChildren: {
-    id: 'navigator.noChildren',
+    id: 'pathNavigator.noChildren',
     defaultMessage: 'Item has no children'
   },
   itemMenu: {
@@ -148,12 +148,12 @@ export default function PathNavigatorItem(props: NavItemProps) {
         )}
         {showItemNavigateToButton && (
           <Tooltip
-            title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.view)}
+            title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
             classes={{ tooltip: clsx(isLeaf && classes.leafTooltip) }}
           >
             <IconButton
               disableRipple={isLeaf}
-              aria-label={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.view)}
+              aria-label={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
               className={clsx(classes.itemIconButton, isLeaf && 'Mui-disabled')}
               onClick={(event) => {
                 event.preventDefault();

@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
@@ -66,11 +66,10 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     compact: {
-      marginRight: 'auto',
-      paddingLeft: '20px'
+      marginRight: 'auto'
     },
     dialogContent: {
       minHeight: 455
@@ -92,9 +91,7 @@ interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[] | any>;
   isCompact: boolean;
   selectedContentType?: string;
-
   onTypeOpen(data: LegacyFormConfig): void;
-
   getPrevImg(data: LegacyFormConfig): string;
 }
 

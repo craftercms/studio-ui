@@ -26,10 +26,27 @@ export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string }>('DISP
 // endregion
 
 // region TemplateActions
+
 export const changeContentType = /*#__PURE__*/ createAction<{
   originalContentTypeId: string;
   path: string;
   newContentTypeId?: string;
 }>('CHANGE_CONTENT_TYPE');
-export const editTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
+
+export const editContentTypeTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
+  'EDIT_CONTENT_TYPE_TEMPLATE'
+);
+
+interface EditFilePayload {
+  path: string;
+  fileName: string;
+  // The `openOnSuccess` really belongs to CreateFileDialog onCreated (success)
+  // payload; it's added here to integrate with it
+  openOnSuccess?: boolean;
+}
+
+export const editTemplate = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_TEMPLATE');
+
+export const editController = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_CONTROLLER');
+
 // endregion

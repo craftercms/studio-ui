@@ -14,33 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { ListItem, ListItemText, Snackbar, Theme } from '@material-ui/core';
+import { ListItem, ListItemText, Snackbar } from '@material-ui/core';
 import palette from '../../styles/palette';
 import { defineMessages, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../utils/hooks';
-import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
-import { useDispatch } from 'react-redux';
-import StandardAction from '../../models/StandardAction';
-import { DetailedItem } from '../../models/Item';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { rand } from '../Navigation/PathNavigator/utils';
+import Button from '@material-ui/core/Button';
 
 export interface ItemActionsSnackbarProps {
   open: boolean;
-  selectedItems: string[];
-  mode?: string;
-  handleClearSelected(): void;
-  onActionSuccess?: StandardAction;
-  onAcceptSelection?(items: DetailedItem[]): any;
+  options: Array<{
+    id: string;
+    label: ReactNode;
+  }>;
+  onActionClicked(id: string): void;
+  append?: ReactNode;
+  prepend?: ReactNode;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   actionsBar: {
     zIndex: theme.zIndex.modal,
-
     '& .MuiSnackbarContent-root': {
       backgroundColor: palette.blue.highlightHex,
       color: palette.black,
@@ -56,109 +53,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   actionsList: {
     display: 'flex',
     flexDirection: 'row',
-    padding: 0,
-    color: theme.palette.primary.main
-  },
-  resultsSelected: {
-    margin: '0 16px',
-    display: 'flex',
-    alignItems: 'center',
-    color: palette.gray.dark1
-  },
-  clearSelected: {
-    marginLeft: '5px',
-    cursor: 'pointer'
+    padding: 0
   }
 }));
 
 const messages = defineMessages({
-  resultsSelected: {
-    id: 'search.resultsSelected',
-    defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}'
-  },
   acceptSelection: {
     id: 'search.acceptSelection',
     defaultMessage: 'Accept Selection'
+  },
+  noOptionsAvailable: {
+    id: 'siteSearch.noOptionsAvailable',
+    defaultMessage: 'No options available'
   }
 });
 
-const actions = [
-  'edit',
-  'publish',
-  'delete',
-  'reject',
-  'schedule',
-  'duplicate,',
-  'duplicateAsset',
-  'dependencies',
-  'history'
-];
-
-export default function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
-  const { open, selectedItems, handleClearSelected, onActionSuccess, mode = 'default', onAcceptSelection } = props;
-  const classes = useStyles({});
+function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
+  const { open, options, onActionClicked, append, prepend } = props;
+  const classes = useStyles();
   const { formatMessage } = useIntl();
-  const permissions = usePermissions();
-  const items = useSelection((state) => state.content.items);
-  const [selectionOptions, setSelectionOptions] = useState([]);
-  const site = useActiveSiteId();
-  const { authoringBase } = useEnv();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
-  const clipboard = useSelection((state) => state.content.clipboard);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (permissions && selectedItems.length) {
-      if (selectedItems.length === 1) {
-        const path = selectedItems[0];
-        const item = items.byPath?.[path];
-
-        if (item) {
-          const options = generateSingleItemOptions(item, permissions[path], formatMessage);
-          setSelectionOptions(options[0].filter((option) => actions.includes(option.id)));
-        }
-      } else {
-        let itemsDetails = [];
-
-        selectedItems.forEach((itemPath) => {
-          const itemPermissions = permissions[itemPath];
-          const item = items.byPath?.[itemPath];
-          if (itemPermissions && item) {
-            itemsDetails.push({
-              permissions: itemPermissions,
-              item
-            });
-          }
-        });
-
-        setSelectionOptions(generateMultipleItemOptions(itemsDetails, formatMessage));
-      }
-    }
-  }, [permissions, items, selectedItems, formatMessage]);
-
-  const onActionItemClicked = (option: string) => {
-    if (selectedItems.length > 1) {
-      const detailedItems = [];
-      selectedItems.forEach((path) => {
-        detailedItems.push(items.byPath?.[path]);
-      });
-      itemActionDispatcher(
-        site,
-        detailedItems,
-        option,
-        legacyFormSrc,
-        dispatch,
-        formatMessage,
-        clipboard,
-        onActionSuccess
-      );
-    } else {
-      const path = selectedItems[0];
-      const item = items.byPath?.[path];
-      itemActionDispatcher(site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, onActionSuccess);
-    }
-  };
-
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -168,32 +81,39 @@ export default function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
       }}
       message={
         <>
-          {mode === 'default' ? (
-            <List className={classes.actionsList}>
-              {selectionOptions.map((option) => (
-                <ListItem button key={option.id} onClick={() => onActionItemClicked(option.id)}>
-                  <ListItemText primary={formatMessage(option.label)} />
+          {prepend}
+          <List className={classes.actionsList}>
+            {options ? (
+              options.length ? (
+                options.map((option) => (
+                  <Button
+                    size="small"
+                    variant="text"
+                    color="primary"
+                    key={option.id}
+                    onClick={() => onActionClicked(option.id)}
+                  >
+                    <ListItemText primary={option.label} />
+                  </Button>
+                ))
+              ) : (
+                <ListItem>
+                  <ListItemText primary={formatMessage(messages.noOptionsAvailable)} />
                 </ListItem>
-              ))}
-            </List>
-          ) : (
-            <List className={classes.actionsList}>
-              <ListItem button onClick={() => onAcceptSelection?.(selectedItems.map((path) => items.byPath?.[path]))}>
-                <ListItemText primary={formatMessage(messages.acceptSelection)} />
-              </ListItem>
-            </List>
-          )}
-
-          {selectedItems.length > 0 && (
-            <Typography variant="body2" className={classes.resultsSelected}>
-              {formatMessage(messages.resultsSelected, {
-                count: selectedItems.length
-              })}
-              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} color="primary" />
-            </Typography>
-          )}
+              )
+            ) : (
+              new Array(5).fill(null).map((_, index) => (
+                <ListItem key={index}>
+                  <ListItemText primary={<Skeleton animation="pulse" height="10px" width={`${rand(40, 60)}px`} />} />
+                </ListItem>
+              ))
+            )}
+            {append}
+          </List>
         </>
       }
     />
   );
 }
+
+export default ItemActionsSnackbar;

@@ -26,12 +26,12 @@ export const translations = defineMessages({
     defaultMessage: 'View'
   },
   createContent: {
-    id: 'itemMenu.createContent',
-    defaultMessage: 'Create Content'
+    id: 'itemMenu.newContent',
+    defaultMessage: 'New Content'
   },
   createFolder: {
     id: 'itemMenu.createFolder',
-    defaultMessage: 'Create Folder'
+    defaultMessage: 'New Folder'
   },
   renameFolder: {
     id: 'itemMenu.renameFolder',
@@ -99,11 +99,11 @@ export const translations = defineMessages({
   },
   createTemplate: {
     id: 'itemMenu.createTemplate',
-    defaultMessage: 'Create Template'
+    defaultMessage: 'New Template'
   },
   createController: {
     id: 'itemMenu.createController',
-    defaultMessage: 'Create Controller'
+    defaultMessage: 'New Controller'
   },
   changeContentTypeTitle: {
     id: 'itemMenu.contentTypeDialogTitle',

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -23,6 +23,7 @@ import Divider from '@material-ui/core/Divider';
 import palette from '../../../styles/palette';
 import clsx from 'clsx';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { getBinary } from '../../../utils/ajax';
 
 const useStyles = makeStyles(() => ({
   defaultCard: {
@@ -54,22 +55,38 @@ interface NewContentCardProps {
   isSelected: boolean;
 }
 
+function useContentTypePreviewImage(img: string) {
+  const [src, setSrc] = useState('/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg');
+  useEffect(() => {
+    if (img.includes('content-at-path')) {
+      getBinary(img).subscribe((response) => {
+        setSrc(
+          URL.createObjectURL(new Blob([response.response], { type: `image/${/(?:\\.([^.]+))?$/.exec(img)[1]}` }))
+        );
+      });
+    }
+  }, [img]);
+  return src;
+}
+
 const DefaultCardContent = (props) => {
   const { headerTitle, subheader, classes, img, imgTitle } = props;
+  const src = useContentTypePreviewImage(img);
   return (
     <>
       <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
       <Divider />
-      <CardMedia className={classes.media} image={img} title={imgTitle} />
+      <CardMedia className={classes.media} image={src} title={imgTitle} />
     </>
   );
 };
 
 const CompactCardContent = (props) => {
   const { headerTitle, subheader, classes, img, imgTitle } = props;
+  const src = useContentTypePreviewImage(img);
   return (
     <>
-      <CardMedia className={classes.compactMedia} image={img} title={imgTitle} />
+      <CardMedia className={classes.compactMedia} image={src} title={imgTitle} />
       <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
     </>
   );

@@ -46,7 +46,13 @@ import {
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
 import { fetchWorkflowAffectedItems, getLegacyItemsTree } from '../services/content';
-import { batchActions, changeContentType, editTemplate } from '../state/actions/misc';
+import {
+  batchActions,
+  changeContentType,
+  editContentTypeTemplate,
+  editController,
+  editTemplate
+} from '../state/actions/misc';
 import {
   emitSystemEvent,
   itemCut,
@@ -189,7 +195,7 @@ export function toContextMenuOptionsLookup(
   formatMessage: IntlFormatters['formatMessage']
 ): { [prop: string]: ContextMenuOption } {
   const menuOptions: { [prop: string]: ContextMenuOption } = {};
-  Object.entries(unparsedMenuOptions).forEach(([key, value]) => {
+  Object.entries(menuOptionDescriptors).forEach(([key, value]) => {
     menuOptions[key] = {
       id: value.id,
       label: formatMessage(value.label)
@@ -422,16 +428,25 @@ export function generateMultipleItemOptions(
   return options;
 }
 
-export const itemActionDispatcher = (
-  site: string,
-  item: DetailedItem | DetailedItem[],
-  option: string,
-  legacyFormSrc: string,
+export const itemActionDispatcher = ({
+  site,
+  item,
+  option,
+  legacyFormSrc,
   dispatch,
   formatMessage,
   clipboard,
-  onActionSuccess?: any
-) => {
+  onActionSuccess
+}: {
+  site: string;
+  item: DetailedItem | DetailedItem[];
+  option: string;
+  legacyFormSrc: string;
+  dispatch;
+  formatMessage;
+  clipboard;
+  onActionSuccess?: any;
+}) => {
   // actions that support only one item
   if (!Array.isArray(item)) {
     switch (option) {
@@ -442,11 +457,11 @@ export const itemActionDispatcher = (
         break;
       }
       case 'edit': {
+        // TODO: Editing embedded components is not currently supported as to edit them,
+        //  we need the modelId that's not supplied to this function.
+        // const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
         const path = item.path;
         const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-        // TODO: open a embedded form needs the following:
-        // src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
-
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(
@@ -658,44 +673,30 @@ export const itemActionDispatcher = (
         break;
       }
       case 'editTemplate': {
-        dispatch(editTemplate({ contentTypeId: item.contentTypeId }));
+        dispatch(editContentTypeTemplate({ contentTypeId: item.contentTypeId }));
         break;
       }
       case 'editController': {
-        const path = `/scripts/pages/${popPiece(item.contentTypeId, '/')}.groovy`;
-        let src = `${legacyFormSrc}site=${site}&path=${path}&type=controller`;
-
-        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-          if (items?.length > 0) {
-            dispatch(
-              showWorkflowCancellationDialog({
-                items,
-                onContinue: showCodeEditorDialog({ src })
-              })
-            );
-          } else {
-            dispatch(showCodeEditorDialog({ src }));
-          }
-        });
-        break;
-      }
-      case 'createTemplate': {
         dispatch(
-          showCreateFileDialog({
-            path: withoutIndex(item.path),
-            type: 'template',
-            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()])
+          editController({
+            path: '/scripts/pages',
+            fileName: `${popPiece(item.contentTypeId, '/')}.groovy`
           })
         );
         break;
       }
+      case 'createTemplate':
       case 'createController': {
         dispatch(
           showCreateFileDialog({
             path: withoutIndex(item.path),
-            type: 'controller',
-            onCreated: batchActions([closeCreateFileDialog(), showCreateItemSuccessNotification()]),
-            allowBraces: item.path.startsWith('/scripts/rest')
+            type: option === 'createController' ? 'controller' : 'template',
+            allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
+            onCreated: batchActions([
+              closeCreateFileDialog(),
+              showCreateItemSuccessNotification(),
+              option === 'createController' ? editController() : editTemplate()
+            ])
           })
         );
         break;

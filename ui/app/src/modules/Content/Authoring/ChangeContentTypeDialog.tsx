@@ -115,11 +115,10 @@ function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
 
-  const getPrevImg = (content: LegacyFormConfig) => {
-    return content?.imageThumbnail
+  const getPrevImg = (content: LegacyFormConfig) =>
+    content?.imageThumbnail
       ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
       : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  };
 
   const onSelectedContentType = (contentType: LegacyFormConfig) => {
     onContentTypeSelected?.({
