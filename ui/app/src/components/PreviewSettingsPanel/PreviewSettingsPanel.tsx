@@ -21,7 +21,6 @@ import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioG
 import { EditSwitch } from '../../modules/Preview/ToolBar';
 import { usePreviewState } from '../../utils/hooks';
 import { setHighlightMode, setPreviewEditMode } from '../../state/actions/preview';
-import { useSnackbar } from 'notistack';
 import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
@@ -48,14 +47,6 @@ const translations = defineMessages({
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
     defaultMessage: 'Highlight Movable'
-  },
-  editModeOn: {
-    id: 'previewToolbar.editModeOn',
-    defaultMessage: 'Edit mode switched on'
-  },
-  editModeOff: {
-    id: 'previewToolbar.editModeOff',
-    defaultMessage: 'Edit mode switched off'
   }
 });
 
@@ -82,7 +73,6 @@ export default function PreviewSettingsPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { editMode, highlightMode } = usePreviewState();
-  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
   return (
@@ -95,7 +85,6 @@ export default function PreviewSettingsPanel() {
               color="default"
               checked={editMode}
               onChange={(e) => {
-                enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
                 dispatch(setPreviewEditMode({ editMode: e.target.checked }));
               }}
               edge="end"

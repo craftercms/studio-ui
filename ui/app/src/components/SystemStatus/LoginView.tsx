@@ -30,7 +30,6 @@ import {
 } from '../../services/auth';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
-import { setRequestForgeryToken } from '../../utils/auth';
 import LogInForm from './LoginForm';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -50,8 +49,6 @@ import palette from '../../styles/palette';
 import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import FormControl from '@material-ui/core/FormControl';
-
-setRequestForgeryToken();
 
 interface SystemLang {
   id: string;
@@ -231,16 +228,15 @@ function LoginView(props: SubViewProps) {
   const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [storedLangPreferences] = useState(retrieveStoredLangPreferences);
   const username$ = useDebouncedInput(
     useCallback(
       (user: string) => {
         const key = buildStoredLanguageKey(user);
-        if (storedLangPreferences.includes(key)) {
+        if (retrieveStoredLangPreferences().includes(key)) {
           setLanguage(window.localStorage.getItem(key));
         }
       },
-      [setLanguage, storedLangPreferences]
+      [setLanguage]
     ),
     200
   );

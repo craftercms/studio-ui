@@ -26,21 +26,31 @@ import {
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from '../actions/auth';
-import { catchError, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { delay, ignoreElements, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
-import { fetchAuthenticationType } from '../../services/auth';
-import { catchAjaxError } from '../../utils/ajax';
+import { catchAjaxError, get } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
 import { messageSharedWorker } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
+import { interval } from 'rxjs';
 
 const epics: CrafterCMSEpic[] = [
+  // region login
   (action$) =>
     action$.pipe(
       ofType(login.type),
       switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
     ),
+  // endregion
+  // region loginComplete
+  (action$) =>
+    action$.pipe(
+      ofType(loginComplete.type),
+      map(() => messageSharedWorker(refreshAuthToken()))
+    ),
+  // endregion
+  // region logout
   (action$, state$) =>
     action$.pipe(
       ofType(logout.type),
@@ -63,38 +73,47 @@ const epics: CrafterCMSEpic[] = [
       }),
       map(() => messageSharedWorker(logout()))
     ),
+  // endregion
+  // region sessionTimeout
   (action$) =>
     action$.pipe(
       ofType(sessionTimeout.type),
       tap(() => setRequestForgeryToken()),
       map(() => messageSharedWorker(sharedWorkerTimeout()))
     ),
+  // endregion
+  // region sharedWorkerToken
   (action$) =>
     action$.pipe(
       ofType(sharedWorkerToken.type),
       map(({ payload }) => refreshAuthTokenComplete(payload))
     ),
+  // endregion
+  // region sharedWorkerUnauthenticated
   (action$) =>
     action$.pipe(
       ofType(sharedWorkerUnauthenticated.type),
-      // This call will fail. We need the new set of auth cookies to be set
-      // on this window so that if login attempted from the re-login dialog,
-      // it won't fail due to outdated XSRF/auth cookies.
-      switchMap(() => fetchAuthenticationType().pipe(catchError(() => []))),
-      tap(() => setRequestForgeryToken()),
+      switchMap(() =>
+        // We need the new set of auth cookies to be set
+        // on this window so that if login attempted from the re-login dialog,
+        // it won't fail due to outdated XSRF/auth cookies.
+        interval(1000).pipe(
+          delay(100),
+          switchMap(() => get('/studio/foo.json').pipe(tap(() => setRequestForgeryToken()))),
+          take(1)
+        )
+      ),
       ignoreElements()
     ),
+  // endregion
+  // region refreshAuthTokenComplete
   (action$) =>
     action$.pipe(
       ofType(refreshAuthTokenComplete.type),
       tap(({ payload }) => setJwt(payload.token)),
       ignoreElements()
-    ),
-  (action$) =>
-    action$.pipe(
-      ofType(loginComplete.type),
-      map(() => messageSharedWorker(refreshAuthToken()))
     )
+  // endregion
 ];
 
 export default epics;

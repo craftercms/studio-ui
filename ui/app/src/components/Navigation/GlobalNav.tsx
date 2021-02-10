@@ -72,6 +72,7 @@ import { closeGlobalNav } from '../../state/actions/dialogs';
 import GlobalState from '../../models/GlobalState';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
+import { batchActions } from '../../state/actions/misc';
 
 interface TileProps {
   icon: SystemIconDescriptor;
@@ -143,14 +144,6 @@ const messages = defineMessages({
   preview: {
     id: 'words.preview',
     defaultMessage: 'Preview'
-  },
-  preview2: {
-    id: 'globalMenu.preview2',
-    defaultMessage: 'Preview 2.0'
-  },
-  preview1: {
-    id: 'globalMenu.preview1',
-    defaultMessage: 'Preview 1.0'
   },
   search: {
     id: 'words.search',
@@ -564,6 +557,13 @@ export default function GlobalNav() {
         onClick(site) {
           setSiteCookie(site);
         }
+      },
+      {
+        name: formatMessage(messages.search),
+        href: getLink('search', authoringBase),
+        onClick(site) {
+          setSiteCookie(site);
+        }
       }
       // TODO: Since these should be per-site and constraint by role, we need to figure what to do with them.
       // {
@@ -580,14 +580,20 @@ export default function GlobalNav() {
   const onErrorStateBackClicked = () => setError(error);
 
   const onSiteCardClick = (site: string) => {
-    dispatch(changeSite(site));
-    setTimeout(() => {
-      if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
-        navigateTo(previewChoice[site] === '2' ? `${authoringBase}/next/preview` : `${authoringBase}/preview`);
+    if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
+      if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {
+        // If site we're switching to is next compatible, there's no need for any sort of page postback.
+        dispatch(batchActions([changeSite(site), closeGlobalNav()]));
       } else {
-        window.location.reload();
+        setSiteCookie(site);
+        setTimeout(() => {
+          window.location.href =
+            previewChoice[site] === '2' ? `${authoringBase}/next/preview` : `${authoringBase}/preview`;
+        });
       }
-    });
+    } else {
+      window.location.reload();
+    }
   };
 
   const onMenuClose = () => dispatch(closeGlobalNav());
@@ -699,10 +705,6 @@ function getLink(id: string, authoringBase: string = `${getBase()}/studio`) {
 
 function getBase() {
   return window.location.host.replace('3000', '8080');
-}
-
-function navigateTo(link: string): void {
-  window.location.href = link;
 }
 
 const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
