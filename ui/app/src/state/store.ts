@@ -63,13 +63,13 @@ export function getStore(): Observable<CrafterCMSStore> {
           switchMap((store) =>
             fetchStateInitialization().pipe(
               tap((requirements) => {
-                store.dispatch(storeInitialized({ auth, ...requirements }));
                 worker.port.onmessage = (e) => {
                   if (e.data?.type) {
-                    console.log('%c[page] Message received from worker', 'color: #AF52DE');
+                    logWorkerMessage(e);
                     store.dispatch(e.data);
                   }
                 };
+                store.dispatch(storeInitialized({ auth, ...requirements }));
                 store$.next(store);
               })
             )
@@ -94,7 +94,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     });
     return fromEvent<MessageEvent>(worker.port, 'message').pipe(
       tap((e) => {
-        console.log('%c[page] Message received from worker', 'color: #AF52DE');
+        logWorkerMessage(e);
         if (e.data?.type === sharedWorkerUnauthenticated.type) {
           throw new Error('User not authenticated.');
         }
@@ -113,6 +113,10 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       );
     });
   }
+}
+
+function logWorkerMessage(e) {
+  console.log('%c[page] Message received from worker', 'color: #AF52DE');
 }
 
 export function getStoreSync(): CrafterCMSStore {

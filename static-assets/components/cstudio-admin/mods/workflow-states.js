@@ -43,18 +43,34 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
   },
 
   renderJobsList: function() {
-    var actions = [
-      {
-        name: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'),
-        context: this,
-        method: this.setStates
-      }
-    ];
-
-    CStudioAuthoring.ContextualNav.AdminConsoleNav &&
-      CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
-
+    this.initActions();
     this.renderStatesTable();
+  },
+
+  initActions: function() {
+    const isEmbedded = $('body').hasClass('embedded');
+
+    if (isEmbedded) {
+      const me = this;
+      const btnLabel = CMgs.format(formsLangBundle, 'setStatedDialogSetStates');
+
+      $(`<button type="button" class="mt35 ml40 btn btn-default">${btnLabel}</button>`)
+        .prependTo('#cstudio-admin-console-workarea')
+        .on('click', function() {
+          me.setStates();
+        });
+    } else {
+      var actions = [
+        {
+          name: CMgs.format(formsLangBundle, 'setStatedDialogSetStates'),
+          context: this,
+          method: this.setStates
+        }
+      ];
+
+      CStudioAuthoring.ContextualNav.AdminConsoleNav &&
+        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+    }
   },
 
   renderStatesTable: function() {

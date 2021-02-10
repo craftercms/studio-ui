@@ -19,7 +19,7 @@ import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { useDispatch } from 'react-redux';
 import { popToolsPanelPage } from '../../state/actions/preview';
-import { usePossibleTranslation } from '../../utils/hooks';
+import { useActiveSiteId, useActiveUser, usePossibleTranslation } from '../../utils/hooks';
 
 export interface ToolsPanelPageDescriptor {
   widgets: WidgetDescriptor[];
@@ -30,14 +30,12 @@ export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
 
 export default function ToolsPanelPage(props: ToolsPanelPageProps) {
   const dispatch = useDispatch();
-
-  const pop = () => {
-    dispatch(popToolsPanelPage());
-  };
-
+  const site = useActiveSiteId();
+  const { rolesBySite } = useActiveUser();
+  const pop = () => dispatch(popToolsPanelPage());
   return (
     <ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>
-      {renderWidgets(props.widgets, [])}
+      {renderWidgets(props.widgets, rolesBySite[site])}
     </ToolPanel>
   );
 }

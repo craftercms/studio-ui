@@ -118,9 +118,11 @@ const Widget = memo(function(props: WidgetProps) {
 
 export { Widget };
 
-export function renderWidgets(widgets, roles: string[]) {
+export function renderWidgets(widgets, userRoles: string[]) {
   return widgets
-    .filter((widget) => (widget.roles ?? []).length === 0 || roles.some((role) => widget.roles.includes(role)))
+    .filter(
+      (widget) => (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
+    )
     .map((widget) => <Widget key={widget.uiKey} {...widget} />);
 }
 
