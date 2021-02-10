@@ -336,10 +336,7 @@ CStudioAuthoring.Module.requireModule(
               imageDatasources.includes(datasource.id)
           );
 
-          // TODO: default value pending
-          const codeEditorWrap = rteConfig.codeEditorWrap
-            ? rteConfig.codeEditorWrap === 'true'
-            : true;
+          const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
           editor = tinymce.init({
             selector: '#' + rteId,
