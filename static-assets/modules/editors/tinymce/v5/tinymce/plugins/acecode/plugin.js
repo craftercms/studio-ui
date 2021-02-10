@@ -65,8 +65,9 @@
 				var dialog = document.getElementsByClassName('tox-dialog--width-lg')[0];
 				dialog.classList.add('fullscreen');
 
+				const wrapCode = editor.getParam('code_editor_wrap');
 				mce_editor = ace.edit('mce-ace-editor-block', {
-				  wrap: true
+				  wrap: wrapCode
         });
 				mce_editor.setTheme("ace/theme/eclipse");
 				mce_editor.getSession().setMode("ace/mode/html");
