@@ -255,12 +255,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
       ).subscribe((response) => {
         let disable = false;
         response.forEach((contentValidationResult, index) => {
-          // const { allowed, modifiedValue, target } = contentValidationResult;
-          const { target } = contentValidationResult;
-
-          const allowed = false;
-          const modifiedValue = 'as';
-
+          const { allowed, modifiedValue, target } = contentValidationResult;
           const fileName = target.replace(`${path}/`, '');
           const file = pendingValidationFiles.find((file) => file.name === fileName);
           setConflictedFiles((files) => [
@@ -269,10 +264,8 @@ function UploadDialogUI(props: UploadDialogUIProps) {
               id: file.id,
               name: fileName,
               data: file.data,
-              // ...(modifiedValue && { suggestedName: modifiedValue.replace(`${path}/`, '') }),
-              // allowed,
-              allowed: true,
-              suggestedName: fileName,
+              ...(modifiedValue && { suggestedName: modifiedValue.replace(`${path}/`, '') }),
+              allowed,
               size: file.size,
               type: file.type,
               meta: {
