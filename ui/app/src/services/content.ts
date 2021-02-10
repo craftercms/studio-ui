@@ -92,7 +92,7 @@ export function getSandboxItem(site: string, path: string): Observable<SandboxIt
 }
 
 export function getDetailedItem(siteId: string, path: string): Observable<DetailedItem> {
-  const qs = toQueryString({ siteId, path });
+  const qs = toQueryString({ siteId, path, preferContent: true });
   return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
     pluck('response', 'item'),
     map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))

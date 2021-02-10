@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import Core from '@uppy/core';
+import Core, { UppyFile } from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import FileInput from '@uppy/file-input';
@@ -29,7 +29,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';
-import { UppyFile } from '../Dialogs/UploadDialog';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 
