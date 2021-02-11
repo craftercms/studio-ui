@@ -18,7 +18,7 @@ import { ofType } from 'redux-observable';
 import { exhaustMap, map } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
-import { getSiteUiConfig } from '../../services/configuration';
+import { fetchSiteUiConfig as fetchSiteUiConfigService } from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
 
 export default [
@@ -28,7 +28,10 @@ export default [
       // A very quick site change may present problematic as the
       // config that would be retrieved would be the first site.
       exhaustMap(({ payload }) =>
-        getSiteUiConfig(payload.site).pipe(map(fetchSiteUiConfigComplete), catchAjaxError(fetchSiteUiConfigFailed))
+        fetchSiteUiConfigService(payload.site).pipe(
+          map(fetchSiteUiConfigComplete),
+          catchAjaxError(fetchSiteUiConfigFailed)
+        )
       )
     )
 ] as CrafterCMSEpic[];

@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getGlobalMenuItems } from '../../services/configuration';
+import { fetchGlobalMenuItems } from '../../services/configuration';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import Link from '@material-ui/core/Link';
@@ -314,7 +314,12 @@ const useGlobalNavStyles = makeStyles((theme) =>
     versionText: {},
     title: {
       textTransform: 'uppercase',
-      fontWeight: 600
+      fontWeight: 600,
+      '& > span': {
+        textTransform: 'none',
+        marginLeft: '0.315em',
+        color: theme.palette.text.secondary
+      }
     },
     titleCard: {
       marginBottom: '20px'
@@ -366,7 +371,8 @@ const useGlobalNavStyles = makeStyles((theme) =>
 
 interface AppsRailProps {
   classes: LookupTable<string>;
-  site: string;
+  siteId: string;
+  siteName: string;
   siteNav: GlobalState['uiConfig']['siteNav'];
   menuItems: Array<{ id: string; icon: string; label: string }>;
   formatMessage: IntlShape['formatMessage'];
@@ -379,7 +385,8 @@ interface AppsRailProps {
 
 const AppsRail = ({
   classes,
-  site,
+  siteId,
+  siteName,
   siteNav,
   menuItems,
   formatMessage,
@@ -391,18 +398,24 @@ const AppsRail = ({
 }: AppsRailProps) => (
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={classes.railTop}>
-      {/* region Site */}
-      {site && siteNav && (
+      {/* region Site Navigation */}
+      {siteId && siteNav && (
         <>
           {siteNav.title && (
             <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
-              {typeof siteNav.title === 'string' ? siteNav.title : formatMessage(siteNav.title)}
+              {siteNav.title
+                ? typeof siteNav.title === 'string'
+                  ? siteNav.title
+                  : formatMessage(siteNav.title)
+                : formatMessage(messages.site)}
+              <span>• {siteName || siteId}</span>
             </Typography>
           )}
-          <nav className={classes.navItemsWrapper}>{renderWidgets(siteNav.widgets, user.rolesBySite[site])}</nav>
+          <nav className={classes.navItemsWrapper}>{renderWidgets(siteNav.widgets, user.rolesBySite[siteId])}</nav>
         </>
       )}
       {/* endregion */}
+      {/* region Global Navigation */}
       <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
         {formatMessage(messages.global)}
       </Typography>
@@ -433,6 +446,7 @@ const AppsRail = ({
           title={formatMessage(messages.about)}
         />
       </nav>
+      {/* endregion */}
     </div>
     <div className={classes.railBottom}>
       <Card className={classes.userCardRoot}>
@@ -520,7 +534,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardA
 
 export default function GlobalNav() {
   const classes = useGlobalNavStyles();
-  const site = useActiveSiteId();
+  const siteId = useActiveSiteId();
   const sites = useSiteList();
   const user = useActiveUser();
   const dispatch = useDispatch();
@@ -533,6 +547,10 @@ export default function GlobalNav() {
   const [menuItems, setMenuItems] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const anchor = useMemo(() => (anchorSelector ? document.querySelector(anchorSelector) : null), [anchorSelector]);
+  const siteName = useMemo(() => {
+    const site = sites.find((model) => model.id === siteId);
+    return site ? site.name || site.id : siteId;
+  }, [sites, siteId]);
 
   const cardActions = useMemo<
     Array<{
@@ -605,7 +623,7 @@ export default function GlobalNav() {
       classes={classes}
       formatMessage={formatMessage}
       sites={sites}
-      site={site}
+      site={siteId}
       version={version}
       cardActions={cardActions}
       onSiteCardClick={onSiteCardClick}
@@ -615,7 +633,8 @@ export default function GlobalNav() {
   const appsRail = () => (
     <AppsRail
       classes={classes}
-      site={site}
+      siteId={siteId}
+      siteName={siteName}
       siteNav={siteNav}
       menuItems={menuItems}
       formatMessage={formatMessage}
@@ -631,7 +650,7 @@ export default function GlobalNav() {
     if (sites === null) {
       dispatch(fetchSites());
     }
-    getGlobalMenuItems().subscribe(setMenuItems, (error) => {
+    fetchGlobalMenuItems().subscribe(setMenuItems, (error) => {
       if (error.response) {
         setError({
           ...error.response,

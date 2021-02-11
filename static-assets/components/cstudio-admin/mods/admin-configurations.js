@@ -269,7 +269,7 @@
           const site = CStudioAuthoringContext.site;
           const path = itemSelectEl[selectedIndex].value;
           const module = itemSelectEl[selectedIndex].getAttribute('module');
-          CrafterCMSNext.services.configuration.getRawConfiguration(site, path, module).subscribe(
+          CrafterCMSNext.services.configuration.fetchConfigurationXML(site, path, module).subscribe(
             (content) => {
               if (content) {
                 editor.setValue(content);
@@ -317,7 +317,7 @@
           var viewSampleButtonEl = document.getElementById('view-sample-button');
 
           if (samplePath != 'undefined' && samplePath != '') {
-            CrafterCMSNext.services.configuration.getRawConfiguration('studio_root', samplePath, 'studio').subscribe(
+            CrafterCMSNext.services.configuration.fetchConfigurationXML('studio_root', samplePath, 'studio').subscribe(
               (sampleConfig) => {
                 var sampleAreaEl = document.getElementById('sample-window');
                 sampleAreaEl.style.display = 'inline';

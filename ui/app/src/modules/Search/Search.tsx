@@ -32,7 +32,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import clsx from 'clsx';
 import { History, Location } from 'history';
-import { getContentXML } from '../../services/content';
+import { fetchContentXML } from '../../services/content';
 import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../utils/hooks';
@@ -687,7 +687,7 @@ export default function Search(props: SearchProps) {
           })
         );
 
-        getContentXML(site, url).subscribe((content) => {
+        fetchContentXML(site, url).subscribe((content) => {
           dispatch(
             updatePreviewDialog({
               content

@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { DetailedItem, SandboxItem } from '../../../models/Item';
-import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
+import { fetchDependant, fetchSimpleDependencies } from '../../../services/dependencies';
 import { useActiveSiteId, useLogicResource, useSelection, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage, parseLegacyItemToSandBoxItem } from '../../../utils/content';
@@ -515,7 +515,7 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
     (siteId: string, path: string, newItem?: boolean) => {
       if (dialog.dependenciesShown === 'depends-on') {
         if (dialog.dependantItems === null || newItem) {
-          getDependant(siteId, path).subscribe(
+          fetchDependant(siteId, path).subscribe(
             (response) => {
               const dependantItems = parseLegacyItemToSandBoxItem(response);
               setDialog({
@@ -531,7 +531,7 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
         }
       } else {
         if (dialog.dependencies === null || newItem) {
-          getSimpleDependencies(siteId, path).subscribe(
+          fetchSimpleDependencies(siteId, path).subscribe(
             (response) => {
               const dependencies = parseLegacyItemToSandBoxItem(response);
               setDialog({

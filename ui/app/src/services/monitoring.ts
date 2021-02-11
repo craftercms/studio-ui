@@ -22,18 +22,18 @@ import { Status } from '../models/monitoring/Status';
 import { LogEvent } from '../models/monitoring/LogEvent';
 import { Memory } from '../models/monitoring/Memory';
 
-export function version(): Observable<Version> {
+export function fetchVersion(): Observable<Version> {
   return get(`/studio/api/2/monitoring/version`).pipe(pluck('response', 'version'));
 }
 
-export function status(): Observable<Status> {
+export function fetchStatus(): Observable<Status> {
   return get('/studio/api/2/monitoring/status').pipe(pluck('response', 'status'));
 }
 
-export function memory(): Observable<Memory> {
+export function fetchMemory(): Observable<Memory> {
   return get('/studio/api/2/monitoring/memory').pipe(pluck('response', 'memory'));
 }
 
-export function log(since: number): Observable<LogEvent[]> {
+export function fetchLog(since: number): Observable<LogEvent[]> {
   return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(pluck('response', 'events'));
 }

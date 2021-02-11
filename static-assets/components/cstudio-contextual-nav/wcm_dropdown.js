@@ -50,16 +50,11 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
     var navBarSiteNameEl = YDom.get('navbar-site-name');
 
-    let unsubscribe;
-    unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
-      const stateSite = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
-      if (stateSite) {
-        const site = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
-        const siteName = site.name || site.id;
-        navBarSiteNameEl.innerHTML = siteName;
-        navBarSiteNameEl.setAttribute('title', siteName);
-        unsubscribe();
-      }
+    CrafterCMSNext.system.getStore().subscribe((store) => {
+      let site = store.getState().sites.byId[CStudioAuthoringContext.site];
+      const siteName = site.name || site.id;
+      navBarSiteNameEl.innerHTML = siteName;
+      navBarSiteNameEl.setAttribute('title', siteName);
     });
 
     if (window.location.pathname.indexOf('browse') > -1 || window.location.pathname.indexOf('site-config') > -1) {

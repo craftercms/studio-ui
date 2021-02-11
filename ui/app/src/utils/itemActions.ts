@@ -45,7 +45,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchWorkflowAffectedItems, getLegacyItemsTree } from '../services/content';
+import { fetchWorkflowAffectedItems, fetchLegacyItemsTree } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -559,7 +559,7 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'copy': {
-        getLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
+        fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
               dispatch(

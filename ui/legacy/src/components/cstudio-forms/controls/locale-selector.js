@@ -87,7 +87,7 @@
       }
 
       CrafterCMSNext.services.translation
-        .getSiteLocales(CStudioAuthoringContext.site)
+        .fetchSiteLocales(CStudioAuthoringContext.site)
         .subscribe(({ localeCodes, defaultLocaleCode }) => {
           if (localeCodes) {
             var titleEl = document.createElement('span');
