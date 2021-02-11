@@ -72,7 +72,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     height: 'calc(100% - 65px)',
-    overflowY: 'scroll',
     background: theme.palette.background.default,
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
@@ -126,7 +125,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '25px 30px'
+    padding: '25px 30px',
+    overflowY: 'scroll'
   },
   empty: {
     height: '100%',
@@ -493,7 +493,7 @@ export default function Search(props: SearchProps) {
   }
 
   function clearFilters() {
-    searchResults.facets.forEach((facet) => clearFilter(facet.name));
+    Object.keys(checkedFilters).map((filter) => clearFilter(filter));
     clearPath();
   }
 
