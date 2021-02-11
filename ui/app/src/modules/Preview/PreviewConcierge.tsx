@@ -203,6 +203,18 @@ export function PreviewConcierge(props: any) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
+    const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
+
+    return () => {
+      sub.unsubscribe();
+      contentTypes$.complete();
+      contentTypes$.unsubscribe();
+      document.domain = originalDocDomain;
+    };
+  });
+
+  // Retrieve stored site clipboard, retrieve stored tools panel page.
+  useEffect(() => {
     const localClipboard = getStoredClipboard(site, user.username);
     if (localClipboard) {
       let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
@@ -218,19 +230,11 @@ export function PreviewConcierge(props: any) {
         );
       }
     }
-
-    const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     const storedPage = getStoredPreviewToolsPanelPage(site, user.username);
     if (storedPage) {
       dispatch(pushToolsPanelPage(storedPage));
     }
-    return () => {
-      sub.unsubscribe();
-      contentTypes$.complete();
-      contentTypes$.unsubscribe();
-      document.domain = originalDocDomain;
-    };
-  });
+  }, [dispatch, site, user.username]);
 
   // Post content types
   useEffect(() => {
@@ -723,7 +727,7 @@ export function PreviewConcierge(props: any) {
 
 function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   const guestToHost$ = getGuestToHostBus();
-  return interval(2500)
+  return interval(5000)
     .pipe(
       take(1),
       takeUntil(guestToHost$.pipe(filter(({ type }) => type === GUEST_CHECK_IN || type === 'GUEST_SITE_LOAD')))

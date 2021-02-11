@@ -330,10 +330,10 @@ const reducer = createReducer<GlobalState['preview']>(
     [changeSite.type]: (state, { payload }) => {
       let nextState = {
         ...state,
-        tools: null,
         audiencesPanel: audiencesPanelInitialState,
         components: componentsInitialState,
-        assets: assetsPanelInitialState
+        assets: assetsPanelInitialState,
+        toolsPanelPageStack: []
       };
 
       // TODO: If there's a guest it would have checked out?

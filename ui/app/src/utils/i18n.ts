@@ -82,9 +82,7 @@ export function getPossibleTranslation(titleOrDescriptor: string | MessageDescri
 }
 
 export function getCurrentLocale(): string {
-  const username = localStorage.getItem('username');
-  const locale = getStoredLanguage(username);
-  return locale ? locale : 'en';
+  return getStoredLanguage(localStorage.getItem('username')) || 'en';
 }
 
 export function getCurrentIntl(): IntlShape {
@@ -104,10 +102,11 @@ export function getStoredLanguage(username?: string): string {
 }
 
 export function setStoredLanguage(language: string, username?: string): void {
-  if (username) {
-    localStorage.setItem(buildStoredLanguageKey(username), language);
+  // Prevent `null` or `undefined`, or even `"""` from being stored.
+  if (language) {
+    username && localStorage.setItem(buildStoredLanguageKey(username), language);
+    localStorage.setItem('crafterStudioLanguage', language);
   }
-  localStorage.setItem('crafterStudioLanguage', language);
 }
 
 export function dispatchLanguageChange(language: string): void {

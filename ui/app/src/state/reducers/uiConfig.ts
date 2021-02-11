@@ -17,6 +17,7 @@
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
+import { changeSite } from './sites';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -46,7 +47,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     error: payload,
     isFetching: false,
     currentSite: null
-  })
+  }),
+  [changeSite.type]: () => initialState
 });
 
 export default reducer;

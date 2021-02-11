@@ -18,7 +18,7 @@ import { ofType } from 'redux-observable';
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, map, withLatestFrom } from 'rxjs/operators';
 import { getSiteLocales } from '../../services/translation';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
@@ -29,7 +29,7 @@ export default [
     action$.pipe(
       ofType(fetchSiteLocales.type),
       withLatestFrom(state$),
-      switchMap(([, state]) =>
+      exhaustMap(([, state]) =>
         getSiteLocales(state.sites.active).pipe(map(fetchSiteLocalesComplete), catchAjaxError(fetchSiteLocalesFailed))
       )
     )
