@@ -17,13 +17,21 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { EnhancedUser } from '../../models/User';
 import { storeInitialized } from '../actions/system';
+import { fetchMyRolesInSiteComplete } from '../actions/user';
 
 const reducer = createReducer<EnhancedUser>(null, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...payload.user,
-    rolesBySite: payload.rolesBySite,
+    rolesBySite: {},
     sites: payload.sites.map((id) => id),
     preferences: null // TODO: is this needed?
+  }),
+  [fetchMyRolesInSiteComplete.type]: (state, { payload }) => ({
+    ...state,
+    rolesBySite: {
+      ...state.rolesBySite,
+      [payload.site]: payload.roles
+    }
   })
 });
 

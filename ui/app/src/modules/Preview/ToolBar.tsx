@@ -49,7 +49,6 @@ import { changeSite } from '../../state/reducers/sites';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
@@ -59,6 +58,7 @@ import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/ite
 import ActionsGroup from '../../components/ActionsGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { setSiteCookie } from '../../utils/auth';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -72,14 +72,6 @@ const translations = defineMessages({
   toggleSidebarTooltip: {
     id: 'common.toggleSidebarTooltip',
     defaultMessage: 'Toggle sidebar'
-  },
-  editModeOn: {
-    id: 'previewToolbar.editModeOn',
-    defaultMessage: 'Edit mode switched on'
-  },
-  editModeOff: {
-    id: 'previewToolbar.editModeOff',
-    defaultMessage: 'Edit mode switched off'
   },
   reload: {
     id: 'words.reload',
@@ -280,7 +272,8 @@ export default function ToolBar() {
   const models = guest?.models;
   const items = useSelection((state) => state.content.items.byPath);
   const item = items?.[models?.[modelId]?.craftercms.path];
-  const { enqueueSnackbar } = useSnackbar();
+  const { previewChoice } = usePreviewState();
+  const { authoringBase } = useEnv();
 
   // region permissions
   const permissions = usePermissions();
@@ -307,7 +300,6 @@ export default function ToolBar() {
             color="default"
             checked={editMode}
             onChange={(e) => {
-              enqueueSnackbar(formatMessage(e.target.checked ? translations.editModeOn : translations.editModeOff));
               dispatch(setPreviewEditMode({ editMode: e.target.checked }));
             }}
           />
@@ -317,7 +309,14 @@ export default function ToolBar() {
           sites={sites}
           url={computedUrl}
           item={item}
-          onSiteChange={(site) => dispatch(changeSite(site))}
+          onSiteChange={(site) => {
+            if (previewChoice[site] === '2') {
+              dispatch(changeSite(site));
+            } else {
+              setSiteCookie(site);
+              setTimeout(() => (window.location.href = `${authoringBase}/preview`));
+            }
+          }}
           onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
           onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
         />

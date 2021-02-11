@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) =>
       marginBottom: '10px'
     },
     graphic: {
-      width: 150
+      width: 120
     }
   })
 );
@@ -63,7 +63,7 @@ export interface LoadingStateProps {
 export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren<{ isLoading: boolean }>;
 
 export default function LoadingState(props: LoadingStateProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { graphic: Graphic = Gears, classes: propClasses } = props;
   return (
     <div className={clsx(classes.loadingView, propClasses?.root)}>

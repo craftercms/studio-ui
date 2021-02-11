@@ -18,7 +18,7 @@ import React, { useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useLogicResource, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useLogicResource, usePreviewState, useSelection } from '../../utils/hooks';
 import ResizeableDrawer from './ResizeableDrawer';
 import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbeddedAppViewButton';
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
@@ -69,6 +69,10 @@ const useStyles = makeStyles((theme: Theme) =>
     emptyStateImage: {
       width: '50%',
       marginBottom: theme.spacing(1)
+    },
+    loadingViewRoot: {
+      flex: 1,
+      flexDirection: 'row'
     }
   })
 );
@@ -87,7 +91,7 @@ export default function ToolsPanel() {
     WidgetDescriptor[],
     { pages: WidgetDescriptor[]; uiConfig: GlobalState['uiConfig'] }
   >(
-    useMemo(() => ({ pages, uiConfig }), [pages, uiConfig]),
+    useMemo(() => ({ pages, uiConfig, site }), [pages, uiConfig, site]),
     {
       errorSelector: (source) => source.uiConfig.error,
       resultSelector: (source) =>
@@ -118,6 +122,9 @@ export default function ToolsPanel() {
     >
       <SuspenseWithEmptyState
         resource={resource}
+        loadingStateProps={{
+          classes: { root: classes.loadingViewRoot }
+        }}
         withEmptyStateProps={{
           isEmpty: (widgets) => !site || widgets?.length === 0,
           emptyStateProps: {
@@ -143,7 +150,9 @@ interface ToolsPaneBodyProps {
 
 function ToolsPaneBody(props: ToolsPaneBodyProps) {
   const stack = props.resource.read();
-  return <>{renderWidgets(stack, ['admin'])}</>;
+  const site = useActiveSiteId();
+  const { rolesBySite } = useActiveUser();
+  return <>{renderWidgets(stack, rolesBySite[site])}</>;
 }
 
 // TODO: Move this to a better place.

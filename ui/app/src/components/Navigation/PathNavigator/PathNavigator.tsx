@@ -21,7 +21,6 @@ import ContextMenu, { ContextMenuOption } from '../../ContextMenu';
 import {
   useActiveSiteId,
   useEnv,
-  useMount,
   usePreviewState,
   useSelection,
   useSiteLocales,
@@ -50,7 +49,6 @@ import { completeDetailedItem } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';
-import LoadingState from '../../SystemStatus/LoadingState';
 import { StateStylingProps } from '../../../models/UiConfig';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { debounceTime, filter } from 'rxjs/operators';
@@ -67,6 +65,8 @@ import { getNumOfMenuOptionsForItem } from '../../../utils/content';
 import PathNavigatorUI from './PathNavigatorUI';
 import LookupTable from '../../../models/LookupTable';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../../utils/itemActions';
+import PathNavigatorSkeleton from './PathNavigatorSkeleton';
+import GlobalState from '../../../models/GlobalState';
 
 interface Menu {
   path?: string;
@@ -156,14 +156,16 @@ export default function PathNavigator(props: PathNavigatorProps) {
   });
   const [keyword, setKeyword] = useState('');
   const onSearch$ = useSubject<string>();
-
+  const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
 
-  useMount(() => {
-    if (!state) {
+  useEffect(() => {
+    // Adding uiConfig as means to stop navigator from trying to
+    // initialize with previous state information when switching sites
+    if (!state && uiConfig.currentSite === site) {
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit }));
     }
-  });
+  }, [dispatch, excludes, id, limit, locale, path, site, state, uiConfig.currentSite]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
@@ -280,7 +282,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
 
   if (!state) {
-    return <LoadingState />;
+    return <PathNavigatorSkeleton showChildrenRail={showChildrenRail} />;
   }
 
   const onPathSelected = (item: DetailedItem) => {

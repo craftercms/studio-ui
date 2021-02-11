@@ -34,6 +34,20 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { useSpreadState } from '../../utils/hooks';
 import Divider from '@material-ui/core/Divider/Divider';
 
+interface SiteSearchFiltersProps {
+  className: any;
+  facets: [Facet];
+  queryParams: Partial<ElasticParams>;
+  mode: string;
+  checkedFilters: object;
+  selectedPath: string;
+  setSelectedPath(path: string): void;
+  clearFilters(): void;
+  setCheckedFilters(checkedFilters: object): any;
+  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+  handleClearClick(filter: string): void;
+}
+
 const useStyles = makeStyles((theme) => ({
   header: {
     width: '100%',
@@ -108,19 +122,49 @@ const messages: any = defineMessages({
   }
 });
 
-interface SiteSearchFiltersProps {
-  className: any;
-  facets: [Facet];
-  queryParams: Partial<ElasticParams>;
-  mode: string;
-  checkedFilters: object;
-  selectedPath: string;
-  setSelectedPath(path: string): void;
-  clearFilters(): void;
-  setCheckedFilters(checkedFilters: object): any;
-  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
-  handleClearClick(filter: string): void;
-}
+const filterToFacet = (filterKey, filterValue) => {
+  const isMultiple = typeof filterValue === 'object';
+  const isDate = !isMultiple && filterValue.includes('TODATE');
+  const isRange = !isMultiple && !isDate && filterValue.includes('TO');
+  const name = filterKey;
+  let values = {};
+
+  if (isMultiple) {
+    Object.keys(filterValue).forEach((value) => {
+      values[value] = 0;
+    });
+  } else if (isDate) {
+    const deserializedValue = filterValue.match(/(.+)TODATE(.+)ID(.+)/);
+    const id = deserializedValue[3].replace(filterKey, '');
+    const from = deserializedValue[1] === 'null' ? null : deserializedValue[1];
+    const to = deserializedValue[2] === 'null' ? null : deserializedValue[2];
+
+    values[id] = {
+      count: 0,
+      from,
+      to
+    };
+  } else {
+    const deserializedValue = filterValue.match(/(.+)?TO(.+)?/);
+    const rangeStart = deserializedValue[1];
+    const rangeEnd = deserializedValue[2];
+    const id = `${rangeStart ?? '*'}-${rangeEnd ?? '*'}`;
+
+    values[id] = {
+      count: 0,
+      from: rangeStart ?? '-Infinity',
+      to: rangeEnd ?? 'Infinity'
+    };
+  }
+
+  return {
+    date: isDate,
+    multiple: isMultiple,
+    name,
+    range: isRange,
+    values
+  };
+};
 
 export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   const classes = useStyles();
@@ -175,6 +219,14 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   facets.forEach((facet) => {
     filterKeys.push(facet.name);
     facetsLookupTable[facet.name] = facet;
+  });
+
+  // Add filters already selected not coming from facets
+  Object.keys(checkedFilters).forEach((filterKey) => {
+    if (!filterKeys.includes(filterKey)) {
+      filterKeys.push(filterKey);
+      facetsLookupTable[filterKey] = filterToFacet(filterKey, checkedFilters[filterKey]);
+    }
   });
 
   const handleExpandClick = (item: string) => {
