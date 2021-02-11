@@ -326,10 +326,9 @@
         };
 
         function getResultsPage(pageNumber) {
-          var dateToUTC, dateFromUTC;
           var params = {};
           if (site) {
-            params.siteName = site;
+            params.siteId = site;
           }
           if (audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
 

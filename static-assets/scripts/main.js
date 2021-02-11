@@ -400,7 +400,7 @@
     AUTH_HEADERS: 'AUTH_HEADERS',
     SAML: 'SAML',
     AUDIT_TIMEZONE_COOKIE: 'crafterStudioAuditTimezone',
-    AUDIT_SYSTEM: 'Studio Root'
+    AUDIT_SYSTEM: 'studio_root'
   });
 
   app.service('authService', [
