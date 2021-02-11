@@ -1482,6 +1482,7 @@
             globalConfig.isModified = false;
           })
           .catch(() => {
+            enableUI(true);
             $element.notify(formatMessage(globalConfigMessages.failedSave), {
               position: 'top left',
               className: 'error'
