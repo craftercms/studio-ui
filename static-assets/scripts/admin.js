@@ -139,7 +139,7 @@
       };
 
       this.pushRepository = function(data) {
-        return repositoriesApi.push(data).toPromise();
+        return repositoriesApi.push(data.siteId, data.remoteName, data.remoteBranch).toPromise();
       };
 
       this.repositoryStatus = function(site) {
@@ -2174,7 +2174,7 @@
             },
             function(error) {
               repositories.spinnerOverlay.close();
-              $scope.showError(error.response);
+              $scope.showError(error.response.response);
             }
           );
         };
