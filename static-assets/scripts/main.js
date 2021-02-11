@@ -1423,6 +1423,7 @@
               $scope.$apply();
             },
             () => {
+              enableUI(true);
               CrafterCMSNext.system.store.dispatch({
                 type: 'SHOW_SYSTEM_NOTIFICATION',
                 payload: {
