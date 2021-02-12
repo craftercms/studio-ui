@@ -20,7 +20,7 @@ import { createStyles, darken, lighten, makeStyles, withStyles } from '@material
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import { deleteToken, getTokens, updateToken } from '../../services/tokens';
+import { deleteToken, fetchTokens as fetchTokensService, updateToken } from '../../services/tokens';
 import { useDispatch } from 'react-redux';
 import { Token } from '../../models/Token';
 import CreateTokenDialog from '../CreateTokenDialog/CreateTokenDialog';
@@ -176,15 +176,15 @@ export default function TokenManagement() {
     [checkedCount, formatMessage]
   );
 
-  useEffect(() => {
-    fetchTokens();
-  }, []);
-
   const fetchTokens = () => {
-    getTokens().subscribe((tokens) => {
+    fetchTokensService().subscribe((tokens) => {
       setTokens(tokens);
     });
   };
+
+  useEffect(() => {
+    fetchTokens();
+  }, []);
 
   const onCreateToken = () => {
     setOpenCreateDialog(true);

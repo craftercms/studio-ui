@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   completeDetailedItem,
@@ -37,9 +37,13 @@ import {
   unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem, paste, unlock } from '../../services/content';
-import StandardAction from '../../models/StandardAction';
-import GlobalState from '../../models/GlobalState';
+import {
+  duplicate,
+  fetchDetailedItem as fetchDetailedItemService,
+  fetchQuickCreateList,
+  paste,
+  unlock
+} from '../../services/content';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
@@ -60,6 +64,7 @@ import { getParentPath, isValidCutPastePath, withoutIndex } from '../../utils/pa
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
+import { CrafterCMSEpic } from '../store';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -80,9 +85,9 @@ export const itemFailureMessages = defineMessages({
   }
 });
 
-const content = [
+const content: CrafterCMSEpic[] = [
   // region Quick Create
-  (action$: ActionsObservable<StandardAction>, $state: StateObservable<GlobalState>) =>
+  (action$, $state) =>
     action$.pipe(
       ofType(fetchQuickCreateListAction.type),
       withLatestFrom($state),
@@ -92,7 +97,7 @@ const content = [
     ),
   // endregion
   // region getUserPermissions
-  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
       filter(({ payload }) => !payload.__CRAFTERCMS_GUEST_LANDING__),
@@ -112,7 +117,7 @@ const content = [
     ),
   // endregion
   // region Items fetchDetailedItem
-  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(fetchDetailedItem.type, reloadDetailedItem.type),
       withLatestFrom(state$),
@@ -120,14 +125,14 @@ const content = [
         if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
           return NEVER;
         } else {
-          return getDetailedItem(state.sites.active, payload.path).pipe(
+          return fetchDetailedItemService(state.sites.active, payload.path).pipe(
             map((item) => fetchDetailedItemComplete(item)),
             catchAjaxError(fetchDetailedItemFailed)
           );
         }
       })
     ),
-  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(completeDetailedItem.type),
       withLatestFrom(state$),
@@ -135,7 +140,7 @@ const content = [
         if (state.content.items.byPath?.[payload.path]?.live) {
           return NEVER;
         } else {
-          return getDetailedItem(state.sites.active, payload.path).pipe(
+          return fetchDetailedItemService(state.sites.active, payload.path).pipe(
             map((item) => fetchDetailedItemComplete(item)),
             catchAjaxError(fetchDetailedItemFailed)
           );
@@ -144,7 +149,7 @@ const content = [
     ),
   // endregion
   // region Item Duplicate
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(duplicateItem.type),
       withLatestFrom(state$),
@@ -162,7 +167,7 @@ const content = [
         );
       })
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(unlockItem.type),
       withLatestFrom(state$),
@@ -176,7 +181,7 @@ const content = [
     ),
   // endregion
   // region Asset Duplicate
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(duplicateAsset.type),
       withLatestFrom(state$),
@@ -202,7 +207,7 @@ const content = [
     ),
   // endregion
   // region Duplicate with validation policy
-  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(duplicateWithPolicyValidation.type),
       withLatestFrom(state$),
@@ -259,7 +264,7 @@ const content = [
     ),
   // endregion
   // region Item Paste
-  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
@@ -290,7 +295,7 @@ const content = [
     ),
   // endregion
   // region Item Paste with validation policy
-  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(pasteItemWithPolicyValidation.type),
       withLatestFrom(state$),

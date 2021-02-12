@@ -20,7 +20,7 @@ import { pluck } from 'rxjs/operators';
 import { LegacyDashboardItem, LegacyDeploymentHistoryItem } from '../models/Dashboard';
 import { Observable } from 'rxjs';
 
-export function legacyGetGoLiveItems(
+export function fetchLegacyGetGoLiveItems(
   site: string,
   sortBy: string,
   sortAsc: boolean,
@@ -42,7 +42,7 @@ export function legacyGetGoLiveItems(
   return get(`/studio/api/1/services/api/1/workflow/get-go-live-items.json${qs}`).pipe(pluck('response'));
 }
 
-export function legacyFetchUserActivities(
+export function fetchLegacyUserActivities(
   site: string,
   user: string,
   sortBy: string,
@@ -68,7 +68,7 @@ export function legacyFetchUserActivities(
   return get(`/studio/api/1/services/api/1/activity/get-user-activities.json${qs}`).pipe(pluck('response'));
 }
 
-export function legacyFetchScheduledItems(
+export function fetchLegacyScheduledItems(
   site: string,
   sortBy: string,
   sortAsc: boolean,
@@ -88,7 +88,7 @@ export function legacyFetchScheduledItems(
   return get(`/studio/api/1/services/api/1/deployment/get-scheduled-items.json${qs}`).pipe(pluck('response'));
 }
 
-export function legacyFetchDeploymentHistory(
+export function fetchLegacyDeploymentHistory(
   site: string,
   sortBy: string,
   sortAsc: boolean,

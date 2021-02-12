@@ -423,7 +423,7 @@
       };
 
       this.getSSOLogoutInfo = function() {
-        return authApi.getSSOLogoutURL().toPromise();
+        return authApi.fetchSSOLogoutURL().toPromise();
       };
 
       this.getUser = function() {
@@ -433,7 +433,7 @@
       this.removeUser = function() {};
 
       this.getStudioInfo = function() {
-        return monitoringApi.version().toPromise();
+        return monitoringApi.fetchVersion().toPromise();
       };
 
       this.changePassword = function(data) {
@@ -596,7 +596,7 @@
       };
 
       this.getGlobalMenu = function() {
-        return configurationApi.getGlobalMenuItems().toPromise();
+        return configurationApi.fetchGlobalMenuItems().toPromise();
       };
 
       return this;
@@ -1360,7 +1360,7 @@
 
       CrafterCMSNext.system.getStore().subscribe(() => {
         configurationApi
-          .getRawConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio')
+          .fetchConfigurationXML('studio_root', '/configuration/studio-config-override.yaml', 'studio')
           .subscribe((data) => {
             aceEditor.setValue(data || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
             aceEditor.focus();
@@ -1374,7 +1374,7 @@
         // avoiding fetching it multiple times on every sample modal open.
         setTimeout(() => {
           configurationApi
-            .getRawConfiguration('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio')
+            .fetchConfigurationXML('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio')
             .subscribe((data) => {
               sampleValue = data;
               $scope.$apply();

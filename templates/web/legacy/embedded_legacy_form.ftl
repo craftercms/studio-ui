@@ -158,6 +158,9 @@
                                     });
                                   }
                                 },
+                                renderFailed(error) {
+                                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
+                                },
                                 id: type
                               },
                               aux,

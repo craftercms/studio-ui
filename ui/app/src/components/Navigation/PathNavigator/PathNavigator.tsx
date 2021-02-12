@@ -47,7 +47,7 @@ import {
 import ItemActionsMenu from '../../ItemActionsMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
-import { getContentXML } from '../../../services/content';
+import { fetchContentXML } from '../../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../../models/UiConfig';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
@@ -307,7 +307,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
         })
       );
     } else {
-      getContentXML(site, item.path).subscribe((content) => {
+      fetchContentXML(site, item.path).subscribe((content) => {
         let mode = 'txt';
 
         if (item.systemType === 'renderingTemplate') {

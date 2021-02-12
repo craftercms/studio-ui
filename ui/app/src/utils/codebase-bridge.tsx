@@ -50,7 +50,7 @@ import * as authService from '../services/auth';
 import * as translation from '../services/translation';
 import * as monitoring from '../services/monitoring';
 import { forkJoin, fromEvent, Observable, Subject } from 'rxjs';
-import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
@@ -142,7 +142,7 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { debounceTime, filter, map, switchMap, take, tap }
+      operators: { debounceTime, filter, map, switchMap, take, tap, pluck }
     },
 
     components: {

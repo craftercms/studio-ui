@@ -24,7 +24,7 @@ import {
   fetchContentTypesFailed
 } from '../actions/preview';
 import { exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { getContentByContentType } from '../../services/content';
+import { fetchItemsByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
@@ -44,7 +44,7 @@ const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalSt
     ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
     withLatestFrom(state$),
     switchMap(([, state]) =>
-      getContentByContentType(
+      fetchItemsByContentType(
         state.sites.active,
         state.preview.components.contentTypeFilter,
         state.contentTypes.byId,

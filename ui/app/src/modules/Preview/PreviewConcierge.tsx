@@ -62,9 +62,9 @@ import {
 } from '../../state/actions/preview';
 import {
   deleteItem,
-  getComponentInstanceHTML,
-  getContentInstance,
-  getContentInstanceDescriptor,
+  fetchComponentInstanceHTML,
+  fetchContentInstance,
+  fetchContentInstanceDescriptor,
   insertComponent,
   insertInstance,
   moveItem,
@@ -284,7 +284,7 @@ export function PreviewConcierge(props: any) {
           // region const issueDescriptorRequest = () => {...}
           // This request & response processing is common to both of these actions so grouping them together.
           const issueDescriptorRequest = (path, completeAction) =>
-            getContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
+            fetchContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
               .pipe(
                 // If another check in comes while loading, this request should be cancelled.
                 // This may happen if navigating rapidly from one page to another (guest-side).
@@ -294,7 +294,7 @@ export function PreviewConcierge(props: any) {
                   Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
                     if (!requestedSourceMapPaths.current[path]) {
                       requestedSourceMapPaths.current[path] = true;
-                      requests.push(getContentInstance(site, path, contentTypes));
+                      requests.push(fetchContentInstance(site, path, contentTypes));
                     }
                   });
                   if (requests.length) {
@@ -651,7 +651,7 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case COMPONENT_INSTANCE_HTML_REQUEST: {
-          getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
+          fetchComponentInstanceHTML(payload.path).subscribe((htmlString) => {
             hostToGuest$.next({
               type: COMPONENT_INSTANCE_HTML_RESPONSE,
               payload: { response: htmlString, id: payload.id }
