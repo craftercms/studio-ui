@@ -22,7 +22,7 @@
     <div class="audit-nav">
         <div class="nav-containers">
             <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
-            <span class="pr20" ng-show="audit.currentSiteName">{{ audit.currentSiteName }}</span>
+            <span class="pr20 inline-block" ng-show="audit.currentSiteName" style="padding-top: 6px;">{{ audit.currentSiteName }}</span>
             <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 5px;" ng-show="!audit.currentSiteName">
                 <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle title="{{audit.site || 'admin.audit.ALL_SITES' | translate}}" >
                     {{audit.siteLabel || audit.site || 'admin.audit.ALL_SITES' | translate }}  <span class="caret"></span>
