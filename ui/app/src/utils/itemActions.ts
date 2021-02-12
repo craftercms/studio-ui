@@ -269,7 +269,6 @@ export function generateSingleItemOptions(
       sectionA.push(menuOptions.codeEditor);
     }
   }
-
   if (hasReadAction(item.availableActions)) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
@@ -279,34 +278,27 @@ export function generateSingleItemOptions(
       sectionA.push(menuOptions.viewCodeEditor);
     }
   }
-
   if (hasCreateAction(item.availableActions)) {
-    if (type === 'page' || (type === 'folder' && !isAsset)) {
+    if (type === 'page' || type === 'component' || type === 'taxonomy' || (type === 'folder' && !isAsset)) {
       sectionA.push(menuOptions.createContent);
       sectionA.push(menuOptions.createFolder);
     } else if (type === 'folder') {
       sectionA.push(menuOptions.createFolder);
     }
   }
-
   if (hasDeleteAction(item.availableActions)) {
     sectionA.push(menuOptions.delete);
   }
-
   if (type !== 'folder') {
     sectionA.push(menuOptions.dependencies);
   }
-
   if (hasRenameAction(item.availableActions)) {
     if (type === 'folder') {
       sectionA.push(menuOptions.renameFolder);
     }
   }
-
   if (hasHistoryAction(item.availableActions)) {
     sectionA.push(menuOptions.history);
-  }
-
   if (hasReadAction(item.availableActions)) {
     // TODO: Not Implemented
     sectionA.push(menuOptions.preview);
