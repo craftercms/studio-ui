@@ -210,6 +210,7 @@
   "globalConfig.appendContent": "Beispiel an den Hintergrundeditor anhängen?",
   "globalConfig.confirmReset": "Reset bestätigen?",
   "globalConfig.confirmSave": "Bestätigen Sie Speichern?",
+  "globalConfig.documentError": "Das Dokument enthält Fehler. Suchen Sie auf der Seite des Editors nach Fehlermarkierungen.",
   "globalConfig.failedSave": "Speichern fehlgeschlagen. Bitte versuchen Sie es vorübergehend erneut.",
   "globalConfig.replaceContent": "Aktuellen Wert im Hintergrundeditor ersetzen?",
   "globalConfig.sampleFile": "Beispieldatei",
