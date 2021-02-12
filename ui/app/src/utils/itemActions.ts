@@ -256,6 +256,9 @@ export function generateSingleItemOptions(
   const type = item.systemType;
   const isImage = item.mimeType?.startsWith('image/');
   const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
+  const isFolder = item.systemType === 'folder';
+  const isTemplate = item.path.includes('/templates');
+  const isController = item.path.includes('/scripts');
   const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
     unparsedMenuOptions,
     formatMessage
@@ -279,26 +282,27 @@ export function generateSingleItemOptions(
     }
   }
   if (hasCreateAction(item.availableActions)) {
-    if (type === 'page' || type === 'component' || type === 'taxonomy' || (type === 'folder' && !isAsset)) {
+    if (type === 'page' || type === 'component' || type === 'taxonomy' || (isFolder && !isAsset)) {
       sectionA.push(menuOptions.createContent);
       sectionA.push(menuOptions.createFolder);
-    } else if (type === 'folder') {
+    } else if (isFolder) {
       sectionA.push(menuOptions.createFolder);
     }
   }
   if (hasDeleteAction(item.availableActions)) {
     sectionA.push(menuOptions.delete);
   }
-  if (type !== 'folder') {
+  if (!isFolder) {
     sectionA.push(menuOptions.dependencies);
   }
   if (hasRenameAction(item.availableActions)) {
-    if (type === 'folder') {
+    if (isFolder) {
       sectionA.push(menuOptions.renameFolder);
     }
   }
   if (hasHistoryAction(item.availableActions)) {
     sectionA.push(menuOptions.history);
+  }
   if (hasReadAction(item.availableActions)) {
     // TODO: Not Implemented
     sectionA.push(menuOptions.preview);
@@ -321,6 +325,9 @@ export function generateSingleItemOptions(
     } else {
       sectionA.push(menuOptions.duplicateAsset);
     }
+  }
+  if (isFolder && isAsset) {
+    sectionA.push(menuOptions.upload);
   }
   // endregion
 
@@ -345,9 +352,14 @@ export function generateSingleItemOptions(
   if (hasEditControllerAction(item.availableActions)) {
     sectionD.push(menuOptions.editController);
   }
-
   if (hasEditTemplateAction(item.availableActions)) {
     sectionD.push(menuOptions.editTemplate);
+  }
+  if (hasCreateAction(item.availableActions) && isTemplate) {
+    sectionD.push(menuOptions.createTemplate);
+  }
+  if (hasCreateAction(item.availableActions) && isController) {
+    sectionD.push(menuOptions.createController);
   }
   // endregion
 
@@ -366,177 +378,6 @@ export function generateSingleItemOptions(
   }
 
   return sections;
-
-  // const write = permissions.write;
-  // const read = permissions.read;
-  // const publish = permissions.publish;
-  // const reject = permissions.cancel_publish;
-  // const deleteItem = permissions.delete;
-  // const createFolder = permissions.create_folder;
-  // const createContent = permissions.create_content;
-  // const changeContentType = permissions.change_content_type;
-  // const hasClipboard = permissions.hasClipboard;
-  // const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
-  // const isTemplate = item.path.includes('/templates');
-  // const isController = item.path.includes('/scripts');
-  // const isImage = item.mimeType?.startsWith('image/');
-  // const isRootFolder = isRootPath(item.path);
-  // const translation = false;
-  // const isLocked = item.lockOwner;
-  // const type = item.systemType;
-  // const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
-  //   unparsedMenuOptions,
-  //   formatMessage
-  // );
-  // switch (type) {
-  //   case 'page': {
-  //     let options = [];
-  //     if (write) {
-  //       options.push(menuOptions.edit);
-  //       if (read) {
-  //         options.push(menuOptions.view);
-  //       }
-  //       if (createFolder) {
-  //         options.push(menuOptions.createFolder);
-  //       }
-  //       if (createContent) {
-  //         options.push(menuOptions.createContent);
-  //       }
-  //       if (deleteItem && !isRootFolder) {
-  //         options.push(menuOptions.delete);
-  //       }
-  //       if (changeContentType && !isRootFolder) {
-  //         options.push(menuOptions.changeContentType);
-  //       }
-  //       if (!isRootFolder) {
-  //         options.push(menuOptions.cut);
-  //         options.push(menuOptions.copy);
-  //         options.push(menuOptions.duplicate);
-  //       }
-  //       if (hasClipboard) {
-  //         options.push(menuOptions.paste);
-  //       }
-  //       if (isLocked) {
-  //         options.push(menuOptions.unlock);
-  //       }
-  //       if (publish && !isLocked && !item.stateMap.live) {
-  //         options.push(menuOptions.schedule);
-  //       }
-  //       if (!isLocked && !item.stateMap.live) {
-  //         options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
-  //       }
-  //       if (
-  //         reject &&
-  //         (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
-  //       ) {
-  //         options.push(menuOptions.reject);
-  //       }
-  //       options.push(menuOptions.history);
-  //       options.push(menuOptions.dependencies);
-  //       if (translation) {
-  //         options.push(menuOptions.translation);
-  //       }
-  //       options.push(menuOptions.editTemplate);
-  //       options.push(menuOptions.editController);
-  //     } else if (read) {
-  //       options.push(menuOptions.view);
-  //       options.push(menuOptions.history);
-  //     }
-  //     sections.push(options);
-  //     return sections;
-  //   }
-  //   case 'folder': {
-  //     let options = [];
-  //     if (write) {
-  //       if (createContent && !isAsset) {
-  //         options.push(menuOptions.createContent);
-  //       }
-  //       if (createFolder) {
-  //         options.push(menuOptions.createFolder);
-  //       }
-  //       if (!isRootFolder) {
-  //         options.push(menuOptions.renameFolder);
-  //       }
-  //       if (deleteItem && !isRootFolder) {
-  //         options.push(menuOptions.delete);
-  //         options.push(menuOptions.cut);
-  //       }
-  //       options.push(menuOptions.copy);
-  //       if (hasClipboard) {
-  //         options.push(menuOptions.paste);
-  //       }
-  //       if (isAsset) {
-  //         options.push(menuOptions.upload);
-  //       }
-  //       if (isTemplate) {
-  //         options.push(menuOptions.createTemplate);
-  //       }
-  //       if (isController) {
-  //         options.push(menuOptions.createController);
-  //       }
-  //     }
-  //     sections.push(options);
-  //     return sections;
-  //   }
-  //   case 'taxonomy':
-  //   case 'component':
-  //   case 'levelDescriptor':
-  //   case 'renderingTemplate':
-  //   case 'script':
-  //   case 'asset': {
-  //     let options = [];
-  //     if (write) {
-  //       if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
-  //         options.push(menuOptions.edit);
-  //         if (read) {
-  //           options.push(menuOptions.view);
-  //         }
-  //       } else if (isImage) {
-  //         options.push(menuOptions.viewImage);
-  //       } else {
-  //         options.push(menuOptions.codeEditor);
-  //         options.push(menuOptions.viewCodeEditor);
-  //       }
-  //       if (deleteItem) {
-  //         options.push(menuOptions.delete);
-  //       }
-  //       options.push(menuOptions.cut);
-  //       options.push(menuOptions.copy);
-  //       if (type === 'taxonomy' || type === 'component' || type === 'levelDescriptor') {
-  //         options.push(menuOptions.duplicate);
-  //         options.push(menuOptions.changeContentType);
-  //       } else {
-  //         options.push(menuOptions.duplicateAsset);
-  //       }
-  //       if (hasClipboard) {
-  //         options.push(menuOptions.paste);
-  //       }
-  //       if (publish && !item.lockOwner && !item.stateMap.live) {
-  //         options.push(menuOptions.schedule);
-  //       }
-  //       if (!isLocked && !item.stateMap.live) {
-  //         options.push(menuOptions.publish); // this will show even when no publish permissions (shows request publish)
-  //       }
-  //       if (
-  //         reject &&
-  //         (item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted)
-  //       ) {
-  //         options.push(menuOptions.reject);
-  //       }
-  //       options.push(menuOptions.history);
-  //       options.push(menuOptions.dependencies);
-  //     } else if (read) {
-  //       options.push(menuOptions.view);
-  //       options.push(menuOptions.history);
-  //     }
-  //     sections.push(options);
-  //     return sections;
-  //   }
-  //   default: {
-  //     console.error(`[itemActions.ts] Unknown system type "${item.systemType}" for item ${item.path}`, item);
-  //     return sections;
-  //   }
-  // }
 }
 
 export function generateMultipleItemOptions(
