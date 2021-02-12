@@ -91,14 +91,16 @@ export function getSandboxItem(site: string, path: string): Observable<SandboxIt
   return getLegacyItem(site, path).pipe(map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem));
 }
 
-export function getDetailedItem(siteId: string, path: string): Observable<DetailedItem> {
-  const qs = toQueryString({ siteId, path });
+export function fetchDetailedItem(
+  siteId: string,
+  path: string,
+  options?: { preferContent: boolean }
+): Observable<DetailedItem> {
+  const { preferContent } = { preferContent: true, ...options };
+  const qs = toQueryString({ siteId, path, preferContent });
   return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
     pluck('response', 'item'),
-    map((item: DetailedItem) => ({
-      ...item,
-      stateMap: createItemStateMap(item.state)
-    }))
+    map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))
   );
 }
 
@@ -857,7 +859,7 @@ export function fetchItemWithChildrenByPath(
   options?: Partial<GetChildrenOptions>
 ): Observable<GetItemWithChildrenResponse> {
   const requests = [
-    getDetailedItem(
+    fetchDetailedItem(
       siteId,
       path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
     ),

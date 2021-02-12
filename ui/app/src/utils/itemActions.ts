@@ -901,12 +901,17 @@ export const itemActionDispatcher = ({
         );
         break;
       }
-      default:
+      case 'preview':
+      case 'cancel':
+      case 'bulkPublish': {
         dispatch(
           showSystemNotification({
             message: `${option} not implemented.`
           })
         );
+        break;
+      }
+      default:
         break;
     }
   }

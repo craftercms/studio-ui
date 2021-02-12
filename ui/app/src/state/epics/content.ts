@@ -21,7 +21,7 @@ import {
   duplicateAsset,
   duplicateItem,
   duplicateWithPolicyValidation,
-  fetchDetailedItem,
+  fetchDetailedItem as fetchDetailedItemAction,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
   fetchQuickCreateList as fetchQuickCreateListAction,
@@ -37,7 +37,7 @@ import {
   unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchQuickCreateList, getDetailedItem, paste, unlock } from '../../services/content';
+import { duplicate, fetchDetailedItem, fetchQuickCreateList, paste, unlock } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
@@ -114,13 +114,13 @@ const content = [
   // region Items fetchDetailedItem
   (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchDetailedItem.type, reloadDetailedItem.type),
+      ofType(fetchDetailedItemAction.type, reloadDetailedItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload, type }, state]) => {
         if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
           return NEVER;
         } else {
-          return getDetailedItem(state.sites.active, payload.path).pipe(
+          return fetchDetailedItem(state.sites.active, payload.path).pipe(
             map((item) => fetchDetailedItemComplete(item)),
             catchAjaxError(fetchDetailedItemFailed)
           );
@@ -135,7 +135,7 @@ const content = [
         if (state.content.items.byPath?.[payload.path]?.live) {
           return NEVER;
         } else {
-          return getDetailedItem(state.sites.active, payload.path).pipe(
+          return fetchDetailedItem(state.sites.active, payload.path).pipe(
             map((item) => fetchDetailedItemComplete(item)),
             catchAjaxError(fetchDetailedItemFailed)
           );
