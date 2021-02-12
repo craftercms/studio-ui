@@ -53,6 +53,10 @@ export const translations = defineMessages({
     id: 'words.publish',
     defaultMessage: 'Publish'
   },
+  approve: {
+    id: 'words.approve',
+    defaultMessage: 'Approve'
+  },
   reject: {
     id: 'words.reject',
     defaultMessage: 'Reject'

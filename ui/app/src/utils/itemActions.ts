@@ -172,6 +172,10 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'publish',
     label: translations.publish
   },
+  approve: {
+    id: 'approve',
+    label: translations.approve
+  },
   reject: {
     id: 'reject',
     label: translations.reject
@@ -303,6 +307,7 @@ export function generateSingleItemOptions(
   if (hasHistoryAction(item.availableActions)) {
     sectionA.push(menuOptions.history);
   }
+  sectionA.push(menuOptions.history);
   if (hasReadAction(item.availableActions)) {
     // TODO: Not Implemented
     sectionA.push(menuOptions.preview);
@@ -332,8 +337,11 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
-  if (hasRequestPublishAction(item.availableActions) || hasApprovePublishAction(item.availableActions)) {
+  if (hasRequestPublishAction(item.availableActions)) {
     sectionC.push(menuOptions.publish);
+  }
+  if (hasApprovePublishAction(item.availableActions)) {
+    sectionC.push(menuOptions.approve);
   }
   if (hasRejectPublishAction(item.availableActions)) {
     sectionC.push(menuOptions.reject);
@@ -780,6 +788,7 @@ export const itemActionDispatcher = ({
       );
       break;
     }
+    case 'approve':
     case 'publish': {
       const items = Array.isArray(item) ? item : [item];
       dispatch(
