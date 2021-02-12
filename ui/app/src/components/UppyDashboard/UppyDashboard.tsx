@@ -15,26 +15,29 @@
  */
 
 import Dashboard, { DashboardOptions } from '@craftercms/uppy-dashboard';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { Uppy } from '@uppy/core';
 
 interface UppyDashboardProps {
-  uppy: any;
+  uppy: Uppy;
   options?: DashboardOptions;
 }
 
 export default function UppyDashboard(props: UppyDashboardProps) {
   const { uppy, options } = props;
-  const [plugin, setPlugin] = useState(null);
   const ref = useRef();
 
   useEffect(() => {
-    uppy.use(Dashboard, { id: 'react:Dashboard', inline: true, ...options, target: ref.current });
-    setPlugin(uppy.getPlugin(options.id ?? 'react:Dashboard'));
-
+    if (uppy.getPlugin(options.id ?? 'craftercms:Dashboard')) {
+      uppy.removePlugin(uppy.getPlugin(options.id ?? 'craftercms:Dashboard'));
+    }
+    uppy.use(Dashboard, { id: 'craftercms:Dashboard', inline: true, ...options, target: ref.current });
     return () => {
-      uppy.removePlugin(plugin);
+      uppy.removePlugin(uppy.getPlugin(options.id ?? 'craftercms:Dashboard'));
     };
-  }, [options, plugin, uppy]);
+    // options is removed from dependencies to avoid re-render a new dashboard
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [uppy]);
 
   return <section ref={ref} />;
 }
