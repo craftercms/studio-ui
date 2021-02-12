@@ -3474,7 +3474,7 @@ var nodeOpen = false,
        */
       getContent: function(path, edit, callback) {
         CrafterCMSNext.services.content
-          .getContentXML(CStudioAuthoringContext.site, encodeURI(path), {
+          .fetchContentXML(CStudioAuthoringContext.site, encodeURI(path), {
             lock: !edit
           })
           .subscribe(

@@ -31,7 +31,7 @@ CStudioForms.Datasources.SiteComponent =
     for (var i = 0; i < properties.length; i++) {
       var property = properties[i];
       if (property.name === 'componentPath') {
-        CrafterCMSNext.services.content.getContentDOM(CStudioAuthoringContext.siteId, property.value).subscribe(
+        CrafterCMSNext.services.content.fetchContentDOM(CStudioAuthoringContext.siteId, property.value).subscribe(
           (dom) => {
             let items = Array.from(dom.querySelectorAll('items > item'));
             items = items.map((item) => {

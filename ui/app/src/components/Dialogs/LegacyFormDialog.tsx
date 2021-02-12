@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
+  EMBEDDED_LEGACY_FORM_RENDER_FAILED,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
   EMBEDDED_LEGACY_FORM_SUCCESS,
@@ -41,15 +42,20 @@ import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import { getQueryVariable } from '../../utils/path';
 import DialogHeader from './DialogHeader';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const translations = defineMessages({
   title: {
-    id: 'craftercms.edit.title',
+    id: 'legacyFormDialog.title',
     defaultMessage: 'Content Form'
   },
   loadingForm: {
-    id: 'craftercms.edit.loadingForm',
+    id: 'legacyFormDialog.loadingForm',
     defaultMessage: 'Loading...'
+  },
+  error: {
+    id: 'legacyFormDialog.errorLoadingForm',
+    defaultMessage: 'An error occurred trying to load the form'
   }
 });
 
@@ -158,9 +164,13 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
           if (inProgress) {
-            const config = { inProgress: false };
-            dispatch(updateEditConfig(config));
+            dispatch(updateEditConfig({ inProgress: false }));
           }
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
+          onDismiss();
+          dispatch(showErrorDialog({ error: { message: formatMessage(translations.error) } }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
