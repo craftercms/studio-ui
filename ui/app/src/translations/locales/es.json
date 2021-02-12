@@ -211,6 +211,7 @@
   "globalConfig.appendContent": "¿Agregar muestra al editor de fondo?",
   "globalConfig.confirmReset": "Confirmar reinicio?",
   "globalConfig.confirmSave": "Confirmar guardar",
+  "globalConfig.documentError": "El documento contiene errores. Busque marcadores de error en el lateral del editor.",
   "globalConfig.failedSave": "Error al guardar. Vuelva a intentarlo momentáneamente.",
   "globalConfig.replaceContent": "Reemplazar el valor actual en el editor de fondo?",
   "globalConfig.sampleFile": "Archivo de muestra",
