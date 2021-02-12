@@ -423,7 +423,7 @@ export default function Search(props: SearchProps) {
         }
       }
     );
-  }, [searchParameters, site]);
+  }, [dispatch, formatMessage, searchParameters, site]);
 
   const handleClearSelected = useCallback(() => {
     selected.forEach((path) => {
