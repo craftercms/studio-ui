@@ -134,12 +134,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
       modal: true,
       close: false,
       constraintoviewport: true,
-      underlay: 'none',
-      // It looks like when in browse, the .yui-dialog { z-index: 1040 } rule is missing so the dialog
-      // shows below the mask; however, to avoid potential z-index issues breaking out due to adding this rule
-      // to this location, preferring a localized fix. These dialogs need to go away in favour of next ui dialogs
-      // in any case.
-      zIndex: window.location.href.indexOf('/studio/browse') === -1 ? void 0 : 1032
+      underlay: 'none'
     });
 
     // Render the Dialog
