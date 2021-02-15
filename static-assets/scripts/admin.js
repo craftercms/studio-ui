@@ -1051,6 +1051,13 @@
       function renderDashboard() {
         var state = store.getState().dialogs.publishingStatus;
         if (currentStatus !== state.status) {
+          publish.stopDisabled = false;
+          publish.startDisabled = false;
+          if (state.status.toLowerCase() === 'stopped') {
+            publish.stopDisabled = true;
+          } else {
+            publish.startDisabled = true;
+          }
           CrafterCMSNext.render('#publisherDashboard', 'PublishingStatusDialogBody', {
             onClose: null,
             isFetching: false,
@@ -1058,6 +1065,7 @@
             details: state.details,
             onRefresh: publish.getPublish
           });
+          $scope.$apply();
         }
       }
     }
