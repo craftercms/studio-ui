@@ -116,6 +116,10 @@ export const publishingStatusTileMessages = defineMessages({
     id: 'words.started',
     defaultMessage: 'Started'
   },
+  refresh: {
+    id: 'words.refresh',
+    defaultMessage: 'Refresh'
+  },
   publishingStatus: {
     id: 'publishingStatusTile.publishingStatus',
     defaultMessage: 'Publishing Status'

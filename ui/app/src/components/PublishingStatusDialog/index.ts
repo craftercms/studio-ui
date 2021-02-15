@@ -17,3 +17,7 @@
 export { default } from './PublishingStatusDialog';
 
 export * from './PublishingStatusDialog';
+
+export { default as PublishingStatusDialogBody } from './PublishingStatusDialogBody';
+
+export * from './PublishingStatusDialogBody';
