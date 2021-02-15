@@ -24,11 +24,13 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
    * initialize module
    */
   initialize: function() {
-    this.definePlugin();
-    CStudioAuthoring.ContextualNav.StatusNav.init();
+    CrafterCMSNext.system.getStore().subscribe((store) => {
+      this.definePlugin(store);
+      CStudioAuthoring.ContextualNav.StatusNav.init();
+    });
   },
 
-  definePlugin: function() {
+  definePlugin: function(store) {
     var CMgs = CStudioAuthoring.Messages;
     /**
      * WCM preview tools Contextual Nav Widget
@@ -36,16 +38,12 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
     CStudioAuthoring.register({
       'ContextualNav.StatusNav': {
         init: function() {
-          var me = this;
           this.render();
           window.onmessage = function(e) {
             if (e.data === 'status-changed') {
-              me.refreshStatus();
+              store.dispatch({ type: 'FETCH_PUBLISHING_STATUS' });
             }
           };
-        },
-        refreshStatus: function() {
-          console.log('ContextualNav.StatusNav.refreshStatus called.');
         },
         render: function() {
           var //
@@ -53,30 +51,26 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
             iconClass,
             currentStatus = '';
 
-          CrafterCMSNext.system.getStore().subscribe((store) => {
-            store.subscribe(() => {
-              let status = store.getState().dialogs.publishingStatus.status || '';
-              if (currentStatus !== status) {
-                currentStatus = status;
-                switch (status.toLowerCase()) {
-                  case 'busy':
-                    iconClass = 'icon-orange';
-                    break;
-                  case 'stopped':
-                    iconClass = 'icon-red';
-                    break;
-                  default:
-                    iconClass = 'icon-default';
-                }
-                $el.removeClass('icon-default icon-red icon-orange').addClass(iconClass);
+          store.subscribe(() => {
+            let status = store.getState().dialogs.publishingStatus.status || '';
+            if (currentStatus !== status) {
+              currentStatus = status;
+              switch (status.toLowerCase()) {
+                case 'busy':
+                  iconClass = 'icon-orange';
+                  break;
+                case 'stopped':
+                  iconClass = 'icon-red';
+                  break;
+                default:
+                  iconClass = 'icon-default';
               }
-            });
+              $el.removeClass('icon-default icon-red icon-orange').addClass(iconClass);
+            }
           });
 
           $el.on('click', function() {
-            CrafterCMSNext.system
-              .getStore()
-              .subscribe((store) => store.dispatch({ type: 'SHOW_PUBLISHING_STATUS_DIALOG' }));
+            store.dispatch({ type: 'SHOW_PUBLISHING_STATUS_DIALOG' });
           });
         },
         getStatusMessage: function(contextNavLangBundle, status) {
