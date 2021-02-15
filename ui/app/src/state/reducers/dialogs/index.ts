@@ -39,6 +39,7 @@ import pathSelection from './pathSelection';
 import changeContentType from './changeContentType';
 import itemMenu from './itemMenu';
 import globalNav from './globalNav';
+import publishingStatus from './publishingStatus';
 
 export default combineReducers({
   confirm,
@@ -64,5 +65,6 @@ export default combineReducers({
   pathSelection,
   changeContentType,
   itemMenu,
-  globalNav
+  globalNav,
+  publishingStatus
 });

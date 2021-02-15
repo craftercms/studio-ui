@@ -8114,11 +8114,6 @@ CStudioAuthoring.FilesDiff = {
   }, w);
 })(window);
 
-if (window.top === window) {
-  const el = document.createElement('craftercms-auth-monitor');
-  CrafterCMSNext.render(el, 'AuthMonitor');
-}
-
 function getTopLegacyWindow(nextWindow) {
   try {
     if (nextWindow === window.top) return nextWindow;

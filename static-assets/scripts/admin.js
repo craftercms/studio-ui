@@ -143,7 +143,7 @@
       };
 
       this.repositoryStatus = function(site) {
-        return repositoriesApi.status(site).toPromise();
+        return repositoriesApi.fetchStatus(site).toPromise();
       };
 
       this.resolveConflict = function(data) {
@@ -199,7 +199,7 @@
       let publishingApi = CrafterCMSNext.services.publishing;
 
       this.getPublishStatus = function(site) {
-        return publishingApi.status(site).toPromise();
+        return publishingApi.fetchStatus(site).toPromise();
       };
 
       this.startPublishStatus = function(site) {

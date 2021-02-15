@@ -39,6 +39,7 @@ import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authori
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 import { GlobalNavStateProps } from '../../components/Navigation/GlobalNav';
+import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -218,5 +219,15 @@ export const itemMenuClosed = /*#__PURE__*/ createAction('ITEM_MENU_CLOSED');
 export const showGlobalNav = /*#__PURE__*/ createAction<Partial<GlobalNavStateProps>>('SHOW_GLOBAL_NAV');
 
 export const closeGlobalNav = /*#__PURE__*/ createAction('CLOSE_GLOBAL_NAV');
+
+// endregion
+
+// region PublishingStatusDialog
+
+export const showPublishingStatusDialog = /*#__PURE__*/ createAction<Partial<PublishingStatusDialogStateProps>>(
+  'SHOW_PUBLISHING_STATUS_DIALOG'
+);
+
+export const closePublishingStatusDialog = /*#__PURE__*/ createAction('HIDE_PUBLISHING_STATUS_DIALOG');
 
 // endregion

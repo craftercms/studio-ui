@@ -598,6 +598,10 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
     },
     widgets: [
       {
+        id: 'craftercms.components.GlobalNavPublishingStatusTile',
+        uiKey: count++
+      },
+      {
         id: 'craftercms.components.GlobalNavLinkTile',
         uiKey: count++,
         configuration: {

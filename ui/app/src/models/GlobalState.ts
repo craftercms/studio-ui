@@ -54,6 +54,7 @@ import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { MessageDescriptor } from 'react-intl';
 import { GlobalNavStateProps } from '../components/Navigation/GlobalNav';
+import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -173,6 +174,7 @@ export interface GlobalState {
     changeContentType: ChangeContentTypeDialogStateProps;
     itemMenu: ItemMenuStateProps;
     globalNav: GlobalNavStateProps;
+    publishingStatus: PublishingStatusDialogStateProps;
   };
   translation: {
     siteLocales: {

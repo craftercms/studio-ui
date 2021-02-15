@@ -22,11 +22,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
-import clsx from 'clsx';
 import { fetchGlobalMenuItems } from '../../services/configuration';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
-import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
@@ -62,7 +60,6 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import BuildIcon from '@material-ui/icons/BuildRounded';
 import PreviewIcon from '../Icons/Preview';
 import { components } from '../../services/plugin';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { renderWidgets } from '../Widget';
 import { logout } from '../../state/actions/auth';
 import { Tooltip } from '@material-ui/core';
@@ -73,15 +70,8 @@ import GlobalState from '../../models/GlobalState';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
-
-interface TileProps {
-  icon: SystemIconDescriptor;
-  title: string;
-  link?: string;
-  target?: string;
-  disabled?: any;
-  onClick?(id?: string, type?: string): any;
-}
+import GlobalMenuTile from '../GlobalMenuTile/GlobalMenuTile';
+import GlobalNavPublishingStatusTile from '../GlobalNavPublishingStatusTile';
 
 export interface GlobalNavProps {
   anchor: Element;
@@ -95,38 +85,6 @@ export interface GlobalNavStateProps {
   onMenuClose: StandardAction;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
 }
-
-const useTileStyles = makeStyles((theme) =>
-  createStyles({
-    tile: {
-      width: '120px',
-      height: '100px',
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      cursor: 'pointer',
-      textAlign: 'center',
-      borderRadius: theme.shape.borderRadius,
-      transition: 'background 250ms ease, box-shadow 500ms ease',
-      margin: 5,
-      '&:hover, &:focus': {
-        background: theme.palette.action.hover,
-        boxShadow: theme.shadows[2],
-        textDecoration: 'none'
-      },
-      '&.disabled': {
-        opacity: theme.palette.action.disabledOpacity,
-        background: theme.palette.action.disabled,
-        pointerEvents: 'none'
-      }
-    },
-    iconAvatar: {
-      backgroundColor: 'transparent',
-      color: theme.palette.text.secondary
-    }
-  })
-);
 
 const messages = defineMessages({
   mySites: {
@@ -242,24 +200,6 @@ const messages = defineMessages({
     defaultMessage: 'Logout'
   }
 });
-
-function Tile(props: TileProps) {
-  const { title, icon, link, target, onClick, disabled = false } = props;
-  const classes = useTileStyles();
-  return (
-    <Link
-      className={clsx(classes.tile, disabled && 'disabled')}
-      href={disabled ? null : link}
-      onClick={() => (!disabled && onClick ? onClick() : null)}
-      target={target ? target : '_self'}
-    >
-      <Avatar variant="rounded" className={classes.iconAvatar} color="inherit">
-        <SystemIcon icon={icon} />
-      </Avatar>
-      <Typography color="textPrimary">{title}</Typography>
-    </Link>
-  );
-}
 
 const globalNavUrlMapping = {
   'home.globalMenu.logging-levels': '#/globalMenu/logging',
@@ -421,7 +361,7 @@ const AppsRail = ({
       </Typography>
       <nav className={classes.navItemsWrapper}>
         {menuItems.map((item) => (
-          <Tile
+          <GlobalMenuTile
             key={item.id}
             title={formatMessage(messages[popPiece(camelize(item.id))])}
             icon={{ baseClass: `fa ${item.icon}` }}
@@ -429,18 +369,18 @@ const AppsRail = ({
             onClick={onMenuClose}
           />
         ))}
-        <Tile
+        <GlobalMenuTile
           title={formatMessage(messages.docs)}
           icon={{ id: 'craftercms.icons.Docs' }}
           link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
           target="_blank"
         />
-        <Tile
+        <GlobalMenuTile
           title={formatMessage(messages.settings)}
           icon={{ id: '@material-ui/icons/SettingsRounded' }}
           link={getLink('settings', authoringBase)}
         />
-        <Tile
+        <GlobalMenuTile
           icon={{ id: 'craftercms.icons.CrafterIcon' }}
           link={getLink('about', authoringBase)}
           title={formatMessage(messages.about)}
@@ -731,7 +671,7 @@ const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { previewChoice } = usePreviewState();
   const site = useActiveSiteId();
   return (
-    <Tile
+    <GlobalMenuTile
       icon={icon}
       title={usePossibleTranslation(title)}
       link={
@@ -753,6 +693,7 @@ const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
 
 Object.entries({
   'craftercms.components.GlobalNavLinkTile': GlobalNavLinkTile,
+  'craftercms.components.GlobalNavPublishingStatusTile': GlobalNavPublishingStatusTile,
   'craftercms.icons.Preview': PreviewIcon,
   'craftercms.icons.CrafterIcon': About,
   'craftercms.icons.Docs': Docs,
