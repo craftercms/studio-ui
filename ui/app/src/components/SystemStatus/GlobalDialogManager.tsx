@@ -54,6 +54,7 @@ const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
+const PublishingStatusDialog = lazy(() => import('../PublishingStatusDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -419,6 +420,17 @@ function GlobalDialogManager() {
 
       {/* region Global Navigation */}
       <GlobalNav />
+      {/* endregion */}
+
+      {/* region Publishing Status Dialog */}
+      <PublishingStatusDialog
+        open={state.publishingStatus.open}
+        status={state.publishingStatus.status}
+        details={state.publishingStatus.details}
+        isFetching={state.publishingStatus.isFetching}
+        onClose={createCallback(state.publishingStatus.onClose, dispatch)}
+        onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
+      />
       {/* endregion */}
     </Suspense>
   );

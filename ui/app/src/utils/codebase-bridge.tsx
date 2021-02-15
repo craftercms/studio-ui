@@ -183,7 +183,8 @@ export function createCodebaseBridge() {
         }))
       ),
       TokenManagement: lazy(() => import('../components/TokenManagement')),
-      PluginManagement: lazy(() => import('../components/PluginManagement'))
+      PluginManagement: lazy(() => import('../components/PluginManagement')),
+      PublishingStatusDialogBody: lazy(() => import('../components/PublishingStatusDialog/PublishingStatusDialogBody'))
     },
 
     system: {
