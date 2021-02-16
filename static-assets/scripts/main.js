@@ -1430,9 +1430,8 @@
                 type: 'SHOW_SYSTEM_NOTIFICATION',
                 payload: {
                   message:
-                    e.response && e.response.response
-                      ? e.response.response.message
-                      : formatMessage(globalConfigMessages.failedSave),
+                    (e.response && e.response.response && e.response.response.message) ||
+                    formatMessage(globalConfigMessages.failedSave),
                   options: {
                     variant: 'error'
                   }
