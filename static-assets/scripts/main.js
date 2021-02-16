@@ -1385,9 +1385,8 @@
         });
       });
 
-      $scope.checkDocumentErrors = function() {
+      $scope.checkDocumentErrors = function(saveOnSuccess) {
         const errors = fileErrors(aceEditor);
-
         if (errors.length) {
           $scope.documentHasErrors = true;
           CrafterCMSNext.system.store.dispatch({
@@ -1401,6 +1400,9 @@
           });
         } else {
           $scope.documentHasErrors = false;
+          if (saveOnSuccess) {
+            $scope.save();
+          }
         }
       };
 
