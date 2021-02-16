@@ -33,7 +33,7 @@ import Typography from '@material-ui/core/Typography';
 import LogInForm from './LoginForm';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { getProductLanguages } from '../../services/configuration';
+import { fetchProductLanguages } from '../../services/configuration';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import { parse } from 'query-string';
 import TextField from '@material-ui/core/TextField';
@@ -698,7 +698,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
 
   // Retrieve Platform Languages.
   useEffect(() => {
-    getProductLanguages().subscribe(setLanguages);
+    fetchProductLanguages().subscribe(setLanguages);
   }, []);
 
   // View specific adjustments (based on mode).
