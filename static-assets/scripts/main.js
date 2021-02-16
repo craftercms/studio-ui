@@ -1407,7 +1407,6 @@
       $scope.save = function() {
         enableUI(false);
         const value = aceEditor.getValue();
-
         configurationApi
           .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
           .subscribe(
@@ -1425,18 +1424,20 @@
 
               $scope.$apply();
             },
-            () => {
+            (e) => {
               enableUI(true);
               CrafterCMSNext.system.store.dispatch({
                 type: 'SHOW_SYSTEM_NOTIFICATION',
                 payload: {
-                  message: formatMessage(globalConfigMessages.failedSave),
+                  message:
+                    e.response && e.response.response
+                      ? e.response.response.message
+                      : formatMessage(globalConfigMessages.failedSave),
                   options: {
                     variant: 'error'
                   }
                 }
               });
-
               $scope.$apply();
             }
           );
