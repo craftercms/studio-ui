@@ -1394,6 +1394,15 @@
 
       const aceEditor = ace.edit('globalConfigAceEditor');
 
+      const fileErrors = (editor) => {
+        const editorAnnotations = editor.getSession().getAnnotations();
+        const errors = editorAnnotations.filter((annotation) => {
+          return annotation.type === 'error';
+        });
+
+        return errors;
+      };
+
       aceEditor.setOptions({
         readOnly: true,
         value: defaultValue,
@@ -1437,9 +1446,24 @@
           });
       });
 
+      $scope.checkDocumentErrors = function () {
+        const errors = fileErrors(aceEditor);
+
+        if (errors.length) {
+          $scope.documentHasErrors = true;
+          $element.notify(formatMessage(globalConfigMessages.documentError), {
+            position: 'top left',
+            className: 'error'
+          });
+        } else {
+          $scope.documentHasErrors = false;
+        }
+      };
+
       $scope.save = function () {
         enableUI(false);
         const value = aceEditor.getValue();
+
         $http
           .post('/studio/api/2/configuration/write_configuration', {
             siteId: 'studio_root',
@@ -1457,11 +1481,15 @@
             });
             globalConfig.isModified = false;
           })
-          .catch(() => {
-            $element.notify(formatMessage(globalConfigMessages.failedSave), {
-              position: 'top left',
-              className: 'error'
-            });
+          .catch((e) => {
+            enableUI(true);
+            $element.notify(
+              (e.data && e.data.response && e.data.response.message) || formatMessage(globalConfigMessages.failedSave),
+              {
+                position: 'top left',
+                className: 'error'
+              }
+            );
           });
       };
 

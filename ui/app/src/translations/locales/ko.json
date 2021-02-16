@@ -211,6 +211,7 @@
   "globalConfig.appendContent": "백그라운드 편집기에 샘플을 추가 하시겠습니까?",
   "globalConfig.confirmReset": "재설정을 확인 하시겠습니까?",
   "globalConfig.confirmSave": "저장을 확인 하시겠습니까?",
+  "globalConfig.documentError": "문서에 오류가 있습니다. 편집기 측면에서 오류 마커를 확인합니다.",
   "globalConfig.failedSave": "저장하지 못했습니다. 잠시 후 다시 시도하십시오.",
   "globalConfig.replaceContent": "백그라운드 편집기에서 현재 값을 바꾸시겠습니까?",
   "globalConfig.sampleFile": "샘플 파일",
