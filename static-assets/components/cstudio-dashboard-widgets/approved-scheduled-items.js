@@ -266,7 +266,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
           item.previewable == true ? ' previewLink' : ' non-previewable-link',
           '" ',
           item.previewable == true
-            ? 'href="/studio/preview/#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
+            ? 'href="/studio/preview#/?page=' + currentBrowserUri + '&site=' + CStudioAuthoringContext.site + '"'
             : '',
           '">',
           displayName,

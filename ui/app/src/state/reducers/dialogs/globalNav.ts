@@ -23,6 +23,7 @@ const initialState: GlobalNavStateProps = {
   open: false,
   anchor: null,
   sitesRailPosition: 'left',
+  closeButtonPosition: 'right',
   onMenuClose: closeGlobalNav()
 };
 

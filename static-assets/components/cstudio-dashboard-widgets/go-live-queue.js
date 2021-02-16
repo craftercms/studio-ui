@@ -260,7 +260,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
           `<a class="anchorRow"
            ${
              item.previewable
-               ? `href="/studio/preview/#/?page=${currentBrowserUri}&site=${CStudioAuthoringContext.site}"`
+               ? `href="/studio/preview#/?page=${currentBrowserUri}&site=${CStudioAuthoringContext.site}"`
                : ''
            }
            class="itemNameCol ${item.previewable ? 'previewLink' : 'non-previewable-link'} ${

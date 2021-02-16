@@ -255,7 +255,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function(widgetId, pageId) {
             item.previewable ? ' previewLink' : ' non-previewable-link'
           }" ${
             item.previewable
-              ? `href="/studio/preview/#/?page=${currentBrowserUri}&site=${CStudioAuthoringContext.site}"`
+              ? `href="/studio/preview#/?page=${currentBrowserUri}&site=${CStudioAuthoringContext.site}"`
               : ''
           }>`,
           displayName,

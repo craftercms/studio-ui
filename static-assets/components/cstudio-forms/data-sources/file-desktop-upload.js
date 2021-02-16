@@ -88,10 +88,11 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     }
 
     const create = $(
-      `<li class="cstudio-form-controls-create-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
-        langBundle,
-        'createNew'
-      )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}</a></li>`
+      `<li class="cstudio-form-controls-create-element">
+        <a class="cstudio-form-control-node-selector-add-container-item">
+          ${CMgs.format(langBundle, 'createNew')} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
+        </a>
+      </li>`
     );
 
     create.find('a').on('click', function() {
