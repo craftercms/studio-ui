@@ -538,7 +538,7 @@
       };
 
       this.getAvailableLanguages = function() {
-        return configurationApi.getProductLanguages().toPromise();
+        return configurationApi.fetchProductLanguages().toPromise();
       };
 
       this.getDocumentCookie = function(name) {

@@ -122,8 +122,6 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
-// region SidebarConfig
-
 export function fetchSiteUiConfig(
   site: string
 ): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
@@ -160,13 +158,11 @@ export function fetchSiteUiConfig(
   );
 }
 
-// endregion
-
 export function fetchGlobalMenuItems(): Observable<{ id: string; icon: string; label: string }[]> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
 }
 
-export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
+export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
   return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
 }
 

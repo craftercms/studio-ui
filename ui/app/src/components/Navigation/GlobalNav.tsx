@@ -383,16 +383,19 @@ const AppsRail = ({
           icon={{ id: 'craftercms.icons.Docs' }}
           link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
           target="_blank"
+          onClick={onMenuClose}
         />
         <GlobalNavTile
           title={formatMessage(messages.settings)}
           icon={{ id: '@material-ui/icons/SettingsRounded' }}
           link={getLink('settings', authoringBase)}
+          onClick={onMenuClose}
         />
         <GlobalNavTile
           icon={{ id: 'craftercms.icons.CrafterIcon' }}
           link={getLink('about', authoringBase)}
           title={formatMessage(messages.about)}
+          onClick={onMenuClose}
         />
       </nav>
       {/* endregion */}
