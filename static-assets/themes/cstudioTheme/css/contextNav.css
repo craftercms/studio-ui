@@ -137,7 +137,7 @@
 body .mask {
   background-color: rgb(68, 68, 68) !important;
   opacity: 0.5 !important;
-  z-index: 1031 !important;
+  z-index: 1031;
 }
 
 .yui-dialog.inc-zindex {
