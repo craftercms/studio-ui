@@ -70,13 +70,15 @@ import GlobalState from '../../models/GlobalState';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
-import GlobalMenuTile from '../GlobalMenuTile/GlobalMenuTile';
+import GlobalNavTile from '../GlobalNavTile/GlobalNavTile';
 import GlobalNavPublishingStatusTile from '../GlobalNavPublishingStatusTile';
+import clsx from 'clsx';
 
 export interface GlobalNavProps {
   anchor: Element;
   onMenuClose: (e: any) => void;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
+  closeButtonPosition?: 'left' | 'right';
 }
 
 export interface GlobalNavStateProps {
@@ -84,6 +86,7 @@ export interface GlobalNavStateProps {
   anchor: string;
   onMenuClose: StandardAction;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
+  closeButtonPosition?: 'left' | 'right';
 }
 
 const messages = defineMessages({
@@ -224,21 +227,21 @@ const globalNavUrlMapping = {
 const useGlobalNavStyles = makeStyles((theme) =>
   createStyles({
     popover: {
-      maxWidth: 990,
-      height: '100%',
+      maxWidth: 1065,
       borderRadius: '10px'
     },
     sitesRail: {
-      height: '100%',
       backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark1 : palette.gray.light1
     },
-    appsRail: {
-      height: '100%'
-    },
+    appsRail: {},
     railTop: {
       padding: '30px',
       overflow: 'auto',
-      height: 'calc(100% - 65px)'
+      height: 'calc(100% - 65px)',
+      maxHeight: 'calc(100vh - 95px)'
+    },
+    railTopExtraPadded: {
+      paddingTop: 70
     },
     railBottom: {
       height: 65,
@@ -274,7 +277,11 @@ const useGlobalNavStyles = makeStyles((theme) =>
     closeButton: {
       position: 'absolute',
       top: '10px',
-      right: '10px'
+      right: '10px',
+      '&.left': {
+        right: 'auto',
+        left: '10px'
+      }
     },
     simpleGear: {
       margin: 'auto'
@@ -321,6 +328,7 @@ interface AppsRailProps {
   user: EnhancedUser;
   onMenuClose(): void;
   onLogout(): void;
+  closeButtonPosition: GlobalNavStateProps['closeButtonPosition'];
 }
 
 const AppsRail = ({
@@ -334,10 +342,11 @@ const AppsRail = ({
   authoringBase,
   version,
   user,
-  onLogout
+  onLogout,
+  closeButtonPosition
 }: AppsRailProps) => (
   <Grid item xs={12} md={8} className={classes.appsRail}>
-    <div className={classes.railTop}>
+    <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       {/* region Site Navigation */}
       {siteId && siteNav && (
         <>
@@ -361,7 +370,7 @@ const AppsRail = ({
       </Typography>
       <nav className={classes.navItemsWrapper}>
         {menuItems.map((item) => (
-          <GlobalMenuTile
+          <GlobalNavTile
             key={item.id}
             title={formatMessage(messages[popPiece(camelize(item.id))])}
             icon={{ baseClass: `fa ${item.icon}` }}
@@ -369,18 +378,18 @@ const AppsRail = ({
             onClick={onMenuClose}
           />
         ))}
-        <GlobalMenuTile
+        <GlobalNavTile
           title={formatMessage(messages.docs)}
           icon={{ id: 'craftercms.icons.Docs' }}
           link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
           target="_blank"
         />
-        <GlobalMenuTile
+        <GlobalNavTile
           title={formatMessage(messages.settings)}
           icon={{ id: '@material-ui/icons/SettingsRounded' }}
           link={getLink('settings', authoringBase)}
         />
-        <GlobalMenuTile
+        <GlobalNavTile
           icon={{ id: 'craftercms.icons.CrafterIcon' }}
           link={getLink('about', authoringBase)}
           title={formatMessage(messages.about)}
@@ -482,7 +491,9 @@ export default function GlobalNav() {
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
-  const { open, anchor: anchorSelector, sitesRailPosition = 'left' } = useSelection((state) => state.dialogs.globalNav);
+  const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = useSelection(
+    (state) => state.dialogs.globalNav
+  );
   const { siteNav } = useSiteUIConfig();
   const [menuItems, setMenuItems] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
@@ -510,7 +521,10 @@ export default function GlobalNav() {
       {
         name: formatMessage(messages.preview),
         href(site) {
-          return getLink(previewChoice[site] === '2' ? 'preview' : 'legacy.preview', authoringBase);
+          return `${getLink(
+            previewChoice[site] === '2' ? 'preview' : 'legacy.preview',
+            authoringBase
+          )}#/?page=/&site=${site}`;
         },
         onClick(site) {
           setSiteCookie(site);
@@ -545,12 +559,16 @@ export default function GlobalNav() {
       } else {
         setSiteCookie(site);
         setTimeout(() => {
-          window.location.href =
-            previewChoice[site] === '2' ? `${authoringBase}/next/preview` : `${authoringBase}/preview`;
+          window.location.href = `${
+            previewChoice[site] === '2' ? `${authoringBase}/next/preview` : `${authoringBase}/preview`
+          }#/?page=/&site=${site}`;
         });
       }
     } else {
-      window.location.reload();
+      setSiteCookie(site);
+      setTimeout(() => {
+        window.location.reload();
+      });
     }
   };
 
@@ -583,6 +601,7 @@ export default function GlobalNav() {
       user={user}
       onMenuClose={onMenuClose}
       onLogout={onLogout}
+      closeButtonPosition={closeButtonPosition}
     />
   );
 
@@ -621,7 +640,7 @@ export default function GlobalNav() {
       <Tooltip title={formatMessage(messages.closeMenu)}>
         <IconButton
           aria-label={formatMessage(messages.closeMenu)}
-          className={classes.closeButton}
+          className={clsx(classes.closeButton, closeButtonPosition)}
           onClick={onMenuClose}
         >
           <CloseIcon />
@@ -671,7 +690,7 @@ const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { previewChoice } = usePreviewState();
   const site = useActiveSiteId();
   return (
-    <GlobalMenuTile
+    <GlobalNavTile
       icon={icon}
       title={usePossibleTranslation(title)}
       link={
@@ -679,8 +698,8 @@ const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
         (systemLinkId === 'preview'
           ? // Preview is a special "dynamic case"
             previewChoice[site] === '2'
-            ? `${authoringBase}/next/preview`
-            : `${authoringBase}/preview`
+            ? `${authoringBase}/next/preview#/?page=/&site=${site}`
+            : `${authoringBase}/preview#/?page=/&site=${site}`
           : {
               siteTools: `${authoringBase}/site-config`,
               siteSearch: `${authoringBase}/search`,

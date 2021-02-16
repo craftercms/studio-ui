@@ -52,15 +52,16 @@ let instanceCount = 0;
 interface GlobalNavOpenerButtonProps {
   icon?: 'logo' | 'apps';
   sitesRailPosition?: GlobalNavStateProps['sitesRailPosition'];
+  closeButtonPosition?: 'left' | 'right';
 }
 
 export default function GlobalNavOpenerButton(props: GlobalNavOpenerButtonProps) {
   const classes = useStyles({});
-  const { sitesRailPosition = 'right', icon = 'logo' } = props;
+  const { sitesRailPosition = 'right', icon = 'logo', closeButtonPosition = 'right' } = props;
   const { formatMessage } = useIntl();
   const id = useMemo(() => `toolbarGlobalNavButton${instanceCount++}`, []);
   const dispatch = useDispatch();
-  const onMenuClick = () => dispatch(showGlobalNav({ anchor: `#${id}`, sitesRailPosition }));
+  const onMenuClick = () => dispatch(showGlobalNav({ anchor: `#${id}`, sitesRailPosition, closeButtonPosition }));
   return (
     <Tooltip title={formatMessage(messages.menu)}>
       <IconButton

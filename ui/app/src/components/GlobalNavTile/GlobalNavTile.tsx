@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export interface GlobalMenuTileProps {
+export interface GlobalNavTileProps {
   icon: SystemIconDescriptor;
   title: string;
   link?: string;
@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) =>
       borderRadius: theme.shape.borderRadius,
       transition: 'background 250ms ease, box-shadow 500ms ease',
       margin: 5,
+      overflow: 'hidden',
       '&:hover, &:focus': {
         background: theme.palette.action.hover,
         boxShadow: theme.shadows[2],
@@ -56,14 +57,18 @@ const useStyles = makeStyles((theme) =>
         pointerEvents: 'none'
       }
     },
+    title: {
+      lineHeight: 1
+    },
     iconAvatar: {
       backgroundColor: 'transparent',
-      color: theme.palette.text.secondary
+      color: theme.palette.text.secondary,
+      margin: 5
     }
   })
 );
 
-function GlobalMenuTile(props: GlobalMenuTileProps) {
+function GlobalNavTile(props: GlobalNavTileProps) {
   const { title, icon, link, target, onClick, disabled = false } = props;
   const classes = useStyles();
   return (
@@ -76,9 +81,11 @@ function GlobalMenuTile(props: GlobalMenuTileProps) {
       <Avatar variant="rounded" className={classes.iconAvatar} color="inherit">
         <SystemIcon icon={icon} />
       </Avatar>
-      <Typography color="textPrimary">{title}</Typography>
+      <Typography color="textPrimary" className={classes.title}>
+        {title}
+      </Typography>
     </Link>
   );
 }
 
-export default GlobalMenuTile;
+export default GlobalNavTile;

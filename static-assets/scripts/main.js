@@ -470,8 +470,9 @@
         $timeout(
           function() {
             const previewChoice = CrafterCMSNext.system.store.getState().preview.previewChoice;
-            $window.location.href =
-              previewChoice && previewChoice[site.id] === '2' ? '/studio/next/preview' : '/studio/preview';
+            $window.location.href = `${
+              previewChoice && previewChoice[site.id] === '2' ? '/studio/next/preview' : '/studio/preview'
+            }#/?page=/&site=${site.id}`;
           },
           0,
           false
@@ -831,7 +832,9 @@
 
       let container = document.querySelector('#brandGlobalNavOpenerButton');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'GlobalNavOpenerButton');
+      CrafterCMSNext.render(container, 'GlobalNavOpenerButton', {
+        closeButtonPosition: 'left'
+      });
 
       container = document.querySelector('#appsIconGlobalNav');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);

@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) =>
         background: theme.palette.error.main
       },
       '&.started': {
-        background: theme.palette.warning.main
+        background: theme.palette.success.main
       }
     },
     body: {

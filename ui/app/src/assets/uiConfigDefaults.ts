@@ -598,10 +598,6 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
     },
     widgets: [
       {
-        id: 'craftercms.components.GlobalNavPublishingStatusTile',
-        uiKey: count++
-      },
-      {
         id: 'craftercms.components.GlobalNavLinkTile',
         uiKey: count++,
         configuration: {
@@ -648,6 +644,10 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
           systemLinkId: 'siteSearch',
           icon: { id: '@material-ui/icons/SearchRounded' }
         }
+      },
+      {
+        id: 'craftercms.components.GlobalNavPublishingStatusTile',
+        uiKey: count++
       }
     ]
   }
