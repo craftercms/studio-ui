@@ -22,7 +22,7 @@ import { useActiveSiteId, useActiveUser, useLogicResource, usePreviewState, useS
 import ResizeableDrawer from './ResizeableDrawer';
 import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbeddedAppViewButton';
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
-import PathNavigator from '../../components/Navigation/PathNavigator/PathNavigator';
+import PathNavigator from '../../components/PathNavigator/PathNavigator';
 import ToolsPanelPageComponent from '../../components/ToolsPanelPage';
 import { fetchSiteUiConfig } from '../../state/actions/configuration';
 import GlobalState from '../../models/GlobalState';

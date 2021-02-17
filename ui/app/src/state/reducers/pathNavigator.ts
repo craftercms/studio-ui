@@ -15,7 +15,7 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {

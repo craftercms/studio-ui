@@ -17,13 +17,13 @@
 import React from 'react';
 import { useSelection } from '../../utils/hooks';
 import PublishingStatusTile, { publishingStatusTileMessages } from '../PublishingStatusTile';
-import { closeGlobalNav, showPublishingStatusDialog } from '../../state/actions/dialogs';
+import { closeLaunchpad, showPublishingStatusDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { batchActions } from '../../state/actions/misc';
 import { Tooltip } from '@material-ui/core';
 import { useIntl } from 'react-intl';
 
-function GlobalNavPublishingStatusTile() {
+function LaunchpadPublishingStatusTile() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const state = useSelection((state) => state.dialogs.publishingStatus);
@@ -36,10 +36,10 @@ function GlobalNavPublishingStatusTile() {
       <PublishingStatusTile
         status={state.status}
         isFetching={state.isFetching}
-        onClick={() => dispatch(batchActions([closeGlobalNav(), showPublishingStatusDialog({})]))}
+        onClick={() => dispatch(batchActions([closeLaunchpad(), showPublishingStatusDialog({})]))}
       />
     </Tooltip>
   );
 }
 
-export default GlobalNavPublishingStatusTile;
+export default LaunchpadPublishingStatusTile;

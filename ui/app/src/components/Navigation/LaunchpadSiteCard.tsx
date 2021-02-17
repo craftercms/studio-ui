@@ -27,6 +27,17 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Box from '@material-ui/core/Box';
 
+interface LaunchpadSiteCardProps {
+  title: string;
+  value?: string;
+  options?: boolean;
+  classes?: any;
+  cardActions?: any;
+  disabled?: boolean;
+  selected?: boolean;
+  onCardClick(id: string): any;
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     card: {
@@ -41,18 +52,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-interface TitleCardProps {
-  title: string;
-  value?: string;
-  options?: boolean;
-  classes?: any;
-  cardActions?: any;
-  disabled?: boolean;
-  selected?: boolean;
-  onCardClick(id: string): any;
-}
-
-export default function SiteCard(props: TitleCardProps) {
+function LaunchpadSiteCard(props: LaunchpadSiteCardProps) {
   const { title, value, options, onCardClick, cardActions = [], selected = false } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles();
@@ -104,3 +104,5 @@ export default function SiteCard(props: TitleCardProps) {
     </>
   );
 }
+
+export default LaunchpadSiteCard;

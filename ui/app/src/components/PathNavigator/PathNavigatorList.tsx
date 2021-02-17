@@ -15,12 +15,12 @@
  */
 
 import List from '@material-ui/core/List';
-import { DetailedItem } from '../../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import NavItem from './PathNavigatorItem';
 import React, { useMemo } from 'react';
-import { Resource } from '../../../models/Resource';
+import { Resource } from '../../models/Resource';
 
-interface NavProps {
+export interface NavProps {
   locale?: string;
   resource: Resource<DetailedItem[]>;
   isSelectMode?: boolean;
@@ -36,7 +36,7 @@ interface NavProps {
 }
 
 // PathNavigatorList
-export default function PathNavigatorList(props: NavProps) {
+function PathNavigatorList(props: NavProps) {
   const {
     resource,
     onPathSelected,
@@ -73,3 +73,5 @@ export default function PathNavigatorList(props: NavProps) {
     </List>
   );
 }
+
+export default PathNavigatorList;

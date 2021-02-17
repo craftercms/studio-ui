@@ -20,7 +20,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import SiteCard from './SiteCard';
+import LaunchpadSiteCard from './LaunchpadSiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import { fetchGlobalMenuItems } from '../../services/configuration';
 import About from '../Icons/About';
@@ -65,23 +65,23 @@ import { logout } from '../../state/actions/auth';
 import { Tooltip } from '@material-ui/core';
 import StandardAction from '../../models/StandardAction';
 import ApiResponse from '../../models/ApiResponse';
-import { closeGlobalNav } from '../../state/actions/dialogs';
+import { closeLaunchpad } from '../../state/actions/dialogs';
 import GlobalState from '../../models/GlobalState';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
-import GlobalNavTile from '../GlobalNavTile/GlobalNavTile';
-import GlobalNavPublishingStatusTile from '../GlobalNavPublishingStatusTile';
+import LaunchpadTile from '../LaunchpadTile';
+import LaunchpadPublishingStatusTile from '../LaunchpadPublishingStatusTile';
 import clsx from 'clsx';
 
-export interface GlobalNavProps {
+export interface LaunchpadProps {
   anchor: Element;
   onMenuClose: (e: any) => void;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
   closeButtonPosition?: 'left' | 'right';
 }
 
-export interface GlobalNavStateProps {
+export interface LaunchpadStateProps {
   open: boolean;
   anchor: string;
   onMenuClose: StandardAction;
@@ -187,7 +187,7 @@ const messages = defineMessages({
     defaultMessage: 'Do you want to remove {site}?'
   },
   signOut: {
-    id: 'globalNavOpenerButton.signOut',
+    id: 'launchpadOpenerButton.signOut',
     defaultMessage: 'Sign Out'
   },
   settings: {
@@ -204,7 +204,7 @@ const messages = defineMessages({
   }
 });
 
-const globalNavUrlMapping = {
+const urlMapping = {
   'home.globalMenu.logging-levels': '#/globalMenu/logging',
   'home.globalMenu.log-console': '#/globalMenu/log',
   'home.globalMenu.users': '#/globalMenu/users',
@@ -224,7 +224,7 @@ const globalNavUrlMapping = {
   settings: '#/settings'
 };
 
-const useGlobalNavStyles = makeStyles((theme) =>
+const useLaunchpadStyles = makeStyles((theme) =>
   createStyles({
     popover: {
       maxWidth: 1065,
@@ -316,6 +316,8 @@ const useGlobalNavStyles = makeStyles((theme) =>
   })
 );
 
+// region AppsRail
+
 interface AppsRailProps {
   classes: LookupTable<string>;
   siteId: string;
@@ -328,7 +330,7 @@ interface AppsRailProps {
   user: EnhancedUser;
   onMenuClose(): void;
   onLogout(): void;
-  closeButtonPosition: GlobalNavStateProps['closeButtonPosition'];
+  closeButtonPosition: LaunchpadStateProps['closeButtonPosition'];
 }
 
 const AppsRail = ({
@@ -370,7 +372,7 @@ const AppsRail = ({
       </Typography>
       <nav className={classes.navItemsWrapper}>
         {menuItems.map((item) => (
-          <GlobalNavTile
+          <LaunchpadTile
             key={item.id}
             title={formatMessage(messages[popPiece(camelize(item.id))])}
             icon={{ baseClass: `fa ${item.icon}` }}
@@ -378,20 +380,20 @@ const AppsRail = ({
             onClick={onMenuClose}
           />
         ))}
-        <GlobalNavTile
+        <LaunchpadTile
           title={formatMessage(messages.docs)}
           icon={{ id: 'craftercms.icons.Docs' }}
           link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
           target="_blank"
           onClick={onMenuClose}
         />
-        <GlobalNavTile
+        <LaunchpadTile
           title={formatMessage(messages.settings)}
           icon={{ id: '@material-ui/icons/SettingsRounded' }}
           link={getLink('settings', authoringBase)}
           onClick={onMenuClose}
         />
-        <GlobalNavTile
+        <LaunchpadTile
           icon={{ id: 'craftercms.icons.CrafterIcon' }}
           link={getLink('about', authoringBase)}
           title={formatMessage(messages.about)}
@@ -432,6 +434,10 @@ const AppsRail = ({
   </Grid>
 );
 
+// endregion
+
+// region SiteRail
+
 interface SitesRailProps {
   classes: LookupTable<string>;
   formatMessage: IntlShape['formatMessage'];
@@ -456,7 +462,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardA
         {sites.length ? (
           <List>
             {sites.map((item, i) => (
-              <SiteCard
+              <LaunchpadSiteCard
                 key={i}
                 options
                 selected={item.id === site}
@@ -484,8 +490,10 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardA
   </Hidden>
 );
 
-export default function GlobalNav() {
-  const classes = useGlobalNavStyles();
+// endregion
+
+export default function Launchpad() {
+  const classes = useLaunchpadStyles();
   const siteId = useActiveSiteId();
   const sites = useSiteList();
   const user = useActiveUser();
@@ -495,7 +503,7 @@ export default function GlobalNav() {
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = useSelection(
-    (state) => state.dialogs.globalNav
+    (state) => state.dialogs.launchpad
   );
   const { siteNav } = useSiteUIConfig();
   const [menuItems, setMenuItems] = useState(null);
@@ -558,7 +566,7 @@ export default function GlobalNav() {
     if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
       if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {
         // If site we're switching to is next compatible, there's no need for any sort of page postback.
-        dispatch(batchActions([changeSite(site), closeGlobalNav()]));
+        dispatch(batchActions([changeSite(site), closeLaunchpad()]));
       } else {
         setSiteCookie(site);
         setTimeout(() => {
@@ -575,7 +583,7 @@ export default function GlobalNav() {
     }
   };
 
-  const onMenuClose = () => dispatch(closeGlobalNav());
+  const onMenuClose = () => dispatch(closeLaunchpad());
 
   const onLogout = () => dispatch(logout());
 
@@ -681,19 +689,19 @@ export default function GlobalNav() {
 }
 
 function getLink(id: string, authoringBase: string = `${getBase()}/studio`) {
-  return `${authoringBase}${globalNavUrlMapping[id]}`;
+  return `${authoringBase}${urlMapping[id]}`;
 }
 
 function getBase() {
   return window.location.host.replace('3000', '8080');
 }
 
-const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
+const LaunchpadLinkTile = ({ title, icon, systemLinkId, link }) => {
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const site = useActiveSiteId();
   return (
-    <GlobalNavTile
+    <LaunchpadTile
       icon={icon}
       title={usePossibleTranslation(title)}
       link={
@@ -714,8 +722,8 @@ const GlobalNavLinkTile = ({ title, icon, systemLinkId, link }) => {
 };
 
 Object.entries({
-  'craftercms.components.GlobalNavLinkTile': GlobalNavLinkTile,
-  'craftercms.components.GlobalNavPublishingStatusTile': GlobalNavPublishingStatusTile,
+  'craftercms.components.LaunchpadLinkTile': LaunchpadLinkTile,
+  'craftercms.components.LaunchpadPublishingStatusTile': LaunchpadPublishingStatusTile,
   'craftercms.icons.Preview': PreviewIcon,
   'craftercms.icons.CrafterIcon': About,
   'craftercms.icons.Docs': Docs,

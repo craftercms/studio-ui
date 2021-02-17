@@ -21,8 +21,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
-import { showGlobalNav } from '../../state/actions/dialogs';
-import { GlobalNavStateProps } from './GlobalNav';
+import { showLaunchpad } from '../../state/actions/dialogs';
+import { LaunchpadStateProps } from './Launchpad';
 import AppsRounded from '@material-ui/icons/AppsRounded';
 
 const useStyles = makeStyles((theme) =>
@@ -38,30 +38,30 @@ const useStyles = makeStyles((theme) =>
 
 const messages = defineMessages({
   menu: {
-    id: 'globalNavOpenerButton.menuTooltip',
+    id: 'launchpadOpenerButton.menuTooltip',
     defaultMessage: 'Navigation Menu'
   },
   openDrawer: {
-    id: 'globalNavOpenerButton.openMenuButtonText',
+    id: 'launchpadOpenerButton.openMenuButtonText',
     defaultMessage: 'Open Menu'
   }
 });
 
 let instanceCount = 0;
 
-interface GlobalNavOpenerButtonProps {
+interface LaunchpadOpenerButtonProps {
   icon?: 'logo' | 'apps';
-  sitesRailPosition?: GlobalNavStateProps['sitesRailPosition'];
+  sitesRailPosition?: LaunchpadStateProps['sitesRailPosition'];
   closeButtonPosition?: 'left' | 'right';
 }
 
-export default function GlobalNavOpenerButton(props: GlobalNavOpenerButtonProps) {
+export default function LaunchpadOpenerButton(props: LaunchpadOpenerButtonProps) {
   const classes = useStyles({});
   const { sitesRailPosition = 'right', icon = 'logo', closeButtonPosition = 'right' } = props;
   const { formatMessage } = useIntl();
-  const id = useMemo(() => `toolbarGlobalNavButton${instanceCount++}`, []);
+  const id = useMemo(() => `toolbarLaunchpadButton${instanceCount++}`, []);
   const dispatch = useDispatch();
-  const onMenuClick = () => dispatch(showGlobalNav({ anchor: `#${id}`, sitesRailPosition, closeButtonPosition }));
+  const onMenuClick = () => dispatch(showLaunchpad({ anchor: `#${id}`, sitesRailPosition, closeButtonPosition }));
   return (
     <Tooltip title={formatMessage(messages.menu)}>
       <IconButton

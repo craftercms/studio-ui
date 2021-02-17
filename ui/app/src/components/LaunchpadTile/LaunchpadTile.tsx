@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export interface GlobalNavTileProps {
+export interface LaunchpadTileProps {
   icon: SystemIconDescriptor;
   title: string;
   link?: string;
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function GlobalNavTile(props: GlobalNavTileProps) {
+function LaunchpadTile(props: LaunchpadTileProps) {
   const { title, icon, link, target, onClick, disabled = false } = props;
   const classes = useStyles();
   return (
@@ -88,4 +88,4 @@ function GlobalNavTile(props: GlobalNavTileProps) {
   );
 }
 
-export default GlobalNavTile;
+export default LaunchpadTile;

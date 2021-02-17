@@ -144,7 +144,7 @@ export function fetchSiteUiConfig(
             renameTable
           });
         }
-        const siteNavSection = xml.querySelector('[id="craftercms.components.GlobalNavSiteSection"] > configuration');
+        const siteNavSection = xml.querySelector('[id="craftercms.components.LaunchpadSiteSection"] > configuration');
         if (siteNavSection) {
           siteNavSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
           config.siteNav = applyDeserializedXMLTransforms(deserialize(siteNavSection), {

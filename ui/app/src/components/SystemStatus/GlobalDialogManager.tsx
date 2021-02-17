@@ -30,7 +30,7 @@ import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
-import GlobalNav from '../Navigation/GlobalNav';
+import Launchpad from '../Navigation/Launchpad';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -418,8 +418,8 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Global Navigation */}
-      <GlobalNav />
+      {/* region Launchpad */}
+      <Launchpad />
       {/* endregion */}
 
       {/* region Publishing Status Dialog */}

@@ -22,8 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
-import GlobalNavOpenerButton from '../../components/Navigation/GlobalNavOpenerButton';
-import CustomMenu from '../../components/Icons/CustomMenu';
+import LaunchpadOpenerButton from '../../components/Navigation/LaunchpadOpenerButton';
 import {
   changeCurrentUrl,
   closeTools,
@@ -59,6 +58,7 @@ import ActionsGroup from '../../components/ActionsGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { setSiteCookie } from '../../utils/auth';
+import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -285,14 +285,11 @@ export default function ToolBar() {
   return (
     <ViewToolbar>
       <section>
-        <GlobalNavOpenerButton />
         <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
-          <IconButton
+          <LogoAndMenuBundleButton
             aria-label={formatMessage(translations.openToolsPanel)}
             onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
-          >
-            <CustomMenu />
-          </IconButton>
+          />
         </Tooltip>
         <QuickCreate disabled={!createContent} />
         <Tooltip title={!write ? '' : formatMessage(translations.toggleEditMode)}>
@@ -323,7 +320,7 @@ export default function ToolBar() {
         />
       </section>
       <section>
-        <GlobalNavOpenerButton sitesRailPosition="left" icon="apps" />
+        <LaunchpadOpenerButton sitesRailPosition="left" icon="apps" />
       </section>
     </ViewToolbar>
   );

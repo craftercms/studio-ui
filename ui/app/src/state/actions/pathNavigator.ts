@@ -16,7 +16,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { DetailedItem } from '../../models/Item';
-import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { AjaxError } from 'rxjs/ajax';
 
