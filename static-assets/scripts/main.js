@@ -980,7 +980,7 @@
           authService.getStudioInfo().then(function(data) {
             const packageVersion = data.packageVersion;
             const simpleVersion = packageVersion.substr(0, 3);
-            $scope.aboutStudio = data.version;
+            $scope.aboutStudio = data;
             $scope.versionNumber = `${packageVersion}-${data.packageBuild.substring(0, 6)}`;
             $scope.simpleVersion = simpleVersion;
             $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
@@ -990,6 +990,8 @@
                   `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
               })
               .join('');
+
+            $scope.$apply();
           });
         }
       });
