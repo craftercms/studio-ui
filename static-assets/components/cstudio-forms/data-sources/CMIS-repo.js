@@ -54,99 +54,26 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
   add: function(control, multiple) {
     const _self = this;
 
-    const callback = {
-      success: function(searchId, selectedTOs) {
-        var cb = function(repositories) {
-          var repo = null;
-          if (!repositories.length) {
-            repo = repositories;
-          } else {
-            for (var i = 0; i < repositories.length; i++) {
-              if (_self.repoId === repositories[i].id) {
-                repo = repositories[i];
-              }
-            }
-          }
+    var datasourceDef = this.form.definition.datasources,
+      newElTitle = '';
 
-          for (var i = 0; i < selectedTOs.length; i++) {
-            var item = selectedTOs[i];
-            var uri;
-            var fileName = item.internalName;
-            var fileExtension = fileName.split('.').pop();
-            if (!selectedTOs[i].clone) {
-              uri = repo['download-url-regex'].replace('{item_id}', item.itemId);
-            } else {
-              uri = _self.studioPath + fileName;
-              uri = uri.startsWith('/') ? uri : '/' + uri;
-            }
-
-            control.insertItem(uri, item.browserUri, fileExtension, null, _self.id);
-            if (control._renderItems) {
-              control._renderItems();
-            }
-          }
-        };
-
-        _self.getConfig(cb);
-      },
-      failure: function() {}
-    };
-
-    if (multiple) {
-      var addContainerEl = null;
-
-      if (!control.addContainerEl) {
-        addContainerEl = document.createElement('div');
-        addContainerEl.create = document.createElement('div');
-        addContainerEl.browse = document.createElement('div');
-
-        addContainerEl.appendChild(addContainerEl.create);
-        addContainerEl.appendChild(addContainerEl.browse);
-        control.containerEl.appendChild(addContainerEl);
-
-        YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-        YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-        YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
-
-        control.addContainerEl = addContainerEl;
-        addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
-        addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
+    for (var x = 0; x < datasourceDef.length; x++) {
+      if (datasourceDef[x].id == this.id) {
+        newElTitle = datasourceDef[x].title;
       }
+    }
 
-      var datasourceDef = this.form.definition.datasources,
-        newElTitle = '';
+    const create = $(
+      `<li class="cstudio-form-controls-create-element">
+        <a class="cstudio-form-control-node-selector-add-container-item">
+          ${CrafterCMSNext.i18n.intl.formatMessage(
+            _self.messages.words.browse
+          )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
+        </a>
+      </li>`
+    );
 
-      for (var x = 0; x < datasourceDef.length; x++) {
-        if (datasourceDef[x].id == this.id) {
-          newElTitle = datasourceDef[x].title;
-        }
-      }
-
-      var createEl = document.createElement('div');
-      YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.browse)} - ${newElTitle}`;
-      control.addContainerEl.create.appendChild(createEl);
-
-      var addContainerEl = control.addContainerEl;
-      YAHOO.util.Event.on(
-        createEl,
-        'click',
-        function() {
-          control.addContainerEl = null;
-          control.containerEl.removeChild(addContainerEl);
-          CStudioAuthoring.Operations.openCMISBrowse(
-            _self.repoId,
-            _self.repoPath,
-            _self.studioPath,
-            _self.allowedOperations,
-            'select',
-            true,
-            callback
-          );
-        },
-        createEl
-      );
-    } else {
+    create.find('a').on('click', function() {
       CStudioAuthoring.Operations.openCMISBrowse(
         _self.repoId,
         _self.repoPath,
@@ -154,9 +81,47 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
         _self.allowedOperations,
         'select',
         true,
-        callback
+        {
+          success: function(searchId, selectedTOs) {
+            var cb = function(repositories) {
+              var repo = null;
+              if (!repositories.length) {
+                repo = repositories;
+              } else {
+                for (var i = 0; i < repositories.length; i++) {
+                  if (_self.repoId === repositories[i].id) {
+                    repo = repositories[i];
+                  }
+                }
+              }
+
+              for (var i = 0; i < selectedTOs.length; i++) {
+                var item = selectedTOs[i];
+                var uri;
+                var fileName = item.internalName;
+                var fileExtension = fileName.split('.').pop();
+                if (!selectedTOs[i].clone) {
+                  uri = repo['download-url-regex'].replace('{item_id}', item.itemId);
+                } else {
+                  uri = _self.studioPath + fileName;
+                  uri = uri.startsWith('/') ? uri : '/' + uri;
+                }
+
+                control.insertItem(uri, item.browserUri, fileExtension, null, _self.id);
+                if (control._renderItems) {
+                  control._renderItems();
+                }
+              }
+            };
+
+            _self.getConfig(cb);
+          },
+          failure: function() {}
+        }
       );
-    }
+    });
+
+    control.$dropdownMenu.append(create);
   },
 
   getConfig: function(callback) {

@@ -33,80 +33,28 @@ CStudioForms.Datasources.FileBrowseRepo =
 
 YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDatasource, {
   add: function(control, multiple) {
+    var _self = this;
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
-    var _self = this;
+    var datasourceDef = this.form.definition.datasources,
+      newElTitle = '';
 
-    var addContainerEl = null;
-
-    if (multiple) {
-      if (!control.addContainerEl) {
-        addContainerEl = document.createElement('div');
-        addContainerEl.create = document.createElement('div');
-        addContainerEl.browse = document.createElement('div');
-
-        addContainerEl.appendChild(addContainerEl.create);
-        addContainerEl.appendChild(addContainerEl.browse);
-        control.containerEl.appendChild(addContainerEl);
-
-        YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-        YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-        YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
-
-        control.addContainerEl = addContainerEl;
-        addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
-        addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
+    for (var x = 0; x < datasourceDef.length; x++) {
+      if (datasourceDef[x].id == this.id) {
+        newElTitle = datasourceDef[x].title;
       }
+    }
 
-      var datasourceDef = this.form.definition.datasources,
-        newElTitle = '';
+    const create = $(
+      `<li class="cstudio-form-controls-create-element">
+        <a class="cstudio-form-control-node-selector-add-container-item">
+          ${CMgs.format(langBundle, 'browseExisting')} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
+        </a>
+      </li>`
+    );
 
-      for (var x = 0; x < datasourceDef.length; x++) {
-        if (datasourceDef[x].id == this.id) {
-          newElTitle = datasourceDef[x].title;
-        }
-      }
-
-      var browseEl = document.createElement('div');
-      browseEl.innerHTML = CMgs.format(langBundle, 'browseExisting') + ' - ' + newElTitle;
-      YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
-      control.addContainerEl.browse.appendChild(browseEl);
-
-      var addContainerEl = control.addContainerEl;
-      YAHOO.util.Event.on(
-        browseEl,
-        'click',
-        function() {
-          control.addContainerEl = null;
-          control.containerEl.removeChild(addContainerEl);
-
-          CStudioAuthoring.Operations.openBrowse(
-            '',
-            _self.processPathsForMacros(_self.repoPath),
-            '-1',
-            'select',
-            true,
-            {
-              success: function(searchId, selectedTOs) {
-                for (var i = 0; i < selectedTOs.length; i++) {
-                  var item = selectedTOs[i];
-                  var fileName = item.name;
-                  var fileExtension = fileName.split('.').pop();
-                  const returnProp = control.returnProp ? control.returnProp : 'uri';
-                  control.insertItem(item[returnProp], item.uri, fileExtension, null, _self.id);
-                  if (control._renderItems) {
-                    control._renderItems();
-                  }
-                }
-              },
-              failure: function() {}
-            }
-          );
-        },
-        browseEl
-      );
-    } else {
+    create.find('a').on('click', function() {
       CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
         success: function(searchId, selectedTOs) {
           for (var i = 0; i < selectedTOs.length; i++) {
@@ -122,7 +70,9 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
         },
         failure: function() {}
       });
-    }
+    });
+
+    control.$dropdownMenu.append(create);
   },
 
   edit: function(key) {
