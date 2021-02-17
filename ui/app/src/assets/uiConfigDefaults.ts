@@ -598,7 +598,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
     },
     widgets: [
       {
-        id: 'craftercms.components.LaunchpadLinkTile',
+        id: 'craftercms.components.LauncherLinkTile',
         uiKey: count++,
         configuration: {
           title: {
@@ -610,7 +610,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
         }
       },
       {
-        id: 'craftercms.components.LaunchpadLinkTile',
+        id: 'craftercms.components.LauncherLinkTile',
         uiKey: count++,
         configuration: {
           title: {
@@ -622,7 +622,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
         }
       },
       {
-        id: 'craftercms.components.LaunchpadLinkTile',
+        id: 'craftercms.components.LauncherLinkTile',
         uiKey: count++,
         configuration: {
           title: {
@@ -634,7 +634,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
         }
       },
       {
-        id: 'craftercms.components.LaunchpadLinkTile',
+        id: 'craftercms.components.LauncherLinkTile',
         uiKey: count++,
         configuration: {
           title: {
@@ -646,7 +646,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
         }
       },
       {
-        id: 'craftercms.components.LaunchpadPublishingStatusTile',
+        id: 'craftercms.components.LauncherPublishingStatusTile',
         uiKey: count++
       }
     ]

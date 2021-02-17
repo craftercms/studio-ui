@@ -19,7 +19,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
-import LaunchpadOpenerButton from '../LaunchpadOpenerButton/LaunchpadOpenerButton';
+import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../../components/Controls/SearchBar';
 import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
 import GridViewIcon from '@material-ui/icons/GridOnRounded';
@@ -99,7 +99,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
           </IconButton>
         </Tooltip>
-        {!embedded && <LaunchpadOpenerButton sitesRailPosition="left" icon="apps" />}
+        {!embedded && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
       </section>
     </ViewToolbar>
   );

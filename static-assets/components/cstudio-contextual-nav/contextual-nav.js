@@ -53,7 +53,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
           function() {
             document.domain = CStudioAuthoringContext.cookieDomain;
             CStudioAuthoring.Events.contextNavReady.fire();
-            CrafterCMSNext.render('#appsIconLaunchpad', 'LaunchpadOpenerButton', {
+            CrafterCMSNext.render('#appsIconLauncher', 'LauncherOpenerButton', {
               sitesRailPosition: 'left',
               icon: 'apps'
             });

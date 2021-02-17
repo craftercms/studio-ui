@@ -43,7 +43,7 @@
       <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
       <div class="navbar-right-wrapper navbar-right">
-        <div id="appsIconLaunchpad"></div>
+        <div id="appsIconLauncher"></div>
         <div id="acn-status">
           <span class="nav-icon fa fa-cloud-upload f18" data-title="publishingStatus"></span>
         </div>

@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './Launchpad';
+export { default } from './LauncherPublishingStatusTile';
 
-export * from './Launchpad';
+export * from './LauncherPublishingStatusTile';

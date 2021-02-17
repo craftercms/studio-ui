@@ -53,7 +53,7 @@ import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { MessageDescriptor } from 'react-intl';
-import { LaunchpadStateProps } from '../components/Launchpad/Launchpad';
+import { LauncherStateProps } from '../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -173,7 +173,7 @@ export interface GlobalState {
     pathSelection: PathSelectionDialogStateProps;
     changeContentType: ChangeContentTypeDialogStateProps;
     itemMenu: ItemMenuStateProps;
-    launchpad: LaunchpadStateProps;
+    launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
   };
   translation: {

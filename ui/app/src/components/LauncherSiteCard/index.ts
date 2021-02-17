@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './LaunchpadOpenerButton';
+export { default } from './LauncherSiteCard';
 
-export * from './LaunchpadOpenerButton';
+export * from './LauncherSiteCard';

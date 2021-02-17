@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export interface LaunchpadTileProps {
+export interface LauncherTileProps {
   icon: SystemIconDescriptor;
   title: string;
   link?: string;
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function LaunchpadTile(props: LaunchpadTileProps) {
+function LauncherTile(props: LauncherTileProps) {
   const { title, icon, link, target, onClick, disabled = false } = props;
   const classes = useStyles();
   return (
@@ -88,4 +88,4 @@ function LaunchpadTile(props: LaunchpadTileProps) {
   );
 }
 
-export default LaunchpadTile;
+export default LauncherTile;

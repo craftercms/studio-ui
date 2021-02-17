@@ -874,9 +874,9 @@
         }
       });
 
-      container = document.querySelector('#appsIconLaunchpad');
+      container = document.querySelector('#appsIconLauncher');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'LaunchpadOpenerButton', {
+      CrafterCMSNext.render(container, 'LauncherOpenerButton', {
         sitesRailPosition: 'left',
         icon: 'apps'
       });

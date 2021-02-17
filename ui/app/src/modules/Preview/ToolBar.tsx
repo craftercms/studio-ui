@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
-import LaunchpadOpenerButton from '../../components/LaunchpadOpenerButton';
+import LauncherOpenerButton from '../../components/LauncherOpenerButton';
 import {
   changeCurrentUrl,
   closeTools,
@@ -320,7 +320,7 @@ export default function ToolBar() {
         />
       </section>
       <section>
-        <LaunchpadOpenerButton sitesRailPosition="left" icon="apps" />
+        <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
       </section>
     </ViewToolbar>
   );
