@@ -38,7 +38,7 @@ import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSele
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
-import { LaunchpadStateProps } from '../../components/Navigation/Launchpad';
+import { LaunchpadStateProps } from '../../components/Launchpad/Launchpad';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 
 // region History

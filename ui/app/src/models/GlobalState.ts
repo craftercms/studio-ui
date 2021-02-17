@@ -53,7 +53,7 @@ import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { MessageDescriptor } from 'react-intl';
-import { LaunchpadStateProps } from '../components/Navigation/Launchpad';
+import { LaunchpadStateProps } from '../components/Launchpad/Launchpad';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {

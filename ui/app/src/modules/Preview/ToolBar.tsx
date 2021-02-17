@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
-import LaunchpadOpenerButton from '../../components/Navigation/LaunchpadOpenerButton';
+import LaunchpadOpenerButton from '../../components/LaunchpadOpenerButton';
 import {
   changeCurrentUrl,
   closeTools,
@@ -51,7 +51,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
-import PagesSearchAhead from '../../components/Navigation/PagesSearchAhead';
+import PagesSearchAhead from '../../components/PagesSearchAhead/PagesSearchAhead';
 import clsx from 'clsx';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import ActionsGroup from '../../components/ActionsGroup';

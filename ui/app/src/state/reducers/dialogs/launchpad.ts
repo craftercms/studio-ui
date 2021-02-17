@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { LaunchpadStateProps } from '../../../components/Navigation/Launchpad';
+import { LaunchpadStateProps } from '../../../components/Launchpad/Launchpad';
 import { closeLaunchpad, showLaunchpad } from '../../actions/dialogs';
 
 const initialState: LaunchpadStateProps = {

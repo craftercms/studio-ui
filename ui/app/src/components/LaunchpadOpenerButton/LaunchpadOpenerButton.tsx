@@ -22,7 +22,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
 import { showLaunchpad } from '../../state/actions/dialogs';
-import { LaunchpadStateProps } from './Launchpad';
+import { LaunchpadStateProps } from '../Launchpad/Launchpad';
 import AppsRounded from '@material-ui/icons/AppsRounded';
 
 const useStyles = makeStyles((theme) =>

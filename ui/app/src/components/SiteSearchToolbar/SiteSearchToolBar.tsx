@@ -19,7 +19,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
-import LaunchpadOpenerButton from '../Navigation/LaunchpadOpenerButton';
+import LaunchpadOpenerButton from '../LaunchpadOpenerButton/LaunchpadOpenerButton';
 import SearchBar from '../../components/Controls/SearchBar';
 import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
 import GridViewIcon from '@material-ui/icons/GridOnRounded';

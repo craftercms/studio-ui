@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -20,7 +20,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import LaunchpadSiteCard from './LaunchpadSiteCard';
+import LaunchpadSiteCard from '../LaunchpadSiteCard/LaunchpadSiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import { fetchGlobalMenuItems } from '../../services/configuration';
 import About from '../Icons/About';

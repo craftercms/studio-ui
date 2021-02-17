@@ -30,7 +30,7 @@ import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
-import Launchpad from '../Navigation/Launchpad';
+import Launchpad from '../Launchpad/Launchpad';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
