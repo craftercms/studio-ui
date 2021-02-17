@@ -55,29 +55,6 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
       }
     }
 
-    var callback = {
-      success: function(fileData) {
-        if (control) {
-          control.insertItem(
-            path + '/' + fileData.fileName,
-            path + '/' + fileData.fileName,
-            fileData.fileExtension,
-            fileData.size,
-            me.id
-          );
-          if (control._renderItems) {
-            control._renderItems();
-          }
-        }
-      },
-      failure: function() {
-        if (control) {
-          control.failure('An error occurred while uploading the file.');
-        }
-      },
-      context: this
-    };
-
     var datasourceDef = this.form.definition.datasources,
       newElTitle = '';
 
@@ -96,7 +73,28 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
     );
 
     create.find('a').on('click', function() {
-      CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+      CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, {
+        success: function(fileData) {
+          if (control) {
+            control.insertItem(
+              path + '/' + fileData.fileName,
+              path + '/' + fileData.fileName,
+              fileData.fileExtension,
+              fileData.size,
+              me.id
+            );
+            if (control._renderItems) {
+              control._renderItems();
+            }
+          }
+        },
+        failure: function() {
+          if (control) {
+            control.failure('An error occurred while uploading the file.');
+          }
+        },
+        context: this
+      });
     });
 
     control.$dropdownMenu.append(create);

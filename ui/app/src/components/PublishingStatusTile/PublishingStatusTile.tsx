@@ -147,7 +147,7 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
       <Avatar variant="circular" className={clsx(classes.avatar, propClasses?.avatar, !isFetching && status)}>
         <CloudUploadOutlined />
       </Avatar>
-      <Typography className={clsx(classes.text, propClasses?.text)} noWrap title={statusText}>
+      <Typography className={clsx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
         {isFetching ? <Skeleton /> : statusText}
       </Typography>
     </Component>

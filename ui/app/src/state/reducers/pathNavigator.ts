@@ -27,6 +27,7 @@ import {
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete,
+  pathNavigatorFetchPathFailed,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -134,6 +135,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         }
       };
     },
+    [pathNavigatorFetchPathFailed.type]: (state, { payload: { id } }) => ({
+      ...state,
+      [id]: { ...state[id], isFetching: false }
+    }),
     [pathNavigatorFetchParentItems.type]: (state, { payload: { id, path } }) => {
       return {
         ...state,

@@ -17,7 +17,7 @@
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
-import { fetchItemHistory as getContentHistory, getVersions, revertTo } from '../../services/content';
+import { fetchItemHistory as getContentHistory, fetchVersions, revertTo } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   compareBothVersions,
@@ -65,7 +65,7 @@ export default [
       ofType(compareBothVersions.type, compareToPreviousVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        getVersions(
+        fetchVersions(
           state.sites.active,
           state.versions.item.path,
           [state.versions.selected[0], state.versions.selected[1]],
