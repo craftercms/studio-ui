@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import { useStyles } from './styles';
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import SearchBar from '../../Controls/SearchBar';
+import SearchBar from '../Controls/SearchBar';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import Link from '@material-ui/core/Link';
@@ -30,7 +30,7 @@ import { isNavigable } from './utils';
 
 export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchButton';
 
-interface BreadcrumbsProps {
+export interface BreadcrumbsProps {
   breadcrumb: DetailedItem[];
   keyword?: string;
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
@@ -40,7 +40,7 @@ interface BreadcrumbsProps {
 }
 
 // PathBreadcrumbs + PathOptions + (Path)Search
-export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
+function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles({});
   const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
@@ -131,3 +131,5 @@ export default function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
     </section>
   );
 }
+
+export default PathNavigatorBreadcrumbs;

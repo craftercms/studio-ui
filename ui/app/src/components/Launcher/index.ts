@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './GlobalNavTile';
+export { default } from './Launcher';
 
-export * from './GlobalNavTile';
+export * from './Launcher';

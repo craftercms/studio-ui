@@ -14,21 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useStyles } from './styles';
-import ListItem from '@material-ui/core/ListItem';
-import Skeleton from '@material-ui/lab/Skeleton';
-import Typography from '@material-ui/core/Typography';
-import { rand } from './utils';
-import React from 'react';
+import { DetailedItem } from '../../models/Item';
 
-export default function PathNavigatorSkeletonItem() {
-  const classes = useStyles();
+export function isNavigable(item: DetailedItem): boolean {
+  return item.systemType === 'page';
+}
+
+export function isPreviewable(item: DetailedItem): boolean {
   return (
-    <ListItem className={classes.navItem} style={{ height: '25px' }}>
-      <Skeleton animation="wave" variant="circle" className={classes.typeIcon} height={15} width={15} />
-      <Typography variant="body2" style={{ width: `${rand(70, 80)}%` }}>
-        <Skeleton animation="wave" width="100%" />
-      </Typography>
-    </ListItem>
+    item.systemType === 'component' ||
+    item.systemType === 'asset' ||
+    item.systemType === 'renderingTemplate' ||
+    item.systemType === 'script' ||
+    item.systemType === 'taxonomy'
   );
+}
+
+export function isFolder(item: DetailedItem): boolean {
+  return item.systemType === 'folder';
+}
+
+export function rand(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }

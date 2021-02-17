@@ -21,7 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import { rand } from './Navigation/PathNavigator/utils';
+import { rand } from './PathNavigator/utils';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { MenuProps } from '@material-ui/core/Menu/Menu';
 import clsx from 'clsx';

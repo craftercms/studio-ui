@@ -860,8 +860,28 @@ export function fetchItemsByPath(
   );
 }
 
-export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem> {
-  return fetchItemsByPath(siteId, [path]).pipe(pluck('0'));
+export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: false }
+): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
+): Observable<DetailedItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions
+): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options?: FetchItemsByPathOptions
+): Observable<SandboxItem | DetailedItem> {
+  return fetchItemsByPath(siteId, [path], options).pipe(pluck('0'));
 }
 
 export function fetchItemWithChildrenByPath(
@@ -870,10 +890,7 @@ export function fetchItemWithChildrenByPath(
   options?: Partial<GetChildrenOptions>
 ): Observable<GetItemWithChildrenResponse> {
   return forkJoin({
-    item: fetchDetailedItem(
-      siteId,
-      path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
-    ),
+    item: fetchItemByPath(siteId, path, { castAsDetailedItem: true }),
     children: fetchChildrenByPath(siteId, path, options)
   });
 }

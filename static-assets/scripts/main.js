@@ -52,11 +52,11 @@
     function($rootScope, $state, $stateParams, authService, sitesService, Constants) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
-
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
-      $rootScope.$on('$stateChangeStart', function(event, toState) {
-        CrafterCMSNext.system.getStore().subscribe(() => {
+      CrafterCMSNext.system.getStore().subscribe(() => {
+        sitesService.getLanguages($rootScope, true);
+        $rootScope.$on('$stateChangeStart', function(event, toState) {
           if (toState.name.indexOf('users') !== -1) {
             var user = authService.getUser();
             if (user && user.username) {
@@ -100,10 +100,6 @@
             });
           }
         });
-      });
-
-      CrafterCMSNext.system.getStore().subscribe(() => {
-        sitesService.getLanguages($rootScope, true);
       });
 
       // More configuration on https://notifyjs.com/
@@ -210,30 +206,21 @@
             }
           }
         })
-        .state('home.globalMenu.cluster', {
-          url: '/cluster',
-          views: {
-            contentTab: {
-              templateUrl: '/studio/static-assets/ng-views/admin-cluster.html',
-              controller: 'clusterCtrl'
-            }
-          }
-        })
-        .state('home.cluster', {
-          url: 'cluster',
-          views: {
-            content: {
-              templateUrl: '/studio/static-assets/ng-views/admin-cluster.html',
-              controller: 'clusterCtrl'
-            }
-          }
-        })
         .state('home.globalMenu.groups', {
           url: '/groups',
           views: {
             contentTab: {
               templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
               controller: 'GroupsCtrl'
+            }
+          }
+        })
+        .state('home.globalMenu.cluster', {
+          url: '/cluster',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/admin-cluster.html',
+              controller: 'clusterCtrl'
             }
           }
         })
@@ -300,29 +287,6 @@
             }
           }
         })
-        .state('home.sites.site', {
-          url: '/:siteId',
-          templateUrl: '/studio/static-assets/ng-views/site.html',
-          controller: 'SiteCtrl'
-        })
-        .state('home.settings', {
-          url: 'settings',
-          views: {
-            content: {
-              templateUrl: '/studio/static-assets/ng-views/settings.html',
-              controller: 'AppCtrl'
-            }
-          }
-        })
-        .state('home.about-us', {
-          url: 'about-us',
-          views: {
-            content: {
-              templateUrl: '/studio/static-assets/ng-views/about.html',
-              controller: 'AppCtrl'
-            }
-          }
-        })
         .state('home.users', {
           url: 'users',
           views: {
@@ -341,12 +305,66 @@
             }
           }
         })
+        .state('home.cluster', {
+          url: 'cluster',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/admin-cluster.html',
+              controller: 'clusterCtrl'
+            }
+          }
+        })
         .state('home.audit', {
           url: 'audit',
           views: {
             content: {
               templateUrl: '/studio/static-assets/ng-views/audit.html',
               controller: 'AuditCtrl'
+            }
+          }
+        })
+        .state('home.logging', {
+          url: 'logging',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/logging.html',
+              controller: 'LoggingLevelsCtrl'
+            }
+          }
+        })
+        .state('home.log', {
+          url: 'log',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/log-console.html',
+              controller: window === window.top ? 'LogConsoleStudioCtrl' : 'LogConsolePreviewCtrl'
+            }
+          }
+        })
+        .state('home.globalConfig', {
+          url: 'global-config',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/global-config.html',
+              controller: 'GlobalConfigCtrl'
+            }
+          }
+        })
+        .state('home.encryptionTool', {
+          url: 'encryption-tool',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/encrypt.html',
+              controller: 'EncryptionToolCtrl'
+            }
+          }
+        })
+        .state('home.tokenManagement', {
+          url: 'token-management',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/tokenManagement.html',
+              controller: 'TokenManagementCtrl'
             }
           }
         })
@@ -368,12 +386,26 @@
             }
           }
         })
-        .state('home.log', {
-          url: 'log',
+        .state('home.sites.site', {
+          url: '/:siteId',
+          templateUrl: '/studio/static-assets/ng-views/site.html',
+          controller: 'SiteCtrl'
+        })
+        .state('home.settings', {
+          url: 'settings',
           views: {
             content: {
-              templateUrl: '/studio/static-assets/ng-views/log-console.html',
-              controller: 'LogConsolePreviewCtrl'
+              templateUrl: '/studio/static-assets/ng-views/settings.html',
+              controller: 'AppCtrl'
+            }
+          }
+        })
+        .state('home.about-us', {
+          url: 'about-us',
+          views: {
+            content: {
+              templateUrl: '/studio/static-assets/ng-views/about.html',
+              controller: 'AppCtrl'
             }
           }
         });
@@ -830,15 +862,21 @@
         $rootScope.isFooter = false;
       }
 
-      let container = document.querySelector('#brandGlobalNavOpenerButton');
+      let container = document.querySelector('#menuBundleButton');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'GlobalNavOpenerButton', {
-        closeButtonPosition: 'left'
+      CrafterCMSNext.render(container, 'LogoAndMenuBundleButton', {
+        onClick() {
+          if (window.location.hash.includes('/globalMenu/')) {
+            window.location.hash = window.location.hash.replace('/globalMenu', '');
+          } else {
+            window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
+          }
+        }
       });
 
-      container = document.querySelector('#appsIconGlobalNav');
+      container = document.querySelector('#appsIconLauncher');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'GlobalNavOpenerButton', {
+      CrafterCMSNext.render(container, 'LauncherOpenerButton', {
         sitesRailPosition: 'left',
         icon: 'apps'
       });

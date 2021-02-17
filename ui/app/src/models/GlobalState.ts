@@ -38,7 +38,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
-import { PathNavigatorStateProps } from '../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../components/PathNavigator/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
@@ -53,7 +53,7 @@ import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { MessageDescriptor } from 'react-intl';
-import { GlobalNavStateProps } from '../components/Navigation/GlobalNav';
+import { LauncherStateProps } from '../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -173,7 +173,7 @@ export interface GlobalState {
     pathSelection: PathSelectionDialogStateProps;
     changeContentType: ChangeContentTypeDialogStateProps;
     itemMenu: ItemMenuStateProps;
-    globalNav: GlobalNavStateProps;
+    launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
   };
   translation: {

@@ -16,23 +16,23 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { GlobalNavStateProps } from '../../../components/Navigation/GlobalNav';
-import { closeGlobalNav, showGlobalNav } from '../../actions/dialogs';
+import { LauncherStateProps } from '../../../components/Launcher';
+import { closeLauncher, showLauncher } from '../../actions/dialogs';
 
-const initialState: GlobalNavStateProps = {
+const initialState: LauncherStateProps = {
   open: false,
   anchor: null,
   sitesRailPosition: 'left',
   closeButtonPosition: 'right',
-  onMenuClose: closeGlobalNav()
+  onMenuClose: closeLauncher()
 };
 
-const globalNav = createReducer<GlobalState['dialogs']['globalNav']>(initialState, {
-  [showGlobalNav.type]: (state, { payload }) => ({
+const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState, {
+  [showLauncher.type]: (state, { payload }) => ({
     ...payload,
     open: true
   }),
-  [closeGlobalNav.type]: () => initialState
+  [closeLauncher.type]: () => initialState
 });
 
-export default globalNav;
+export default launcher;

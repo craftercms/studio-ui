@@ -23,7 +23,7 @@ import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath } from './path';
-import { isFolder, isNavigable, isPreviewable } from '../components/Navigation/PathNavigator/utils';
+import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
   STATE_MASK_DELETED_MASK,
   STATE_MASK_IN_WORKFLOW_MASK,
@@ -156,6 +156,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
   return {
     id: item.uri ?? item.path,
     label: item.internalName ?? item.name,
+    parentId: null,
     contentTypeId: item.contentType,
     path: item.uri ?? item.path,
     // Assuming folders aren't navigable
@@ -167,7 +168,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     lockOwner: null,
     disabled: null,
     localeCode: 'en',
-    translationSourceId: null
+    translationSourceId: null,
+    availableActions: 0
   };
 }
 
@@ -182,9 +184,9 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
   return {
     ...parseLegacyItemToBaseItem(item),
     creator: null,
-    createdDate: null,
+    dateCreated: null,
     modifier: item.user,
-    lastModifiedDate: null,
+    dateModified: null,
     commitId: null,
     sizeInBytes: null
   };
@@ -202,9 +204,9 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
     ...parseLegacyItemToBaseItem(item),
     sandbox: {
       creator: null,
-      createdDate: null,
+      dateCreated: null,
       modifier: item.user,
-      lastModifiedDate: null,
+      dateModified: null,
       commitId: null,
       sizeInBytes: null
     },
@@ -228,9 +230,9 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
   return {
     sandbox: {
       creator: item.creator,
-      createdDate: item.createdDate,
+      dateCreated: item.dateCreated,
       modifier: item.modifier,
-      lastModifiedDate: item.lastModifiedDate,
+      dateModified: item.dateModified,
       commitId: item.commitId,
       sizeInBytes: item.sizeInBytes
     },
@@ -239,9 +241,9 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
     ...(reversePluckProps(
       item,
       'creator',
-      'createdDate',
+      'dateCreated',
       'modifier',
-      'lastModifiedDate',
+      'dateModified',
       'commitId',
       'sizeInBytes'
     ) as BaseItem)
