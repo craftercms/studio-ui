@@ -102,7 +102,6 @@ function ProgressBar({ width, type }) {
 }
 
 module.exports = function FileProgress({ file, isUploaded, error }) {
-  console.log(file);
   // Nothing if upload has not started
   if (!file.progress.uploadStarted) {
     return null;

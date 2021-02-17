@@ -3,7 +3,7 @@ const AddFiles = require('@uppy/dashboard/lib/components/AddFiles');
 const AddFilesPanel = require('@uppy/dashboard/lib/components/AddFilesPanel');
 const PickerPanelContent = require('@uppy/dashboard/lib/components/PickerPanelContent');
 const EditorPanel = require('@uppy/dashboard/lib/components/EditorPanel');
-const PanelTopBar = require('@uppy/dashboard/lib/components/PickerPanelTopBar');
+const PanelTopBar = require('./PickerPanelTopBar');
 const FileCard = require('@uppy/dashboard/lib/components/FileCard');
 const Slide = require('@uppy/dashboard/lib/components/Slide');
 const classNames = require('classnames');
@@ -83,9 +83,6 @@ module.exports = function Dashboard(props) {
 
         <div class="uppy-Dashboard-innerWrap">
           <div class="uppy-Dashboard-dropFilesHereHint">{props.i18n('dropHint')}</div>
-
-          {showFileList && <PanelTopBar {...props} />}
-
           {showFileList ? (
             <FileList {...props} itemsPerRow={itemsPerRow} />
           ) : (
@@ -102,11 +99,7 @@ module.exports = function Dashboard(props) {
 
           <Slide>{props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}</Slide>
 
-          <div class="uppy-Dashboard-progressindicators">
-            {props.progressindicators.map((target) => {
-              return props.getPlugin(target.id).render(props.state);
-            })}
-          </div>
+          {showFileList && <PanelTopBar {...props} />}
         </div>
       </div>
     </div>

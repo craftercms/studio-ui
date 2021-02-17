@@ -103,7 +103,10 @@ module.exports = class Dashboard extends Plugin {
         poweredBy2: '%{backwardsCompat} %{uppy}',
         poweredBy: 'Powered by',
         validating: 'Validating',
-        validateAndRetry: 'Accept changes'
+        validateAndRetry: 'Accept changes',
+        rejectAll: 'Reject all changes',
+        acceptAll: 'Accept all changes',
+        clear: 'Clear'
       }
     };
 
@@ -133,13 +136,13 @@ module.exports = class Dashboard extends Plugin {
       note: null,
       closeModalOnClickOutside: false,
       closeAfterFinish: false,
-      disableStatusBar: false,
-      disableInformer: false,
+      disableStatusBar: true,
+      disableInformer: true,
       disableThumbnailGenerator: false,
       disablePageScrollWhenModalOpen: true,
       animateOpenClose: true,
       fileManagerSelectionType: 'files',
-      proudlyDisplayPoweredByUppy: true,
+      proudlyDisplayPoweredByUppy: false,
       onRequestCloseModal: () => this.closeModal(),
       showSelectedFiles: true,
       showRemoveButtonAfterComplete: false,
@@ -671,8 +674,8 @@ module.exports = class Dashboard extends Plugin {
   };
 
   validateFilesPolicy = (files) => {
-    // call sitePolicy
     const fileIdLookup = {};
+    const invalidFiles = this.getPluginState().invalidFiles;
 
     this.opts
       .validateActionPolicy(
@@ -696,17 +699,56 @@ module.exports = class Dashboard extends Plugin {
           });
           if (allowed && modifiedValue === null) {
             this.uppy.retryUpload(fileId);
+          } else {
+            invalidFiles[fileId] = true;
           }
+        });
+        this.setPluginState({
+          invalidFiles: invalidFiles
         });
       });
   };
 
   validateAndRetry = (fileID) => {
+    const invalidFiles = { ...this.getPluginState().invalidFiles };
+    invalidFiles[fileID] = false;
+    this.setPluginState({ invalidFiles });
     this.uppy.setFileMeta(fileID, {
       allowed: true,
       suggestedName: null
     });
     this.uppy.retryUpload(fileID);
+  };
+
+  rejectAll = () => {
+    const invalidFiles = { ...this.getPluginState().invalidFiles };
+    Object.keys(invalidFiles).forEach((fileID) => {
+      if (invalidFiles[fileID]) {
+        invalidFiles[fileID] = false;
+        this.uppy.removeFile(fileID);
+      }
+    });
+    this.setPluginState({ invalidFiles });
+  };
+
+  confirmAll = () => {
+    const invalidFiles = { ...this.getPluginState().invalidFiles };
+    Object.keys(invalidFiles).forEach((fileID) => {
+      if (invalidFiles[fileID]) {
+        invalidFiles[fileID] = false;
+        const file = this.uppy.getFile(fileID);
+        if (file.meta.allowed) {
+          this.uppy.setFileMeta(fileID, {
+            allowed: true,
+            suggestedName: null
+          });
+          this.uppy.retryUpload(fileID);
+        } else {
+          this.uppy.removeFile(fileID);
+        }
+      }
+    });
+    this.setPluginState({ invalidFiles });
   };
 
   initEvents = () => {
@@ -955,7 +997,11 @@ module.exports = class Dashboard extends Plugin {
       isMobileDevice: capabilities.isMobileDevice,
       pauseUpload: this.uppy.pauseResume,
       retryUpload: this.uppy.retryUpload,
+      // region Site policy functions
       validateAndRetry: this.validateAndRetry,
+      rejectAll: this.rejectAll,
+      confirmAll: this.confirmAll,
+      // endregion
       cancelUpload: this.cancelUpload,
       cancelAll: this.uppy.cancelAll,
       fileCardFor: pluginState.fileCardFor,
@@ -984,6 +1030,9 @@ module.exports = class Dashboard extends Plugin {
       showSelectedFiles: this.opts.showSelectedFiles,
       handleRequestThumbnail: this.handleRequestThumbnail,
       handleCancelThumbnail: this.handleCancelThumbnail,
+      doneButtonHandler: this.opts.doneButtonHandler,
+      // site policy props
+      invalidFiles: pluginState.invalidFiles ?? {},
       // drag props
       isDraggingOver: pluginState.isDraggingOver,
       handleDragOver: this.handleDragOver,
@@ -1022,7 +1071,9 @@ module.exports = class Dashboard extends Plugin {
       targets: [],
       // We'll make them visible once .containerWidth is determined
       areInsidesReadyToBeVisible: false,
-      isDraggingOver: false
+      isDraggingOver: false,
+      // Site Policy Props
+      invalidFiles: {}
     });
 
     const { inline, closeAfterFinish } = this.opts;

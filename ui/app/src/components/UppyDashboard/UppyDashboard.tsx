@@ -155,6 +155,42 @@ const useStyles = makeStyles((theme) =>
       // region File list
       '& .uppy-dashboard-files-list-row': {
         marginBottom: '20px'
+      },
+      // endregion
+      // region Footer
+      '& .uppy-DashboardContent-bar': {
+        position: 'relative',
+        borderTop: `1px solid ${theme.palette.divider}`,
+        backgroundColor: theme.palette.background.paper
+      },
+      '& .uppy-dashboard-progress-indicator': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        '& .uppy-file-progress-bar': {
+          backgroundColor: theme.palette.primary.main,
+          height: '2px',
+          transition: 'background-color, width 0.3s ease-out',
+          '&.complete': {
+            backgroundColor: theme.palette.success.main
+          },
+          '&.error': {
+            backgroundColor: theme.palette.error.main
+          }
+        }
+      },
+      '& .uppy-dashboard-validation-buttons': {
+        marginLeft: 'auto',
+        '& button:first-child': {
+          marginRight: '10px'
+        }
+      },
+      '& .uppy-dashboard-right-buttons': {
+        marginLeft: 'auto',
+        '& button:last-child': {
+          marginLeft: '10px'
+        }
       }
       // endregion
     }

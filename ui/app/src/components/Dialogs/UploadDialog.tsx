@@ -34,6 +34,7 @@ import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { UppyFile } from '@uppy/utils';
 import UppyDashboard from '../UppyDashboard';
+import { Button } from '@material-ui/core';
 
 const translations = defineMessages({
   title: {
@@ -200,13 +201,13 @@ function UploadDialogUI(props: UploadDialogUIProps) {
         ]}
       />
       <DialogBody className={classes.dialogBody}>
+        <Button style={{ display: 'none' }}>test</Button>
         <UppyDashboard
           uppy={uppy}
           site={site}
           path={path}
           options={{
             replaceTargetContent: true,
-            proudlyDisplayPoweredByUppy: false,
             width: '100%'
           }}
         />
