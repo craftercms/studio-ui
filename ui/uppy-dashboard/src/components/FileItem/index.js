@@ -2,9 +2,9 @@ const { h, Component } = require('preact');
 const classNames = require('classnames');
 const shallowEqual = require('is-shallow-equal');
 const FilePreviewAndLink = require('@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink');
-const FileProgress = require('@uppy/dashboard/lib/components/FileItem/FileProgress');
-const FileInfo = require('@uppy/dashboard/lib/components/FileItem/FileInfo');
-const Buttons = require('@uppy/dashboard/lib/components/FileItem/Buttons');
+const FileProgress = require('./FileProgress');
+const FileInfo = require('./FileInfo');
+const Buttons = require('./Buttons');
 
 module.exports = class FileItem extends Component {
   shouldComponentUpdate(nextProps) {
@@ -41,7 +41,7 @@ module.exports = class FileItem extends Component {
     }
 
     const dashboardItemClass = classNames({
-      'uppy-Dashboard-Item': true,
+      'MuiPaper-root MuiCard-root MuiPaper-elevation1 MuiPaper-rounded uppy-dashboard-item-card': true,
       'is-inprogress': uploadInProgress,
       'is-processing': isProcessing,
       'is-complete': isUploaded,
@@ -52,25 +52,10 @@ module.exports = class FileItem extends Component {
 
     return (
       <div class={dashboardItemClass} id={`uppy_${file.id}`} role={this.props.role}>
-        <div class="uppy-Dashboard-Item-preview">
+        <div class="uppy-dashboard-item-preview">
           <FilePreviewAndLink file={file} showLinkToFileUploadResult={this.props.showLinkToFileUploadResult} />
-          <FileProgress
-            file={file}
-            error={error}
-            isUploaded={isUploaded}
-            hideRetryButton={this.props.hideRetryButton}
-            hideCancelButton={this.props.hideCancelButton}
-            hidePauseResumeButton={this.props.hidePauseResumeButton}
-            showRemoveButtonAfterComplete={this.props.showRemoveButtonAfterComplete}
-            resumableUploads={this.props.resumableUploads}
-            individualCancellation={this.props.individualCancellation}
-            pauseUpload={this.props.pauseUpload}
-            cancelUpload={this.props.cancelUpload}
-            retryUpload={this.props.retryUpload}
-            i18n={this.props.i18n}
-          />
         </div>
-        <div class="uppy-Dashboard-Item-fileInfoAndButtons">
+        <div class="uppy-dashboard-item-fileInfoAndButtons">
           <FileInfo
             file={file}
             id={this.props.id}
@@ -80,19 +65,16 @@ module.exports = class FileItem extends Component {
           />
           <Buttons
             file={file}
-            metaFields={this.props.metaFields}
-            showLinkToFileUploadResult={this.props.showLinkToFileUploadResult}
+            error={error}
+            hideRetryButton={this.props.hideRetryButton}
             showRemoveButton={showRemoveButton}
-            canEditFile={this.props.canEditFile}
-            uploadInProgressOrComplete={uploadInProgressOrComplete}
+            validateAndRetry={this.props.validateAndRetry}
             removeFile={this.props.removeFile}
-            toggleFileCard={this.props.toggleFileCard}
-            openFileEditor={this.props.openFileEditor}
+            retryUpload={this.props.retryUpload}
             i18n={this.props.i18n}
-            log={this.props.log}
-            info={this.props.info}
           />
         </div>
+        <FileProgress file={file} error={error} isUploaded={isUploaded} />
       </div>
     );
   }

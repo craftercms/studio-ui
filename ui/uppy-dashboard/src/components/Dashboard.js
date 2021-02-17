@@ -41,14 +41,7 @@ module.exports = function Dashboard(props) {
   });
 
   // Important: keep these in sync with the percent width values in `src/components/FileItem/index.scss`.
-  let itemsPerRow = 1; // mobile
-  if (props.containerWidth > WIDTH_XL) {
-    itemsPerRow = 5;
-  } else if (props.containerWidth > WIDTH_LG) {
-    itemsPerRow = 4;
-  } else if (props.containerWidth > WIDTH_MD) {
-    itemsPerRow = 3;
-  }
+  let itemsPerRow = 1;
 
   const showFileList = props.showSelectedFiles && !noFiles;
 

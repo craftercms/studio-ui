@@ -26,32 +26,13 @@ import { useDispatch } from 'react-redux';
 import StandardAction from '../../models/StandardAction';
 import { XHRUpload } from 'uppy';
 import { Uppy } from '@uppy/core';
-import ImageEditor from '@uppy/image-editor';
 
-import '@uppy/image-editor/dist/style.css';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { UppyFile } from '@uppy/utils';
-import { FormattedMessage } from 'react-intl/lib';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDownRounded';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Card from '@material-ui/core/Card';
-import clsx from 'clsx';
-import CardContent from '@material-ui/core/CardContent';
-import WarningIcon from '@material-ui/icons/WarningRounded';
-import ForwardIcon from '@material-ui/icons/ForwardRounded';
-import { bytesToSize } from '../../utils/string';
-import SecondaryButton from '../SecondaryButton';
-import { PrimaryButton } from '../PrimaryButton';
-import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
-import palette from '../../styles/palette';
 import UppyDashboard from '../UppyDashboard';
 
 const translations = defineMessages({
@@ -104,18 +85,16 @@ const useStyles = makeStyles((theme) =>
     rootTitle: {
       paddingBottom: 0
     },
-    rootTabPanel: {
-      padding: 0
-    },
-    rootTab: {
-      minWidth: 'auto'
-    },
     subtitleWrapper: {
       paddingBottom: 0,
       display: 'flex',
       alignItems: 'center',
       width: '100%',
       justifyContent: 'space-between'
+    },
+    dialogBody: {
+      minHeight: '60vh',
+      padding: 0
     }
   })
 );
@@ -179,25 +158,10 @@ interface UploadDialogUIProps extends UploadDialogProps {
   onMinimized?(): void;
 }
 
-interface ConflictedFile {
-  id: string;
-  name: string;
-  suggestedName?: string;
-  allowed?: boolean;
-  index: number;
-  size: number;
-  type: string;
-  data: Blob | File;
-  meta?: {
-    relativePath?: string;
-  };
-}
-
 function UploadDialogUI(props: UploadDialogUIProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const { site, path, onClose, onClosed, maxSimultaneousUploads = 1, onMinimized } = props;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const uppy = React.useMemo(() => {
     return new Uppy({
@@ -208,29 +172,19 @@ function UploadDialogUI(props: UploadDialogUIProps) {
           : path;
         return { ...currentFile, meta: { ...currentFile.meta, path: filePath } };
       }
-    })
-      .use(XHRUpload, {
-        endpoint: getBulkUploadUrl(site, path),
-        formData: true,
-        fieldName: 'file',
-        limit: maxSimultaneousUploads,
-        headers: getGlobalHeaders()
-      })
-      .use(ImageEditor, { id: 'ImageEditor' });
+    }).use(XHRUpload, {
+      endpoint: getBulkUploadUrl(site, path),
+      formData: true,
+      fieldName: 'file',
+      limit: maxSimultaneousUploads,
+      headers: getGlobalHeaders()
+    });
   }, [maxSimultaneousUploads, path, site]);
 
   useUnmount(() => {
     uppy.close();
     onClosed();
   });
-
-  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeMenu = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <>
@@ -244,236 +198,19 @@ function UploadDialogUI(props: UploadDialogUIProps) {
             onClick: onMinimized
           }
         ]}
-      >
-        <>
-          <section>
-            <Button size="small" onClick={openMenu} color="primary">
-              <FormattedMessage id="words.options" defaultMessage="Options" />
-              <ArrowDropDownIcon />
-            </Button>
-          </section>
-          <Menu
-            anchorEl={anchorEl}
-            getContentAnchorEl={null}
-            open={Boolean(anchorEl)}
-            onClose={closeMenu}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-          >
-            <MenuItem onClick={() => {}}>
-              <FormattedMessage id="sitePolicyOptionAcceptAll" defaultMessage="Accept all changes" />
-            </MenuItem>
-            <MenuItem onClick={() => {}}>
-              <FormattedMessage id="sitePolicyOptionRejectAll" defaultMessage="Reject all changes" />
-            </MenuItem>
-          </Menu>
-        </>
-      </DialogHeader>
-      <DialogBody style={{ minHeight: '60vh' }}>
+      />
+      <DialogBody className={classes.dialogBody}>
         <UppyDashboard
           uppy={uppy}
+          site={site}
+          path={path}
           options={{
             replaceTargetContent: true,
-            plugins: ['ImageEditor'],
             proudlyDisplayPoweredByUppy: false,
-            width: '100%',
-            metaFields: [
-              {
-                id: 'path',
-                name: 'path',
-                render: function({ value, onChange }, h) {
-                  return h('input', {
-                    type: 'input',
-                    disabled: true,
-                    value,
-                    class: 'uppy-u-reset uppy-c-textInput uppy-Dashboard-FileCard-input'
-                  });
-                }
-              }
-            ]
+            width: '100%'
           }}
         />
       </DialogBody>
     </>
-  );
-}
-
-const UppyItemStyles = makeStyles((theme) =>
-  createStyles({
-    cardActive: {
-      border: `1px solid ${theme.palette.primary.main}`
-    },
-    cardRoot: {
-      display: 'flex',
-      backgroundColor: theme.palette.background.paper,
-      position: 'relative',
-      marginBottom: '12px',
-      '&:last-child': {
-        marginBottom: 0
-      }
-    },
-    cardContentRoot: {
-      flexGrow: 1,
-      '&:last-child': {
-        padding: '16px'
-      }
-    },
-    cardContent: {
-      display: 'flex'
-    },
-    cardContentWrapper: {
-      width: '100%'
-    },
-    cardContentText: {
-      marginRight: 'auto'
-    },
-    cardContentFlexWrapper: {
-      display: 'flex',
-      justifyContent: 'space-between'
-    },
-    cardMedia: {
-      width: '100px',
-      backgroundColor: theme.palette.background.default,
-      backgroundSize: 'contain'
-    },
-    caption: {
-      color: palette.gray.medium5
-    },
-    sitePolicySuggestion: {
-      color: theme.palette.error.main,
-      display: 'flex',
-      marginBottom: '10px',
-      alignItems: 'center',
-      '& svg': {
-        marginRight: '5px'
-      }
-    },
-    sitePolicySuggestionFileName: {
-      display: 'flex',
-      '& svg': {
-        margin: '0 10px',
-        color: theme.palette.text.primary
-      }
-    },
-    sitePolicySuggestionActions: {
-      marginTop: '10px',
-      '& button:first-child': {
-        marginRight: '15px'
-      }
-    },
-    textAccepted: {
-      color: theme.palette.success.main
-    },
-    textFailed: {
-      color: theme.palette.error.main
-    },
-    textUnderlined: {
-      textDecoration: 'line-through'
-    },
-    iconRetry: {
-      height: '48px'
-    }
-  })
-);
-
-interface UppyItemProps {
-  conflictedFile: ConflictedFile;
-  retryFileUpload(file: ConflictedFile): void;
-  onRemove(file: ConflictedFile): void;
-  active?: boolean;
-}
-
-function UppyItem(props: UppyItemProps) {
-  const classes = UppyItemStyles({});
-  const { conflictedFile, retryFileUpload, onRemove, active } = props;
-
-  return (
-    <Card className={clsx(classes.cardRoot, active && classes.cardActive)} data-issue-id={conflictedFile.index}>
-      <CardContent className={classes.cardContentRoot}>
-        <div className={classes.cardContent}>
-          {conflictedFile.allowed ? (
-            <div className={classes.cardContentWrapper}>
-              <div className={classes.sitePolicySuggestion}>
-                <WarningIcon />
-                <Typography variant="body2">
-                  <FormattedMessage
-                    id="uploadDialog.sitePolicySuggestion"
-                    defaultMessage="File name “{name}” requires changes to comply with site policies."
-                    values={{ name: conflictedFile.name }}
-                  />
-                </Typography>
-              </div>
-              <div className={classes.sitePolicySuggestionFileName}>
-                <Typography variant="body2" className={classes.textUnderlined}>
-                  {conflictedFile.name}
-                </Typography>
-                <ForwardIcon fontSize="small" />
-                <Typography variant="body2" className={classes.textAccepted}>
-                  {conflictedFile.suggestedName}
-                </Typography>
-              </div>
-              <Typography variant="caption" className={classes.caption}>
-                {conflictedFile.type} @ {bytesToSize(conflictedFile.size)}
-              </Typography>
-              <div className={classes.sitePolicySuggestionActions}>
-                <SecondaryButton
-                  size="small"
-                  onClick={() => {
-                    onRemove(conflictedFile);
-                  }}
-                >
-                  <FormattedMessage id="sitePolicy.cancelUpload" defaultMessage="Cancel Upload" />
-                </SecondaryButton>
-                <PrimaryButton
-                  size="small"
-                  onClick={() => {
-                    retryFileUpload(conflictedFile);
-                  }}
-                >
-                  <FormattedMessage id="sitePolicy.acceptChanges" defaultMessage="Accept Changes" />
-                </PrimaryButton>
-              </div>
-            </div>
-          ) : (
-            <div className={classes.cardContentWrapper}>
-              <div className={classes.sitePolicySuggestion}>
-                <WarningIcon />
-                <Typography variant="body2">
-                  <FormattedMessage
-                    id="uploadDialog.sitePolicySuggestion"
-                    defaultMessage="File name “{name}” doesn't comply with site policies and can’t be uploaded."
-                    values={{ name: conflictedFile.name }}
-                  />
-                </Typography>
-              </div>
-              <div className={classes.cardContentFlexWrapper}>
-                <div>
-                  <Typography variant="body2" className={classes.textUnderlined}>
-                    {conflictedFile.name}
-                  </Typography>
-                  <Typography variant="caption" className={classes.caption}>
-                    {conflictedFile.type} @ {bytesToSize(conflictedFile.size)}
-                  </Typography>
-                </div>
-                <IconButton
-                  onClick={() => {
-                    onRemove(conflictedFile);
-                  }}
-                  className={classes.iconRetry}
-                >
-                  <CloseOutlinedIcon />
-                </IconButton>
-              </div>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
   );
 }

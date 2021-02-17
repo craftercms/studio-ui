@@ -101,7 +101,9 @@ module.exports = class Dashboard extends Plugin {
         // substitution.
         // TODO: In 2.0 `poweredBy2` should be removed in and `poweredBy` updated to use substitution.
         poweredBy2: '%{backwardsCompat} %{uppy}',
-        poweredBy: 'Powered by'
+        poweredBy: 'Powered by',
+        validating: 'Validating',
+        validateAndRetry: 'Accept changes'
       }
     };
 
@@ -426,7 +428,9 @@ module.exports = class Dashboard extends Plugin {
       meta: {
         // path of the file relative to the ancestor directory the user selected.
         // e.g. 'docs/Old Prague/airbnb.pdf'
-        relativePath: file.relativePath || null
+        relativePath: file.relativePath || null,
+        // sitePolicy custom value
+        validating: true
       }
     }));
 
@@ -666,6 +670,45 @@ module.exports = class Dashboard extends Plugin {
     }
   };
 
+  validateFilesPolicy = (files) => {
+    // call sitePolicy
+    const fileIdLookup = {};
+
+    this.opts
+      .validateActionPolicy(
+        this.opts.site,
+        files.map((file) => {
+          let target = `${this.opts.path}/${file.name}`;
+          fileIdLookup[target] = file.id;
+          return {
+            type: 'CREATE',
+            target
+          };
+        })
+      )
+      .subscribe((response) => {
+        response.forEach(({ allowed, modifiedValue, target }) => {
+          let fileId = fileIdLookup[target];
+          this.uppy.setFileMeta(fileId, {
+            validating: false,
+            allowed,
+            ...(modifiedValue && { suggestedName: modifiedValue.replace(`${this.opts.path}/`, '') })
+          });
+          if (allowed && modifiedValue === null) {
+            this.uppy.retryUpload(fileId);
+          }
+        });
+      });
+  };
+
+  validateAndRetry = (fileID) => {
+    this.uppy.setFileMeta(fileID, {
+      allowed: true,
+      suggestedName: null
+    });
+    this.uppy.retryUpload(fileID);
+  };
+
   initEvents = () => {
     // Modal open button
     if (this.opts.trigger && !this.opts.inline) {
@@ -698,9 +741,7 @@ module.exports = class Dashboard extends Plugin {
       this.el.addEventListener('keydown', this.handleKeyDownInInline);
     }
 
-    if (this.opts.autoOpenFileEditor) {
-      this.uppy.on('files-added', this._openFileEditorWhenFilesAdded);
-    }
+    this.uppy.on('files-added', this.validateFilesPolicy);
   };
 
   removeEvents = () => {
@@ -725,9 +766,7 @@ module.exports = class Dashboard extends Plugin {
       this.el.removeEventListener('keydown', this.handleKeyDownInInline);
     }
 
-    if (this.opts.autoOpenFileEditor) {
-      this.uppy.off('files-added', this._openFileEditorWhenFilesAdded);
-    }
+    this.uppy.off('files-added', this.validateFilesPolicy);
   };
 
   superFocusOnEachUpdate = () => {
@@ -916,6 +955,7 @@ module.exports = class Dashboard extends Plugin {
       isMobileDevice: capabilities.isMobileDevice,
       pauseUpload: this.uppy.pauseResume,
       retryUpload: this.uppy.retryUpload,
+      validateAndRetry: this.validateAndRetry,
       cancelUpload: this.cancelUpload,
       cancelAll: this.uppy.cancelAll,
       fileCardFor: pluginState.fileCardFor,
