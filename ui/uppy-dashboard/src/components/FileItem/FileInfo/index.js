@@ -23,16 +23,6 @@ const renderFileName = (props) => {
   let maxNameLength;
   let nameClass = 'item-name-pending';
   let suggestedName;
-  // For very small mobile screens
-  if (props.containerWidth <= 352) {
-    maxNameLength = 35;
-    // For regular mobile screens
-  } else if (props.containerWidth <= 576) {
-    maxNameLength = 60;
-    // For desktops
-  } else {
-    maxNameLength = 30;
-  }
 
   if (props.file.meta.allowed) {
     nameClass = 'item-name-valid';
@@ -44,8 +34,26 @@ const renderFileName = (props) => {
     nameClass = 'item-name-invalid';
   }
 
+  if (props.containerWidth <= 720) {
+    maxNameLength = suggestedName ? 30 : 80;
+  } else if (props.containerWidth <= 900) {
+    maxNameLength = suggestedName ? 40 : 100;
+  } else {
+    maxNameLength = suggestedName ? 60 : 120;
+  }
+
   return (
-    <div class="uppy-Dashboard-Item-name" title={props.file.meta.name}>
+    <div
+      class="uppy-Dashboard-Item-name"
+      title={
+        suggestedName
+          ? props.i18n('renamingFromTo', {
+              from: props.file.meta.name,
+              to: suggestedName
+            })
+          : props.file.meta.name
+      }
+    >
       <span class={nameClass}>{truncateString(props.file.meta.name, maxNameLength)}</span>
       {suggestedName && (
         <div class="suggested-file-name">

@@ -22,7 +22,7 @@ module.exports = (props) => {
   const noFiles = props.totalFileCount === 0;
   const dashboardFilesClass = classNames('uppy-Dashboard-files', { 'uppy-Dashboard-files--noFiles': noFiles });
 
-  const rowHeight = 140;
+  const rowHeight = props.totalFileCount ? (props.totalFileCount * 140 - 20) / props.totalFileCount : 140;
 
   const fileProps = {
     // FIXME This is confusing, it's actually the Dashboard's plugin ID
@@ -34,6 +34,7 @@ module.exports = (props) => {
     info: props.info,
     // features
     acquirers: props.acquirers,
+    containerWidth: props.containerWidth,
     resumableUploads: props.resumableUploads,
     individualCancellation: props.individualCancellation,
     // visual options

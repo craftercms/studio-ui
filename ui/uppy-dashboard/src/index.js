@@ -106,7 +106,10 @@ module.exports = class Dashboard extends Plugin {
         validateAndRetry: 'Accept changes',
         rejectAll: 'Reject all changes',
         acceptAll: 'Accept all changes',
-        clear: 'Clear'
+        clear: 'Clear',
+        cancelPending: 'Cancel pending',
+        clearCompleted: 'Clear completed',
+        renamingFromTo: 'Renaming from %{from} to %{to}'
       }
     };
 
@@ -118,7 +121,7 @@ module.exports = class Dashboard extends Plugin {
       inline: false,
       width: 750,
       height: 550,
-      thumbnailWidth: 280,
+      thumbnailWidth: 120,
       thumbnailType: 'image/jpeg',
       waitForThumbnailsBeforeUpload: false,
       defaultPickerIcon,
@@ -720,6 +723,36 @@ module.exports = class Dashboard extends Plugin {
     this.uppy.retryUpload(fileID);
   };
 
+  validateAndRemove = (fileID) => {
+    const invalidFiles = { ...this.getPluginState().invalidFiles };
+    if (invalidFiles[fileID]) {
+      invalidFiles[fileID] = false;
+    }
+    this.setPluginState({ invalidFiles });
+    this.uppy.removeFile(fileID);
+  };
+
+  cancelPending = () => {
+    const invalidFiles = { ...this.getPluginState().invalidFiles };
+    this.uppy.getFiles().forEach((file) => {
+      if (!file.progress.uploadComplete) {
+        if (invalidFiles[file.id]) {
+          invalidFiles[file.id] = false;
+        }
+        this.uppy.removeFile(file.id);
+      }
+    });
+    this.setPluginState({ invalidFiles });
+  };
+
+  clearCompleted = () => {
+    this.uppy.getFiles().forEach((file) => {
+      if (file.progress.uploadComplete) {
+        this.uppy.removeFile(file.id);
+      }
+    });
+  };
+
   rejectAll = () => {
     const invalidFiles = { ...this.getPluginState().invalidFiles };
     Object.keys(invalidFiles).forEach((fileID) => {
@@ -929,6 +962,8 @@ module.exports = class Dashboard extends Plugin {
 
     const isAllPaused = inProgressFiles.length !== 0 && pausedFiles.length === inProgressFiles.length;
 
+    const hasInvalidFiles = Object.values(pluginState.invalidFiles).some((value) => value);
+
     const acquirers = this._getAcquirers(pluginState.targets);
     const progressindicators = this._getProgressIndicators(pluginState.targets);
     const editors = this._getEditors(pluginState.targets);
@@ -962,6 +997,7 @@ module.exports = class Dashboard extends Plugin {
       isAllComplete,
       isAllErrored,
       isAllPaused,
+      hasInvalidFiles,
       totalFileCount: Object.keys(files).length,
       totalProgress: state.totalProgress,
       allowNewUpload,
@@ -987,7 +1023,7 @@ module.exports = class Dashboard extends Plugin {
       log: this.uppy.log,
       i18n: this.i18n,
       i18nArray: this.i18nArray,
-      removeFile: this.uppy.removeFile,
+      removeFile: this.validateAndRemove,
       uppy: this.uppy,
       info: this.uppy.info,
       note: this.opts.note,
@@ -998,6 +1034,8 @@ module.exports = class Dashboard extends Plugin {
       pauseUpload: this.uppy.pauseResume,
       retryUpload: this.uppy.retryUpload,
       // region Site policy functions
+      cancelPending: this.cancelPending,
+      clearCompleted: this.clearCompleted,
       validateAndRetry: this.validateAndRetry,
       rejectAll: this.rejectAll,
       confirmAll: this.confirmAll,

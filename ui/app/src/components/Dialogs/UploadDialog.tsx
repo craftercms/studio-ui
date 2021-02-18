@@ -202,15 +202,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
       />
       <DialogBody className={classes.dialogBody}>
         <Button style={{ display: 'none' }}>test</Button>
-        <UppyDashboard
-          uppy={uppy}
-          site={site}
-          path={path}
-          options={{
-            replaceTargetContent: true,
-            width: '100%'
-          }}
-        />
+        <UppyDashboard uppy={uppy} site={site} path={path} />
       </DialogBody>
     </>
   );

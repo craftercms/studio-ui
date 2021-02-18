@@ -1,4 +1,5 @@
 const { h } = require('preact');
+const classNames = require('classnames');
 
 const uploadStates = {
   STATE_ERROR: 'error',
@@ -70,8 +71,6 @@ function PanelTopBar(props) {
     allowNewUpload = props.totalFileCount < props.maxNumberOfFiles;
   }
 
-  const hasInvalidFiles = Object.values(props.invalidFiles).some((value) => value);
-
   return (
     <div class="uppy-DashboardContent-bar">
       <div className="uppy-dashboard-progress-indicator">
@@ -83,17 +82,25 @@ function PanelTopBar(props) {
           style={{ width: `${props.state.totalProgress}%` }}
         />
       </div>
-      {!props.isAllComplete && !props.hideCancelButton && (
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-          type="button"
-          onclick={props.cancelAll}
-        >
-          {props.i18n('cancel')}
-        </button>
-      )}
 
-      {hasInvalidFiles && (
+      <button
+        className={classNames({
+          'MuiButtonBase-root': true,
+          'MuiButton-root': true,
+          'MuiButton-outlined': true,
+          'MuiButton-outlinedPrimary': true,
+          'Mui-disabled': props.isAllComplete && props.state.totalProgress === 100
+        })}
+        type="button"
+        aria-label={props.i18n('cancelPending')}
+        title={props.i18n('cancelPending')}
+        disabled={props.isAllComplete && props.state.totalProgress === 100}
+        onClick={props.cancelPending}
+      >
+        {props.i18n('cancelPending')}
+      </button>
+
+      {props.hasInvalidFiles && (
         <div className="uppy-dashboard-validation-buttons">
           <button
             className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -133,17 +140,22 @@ function PanelTopBar(props) {
             {props.i18n('addMore')}
           </button>
         )}
-        {props.isAllComplete && (
-          <button
-            className="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary"
-            type="button"
-            aria-label={props.i18n('clear')}
-            title={props.i18n('clear')}
-            onClick={() => props.doneButtonHandler()}
-          >
-            {props.i18n('clear')}
-          </button>
-        )}
+        <button
+          className={classNames({
+            'MuiButtonBase-root': true,
+            'MuiButton-root': true,
+            'MuiButton-contained': true,
+            'MuiButton-containedPrimary': true,
+            'Mui-disabled': props.completeFiles.length === 0
+          })}
+          type="button"
+          aria-label={props.i18n('clearCompleted')}
+          title={props.i18n('clearCompleted')}
+          onClick={props.clearCompleted}
+          disabled={props.completeFiles.length === 0}
+        >
+          {props.i18n('clearCompleted')}
+        </button>
       </div>
     </div>
   );

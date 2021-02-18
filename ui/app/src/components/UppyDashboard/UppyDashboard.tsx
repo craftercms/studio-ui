@@ -20,6 +20,7 @@ import { Uppy } from '@uppy/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
+import { defineMessages, useIntl } from 'react-intl';
 
 interface UppyDashboardProps {
   uppy: Uppy;
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) =>
       '& .uppy-Dashboard-inner': {
         border: 0
       },
-      '& .uppy-Dashboard-files': {
+      '& .uppy-Dashboard-files, & .uppy-size--md .uppy-Dashboard-files': {
         padding: '15px'
       },
       '& .uppy-Dashboard-browse': {
@@ -87,6 +88,7 @@ const useStyles = makeStyles((theme) =>
         }
       },
       '& .uppy-Dashboard-Item-previewInnerWrap': {
+        backgroundColor: theme.palette.background.default,
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0
       },
@@ -154,7 +156,10 @@ const useStyles = makeStyles((theme) =>
       // endregion
       // region File list
       '& .uppy-dashboard-files-list-row': {
-        marginBottom: '20px'
+        marginBottom: '20px',
+        '&:last-child': {
+          marginBottom: 0
+        }
       },
       // endregion
       // region Footer
@@ -197,10 +202,69 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
+const translations = defineMessages({
+  cancelPending: {
+    id: 'uppyDashboard.cancelPending',
+    defaultMessage: 'Cancel pending'
+  },
+  clearCompleted: {
+    id: 'uppyDashboard.clearCompleted',
+    defaultMessage: 'Clear completed'
+  },
+  clear: {
+    id: 'words.clear',
+    defaultMessage: 'Clear'
+  },
+  addMore: {
+    id: 'uppyDashboard.addMore',
+    defaultMessage: 'Add more'
+  },
+  rejectAll: {
+    id: 'uppyDashboard.rejectAll',
+    defaultMessage: 'Reject all changes'
+  },
+  acceptAll: {
+    id: 'uppyDashboard.acceptAll',
+    defaultMessage: 'Accept all changes'
+  },
+  validating: {
+    id: 'words.validating',
+    defaultMessage: 'Validating'
+  },
+  validateAndRetry: {
+    id: 'uppyDashboard.validateAndRetry',
+    defaultMessage: 'Accept changes and upload'
+  },
+  removeFile: {
+    id: 'uppyDashboard.removeFile',
+    defaultMessage: 'Remove file'
+  },
+  back: {
+    id: 'words.back',
+    defaultMessage: 'Back'
+  },
+  addingMoreFiles: {
+    id: 'uppyDashboard.addingMoreFiles',
+    defaultMessage: 'Adding more files'
+  },
+  renamingFromTo: {
+    id: 'uppyDashboard.renamingFromTo',
+    defaultMessage: "Renaming from %'{from}' to %'{to}'"
+  }
+});
+
 export default function UppyDashboard(props: UppyDashboardProps) {
-  const { uppy, options, site, path } = props;
+  const { uppy, site, path } = props;
+  const options = {
+    replaceTargetContent: true,
+    width: '100%',
+    height: '60vh',
+    fileManagerSelectionType: 'both',
+    ...props.options
+  };
   const classes = useStyles();
   const ref = useRef();
+  const { formatMessage } = useIntl();
 
   useEffect(() => {
     if (uppy.getPlugin(options.id ?? 'craftercms:Dashboard')) {
@@ -213,7 +277,27 @@ export default function UppyDashboard(props: UppyDashboardProps) {
       validateActionPolicy,
       id: 'craftercms:Dashboard',
       site,
-      path
+      path,
+      locale: {
+        strings: {
+          cancelPending: formatMessage(translations.cancelPending),
+          clearCompleted: formatMessage(translations.clearCompleted),
+          clear: formatMessage(translations.clear),
+          addMore: formatMessage(translations.addMore),
+          acceptAll: formatMessage(translations.acceptAll),
+          rejectAll: formatMessage(translations.rejectAll),
+          validating: formatMessage(translations.validating),
+          validateAndRetry: formatMessage(translations.validateAndRetry),
+          removeFile: formatMessage(translations.removeFile),
+          back: formatMessage(translations.back),
+          addingMoreFiles: formatMessage(translations.addingMoreFiles),
+          renamingFromTo: formatMessage(translations.renamingFromTo)
+          // renamingFromTo: formatMessage(translations.renamingFromTo, {
+          //   from: '%{from}',
+          //   to: '%{to}'
+          // })
+        }
+      }
     });
     return () => {
       uppy.removePlugin(uppy.getPlugin(options.id ?? 'craftercms:Dashboard'));
