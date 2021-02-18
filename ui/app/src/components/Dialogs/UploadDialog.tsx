@@ -18,7 +18,6 @@ import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
 import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import DialogBody from './DialogBody';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
@@ -34,7 +33,8 @@ import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { UppyFile } from '@uppy/utils';
 import UppyDashboard from '../UppyDashboard';
-import { Button } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
+import CloseIconRounded from '@material-ui/icons/CloseRounded';
 
 const translations = defineMessages({
   title: {
@@ -84,7 +84,8 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme) =>
   createStyles({
     rootTitle: {
-      paddingBottom: 0
+      paddingBottom: 0,
+      display: 'none'
     },
     subtitleWrapper: {
       paddingBottom: 0,
@@ -189,20 +190,19 @@ function UploadDialogUI(props: UploadDialogUIProps) {
 
   return (
     <>
-      <DialogHeader
-        title={formatMessage(translations.title)}
-        classes={{ root: classes.rootTitle, subtitleWrapper: classes.subtitleWrapper }}
-        onDismiss={onClose}
-        rightActions={[
-          {
-            icon: 'MinimizeIcon',
-            onClick: onMinimized
-          }
-        ]}
-      />
+      <Button style={{ display: 'none' }}>test</Button>
+      <IconButton style={{ display: 'none' }}>
+        <CloseIconRounded />
+      </IconButton>
       <DialogBody className={classes.dialogBody}>
-        <Button style={{ display: 'none' }}>test</Button>
-        <UppyDashboard uppy={uppy} site={site} path={path} />
+        <UppyDashboard
+          uppy={uppy}
+          site={site}
+          path={path}
+          onMinimized={onMinimized}
+          onClose={onClose}
+          title={formatMessage(translations.title)}
+        />
       </DialogBody>
     </>
   );

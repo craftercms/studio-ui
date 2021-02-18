@@ -26,6 +26,9 @@ interface UppyDashboardProps {
   uppy: Uppy;
   site: string;
   path: string;
+  title: string;
+  onMinimized?(): void;
+  onClose?(): void;
   options?: DashboardOptions;
 }
 
@@ -34,7 +37,9 @@ const useStyles = makeStyles((theme) =>
     dashboard: {
       paddingBottom: 0,
       '& .uppy-Dashboard-inner': {
-        border: 0
+        border: 0,
+        borderRadius: 0,
+        backgroundColor: theme.palette.background.default
       },
       '& .uppy-Dashboard-files, & .uppy-size--md .uppy-Dashboard-files': {
         padding: '15px'
@@ -44,11 +49,34 @@ const useStyles = makeStyles((theme) =>
         textDecoration: 'underline'
       },
       '& .uppy-Dashboard-dropFilesHereHint': {
-        border: `1px dashed ${theme.palette.primary.main}`
+        border: `1px dashed ${theme.palette.primary.main}`,
+        color: theme.palette.primary.main
       },
       '& [data-uppy-drag-drop-supported=true] .uppy-Dashboard-AddFiles': {
         border: 0
       },
+      // region header
+      '& .uppy-dashboard-header': {
+        backgroundColor: theme.palette.background.paper,
+        minHeight: '64px',
+        color: theme.palette.text.primary,
+        padding: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+        '& .uppy-dashboard-header-actions': {
+          marginLeft: 'auto'
+        },
+        '& .uppy-dashboard-header-title': {
+          padding: '0 8px',
+          margin: 0,
+          fontSize: '1.25rem',
+          fontFamily: ' Source Sans Pro, Open Sans, sans-serif',
+          fontWeight: '600',
+          lineHeight: '1.6'
+        }
+      },
+      // endregion
       // region item card
       '& .uppy-dashboard-item-card': {
         display: 'flex',
@@ -88,7 +116,7 @@ const useStyles = makeStyles((theme) =>
         }
       },
       '& .uppy-Dashboard-Item-previewInnerWrap': {
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: `${theme.palette.divider} !important`,
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0
       },
@@ -100,32 +128,6 @@ const useStyles = makeStyles((theme) =>
         display: 'flex',
         alignItems: 'center',
         flexGrow: 1
-      },
-      '& .uppy-Dashboard-Item-action:focus': {
-        boxShadow: 'none'
-      },
-      '& .uppy-dashboard-item-action--validating': {
-        color: palette.gray.medium4,
-        width: '20px',
-        height: '20px',
-        display: 'block'
-      },
-      '& .uppy-dashboard-item-action--remove': {
-        color: palette.gray.medium4,
-        width: '20px',
-        height: '20px'
-      },
-      '& .uppy-dashboard-item-action--retry': {
-        color: palette.gray.medium4,
-        width: '20px',
-        height: '20px',
-        marginRight: '10px'
-      },
-      '& .uppy-dashboard-item-action--validateAndRetry': {
-        color: palette.gray.medium4,
-        width: '20px',
-        height: '20px',
-        marginLeft: '10px'
       },
       '& .uppy-dashboard-item-progress': {
         position: 'absolute',
@@ -155,6 +157,10 @@ const useStyles = makeStyles((theme) =>
       },
       // endregion
       // region File list
+      '& .uppy-Dashboard-files': {},
+      '& .uppy-Dashboard-AddFiles-title': {
+        color: theme.palette.text.primary
+      },
       '& .uppy-dashboard-files-list-row': {
         marginBottom: '20px',
         '&:last-child': {
@@ -166,7 +172,8 @@ const useStyles = makeStyles((theme) =>
       '& .uppy-DashboardContent-bar': {
         position: 'relative',
         borderTop: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.background.paper
+        backgroundColor: theme.palette.background.paper,
+        borderBottom: 0
       },
       '& .uppy-dashboard-progress-indicator': {
         position: 'absolute',
@@ -250,11 +257,19 @@ const translations = defineMessages({
   renamingFromTo: {
     id: 'uppyDashboard.renamingFromTo',
     defaultMessage: "Renaming from %'{from}' to %'{to}'"
+  },
+  close: {
+    id: 'words.close',
+    defaultMessage: 'Close'
+  },
+  minimize: {
+    id: 'words.minimize',
+    defaultMessage: 'Minimize'
   }
 });
 
 export default function UppyDashboard(props: UppyDashboardProps) {
-  const { uppy, site, path } = props;
+  const { uppy, site, path, onClose, onMinimized, title } = props;
   const options = {
     replaceTargetContent: true,
     width: '100%',
@@ -267,14 +282,17 @@ export default function UppyDashboard(props: UppyDashboardProps) {
   const { formatMessage } = useIntl();
 
   useEffect(() => {
-    if (uppy.getPlugin(options.id ?? 'craftercms:Dashboard')) {
-      uppy.removePlugin(uppy.getPlugin(options.id ?? 'craftercms:Dashboard'));
+    if (uppy.getPlugin('craftercms:Dashboard')) {
+      uppy.removePlugin(uppy.getPlugin('craftercms:Dashboard'));
     }
     uppy.use(Dashboard, {
       ...options,
       inline: true,
       target: ref.current,
       validateActionPolicy,
+      onClose,
+      onMinimized,
+      title,
       id: 'craftercms:Dashboard',
       site,
       path,
@@ -291,16 +309,17 @@ export default function UppyDashboard(props: UppyDashboardProps) {
           removeFile: formatMessage(translations.removeFile),
           back: formatMessage(translations.back),
           addingMoreFiles: formatMessage(translations.addingMoreFiles),
-          renamingFromTo: formatMessage(translations.renamingFromTo)
-          // renamingFromTo: formatMessage(translations.renamingFromTo, {
-          //   from: '%{from}',
-          //   to: '%{to}'
-          // })
+          renamingFromTo: formatMessage(translations.renamingFromTo),
+          minimize: formatMessage(translations.minimize),
+          close: formatMessage(translations.close)
         }
       }
     });
     return () => {
-      uppy.removePlugin(uppy.getPlugin(options.id ?? 'craftercms:Dashboard'));
+      const plugin = uppy.getPlugin('craftercms:Dashboard');
+      if (plugin) {
+        uppy.removePlugin(plugin);
+      }
     };
     // options is removed from dependencies to avoid re-render a new dashboard
     /* eslint-disable react-hooks/exhaustive-deps */

@@ -109,7 +109,9 @@ module.exports = class Dashboard extends Plugin {
         clear: 'Clear',
         cancelPending: 'Cancel pending',
         clearCompleted: 'Clear completed',
-        renamingFromTo: 'Renaming from %{from} to %{to}'
+        renamingFromTo: 'Renaming from %{from} to %{to}',
+        minimize: 'Minimize',
+        close: 'Close'
       }
     };
 
@@ -1033,6 +1035,11 @@ module.exports = class Dashboard extends Plugin {
       isMobileDevice: capabilities.isMobileDevice,
       pauseUpload: this.uppy.pauseResume,
       retryUpload: this.uppy.retryUpload,
+      // region header
+      onMinimized: this.opts.onMinimized,
+      onClose: this.opts.onClose,
+      title: this.opts.title,
+      // endregion
       // region Site policy functions
       cancelPending: this.cancelPending,
       clearCompleted: this.clearCompleted,

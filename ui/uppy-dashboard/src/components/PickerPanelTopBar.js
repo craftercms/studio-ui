@@ -87,8 +87,8 @@ function PanelTopBar(props) {
         className={classNames({
           'MuiButtonBase-root': true,
           'MuiButton-root': true,
-          'MuiButton-outlined': true,
-          'MuiButton-outlinedPrimary': true,
+          'MuiButton-text': true,
+          'MuiButton-textPrimary': true,
           'Mui-disabled': props.isAllComplete && props.state.totalProgress === 100
         })}
         type="button"
@@ -103,7 +103,7 @@ function PanelTopBar(props) {
       {props.hasInvalidFiles && (
         <div className="uppy-dashboard-validation-buttons">
           <button
-            className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
             type="button"
             aria-label={props.i18n('rejectAll')}
             title={props.i18n('rejectAll')}
@@ -113,7 +113,7 @@ function PanelTopBar(props) {
           </button>
 
           <button
-            className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
             type="button"
             aria-label={props.i18n('acceptAll')}
             title={props.i18n('acceptAll')}
@@ -131,7 +131,7 @@ function PanelTopBar(props) {
       <div className="uppy-dashboard-right-buttons">
         {allowNewUpload && (
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
             type="button"
             aria-label={props.i18n('addMoreFiles')}
             title={props.i18n('addMoreFiles')}
@@ -144,8 +144,8 @@ function PanelTopBar(props) {
           className={classNames({
             'MuiButtonBase-root': true,
             'MuiButton-root': true,
-            'MuiButton-contained': true,
-            'MuiButton-containedPrimary': true,
+            'MuiButton-text': true,
+            'MuiButton-textPrimary': true,
             'Mui-disabled': props.completeFiles.length === 0
           })}
           type="button"

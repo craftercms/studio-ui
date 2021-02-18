@@ -108,6 +108,40 @@ module.exports = function Dashboard(props) {
   return (
     // Wrap it for RTL language support
     <div class={wrapperClassName} dir={props.direction}>
+      <div class="uppy-dashboard-header">
+        <h2 className="MuiTypography-root MuiTypography-h6 uppy-dashboard-header-title">{props.title}</h2>
+        <div class="uppy-dashboard-header-actions">
+          <button
+            title={props.i18n('minimize')}
+            onClick={props.onMinimized}
+            className="MuiButtonBase-root MuiIconButton-root"
+            tabIndex="0"
+            type="button"
+          >
+            <span className="MuiIconButton-label">
+              <svg className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z"></path>
+              </svg>
+            </span>
+            <span className="MuiTouchRipple-root" />
+          </button>
+          <button
+            title={props.i18n('close')}
+            onClick={props.onClose}
+            className="MuiButtonBase-root MuiIconButton-root"
+            tabIndex="0"
+            type="button"
+            aria-label="close"
+          >
+            <span className="MuiIconButton-label">
+              <svg className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18.3 5.71a.9959.9959 0 00-1.41 0L12 10.59 7.11 5.7a.9959.9959 0 00-1.41 0c-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"></path>
+              </svg>
+            </span>
+            <span className="MuiTouchRipple-root" />
+          </button>
+        </div>
+      </div>
       {dashboard}
     </div>
   );
