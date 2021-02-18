@@ -1117,6 +1117,9 @@
               defaultView = entry.id;
             }
           });
+          if (currentView === 'home.globalMenu.about-us' || currentView === 'home.globalMenu.settings') {
+            defaultView = currentView;
+          }
           $state.go(defaultView);
         } else {
           if ($scope.entities.length > 0) {
