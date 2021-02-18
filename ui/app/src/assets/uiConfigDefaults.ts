@@ -41,12 +41,24 @@ const messages = defineMessages({
   remoteRepositories: {
     id: 'remoteRepositories.title',
     defaultMessage: 'Remote Repositories'
+  },
+  preview: {
+    id: 'words.preview',
+    defaultMessage: 'Preview'
+  },
+  site: {
+    id: 'launcher.siteSectionTitle',
+    defaultMessage: 'Site <muted>• {siteName}</muted>'
+  },
+  global: {
+    id: 'words.global',
+    defaultMessage: 'Global'
   }
 });
 
 let count = 0;
 
-const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'> = {
+const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = {
   preview: {
     toolsPanel: {
       widgets: [
@@ -591,63 +603,90 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
       ]
     }
   },
-  siteNav: {
-    title: {
-      id: 'words.site',
-      defaultMessage: 'Site'
-    },
+  launcher: {
+    siteCardMenuLinks: [
+      {
+        systemLinkId: 'siteDashboard',
+        title: messages.siteTools
+      },
+      {
+        systemLinkId: 'preview',
+        title: messages.preview
+      },
+      {
+        systemLinkId: 'siteTools',
+        title: messages.siteTools,
+        roles: ['admin', 'developer']
+      }
+    ],
     widgets: [
       {
-        id: 'craftercms.components.LauncherLinkTile',
+        id: 'craftercms.components.LauncherSection',
         uiKey: count++,
         configuration: {
-          title: {
-            id: 'words.dashboard',
-            defaultMessage: 'Dashboard'
-          },
-          systemLinkId: 'siteDashboard',
-          icon: { id: '@material-ui/icons/DashboardRounded' }
+          title: messages.site,
+          widgets: [
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'words.dashboard',
+                  defaultMessage: 'Dashboard'
+                },
+                systemLinkId: 'siteDashboard',
+                icon: { id: '@material-ui/icons/DashboardRounded' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'words.preview',
+                  defaultMessage: 'Preview'
+                },
+                systemLinkId: 'preview',
+                icon: { id: 'craftercms.icons.Preview' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'siteTools.title',
+                  defaultMessage: 'Site Tools'
+                },
+                systemLinkId: 'siteTools',
+                icon: { id: '@material-ui/icons/BuildRounded' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'words.search',
+                  defaultMessage: 'Search'
+                },
+                systemLinkId: 'siteSearch',
+                icon: { id: '@material-ui/icons/SearchRounded' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherPublishingStatusTile',
+              uiKey: count++
+            }
+          ]
         }
       },
       {
-        id: 'craftercms.components.LauncherLinkTile',
+        id: 'craftercms.components.LauncherGlobalNav',
         uiKey: count++,
         configuration: {
-          title: {
-            id: 'words.preview',
-            defaultMessage: 'Preview'
-          },
-          systemLinkId: 'preview',
-          icon: { id: 'craftercms.icons.Preview' }
+          title: messages.global
         }
-      },
-      {
-        id: 'craftercms.components.LauncherLinkTile',
-        uiKey: count++,
-        configuration: {
-          title: {
-            id: 'siteTools.title',
-            defaultMessage: 'Site Tools'
-          },
-          systemLinkId: 'siteTools',
-          icon: { id: '@material-ui/icons/BuildRounded' }
-        }
-      },
-      {
-        id: 'craftercms.components.LauncherLinkTile',
-        uiKey: count++,
-        configuration: {
-          title: {
-            id: 'words.search',
-            defaultMessage: 'Search'
-          },
-          systemLinkId: 'siteSearch',
-          icon: { id: '@material-ui/icons/SearchRounded' }
-        }
-      },
-      {
-        id: 'craftercms.components.LauncherPublishingStatusTile',
-        uiKey: count++
       }
     ]
   }

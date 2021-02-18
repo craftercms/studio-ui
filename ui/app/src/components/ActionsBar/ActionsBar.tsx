@@ -15,12 +15,13 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { MessageDescriptor, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 import React from 'react';
 import { getPossibleTranslation } from '../../utils/i18n';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
+import TranslationOrText from '../../models/TranslationOrText';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -37,7 +38,7 @@ const styles = makeStyles((theme) =>
 
 export interface Action {
   id: string;
-  label: MessageDescriptor | string;
+  label: TranslationOrText;
 }
 
 interface ActionsBarProps {

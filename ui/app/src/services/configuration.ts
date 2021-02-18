@@ -122,14 +122,12 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
-export function fetchSiteUiConfig(
-  site: string
-): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
+export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['uiConfig'], 'preview' | 'launcher'>> {
   return fetchConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       const config = deepCopy(uiConfigDefaults);
       if (xml) {
-        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
         const renameTable = { permittedRoles: 'roles' };
         const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
         if (toolsPanelPages) {
@@ -144,10 +142,10 @@ export function fetchSiteUiConfig(
             renameTable
           });
         }
-        const siteNavSection = xml.querySelector('[id="craftercms.components.LauncherSiteSection"] > configuration');
-        if (siteNavSection) {
-          siteNavSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          config.siteNav = applyDeserializedXMLTransforms(deserialize(siteNavSection), {
+        const launcher = xml.querySelector('[id="craftercms.components.Launcher"] > configuration');
+        if (launcher) {
+          launcher.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          config.launcher = applyDeserializedXMLTransforms(deserialize(launcher), {
             arrays,
             renameTable
           }).configuration;
@@ -158,7 +156,7 @@ export function fetchSiteUiConfig(
   );
 }
 
-export function fetchGlobalMenuItems(): Observable<{ id: string; icon: string; label: string }[]> {
+export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
 }
 

@@ -31,6 +31,9 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
+  fetchGlobalMenu,
+  fetchGlobalMenuComplete,
+  fetchGlobalMenuFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateItemSuccessNotification,
@@ -60,6 +63,7 @@ import { changeSite } from '../reducers/sites';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
+import { fetchGlobalMenuItems } from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized & changeSite
@@ -322,8 +326,15 @@ const systemEpics: CrafterCMSEpic[] = [
           )
         )
       )
-    )
+    ),
   // endregion
+  // region fetchGlobalMenu
+  (action$) =>
+    action$.pipe(
+      ofType(fetchGlobalMenu.type),
+      exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
+    )
+  //
 ];
 
 export default systemEpics;
