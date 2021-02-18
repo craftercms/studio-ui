@@ -1,10 +1,7 @@
 const FileList = require('./FileList');
 const AddFiles = require('@uppy/dashboard/lib/components/AddFiles');
 const AddFilesPanel = require('@uppy/dashboard/lib/components/AddFilesPanel');
-const PickerPanelContent = require('@uppy/dashboard/lib/components/PickerPanelContent');
-const EditorPanel = require('@uppy/dashboard/lib/components/EditorPanel');
 const PanelTopBar = require('./PickerPanelTopBar');
-const FileCard = require('@uppy/dashboard/lib/components/FileCard');
 const Slide = require('@uppy/dashboard/lib/components/Slide');
 const classNames = require('classnames');
 const isDragDropSupported = require('@uppy/utils/lib/isDragDropSupported');
@@ -93,11 +90,11 @@ module.exports = function Dashboard(props) {
             {props.showAddFilesPanel ? <AddFilesPanel key="AddFiles" {...props} isSizeMD={isSizeMD} /> : null}
           </Slide>
 
-          <Slide>{props.fileCardFor ? <FileCard key="FileCard" {...props} /> : null}</Slide>
-
-          <Slide>{props.activePickerPanel ? <PickerPanelContent key="Picker" {...props} /> : null}</Slide>
-
-          <Slide>{props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}</Slide>
+          <div className="uppy-Dashboard-progressindicators">
+            {props.progressindicators.map((target) => {
+              return props.getPlugin(target.id).render(props.state);
+            })}
+          </div>
 
           {showFileList && <PanelTopBar {...props} />}
         </div>

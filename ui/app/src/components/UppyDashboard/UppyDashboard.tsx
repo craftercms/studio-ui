@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme) =>
         display: 'flex',
         position: 'relative'
       },
+      '& .uppy-dashboard-item-validating': {
+        color: 'rgba(0, 0, 0, 0.54)'
+      },
       '& .uppy-dashboard-item-preview': {
         width: '120px',
         height: '120px',

@@ -31,7 +31,6 @@ import '@uppy/dashboard/dist/style.css';
 
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
-import { UppyFile } from '@uppy/utils';
 import UppyDashboard from '../UppyDashboard';
 import { Button, IconButton } from '@material-ui/core';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
@@ -78,6 +77,10 @@ const translations = defineMessages({
   policyError: {
     id: 'uploadDialog.policyError',
     defaultMessage: 'The following files paths goes against site policies: {paths}'
+  },
+  noDuplicates: {
+    id: 'uppyCore.noDuplicates',
+    defaultMessage: "Cannot add the duplicate file “%'{fileName}'”, it already exists"
   }
 });
 
@@ -168,11 +171,10 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   const uppy = React.useMemo(() => {
     return new Uppy({
       meta: { site },
-      onBeforeFileAdded: (currentFile: UppyFile, files) => {
-        const filePath = currentFile.meta.relativePath
-          ? path + currentFile.meta.relativePath.substring(0, currentFile.meta.relativePath.lastIndexOf('/'))
-          : path;
-        return { ...currentFile, meta: { ...currentFile.meta, path: filePath } };
+      locale: {
+        strings: {
+          noDuplicates: formatMessage(translations.noDuplicates)
+        }
       }
     }).use(XHRUpload, {
       endpoint: getBulkUploadUrl(site, path),
@@ -181,7 +183,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
       limit: maxSimultaneousUploads,
       headers: getGlobalHeaders()
     });
-  }, [maxSimultaneousUploads, path, site]);
+  }, [formatMessage, maxSimultaneousUploads, path, site]);
 
   useUnmount(() => {
     uppy.close();

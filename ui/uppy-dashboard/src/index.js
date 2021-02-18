@@ -142,7 +142,7 @@ module.exports = class Dashboard extends Plugin {
       closeModalOnClickOutside: false,
       closeAfterFinish: false,
       disableStatusBar: true,
-      disableInformer: true,
+      disableInformer: false,
       disableThumbnailGenerator: false,
       disablePageScrollWhenModalOpen: true,
       animateOpenClose: true,
@@ -438,7 +438,10 @@ module.exports = class Dashboard extends Plugin {
         // e.g. 'docs/Old Prague/airbnb.pdf'
         relativePath: file.relativePath || null,
         // sitePolicy custom value
-        validating: true
+        validating: true,
+        path: file.relativePath
+          ? this.opts.path + file.relativePath.substring(0, file.relativePath.lastIndexOf('/'))
+          : this.opts.path
       }
     }));
 
@@ -679,6 +682,7 @@ module.exports = class Dashboard extends Plugin {
   };
 
   validateFilesPolicy = (files) => {
+    if (files.length === 0) return;
     const fileIdLookup = {};
     const invalidFiles = this.getPluginState().invalidFiles;
 
