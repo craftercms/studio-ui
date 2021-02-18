@@ -80,7 +80,7 @@ export interface PathNavigatorUIProps {
   /**
    *
    **/
-  siteLocales?: GlobalState['translation']['siteLocales'];
+  siteLocales?: GlobalState['uiConfig']['siteLocales'];
   /**
    * Prop called to determine which items are highlighted as active/selected
    **/
