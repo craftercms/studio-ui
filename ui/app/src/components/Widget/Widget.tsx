@@ -21,9 +21,6 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
 import ErrorState from '../ErrorState';
 
-// TODO: Temporary/remove after testing.
-export const TempTestContext = React.createContext<any>({});
-
 export interface WidgetDescriptor {
   id: string;
   uiKey?: string | number;
@@ -118,12 +115,14 @@ const Widget = memo(function(props: WidgetProps) {
 
 export { Widget };
 
-export function renderWidgets(widgets, userRoles: string[]) {
+export function renderWidgets(widgets: WidgetDescriptor[], userRoles: string[]): JSX.Element[] {
   return widgets
-    .filter(
-      (widget) => (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
-    )
-    .map((widget) => <Widget key={widget.uiKey} {...widget} />);
+    ? widgets
+        .filter(
+          (widget) => (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
+        )
+        .map((widget) => <Widget key={widget.uiKey} {...widget} />)
+    : [];
 }
 
 export default Widget;

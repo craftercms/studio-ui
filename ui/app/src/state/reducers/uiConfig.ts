@@ -18,6 +18,7 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
+import { fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -28,10 +29,15 @@ const initialState: GlobalState['uiConfig'] = {
       widgets: null
     }
   },
-  siteNav: null
+  launcher: null,
+  globalNavigation: {
+    error: null,
+    items: null
+  }
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
+  [changeSite.type]: (state) => ({ ...initialState, globalNavigation: state.globalNavigation }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
@@ -48,7 +54,20 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     isFetching: false,
     currentSite: null
   }),
-  [changeSite.type]: () => initialState
+  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
+    ...state,
+    globalNavigation: {
+      error: null,
+      items: payload
+    }
+  }),
+  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
+    ...state,
+    globalNavigation: {
+      error: payload,
+      items: state.globalNavigation.items
+    }
+  })
 });
 
 export default reducer;

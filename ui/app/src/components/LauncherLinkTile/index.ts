@@ -14,24 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../../models/GlobalState';
-import { LauncherStateProps } from '../../../components/Launcher';
-import { closeLauncher, showLauncher } from '../../actions/dialogs';
+export { default } from './LauncherLinkTile';
 
-const initialState: LauncherStateProps = {
-  open: false,
-  anchor: null,
-  sitesRailPosition: 'left',
-  closeButtonPosition: 'right'
-};
-
-const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState, {
-  [showLauncher.type]: (state, { payload }) => ({
-    ...payload,
-    open: true
-  }),
-  [closeLauncher.type]: () => initialState
-});
-
-export default launcher;
+export * from './LauncherLinkTile';

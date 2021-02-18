@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -22,27 +22,22 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import LauncherSiteCard from '../LauncherSiteCard/LauncherSiteCard';
 import CloseIcon from '@material-ui/icons/Close';
-import { fetchGlobalMenuItems } from '../../services/configuration';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import IconButton from '@material-ui/core/IconButton';
-import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import {
   useActiveSiteId,
   useActiveUser,
   useEnv,
-  useMount,
-  usePossibleTranslation,
   usePreviewState,
-  useSelection,
   useSiteList,
   useSiteUIConfig,
   useSystemVersion
 } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
-import { changeSite, fetchSites } from '../../state/reducers/sites';
+import { getInitials } from '../../utils/string';
+import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
@@ -54,29 +49,27 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import ApiResponseErrorState from '../ApiResponseErrorState';
 import DashboardIcon from '@material-ui/icons/DashboardRounded';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import BuildIcon from '@material-ui/icons/BuildRounded';
 import PreviewIcon from '../Icons/Preview';
 import { components } from '../../services/plugin';
-import { renderWidgets } from '../Widget';
+import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { logout } from '../../state/actions/auth';
 import { Tooltip } from '@material-ui/core';
-import StandardAction from '../../models/StandardAction';
-import ApiResponse from '../../models/ApiResponse';
 import { closeLauncher } from '../../state/actions/dialogs';
-import GlobalState from '../../models/GlobalState';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
-import LauncherTile from '../LauncherTile';
 import LauncherPublishingStatusTile from '../LauncherPublishingStatusTile';
 import clsx from 'clsx';
+import LauncherLinkTile from '../LauncherLinkTile';
+import LauncherSection, { getSystemLink } from '../LauncherSection';
+import LauncherGlobalNav from '../LauncherGlobalNav';
 
 export interface LauncherProps {
+  open: boolean;
   anchor: Element;
-  onMenuClose: (e: any) => void;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
   closeButtonPosition?: 'left' | 'right';
 }
@@ -84,7 +77,6 @@ export interface LauncherProps {
 export interface LauncherStateProps {
   open: boolean;
   anchor: string;
-  onMenuClose: StandardAction;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
   closeButtonPosition?: 'left' | 'right';
 }
@@ -94,14 +86,6 @@ const messages = defineMessages({
     id: 'globalMenu.mySites',
     defaultMessage: 'My Sites'
   },
-  site: {
-    id: 'words.site',
-    defaultMessage: 'Site'
-  },
-  global: {
-    id: 'words.global',
-    defaultMessage: 'Global'
-  },
   preview: {
     id: 'words.preview',
     defaultMessage: 'Preview'
@@ -110,89 +94,9 @@ const messages = defineMessages({
     id: 'words.search',
     defaultMessage: 'Search'
   },
-  about: {
-    id: 'GlobalMenu.AboutUs',
-    defaultMessage: 'About'
-  },
-  docs: {
-    id: 'globalMenu.docs',
-    defaultMessage: 'Documentation'
-  },
-  siteConfig: {
-    id: 'globalMenu.siteConfig',
-    defaultMessage: 'Site Config'
-  },
-  sites: {
-    id: 'GlobalMenu.SitesEntryLabel',
-    defaultMessage: 'Sites'
-  },
-  users: {
-    id: 'GlobalMenu.UsersEntryLabel',
-    defaultMessage: 'Users'
-  },
-  groups: {
-    id: 'GlobalMenu.GroupsEntryLabel',
-    defaultMessage: 'Groups'
-  },
-  cluster: {
-    id: 'GlobalMenu.ClusterEntryLabel',
-    defaultMessage: 'Cluster'
-  },
-  audit: {
-    id: 'GlobalMenu.AuditEntryLabel',
-    defaultMessage: 'Audit'
-  },
-  loggingLevels: {
-    id: 'GlobalMenu.LoggingLevelsEntryLabel',
-    defaultMessage: 'Logging Levels'
-  },
-  logConsole: {
-    id: 'GlobalMenu.LogConsoleEntryLabel',
-    defaultMessage: 'Log Console'
-  },
-  globalConfig: {
-    id: 'GlobalMenu.GlobalConfigEntryLabel',
-    defaultMessage: 'Global Config'
-  },
-  encryptionTool: {
-    id: 'GlobalMenu.EncryptionTool',
-    defaultMessage: 'Encryption Tool'
-  },
-  tokenManagement: {
-    id: 'GlobalMenu.TokenManagement',
-    defaultMessage: 'Token Management'
-  },
-  dashboard: {
-    id: 'words.dashboard',
-    defaultMessage: 'Dashboard'
-  },
-  remove: {
-    id: 'words.remove',
-    defaultMessage: 'Remove'
-  },
-  ok: {
-    id: 'words.ok',
-    defaultMessage: 'Ok'
-  },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
-  },
-  removeSite: {
-    id: 'globalMenu.removeSite',
-    defaultMessage: 'Remove site'
-  },
-  removeSiteConfirm: {
-    id: 'globalMenu.removeSiteConfirm',
-    defaultMessage: 'Do you want to remove {site}?'
-  },
   signOut: {
     id: 'launcherOpenerButton.signOut',
     defaultMessage: 'Sign Out'
-  },
-  settings: {
-    id: 'words.settings',
-    defaultMessage: 'Settings'
   },
   closeMenu: {
     id: 'globalMenu.closeMenu',
@@ -203,26 +107,6 @@ const messages = defineMessages({
     defaultMessage: 'Logout'
   }
 });
-
-const urlMapping = {
-  'home.globalMenu.logging-levels': '#/globalMenu/logging',
-  'home.globalMenu.log-console': '#/globalMenu/log',
-  'home.globalMenu.users': '#/globalMenu/users',
-  'home.globalMenu.sites': '#/globalMenu/sites',
-  'home.globalMenu.audit': '#/globalMenu/audit',
-  'home.globalMenu.groups': '#/globalMenu/groups',
-  'home.globalMenu.globalConfig': '#/globalMenu/global-config',
-  'home.globalMenu.cluster': '#/globalMenu/cluster',
-  'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
-  'home.globalMenu.tokenManagement': '#/globalMenu/token-management',
-  'legacy.preview': '/preview/',
-  preview: '/next/preview',
-  about: '#/about-us',
-  siteConfig: '/site-config',
-  search: '/search',
-  siteDashboard: '/site-dashboard',
-  settings: '#/settings'
-};
 
 const useLauncherStyles = makeStyles((theme) =>
   createStyles({
@@ -255,24 +139,8 @@ const useLauncherStyles = makeStyles((theme) =>
       maxHeight: '100%'
     },
     versionText: {},
-    title: {
-      textTransform: 'uppercase',
-      fontWeight: 600,
-      '& > span': {
-        textTransform: 'none',
-        marginLeft: '0.315em',
-        color: theme.palette.text.secondary
-      }
-    },
     titleCard: {
       marginBottom: '20px'
-    },
-    navItemsWrapper: {
-      display: 'flex',
-      flexWrap: 'wrap'
-    },
-    errorPaperRoot: {
-      height: '100%'
     },
     closeButton: {
       position: 'absolute',
@@ -285,12 +153,6 @@ const useLauncherStyles = makeStyles((theme) =>
     },
     simpleGear: {
       margin: 'auto'
-    },
-    loadingContainer: {
-      height: '600px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
     },
     userCardRoot: {
       width: '100%',
@@ -312,7 +174,8 @@ const useLauncherStyles = makeStyles((theme) =>
       maxWidth: '300px',
       overflow: 'hidden',
       textOverflow: 'ellipsis'
-    }
+    },
+    mySitesTitle: { marginBottom: '24px', textTransform: 'uppercase', fontWeight: 600 }
   })
 );
 
@@ -320,87 +183,26 @@ const useLauncherStyles = makeStyles((theme) =>
 
 interface AppsRailProps {
   classes: LookupTable<string>;
-  siteId: string;
-  siteName: string;
-  siteNav: GlobalState['uiConfig']['siteNav'];
-  menuItems: Array<{ id: string; icon: string; label: string }>;
+  widgets: WidgetDescriptor[];
   formatMessage: IntlShape['formatMessage'];
-  authoringBase: string;
-  version: string;
   user: EnhancedUser;
-  onMenuClose(): void;
   onLogout(): void;
   closeButtonPosition: LauncherStateProps['closeButtonPosition'];
+  userRoles: string[];
 }
 
 const AppsRail = ({
   classes,
-  siteId,
-  siteName,
-  siteNav,
-  menuItems,
+  widgets,
   formatMessage,
-  onMenuClose,
-  authoringBase,
-  version,
   user,
   onLogout,
-  closeButtonPosition
+  closeButtonPosition,
+  userRoles
 }: AppsRailProps) => (
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
-      {/* region Site Navigation */}
-      {siteId && siteNav && (
-        <>
-          {siteNav.title && (
-            <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
-              {siteNav.title
-                ? typeof siteNav.title === 'string'
-                  ? siteNav.title
-                  : formatMessage(siteNav.title)
-                : formatMessage(messages.site)}
-              <span>• {siteName || siteId}</span>
-            </Typography>
-          )}
-          <nav className={classes.navItemsWrapper}>{renderWidgets(siteNav.widgets, user.rolesBySite[siteId])}</nav>
-        </>
-      )}
-      {/* endregion */}
-      {/* region Global Navigation */}
-      <Typography variant="subtitle1" component="h2" className={classes.title} style={{ margin: '0 0 10px 0' }}>
-        {formatMessage(messages.global)}
-      </Typography>
-      <nav className={classes.navItemsWrapper}>
-        {menuItems.map((item) => (
-          <LauncherTile
-            key={item.id}
-            title={formatMessage(messages[popPiece(camelize(item.id))])}
-            icon={{ baseClass: `fa ${item.icon}` }}
-            link={getLink(item.id, authoringBase)}
-            onClick={onMenuClose}
-          />
-        ))}
-        <LauncherTile
-          title={formatMessage(messages.docs)}
-          icon={{ id: 'craftercms.icons.Docs' }}
-          link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
-          target="_blank"
-          onClick={onMenuClose}
-        />
-        <LauncherTile
-          title={formatMessage(messages.settings)}
-          icon={{ id: '@material-ui/icons/SettingsRounded' }}
-          link={getLink('settings', authoringBase)}
-          onClick={onMenuClose}
-        />
-        <LauncherTile
-          icon={{ id: 'craftercms.icons.CrafterIcon' }}
-          link={getLink('about', authoringBase)}
-          title={formatMessage(messages.about)}
-          onClick={onMenuClose}
-        />
-      </nav>
-      {/* endregion */}
+      {renderWidgets(widgets, userRoles)}
     </div>
     <div className={classes.railBottom}>
       <Card className={classes.userCardRoot}>
@@ -456,7 +258,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardA
   <Hidden only={['xs', 'sm']}>
     <Grid item md={4} className={classes.sitesRail}>
       <div className={classes.railTop}>
-        <Typography variant="subtitle1" component="h2" className={classes.title} style={{ marginBottom: '24px' }}>
+        <Typography variant="subtitle1" component="h2" className={classes.mySitesTitle}>
           {formatMessage(messages.mySites)}
         </Typography>
         {sites.length ? (
@@ -492,7 +294,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardA
 
 // endregion
 
-export default function Launcher() {
+export default function Launcher(props: LauncherStateProps) {
   const classes = useLauncherStyles();
   const siteId = useActiveSiteId();
   const sites = useSiteList();
@@ -502,65 +304,35 @@ export default function Launcher() {
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
-  const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = useSelection(
-    (state) => state.dialogs.launcher
-  );
-  const { siteNav } = useSiteUIConfig();
-  const [menuItems, setMenuItems] = useState(null);
-  const [error, setError] = useState<ApiResponse>(null);
+  const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
+  const { launcher } = useSiteUIConfig();
+  const siteCardMenuLinks = launcher?.siteCardMenuLinks;
+  const widgets = launcher?.widgets;
+  const userRoles = user.rolesBySite[siteId];
   const anchor = useMemo(() => (anchorSelector ? document.querySelector(anchorSelector) : null), [anchorSelector]);
-  const siteName = useMemo(() => {
-    const site = sites.find((model) => model.id === siteId);
-    return site ? site.name || site.id : siteId;
-  }, [sites, siteId]);
-
-  const cardActions = useMemo<
-    Array<{
-      name: string;
-      href: string | ((id: string) => string);
-      onClick(site): void;
-    }>
-  >(
-    () => [
-      {
-        name: formatMessage(messages.dashboard),
-        href: getLink('siteDashboard', authoringBase),
-        onClick(site) {
-          setSiteCookie(site);
-        }
-      },
-      {
-        name: formatMessage(messages.preview),
-        href(site) {
-          return `${getLink(
-            previewChoice[site] === '2' ? 'preview' : 'legacy.preview',
-            authoringBase
-          )}#/?page=/&site=${site}`;
-        },
-        onClick(site) {
-          setSiteCookie(site);
-        }
-      },
-      {
-        name: formatMessage(messages.search),
-        href: getLink('search', authoringBase),
-        onClick(site) {
-          setSiteCookie(site);
-        }
-      }
-      // TODO: Since these should be per-site and constraint by role, we need to figure what to do with them.
-      // {
-      //   name: formatMessage(messages.siteConfig),
-      //   href: getLink('siteConfig', authoringUrl),
-      //   onClick(site) {
-      //     setSiteCookie(site);
-      //   }
-      // }
-    ],
-    [formatMessage, authoringBase, previewChoice]
+  const cardActions = useMemo(
+    () =>
+      siteCardMenuLinks
+        ? siteCardMenuLinks
+            .filter(
+              (widget) =>
+                (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
+            )
+            .map((descriptor) => ({
+              name: typeof descriptor.title === 'string' ? descriptor.title : formatMessage(descriptor.title),
+              href: getSystemLink({
+                systemLinkId: descriptor.systemLinkId,
+                authoringBase,
+                previewChoice,
+                site: siteId
+              }),
+              onClick(site) {
+                setSiteCookie(site);
+              }
+            }))
+        : [],
+    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, previewChoice, siteId]
   );
-
-  const onErrorStateBackClicked = () => setError(error);
 
   const onSiteCardClick = (site: string) => {
     if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
@@ -570,9 +342,12 @@ export default function Launcher() {
       } else {
         setSiteCookie(site);
         setTimeout(() => {
-          window.location.href = `${
-            previewChoice[site] === '2' ? `${authoringBase}/next/preview` : `${authoringBase}/preview`
-          }#/?page=/&site=${site}`;
+          window.location.href = getSystemLink({
+            systemLinkId: 'preview',
+            previewChoice,
+            authoringBase,
+            site: siteId
+          });
         });
       }
     } else {
@@ -602,35 +377,14 @@ export default function Launcher() {
   const appsRail = () => (
     <AppsRail
       classes={classes}
-      siteId={siteId}
-      siteName={siteName}
-      siteNav={siteNav}
-      menuItems={menuItems}
+      widgets={widgets}
       formatMessage={formatMessage}
-      authoringBase={authoringBase}
-      version={version}
       user={user}
-      onMenuClose={onMenuClose}
       onLogout={onLogout}
       closeButtonPosition={closeButtonPosition}
+      userRoles={userRoles}
     />
   );
-
-  useMount(() => {
-    if (sites === null) {
-      dispatch(fetchSites());
-    }
-    fetchGlobalMenuItems().subscribe(setMenuItems, (error) => {
-      if (error.response) {
-        setError({
-          ...error.response,
-          code: '',
-          documentationUrl: '',
-          remedialAction: ''
-        });
-      }
-    });
-  });
 
   return (
     <Popover
@@ -647,7 +401,7 @@ export default function Launcher() {
         horizontal: 'right'
       }}
     >
-      {/* Close button (x) */}
+      {/* region Close button (x) */}
       <Tooltip title={formatMessage(messages.closeMenu)}>
         <IconButton
           aria-label={formatMessage(messages.closeMenu)}
@@ -657,73 +411,31 @@ export default function Launcher() {
           <CloseIcon />
         </IconButton>
       </Tooltip>
-      {error ? (
-        <ApiResponseErrorState
-          classes={{ root: classes.errorPaperRoot }}
-          error={error}
-          onButtonClick={onErrorStateBackClicked}
-        />
-      ) : menuItems !== null ? (
-        <Grid container spacing={0} className={classes.gridContainer}>
-          {sitesRailPosition === 'left' ? (
-            <>
-              {sitesRail()}
-              {appsRail()}
-            </>
-          ) : sitesRailPosition === 'right' ? (
-            <>
-              {appsRail()}
-              {sitesRail()}
-            </>
-          ) : (
-            sitesRail()
-          )}
-        </Grid>
-      ) : (
-        <div className={classes.loadingContainer}>
-          <LoadingState />
-        </div>
-      )}
+      {/* endregiong */}
+      <Grid container spacing={0} className={classes.gridContainer}>
+        {sitesRailPosition === 'left' ? (
+          <>
+            {sitesRail()}
+            {appsRail()}
+          </>
+        ) : sitesRailPosition === 'right' ? (
+          <>
+            {appsRail()}
+            {sitesRail()}
+          </>
+        ) : (
+          appsRail()
+        )}
+      </Grid>
     </Popover>
   );
 }
 
-function getLink(id: string, authoringBase: string = `${getBase()}/studio`) {
-  return `${authoringBase}${urlMapping[id]}`;
-}
-
-function getBase() {
-  return window.location.host.replace('3000', '8080');
-}
-
-const LauncherLinkTile = ({ title, icon, systemLinkId, link }) => {
-  const { authoringBase } = useEnv();
-  const { previewChoice } = usePreviewState();
-  const site = useActiveSiteId();
-  return (
-    <LauncherTile
-      icon={icon}
-      title={usePossibleTranslation(title)}
-      link={
-        link ??
-        (systemLinkId === 'preview'
-          ? // Preview is a special "dynamic case"
-            previewChoice[site] === '2'
-            ? `${authoringBase}/next/preview#/?page=/&site=${site}`
-            : `${authoringBase}/preview#/?page=/&site=${site}`
-          : {
-              siteTools: `${authoringBase}/site-config`,
-              siteSearch: `${authoringBase}/search`,
-              siteDashboard: `${authoringBase}/site-dashboard`
-            }[systemLinkId])
-      }
-    />
-  );
-};
-
 Object.entries({
   'craftercms.components.LauncherLinkTile': LauncherLinkTile,
   'craftercms.components.LauncherPublishingStatusTile': LauncherPublishingStatusTile,
+  'craftercms.components.LauncherSection': LauncherSection,
+  'craftercms.components.LauncherGlobalNav': LauncherGlobalNav,
   'craftercms.icons.Preview': PreviewIcon,
   'craftercms.icons.CrafterIcon': About,
   'craftercms.icons.Docs': Docs,

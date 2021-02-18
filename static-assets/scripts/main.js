@@ -278,6 +278,24 @@
             }
           }
         })
+        .state('home.globalMenu.settings', {
+          url: '/settings',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/settings.html',
+              controller: 'AppCtrl'
+            }
+          }
+        })
+        .state('home.globalMenu.about-us', {
+          url: '/about-us',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/about.html',
+              controller: 'AppCtrl'
+            }
+          }
+        })
         .state('home.sites', {
           url: 'sites',
           views: {

@@ -52,9 +52,12 @@ import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelecti
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
-import { MessageDescriptor } from 'react-intl';
-import { LauncherStateProps } from '../components/Launcher/Launcher';
+import { LauncherStateProps } from '../components/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
+import TranslationOrText from './TranslationOrText';
+import { SystemLinkId } from '../components/LauncherSection';
+import { SystemIconDescriptor } from '../components/SystemIcon';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -200,10 +203,18 @@ export interface GlobalState {
         widgets: WidgetDescriptor[];
       };
     };
-    siteNav: {
-      title: string | MessageDescriptor;
-      roles?: string[];
-      widgets: any;
+    launcher: {
+      widgets: WidgetDescriptor[];
+      siteCardMenuLinks: Array<{
+        title: TranslationOrText;
+        systemLinkId: SystemLinkId;
+        icon?: SystemIconDescriptor;
+        roles?: string[];
+      }>;
+    };
+    globalNavigation: {
+      error: AjaxError;
+      items: Array<{ icon: string; id: string; label: string }>;
     };
   };
   pathNavigator: {

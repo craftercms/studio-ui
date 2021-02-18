@@ -419,7 +419,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Launcher */}
-      <Launcher />
+      <Launcher {...state.launcher} />
       {/* endregion */}
 
       {/* region Publishing Status Dialog */}

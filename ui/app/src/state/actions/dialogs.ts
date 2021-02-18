@@ -216,9 +216,9 @@ export const itemMenuClosed = /*#__PURE__*/ createAction('ITEM_MENU_CLOSED');
 
 // region Global Nav
 
-export const showLauncher = /*#__PURE__*/ createAction<Partial<LauncherStateProps>>('SHOW_GLOBAL_NAV');
+export const showLauncher = /*#__PURE__*/ createAction<Partial<LauncherStateProps>>('SHOW_LAUNCHER');
 
-export const closeLauncher = /*#__PURE__*/ createAction('CLOSE_GLOBAL_NAV');
+export const closeLauncher = /*#__PURE__*/ createAction('CLOSE_LAUNCHER');
 
 // endregion
 
