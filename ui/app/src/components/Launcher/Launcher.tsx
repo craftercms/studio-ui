@@ -30,7 +30,6 @@ import {
   useActiveSiteId,
   useActiveUser,
   useEnv,
-  useMount,
   usePreviewState,
   useSiteList,
   useSiteUIConfig,
@@ -38,7 +37,7 @@ import {
 } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { getInitials } from '../../utils/string';
-import { changeSite, fetchSites } from '../../state/reducers/sites';
+import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
