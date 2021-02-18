@@ -109,7 +109,9 @@ module.exports = function Dashboard(props) {
     // Wrap it for RTL language support
     <div class={wrapperClassName} dir={props.direction}>
       <div class="uppy-dashboard-header">
-        <h2 className="MuiTypography-root MuiTypography-h6 uppy-dashboard-header-title">{props.title}</h2>
+        <h2 className="MuiTypography-root MuiTypography-h6 uppy-dashboard-header-title">
+          {props.title} {Boolean(props.totalFileCount) && `(${props.completeFiles.length}/${props.totalFileCount})`}
+        </h2>
         <div class="uppy-dashboard-header-actions">
           <button
             title={props.i18n('minimize')}
