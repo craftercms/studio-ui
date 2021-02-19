@@ -1166,14 +1166,14 @@
 
       $scope.editSite = sitesService.editSite;
 
-      $scope.editSiteData = function(site) {
+      $scope.editSiteData = function(site, $event) {
+        $event.stopPropagation();
         const onEditSuccess = () => {
           CrafterCMSNext.system.store.dispatch({
             type: 'CLOSE_EDIT_SITE_DIALOG'
           });
           getSites();
         };
-
         sitesService.editSiteData(site, onEditSuccess);
       };
 
@@ -1250,7 +1250,8 @@
         getResultsPage(1);
       });
 
-      $scope.removeSiteSites = function(site) {
+      $scope.removeSiteSites = function(site, $event) {
+        $event.stopPropagation();
         var modalInstance = $uibModal.open({
           templateUrl: 'removeConfirmation.html',
           controller: 'RemoveSiteCtrl',
@@ -1263,7 +1264,6 @@
             }
           }
         });
-
         modalInstance.result.then(function() {
           getResultsPage(1);
         });

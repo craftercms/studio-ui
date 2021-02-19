@@ -165,10 +165,10 @@ export function useGlobalNavigation(): GlobalState['uiConfig']['globalNavigation
   const dispatch = useDispatch();
   const data = useSelection((state) => state.uiConfig.globalNavigation);
   useEffect(() => {
-    if (nou(data.items) && nou(data.error)) {
+    if (nou(data.items) && nou(data.error) && !data.isFetching) {
       dispatch(fetchGlobalMenu());
     }
-  }, [data.error, data.items, dispatch]);
+  }, [data.error, data.isFetching, data.items, dispatch]);
   return data;
 }
 

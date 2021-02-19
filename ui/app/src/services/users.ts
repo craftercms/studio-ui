@@ -206,7 +206,7 @@ export function getMyPermissions(site: string): Observable<string[]> {
 }
 
 export function hasPermissions(site: string, ...permissions: string[]): Observable<LookupTable<boolean>> {
-  return post(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
+  return postJSON(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
     pluck('response', 'permissions')
   );
 }

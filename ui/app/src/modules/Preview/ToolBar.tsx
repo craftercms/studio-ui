@@ -59,6 +59,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
+import { getSystemLink } from '../../components/LauncherSection';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -312,7 +313,15 @@ export default function ToolBar() {
               dispatch(changeSite(site));
             } else {
               setSiteCookie(site);
-              setTimeout(() => (window.location.href = `${authoringBase}/preview`));
+              setTimeout(
+                () =>
+                  (window.location.href = getSystemLink({
+                    site,
+                    systemLinkId: 'preview',
+                    previewChoice,
+                    authoringBase
+                  }))
+              );
             }
           }}
           onUrlChange={(url) => dispatch(changeCurrentUrl(url))}

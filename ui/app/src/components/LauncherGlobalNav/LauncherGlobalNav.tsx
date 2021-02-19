@@ -29,7 +29,7 @@ import { globalMenuMessages } from '../../utils/i18n-legacy';
 import Skeleton from '@material-ui/lab/Skeleton';
 
 export interface LauncherGlobalNavProps {
-  title: TranslationOrText;
+  title?: TranslationOrText;
 }
 
 function LauncherGlobalNav(props: LauncherGlobalNavProps) {
@@ -53,7 +53,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
     return <ApiResponseErrorState error={error.response ?? error} />;
   }
   return (
-    <LauncherSectionUI title={props.title}>
+    <LauncherSectionUI title={props.title ?? formatMessage(messages.global)}>
       {items.map((item) => (
         <LauncherTile
           key={item.id}

@@ -67,7 +67,11 @@ import { fetchGlobalMenuItems } from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized & changeSite
-  (action$) => action$.pipe(ofType(storeInitialized.type, changeSite.type), mapTo(startPublishingStatusFetcher())),
+  (action$) =>
+    action$.pipe(
+      ofType(storeInitialized.type, changeSite.type),
+      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu()])
+    ),
   // endregion
   // region emitSystemEvent
   (action$) =>
