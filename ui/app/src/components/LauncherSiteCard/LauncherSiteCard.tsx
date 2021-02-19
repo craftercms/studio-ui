@@ -101,6 +101,8 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
             <MenuItem
               key={i}
               component={Link}
+              color="inherit"
+              underline="none"
               href={typeof action.href === 'function' ? action.href(value) : action.href}
               onClick={(e) => handleClose(e, action)}
             >

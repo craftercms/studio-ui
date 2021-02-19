@@ -16,7 +16,7 @@
 
 import { forkJoin, Observable, of } from 'rxjs';
 import { User } from '../models/User';
-import { del, get, patchJSON, post, postJSON } from '../utils/ajax';
+import { del, get, patchJSON, postJSON } from '../utils/ajax';
 import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { fetchAll as fetchAllSites } from './sites';
 import LookupTable from '../models/LookupTable';

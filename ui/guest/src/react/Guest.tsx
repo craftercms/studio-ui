@@ -97,7 +97,7 @@ function Guest(props: GuestProps) {
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
-  const refs = useRef({ contentReady: false });
+  const refs = useRef({ contentReady: false, firstRender: true });
   // TODO: Avoid double re-render when draggable changes without coupling to redux on useICE
   const context = useMemo(
     () => ({
@@ -147,10 +147,17 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     if (editMode === false) {
       $('html').removeClass(editModeClass);
-      document.dispatchEvent(new CustomEvent(editModeClass, { detail: false }));
+      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: false }));
+      // Refreshing the page for now. Will revisit on a later release.
+      if (!refs.current.firstRender) {
+        window.location.reload();
+      }
     } else {
       $('html').addClass(editModeClass);
-      document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
+      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: true }));
+    }
+    if (refs.current.firstRender) {
+      refs.current.firstRender = false;
     }
   }, [editMode]);
 
