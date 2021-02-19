@@ -190,6 +190,11 @@ export interface GlobalState {
     };
     launcher: {
       widgets: WidgetDescriptor[];
+      /**
+       * Whether to render the global nav before or after
+       * the additional widgets coming from configuration
+       **/
+      globalNavigationPosition?: 'before' | 'after';
       siteCardMenuLinks: Array<{
         title: TranslationOrText;
         systemLinkId: SystemLinkId;
@@ -199,7 +204,8 @@ export interface GlobalState {
     };
     globalNavigation: {
       error: AjaxError;
-      items: Array<{ icon: string; id: string; label: string }>;
+      items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
+      isFetching: boolean;
     };
     siteLocales: {
       error: ApiResponse;

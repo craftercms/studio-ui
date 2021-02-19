@@ -33,7 +33,8 @@ const initialState: GlobalState['uiConfig'] = {
   launcher: null,
   globalNavigation: {
     error: null,
-    items: null
+    items: null,
+    isFetching: false
   },
   siteLocales: {
     error: null,
@@ -69,15 +70,24 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
     ...state,
     globalNavigation: {
+      ...state.globalNavigation,
+      isFetching: true
+    }
+  }),
+  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
+    ...state,
+    globalNavigation: {
       error: null,
-      items: payload
+      items: payload,
+      isFetching: false
     }
   }),
   [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
     ...state,
     globalNavigation: {
       error: payload,
-      items: state.globalNavigation.items
+      items: state.globalNavigation.items,
+      isFetching: false
     }
   }),
   [fetchSiteLocales.type]: (state) => ({

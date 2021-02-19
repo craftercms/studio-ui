@@ -36,10 +36,7 @@
         <thead>
           <tr>
             <th><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
-            <th>
-              <span class="sr-only">{{ 'dashboard.sites.SITE_DASHBOARD_LINK' | translate }}</span>
-            </th>
-            <th><span class="sr-only">{{ 'dashboard.sites.PREVIEW_LINK' | translate }}</span></th>
+            <th><span class="sr-only">Site Id</span></th>
             <th><span class="sr-only">{{ 'common.EDIT' | translate }}</span></th>
             <th><span class="sr-only">{{ 'common.REMOVE_LABEL' | translate }}</span></th>
           </tr>
@@ -47,23 +44,32 @@
         <tbody>
           <tr
             id="site-row-{{site.id}}"
+            ng-click="editSite(site)"
             dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage"
             current-page="pagination"
             total-items="totalSites"
+            style="cursor: pointer"
           >
             <td class="name site-name trim" title="{{site.name ? site.name : site.id}}">
-              {{site.name ? site.name : site.id }}
+              <a ng-click="editSite(site)">{{site.name ? site.name : site.id}} &raquo;</a>
+              <div
+                ng-if="site.description"
+                ng-bind="site.description"
+                ng-attr-title="{{site.description}}"
+                style="overflow: hidden; text-overflow: ellipsis"
+              ></div>
             </td>
-            <td class="preview">
-              <a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a>
-            </td>
-            <td class="dashboard">
-              <a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a>
+            <td class="name site-name trim">
+              <div
+                ng-bind="site.id"
+                ng-attr-title="{{site.id}}"
+                style="overflow: hidden; text-overflow: ellipsis"
+              ></div>
             </td>
             <td class="remove">
               <a
                 ng-show="site.edit"
-                ng-click="editSiteData(site)"
+                ng-click="editSiteData(site, $event)"
                 class="btn btn-sm"
                 tooltip-placement="bottom"
                 uib-tooltip="Edit"
@@ -74,7 +80,7 @@
             <td class="remove">
               <a
                 ng-show="site.remove"
-                ng-click="removeSiteSites(site)"
+                ng-click="removeSiteSites(site, $event)"
                 class="btn btn-sm"
                 tooltip-placement="bottom"
                 uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"

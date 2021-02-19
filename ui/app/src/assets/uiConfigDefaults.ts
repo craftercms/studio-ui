@@ -26,6 +26,10 @@ const messages = defineMessages({
     id: 'siteTools.title',
     defaultMessage: 'Site Tools'
   },
+  siteDashboard: {
+    id: 'words.dashboard',
+    defaultMessage: 'Dashboard'
+  },
   configuration: {
     id: 'words.configuration',
     defaultMessage: 'Configuration'
@@ -49,10 +53,6 @@ const messages = defineMessages({
   site: {
     id: 'launcher.siteSectionTitle',
     defaultMessage: 'Site <muted>• {siteName}</muted>'
-  },
-  global: {
-    id: 'words.global',
-    defaultMessage: 'Global'
   }
 });
 
@@ -607,7 +607,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
     siteCardMenuLinks: [
       {
         systemLinkId: 'siteDashboard',
-        title: messages.siteTools
+        title: messages.siteDashboard
       },
       {
         systemLinkId: 'preview',
@@ -679,13 +679,6 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
               uiKey: count++
             }
           ]
-        }
-      },
-      {
-        id: 'craftercms.components.LauncherGlobalNav',
-        uiKey: count++,
-        configuration: {
-          title: messages.global
         }
       }
     ]

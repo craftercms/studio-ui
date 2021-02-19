@@ -27,12 +27,17 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Box from '@material-ui/core/Box';
 
-interface LauncherSiteCardProps {
+export interface LauncherSiteCardOption {
+  name: string;
+  href: string | ((site: string) => string);
+  onClick?(site: string): void;
+}
+
+export interface LauncherSiteCardProps {
   title: string;
   value?: string;
-  options?: boolean;
   classes?: any;
-  cardActions?: any;
+  options?: Array<LauncherSiteCardOption>;
   disabled?: boolean;
   selected?: boolean;
   onCardClick(id: string): any;
@@ -53,9 +58,10 @@ const useStyles = makeStyles((theme) =>
 );
 
 function LauncherSiteCard(props: LauncherSiteCardProps) {
-  const { title, value, options, onCardClick, cardActions = [], selected = false } = props;
+  const { title, value, onCardClick, options, selected = false } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles();
+  const hasOptions = Boolean(options && options.length);
 
   const handleClose = (event, action?) => {
     event.stopPropagation();
@@ -81,25 +87,28 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         title={title}
       >
         <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
-        {options && (
+        {hasOptions && (
           <ListItemSecondaryAction>
-            <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>
+            <IconButton aria-label="settings" onClick={handleOptions}>
               <MoreVertIcon />
             </IconButton>
           </ListItemSecondaryAction>
         )}
       </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {cardActions.map((action, i) => (
-          <MenuItem
-            key={i}
-            component={Link}
-            href={typeof action.href === 'function' ? action.href(value) : action.href}
-            onClick={(e) => handleClose(e, action)}
-          >
-            {action.name}
-          </MenuItem>
-        ))}
+        {hasOptions &&
+          options.map((action, i) => (
+            <MenuItem
+              key={i}
+              component={Link}
+              color="inherit"
+              underline="none"
+              href={typeof action.href === 'function' ? action.href(value) : action.href}
+              onClick={(e) => handleClose(e, action)}
+            >
+              {action.name}
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );
