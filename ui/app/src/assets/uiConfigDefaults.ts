@@ -27,8 +27,8 @@ const messages = defineMessages({
     defaultMessage: 'Site Tools'
   },
   siteDashboard: {
-    id: 'siteDashboard.title',
-    defaultMessage: 'Site Dashboard'
+    id: 'words.dashboard',
+    defaultMessage: 'Dashboard'
   },
   configuration: {
     id: 'words.configuration',
