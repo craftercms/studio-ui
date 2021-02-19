@@ -35,7 +35,7 @@ function LauncherSection(props: LauncherSectionProps) {
       site={site}
       user={user}
       translationValues={{
-        siteName: sites[site].name,
+        siteName: sites[site]?.name ?? '',
         muted: (value) => (
           <span className="muted" key={value}>
             {value}

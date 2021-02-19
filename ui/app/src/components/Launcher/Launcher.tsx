@@ -20,7 +20,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import LauncherSiteCard from '../LauncherSiteCard/LauncherSiteCard';
+import LauncherSiteCard, { LauncherSiteCardOption } from '../LauncherSiteCard/LauncherSiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
@@ -43,7 +43,7 @@ import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
+import AccountCircleRounded from '@material-ui/icons/AccountCircleRounded';
 import { Site } from '../../models/Site';
 import EmptyState from '../SystemStatus/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
@@ -66,6 +66,17 @@ import clsx from 'clsx';
 import LauncherLinkTile from '../LauncherLinkTile';
 import LauncherSection, { getSystemLink } from '../LauncherSection';
 import LauncherGlobalNav from '../LauncherGlobalNav';
+import GlobalState from '../../models/GlobalState';
+import SitesRounded from '../Icons/SitesRounded';
+import PeopleRounded from '@material-ui/icons/PeopleRounded';
+import SupervisedUserCircleRounded from '@material-ui/icons/SupervisedUserCircleRounded';
+import StorageRounded from '@material-ui/icons/StorageRounded';
+import SubjectRounded from '@material-ui/icons/SubjectRounded';
+import SettingsApplicationsRounded from '@material-ui/icons/SettingsApplicationsRounded';
+import FormatAlignCenterRounded from '@material-ui/icons/FormatAlignCenterRounded';
+import LockRounded from '@material-ui/icons/LockRounded';
+import PublicRounded from '@material-ui/icons/PublicRounded';
+import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
 
 export interface LauncherProps {
   open: boolean;
@@ -79,6 +90,8 @@ export interface LauncherStateProps {
   anchor: string;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
   closeButtonPosition?: 'left' | 'right';
+  // Keeping prop @ GlobalState['uiConfig']['launcher']['globalNavigationPosition']
+  // globalNavigationPosition?: 'before' | 'after';
 }
 
 const messages = defineMessages({
@@ -188,6 +201,7 @@ interface AppsRailProps {
   user: EnhancedUser;
   onLogout(): void;
   closeButtonPosition: LauncherStateProps['closeButtonPosition'];
+  globalNavigationPosition: GlobalState['uiConfig']['launcher']['globalNavigationPosition'];
   userRoles: string[];
 }
 
@@ -198,11 +212,15 @@ const AppsRail = ({
   user,
   onLogout,
   closeButtonPosition,
-  userRoles
+  userRoles,
+  globalNavigationPosition
 }: AppsRailProps) => (
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
+      {globalNavigationPosition === 'before' && <LauncherGlobalNav />}
       {renderWidgets(widgets, userRoles)}
+      {/* Using != 'before' (instead of == 'after') to avoid config hiding away the global nav */}
+      {globalNavigationPosition !== 'before' && <LauncherGlobalNav />}
     </div>
     <div className={classes.railBottom}>
       <Card className={classes.userCardRoot}>
@@ -246,15 +264,11 @@ interface SitesRailProps {
   sites: Site[];
   site: string;
   version: string;
-  cardActions: Array<{
-    name: string;
-    href: string | ((id: string) => string);
-    onClick(site): void;
-  }>;
+  options: Array<LauncherSiteCardOption>;
   onSiteCardClick(id: string): void;
 }
 
-const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardActions, version }: SitesRailProps) => (
+const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, options, version }: SitesRailProps) => (
   <Hidden only={['xs', 'sm']}>
     <Grid item md={4} className={classes.sitesRail}>
       <div className={classes.railTop}>
@@ -266,13 +280,12 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, cardA
             {sites.map((item, i) => (
               <LauncherSiteCard
                 key={i}
-                options
                 selected={item.id === site}
                 title={item.name}
                 value={item.id}
                 classes={{ root: classes.titleCard }}
                 onCardClick={() => onSiteCardClick(item.id)}
-                cardActions={cardActions}
+                options={options}
               />
             ))}
           </List>
@@ -308,9 +321,10 @@ export default function Launcher(props: LauncherStateProps) {
   const { launcher } = useSiteUIConfig();
   const siteCardMenuLinks = launcher?.siteCardMenuLinks;
   const widgets = launcher?.widgets;
+  const globalNavigationPosition = launcher?.globalNavigationPosition ?? 'after';
   const userRoles = user.rolesBySite[siteId];
   const anchor = useMemo(() => (anchorSelector ? document.querySelector(anchorSelector) : null), [anchorSelector]);
-  const cardActions = useMemo(
+  const cardActions = useMemo<LauncherSiteCardOption[]>(
     () =>
       siteCardMenuLinks
         ? siteCardMenuLinks
@@ -320,18 +334,19 @@ export default function Launcher(props: LauncherStateProps) {
             )
             .map((descriptor) => ({
               name: typeof descriptor.title === 'string' ? descriptor.title : formatMessage(descriptor.title),
-              href: getSystemLink({
-                systemLinkId: descriptor.systemLinkId,
-                authoringBase,
-                previewChoice,
-                site: siteId
-              }),
+              href: (site) =>
+                getSystemLink({
+                  systemLinkId: descriptor.systemLinkId,
+                  authoringBase,
+                  previewChoice,
+                  site
+                }),
               onClick(site) {
                 setSiteCookie(site);
               }
             }))
-        : [],
-    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, previewChoice, siteId]
+        : null,
+    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, previewChoice]
   );
 
   const onSiteCardClick = (site: string) => {
@@ -346,7 +361,7 @@ export default function Launcher(props: LauncherStateProps) {
             systemLinkId: 'preview',
             previewChoice,
             authoringBase,
-            site: siteId
+            site
           });
         });
       }
@@ -369,7 +384,7 @@ export default function Launcher(props: LauncherStateProps) {
       sites={sites}
       site={siteId}
       version={version}
-      cardActions={cardActions}
+      options={cardActions}
       onSiteCardClick={onSiteCardClick}
     />
   );
@@ -383,6 +398,7 @@ export default function Launcher(props: LauncherStateProps) {
       onLogout={onLogout}
       closeButtonPosition={closeButtonPosition}
       userRoles={userRoles}
+      globalNavigationPosition={globalNavigationPosition}
     />
   );
 
@@ -439,10 +455,20 @@ Object.entries({
   'craftercms.icons.Preview': PreviewIcon,
   'craftercms.icons.CrafterIcon': About,
   'craftercms.icons.Docs': Docs,
+  'craftercms.icons.Sites': SitesRounded,
   '@material-ui/icons/DashboardRounded': DashboardIcon,
   '@material-ui/icons/SearchRounded': SearchIcon,
   '@material-ui/icons/BuildRounded': BuildIcon,
-  '@material-ui/icons/SettingsRounded': SettingsRoundedIcon
+  '@material-ui/icons/AccountCircleRounded': AccountCircleRounded,
+  '@material-ui/icons/PeopleRounded': PeopleRounded,
+  '@material-ui/icons/SupervisedUserCircleRounded': SupervisedUserCircleRounded,
+  '@material-ui/icons/StorageRounded': StorageRounded,
+  '@material-ui/icons/SubjectRounded': SubjectRounded,
+  '@material-ui/icons/SettingsApplicationsRounded': SettingsApplicationsRounded,
+  '@material-ui/icons/FormatAlignCenterRounded': FormatAlignCenterRounded,
+  '@material-ui/icons/LockRounded': LockRounded,
+  '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
+  '@material-ui/icons/PublicRounded': PublicRounded
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

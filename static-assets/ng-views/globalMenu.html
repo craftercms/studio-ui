@@ -17,13 +17,7 @@
 <div class="global-menu--root admin-console-view mainContainer">
   <div class="row mt30">
     <div class="col-sm-3">
-      <ul class="nav nav-tabs nav-stacked nav-pills" role="tablist">
-        <li class="global-menu--item" ng-repeat="entity in entities" ui-sref-active="global-menu--item__active">
-          <a class="global-menu--item-link" ui-sref={{entity.id}} href="">
-            <span class="nav-icon global-menu--nav-icon fa {{entity.icon}}"></span> {{entity.label}}
-          </a>
-        </li>
-      </ul>
+      <div id="globalNavElement"></div>
     </div>
     <div class="col-sm-9">
       <div class="tab-content">
@@ -32,4 +26,3 @@
     </div>
   </div>
 </div>
-

@@ -186,7 +186,8 @@ export function createCodebaseBridge() {
       PluginManagement: lazy(() => import('../components/PluginManagement')),
       PublishingStatusDialogBody: lazy(() => import('../components/PublishingStatusDialog/PublishingStatusDialogBody')),
       LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
-      CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon'))
+      CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
+      LauncherGlobalNav: lazy(() => import('../components/LauncherGlobalNav/LauncherGlobalNav'))
     },
 
     system: {

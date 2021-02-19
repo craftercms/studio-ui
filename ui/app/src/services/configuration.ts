@@ -156,8 +156,33 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
   );
 }
 
-export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']> {
-  return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
+const legacyToNextMenuIconMap = {
+  'fa-sitemap': 'craftercms.icons.Sites',
+  'fa-user': '@material-ui/icons/PeopleRounded',
+  'fa-users': '@material-ui/icons/SupervisedUserCircleRounded',
+  'fa-database': '@material-ui/icons/StorageRounded',
+  'fa-bars': '@material-ui/icons/SubjectRounded',
+  'fa-level-down': '@material-ui/icons/SettingsApplicationsRounded',
+  'fa-align-left': '@material-ui/icons/FormatAlignCenterRounded',
+  'fa-globe': '@material-ui/icons/PublicRounded',
+  'fa-lock': '@material-ui/icons/LockRounded',
+  'fa-key': '@material-ui/icons/VpnKeyRounded'
+};
+
+export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']['items']> {
+  return get('/studio/api/2/ui/views/global_menu.json').pipe(
+    pluck('response', 'menuItems'),
+    map((items) => [
+      ...items.map((item) => ({
+        ...item,
+        icon: legacyToNextMenuIconMap[item.icon]
+          ? { id: legacyToNextMenuIconMap[item.icon] }
+          : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
+      })),
+      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.CrafterIcon' }, label: 'About' },
+      { id: 'home.globalMenu.settings', icon: { id: '@material-ui/icons/AccountCircleRounded' }, label: 'Account' }
+    ])
+  );
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {

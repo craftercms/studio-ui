@@ -22,6 +22,12 @@ import TranslationOrText from '../../models/TranslationOrText';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { EnhancedUser } from '../../models/User';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { CSSProperties } from '@material-ui/styles';
+import clsx from 'clsx';
+
+export type LauncherSectionUIClassKey = 'title' | 'nav';
+
+type LauncherSectionUIStyles = Partial<Record<LauncherSectionUIClassKey, CSSProperties>>;
 
 export type LauncherSectionUIProps = PropsWithChildren<{
   title: TranslationOrText;
@@ -29,11 +35,13 @@ export type LauncherSectionUIProps = PropsWithChildren<{
   site?: string;
   widgets?: WidgetDescriptor[];
   translationValues?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>;
+  styles?: LauncherSectionUIStyles;
+  classes?: Partial<Record<LauncherSectionUIClassKey, string>>;
 }>;
 
 const useStyles = makeStyles((theme) =>
-  createStyles({
-    title: {
+  createStyles<LauncherSectionUIClassKey, LauncherSectionUIStyles>({
+    title: (styles) => ({
       textTransform: 'uppercase',
       fontWeight: 600,
       margin: '0 0 10px 0',
@@ -41,27 +49,29 @@ const useStyles = makeStyles((theme) =>
         textTransform: 'none',
         marginLeft: '0.315em',
         color: theme.palette.text.secondary
-      }
-    },
-    nav: {
+      },
+      ...styles.title
+    }),
+    nav: (styles) => ({
       display: 'flex',
-      flexWrap: 'wrap'
-    }
+      flexWrap: 'wrap',
+      ...styles.nav
+    })
   })
 );
 
 function LauncherSectionUI(props: LauncherSectionUIProps) {
-  const classes = useStyles();
+  const classes = useStyles(props.styles);
   const title = usePossibleTranslation(props.title, props.translationValues);
   const { children } = props;
   return (
     <>
       {title && (
-        <Typography variant="subtitle1" component="h2" className={classes.title}>
+        <Typography variant="subtitle1" component="h2" className={clsx(classes.title, props.classes?.title)}>
           {title}
         </Typography>
       )}
-      <nav className={classes.nav}>
+      <nav className={clsx(classes.nav, props.classes?.nav)}>
         {children ? children : renderWidgets(props.widgets, props.user.rolesBySite[props.site])}
       </nav>
     </>

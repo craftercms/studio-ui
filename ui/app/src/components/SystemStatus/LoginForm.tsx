@@ -42,6 +42,9 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     spacing: {
       marginBottom: theme.spacing(1)
+    },
+    doubleSpacing: {
+      marginBottom: theme.spacing(2)
     }
   })
 );
@@ -86,7 +89,7 @@ export default function LogInForm(props: LogInFormProps) {
         autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
-        className={clsx(cls.spacing, classes?.password)}
+        className={clsx(cls.spacing, classes?.password, 'last-before-button')}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
       />
       {xsrfParamName && <input type="hidden" name={xsrfParamName} value={xsrfToken} />}

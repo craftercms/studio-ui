@@ -16,7 +16,7 @@
 
 import { forkJoin, Observable, of } from 'rxjs';
 import { User } from '../models/User';
-import { del, get, patchJSON, post, postJSON } from '../utils/ajax';
+import { del, get, patchJSON, postJSON } from '../utils/ajax';
 import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { fetchAll as fetchAllSites } from './sites';
 import LookupTable from '../models/LookupTable';
@@ -206,7 +206,7 @@ export function getMyPermissions(site: string): Observable<string[]> {
 }
 
 export function hasPermissions(site: string, ...permissions: string[]): Observable<LookupTable<boolean>> {
-  return post(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
+  return postJSON(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
     pluck('response', 'permissions')
   );
 }
