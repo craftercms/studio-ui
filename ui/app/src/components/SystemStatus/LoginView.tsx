@@ -46,7 +46,6 @@ import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import IconButton from '@material-ui/core/IconButton';
 import LanguageRounded from '@material-ui/icons/LanguageRounded';
 import Menu from '@material-ui/core/Menu';
 

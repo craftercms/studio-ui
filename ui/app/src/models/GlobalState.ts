@@ -219,7 +219,7 @@ export interface GlobalState {
     };
     globalNavigation: {
       error: AjaxError;
-      items: Array<{ icon: string; id: string; label: string }>;
+      items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
       isFetching: boolean;
     };
   };

@@ -30,13 +30,15 @@ export const urlMapping = {
   'home.globalMenu.cluster': '#/globalMenu/cluster',
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
   'home.globalMenu.tokenManagement': '#/globalMenu/token-management',
+  'home.globalMenu.about-us': '#/globalMenu/about-us',
+  'home.globalMenu.settings': '#/globalMenu/settings',
+  about: '#/about-us',
+  settings: '#/settings',
   'legacy.preview': '/preview/',
   preview: '/next/preview',
-  about: '#/about-us',
   siteConfig: '/site-config',
   search: '/search',
-  siteDashboard: '/site-dashboard',
-  settings: '#/settings'
+  siteDashboard: '/site-dashboard'
 };
 
 export const messages = defineMessages({

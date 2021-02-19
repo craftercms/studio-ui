@@ -1121,11 +1121,27 @@
             defaultView = currentView;
           }
           $state.go(defaultView);
-        } else {
-          if ($scope.entities.length > 0) {
-            $state.go((data[0] || data.menuItems[0]).id.replace('globalMenu.', ''));
-          }
+        } else if ($scope.entities.length > 0) {
+          $state.go((data[0] || data.menuItems[0]).id);
         }
+        CrafterCMSNext.render('#globalNavElement', 'LauncherGlobalNav', {
+          title: '',
+          onTileClicked() {},
+          tileStyles: {
+            tile: {
+              width: '100%',
+              height: 'auto',
+              flexDirection: 'row',
+              justifyContent: 'left',
+              margin: '0 0 5px'
+            },
+            iconAvatar: {
+              width: '25px',
+              height: '25px',
+              margin: '5px 10px'
+            }
+          }
+        });
       }
 
       document.addEventListener(

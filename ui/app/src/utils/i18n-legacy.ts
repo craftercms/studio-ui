@@ -871,7 +871,7 @@ export const globalMenuMessages = defineMessages({
   },
   'home.settings': {
     id: 'GlobalMenu.Settings',
-    defaultMessage: 'Account Management'
+    defaultMessage: 'Account'
   },
   login: {
     id: 'words.login',
@@ -882,6 +882,9 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Password Recovery'
   }
 });
+
+globalMenuMessages['home.globalMenu.about-us'] = globalMenuMessages['home.about-us'];
+globalMenuMessages['home.globalMenu.settings'] = globalMenuMessages['home.settings'];
 
 export const adminConfigurationMessages = defineMessages({
   encryptMarked: {
