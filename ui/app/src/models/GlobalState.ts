@@ -214,9 +214,7 @@ export interface GlobalState {
       defaultLocaleCode: string;
     };
     publishing: {
-      submission: {
-        commentMaxLength: number;
-      };
+      submissionCommentMaxLength: number;
     };
   };
   pathNavigator: {

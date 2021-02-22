@@ -43,9 +43,7 @@ const initialState: GlobalState['uiConfig'] = {
     defaultLocaleCode: null
   },
   publishing: {
-    submission: {
-      commentMaxLength: 250
-    }
+    submissionCommentMaxLength: 250
   }
 };
 
