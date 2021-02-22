@@ -227,7 +227,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   const parentModelId = getParentModelId(modelId, models, children);
   const modelsToUpdate = collectReferrers(modelId);
 
-  Model.value(model, fieldId, value);
+  Model.value(model, fieldId, value, index);
 
   // Update the model cache
   models$.next({

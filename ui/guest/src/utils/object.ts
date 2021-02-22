@@ -72,17 +72,23 @@ export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T
 export function setProperty<T extends object = {}, K extends string = string, V extends any = any>(
   object: T,
   prop: K,
-  value: V
+  value: V,
+  index?: number | string
 ): T {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
     let target = retrieveProperty(object, props.join('.'));
     if (!target) {
-      setProperty(object, props.join('.'), {});
+      setProperty(object, props.join('.'), {}, index);
       target = retrieveProperty(object, props.join('.'));
     }
-    target[propToSet] = value;
+
+    if (index !== null && index !== undefined) {
+      target[index][propToSet] = value;
+    } else {
+      target[propToSet] = value;
+    }
   }
   return object;
 }

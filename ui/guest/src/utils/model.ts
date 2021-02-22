@@ -29,7 +29,7 @@ export function prop(model: ContentInstance, propName: string): string {
   return retrieveProperty(model, propName);
 }
 
-export function value(model: ContentInstance, fieldId: string, newValue?: unknown): any {
+export function value(model: ContentInstance, fieldId: string, newValue?: unknown, index?: string | number): any {
   // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
   // This transform is potentially unreliable. We should discuss approach.
   const cleanFieldId = fieldId.replace(/-/g, '__');
@@ -37,7 +37,7 @@ export function value(model: ContentInstance, fieldId: string, newValue?: unknow
     fieldId = cleanFieldId;
   }
   if (newValue !== undefined) {
-    setProperty(model, fieldId, newValue);
+    setProperty(model, fieldId, newValue, index);
   }
   return retrieveProperty(model, fieldId);
 }
