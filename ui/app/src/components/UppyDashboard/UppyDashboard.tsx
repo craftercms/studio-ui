@@ -28,6 +28,7 @@ interface UppyDashboardProps {
   path: string;
   title: string;
   onMinimized?(): void;
+  onPendingChanges?(pending: boolean): void;
   onClose?(): void;
   options?: DashboardOptions;
 }
@@ -272,7 +273,7 @@ const translations = defineMessages({
 });
 
 export default function UppyDashboard(props: UppyDashboardProps) {
-  const { uppy, site, path, onClose, onMinimized, title } = props;
+  const { uppy, site, path, onClose, onMinimized, title, onPendingChanges } = props;
   const options = {
     replaceTargetContent: true,
     width: '100%',
@@ -293,6 +294,7 @@ export default function UppyDashboard(props: UppyDashboardProps) {
       inline: true,
       target: ref.current,
       validateActionPolicy,
+      onPendingChanges,
       onClose,
       onMinimized,
       title,

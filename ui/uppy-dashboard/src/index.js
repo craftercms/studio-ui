@@ -667,10 +667,23 @@ module.exports = class Dashboard extends Plugin {
     }
   };
 
-  handleComplete = ({ failed }) => {
-    if (this.opts.closeAfterFinish && failed.length === 0) {
-      // All uploads are done
-      this.requestCloseModal();
+  handleComplete = () => {
+    const files = this.uppy.getFiles();
+    let completeFiles = 0;
+    let invalidFiles = 0;
+    files.forEach((file) => {
+      if (file.progress.uploadComplete) {
+        completeFiles++;
+      }
+      if (file.meta.allowed === false || file.meta.suggestedName) {
+        invalidFiles++;
+      }
+    });
+
+    const allFilesCompleted = files.length === completeFiles + invalidFiles;
+
+    if (allFilesCompleted) {
+      this.opts.onPendingChanges(false);
     }
   };
 
@@ -699,6 +712,7 @@ module.exports = class Dashboard extends Plugin {
         })
       )
       .subscribe((response) => {
+        let uploading = false;
         response.forEach(({ allowed, modifiedValue, target }) => {
           let fileId = fileIdLookup[target];
           this.uppy.setFileMeta(fileId, {
@@ -708,10 +722,12 @@ module.exports = class Dashboard extends Plugin {
           });
           if (allowed && modifiedValue === null) {
             this.uppy.retryUpload(fileId);
+            uploading = true;
           } else {
             invalidFiles[fileId] = true;
           }
         });
+        this.opts.onPendingChanges(uploading);
         this.setPluginState({
           invalidFiles: invalidFiles
         });
