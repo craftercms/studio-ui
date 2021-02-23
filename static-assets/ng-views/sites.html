@@ -32,11 +32,10 @@
       </button>
     </div>
     <div ui-view>
-      <table class="site-list table table-hover">
+      <table class="site-list table table-hover" style="table-layout: fixed">
         <thead>
           <tr>
-            <th><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
-            <th><span class="sr-only">Site Id</span></th>
+            <th width="70%"><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
             <th><span class="sr-only">{{ 'common.EDIT' | translate }}</span></th>
             <th><span class="sr-only">{{ 'common.REMOVE_LABEL' | translate }}</span></th>
           </tr>
@@ -52,19 +51,12 @@
           >
             <td class="name site-name trim" title="{{site.name ? site.name : site.id}}">
               <a ng-click="editSite(site)">{{site.name ? site.name : site.id}} &raquo;</a>
-              <div
+              <pre
                 ng-if="site.description"
                 ng-bind="site.description"
                 ng-attr-title="{{site.description}}"
-                style="overflow: hidden; text-overflow: ellipsis"
-              ></div>
-            </td>
-            <td class="name site-name trim">
-              <div
-                ng-bind="site.id"
-                ng-attr-title="{{site.id}}"
-                style="overflow: hidden; text-overflow: ellipsis"
-              ></div>
+                style="overflow: hidden; text-overflow: ellipsis; background: none; padding: 0; border: none; font-family: 'Source Sans Pro', sans-serif; font-size: 1em"
+              ></pre>
             </td>
             <td class="remove">
               <a

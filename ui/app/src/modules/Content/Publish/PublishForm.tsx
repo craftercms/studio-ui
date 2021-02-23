@@ -37,7 +37,7 @@ import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 const messages = defineMessages({
   emailLabel: {
     id: 'publishForm.emailLabel',
-    defaultMessage: 'Email me when items are approved'
+    defaultMessage: "Email me the reviewer's feedback"
   },
   scheduling: {
     id: 'publishForm.scheduling',

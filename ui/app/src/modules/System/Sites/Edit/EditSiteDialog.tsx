@@ -34,6 +34,7 @@ import { fetchSites } from '../../../../state/reducers/sites';
 import Grid from '@material-ui/core/Grid';
 import { SecondaryButton } from '../../../../components/SecondaryButton';
 import { PrimaryButton } from '../../../../components/PrimaryButton';
+import { isBlank } from '../../../../utils/string';
 
 type Source = { site: Site; error: Error };
 type Return = Omit<Source, 'error'>;
@@ -142,18 +143,20 @@ function EditSiteDialogWrapper(props: EditSiteDialogProps) {
   }
 
   const handleSubmit = (id: string, name: string, description: string) => {
-    setSubmitting(true);
-    update({ id, name, description }).subscribe(
-      (response) => {
-        setSubmitting(false);
-        dispatch(fetchSites());
-        onSaveSuccess?.(response);
-      },
-      (e) => {
-        setSubmitting(false);
-        setError(e.response?.response ?? e);
-      }
-    );
+    if (!isBlank(name) && !submitDisabled) {
+      setSubmitting(true);
+      update({ id, name, description }).subscribe(
+        (response) => {
+          setSubmitting(false);
+          dispatch(fetchSites());
+          onSaveSuccess?.(response);
+        },
+        (e) => {
+          setSubmitting(false);
+          setError(e.response?.response ?? e);
+        }
+      );
+    }
   };
 
   const onErrorBoundaryReset = () => setError(null);
@@ -185,7 +188,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
   };
 
   const onKeyPress = (event: React.KeyboardEvent) => {
-    if (event.charCode === 13) {
+    if (event.key === 'Enter') {
       onSubmit(site.id, name, description);
     }
   };
@@ -272,8 +275,15 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
               name="description"
               label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Site Description" />}
               fullWidth
+              multiline
               onChange={(event) => onSiteDescriptionChange(event.target.value)}
-              onKeyPress={onKeyPress}
+              onKeyPress={(e) => {
+                // This behaviour is kind of backwards from how it's usually seen in text editors.
+                // Perhaps we should flip it to shift/ctrl + enter creating new lines and only enter submitting?
+                if (e.key !== 'Enter' || e.ctrlKey || e.shiftKey) {
+                  onKeyPress?.(e);
+                }
+              }}
               value={siteDescription ?? ''}
               inputProps={{ maxLength: 4000 }}
             />
