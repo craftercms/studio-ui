@@ -179,21 +179,6 @@ export interface GlobalState {
     launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
   };
-  translation: {
-    siteLocales: {
-      error: ApiResponse;
-      isFetching: boolean;
-      localeCodes: string[];
-      defaultLocaleCode: string;
-    };
-  };
-  configuration: {
-    publishing: {
-      submission: {
-        commentMaxLength: number;
-      };
-    };
-  };
   uiConfig: {
     error: ApiResponse;
     isFetching: boolean;
@@ -221,6 +206,15 @@ export interface GlobalState {
       error: AjaxError;
       items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
       isFetching: boolean;
+    };
+    siteLocales: {
+      error: ApiResponse;
+      isFetching: boolean;
+      localeCodes: string[];
+      defaultLocaleCode: string;
+    };
+    publishing: {
+      submissionCommentMaxLength: number;
     };
   };
   pathNavigator: {

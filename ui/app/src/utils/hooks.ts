@@ -331,8 +331,8 @@ export function useSiteList(): Site[] {
 }
 
 // TODO: 1. Presents issues when call loads 2. Not refreshing when site changes
-export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
-  const siteLocales = useSelection((state) => state.translation.siteLocales);
+export function useSiteLocales(): GlobalState['uiConfig']['siteLocales'] {
+  const siteLocales = useSelection((state) => state.uiConfig.siteLocales);
   const dispatch = useDispatch();
   useEffect(() => {
     if (!siteLocales.localeCodes && !siteLocales.isFetching && !siteLocales.error) {
