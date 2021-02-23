@@ -456,7 +456,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   requestApproveDialogTitle: 'Request Publish',
   requestApproveDialogSubTitle: 'When would you like the checked item(s) to be published?',
-  requestApproveDialogEmailMe: 'Email me when items are approved for publish.',
+  requestApproveDialogEmailMe: "Email me the reviewer's feedback",
 
   itemsForPublish: 'Items to Publish',
   selectAll: 'Select All',
