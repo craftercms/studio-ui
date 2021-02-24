@@ -462,12 +462,13 @@ function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialo
 
   return inventory.length
     ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status }) => (
+        inventory.map(({ id, title, subtitle, status, showMaximizeButton }) => (
           <MinimizedBar
             key={id}
             title={title}
             subtitle={subtitle}
             status={status}
+            showMaximizeButton={showMaximizeButton}
             onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
           />
         )),
