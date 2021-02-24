@@ -727,6 +727,10 @@ export const formEngineMessages = defineMessages({
     id: 'formEngine.saveAndPreview',
     defaultMessage: 'Save & Preview'
   },
+  saveAndMinimize: {
+    id: 'formEngine.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
+  },
   createPolicy: {
     id: 'formEngine.createPolicy',
     defaultMessage:

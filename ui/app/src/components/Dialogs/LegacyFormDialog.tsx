@@ -88,6 +88,7 @@ interface LegacyFormDialogBaseProps {
   open?: boolean;
   src?: string;
   inProgress?: boolean;
+  onMinimized?(): void;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -107,7 +108,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 }
 
 function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
-  const { src, inProgress, onSaveSuccess, onDismiss, onClosed } = props;
+  const { src, inProgress, onSaveSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -143,6 +144,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
           switch (e.data.action) {
             case 'save': {
+              break;
+            }
+            case 'saveAndMinimize': {
+              onMinimized();
               break;
             }
             case 'saveAndPreview':
@@ -201,7 +206,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onDismiss, formatMessage]);
+  }, [inProgress, onSave, messages, dispatch, onDismiss, formatMessage, onMinimized]);
 
   useUnmount(onClosed);
 
@@ -257,7 +262,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
           }
         ]}
       />
-      <EmbeddedLegacyEditor {...props} />
+      <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );
 }

@@ -142,7 +142,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSuccess, messages, dispatch, onDismiss]);
+  }, [inProgress, onSuccess, messages, dispatch, onDismiss, onMinimized]);
 
   useUnmount(onClosed);
 

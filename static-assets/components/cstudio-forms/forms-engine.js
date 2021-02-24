@@ -1781,6 +1781,12 @@ var CStudioForms =
                     callback: () => {
                       saveFn(false, false, null, 'saveAndClose');
                     }
+                  },
+                  {
+                    label: formatMessage(formEngineMessages.saveAndMinimize),
+                    callback: () => {
+                      saveFn(false, true, null, 'saveAndMinimize');
+                    }
                   }
                 ];
                 if (type.previewable) {

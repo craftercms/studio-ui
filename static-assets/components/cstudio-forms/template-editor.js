@@ -687,7 +687,7 @@ CStudioAuthoring.Module.requireModule(
                         {
                           label: formatMessage(messages.saveAndMinimize),
                           callback: () => {
-                            me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndMinimize');
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
                           }
                         }
                       ];
