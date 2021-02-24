@@ -17,24 +17,24 @@
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
-import { DetailedItem } from '../../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
-import { useLogicResource } from '../../../utils/hooks';
-import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
-import { withIndex } from '../../../utils/path';
+import { useLogicResource } from '../../utils/hooks';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { withIndex } from '../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import NavItem from './PathNavigatorItem';
 import ItemList from './PathNavigatorList';
-import LookupTable from '../../../models/LookupTable';
-import { StateStylingProps } from '../../../models/UiConfig';
+import LookupTable from '../../models/LookupTable';
+import { StateStylingProps } from '../../models/UiConfig';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import List from '@material-ui/core/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
-import GlobalState from '../../../models/GlobalState';
+import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 
 export type PathNavigatorUIClassKey =
@@ -80,7 +80,7 @@ export interface PathNavigatorUIProps {
   /**
    *
    **/
-  siteLocales?: GlobalState['translation']['siteLocales'];
+  siteLocales?: GlobalState['uiConfig']['siteLocales'];
   /**
    * Prop called to determine which items are highlighted as active/selected
    **/

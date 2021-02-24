@@ -59,13 +59,13 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
     if (window.location.pathname.indexOf('browse') > -1 || window.location.pathname.indexOf('site-config') > -1) {
       mainContainerEl.innerHTML = '';
+      CrafterCMSNext.render('#acn-dropdown-wrapper', 'CrafterIcon', {
+        style: { fontSize: '33px', margin: '9px 5px 5px' }
+      });
     } else {
       mainContainerEl.innerHTML = `<div id="acn-dropdown" class="acn-dropdown">
           <div id="acn-dropdown-inner" class="acn-dropdown-inner">
-            <a id="acn-dropdown-toggler" href="#" class="acn-dropdown-toggler">
-              <span class="fa fa-bars"></span>
-              <span class="sr-only">${CMgs.format(contextNavLangBundle, 'sideBar')}</span>
-            </a>
+            <div id="acn-dropdown-toggler"></div>
           </div>
           <div
             style="display:none"
@@ -88,6 +88,10 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
             </div>
           </div>
         </div>`;
+
+      CrafterCMSNext.render('#acn-dropdown-toggler', 'LogoAndMenuBundleButton', {
+        style: { margin: '4px 0' }
+      });
 
       /**
        * WCM Site Dropdown Contextual Nav Widget

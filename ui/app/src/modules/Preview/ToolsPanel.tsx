@@ -14,17 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useActiveUser, useLogicResource, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useActiveUser,
+  useLogicResource,
+  usePreviewState,
+  useSelection,
+  useSiteUIConfig
+} from '../../utils/hooks';
 import ResizeableDrawer from './ResizeableDrawer';
 import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbeddedAppViewButton';
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
-import PathNavigator from '../../components/Navigation/PathNavigator/PathNavigator';
+import PathNavigator from '../../components/PathNavigator/PathNavigator';
 import ToolsPanelPageComponent from '../../components/ToolsPanelPage';
-import { fetchSiteUiConfig } from '../../state/actions/configuration';
 import GlobalState from '../../models/GlobalState';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { components } from '../../services/plugin';
@@ -84,7 +90,7 @@ export default function ToolsPanel() {
   const { showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
-  const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
+  const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   const resource = useLogicResource<
@@ -101,12 +107,6 @@ export default function ToolsPanel() {
       shouldRenew: (source, resource) => source.uiConfig.isFetching || resource.complete
     }
   );
-
-  useEffect(() => {
-    if (site) {
-      dispatch(fetchSiteUiConfig({ site }));
-    }
-  }, [dispatch, site]);
 
   return (
     <ResizeableDrawer

@@ -14,22 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../../models/GlobalState';
-import { GlobalNavStateProps } from '../../../components/Navigation/GlobalNav';
-import { closeGlobalNav, showGlobalNav } from '../../actions/dialogs';
+export { default } from './LauncherGlobalNav';
 
-const initialState: GlobalNavStateProps = {
-  open: false,
-  anchor: null,
-  sitesRailPosition: 'left',
-  onMenuClose: closeGlobalNav()
-};
-
-export default createReducer<GlobalState['dialogs']['globalNav']>(initialState, {
-  [showGlobalNav.type]: (state, { payload }) => ({
-    ...payload,
-    open: true
-  }),
-  [closeGlobalNav.type]: () => initialState
-});
+export * from './LauncherGlobalNav';

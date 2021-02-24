@@ -768,7 +768,7 @@ export function fetchItemVersion(site: string, path: string, versionNumber: stri
   });
 }
 
-export function getVersions(
+export function fetchVersions(
   site: string,
   path: string,
   versionNumbers: [string, string],
@@ -790,12 +790,18 @@ export function getVersions(
   ]);
 }
 
-export function getChildrenByPath(
+export function fetchChildrenByPath(
   siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const qs = toQueryString({ siteId, path, ...options });
+  const qs = toQueryString({
+    siteId,
+    path,
+    ...options,
+    // `excludes` may not come at all or be an array of paths
+    excludes: options?.excludes?.join(',') ?? ''
+  });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>
@@ -854,17 +860,38 @@ export function fetchItemsByPath(
   );
 }
 
+export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: false }
+): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
+): Observable<DetailedItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions
+): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options?: FetchItemsByPathOptions
+): Observable<SandboxItem | DetailedItem> {
+  return fetchItemsByPath(siteId, [path], options).pipe(pluck('0'));
+}
+
 export function fetchItemWithChildrenByPath(
   siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetItemWithChildrenResponse> {
   return forkJoin({
-    item: fetchDetailedItem(
-      siteId,
-      path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
-    ),
-    children: getChildrenByPath(siteId, path, options)
+    item: fetchItemByPath(siteId, path, { castAsDetailedItem: true }),
+    children: fetchChildrenByPath(siteId, path, options)
   });
 }
 

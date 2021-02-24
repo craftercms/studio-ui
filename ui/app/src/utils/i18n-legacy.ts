@@ -826,23 +826,23 @@ export const transcodedVideoPickerControlMessages = defineMessages({
 
 export const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
-    id: 'GlobalMenu.SitesEntryLabel',
+    id: 'words.sites',
     defaultMessage: 'Sites'
   },
   'home.globalMenu.users': {
-    id: 'GlobalMenu.UsersEntryLabel',
+    id: 'words.users',
     defaultMessage: 'Users'
   },
   'home.globalMenu.groups': {
-    id: 'GlobalMenu.GroupsEntryLabel',
+    id: 'words.groups',
     defaultMessage: 'Groups'
   },
   'home.globalMenu.cluster': {
-    id: 'GlobalMenu.ClusterEntryLabel',
+    id: 'words.cluster',
     defaultMessage: 'Cluster'
   },
   'home.globalMenu.audit': {
-    id: 'GlobalMenu.AuditEntryLabel',
+    id: 'words.audit',
     defaultMessage: 'Audit'
   },
   'home.globalMenu.logging-levels': {
@@ -866,15 +866,15 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Token Management'
   },
   'home.about-us': {
-    id: 'GlobalMenu.AboutUs',
+    id: 'words.about',
     defaultMessage: 'About'
   },
   'home.settings': {
     id: 'GlobalMenu.Settings',
-    defaultMessage: 'Account Management'
+    defaultMessage: 'Account'
   },
   login: {
-    id: 'GlobalMenu.Login',
+    id: 'words.login',
     defaultMessage: 'Login'
   },
   'login.recover': {
@@ -882,6 +882,9 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Password Recovery'
   }
 });
+
+globalMenuMessages['home.globalMenu.about-us'] = globalMenuMessages['home.about-us'];
+globalMenuMessages['home.globalMenu.settings'] = globalMenuMessages['home.settings'];
 
 export const adminConfigurationMessages = defineMessages({
   encryptMarked: {

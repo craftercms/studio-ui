@@ -18,6 +18,8 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
+import { fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
+import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -28,10 +30,25 @@ const initialState: GlobalState['uiConfig'] = {
       widgets: null
     }
   },
-  siteNav: null
+  launcher: null,
+  globalNavigation: {
+    error: null,
+    items: null,
+    isFetching: false
+  },
+  siteLocales: {
+    error: null,
+    isFetching: false,
+    localeCodes: null,
+    defaultLocaleCode: null
+  },
+  publishing: {
+    submissionCommentMaxLength: 250
+  }
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
+  [changeSite.type]: (state) => ({ ...initialState, globalNavigation: state.globalNavigation }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
@@ -47,6 +64,53 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     error: payload,
     isFetching: false,
     currentSite: null
+  }),
+  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
+    ...state,
+    globalNavigation: {
+      ...state.globalNavigation,
+      isFetching: true
+    }
+  }),
+  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
+    ...state,
+    globalNavigation: {
+      error: null,
+      items: payload,
+      isFetching: false
+    }
+  }),
+  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
+    ...state,
+    globalNavigation: {
+      error: payload,
+      items: state.globalNavigation.items,
+      isFetching: false
+    }
+  }),
+  [fetchSiteLocales.type]: (state) => ({
+    ...state,
+    siteLocales: {
+      ...state.siteLocales,
+      isFetching: true
+    }
+  }),
+  [fetchSiteLocalesComplete.type]: (state, { payload }) => ({
+    ...state,
+    siteLocales: {
+      ...state.siteLocales,
+      isFetching: false,
+      localeCodes: payload.localeCodes ?? [],
+      defaultLocaleCode: payload.defaultLocaleCode
+    }
+  }),
+  [fetchSiteLocalesFailed.type]: (state, { payload }) => ({
+    ...state,
+    siteLocales: {
+      ...state.siteLocales,
+      isFetching: false,
+      error: payload
+    }
   }),
   [changeSite.type]: () => initialState
 });

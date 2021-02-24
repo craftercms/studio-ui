@@ -1586,9 +1586,9 @@ var nodeOpen = false,
             }
           }
           if (CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.site] === '2') {
-            window.location = `/studio/next/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+            window.location = `/studio/next/preview#/?page=${url}&site=${CStudioAuthoringContext.site}`;
           } else {
-            window.location = `/studio/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+            window.location = `/studio/preview#/?page=${url}&site=${CStudioAuthoringContext.site}`;
           }
         }
       },
@@ -2523,7 +2523,7 @@ var nodeOpen = false,
                 deletedPage = deletedPage.substring(0, deletedPage.length - 1);
               }
               parentPath = deletedPage.substring(0, deletedPage.lastIndexOf('/'));
-              parentPath = parentPath == '/studio/preview/#/?page=' ? parentPath + '/' : parentPath;
+              parentPath = parentPath == '/studio/preview#/?page=' ? parentPath + '/' : parentPath;
               parentPath = CStudioAuthoringContext.previewAppBaseUri + parentPath;
               if (deletedPage.lastIndexOf('/&') == -1 && nodeName == deletedNodeName) {
                 document.location = parentPath;
@@ -8113,11 +8113,6 @@ CStudioAuthoring.FilesDiff = {
     });
   }, w);
 })(window);
-
-if (window.top === window) {
-  const el = document.createElement('craftercms-auth-monitor');
-  CrafterCMSNext.render(el, 'AuthMonitor');
-}
 
 function getTopLegacyWindow(nextWindow) {
   try {

@@ -53,6 +53,7 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/c
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 interface SearchProps {
   history: History;
@@ -324,6 +325,10 @@ const messages = defineMessages({
   previousPage: {
     id: 'pagination.previousPage',
     defaultMessage: 'Previous page'
+  },
+  unknownError: {
+    id: 'siteSearch.unknownErrorSearching',
+    defaultMessage: 'An error occurred with the search service.'
   }
 });
 
@@ -402,13 +407,23 @@ export default function Search(props: SearchProps) {
       (result) => {
         setSearchResults(result);
       },
-      ({ response }) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: response });
+      (error) => {
+        const { response } = error;
+        if (response && response.response) {
+          setApiState({ error: true, errorResponse: response.response });
+        } else {
+          console.error(error);
+          dispatch(
+            showErrorDialog({
+              error: {
+                message: formatMessage(messages.unknownError)
+              }
+            })
+          );
         }
       }
     );
-  }, [searchParameters, site]);
+  }, [dispatch, formatMessage, searchParameters, site]);
 
   const handleClearSelected = useCallback(() => {
     selected.forEach((path) => {

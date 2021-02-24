@@ -122,16 +122,12 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
-// region SidebarConfig
-
-export function fetchSiteUiConfig(
-  site: string
-): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
+export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['uiConfig'], 'preview' | 'launcher'>> {
   return fetchConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       const config = deepCopy(uiConfigDefaults);
       if (xml) {
-        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
         const renameTable = { permittedRoles: 'roles' };
         const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
         if (toolsPanelPages) {
@@ -146,10 +142,10 @@ export function fetchSiteUiConfig(
             renameTable
           });
         }
-        const siteNavSection = xml.querySelector('[id="craftercms.components.GlobalNavSiteSection"] > configuration');
-        if (siteNavSection) {
-          siteNavSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          config.siteNav = applyDeserializedXMLTransforms(deserialize(siteNavSection), {
+        const launcher = xml.querySelector('[id="craftercms.components.Launcher"] > configuration');
+        if (launcher) {
+          launcher.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          config.launcher = applyDeserializedXMLTransforms(deserialize(launcher), {
             arrays,
             renameTable
           }).configuration;
@@ -160,13 +156,36 @@ export function fetchSiteUiConfig(
   );
 }
 
-// endregion
+const legacyToNextMenuIconMap = {
+  'fa-sitemap': 'craftercms.icons.Sites',
+  'fa-user': '@material-ui/icons/PeopleRounded',
+  'fa-users': '@material-ui/icons/SupervisedUserCircleRounded',
+  'fa-database': '@material-ui/icons/StorageRounded',
+  'fa-bars': '@material-ui/icons/SubjectRounded',
+  'fa-level-down': '@material-ui/icons/SettingsApplicationsRounded',
+  'fa-align-left': '@material-ui/icons/FormatAlignCenterRounded',
+  'fa-globe': '@material-ui/icons/PublicRounded',
+  'fa-lock': '@material-ui/icons/LockRounded',
+  'fa-key': '@material-ui/icons/VpnKeyRounded'
+};
 
-export function fetchGlobalMenuItems(): Observable<{ id: string; icon: string; label: string }[]> {
-  return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
+export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']['items']> {
+  return get('/studio/api/2/ui/views/global_menu.json').pipe(
+    pluck('response', 'menuItems'),
+    map((items) => [
+      ...items.map((item) => ({
+        ...item,
+        icon: legacyToNextMenuIconMap[item.icon]
+          ? { id: legacyToNextMenuIconMap[item.icon] }
+          : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
+      })),
+      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.CrafterIcon' }, label: 'About' },
+      { id: 'home.globalMenu.settings', icon: { id: '@material-ui/icons/AccountCircleRounded' }, label: 'Account' }
+    ])
+  );
 }
 
-export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
+export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
   return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
 }
 

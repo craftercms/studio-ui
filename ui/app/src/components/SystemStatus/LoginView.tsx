@@ -14,12 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@material-ui/core/DialogContent';
-import InputLabel from '@material-ui/core/InputLabel';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -31,9 +30,8 @@ import {
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import LogInForm from './LoginForm';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { getProductLanguages } from '../../services/configuration';
+import { fetchProductLanguages } from '../../services/configuration';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import { parse } from 'query-string';
 import TextField from '@material-ui/core/TextField';
@@ -48,7 +46,8 @@ import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import FormControl from '@material-ui/core/FormControl';
+import LanguageRounded from '@material-ui/icons/LanguageRounded';
+import Menu from '@material-ui/core/Menu';
 
 interface SystemLang {
   id: string;
@@ -59,10 +58,6 @@ interface LanguageDropDownProps {
   language: string;
   onChange: Function;
   languages: SystemLang[];
-  classes?: {
-    label?: string;
-    dropDown?: string;
-  };
 }
 
 export interface LoginViewProps {
@@ -146,13 +141,17 @@ const useStyles = makeStyles((theme) =>
     dialogRoot: {
       transition: 'all 600ms ease',
       '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
-      '& .MuiFormControl-root, & .MuiButton-root': { marginBottom: theme.spacing(1) }
+      '& .MuiFormControl-root, & .MuiButton-root': {
+        marginBottom: theme.spacing(1),
+        '&.last-before-button': { marginBottom: theme.spacing(2) }
+      }
     },
     dialogRootFetching: {
       opacity: 0.2
     },
     dialogPaper: {
       minWidth: 300,
+      overflow: 'visible',
       backgroundColor: theme.palette.type === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
     },
     logo: {
@@ -160,10 +159,6 @@ const useStyles = makeStyles((theme) =>
       display: 'block',
       margin: `${theme.spacing(2)}px auto ${theme.spacing(1)}px`
     },
-    languageSelect: {
-      margin: 0
-    },
-    languageSelectLabel: {},
     recoverInfoMessage: {
       maxWidth: 300,
       textAlign: 'center',
@@ -335,19 +330,18 @@ function RecoverView(props: SubViewProps) {
           className={classes?.username}
           label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
         />
-      </DialogContent>
-      <DialogActions>
         <Button
           type="submit"
           color="primary"
           onClick={onSubmitRecover}
           disabled={isFetching}
           variant="contained"
+          style={{ marginTop: 15 }}
           fullWidth
         >
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </Button>
-      </DialogActions>
+      </DialogContent>
       <DialogActions>
         <Button
           fullWidth
@@ -496,27 +490,39 @@ function UnrecognizedView({ classes }: any) {
 
 function LanguageDropDown(props: LanguageDropDownProps) {
   const { formatMessage } = useIntl();
-  const { classes, language, languages, onChange } = props;
+  const buttonRef = useRef();
+  const [openMenu, setOpenMenu] = useState(false);
+  const { language, languages, onChange } = props;
   return (
-    <FormControl fullWidth>
-      <InputLabel id="languageSelectDropDown-label" className={classes?.label}>
+    <>
+      <Button
+        ref={buttonRef}
+        onClick={() => setOpenMenu(true)}
+        style={{ position: 'absolute', bottom: -50, width: '100%', color: 'white' }}
+        startIcon={<LanguageRounded />}
+      >
         {formatMessage(translations.languageDropDownLabel)}
-      </InputLabel>
-      <Select
-        fullWidth
-        value={language}
-        id="languageSelectDropDown"
-        labelId="languageSelectDropDown-label"
-        onChange={(e: any) => onChange(e.target.value)}
-        className={classes?.dropDown}
+      </Button>
+      <Menu
+        anchorEl={buttonRef.current}
+        anchorOrigin={{ horizontal: 'center', vertical: 'center' }}
+        open={openMenu}
+        onClose={() => setOpenMenu(false)}
       >
         {languages?.map(({ id, label }) => (
-          <MenuItem value={id} key={id}>
+          <MenuItem
+            selected={id === language}
+            key={id}
+            onClick={() => {
+              setOpenMenu(false);
+              onChange(id);
+            }}
+          >
             {label}
           </MenuItem>
         ))}
-      </Select>
-    </FormControl>
+      </Menu>
+    </>
   );
 }
 
@@ -683,22 +689,12 @@ export default function LoginViewContainer(props: LoginViewProps) {
     onRecover: () => setMode('recover'),
     xsrfToken,
     xsrfParamName,
-    children: (
-      <LanguageDropDown
-        language={language}
-        languages={languages}
-        onChange={setLanguage}
-        classes={{
-          label: classes.languageSelectLabel,
-          dropDown: classes.languageSelect
-        }}
-      />
-    )
+    children: null
   };
 
   // Retrieve Platform Languages.
   useEffect(() => {
-    getProductLanguages().subscribe(setLanguages);
+    fetchProductLanguages().subscribe(setLanguages);
   }, []);
 
   // View specific adjustments (based on mode).
@@ -751,6 +747,7 @@ export default function LoginViewContainer(props: LoginViewProps) {
           <CrafterCMSLogo className={classes.logo} width="auto" />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
+        <LanguageDropDown language={language} languages={languages} onChange={setLanguage} />
       </Dialog>
       <Snackbar
         open={snack.open}

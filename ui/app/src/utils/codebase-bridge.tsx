@@ -164,14 +164,14 @@ export function createCodebaseBridge() {
       PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
       DependenciesDialog: lazy(() => import('../modules/Content/Dependencies/DependenciesDialog')),
       DeleteDialog: lazy(() => import('../modules/Content/Delete/DeleteDialog')),
-      GlobalNavOpenerButton: lazy(() => import('../components/Navigation/GlobalNavOpenerButton')),
+      LauncherOpenerButton: lazy(() => import('../components/LauncherOpenerButton/LauncherOpenerButton')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/Dialogs/UploadDialog')),
       ConfirmDialog: lazy(() => import('../components/Dialogs/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
-      PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/PathNavigator')),
+      PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
       PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
@@ -183,7 +183,11 @@ export function createCodebaseBridge() {
         }))
       ),
       TokenManagement: lazy(() => import('../components/TokenManagement')),
-      PluginManagement: lazy(() => import('../components/PluginManagement'))
+      PluginManagement: lazy(() => import('../components/PluginManagement')),
+      PublishingStatusDialogBody: lazy(() => import('../components/PublishingStatusDialog/PublishingStatusDialogBody')),
+      LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
+      CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
+      LauncherGlobalNav: lazy(() => import('../components/LauncherGlobalNav/LauncherGlobalNav'))
     },
 
     system: {

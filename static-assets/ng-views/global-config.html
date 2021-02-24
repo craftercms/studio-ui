@@ -9,7 +9,7 @@
       </button>
     </div>
   </div>
-  <hr class="divider mt10 mb15"/>
+  <hr class="divider mt10 mb15" />
   <div class="form-group" ng-style="{ opacity: uiEnabled ? 1 : 0.4 }">
     <div
       id="globalConfigAceEditor"
@@ -29,17 +29,15 @@
         <li role="menuitem"><a>{{ messages.cancel }}</a></li>
       </ul>
     </div>
-    <div class="btn-group" uib-dropdown>
-      <button class="btn btn-primary" id="globalConfigSaveButton" ng-disabled="!uiEnabled" ng-disabled="disabled"
-              type="button" uib-dropdown-toggle ng-click="checkDocumentErrors()">
-        {{ messages.save }}
-      </button>
-      <ul aria-labelledby="globalConfigSaveButton" ng-show="!documentHasErrors" class="dropdown-menu" role="menu" style="top: -150%"
-          uib-dropdown-menu>
-        <li role="menuitem"><a ng-click="save()">{{ messages.confirmSave }}</a></li>
-        <li role="menuitem"><a>{{ messages.cancel }}</a></li>
-      </ul>
-    </div>
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="globalConfigSaveButton"
+      ng-disabled="!uiEnabled"
+      ng-click="checkDocumentErrors(true)"
+    >
+      {{ messages.save }}
+    </button>
   </div>
 </div>
 

@@ -2429,11 +2429,10 @@ var CStudioForms =
                   }, 1900);
                 }
               } catch (err) {
-                //console.log(err);
+                console.error(err);
               }
-              form.sectionsMap[section.title].notifyValidation();
             } catch (e) {
-              //alert(e);
+              console.error(e);
             }
           },
 

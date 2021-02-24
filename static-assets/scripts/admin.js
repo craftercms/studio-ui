@@ -29,6 +29,10 @@
     adminDashboardMessages = i18n.messages.adminDashboardMessages,
     words = i18n.messages.words;
 
+  function getTopLegacyWindow() {
+    return window.top;
+  }
+
   app.service('adminService', [
     '$http',
     'Constants',
@@ -143,7 +147,7 @@
       };
 
       this.repositoryStatus = function(site) {
-        return repositoriesApi.status(site).toPromise();
+        return repositoriesApi.fetchStatus(site).toPromise();
       };
 
       this.resolveConflict = function(data) {
@@ -199,7 +203,7 @@
       let publishingApi = CrafterCMSNext.services.publishing;
 
       this.getPublishStatus = function(site) {
-        return publishingApi.status(site).toPromise();
+        return publishingApi.fetchStatus(site).toPromise();
       };
 
       this.startPublishStatus = function(site) {
@@ -326,10 +330,9 @@
         };
 
         function getResultsPage(pageNumber) {
-          var dateToUTC, dateFromUTC;
           var params = {};
           if (site) {
-            params.siteName = site;
+            params.siteId = site;
           }
           if (audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
 
@@ -821,21 +824,13 @@
       $timeout,
       $stateParams,
       $translate,
-      $location,
-      moment
+      $location
     ) {
-      // PUBLISHING
-
-      // MODAL
-
       $scope.publish = {};
-      var currentIconColor;
+      var store;
+      var currentStatus;
       var publish = $scope.publish;
       publish.error = '';
-
-      CrafterCMSNext.system.getStore().subscribe((store) => {
-        publish.maxCommentLength = store.getState().configuration.publishing.submission.commentMaxLength;
-      });
 
       publish.initQueque = function() {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
@@ -876,48 +871,7 @@
       publish.isValidateCommitPublishCommentOn = false;
 
       publish.getPublish = function() {
-        adminService.getPublishStatus(publish.site).then(
-          function(data) {
-            publish.stopDisabled = false;
-            publish.startDisabled = false;
-            switch (data.status.toLowerCase()) {
-              case 'busy':
-                currentIconColor = 'orange';
-                break;
-              case 'stopped':
-                currentIconColor = 'red';
-                publish.stopDisabled = true;
-                break;
-              default:
-                currentIconColor = 'blue';
-                publish.startDisabled = true;
-            }
-            var stringDate = data.message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
-            var date = null;
-            if (stringDate && stringDate.length) {
-              publish.date = stringDate[0];
-              data.message = data.message.replace(stringDate[0], '');
-            } else {
-              publish.date = '';
-            }
-            publish.iconColor = currentIconColor;
-            publish.message = data.message;
-            publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
-            $scope.$apply();
-          },
-          function(err) {}
-        );
-      };
-
-      var renderStatusView = function() {
-        publish.getPublish(publish.site);
-        $timeout(
-          function() {
-            renderStatusView();
-          },
-          3000,
-          false
-        );
+        store.dispatch({ type: 'FETCH_PUBLISHING_STATUS' });
       };
 
       publish.startPublish = function() {
@@ -958,7 +912,6 @@
 
       // BULK PUBLISH
 
-      var currentIconColor;
       publish.channels;
       publish.getPublishingChannels;
       publish.bulkPublish;
@@ -980,10 +933,6 @@
         );
       };
 
-      CrafterCMSNext.system.getStore().subscribe(() => {
-        publish.getPublishingChannels();
-      });
-
       publish.bulkPublish = function() {
         $scope.adminModal = publish.showModal('confirmationModal.html', 'md');
       };
@@ -992,7 +941,6 @@
         var spinnerOverlay;
         publish.disable = true;
         spinnerOverlay = $scope.spinnerOverlay();
-
         adminService
           .bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
           .then(
@@ -1009,19 +957,6 @@
             }
           );
       };
-
-      angular.element(document).ready(function() {
-        const el = document.getElementById('bulkPublishCharCountStatus');
-        CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-          commentLength: publish && publish.submissionComment ? publish.submissionComment.length : 0
-        });
-
-        document.getElementById('submissionComment').addEventListener('keyup', function(e) {
-          CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-            commentLength: publish.submissionComment.length ? publish.submissionComment.length : 0
-          });
-        });
-      });
 
       // COMMITS PUBLISH
 
@@ -1040,7 +975,7 @@
         spinnerOverlay = $scope.spinnerOverlay();
 
         adminService.commitsPublish(data).then(
-          function(data) {
+          function() {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
             $rootScope.showNotification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'));
@@ -1054,20 +989,38 @@
         );
       };
 
-      angular.element(document).ready(function() {
-        const el = document.getElementById('publishCommentCharCountStatus');
-        CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-          commentLength: publish && publish.publishComment ? publish.publishComment.length : 0
-        });
+      CrafterCMSNext.system.getStore().subscribe((_store_) => {
+        store = _store_;
 
-        document.getElementById('publishComment').addEventListener('keyup', function(e) {
-          CrafterCMSNext.render(el, 'CharCountStatusContainer', {
-            commentLength: publish.publishComment.length || 0
+        publish.maxCommentLength = store.getState().configuration.publishing.submission.commentMaxLength;
+
+        angular.element(document).ready(function() {
+          renderDashboard();
+          store.subscribe(renderDashboard);
+
+          const el1 = document.getElementById('publishCommentCharCountStatus');
+          CrafterCMSNext.render(el1, 'CharCountStatusContainer', {
+            commentLength: publish && publish.publishComment ? publish.publishComment.length : 0
+          });
+          document.getElementById('publishComment').addEventListener('keyup', function(e) {
+            CrafterCMSNext.render(el1, 'CharCountStatusContainer', {
+              commentLength: publish.publishComment.length || 0
+            });
+          });
+
+          const el2 = document.getElementById('bulkPublishCharCountStatus');
+          CrafterCMSNext.render(el2, 'CharCountStatusContainer', {
+            commentLength: publish && publish.submissionComment ? publish.submissionComment.length : 0
+          });
+          document.getElementById('submissionComment').addEventListener('keyup', function(e) {
+            CrafterCMSNext.render(el2, 'CharCountStatusContainer', {
+              commentLength: publish.submissionComment.length ? publish.submissionComment.length : 0
+            });
           });
         });
-      });
 
-      CrafterCMSNext.system.getStore().subscribe(() => {
+        publish.getPublishingChannels();
+
         adminService
           .getTimeZone({
             site: publish.site,
@@ -1093,8 +1046,28 @@
                   : false
                 : false;
           });
-        renderStatusView();
       });
+
+      function renderDashboard() {
+        var state = store.getState().dialogs.publishingStatus;
+        if (currentStatus !== state.status) {
+          publish.stopDisabled = false;
+          publish.startDisabled = false;
+          if (state.status.toLowerCase() === 'stopped') {
+            publish.stopDisabled = true;
+          } else {
+            publish.startDisabled = true;
+          }
+          CrafterCMSNext.render('#publisherDashboard', 'PublishingStatusDialogBody', {
+            onClose: null,
+            isFetching: false,
+            status: state.status,
+            details: state.details,
+            onRefresh: publish.getPublish
+          });
+          $scope.$apply();
+        }
+      }
     }
   ]);
 

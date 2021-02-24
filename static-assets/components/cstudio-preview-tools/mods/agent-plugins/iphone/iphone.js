@@ -165,7 +165,7 @@ CStudioAuthoring.MediumPanel.IPhoneVert = CStudioAuthoring.MediumPanel.IPhoneVer
       }
     };
 
-    location = location.replace('/studio/preview/#/?page=', '');
+    location = location.replace('/studio/preview#/?page=', '');
     location = location.replace('&site', '?site');
     iframeEl.src = location;
   }

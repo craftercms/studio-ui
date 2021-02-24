@@ -201,7 +201,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onDismiss]);
+  }, [inProgress, onSave, messages, dispatch, onDismiss, formatMessage]);
 
   useUnmount(onClosed);
 

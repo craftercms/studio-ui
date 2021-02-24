@@ -16,8 +16,8 @@
 
 import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { DetailedItem } from '../../../models/Item';
-import ContextMenu, { ContextMenuOption } from '../../ContextMenu';
+import { DetailedItem } from '../../models/Item';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   useActiveSiteId,
   useEnv,
@@ -26,11 +26,11 @@ import {
   useSiteLocales,
   useSpreadState,
   useSubject
-} from '../../../utils/hooks';
+} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { getParentPath, withIndex, withoutIndex } from '../../../utils/path';
+import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
-import { languages } from '../../../utils/i18n-legacy';
+import { languages } from '../../utils/i18n-legacy';
 import {
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
@@ -43,14 +43,14 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
-} from '../../../state/actions/pathNavigator';
-import ItemActionsMenu from '../../ItemActionsMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
-import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
-import { fetchContentXML } from '../../../services/content';
+} from '../../state/actions/pathNavigator';
+import ItemActionsMenu from '../ItemActionsMenu';
+import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
+import { fetchContentXML } from '../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';
-import { StateStylingProps } from '../../../models/UiConfig';
-import { getHostToHostBus } from '../../../modules/Preview/previewContext';
+import { StateStylingProps } from '../../models/UiConfig';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
   folderCreated,
@@ -60,13 +60,13 @@ import {
   itemsDeleted,
   itemsPasted,
   itemUpdated
-} from '../../../state/actions/system';
-import { getNumOfMenuOptionsForItem } from '../../../utils/content';
+} from '../../state/actions/system';
+import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import PathNavigatorUI from './PathNavigatorUI';
-import LookupTable from '../../../models/LookupTable';
-import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../../utils/itemActions';
+import LookupTable from '../../models/LookupTable';
+import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
-import GlobalState from '../../../models/GlobalState';
+import GlobalState from '../../models/GlobalState';
 
 interface Menu {
   path?: string;

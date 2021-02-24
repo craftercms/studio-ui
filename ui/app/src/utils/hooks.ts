@@ -16,8 +16,19 @@
 
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import { Dispatch, EffectCallback, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { nnou } from './object';
+import {
+  Dispatch,
+  EffectCallback,
+  ReactElement,
+  ReactNodeArray,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
+import { nnou, nou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -32,6 +43,9 @@ import { Site } from '../models/Site';
 import { fetchSiteLocales } from '../state/actions/translation';
 import { fetchSiteUiConfig } from '../state/actions/configuration';
 import { MessageDescriptor, useIntl } from 'react-intl';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { fetchGlobalMenu } from '../state/actions/system';
+import TranslationOrText from '../models/TranslationOrText';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -145,6 +159,17 @@ export function useContentTypeList(filterFn: (type: ContentType) => boolean = nu
 
 export function useActiveUser(): GlobalState['user'] {
   return useSelector<GlobalState, GlobalState['user']>((state) => state.user);
+}
+
+export function useGlobalNavigation(): GlobalState['uiConfig']['globalNavigation'] {
+  const dispatch = useDispatch();
+  const data = useSelection((state) => state.uiConfig.globalNavigation);
+  useEffect(() => {
+    if (nou(data.items) && nou(data.error) && !data.isFetching) {
+      dispatch(fetchGlobalMenu());
+    }
+  }, [data.error, data.isFetching, data.items, dispatch]);
+  return data;
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
@@ -306,8 +331,8 @@ export function useSiteList(): Site[] {
 }
 
 // TODO: 1. Presents issues when call loads 2. Not refreshing when site changes
-export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
-  const siteLocales = useSelection((state) => state.translation.siteLocales);
+export function useSiteLocales(): GlobalState['uiConfig']['siteLocales'] {
+  const siteLocales = useSelection((state) => state.uiConfig.siteLocales);
   const dispatch = useDispatch();
   useEffect(() => {
     if (!siteLocales.localeCodes && !siteLocales.isFetching && !siteLocales.error) {
@@ -342,12 +367,33 @@ export function usePreviousValue<T = any>(value: T) {
 }
 
 export function usePossibleTranslation(title: string): string;
+export function usePossibleTranslation(title: string, values: Record<string, PrimitiveType>): string;
+export function usePossibleTranslation(
+  title: string,
+  values: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
+): string;
 export function usePossibleTranslation(descriptor: MessageDescriptor): string;
-export function usePossibleTranslation(titleOrDescriptor: string | MessageDescriptor): string;
-export function usePossibleTranslation(titleOrDescriptor: string | MessageDescriptor): string {
+export function usePossibleTranslation(descriptor: MessageDescriptor, values: Record<string, PrimitiveType>): string;
+export function usePossibleTranslation(
+  descriptor: MessageDescriptor,
+  values: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
+): string | ReactNodeArray;
+export function usePossibleTranslation(titleOrDescriptor: TranslationOrText): string;
+export function usePossibleTranslation(
+  titleOrDescriptor: TranslationOrText,
+  values: Record<string, PrimitiveType>
+): string;
+export function usePossibleTranslation(
+  titleOrDescriptor: TranslationOrText,
+  values: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
+): string | ReactNodeArray;
+export function usePossibleTranslation(
+  titleOrDescriptor: TranslationOrText,
+  values?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
+): string | ReactNodeArray {
   const { formatMessage } = useIntl();
-  if (!titleOrDescriptor) {
-    return titleOrDescriptor as null;
+  if (nou(titleOrDescriptor)) {
+    return null;
   }
-  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
+  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
 }

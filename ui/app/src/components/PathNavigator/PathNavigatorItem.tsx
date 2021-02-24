@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import React, { useState } from 'react';
 import { useStyles } from './styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -27,14 +27,14 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { isFolder, isNavigable, isPreviewable } from './utils';
-import ComponentIcon from '../../Icons/Component';
-import Page from '../../Icons/Page';
+import ComponentIcon from '../Icons/Component';
+import Page from '../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
-import LevelDescriptorIcon from '../../Icons/LevelDescriptor';
+import LevelDescriptorIcon from '../Icons/LevelDescriptor';
 
-interface NavItemProps {
+export interface NavItemProps {
   item: DetailedItem;
   locale: string;
   isLeaf?: boolean;
@@ -65,7 +65,7 @@ const translations = defineMessages({
 });
 
 // PathNavigatorListItem
-export default function PathNavigatorItem(props: NavItemProps) {
+function PathNavigatorItem(props: NavItemProps) {
   const classes = useStyles();
   const {
     item,
@@ -197,3 +197,5 @@ function RenderIcon({ item, classes }: { item: DetailedItem; classes: any }) {
   }
   return <Icon className={classes.iconClass} />;
 }
+
+export default PathNavigatorItem;

@@ -200,3 +200,17 @@ export function deleteProperties(properties: string[], siteId?: string): Observa
     pluck('response', 'properties')
   );
 }
+
+export function getMyPermissions(site: string): Observable<string[]> {
+  return get(`/studio/api/2/users/me/sites/${site}/permissions`).pipe(pluck('response', 'permissions'));
+}
+
+export function hasPermissions(site: string, ...permissions: string[]): Observable<LookupTable<boolean>> {
+  return postJSON(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
+    pluck('response', 'permissions')
+  );
+}
+
+export function hasPermission(site: string, permission: string): Observable<boolean> {
+  return hasPermissions(site, permission).pipe(pluck(permission));
+}

@@ -32,7 +32,7 @@ interface HeaderProps {
 }
 
 // PathNavigatorHeader
-export default function PathNavigatorHeader(props: HeaderProps) {
+function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
   const { title, iconClassName, iconStyle, locale, onLanguageMenu, onContextMenu } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
@@ -71,3 +71,5 @@ export default function PathNavigatorHeader(props: HeaderProps) {
     </AccordionSummary>
   );
 }
+
+export default PathNavigatorHeader;

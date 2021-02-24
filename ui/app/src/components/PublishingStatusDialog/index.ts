@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,20 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { GlobalState } from '../../models/GlobalState';
-import { createReducer } from '@reduxjs/toolkit';
-import { changeSite } from './sites';
+export { default } from './PublishingStatusDialog';
 
-const initialState: GlobalState['configuration'] = {
-  publishing: {
-    submission: {
-      commentMaxLength: 250
-    }
-  }
-};
+export * from './PublishingStatusDialog';
 
-const reducer = createReducer<GlobalState['configuration']>(initialState, {
-  [changeSite.type]: () => initialState
-});
+export { default as PublishingStatusDialogBody } from './PublishingStatusDialogBody';
 
-export default reducer;
+export * from './PublishingStatusDialogBody';
