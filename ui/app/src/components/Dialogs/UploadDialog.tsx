@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
+import { useMinimizeDialog, useSelection, useUnmount } from '../../utils/hooks';
 import DialogBody from './DialogBody';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
@@ -168,6 +168,7 @@ interface UploadDialogUIProps extends UploadDialogProps {
 
 function UploadDialogUI(props: UploadDialogUIProps) {
   const { formatMessage } = useIntl();
+  const expiresAt = useSelection((state) => state.auth.expiresAt);
   const classes = useStyles({});
   const {
     site,
@@ -217,6 +218,11 @@ function UploadDialogUI(props: UploadDialogUIProps) {
       window.onbeforeunload = null;
     };
   }, [hasPendingChanges, formatMessage]);
+
+  useEffect(() => {
+    const plugin = uppy.getPlugin('XHRUpload');
+    plugin.setOptions({ headers: getGlobalHeaders() });
+  }, [expiresAt, uppy]);
 
   return (
     <>
