@@ -46,7 +46,7 @@ import {
 } from '../../services/content';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
-import { NEVER } from 'rxjs';
+import { merge, NEVER, of } from 'rxjs';
 import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
@@ -65,6 +65,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
+import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -277,14 +278,29 @@ const content: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
-          return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-            map(({ items }) => {
-              return batchActions([
-                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
-                unSetClipBoard(),
-                showPasteItemSuccessNotification()
-              ]);
-            })
+          // return merge (of pushDialog, paste....)
+          return merge(
+            of(
+              pushDialog({
+                minimized: true,
+                id: `pasting-${state.content.clipboard.sourcePath}-${payload.path}`,
+                status: 'indeterminate',
+                title: getIntl().formatMessage(inProgressMessages.pasting),
+                showMaximizeButton: false
+              })
+            ),
+            paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+              map(({ items }) => {
+                return batchActions([
+                  emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
+                  unSetClipBoard(),
+                  showPasteItemSuccessNotification(),
+                  popDialog({
+                    id: `pasting-${state.content.clipboard.sourcePath}-${payload.path}`
+                  })
+                ]);
+              })
+            )
           );
         } else {
           const hostToHost$ = getHostToHostBus();
