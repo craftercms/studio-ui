@@ -15,7 +15,7 @@
  */
 
 import * as ElementRegistry from '../../classes/ElementRegistry';
-import { getDragContextFromReceptacles, getHighlighted, getRecordsFromIceId } from '../../classes/ElementRegistry';
+import { getDragContextFromDropTargets, getHighlighted, getRecordsFromIceId } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
@@ -30,14 +30,14 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_HIGHLIGHTED_RECEPTACLES,
+  CLEAR_HIGHLIGHTED_DROP_TARGETS,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_DROP_TARGETS_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
@@ -94,9 +94,9 @@ const mouseleave: GuestReducer = (state) => {
 const host_component_drag_started: GuestReducer = (state, action) => {
   const { contentType } = action.payload;
   if (notNullOrUndefined(contentType)) {
-    const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
-    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
+    const dropTargets = iceRegistry.getContentTypeDropTargets(contentType);
+    const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
+    const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(dropTargets, validationsLookup);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -127,9 +127,9 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
   const { instance, contentType } = action.payload;
 
   if (notNullOrUndefined(instance)) {
-    const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
-    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
+    const dropTargets = iceRegistry.getContentTypeDropTargets(instance.craftercms.contentTypeId);
+    const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
+    const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(dropTargets, validationsLookup);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -166,8 +166,8 @@ const asset_drag_started: GuestReducer = (state, action) => {
     } else if (asset.mimeType.includes('video/')) {
       type = 'video-picker';
     }
-    const receptacles = iceRegistry.getMediaReceptacles(type);
-    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const dropTargets = iceRegistry.getMediaDropTargets(type);
+    const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -202,8 +202,8 @@ const desktop_asset_drag_started: GuestReducer = (state, action) => {
     } else if (asset.type.includes('video/')) {
       type = 'video-picker';
     }
-    const receptacles = iceRegistry.getMediaReceptacles(type);
-    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const dropTargets = iceRegistry.getMediaDropTargets(type);
+    const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -235,10 +235,10 @@ const dragstart: GuestReducer = (state, action) => {
   // Items that browser make draggable by default (images, etc)
   const iceId = state.draggable?.[record.id];
   if (notNullOrUndefined(iceId)) {
-    const receptacles = iceRegistry.getRecordReceptacles(iceId);
-    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(
-      receptacles,
+    const dropTargets = iceRegistry.getRecordDropTargets(iceId);
+    const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
+    const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
+      dropTargets,
       validationsLookup,
       record
     );
@@ -503,8 +503,8 @@ const desktop_asset_upload_started: GuestReducer = (state, action) => {
 };
 // endregion
 
-// region clear_highlighted_receptacles
-const clear_highlighted_receptacles: GuestReducer = (state, action) => {
+// region clear_highlighted_drop_targets
+const clear_highlighted_drop_targets: GuestReducer = (state, action) => {
   return {
     ...state,
     status: EditingStatus.LISTENING,
@@ -513,13 +513,13 @@ const clear_highlighted_receptacles: GuestReducer = (state, action) => {
 };
 // endregion
 
-// region content_type_receptacles_request
+// region content_type_drop_targets_request
 // TODO: Not pure
-const content_type_receptacles_request: GuestReducer = (state, action) => {
+const content_type_drop_targets_request: GuestReducer = (state, action) => {
   const { contentTypeId } = action.payload;
   const highlighted = {};
 
-  iceRegistry.getContentTypeReceptacles(contentTypeId).forEach((item) => {
+  iceRegistry.getContentTypeDropTargets(contentTypeId).forEach((item) => {
     let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
     highlighted[elementRecordId] = ElementRegistry.getHoverData(elementRecordId);
   });
@@ -530,7 +530,7 @@ const content_type_receptacles_request: GuestReducer = (state, action) => {
       ...state.dragContext,
       inZone: false
     },
-    status: EditingStatus.SHOW_RECEPTACLES,
+    status: EditingStatus.SHOW_DROP_TARGETS,
     highlighted
   };
 };
@@ -720,8 +720,8 @@ const reducerFunctions: {
   [DESKTOP_ASSET_DRAG_ENDED]: foo,
   [EDIT_MODE_CHANGED]: set_edit_mode,
   [HIGHLIGHT_MODE_CHANGED]: set_highlight_mode,
-  [CONTENT_TYPE_RECEPTACLES_REQUEST]: content_type_receptacles_request,
-  [CLEAR_HIGHLIGHTED_RECEPTACLES]: clear_highlighted_receptacles,
+  [CONTENT_TYPE_DROP_TARGETS_REQUEST]: content_type_drop_targets_request,
+  [CLEAR_HIGHLIGHTED_DROP_TARGETS]: clear_highlighted_drop_targets,
   [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
   [DESKTOP_ASSET_UPLOAD_COMPLETE]: desktop_asset_upload_complete,
   [DESKTOP_ASSET_UPLOAD_PROGRESS]: desktop_asset_upload_progress,

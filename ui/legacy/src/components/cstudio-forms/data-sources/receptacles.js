@@ -16,7 +16,7 @@
 
 (function() {
   function formatMessage(id) {
-    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.receptaclesMessages[id]);
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dropTargetsMessages[id]);
   }
 
   function Receptacles(id, form, properties, constraints) {

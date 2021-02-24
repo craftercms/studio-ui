@@ -18,10 +18,10 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CHANGE_CURRENT_URL,
-  CLEAR_RECEPTACLES,
+  CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   EDIT_MODE_CHANGED,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
@@ -158,7 +158,7 @@ const reducer = createReducer<GlobalState['preview']>(
     assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
     components: componentsInitialState,
-    receptacles: {
+    dropTargets: {
       selectedContentType: null,
       byId: null
     }
@@ -480,18 +480,18 @@ const reducer = createReducer<GlobalState['preview']>(
       ...state,
       components: { ...state.components, error: payload.response, isFetching: false }
     }),
-    [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
+    [CONTENT_TYPE_DROP_TARGETS_RESPONSE]: (state, { payload }) => ({
       ...state,
-      receptacles: {
-        ...state.receptacles,
+      dropTargets: {
+        ...state.dropTargets,
         selectedContentType: payload.contentTypeId,
-        byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
+        byId: { ...state.dropTargets.byId, ...createLookupTable(payload.dropTargets) }
       }
     }),
-    [CLEAR_RECEPTACLES]: (state, { payload }) => ({
+    [CLEAR_DROP_TARGETS]: (state, { payload }) => ({
       ...state,
-      receptacles: {
-        ...state.receptacles,
+      dropTargets: {
+        ...state.dropTargets,
         selectedContentType: null,
         byId: null
       }

@@ -34,7 +34,7 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_HIGHLIGHTED_RECEPTACLES,
+  CLEAR_HIGHLIGHTED_DROP_TARGETS,
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
@@ -42,7 +42,7 @@ import {
   COMPONENT_INSTANCE_DRAG_STARTED,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_DROP_TARGETS_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
@@ -56,7 +56,7 @@ import {
   HOST_CHECK_IN,
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
-  SCROLL_TO_RECEPTACLE,
+  SCROLL_TO_DROP_TARGET,
   TRASHED
 } from '../constants';
 import { createGuestStore } from '../store/store';
@@ -64,7 +64,7 @@ import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { isNullOrUndefined, nnou } from '../utils/object';
-import { scrollToReceptacle } from '../utils/dom';
+import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
@@ -211,17 +211,17 @@ function Guest(props: GuestProps) {
           post({ type: GUEST_CHECK_OUT });
           return (window.location.href = payload.url);
         }
-        case CONTENT_TYPE_RECEPTACLES_REQUEST: {
+        case CONTENT_TYPE_DROP_TARGETS_REQUEST: {
           dispatch({
             type,
             payload: { contentTypeId: payload }
           });
           break;
         }
-        case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
+        case SCROLL_TO_DROP_TARGET:
+          scrollToDropTargets([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
           break;
-        case CLEAR_HIGHLIGHTED_RECEPTACLES:
+        case CLEAR_HIGHLIGHTED_DROP_TARGETS:
           dispatch(action);
           break;
         case CONTENT_TREE_FIELD_SELECTED: {

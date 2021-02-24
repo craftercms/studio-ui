@@ -36,8 +36,8 @@ import {
   COMPONENT_INSTANCE_DRAG_STARTED,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  CONTENT_TYPE_DROP_TARGETS_REQUEST,
+  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_DROP,
@@ -346,13 +346,13 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // (action$: Action$, state$: State$) => {},
   // endregion
 
-  // region content_type_receptacles_request
+  // region content_type_drop_targets_request
   (action$: ActionsObservable<GuestStandardAction<{ contentTypeId: string }>>) => {
     return action$.pipe(
-      ofType(CONTENT_TYPE_RECEPTACLES_REQUEST),
+      ofType(CONTENT_TYPE_DROP_TARGETS_REQUEST),
       tap((action) => {
         const { contentTypeId } = action.payload;
-        const receptacles = iceRegistry.getContentTypeReceptacles(contentTypeId).map((item) => {
+        const dropTargets = iceRegistry.getContentTypeDropTargets(contentTypeId).map((item) => {
           let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
           let highlight = ElementRegistry.getHoverData(elementRecordId);
           return {
@@ -364,8 +364,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           };
         });
         post({
-          type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
-          payload: { contentTypeId, receptacles }
+          type: CONTENT_TYPE_DROP_TARGETS_RESPONSE,
+          payload: { contentTypeId, dropTargets }
         });
       }),
       ignoreElements()
@@ -468,7 +468,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             post({
               type: 'VALIDATION_MESSAGE',
               payload: {
-                id: 'receptaclesNotFound',
+                id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
               }
@@ -495,7 +495,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             post({
               type: 'VALIDATION_MESSAGE',
               payload: {
-                id: 'receptaclesNotFound',
+                id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
               }

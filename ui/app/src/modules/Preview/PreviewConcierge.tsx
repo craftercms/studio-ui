@@ -23,7 +23,7 @@ import {
   clearSelectForEdit,
   COMPONENT_INSTANCE_HTML_REQUEST,
   COMPONENT_INSTANCE_HTML_RESPONSE,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   DELETE_ITEM_OPERATION_COMPLETE,
@@ -49,7 +49,7 @@ import {
   MOVE_ITEM_OPERATION,
   pushToolsPanelPage,
   selectForEdit,
-  setContentTypeReceptacles,
+  setContentTypeDropTargets,
   setHighlightMode,
   setItemBeingDragged,
   setPreviewChoice,
@@ -134,9 +134,9 @@ const guestMessages = defineMessages({
     id: 'register.notFound',
     defaultMessage: '{name} is not visible or was not registered by developers'
   },
-  receptaclesNotFound: {
-    id: 'register.receptaclesNotFound',
-    defaultMessage: 'There are no receptacles for {contentType} components'
+  dropTargetsNotFound: {
+    id: 'register.dropTargetsNotFound',
+    defaultMessage: 'There are no drop targets for {contentType} components'
   }
 });
 
@@ -646,8 +646,8 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
-        case CONTENT_TYPE_RECEPTACLES_RESPONSE: {
-          dispatch(setContentTypeReceptacles(payload));
+        case CONTENT_TYPE_DROP_TARGETS_RESPONSE: {
+          dispatch(setContentTypeDropTargets(payload));
           break;
         }
         case COMPONENT_INSTANCE_HTML_REQUEST: {

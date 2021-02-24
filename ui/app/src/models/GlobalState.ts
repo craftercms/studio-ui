@@ -21,7 +21,7 @@ import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
-import { ContentTypeReceptacle } from './ContentTypeReceptacle';
+import { ContentTypeDropTarget } from './ContentTypeDropTarget';
 import { ConfirmDialogStateProps } from '../components/Dialogs/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
@@ -146,9 +146,9 @@ export interface GlobalState {
       applied: boolean;
     };
     components: PagedEntityState<ContentInstance>;
-    receptacles: {
+    dropTargets: {
       selectedContentType: string;
-      byId: LookupTable<ContentTypeReceptacle>;
+      byId: LookupTable<ContentTypeDropTarget>;
     };
   };
   versions: VersionsStateProps;

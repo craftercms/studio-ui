@@ -44,7 +44,7 @@ import { Resource } from '../../models/Resource';
 import PreviewBrowseComponentsPanel from '../../components/PreviewBrowseComponentsPanel/PreviewBrowseComponentsPanel';
 import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
 import PreviewInPageInstancesPanel from '../../components/PreviewInPageInstancesPanel';
-import PreviewReceptaclesPanel from '../../components/PreviewReceptaclesPanel';
+import PreviewDropTargetsPanel from '../../components/PreviewDropTargetsPanel';
 import LegacySiteToolsFrame from '../../components/LegacySiteToolsFrame';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import LegacyDashboardFrame from '../../components/LegacyDashboardFrame';
@@ -178,7 +178,7 @@ Object.entries({
   'craftercms.components.PreviewSimulatorPanel': PreviewSimulatorPanel,
   'craftercms.components.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
   'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
-  'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
+  'craftercms.components.PreviewDropTargetsPanel': PreviewDropTargetsPanel,
   'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
   'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
   'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,

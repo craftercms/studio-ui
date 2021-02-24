@@ -1069,57 +1069,57 @@ export const embeddedLegacyFormMessages = defineMessages({
   }
 });
 
-export const receptaclesMessages = defineMessages({
-  receptacles: {
-    id: 'receptaclesMessages.receptacles',
-    defaultMessage: 'Receptacles'
+export const dropTargetsMessages = defineMessages({
+  dropTargets: {
+    id: 'dropTargetsMessages.dropTargets',
+    defaultMessage: 'Drop Targets'
   },
   createNewEmbedded: {
-    id: 'receptaclesMessages.createNewEmbedded',
+    id: 'dropTargetsMessages.createNewEmbedded',
     defaultMessage: 'Create new embedded'
   },
   createNewShared: {
-    id: 'receptaclesMessages.createNewShared',
+    id: 'dropTargetsMessages.createNewShared',
     defaultMessage: 'Create new shared'
   },
   allowShared: {
-    id: 'receptaclesMessages.allowShared',
+    id: 'dropTargetsMessages.allowShared',
     defaultMessage: 'Allow Shared'
   },
   allowEmbedded: {
-    id: 'receptaclesMessages.allowEmbedded',
+    id: 'dropTargetsMessages.allowEmbedded',
     defaultMessage: 'Allow Embedded'
   },
   enableBrowse: {
-    id: 'receptaclesMessages.enableBrowse',
+    id: 'dropTargetsMessages.enableBrowse',
     defaultMessage: 'Enable Browse'
   },
   enableSearch: {
-    id: 'receptaclesMessages.enableSearch',
+    id: 'dropTargetsMessages.enableSearch',
     defaultMessage: 'Enable Search'
   },
   baseRepositoryPath: {
-    id: 'receptaclesMessages.baseRepositoryPath',
+    id: 'dropTargetsMessages.baseRepositoryPath',
     defaultMessage: 'Base Repository Path'
   },
   baseBrowsePath: {
-    id: 'receptaclesMessages.baseBrowsePath',
+    id: 'dropTargetsMessages.baseBrowsePath',
     defaultMessage: 'Base Browse Path'
   },
   contentTypes: {
-    id: 'receptaclesMessages.contentTypes',
+    id: 'dropTargetsMessages.contentTypes',
     defaultMessage: 'Content Types'
   },
   tags: {
-    id: 'receptaclesMessages.tags',
+    id: 'dropTargetsMessages.tags',
     defaultMessage: 'Tags'
   },
   browseExisting: {
-    id: 'receptaclesMessages.browseExisting',
+    id: 'dropTargetsMessages.browseExisting',
     defaultMessage: 'Browse existing'
   },
   searchExisting: {
-    id: 'receptaclesMessages.searchExisting',
+    id: 'dropTargetsMessages.searchExisting',
     defaultMessage: 'Search existing components'
   }
 });

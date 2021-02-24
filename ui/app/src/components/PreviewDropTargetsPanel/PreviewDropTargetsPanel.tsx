@@ -19,7 +19,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { useLogicResource, useMount, useSelection } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core';
-import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
+import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -31,10 +31,10 @@ import Select from '@material-ui/core/Select';
 import ContentType from '../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import {
-  CLEAR_HIGHLIGHTED_RECEPTACLES,
-  clearReceptacles,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
-  SCROLL_TO_RECEPTACLE,
+  CLEAR_HIGHLIGHTED_DROP_TARGETS,
+  clearDropTargets,
+  CONTENT_TYPE_DROP_TARGETS_REQUEST,
+  SCROLL_TO_DROP_TARGET,
   setPreviewEditMode
 } from '../../state/actions/preview';
 import { Resource } from '../../models/Resource';
@@ -42,20 +42,20 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { LookupTable } from '../../models/LookupTable';
 
 const translations = defineMessages({
-  receptaclesPanel: {
-    id: 'previewReceptaclesPanel.title',
-    defaultMessage: 'Component Receptacles'
+  dropTargetsPanel: {
+    id: 'previewDropTargetsPanel.title',
+    defaultMessage: 'Drop Targets'
   },
   selectContentType: {
-    id: 'previewReceptaclesPanel.selectContentType',
+    id: 'previewDropTargetsPanel.selectContentType',
     defaultMessage: 'Select content type'
   },
   noResults: {
-    id: 'previewReceptaclesPanel.noResults',
+    id: 'previewDropTargetsPanel.noResults',
     defaultMessage: 'No results found.'
   },
   chooseContentType: {
-    id: 'previewReceptaclesPanel.chooseContentType',
+    id: 'previewDropTargetsPanel.chooseContentType',
     defaultMessage: 'Please choose a content type.'
   }
 });
@@ -72,10 +72,10 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function PreviewReceptaclesPanel() {
+export default function PreviewDropTargetsPanel() {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
-  const receptaclesBranch = useSelection((state) => state.preview.receptacles);
+  const dropTargetsBranch = useSelection((state) => state.preview.dropTargets);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = contentTypesBranch.byId
@@ -86,41 +86,41 @@ export default function PreviewReceptaclesPanel() {
 
   useMount(() => {
     return () => {
-      dispatch(clearReceptacles());
+      dispatch(clearDropTargets());
       hostToGuest$.next({
-        type: CLEAR_HIGHLIGHTED_RECEPTACLES
+        type: CLEAR_HIGHLIGHTED_DROP_TARGETS
       });
     };
   });
 
-  const onSelectedDropZone = (receptacle: ContentTypeReceptacle) => {
+  const onSelectedDropZone = (dropTarget: ContentTypeDropTarget) => {
     if (!editMode) {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: SCROLL_TO_RECEPTACLE,
-      payload: receptacle
+      type: SCROLL_TO_DROP_TARGET,
+      payload: dropTarget
     });
   };
 
   function handleSelectChange(contentTypeId: string) {
     hostToGuest$.next({
-      type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+      type: CONTENT_TYPE_DROP_TARGETS_REQUEST,
       payload: contentTypeId
     });
   }
 
-  const receptacleResource = useLogicResource<
-    ContentTypeReceptacle[],
-    { selectedContentType: string; byId: LookupTable<ContentTypeReceptacle> }
-  >(receptaclesBranch, {
+  const dropTargetsResource = useLogicResource<
+    ContentTypeDropTarget[],
+    { selectedContentType: string; byId: LookupTable<ContentTypeDropTarget> }
+  >(dropTargetsBranch, {
     shouldResolve: (source) => source.selectedContentType === null || Boolean(source.byId),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) =>
       source.byId
         ? Object.values(source.byId).filter(
-            (receptacle) => receptacle.contentTypeId === receptaclesBranch.selectedContentType
+            (dropTarget) => dropTarget.contentTypeId === dropTargetsBranch.selectedContentType
           )
         : [],
     errorSelector: (source) => null
@@ -130,7 +130,7 @@ export default function PreviewReceptaclesPanel() {
     <>
       <div className={classes.select}>
         <Select
-          value={receptaclesBranch.selectedContentType || ''}
+          value={dropTargetsBranch.selectedContentType || ''}
           displayEmpty
           onChange={(event: any) => handleSelectChange(event.target.value)}
         >
@@ -148,39 +148,39 @@ export default function PreviewReceptaclesPanel() {
       </div>
       <List>
         <SuspenseWithEmptyState
-          resource={receptacleResource}
+          resource={dropTargetsResource}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: receptaclesBranch.selectedContentType
+              title: dropTargetsBranch.selectedContentType
                 ? formatMessage(translations.noResults)
                 : formatMessage(translations.chooseContentType)
             }
           }}
         >
-          <ReceptaclesList resource={receptacleResource} onSelectedDropZone={onSelectedDropZone} />
+          <DropTargetsList resource={dropTargetsResource} onSelectedDropZone={onSelectedDropZone} />
         </SuspenseWithEmptyState>
       </List>
     </>
   );
 }
 
-interface ReceptaclesListProps {
-  resource: Resource<ContentTypeReceptacle[]>;
-  onSelectedDropZone(receptacle: ContentTypeReceptacle): void;
+interface DropTargetsListProps {
+  resource: Resource<ContentTypeDropTarget[]>;
+  onSelectedDropZone(dropTarget: ContentTypeDropTarget): void;
 }
 
-function ReceptaclesList(props: ReceptaclesListProps) {
-  const receptacles = props.resource.read();
+function DropTargetsList(props: DropTargetsListProps) {
+  const dropTargets = props.resource.read();
   return (
     <>
-      {receptacles?.map((receptacle: ContentTypeReceptacle) => (
-        <ListItem key={receptacle.id} button onClick={() => props.onSelectedDropZone(receptacle)}>
+      {dropTargets?.map((dropTarget: ContentTypeDropTarget) => (
+        <ListItem key={dropTarget.id} button onClick={() => props.onSelectedDropZone(dropTarget)}>
           <ListItemAvatar>
             <Avatar>
               <MoveToInboxRounded />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={receptacle.label} />
+          <ListItemText primary={dropTarget.label} />
         </ListItem>
       ))}
     </>
