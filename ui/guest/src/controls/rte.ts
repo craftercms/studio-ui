@@ -113,7 +113,7 @@ export function initTinyMCE(
         function save() {
           const content = getContent();
           if (changed) {
-            contentController.updateField(record.modelId, field.id, record.index, content);
+            contentController.updateField(record.modelId, record.fieldId[0], record.index, content);
           }
         }
 
