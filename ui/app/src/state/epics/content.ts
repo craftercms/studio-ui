@@ -60,7 +60,7 @@ import {
   showUnlockItemSuccessNotification
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
-import { getParentPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
+import { getFileNameFromPath, getParentPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
@@ -302,7 +302,7 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) => {
         return validateActionPolicy(state.sites.active, {
           type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
-          target: payload.path,
+          target: `${withoutIndex(payload.path)}/${getFileNameFromPath(state.content.clipboard.sourcePath)}`,
           source: state.content.clipboard.sourcePath
         }).pipe(
           map(({ allowed, modifiedValue, target }) => {

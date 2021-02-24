@@ -64,6 +64,18 @@ export function withIndex(path: string): string {
   return `${withoutIndex(path)}/index.xml`;
 }
 
+export function getFileNameFromPath(path: string): string {
+  return path.endsWith('index.xml')
+    ? withIndex(
+        withoutIndex(path)
+          .split('/')
+          .pop()
+      )
+    : withoutIndex(path)
+        .split('/')
+        .pop();
+}
+
 export function getParentPath(path: string): string {
   let splitPath = withoutIndex(path).split('/');
   splitPath.pop();
