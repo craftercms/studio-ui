@@ -55,6 +55,10 @@ export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction('SH
 
 export const showCreateItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
 
+export const showCreateFolderSuccessNotification = /*#__PURE__*/ createAction(
+  'SHOW_CREATE_FOLDER_SUCCESS_NOTIFICATION'
+);
+
 export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');

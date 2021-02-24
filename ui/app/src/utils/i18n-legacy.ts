@@ -1490,6 +1490,10 @@ export const itemSuccessMessages = defineMessages({
   itemSavedAsDraft: {
     id: 'item.savedAsDraft',
     defaultMessage: 'Item draft saved'
+  },
+  folderCreated: {
+    id: 'folder.created',
+    defaultMessage: 'Folder created successfully'
   }
 });
 

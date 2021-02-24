@@ -196,7 +196,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
       folderRenamed.type,
       itemsDeleted.type,
       itemDuplicated.type,
-      itemCreated.type,
       itemCreated.type
     ];
     const hostToHost$ = getHostToHostBus();
