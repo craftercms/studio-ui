@@ -683,6 +683,12 @@ CStudioAuthoring.Module.requireModule(
                           callback: () => {
                             me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndClose');
                           }
+                        },
+                        {
+                          label: formatMessage(messages.saveAndMinimize),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndMinimize');
+                          }
                         }
                       ];
                       CrafterCMSNext.render(saveEl, 'SplitButton', {

@@ -579,6 +579,10 @@ export const codeEditorMessages = defineMessages({
     id: 'codeEditor.saveAndClose',
     defaultMessage: 'Save & Close'
   },
+  saveAndMinimize: {
+    id: 'codeEditor.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
+  },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
     defaultMessage:

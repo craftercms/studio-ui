@@ -439,7 +439,7 @@ function UppyItem(props: UppyItemProps) {
                 <WarningIcon />
                 <Typography variant="body2">
                   <FormattedMessage
-                    id="uploadDialog.sitePolicySuggestion"
+                    id="uploadDialog.sitePolicyError"
                     defaultMessage="File name “{name}” doesn't comply with site policies and can’t be uploaded."
                     values={{ name: file.name }}
                   />
@@ -972,7 +972,7 @@ export default function UploadDialog(props: UploadDialogProps) {
     (status: DropZoneStatus) => {
       setDropZoneStatus(status);
       if (minimized) {
-        dispatch(updateDialog({ id, status }));
+        dispatch(updateDialog({ id, status: status.progress }));
       }
     },
     [setDropZoneStatus, minimized, dispatch]

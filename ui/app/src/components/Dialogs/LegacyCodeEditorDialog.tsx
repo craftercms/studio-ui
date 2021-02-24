@@ -76,6 +76,7 @@ interface LegacyCodeEditorDialogBaseProps {
   open?: boolean;
   src?: string;
   inProgress?: boolean;
+  onMinimized?(): void;
 }
 
 export type LegacyCodeEditorDialogProps = PropsWithChildren<
@@ -95,7 +96,7 @@ export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialog
 }
 
 function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
-  const { src, inProgress, onSuccess, onDismiss, onClosed } = props;
+  const { src, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -116,6 +117,10 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
             }
             case 'saveAndClose': {
               onDismiss();
+              break;
+            }
+            case 'saveAndMinimize': {
+              onMinimized();
               break;
             }
           }
@@ -192,7 +197,7 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
           }
         ]}
       />
-      <EmbeddedLegacyCodeEditor {...props} />
+      <EmbeddedLegacyCodeEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );
 }
