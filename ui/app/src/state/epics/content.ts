@@ -85,6 +85,13 @@ export const itemFailureMessages = defineMessages({
   }
 });
 
+const inProgressMessages = defineMessages({
+  pasting: {
+    id: 'item.pasting',
+    defaultMessage: 'Pasting...'
+  }
+});
+
 const content: CrafterCMSEpic[] = [
   // region Quick Create
   (action$, $state) =>
