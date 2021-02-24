@@ -17,7 +17,7 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { getZoneMarkerStyle } from '../utils/dom';
 
-interface ZoneMarkerProps {
+export interface ZoneMarkerProps {
   rect: DOMRect;
   label: string;
   inherited: boolean;
@@ -27,7 +27,7 @@ interface ZoneMarkerProps {
   };
 }
 
-export default function ZoneMarker(props: ZoneMarkerProps) {
+export function ZoneMarker(props: ZoneMarkerProps) {
   const { rect, label, classes, inherited } = props;
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
   useEffect(() => {
@@ -44,3 +44,5 @@ export default function ZoneMarker(props: ZoneMarkerProps) {
     </craftercms-zone-marker>
   );
 }
+
+export default ZoneMarker;

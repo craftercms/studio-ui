@@ -9,6 +9,7 @@
     "importHelpers": true,
     "composite": true,
     "paths": {
+      "react": ["../../node_modules/react"],
       "@craftercms/studio-ui": ["../../app/src"],
       "@craftercms/studio-ui/*": ["../../app/src/*"]
     }

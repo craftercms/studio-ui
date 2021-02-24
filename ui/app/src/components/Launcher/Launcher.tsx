@@ -363,6 +363,10 @@ export default function Launcher(props: LauncherStateProps) {
             authoringBase,
             site
           });
+          // If we're in legacy preview already (i.e. switching from a legacy-preview site to another
+          // legacy-preview site) only the hash will change but the page won't reload and it will apparently
+          // not done anything. In these cases, we need to manually reload.
+          !window.location.href.includes('/next/preview') && window.location.reload();
         });
       }
     } else {
