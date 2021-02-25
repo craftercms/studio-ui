@@ -1,6 +1,6 @@
 {
-  "name": "@craftercms/uppy-dashboard",
-  "description": "Crafter CMS UI Uppy plugin.",
+  "name": "@craftercms/uppy",
+  "description": "Crafter CMS UI Uppy extensions.",
   "version": "1.0.0",
   "license": "MIT",
   "main": "lib/index.js",
@@ -11,7 +11,7 @@
     "uppy",
     "uppy-plugin",
     "dashboard",
-    "ui"
+    "xhr"
   ],
   "homepage": "https://craftercms.org",
   "scripts": {
@@ -27,5 +27,9 @@
   },
   "dependencies": {
     "uppy": "^1.25.2"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-object-assign": "^7.12.13",
+    "babel-plugin-inline-package-json": "^2.0.0"
   }
 }

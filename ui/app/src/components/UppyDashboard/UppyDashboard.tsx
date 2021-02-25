@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dashboard, { DashboardOptions } from '@craftercms/uppy-dashboard';
+import { Dashboard } from '@craftercms/uppy';
 import { useEffect, useRef } from 'react';
 import { Uppy } from '@uppy/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -30,7 +30,7 @@ interface UppyDashboardProps {
   onMinimized?(): void;
   onPendingChanges?(pending: boolean): void;
   onClose?(): void;
-  options?: DashboardOptions;
+  options?: Dashboard.DashboardOptions;
 }
 
 const useStyles = makeStyles((theme) =>

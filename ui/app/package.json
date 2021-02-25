@@ -17,7 +17,6 @@
   ],
   "license": "LGPL-3.0-only",
   "dependencies": {
-    "@craftercms/uppy-dashboard": "link:ui/uppy-dashboard",
     "@date-io/date-fns": "^1.3.11",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",

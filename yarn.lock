@@ -2124,6 +2124,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.3"
 
+"@babel/plugin-transform-object-assign@^7.12.13":
+  version "7.12.13"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-object-assign/-/plugin-transform-object-assign-7.12.13.tgz#d9b9200a69e03403a813e44a933ad9f4bddfd050"
+  integrity sha512-4QxDMc0lAOkIBSfCrnSGbAJ+4epDBF2XXwcLXuBcG1xl9u7LrktNVD4+LwhL47XuKVPQ7R25e/WdcV+h97HyZA==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.12.13"
+
 "@babel/plugin-transform-object-super@^7.12.1":
   version "7.12.1"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-object-super/-/plugin-transform-object-super-7.12.1.tgz#4ea08696b8d2e65841d0c7706482b048bed1066e"
@@ -3234,11 +3241,6 @@
     rxjs "^6.5.4"
     url-search-params-polyfill "^5.0.0"
     uuid "^3.4.0"
-
-"@craftercms/uppy-dashboard@link:ui/uppy-dashboard":
-  version "1.0.0"
-  dependencies:
-    uppy "^1.25.2"
 
 "@craftercms/utils@1.2.4":
   version "1.2.4"
@@ -5479,6 +5481,11 @@ babel-plugin-dynamic-import-node@^2.3.3:
   integrity sha512-jZVI+s9Zg3IqA/kdi0i6UDCybUI3aSBLnglhYbSSjKlV7yF1F/5LWv8MakQmvYpnbJDS6fcBL2KzHSxNCMtWSQ==
   dependencies:
     object.assign "^4.1.0"
+
+babel-plugin-inline-package-json@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-inline-package-json/-/babel-plugin-inline-package-json-2.0.0.tgz#1f9558d96667f4b8787e807d764e6e15b4f0cd07"
+  integrity sha1-H5VY2WZn9Lh4foB9dk5uFbTwzQc=
 
 babel-plugin-istanbul@^6.0.0:
   version "6.0.0"

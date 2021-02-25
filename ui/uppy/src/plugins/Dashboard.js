@@ -1,7 +1,23 @@
+/*
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 const { h } = require('preact');
 const { Plugin } = require('@uppy/core');
 const Translator = require('@uppy/utils/lib/Translator');
-const DashboardUI = require('./components/Dashboard');
+const DashboardUI = require('../components/Dashboard');
 const StatusBar = require('@uppy/status-bar');
 const Informer = require('@uppy/informer');
 const ThumbnailGenerator = require('@uppy/thumbnail-generator');
@@ -38,7 +54,7 @@ function defaultPickerIcon() {
 /**
  * Dashboard UI with previews, metadata editing, tabs for various services and more
  */
-module.exports = class Dashboard extends Plugin {
+class Dashboard extends Plugin {
   constructor(uppy, opts) {
     super(uppy, opts);
     this.id = this.opts.id || 'Dashboard';
@@ -1249,4 +1265,6 @@ module.exports = class Dashboard extends Plugin {
     this.unmount();
     this.removeEvents();
   };
-};
+}
+
+module.exports = Dashboard;

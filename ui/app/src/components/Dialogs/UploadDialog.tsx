@@ -23,7 +23,7 @@ import DialogBody from './DialogBody';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
 import StandardAction from '../../models/StandardAction';
-import { XHRUpload } from 'uppy';
+import { XHRUpload } from '@craftercms/uppy';
 import { Uppy } from '@uppy/core';
 
 import '@uppy/core/dist/style.css';
@@ -58,7 +58,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     rootTitle: {
       paddingBottom: 0,
@@ -104,7 +104,7 @@ export default function UploadDialog(props: UploadDialogProps) {
   const pendingChangesRef = useRef(false);
   // NOTE: this id needs to changed if we added support to many dialogs at the same time;
   const id = 'uploadDialog';
-  const { open, path } = props;
+  const { open } = props;
 
   const minimized = useMinimizeDialog({
     id,

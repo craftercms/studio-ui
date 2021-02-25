@@ -90,7 +90,7 @@
             </goals>
             <phase>prepare-package</phase>
             <configuration>
-              <workingDirectory>ui/uppy-dashboard</workingDirectory>
+              <workingDirectory>ui/uppy</workingDirectory>
               <arguments>build-if-changed</arguments>
             </configuration>
           </execution>
