@@ -286,7 +286,7 @@ const content: CrafterCMSEpic[] = [
                 id: `pasting-${state.content.clipboard.sourcePath}-${payload.path}`,
                 status: 'indeterminate',
                 title: getIntl().formatMessage(inProgressMessages.pasting),
-                showMaximizeButton: false
+                onMaximized: null
               })
             ),
             paste(state.sites.active, payload.path, state.content.clipboard).pipe(
