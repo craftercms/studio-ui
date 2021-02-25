@@ -34,7 +34,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { createLookupTable, nnou, nou } from '../utils/object';
+import { createLookupTable, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
