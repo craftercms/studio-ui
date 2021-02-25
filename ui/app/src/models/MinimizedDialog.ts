@@ -8,7 +8,6 @@ export interface MinimizedDialog {
   subtitle?: string;
   status?: 'indeterminate' | number;
   onMaximized?: StandardAction;
-  showMaximizeButton?: false;
 }
 
 export type MinimizedDialogsStateProps = LookupTable<MinimizedDialog>;

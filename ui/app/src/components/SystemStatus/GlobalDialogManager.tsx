@@ -22,7 +22,6 @@ import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MinimizedBar } from './MinimizedBar';
-import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
@@ -462,14 +461,13 @@ function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialo
 
   return inventory.length
     ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status, showMaximizeButton }) => (
+        inventory.map(({ id, title, subtitle, status, onMaximized }) => (
           <MinimizedBar
             key={id}
             title={title}
             subtitle={subtitle}
             status={status}
-            showMaximizeButton={showMaximizeButton}
-            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+            onMaximized={createCallback(onMaximized, dispatch)}
           />
         )),
         el

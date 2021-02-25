@@ -42,20 +42,17 @@ interface MinimizedBarProps {
   title: string;
   subtitle?: string;
   status?: 'indeterminate' | number;
-  showMaximizeButton?: boolean;
   onMaximized?(): void;
 }
 
 export function MinimizedBar(props: MinimizedBarProps) {
-  const { title, onMaximized, subtitle, status, showMaximizeButton = true } = props;
+  const { title, onMaximized, subtitle, status } = props;
   const classes = useStyles({});
   return (
     <Paper className={classes.root} elevation={4}>
       <Typography variant="h6" children={title} />
       {subtitle && <Typography variant="subtitle1" className={classes.subtitle} children={subtitle} />}
-      {showMaximizeButton ? (
-        <IconButton aria-label="Maximize" onClick={onMaximized} children={<MaximizeIcon />} />
-      ) : null}
+      {onMaximized ? <IconButton aria-label="Maximize" onClick={onMaximized} children={<MaximizeIcon />} /> : null}
       {status === 'indeterminate' ? (
         <LinearProgress className={classes.indeterminateProgressBar} />
       ) : status ? (
