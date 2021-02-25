@@ -182,12 +182,13 @@ export function isRepeatGroupItem(id: number): boolean {
 
 export function getMediaReceptacles(type: string): ICERecord[] {
   const receptacles = [];
-  for (const [, record] of registry) {
+  Array.from(registry.keys()).forEach((key) => {
+    const record = registry.get(key);
     const entries = getReferentialEntries(record);
     if (entries.field && entries.field.type === type) {
       receptacles.push(record);
     }
-  }
+  });
   return receptacles;
 }
 
