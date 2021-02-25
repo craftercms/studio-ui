@@ -250,7 +250,6 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
       target = target[fieldPiece][indexPiece];
     }
     const specificFieldId = fieldPieces.pop();
-    console.log(specificFieldId, target);
     target[specificFieldId] = value;
   } else {
     Model.value(model, fieldId, value);
