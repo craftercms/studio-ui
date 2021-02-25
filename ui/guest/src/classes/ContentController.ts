@@ -223,45 +223,11 @@ function collectReferrers(modelId) {
 
 export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
   const models = getCachedModels();
+  const model = { ...models[modelId] };
   const parentModelId = getParentModelId(modelId, models, children);
   const modelsToUpdate = collectReferrers(modelId);
-  const model = { ...models[modelId] };
 
-  // Using `index` being present as the factor to determine how to treat this update.
-  // For now, fieldId should only ever have a `.` if the target zone is inside some collection
-  // (node selector, repeat group) which would in turn mean there should be an `index` present.
-  // In the future there may be some object type fields that would need this logic revisited
-  // to account for a nested field without an index.
-  if (nnou(index)) {
-    // Assuming field/index should be asymmetric (one more piece of field than index). e.g.
-    // - field = repeatingGroup_o.textField_s, index = 0
-    // - field = repeatingGroup_o.nodeSelector_o.textField_s, index = 0.0
-    const fieldPieces = fieldId.split('.');
-    const indexPieces = `${index}`.split('.');
-    let target = model;
-    for (let i = 0, length = fieldPieces.length; i < length; i++) {
-      const fieldPiece = fieldPieces[i]; // repeatingGroup_o   textField_s
-      const indexPiece = indexPieces[i]; // 0
-      target[fieldPiece][indexPiece];
-      if (length === i - 1) {
-        target[fieldPiece][indexPiece] = { ...model[fieldPiece][indexPiece], [fieldPieces[length - 1]]: value };
-      } else {
-        //
-      }
-    }
-    // model = {
-    //   repeatingGroup_o: [
-    //      0: {
-    //       text_s: '',
-    //       nodeSelector_o: [
-    //         0: { text_s: '' }
-    //       ]
-    //     }
-    //   ]
-    // }
-  } else {
-    Model.value(model, fieldId, value);
-  }
+  Model.value(model, fieldId, value);
 
   // Update the model cache
   models$.next({
