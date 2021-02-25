@@ -653,6 +653,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
             {
               id: 'craftercms.components.LauncherLinkTile',
               uiKey: count++,
+              roles: ['admin', 'developer'],
               configuration: {
                 title: {
                   id: 'siteTools.title',

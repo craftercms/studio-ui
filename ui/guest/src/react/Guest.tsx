@@ -73,16 +73,20 @@ import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
 
-const initialDocumentDomain = document.domain;
-const editModeClass = 'craftercms-ice-on';
-
-type GuestProps = PropsWithChildren<{
+export type GuestProps = PropsWithChildren<{
   documentDomain?: string;
   path?: string;
   styleConfig?: GuestStyleConfig;
   isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
 }>;
+
+const initialDocumentDomain = document.domain;
+const editModeClass = 'craftercms-ice-on';
+
+export function getEditModeClass() {
+  return editModeClass;
+}
 
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
@@ -462,7 +466,7 @@ function Guest(props: GuestProps) {
   );
 }
 
-export default function CrafterCMSGuest(props: GuestProps) {
+function CrafterCMSGuest(props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   return isAuthoring ? (
@@ -473,3 +477,7 @@ export default function CrafterCMSGuest(props: GuestProps) {
     (children as JSX.Element)
   );
 }
+
+export { CrafterCMSGuest as Guest };
+
+export default CrafterCMSGuest;
