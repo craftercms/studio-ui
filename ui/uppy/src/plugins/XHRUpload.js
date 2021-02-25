@@ -18,6 +18,8 @@ const cuid = require('cuid');
 const EventTracker = require('@uppy/utils/lib/EventTracker');
 const ProgressTimeout = require('@uppy/utils/lib/ProgressTimeout');
 const UppyXHRUpload = require('@uppy/xhr-upload');
+const NetworkError = require('@uppy/utils/lib/NetworkError');
+const isNetworkError = require('@uppy/utils/lib/isNetworkError');
 
 function buildResponseError(xhr, error) {
   // No error message

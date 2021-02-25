@@ -1,4 +1,4 @@
-import Uppy = require('@uppy/core')
+import Uppy = require('@uppy/core');
 
 type DashboardLocale = Uppy.Locale<
   | 'closeModal'
@@ -41,6 +41,16 @@ type DashboardLocale = Uppy.Locale<
   | 'processingXFiles'
   | 'poweredBy2'
   | 'poweredBy'
->
+  | 'validating'
+  | 'validateAndRetry'
+  | 'rejectAll'
+  | 'acceptAll'
+  | 'clear'
+  | 'cancelPending'
+  | 'clearCompleted'
+  | 'renamingFromTo'
+  | 'minimize'
+  | 'close'
+>;
 
-export = DashboardLocale
+export = DashboardLocale;
