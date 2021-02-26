@@ -15,7 +15,7 @@
  */
 
 import { Dashboard } from '@craftercms/uppy';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Uppy } from '@uppy/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
