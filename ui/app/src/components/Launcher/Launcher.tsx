@@ -125,7 +125,8 @@ const useLauncherStyles = makeStyles((theme) =>
   createStyles({
     popover: {
       maxWidth: 1065,
-      borderRadius: '10px'
+      borderRadius: '10px',
+      overflowY: 'hidden'
     },
     sitesRail: {
       backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark1 : palette.gray.light1
