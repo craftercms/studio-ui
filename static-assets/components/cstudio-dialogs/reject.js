@@ -16,63 +16,15 @@
 
 CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 
-REJECT_DIALOG_TEMPLATE = [
-  '<div class="bd">' +
-    '<div class="rejectContainer">' +
-    '<h3 id="title">Reject</h3>' +
-    '<p id="subtitle">The following checked item(s) will be rejected.</p>' +
-    '<div class="row">' +
-    '<div class="col-sm-8">' +
-    '<div class="table-wrapper">' +
-    '<table class="acnLiveTable liveTable">' +
-    '<thead class="ttThead">' +
-    '<tr>' +
-    '<th class="checkboxTh"></th>' +
-    '<th class="itemTh">Item</th>' +
-    '<th class="submittedTh">Submitted By</th>' +
-    '</tr>' +
-    '</thead>' +
-    '<tbody id="tbodyDepend">' +
-    '</tbody>' +
-    '</table>' +
-    '</div>' +
-    '</div>' +
-    '<div class="col-sm-4">' +
-    '<h4>Rejection Reason:</h4>' +
-    '<div class="field">' +
-    '<select id="rejectReasonDropDown" class="rejectReasonDropDown">' +
-    '<option>Select a Reason</option>' +
-    '<option value="NotApproved">Not Approved</option>' +
-    '<option value="IncorrectBranding">Incorrect Branding</option>' +
-    '<option value="Typos">Typos</option>' +
-    '<option value="BrokenLinks">Broken Links</option>' +
-    '<option value="NSOA">Needs Section Owner\'s Approval</option>' +
-    '</select>' +
-    '</div>' +
-    '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>' +
-    '</div>' +
-    '</div>' +
-    '<div id="rejectReasonJson" style="display:none;">' +
-    '</div>' +
-    '<div class="acnSubmitButtons">' +
-    '<span><input id="golivesubmitButton" type="submit" value="Send Rejection" class="rejectSend btn btn-primary"></span>' +
-    '<span><input id="golivecancelButton" type="submit" value="Cancel" class="rejectCancel btn btn-default"></span>' +
-    '</div>' +
-    '</div>' +
-    '</div>'
-].join();
-
 /**
  * GoLive Constructor
  */
-CStudioAuthoring.Dialogs.DialogReject =
-  CStudioAuthoring.Dialogs.DialogReject ||
-  function () {
-    CStudioAuthoring.Dialogs.DialogReject.superclass.constructor.call(this);
-    this.moduleName = 'reject';
-    this.reasonHash = [];
-    this.uncheckedItemsArrayNew = [];
-  };
+CStudioAuthoring.Dialogs.DialogReject = function () {
+  CStudioAuthoring.Dialogs.DialogReject.superclass.constructor.call(this);
+  this.moduleName = 'reject';
+  this.reasonHash = [];
+  this.uncheckedItemsArrayNew = [];
+};
 
 CStudioAuthoring.Module.requireModule(
   'publish-dialog',
@@ -80,6 +32,50 @@ CStudioAuthoring.Module.requireModule(
   {},
   {
     moduleLoaded: function (moduleName, dialogClass) {
+      var REJECT_DIALOG_TEMPLATE = [
+        '<div class="bd">',
+        /**/ '<div class="rejectContainer">',
+        /**/ /**/ '<h3 id="title">Reject</h3>',
+        /**/ /**/ '<p id="subtitle">The following checked item(s) will be rejected.</p>',
+        /**/ /**/ '<div class="row">',
+        /**/ /**/ /**/ '<div class="col-sm-8">',
+        /**/ /**/ /**/ /**/ '<div class="table-wrapper">',
+        /**/ /**/ /**/ /**/ /**/ '<table class="acnLiveTable liveTable">',
+        /**/ /**/ /**/ /**/ /**/ '<thead class="ttThead">',
+        /**/ /**/ /**/ /**/ /**/ '<tr>',
+        /**/ /**/ /**/ /**/ /**/ '<th class="checkboxTh"></th>',
+        /**/ /**/ /**/ /**/ /**/ '<th class="itemTh">Item</th>',
+        /**/ /**/ /**/ /**/ /**/ '<th class="submittedTh">Submitted By</th>',
+        /**/ /**/ /**/ /**/ /**/ '</tr>',
+        /**/ /**/ /**/ /**/ /**/ '</thead>',
+        /**/ /**/ /**/ /**/ /**/ '<tbody id="tbodyDepend"></tbody>',
+        /**/ /**/ /**/ /**/ /**/ '</table>',
+        /**/ /**/ /**/ /**/ '</div>',
+        /**/ /**/ /**/ '</div>',
+        /**/ /**/ /**/ '<div class="col-sm-4">',
+        /**/ /**/ /**/ /**/ '<h4>Rejection Reason:</h4>',
+        /**/ /**/ /**/ /**/ '<div class="field">',
+        /**/ /**/ /**/ /**/ /**/ '<select id="rejectReasonDropDown" class="rejectReasonDropDown">',
+        /**/ /**/ /**/ /**/ /**/ /**/ '<option>Select a Reason</option>',
+        /**/ /**/ /**/ /**/ /**/ /**/ '<option value="NotApproved">Not Approved</option>',
+        /**/ /**/ /**/ /**/ /**/ /**/ '<option value="IncorrectBranding">Incorrect Branding</option>',
+        /**/ /**/ /**/ /**/ /**/ /**/ '<option value="Typos">Typos</option>',
+        /**/ /**/ /**/ /**/ /**/ /**/ '<option value="BrokenLinks">Broken Links</option>',
+        /**/ /**/ /**/ /**/ /**/ /**/ '<option value="NSOA">Needs Section Owner\'s Approval</option>',
+        /**/ /**/ /**/ /**/ /**/ '</select>',
+        /**/ /**/ /**/ /**/ '</div>',
+        /**/ /**/ /**/ /**/ '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>',
+        /**/ /**/ /**/ '</div>',
+        /**/ /**/ '</div>',
+        /**/ /**/ '<div id="rejectReasonJson" style="display: none"></div>',
+        /**/ /**/ '<div class="acnSubmitButtons">',
+        /**/ /**/ /**/ '<span><input id="golivesubmitButton" type="submit" value="Send Rejection" class="rejectSend btn btn-primary"></span>',
+        /**/ /**/ /**/ '<span><input id="golivecancelButton" type="submit" value="Cancel" class="rejectCancel btn btn-default"></span>',
+        /**/ /**/ '</div>',
+        /**/ '</div>',
+        '</div>'
+      ].join('');
+
       // Make GoLive constructor inherit from its parent (i.e. PublishDialog)
       YAHOO.lang.extend(CStudioAuthoring.Dialogs.DialogReject, dialogClass);
 
@@ -98,8 +94,6 @@ CStudioAuthoring.Module.requireModule(
         });
       };
 
-      //this.uncheckedItemsArray = [];
-
       CStudioAuthoring.Dialogs.DialogReject.prototype.invokeRejectService = function () {
         // check if rejection reason is filled out
         var tempStr = YAHOO.lang.trim(YDom.get('rejectMessageArea').value);
@@ -113,14 +107,15 @@ CStudioAuthoring.Module.requireModule(
               {
                 text: 'OK',
                 handler: function () {
-                  this.hide();
-                  return;
+                  this.destroy();
                 },
                 isDefault: false
               }
             ],
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            'studioDialog',
+            null,
+            1043
           );
         }
 
@@ -166,7 +161,9 @@ CStudioAuthoring.Module.requireModule(
                       }
                     ],
                     YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    'studioDialog'
+                    'studioDialog',
+                    null,
+                    1043
                   );
                 } else {
                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -185,15 +182,15 @@ CStudioAuthoring.Module.requireModule(
                       }
                     ],
                     YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    'studioDialog'
+                    'studioDialog',
+                    null,
+                    1043
                   );
                 }
               },
               timeout: CStudioAuthoring.Request.Timeout.GoLiveTimeout
             };
 
-          //show loading image when submit is clicked.
-          this.showLoadingImage('reject');
           //disable submit button to protect multiple submit at the same time.
           YDom.get('golivesubmitButton').disabled = true;
           YDom.get('golivecancelButton').disabled = true;
@@ -226,7 +223,9 @@ CStudioAuthoring.Module.requireModule(
             'No items selected.',
             null,
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            'studioDialog',
+            null,
+            1043
           );
         }
       };
@@ -271,34 +270,51 @@ CStudioAuthoring.Module.requireModule(
 
         this.dialog.mask.style.zIndex = '1030';
 
-        //set z-index for panel so that it will appear over context nav bar also.
+        // set z-index for panel so that it will appear over context nav bar also.
         var oContainerPanel = YDom.get('submitPanel_c');
         if (oContainerPanel && oContainerPanel.style.zIndex != '') {
           var zIdx = oContainerPanel.style.zIndex;
           if (!isNaN(zIdx) && parseInt(zIdx, 10) <= 100) {
-            oContainerPanel.style.zIndex = '1500';
+            oContainerPanel.style.zIndex = '1042';
           }
         }
 
-        var items = dependencyList.items;
+        var dependencies = dependencyList.items;
 
         var html = [];
 
-        CStudioAuthoring.Utils.each(items, function (index, item) {
-          html.push(
-            '<tr>',
-            '<td class="text-center"><input type="checkbox" class="item-checkbox" data-item-id="' +
-              item.uri +
-              '" checked/></td>',
-            '<td class="name"><div class="in">' + item.internalName + ' ' + item.uri + '</div></div></td>'
-          );
+        const renderItems = (items) => {
+          CStudioAuthoring.Utils.each(items, function (index, item) {
+            html.push(
+              '<tr>',
+              /**/ '<td class="text-center">',
+              /**/ /**/ `<input type="checkbox" class="item-checkbox" data-item-id="${encodeURIComponent(
+                item.uri
+              )}" checked />`,
+              /**/ '</td>',
+              /**/ '<td class="name">',
+              /**/ /**/ '<div class="in">',
+              /**/ /**/ /**/ CrafterCMSNext.util.string.escapeHTML(`${item.internalName} ${item.uri}`),
+              /**/ /**/ '</div>',
+              /**/ /**/ '</div>',
+              /**/ '</td>'
+            );
 
-          if (item.userFirstName) {
-            html.push('<td class="schedule">' + item.userFirstName + '</td>', '</tr>');
-          } else {
-            html.push('<td class="text-right schedule"></td>', '</tr>');
-          }
-        });
+            if (item.userFirstName) {
+              html.push('<td class="schedule">' + item.userFirstName + '</td>', '</tr>');
+            } else {
+              html.push('<td class="text-right schedule"></td>', '</tr>');
+            }
+          });
+        };
+
+        renderItems(this.selectedContent);
+
+        html.push(
+          `<tr><td></td><td class="dependencies-label">${CMgs.format(langBundle, 'dependenciesLabel')}</td>`
+        );
+
+        renderItems(dependencies);
 
         YDom.get('tbodyDepend').innerHTML = html.join('');
 
@@ -384,7 +400,7 @@ CStudioAuthoring.Module.requireModule(
         }
       };
 
-      //Listener to change select box message in reject pop-up
+      // Listener to change select box message in reject pop-up
       CStudioAuthoring.Dialogs.DialogReject.prototype.onRejectSelectBoxChange = function (e) {
         var reasonList = YDom.get('rejectReasonDropDown');
         var chosenOption = reasonList.options[reasonList.selectedIndex].value;
@@ -408,7 +424,6 @@ CStudioAuthoring.Module.requireModule(
 
       CStudioAuthoring.Dialogs.DialogReject.prototype.getDependenciesForGoLiveItemList = function (contentItems) {
         var self = this;
-
         if (this.itemArray.length) {
           var xmlString = CStudioAuthoring.Utils.createContentItemsJson(contentItems),
             dependencyUrl =
@@ -416,38 +431,6 @@ CStudioAuthoring.Module.requireModule(
               CStudioAuthoring.Service.getDependenciesServiceUrl +
               '?site=' +
               CStudioAuthoringContext.site;
-
-          var serviceCallback = {
-            success: function (o) {
-              var respText = o.responseText;
-              var timeZoneText = o.getResponseHeader.Timezone;
-
-              self.dependencyJsonObj = eval('(' + respText + ')');
-              self.flatMap = self.createItemMap();
-              self.uncheckedItemsArray = [];
-              self.displayItemListWithDependencies(self.dependencyJsonObj);
-
-              // get reject reason from hidden div
-              var reasonJsonArray = [];
-
-              for (var i = 0; i < reasonJsonArray.length; i++) {
-                self.reasonHash[reasonJsonArray[i].title] = reasonJsonArray[i].body;
-              }
-              YEvent.addListener('rejectReasonDropDown', 'change', self.onRejectSelectBoxChange, self, true);
-            },
-            failure: function (o) {
-              self.pageRedirect(o);
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'error-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                'Notification',
-                o.statusText,
-                null,
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
-            }
-          };
 
           if (YConnect._isFormSubmit) {
             YConnect.resetFormState();
@@ -458,7 +441,46 @@ CStudioAuthoring.Module.requireModule(
             CStudioAuthoringContext.xsrfHeaderName,
             CrafterCMSNext.util.auth.getRequestForgeryToken()
           );
-          YConnect.asyncRequest('POST', dependencyUrl, serviceCallback, xmlString);
+          YConnect.asyncRequest(
+            'POST',
+            dependencyUrl,
+            {
+              success: function (o) {
+                var respText = o.responseText;
+                var timeZoneText = o.getResponseHeader.Timezone;
+
+                self.dependencyJsonObj = eval('(' + respText + ')');
+                self.dependencyJsonObj.items = self.dependencyJsonObj.items.concat(self.selectedContent);
+
+                self.flatMap = self.createItemMap();
+                self.uncheckedItemsArray = [];
+                self.displayItemListWithDependencies(eval('(' + respText + ')'));
+
+                // get reject reason from hidden div
+                var reasonJsonArray = [];
+
+                for (var i = 0; i < reasonJsonArray.length; i++) {
+                  self.reasonHash[reasonJsonArray[i].title] = reasonJsonArray[i].body;
+                }
+                YEvent.addListener('rejectReasonDropDown', 'change', self.onRejectSelectBoxChange, self, true);
+              },
+              failure: function (o) {
+                self.pageRedirect(o);
+                CStudioAuthoring.Operations.showSimpleDialog(
+                  'error-dialog',
+                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                  'Notification',
+                  o.statusText,
+                  null,
+                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                  'studioDialog',
+                  null,
+                  1043
+                );
+              }
+            },
+            xmlString
+          );
         } else {
           CStudioAuthoring.Operations.showSimpleDialog(
             'error-dialog',
@@ -467,7 +489,9 @@ CStudioAuthoring.Module.requireModule(
             'No items selected',
             null,
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            'studioDialog',
+            null,
+            1043
           );
         }
       };
@@ -493,6 +517,7 @@ CStudioAuthoring.Module.requireModule(
           this.itemArray.push(selectedContent[i].uri);
         }
 
+        this.selectedContent = selectedContent;
         this.getDependenciesForGoLiveItemList(contentItems);
       };
 
@@ -516,8 +541,8 @@ CStudioAuthoring.Module.requireModule(
       CStudioAuthoring.Dialogs.DialogReject.prototype.updateUncheckedItemListNew = function (elt) {
         // walk the DOM to get the path
         // get parent of current element
-        var //parentTD = YDom.getAncestorByTagName(matchedElement, "td"),
-          url = elt.getAttribute('data-item-id'),
+        var //
+          url = decodeURIComponent(elt.getAttribute('data-item-id')),
           isChecked = elt.checked;
 
         if (isChecked == false) {
@@ -571,36 +596,12 @@ CStudioAuthoring.Module.requireModule(
           uncheckedItemsArrayLen = uncheckedItems.length;
 
         for (var i = 0; i < uncheckedItemsArrayLen; ++i) {
-          this.removeItemNew(this.selectedJsonObj.items, uncheckedItems[i]);
+          this.removeItemNew(this.dependencyJsonObj.items, uncheckedItems[i]);
         }
+        this.selectedJsonObj = this.clone_obj_uri(this.dependencyJsonObj);
 
         return uncheckedItemsArrayLen;
       };
-
-      function renderItems(items) {
-        var html = [];
-
-        CStudioAuthoring.Utils.each(items, function (index, item) {
-          html.push(
-            '<tr>',
-            '<td class="text-center"><input type="checkbox" class="item-checkbox" data-item-id="' +
-              item.uri +
-              '" checked/></td>',
-            '<td class="name"><div class="in">' + item.internalName + ' ' + item.uri + '</div></div></td>'
-          );
-
-          if (item.userFirstName) {
-            html.push('<td class="text-right schedule">' + item.userFirstName + '</td>', '</tr>');
-          } else {
-            html.push('<td class="text-right schedule"></td>', '</tr>');
-          }
-        });
-
-        YDom.get('tbodyDepend').innerHTML = html.join('');
-
-        var itemsCheckbox = YDom.getElementsByClassName('item-checkbox');
-        YEvent.addListener(itemsCheckbox, 'click', this.updateUncheckedItemList, this, true);
-      }
 
       // Create GoLive dialog instance
       var reject = new CStudioAuthoring.Dialogs.DialogReject();

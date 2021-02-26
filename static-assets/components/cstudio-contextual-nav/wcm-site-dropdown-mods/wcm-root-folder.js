@@ -289,8 +289,8 @@
 
         parentFolderLinkEl.appendChild(moduleClosed);
         parentFolderLinkEl.appendChild(moduleOpen);
+        parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
-        parentFolderLinkEl.innerHTML += label;
         parentFolderLinkEl.onclick = Self.onRootFolderClick;
         parentFolderLinkEl.componentInstance = instance;
 
@@ -633,8 +633,6 @@
             document.addEventListener(
               'crafter.refresh',
               function (e) {
-                /*eventCM.typeAction = e.typeAction;
-                            document.dispatchEvent(eventCM);*/
                 try {
                   if (e.data && e.data.length) {
                     for (var i = 0; i < e.data.length; i++) {
@@ -984,7 +982,9 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
+          nodeSpan.innerHTML += CrafterCMSNext.util.string.escapeHTML(
+            treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label
+          );
           const tooltip = treeNodeTO.statusObj.deleted
             ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(
                 CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
@@ -1790,7 +1790,6 @@
                               currentInternalName =
                                 treeData.item.internalName != '' ? treeData.item.internalName : treeData.item.name,
                               curElt = YDom.get(curNode.labelElId);
-                            // curElt ? curElt.innerHTML = currentInternalName : null;
                             curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                             if (
                               typeAction === 'publish' &&
@@ -1884,7 +1883,9 @@
                             var icon = CStudioAuthoring.Utils.getContentItemIcon(treeData.item);
                             curElt.innerHTML = '';
                             curElt.appendChild(icon);
-                            curElt ? (curElt.innerHTML += currentInternalName) : null;
+                            curElt
+                              ? (curElt.innerHTML += CrafterCMSNext.util.string.escapeHTML(currentInternalName))
+                              : null;
                           }
                         },
                         failure: function () {}
@@ -2185,6 +2186,7 @@
           itemNameLabel = 'Page';
         }
 
+        label = CrafterCMSNext.util.string.escapeHTML(label);
         label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
         return CStudioAuthoring.Utils.buildToolTip(
@@ -2222,6 +2224,7 @@
           itemNameLabel = 'Page';
         }
 
+        label = CrafterCMSNext.util.string.escapeHTML(label);
         label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
         try {

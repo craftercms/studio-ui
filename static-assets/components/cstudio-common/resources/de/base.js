@@ -116,7 +116,9 @@ CStudioAuthoring.Messages.registerBundle('siteDashboard', 'de', {
   dashletIconGuideExcel: 'MS Excel',
   dashletIconGuideZip: 'ZIP',
   dashletIconGuideGroovy: 'Groovy',
-  dashletIconGuideOtherFiles: 'sonstige Datei'
+  dashletIconGuideOtherFiles: 'sonstige Datei',
+
+  dependenciesLabel: 'Abhängigkeiten'
 });
 
 CStudioAuthoring.Messages.registerBundle('contextnav', 'de', {

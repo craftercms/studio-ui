@@ -64,7 +64,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
   },
   _onChangeVal: function (evt, obj) {
     obj.edited = true;
-    this._onChange(evt, obj);
+    obj._onChange(evt, obj);
   },
 
   /**
@@ -123,7 +123,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     var titleEl = document.createElement('span');
 
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = config.title;
+    titleEl.textContent = config.title;
 
     var controlWidgetContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
@@ -206,7 +206,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     var descriptionEl = document.createElement('span');
     YAHOO.util.Dom.addClass(descriptionEl, 'description');
     YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
+    descriptionEl.textContent = config.description;
 
     containerEl.appendChild(titleEl);
     containerEl.appendChild(controlWidgetContainerEl);

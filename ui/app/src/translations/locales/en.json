@@ -211,6 +211,7 @@
   "globalConfig.appendContent": "Append sample on to background editor?",
   "globalConfig.confirmReset": "Confirm Reset?",
   "globalConfig.confirmSave": "Confirm Save?",
+  "globalConfig.documentError": "The document contains errors. Check for error markers on side of the editor.",
   "globalConfig.failedSave": "Save failed. Please retry momentarily.",
   "globalConfig.replaceContent": "Replace current value on background editor?",
   "globalConfig.sampleFile": "Sample File",

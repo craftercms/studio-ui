@@ -2487,21 +2487,24 @@ var nodeOpen = false,
         CSA.Operations.getWorkflowAffectedFiles(params, {
           success: function (content) {
             if (content && content.length) {
-              CSA.Operations._showDialogueView({
-                controller: 'viewcontroller-cancel-workflow',
-                fn: function (oAjaxCfg) {
-                  // because _showDialogueView was designed to load the body from a
-                  // webscript, must simulate the ajax process here
-                  oAjaxCfg.success({ responseText: '' });
+              CSA.Operations._showDialogueView(
+                {
+                  controller: 'viewcontroller-cancel-workflow',
+                  fn: function (oAjaxCfg) {
+                    // because _showDialogueView was designed to load the body from a
+                    // webscript, must simulate the ajax process here
+                    oAjaxCfg.success({ responseText: '' });
+                  },
+                  callback: function () {
+                    var view = this;
+                    view.setContent(content);
+                    view.on('continue', function () {
+                      doEdit();
+                    });
+                  }
                 },
-                callback: function () {
-                  var view = this;
-                  view.setContent(content);
-                  view.on('continue', function () {
-                    doEdit();
-                  });
-                }
-              });
+                true
+              );
             } else {
               doEdit();
             }
@@ -8104,6 +8107,7 @@ var nodeOpen = false,
         schedDate,
         icon
       ) {
+        label = CrafterCMSNext.util.string.escapeHTML(label);
         label = label.replace(new RegExp(' ', 'g'), '&nbsp;');
 
         if (!contentType) {
@@ -8170,7 +8174,6 @@ var nodeOpen = false,
 
         return CStudioAuthoring.StringUtils.format(
           toolTipMarkup,
-
           itemNameLabel,
           label,
           style,

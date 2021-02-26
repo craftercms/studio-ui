@@ -23,13 +23,13 @@
   <div class="form-group">
     <div class="btn-group" uib-dropdown>
       <button class="btn btn-primary" id="globalConfigSaveButton" ng-disabled="!uiEnabled" ng-disabled="disabled"
-              type="button" uib-dropdown-toggle>
+              type="button" uib-dropdown-toggle ng-click="checkDocumentErrors()">
         {{ messages.save }}
       </button>
-      <ul aria-labelledby="globalConfigSaveButton" class="dropdown-menu" role="menu" style="top: -150%"
+      <ul aria-labelledby="globalConfigSaveButton" ng-show="!documentHasErrors" class="dropdown-menu" role="menu" style="top: -150%"
           uib-dropdown-menu>
         <li role="menuitem"><a ng-click="save()">{{ messages.confirmSave }}</a></li>
-        <li role="menuitem"><a>{{ messages.cancel }}</a></li>
+`        <li role="menuitem"><a>{{ messages.cancel }}</a></li>
       </ul>
     </div>
     <div class="btn-group" uib-dropdown>

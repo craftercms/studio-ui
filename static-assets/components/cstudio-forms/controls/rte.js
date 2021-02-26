@@ -458,7 +458,7 @@ CStudioAuthoring.Module.requireModule(
           var titleEl = document.createElement('span');
 
           YDom.addClass(titleEl, 'cstudio-form-field-title');
-          titleEl.innerHTML = config.title;
+          titleEl.textContent = config.title;
 
           var controlWidgetContainerEl = document.createElement('div');
           YDom.addClass(controlWidgetContainerEl, 'cstudio-form-control-rte-container');

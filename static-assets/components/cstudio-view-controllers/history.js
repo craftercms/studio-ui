@@ -64,7 +64,7 @@
 
             var itemStateEl = _this.getComponent('span.show-for-item');
             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
-            itemStateEl.innerHTML = history.item.internalName;
+            itemStateEl.innerHTML = CrafterCMSNext.util.string.escapeHTML(history.item.internalName);
 
             if (versions.length == 0) {
               tbody.innerHTML =
@@ -346,7 +346,7 @@
 
             var itemStateEl = _this.getComponent('span.show-for-item');
             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
-            itemStateEl.innerHTML = history.item.internalName;
+            itemStateEl.innerHTML = CrafterCMSNext.util.string.escapeHTML(history.item.internalName);
 
             if (versions.length == 0) {
               tbody.innerHTML =

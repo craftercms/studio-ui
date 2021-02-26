@@ -114,8 +114,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   getNavBarContent: function () {
     var callback = {
       success: function (results) {
-        document.getElementById('nav-user-name').innerHTML = results.firstName + ' ' + results.lastName;
-        document.getElementById('nav-user-email').innerHTML = results.email;
+        document.getElementById('nav-user-name').textContent = results.firstName + ' ' + results.lastName;
+        document.getElementById('nav-user-email').textContent = results.email;
         $('#account-dropdown .username').replaceWith(
           `<span class="username trim inline-block">${results.username}</span>`
         );

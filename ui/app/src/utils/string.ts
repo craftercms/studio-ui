@@ -55,10 +55,16 @@ export function isBlank(str: string): boolean {
   return str === '';
 }
 
-export function decodeHTML(html: string): string {
+export function unescapeHTML(html: string): string {
   const txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;
+}
+
+export function escapeHTML(str: string): string {
+  const element = document.createElement('textarea');
+  element.textContent = str;
+  return element.innerHTML;
 }
 
 export function bytesToSize(bytes: number, separator: string = '') {
@@ -82,6 +88,7 @@ export default {
   capitalize,
   underscore,
   dasherize,
-  decodeHTML,
+  escapeHTML,
+  unescapeHTML,
   bytesToSize
 };

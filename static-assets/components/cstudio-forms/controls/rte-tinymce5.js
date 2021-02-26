@@ -307,6 +307,10 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
+          const codeEditorWrap = rteConfig.codeEditorWrap
+            ? rteConfig.codeEditorWrap === 'true'
+            : false;
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -350,6 +354,8 @@ CStudioAuthoring.Module.requireModule(
 
             content_css: rteStylesheets,
             content_style: rteStyleOverride,
+
+            code_editor_wrap: codeEditorWrap,
 
             setup: function (editor) {
               var addPadding = function () {
@@ -519,7 +525,7 @@ CStudioAuthoring.Module.requireModule(
 
                 var itemEl = document.createElement('div');
                 YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
-                itemEl.innerHTML = el.title;
+                itemEl.textContent = el.title;
                 addContainerEl.appendChild(itemEl);
 
                 YAHOO.util.Event.on(
@@ -641,7 +647,7 @@ CStudioAuthoring.Module.requireModule(
           // Control title of form
           titleEl = document.createElement('span');
           YDom.addClass(titleEl, 'cstudio-form-field-title');
-          titleEl.innerHTML = config.title;
+          titleEl.textContent = config.title;
 
           // Control container under form
           controlWidgetContainerEl = document.createElement('div');
