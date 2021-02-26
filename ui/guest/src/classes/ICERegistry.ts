@@ -90,7 +90,7 @@ export function register(registration: ICERecordRegistration): number {
     contentTypeUtils.isGroupItem(getReferentialEntries(data).contentType, data.fieldId)
   ) {
     throw new Error(
-      'Group item registration requires the index within the collection that contains the item to be supplied. ' +
+      'Repeating group item registration requires the index within the repeating group to be supplied. ' +
         `Please supply index for '${data.fieldId}' of the ${getReferentialEntries(data).contentType.name} model.`
     );
   }
@@ -182,13 +182,12 @@ export function isRepeatGroupItem(id: number): boolean {
 
 export function getMediaReceptacles(type: string): ICERecord[] {
   const receptacles = [];
-  Array.from(registry.keys()).forEach((key) => {
-    const record = registry.get(key);
+  for (const [, record] of registry) {
     const entries = getReferentialEntries(record);
-    if (entries.field && entries.field.type === type) {
+    if (entries.field?.type === type) {
       receptacles.push(record);
     }
-  });
+  }
   return receptacles;
 }
 

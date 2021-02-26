@@ -97,18 +97,6 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const elementRegistryId = useRef<number>();
   const model = useHotReloadModel(props);
 
-  const firstRenderRef = useRef<boolean>(true);
-  useEffect(() => {
-    if (firstRenderRef.current) {
-      firstRenderRef.current = false;
-    } else {
-      console.error(
-        '[useICE] An ICE registration changed fieldId and/or model id in a render cycle. ' +
-          `This seems odd. Make sure is intended. Current field is ${props.fieldId}, with model id ${props.model.craftercms.id}`
-      );
-    }
-  }, [props.fieldId, props.model.craftercms.id]);
-
   useEffect(() => {
     // Register
     elementRegistryId.current = register({
