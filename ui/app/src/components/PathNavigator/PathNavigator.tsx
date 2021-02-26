@@ -67,6 +67,7 @@ import LookupTable from '../../models/LookupTable';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
+import { getSystemLink } from '../LauncherSection';
 
 interface Menu {
   path?: string;
@@ -408,11 +409,17 @@ export default function PathNavigator(props: PathNavigatorProps) {
     : createItemClickedHandler((item: DetailedItem, e) => {
         if (isNavigable(item)) {
           if (item.previewUrl) {
-            let previewBase = previewChoice[site] === '2' ? 'next/preview' : 'preview';
+            const url = getSystemLink({
+              site,
+              systemLinkId: 'preview',
+              previewChoice,
+              authoringBase,
+              page: item.previewUrl
+            });
             if (e.ctrlKey || e.metaKey) {
-              window.open(`${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`);
+              window.open(url);
             } else {
-              window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+              window.location.href = url;
             }
           }
         } else if (isFolder(item)) {

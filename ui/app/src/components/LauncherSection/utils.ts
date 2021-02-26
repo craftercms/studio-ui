@@ -72,18 +72,20 @@ export function getSystemLink({
   systemLinkId,
   authoringBase,
   site,
-  previewChoice
+  previewChoice,
+  page = '/'
 }: {
   systemLinkId: SystemLinkId;
   authoringBase: string;
   site: string;
   previewChoice: LookupTable<string>;
+  page?: string;
 }) {
   return systemLinkId === 'preview'
     ? // Preview is a special "dynamic case"
       previewChoice[site] === '2'
-      ? `${authoringBase}/next/preview#/?page=/&site=${site}`
-      : `${authoringBase}/preview#/?page=/&site=${site}`
+      ? `${authoringBase}/next/preview#/?page=${page}&site=${site}`
+      : `${authoringBase}/preview#/?page=${page}&site=${site}`
     : {
         siteTools: `${authoringBase}/site-config`,
         siteSearch: `${authoringBase}/search`,
