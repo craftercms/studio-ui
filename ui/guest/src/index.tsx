@@ -20,6 +20,9 @@ import Guest from './react/Guest';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { nnou } from './utils/object';
+import * as elementRegistry from './classes/ElementRegistry';
+import * as iceRegistry from './classes/ICERegistry';
+import * as contentController from './classes/ContentController';
 
 export interface BaseCrafterConfig {
   baseUrl?: string;
@@ -78,3 +81,5 @@ export function initPageBuilder({ path, documentDomain }) {
     guestProxyElement
   );
 }
+
+export { elementRegistry, iceRegistry, contentController };
