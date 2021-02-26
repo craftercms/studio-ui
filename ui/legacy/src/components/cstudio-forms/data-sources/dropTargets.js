@@ -19,7 +19,7 @@
     return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dropTargetsMessages[id]);
   }
 
-  function Receptacles(id, form, properties, constraints) {
+  function DropTargets(id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -45,7 +45,7 @@
     return this;
   }
 
-  Receptacles.prototype = {
+  DropTargets.prototype = {
     add: function(control) {
       const self = this;
       if (this.contentTypes) {
@@ -90,7 +90,7 @@
     updateItem: function(item, control) {},
 
     getLabel: function() {
-      return formatMessage('receptacles');
+      return formatMessage('dropTargets');
     },
 
     getInterface: function() {
@@ -98,7 +98,7 @@
     },
 
     getName: function() {
-      return 'receptacles';
+      return 'dropTargets';
     },
 
     getSupportedProperties: function() {
@@ -339,5 +339,5 @@
     }
   };
 
-  CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-receptacles', Receptacles);
+  CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-dropTargets', DropTargets);
 })();
