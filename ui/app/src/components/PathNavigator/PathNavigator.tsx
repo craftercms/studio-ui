@@ -67,6 +67,7 @@ import LookupTable from '../../models/LookupTable';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
+import { getSystemLink } from '../LauncherSection';
 
 interface Menu {
   path?: string;
@@ -90,9 +91,11 @@ export interface PathNavigatorProps {
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
-  onItemClicked?: (item: DetailedItem) => void;
+  onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   computeActiveItems?: (items: DetailedItem[]) => string[];
-  createItemClickedHandler?: (defaultHandler: (item: DetailedItem) => void) => (item: DetailedItem) => void;
+  createItemClickedHandler?: (
+    defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
+  ) => (item: DetailedItem) => void;
 }
 
 export interface PathNavigatorStateProps {
@@ -196,7 +199,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
       folderRenamed.type,
       itemsDeleted.type,
       itemDuplicated.type,
-      itemCreated.type,
       itemCreated.type
     ];
     const hostToHost$ = getHostToHostBus();
@@ -404,11 +406,21 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onItemClicked = onItemClickedProp
     ? onItemClickedProp
-    : createItemClickedHandler((item: DetailedItem) => {
+    : createItemClickedHandler((item: DetailedItem, e) => {
         if (isNavigable(item)) {
           if (item.previewUrl) {
-            let previewBase = previewChoice[site] === '2' ? 'next/preview' : 'preview';
-            window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+            const url = getSystemLink({
+              site,
+              systemLinkId: 'preview',
+              previewChoice,
+              authoringBase,
+              page: item.previewUrl
+            });
+            if (e.ctrlKey || e.metaKey) {
+              window.open(url);
+            } else {
+              window.location.href = url;
+            }
           }
         } else if (isFolder(item)) {
           onPathSelected(item);

@@ -24,7 +24,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_DROP_TARGETS_REQUEST,
   pushToolsPanelPage,
   setContentTypeFilter,
   setPreviewEditMode
@@ -47,9 +47,9 @@ const translations = defineMessages({
     id: 'previewComponentsPanel.browse',
     defaultMessage: 'Browse existing'
   },
-  listReceptacles: {
-    id: 'previewComponentsPanel.listReceptacles',
-    defaultMessage: 'List receptacles'
+  listDropTargets: {
+    id: 'previewComponentsPanel.listDropTargets',
+    defaultMessage: 'List drop targets'
   },
   listInPageInstances: {
     id: 'previewComponentsPanel.listInPageInstances',
@@ -144,16 +144,16 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     );
   };
 
-  const onListReceptaclesClick = () => {
+  const onListDropTargetsClick = () => {
     dispatch(
       pushToolsPanelPage(
-        createToolsPanelPage({ id: 'previewReceptaclesPanel.title' }, [
-          createWidgetDescriptor({ id: 'craftercms.components.PreviewReceptaclesPanel' })
+        createToolsPanelPage({ id: 'previewDropTargetsPanel.title' }, [
+          createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })
         ])
       )
     );
     hostToGuest$.next({
-      type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+      type: CONTENT_TYPE_DROP_TARGETS_REQUEST,
       payload: menuContext.contentType.id
     });
   };
@@ -176,7 +176,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
         <MenuItem onClick={onListInPageInstancesClick}>{formatMessage(translations.listInPageInstances)}</MenuItem>
         <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
-        <MenuItem onClick={onListReceptaclesClick}>{formatMessage(translations.listReceptacles)}</MenuItem>
+        <MenuItem onClick={onListDropTargetsClick}>{formatMessage(translations.listDropTargets)}</MenuItem>
       </Menu>
     </>
   );

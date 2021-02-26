@@ -36,6 +36,7 @@ import {
   fetchGlobalMenuFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
+  showCreateFolderSuccessNotification,
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -165,6 +166,21 @@ const systemEpics: CrafterCMSEpic[] = [
         hostToHost$.next(
           showSystemNotification({
             message: getIntl().formatMessage(itemSuccessMessages.itemCreated)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region showCreateFolderSuccessNotification
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showCreateFolderSuccessNotification.type),
+      tap(({ payload: { action } }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: getIntl().formatMessage(itemSuccessMessages.folderCreated)
           })
         );
       }),

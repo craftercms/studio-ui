@@ -17,7 +17,7 @@
 import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchItemsByPath, fetchItemWithChildrenByPath, fetchChildrenByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
@@ -127,6 +127,7 @@ export default [
       mergeMap(([{ type, payload: { id, offset } }, state]) =>
         fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
           limit: state.pathNavigator[id].limit,
+          ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
           offset
         }).pipe(
           map((children) => pathNavigatorFetchPathComplete({ id, children })),

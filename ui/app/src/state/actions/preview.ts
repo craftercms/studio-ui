@@ -21,7 +21,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
-import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
+import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
 
@@ -64,10 +64,10 @@ export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED'
 export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
 export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
 export const COMPONENT_INSTANCE_HTML_RESPONSE = 'COMPONENT_INSTANCE_HTML_RESPONSE';
-export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
-export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
-export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
-export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
+export const CONTENT_TYPE_DROP_TARGETS_REQUEST = 'CONTENT_TYPE_DROP_TARGETS_REQUEST';
+export const CONTENT_TYPE_DROP_TARGETS_RESPONSE = 'CONTENT_TYPE_DROP_TARGETS_RESPONSE';
+export const SCROLL_TO_DROP_TARGET = 'SCROLL_TO_DROP_TARGET';
+export const CLEAR_HIGHLIGHTED_DROP_TARGETS = 'CLEAR_HIGHLIGHTED_DROP_TARGETS';
 export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CLEAR_CONTENT_TREE_FIELD_SELECTED = 'CLEAR_CONTENT_TREE_FIELD_SELECTED';
 export const VALIDATION_MESSAGE = 'VALIDATION_MESSAGE';
@@ -98,7 +98,7 @@ export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
 export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
-export const CLEAR_RECEPTACLES = 'CLEAR_RECEPTACLES';
+export const CLEAR_DROP_TARGETS = 'CLEAR_DROP_TARGETS';
 export const SET_CONTENT_TYPE_FILTER = 'SET_CONTENT_TYPE_FILTER';
 export const EMBEDDED_LEGACY_FORM_CLOSE = 'EMBEDDED_LEGACY_FORM_CLOSE';
 export const EMBEDDED_LEGACY_FORM_SUCCESS = 'EMBEDDED_LEGACY_FORM_SUCCESS';
@@ -271,12 +271,12 @@ export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<C
 
 export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const clearReceptacles = /*#__PURE__*/ createAction(CLEAR_RECEPTACLES);
+export const clearDropTargets = /*#__PURE__*/ createAction(CLEAR_DROP_TARGETS);
 
-export const setContentTypeReceptacles = /*#__PURE__*/ createAction<{
+export const setContentTypeDropTargets = /*#__PURE__*/ createAction<{
   contentType: string;
-  receptacle: ContentTypeReceptacle;
-}>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
+  dropTarget: ContentTypeDropTarget;
+}>(CONTENT_TYPE_DROP_TARGETS_RESPONSE);
 
 export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTENT_TYPE_FILTER);
 

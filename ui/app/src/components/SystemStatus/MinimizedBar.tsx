@@ -5,8 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MaximizeIcon from '@material-ui/icons/OpenInBrowserRounded';
 import React from 'react';
-import { MinimizedDialogStatus } from '../../models/MinimizedDialog';
 import { ProgressBar } from './ProgressBar';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,6 +26,14 @@ export const useStyles = makeStyles((theme: Theme) =>
     subtitle: {
       fontSize: '14px',
       marginLeft: '15px'
+    },
+    indeterminateProgressBar: {
+      position: 'absolute',
+      bottom: ' 0px',
+      width: '100%',
+      left: '0',
+      borderBottomLeftRadius: '3px',
+      borderBottomRightRadius: '3px'
     }
   })
 );
@@ -33,7 +41,7 @@ export const useStyles = makeStyles((theme: Theme) =>
 interface MinimizedBarProps {
   title: string;
   subtitle?: string;
-  status?: MinimizedDialogStatus;
+  status?: 'indeterminate' | number;
   onMaximized?(): void;
 }
 
@@ -45,7 +53,11 @@ export function MinimizedBar(props: MinimizedBarProps) {
       <Typography variant="h6" children={title} />
       {subtitle && <Typography variant="subtitle1" className={classes.subtitle} children={subtitle} />}
       {onMaximized ? <IconButton aria-label="Maximize" onClick={onMaximized} children={<MaximizeIcon />} /> : null}
-      {status && <ProgressBar status={status.status} progress={status.progress} />}
+      {status === 'indeterminate' ? (
+        <LinearProgress className={classes.indeterminateProgressBar} />
+      ) : status ? (
+        <ProgressBar progress={status} />
+      ) : null}
     </Paper>
   );
 }

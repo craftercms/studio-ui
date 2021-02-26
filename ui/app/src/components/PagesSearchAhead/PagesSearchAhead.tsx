@@ -114,7 +114,9 @@ export default function PagesSearchAhead(props) {
     },
     options: keyword && items ? items : [],
     filterOptions: (options: SearchItem[], state) => options,
-    getOptionLabel: (item: SearchItem) => item.path,
+    getOptionLabel: (item: SearchItem | string) => {
+      return typeof item === 'string' ? item : item.path;
+    },
     getOptionSelected: (option: SearchItem, value) => option.path === value.path
   });
 
@@ -158,6 +160,11 @@ export default function PagesSearchAhead(props) {
       <div {...getRootProps()}>
         <InputBase
           {...inputProps}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter' && keyword.startsWith('/')) {
+              onEnter(keyword);
+            }
+          }}
           onFocus={(e) => {
             onFocus?.();
             inputProps.onFocus(e);

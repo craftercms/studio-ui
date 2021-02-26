@@ -38,7 +38,10 @@ export default createReducer<GlobalState['dialogs']['minimizedDialogs']>(
   {
     [pushDialog.type]: (state, { payload }) => ({
       ...state,
-      [payload.id]: payload
+      [payload.id]: {
+        onMaximized: maximizeDialog({ id: payload.id }),
+        ...payload
+      }
     }),
     [popDialog.type]: (state, { payload }) => reversePluckProps(state, payload.id),
     [updateDialog.type]: (state, { payload }) => ({

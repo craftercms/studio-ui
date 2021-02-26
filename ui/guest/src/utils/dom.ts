@@ -21,7 +21,7 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { DropZone, ICEProps, ValidationResult } from '../models/InContextEditing';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
-import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
+import { ContentTypeDropTarget } from '@craftercms/studio-ui/models/ContentTypeDropTarget';
 import { getElementFromICEProps } from '../classes/ElementRegistry';
 
 // Regular click gets triggered even after loooong mouse downs or
@@ -367,14 +367,14 @@ export function scrollToElement(element: Element, scrollElement: string, animate
   return $element;
 }
 
-export function scrollToReceptacle(
-  receptacles: ContentTypeReceptacle[],
+export function scrollToDropTargets(
+  dropTargets: ContentTypeDropTarget[],
   scrollElement: string,
   getElementRegistry: (id: number) => Element
 ) {
   let elementInView: boolean;
   elementInView = forEach(
-    receptacles,
+    dropTargets,
     ({ id }) => {
       let elem = getElementRegistry(id);
       if (isElementInView(elem)) {
@@ -386,7 +386,7 @@ export function scrollToReceptacle(
   );
   if (!elementInView) {
     // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-    let element = getElementRegistry(receptacles[0].id);
+    let element = getElementRegistry(dropTargets[0].id);
     $(scrollElement).animate(
       {
         scrollTop: $(element).offset().top - 100

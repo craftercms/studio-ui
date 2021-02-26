@@ -243,15 +243,15 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewReceptaclesPanel.title',
-                    defaultMessage: 'Component Receptacles'
+                    id: 'previewDropTargetsPanel.title',
+                    defaultMessage: 'Drop Targets'
                   },
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
                   },
                   widgets: [
                     {
-                      id: 'craftercms.components.PreviewReceptaclesPanel',
+                      id: 'craftercms.components.PreviewDropTargetsPanel',
                       uiKey: count++
                     }
                   ]
@@ -417,7 +417,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'receptaclesMessages.contentTypes',
+                    id: 'dropTargetsMessages.contentTypes',
                     defaultMessage: 'Content Types'
                   },
                   icon: {
