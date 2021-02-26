@@ -21,7 +21,7 @@ import { useICE } from './hooks';
 import { extractCollectionItem, value as getModelValue } from '../utils/model';
 import { nnou, setProperty } from '../utils/object';
 
-type FieldProps<P = {}> = PropsWithChildren<
+export type FieldProps<P = {}> = PropsWithChildren<
   P & {
     model: ContentInstance;
     index?: ICEProps['index'];
@@ -30,12 +30,12 @@ type FieldProps<P = {}> = PropsWithChildren<
   }
 >;
 
-type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
+export type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
   renderTarget?: string;
   format?: (value: V, fieldId: string) => F;
 };
 
-type ModelProps<P = {}> = PropsWithChildren<
+export type ModelProps<P = {}> = PropsWithChildren<
   P & {
     model: ContentInstance;
     component?: ElementType<P>;

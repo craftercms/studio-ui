@@ -2,9 +2,9 @@
   "name": "@craftercms/studio-guest",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "build_tsc/index.js",
+  "module": "build_tsc/index.js",
+  "typings": "build_tsc/index.d.ts",
   "craftercms": {
     "id": "craftercms.guest"
   },

@@ -83,6 +83,17 @@
 							<arguments>build-if-changed</arguments>
 						</configuration>
 					</execution>
+          <execution>
+            <id>Uppy Dashboard: build</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <workingDirectory>ui/uppy</workingDirectory>
+              <arguments>build-if-changed</arguments>
+            </configuration>
+          </execution>
 					<execution>
 						<id>UI next: build</id>
 						<goals>

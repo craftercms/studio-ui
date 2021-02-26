@@ -6,7 +6,8 @@
     "ui/legacy",
     "ui/scss",
     "ui/monaco",
-    "ui/ace"
+    "ui/ace",
+    "ui/uppy"
   ],
   "scripts": {
     "prettier": "node scripts/prettier.js",

@@ -5,10 +5,12 @@
     "rootDir": "./src",
     "outDir": "./build_tsc",
     "module": "esnext",
-    "target": "esnext",
+    "target": "ES2015",
     "importHelpers": true,
     "composite": true,
+    "downlevelIteration": true,
     "paths": {
+      "react": ["../../node_modules/react"],
       "@craftercms/studio-ui": ["../../app/src"],
       "@craftercms/studio-ui/*": ["../../app/src/*"]
     }

@@ -22,7 +22,7 @@ import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findClosestRect, getDropMarkerPosition, getInRectStats, splitRect } from '../utils/dom';
 
-interface DropMarkerProps {
+export interface DropMarkerProps {
   over: ElementRecord;
   prev: DOMRect;
   next: DOMRect;
@@ -31,7 +31,7 @@ interface DropMarkerProps {
   onDropPosition: Function;
 }
 
-export default function DropMarker(props: DropMarkerProps) {
+export function DropMarker(props: DropMarkerProps) {
   const //
     { over, prev, next, dropZone, coordinates, onDropPosition } = props,
     { current: r } = useRef({ targetIndex: null }),
@@ -145,3 +145,5 @@ export default function DropMarker(props: DropMarkerProps) {
 DropMarker.defaultProps = {
   onDropPosition: foo
 };
+
+export default DropMarker;

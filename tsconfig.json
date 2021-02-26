@@ -27,6 +27,7 @@
     "declarationMap": false,
     "sourceMap": false,
     "paths": {
+      "react": ["./node_modules/react"],
       "@craftercms/studio-ui": ["./ui/app/src"],
       "@craftercms/studio-ui/*": ["./ui/app/src/*"],
       "@craftercms/studio-guest": ["./ui/guest/src"],
