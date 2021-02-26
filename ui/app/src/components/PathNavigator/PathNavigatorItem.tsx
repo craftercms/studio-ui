@@ -42,7 +42,7 @@ export interface NavItemProps {
   isLevelDescriptor?: boolean;
   isSelectMode?: boolean;
   showItemNavigateToButton?: boolean;
-  onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
+  onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   onChangeParent?(item: DetailedItem): void;
   onPreview?(item: DetailedItem): void;
   onItemChecked?(item: DetailedItem, unselect: boolean): void;

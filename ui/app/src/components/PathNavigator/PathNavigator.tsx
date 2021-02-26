@@ -90,9 +90,11 @@ export interface PathNavigatorProps {
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
-  onItemClicked?: (item: DetailedItem) => void;
+  onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   computeActiveItems?: (items: DetailedItem[]) => string[];
-  createItemClickedHandler?: (defaultHandler: (item: DetailedItem) => void) => (item: DetailedItem) => void;
+  createItemClickedHandler?: (
+    defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
+  ) => (item: DetailedItem) => void;
 }
 
 export interface PathNavigatorStateProps {
@@ -403,11 +405,15 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onItemClicked = onItemClickedProp
     ? onItemClickedProp
-    : createItemClickedHandler((item: DetailedItem) => {
+    : createItemClickedHandler((item: DetailedItem, e) => {
         if (isNavigable(item)) {
           if (item.previewUrl) {
             let previewBase = previewChoice[site] === '2' ? 'next/preview' : 'preview';
-            window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+            if (e.ctrlKey || e.metaKey) {
+              window.open(`${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`);
+            } else {
+              window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+            }
           }
         } else if (isFolder(item)) {
           onPathSelected(item);

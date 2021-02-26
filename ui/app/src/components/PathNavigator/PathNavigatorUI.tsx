@@ -126,7 +126,7 @@ export interface PathNavigatorUIProps {
   /**
    * Prop fired when a list item itself is clicked (anywhere but it's buttons)
    **/
-  onItemClicked?: (item: DetailedItem) => void;
+  onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   /**
    *
    **/

@@ -28,7 +28,7 @@ export interface NavProps {
   computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemNavigateToButton?: boolean;
   classes?: Partial<Record<'root', string>>;
-  onItemClicked(item: DetailedItem): void;
+  onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
   onPathSelected?(item: DetailedItem): void;
   onPreview?(item: DetailedItem): void;
