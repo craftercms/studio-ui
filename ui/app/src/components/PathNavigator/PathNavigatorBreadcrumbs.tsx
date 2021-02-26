@@ -27,8 +27,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import { isNavigable } from './utils';
+import CloseIconRounded from '@material-ui/icons/CloseRounded';
 
-export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchButton';
+export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
 
 export interface BreadcrumbsProps {
   breadcrumb: DetailedItem[];
@@ -57,24 +58,29 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   return (
     <section className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}>
       {showSearch && onSearch ? (
-        <SearchBar
-          autoFocus
-          onChange={onChange}
-          keyword={keyword}
-          onActionButtonClick={() => {
-            if (keyword === '') {
-              setShowSearch(false);
-            } else {
+        <>
+          <SearchBar
+            autoFocus
+            onChange={onChange}
+            keyword={keyword}
+            onActionButtonClick={() => {
               onSearch('');
-            }
-          }}
-          showActionButton={true}
-          classes={{
-            root: clsx(classes.searchRoot, props.classes?.searchRoot),
-            inputInput: clsx(classes.searchInput, props.classes?.searchInput),
-            actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchButton)
-          }}
-        />
+            }}
+            showActionButton={keyword && true}
+            classes={{
+              root: clsx(classes.searchRoot, props.classes?.searchRoot),
+              inputInput: clsx(classes.searchInput, props.classes?.searchInput),
+              actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+            }}
+          />
+          <IconButton
+            size="small"
+            onClick={() => setShowSearch(false)}
+            className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+          >
+            <CloseIconRounded />
+          </IconButton>
+        </>
       ) : (
         <>
           <MuiBreadcrumbs

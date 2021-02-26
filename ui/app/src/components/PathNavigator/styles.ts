@@ -99,11 +99,15 @@ export const useStyles = makeStyles(
       },
       searchRoot: {
         margin: '7px 10px 7px 0',
-        height: '25px'
+        height: '25px',
+        width: '100%'
       },
       searchInput: {
         fontSize: '12px',
         padding: '5px !important'
+      },
+      searchCloseButton: {
+        marginRight: '10px'
       },
       searchCloseIcon: {
         fontSize: '12px !important'
