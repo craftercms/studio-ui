@@ -44,7 +44,7 @@ import { LookupTable } from '../../models/LookupTable';
 const translations = defineMessages({
   dropTargetsPanel: {
     id: 'previewDropTargetsPanel.title',
-    defaultMessage: 'Drop Targets'
+    defaultMessage: 'Component Drop Targets'
   },
   selectContentType: {
     id: 'previewDropTargetsPanel.selectContentType',

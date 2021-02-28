@@ -147,7 +147,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const onListDropTargetsClick = () => {
     dispatch(
       pushToolsPanelPage(
-        createToolsPanelPage({ id: 'previewDropTargetsPanel.title' }, [
+        createToolsPanelPage({ id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' }, [
           createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })
         ])
       )
