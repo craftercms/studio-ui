@@ -256,6 +256,7 @@ export function PreviewConcierge(props: any) {
           let compatibilityForceStay = compatibilityQueryArg === 'stay';
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
+            // Avoid recurrently showing the notification over and over as long as the page is not refreshed
             previewNextCheckInNotificationRef.current = true;
             if (compatibilityAsk) {
               setPreviewCompatibilityDialogOpen(true);
@@ -277,6 +278,8 @@ export function PreviewConcierge(props: any) {
               .subscribe((k) => {
                 handlePreviewCompatibilityDialogGo();
               });
+          } else if (!compatibilityAsk && !compatibilityForceStay) {
+            handlePreviewCompatibilityDialogGo();
           }
           break;
         case GUEST_CHECK_IN:
