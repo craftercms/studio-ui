@@ -244,7 +244,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   title: {
                     id: 'previewDropTargetsPanel.title',
-                    defaultMessage: 'Drop Targets'
+                    defaultMessage: 'Component Drop Targets'
                   },
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'

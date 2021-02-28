@@ -358,16 +358,22 @@ export default function Launcher(props: LauncherStateProps) {
       } else {
         setSiteCookie(site);
         setTimeout(() => {
-          window.location.href = getSystemLink({
+          const link = getSystemLink({
             systemLinkId: 'preview',
             previewChoice,
             authoringBase,
             site
           });
-          // If we're in legacy preview already (i.e. switching from a legacy-preview site to another
-          // legacy-preview site) only the hash will change but the page won't reload and it will apparently
-          // not done anything. In these cases, we need to manually reload.
-          !window.location.href.includes('/next/preview') && window.location.reload();
+          // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
+          // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
+          // fully integrated with the URL. In these cases, we need to programmatically reload.
+          const shouldReload =
+            // Currently in legacy...
+            window.location.pathname === `${authoringBase.replace(window.location.origin, '')}/preview` &&
+            // ...and not going to next
+            !link.includes('next/preview');
+          window.location.href = link;
+          shouldReload && window.location.reload();
         });
       }
     } else {
