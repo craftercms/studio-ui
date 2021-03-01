@@ -138,10 +138,10 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
       () => {
         onInstall(plugin);
       },
-      (response) => {
+      ({ response }) => {
         dispatch(
           showErrorDialog({
-            error: response
+            error: response.response
           })
         );
       }
@@ -239,6 +239,7 @@ function PluginList(props: PluginListProps) {
             plugin={plugin}
             inUse={Boolean(installedPlugins[plugin.id])}
             usePermission={installPermission}
+            disableCardActionClick={true}
             useLabel={
               Boolean(installedPlugins[plugin.id]) ? (
                 <FormattedMessage id="words.installed" defaultMessage="Installed" />
