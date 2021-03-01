@@ -956,6 +956,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabTranslationConfDesc: 'Definiert unterstützte Sprachen und deren Lösung',
   confTabSitePolicyConf: 'Site-Richtlinienkonfiguration',
   confTabSitePolicyConfDesc: 'Definiert Richtlinien zum Überprüfen von Inhaltsvorgängen',
+  confTabUiConf: 'Konfiguration der Benutzeroberfläche',
+  confTabUiConfDesc: 'Definiert die in der Benutzeroberfläche angezeigten Widgets',
 
   /* Image */
   constraintsError: 'Das Bild entspricht nicht den geforderten Maßen',
