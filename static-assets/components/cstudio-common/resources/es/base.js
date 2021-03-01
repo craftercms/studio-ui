@@ -910,6 +910,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabTranslationConfDesc: 'Define los lenguajes soportados y su resolución',
   confTabSitePolicyConf: 'Configuración de Políticas de Sitio',
   confTabSitePolicyConfDesc: 'Define las políticas para validar operaciones de contentido',
+  confTabUiConf: 'Configuración de la Interfaz de Usuario',
+  confTabUiConfDesc: 'Define los widgets que se muestran en la interfaz de usuario',
 
   /*Postfixes*/
   iDescription: 'Para nuúmero entero.',
