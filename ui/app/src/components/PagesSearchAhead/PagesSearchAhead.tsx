@@ -97,6 +97,7 @@ export default function PagesSearchAhead(props) {
   const { getRootProps, getInputProps, getListboxProps, getOptionProps, groupedOptions, popupOpen } = useAutocomplete({
     freeSolo: true,
     inputValue: keyword,
+    disableCloseOnSelect: true,
     onInputChange: (e, value, reason) => {
       if (reason === 'reset') {
         const previewUrl = getPreviewURLFromPath(value);
@@ -108,7 +109,7 @@ export default function PagesSearchAhead(props) {
         if (value) {
           onSearch$.next(value);
         } else {
-          setDirty(false);
+          setDirty(true);
         }
       }
     },
@@ -149,6 +150,7 @@ export default function PagesSearchAhead(props) {
   }, [contentTypes, onSearch$, site]);
 
   const onClean = () => {
+    setItems(null);
     setKeyword(value);
     setDirty(false);
   };
@@ -161,8 +163,17 @@ export default function PagesSearchAhead(props) {
         <InputBase
           {...inputProps}
           onKeyUp={(e) => {
-            if (e.key === 'Enter' && keyword.startsWith('/')) {
-              onEnter(keyword);
+            if (e.key === 'Enter') {
+              if (keyword.startsWith('/')) {
+                onEnter(keyword);
+              } else if (groupedOptions.length > 0) {
+                console.log(groupedOptions[0]);
+                const previewUrl = getPreviewURLFromPath(groupedOptions[0].path);
+                onEnter(previewUrl);
+                setKeyword(previewUrl);
+                setItems(null);
+                setDirty(false);
+              }
             }
           }}
           onFocus={(e) => {
