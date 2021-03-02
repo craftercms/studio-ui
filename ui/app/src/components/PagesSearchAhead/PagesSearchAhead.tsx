@@ -167,7 +167,6 @@ export default function PagesSearchAhead(props) {
               if (keyword.startsWith('/')) {
                 onEnter(keyword);
               } else if (groupedOptions.length > 0) {
-                console.log(groupedOptions[0]);
                 const previewUrl = getPreviewURLFromPath(groupedOptions[0].path);
                 onEnter(previewUrl);
                 setKeyword(previewUrl);
