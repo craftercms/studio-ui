@@ -483,7 +483,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
   const handleSubmit = () => {
     const data = {
-      environment: dialog.environment,
+      ...(userRole === 'admin' ? { publishChannel: dialog.environment } : { environment: dialog.environment }),
       items: dialog.selectedItems,
       schedule: dialog.scheduling,
       sendEmail: dialog.emailOnApprove,
@@ -499,7 +499,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         onSuccess?.({
           ...response,
           schedule: data.schedule,
-          environment: data.environment,
+          environment: dialog.environment,
           items: data.items.map((path) => items.find((item) => item.id === path))
         });
       },
