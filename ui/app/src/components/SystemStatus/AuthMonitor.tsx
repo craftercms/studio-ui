@@ -25,7 +25,7 @@ import Button from '@material-ui/core/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { login, logout, refreshAuthToken } from '../../state/actions/auth';
+import { login, loginComplete } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -139,13 +139,15 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
     e.preventDefault();
     e.stopPropagation();
     if (isSSO) {
-      dispatch(refreshAuthToken());
+      dispatch(loginComplete());
       setSSOButtonClicked(false);
     } else {
       !isBlank(password) && dispatch(login({ username, password }));
     }
   };
-  const onClose = () => dispatch(logout());
+  const onClose = () => {
+    window.location.href = `${authoringUrl}/login`;
+  };
   return (
     <>
       <DialogTitle id="craftercmsReLoginDialog" className={classes.title} style={styles}>
