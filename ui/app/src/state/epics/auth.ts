@@ -28,7 +28,7 @@ import {
 } from '../actions/auth';
 import { delay, ignoreElements, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
-import { catchAjaxError, get } from '../../utils/ajax';
+import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
 import { messageSharedWorker } from '../actions/system';
@@ -99,7 +99,7 @@ const epics: CrafterCMSEpic[] = [
         // it won't fail due to outdated XSRF/auth cookies.
         interval(1000).pipe(
           delay(100),
-          switchMap(() => get('/studio/foo.json').pipe(tap(() => setRequestForgeryToken()))),
+          switchMap(() => auth.fetchAuthenticationType().pipe(tap(() => setRequestForgeryToken()))),
           take(1)
         )
       ),
