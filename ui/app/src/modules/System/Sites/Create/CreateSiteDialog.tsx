@@ -251,7 +251,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     loadingStateRoot: {
-      height: '100%'
+      height: '100%',
+      margin: 0
     },
     loadingStateGraphicRoot: {
       flexGrow: 1,

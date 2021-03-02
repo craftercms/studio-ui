@@ -992,7 +992,7 @@
       CrafterCMSNext.system.getStore().subscribe((_store_) => {
         store = _store_;
 
-        publish.maxCommentLength = store.getState().configuration.publishing.submission.commentMaxLength;
+        publish.maxCommentLength = store.getState().uiConfig.publishing.submissionCommentMaxLength;
 
         angular.element(document).ready(function() {
           renderDashboard();
