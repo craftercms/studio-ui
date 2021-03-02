@@ -66,6 +66,7 @@ import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
 import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
+import { nanoid as uuid } from 'nanoid';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -277,13 +278,13 @@ const content: CrafterCMSEpic[] = [
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
+        const id = uuid();
         if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
-          // return merge (of pushDialog, paste....)
           return merge(
             of(
               pushDialog({
                 minimized: true,
-                id: `pasting-${state.content.clipboard.sourcePath}-${payload.path}`,
+                id,
                 status: 'indeterminate',
                 title: getIntl().formatMessage(inProgressMessages.pasting),
                 onMaximized: null
@@ -296,7 +297,7 @@ const content: CrafterCMSEpic[] = [
                   unSetClipBoard(),
                   showPasteItemSuccessNotification(),
                   popDialog({
-                    id: `pasting-${state.content.clipboard.sourcePath}-${payload.path}`
+                    id
                   })
                 ]);
               })

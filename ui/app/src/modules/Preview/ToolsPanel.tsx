@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
@@ -93,20 +93,13 @@ export default function ToolsPanel() {
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
-  const resource = useLogicResource<
-    WidgetDescriptor[],
-    { pages: WidgetDescriptor[]; uiConfig: GlobalState['uiConfig'] }
-  >(
-    useMemo(() => ({ pages, uiConfig, site }), [pages, uiConfig, site]),
-    {
-      errorSelector: (source) => source.uiConfig.error,
-      resultSelector: (source) =>
-        source.pages.length ? pages.slice(pages.length - 1) : source.uiConfig.preview.toolsPanel.widgets,
-      shouldReject: (source) => Boolean(source.uiConfig.error),
-      shouldResolve: (source) => !site || Boolean(source.uiConfig.preview.toolsPanel.widgets),
-      shouldRenew: (source, resource) => source.uiConfig.isFetching || resource.complete
-    }
-  );
+  const resource = useLogicResource<WidgetDescriptor[], GlobalState['uiConfig']>(uiConfig, {
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => source.preview.toolsPanel.widgets,
+    shouldReject: (source) => Boolean(source.error),
+    shouldResolve: (source) => Boolean(source.preview.toolsPanel.widgets),
+    shouldRenew: (source, resource) => source.isFetching || resource.complete
+  });
 
   return (
     <ResizeableDrawer
@@ -138,7 +131,7 @@ export default function ToolsPanel() {
           }
         }}
       >
-        <ToolsPaneBody resource={resource} />
+        <ToolsPaneBody resource={resource} pages={pages} />
       </SuspenseWithEmptyState>
     </ResizeableDrawer>
   );
@@ -146,13 +139,14 @@ export default function ToolsPanel() {
 
 interface ToolsPaneBodyProps {
   resource: Resource<WidgetDescriptor[]>;
+  pages: WidgetDescriptor[];
 }
 
 function ToolsPaneBody(props: ToolsPaneBodyProps) {
   const stack = props.resource.read();
   const site = useActiveSiteId();
   const { rolesBySite } = useActiveUser();
-  return <>{renderWidgets(stack, rolesBySite[site])}</>;
+  return <>{renderWidgets(props.pages.length ? props.pages : stack, rolesBySite[site])}</>;
 }
 
 // TODO: Move this to a better place.
