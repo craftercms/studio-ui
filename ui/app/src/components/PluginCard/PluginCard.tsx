@@ -340,10 +340,9 @@ function PluginCard(props: PluginCardProps) {
       )}
       <CardActionArea
         onClick={() => {
-          if (disableCardActionClick) {
-            return;
+          if (!disableCardActionClick) {
+            onPluginSelected(plugin, 1);
           }
-          onPluginSelected(plugin, 1);
         }}
       >
         <AutoPlaySwipeableViews
