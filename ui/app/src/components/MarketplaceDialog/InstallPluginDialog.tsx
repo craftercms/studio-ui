@@ -239,7 +239,7 @@ function PluginList(props: PluginListProps) {
             plugin={plugin}
             inUse={Boolean(installedPlugins[plugin.id])}
             usePermission={installPermission}
-            disableCardActionClick={true}
+            disableCardActionClick
             useLabel={
               Boolean(installedPlugins[plugin.id]) ? (
                 <FormattedMessage id="words.installed" defaultMessage="Installed" />
