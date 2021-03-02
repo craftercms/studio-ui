@@ -309,10 +309,8 @@ function PluginCard(props: PluginCardProps) {
     <Card className={classes.card}>
       {id !== 'GIT' && (
         <CardActionArea
+          disabled={disableCardActionClick}
           onClick={(e) => {
-            if (disableCardActionClick) {
-              return;
-            }
             if (isMarketplacePlugin && !plugin.compatible) {
               onImageClick(e);
             } else {
@@ -339,10 +337,9 @@ function PluginCard(props: PluginCardProps) {
         </CardActionArea>
       )}
       <CardActionArea
+        disabled={disableCardActionClick}
         onClick={() => {
-          if (!disableCardActionClick) {
-            onPluginSelected(plugin, 1);
-          }
+          onPluginSelected(plugin, 1);
         }}
       >
         <AutoPlaySwipeableViews
