@@ -85,13 +85,12 @@ export default [
     action$.pipe(
       ofType(fetchSitePropertiesAction.type),
       withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
       switchMap(([, state]) =>
-        state.sites.active
-          ? fetchSiteProperties(state.sites.active).pipe(
-              map(fetchSitePropertiesComplete),
-              catchAjaxError(fetchSitePropertiesFailed)
-            )
-          : NEVER
+        fetchSiteProperties(state.sites.active).pipe(
+          map(fetchSitePropertiesComplete),
+          catchAjaxError(fetchSitePropertiesFailed)
+        )
       )
     ),
   // endregion
