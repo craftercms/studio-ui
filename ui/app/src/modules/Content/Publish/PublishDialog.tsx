@@ -22,7 +22,13 @@ import { BaseItem, DetailedItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useLogicResource,
+  usePermissionsBySite,
+  useSpreadState,
+  useUnmount
+} from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
 import Grid from '@material-ui/core/Grid';
@@ -176,11 +182,6 @@ export const paths = (checked: any) =>
   Object.entries({ ...checked })
     .filter(([, value]) => value === true)
     .map(([key]) => key);
-
-const submitMap = {
-  admin: goLive,
-  author: submitToGoLive
-};
 
 const dialogInitialState = {
   emailOnApprove: false,
@@ -383,16 +384,15 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   });
 
   const siteId = useActiveSiteId();
+  const permissionsBySite = usePermissionsBySite();
+  const myPermissions = permissionsBySite[siteId];
 
   useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
-  const userSitesRoles: String[] = user?.rolesBySite[siteId];
-  let userRole = null;
   let submit = null;
 
-  userRole = userSitesRoles && userSitesRoles.includes('admin') ? 'admin' : 'author';
-  submit = submitMap[userRole];
+  submit = myPermissions.includes('publish') ? goLive : submitToGoLive;
 
   const { formatMessage } = useIntl();
 
@@ -431,13 +431,14 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     () => ({
       items,
       apiState,
-      publishingChannels
+      publishingChannels,
+      myPermissions
     }),
-    [items, publishingChannels, apiState]
+    [items, publishingChannels, apiState, myPermissions]
   );
 
   const resource = useLogicResource<Return, Source>(publishSource, {
-    shouldResolve: (source) => Boolean(source.items && source.publishingChannels),
+    shouldResolve: (source) => Boolean(source.items && source.publishingChannels && myPermissions.length),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => ({
@@ -563,8 +564,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       showDepsDisabled={showDepsDisabled}
       dialog={dialog}
       setDialog={setDialog}
-      title={formatMessage(userRole === 'admin' ? goLiveMessages.title : submitMessages.title)}
-      subtitle={userRole === 'admin' ? formatMessage(goLiveMessages.subtitle) : null}
+      title={formatMessage(myPermissions.includes('publish') ? goLiveMessages.title : submitMessages.title)}
+      subtitle={myPermissions.includes('publish') ? formatMessage(goLiveMessages.subtitle) : null}
       checkedItems={checkedItems}
       setCheckedItems={setChecked}
       checkedSoftDep={checkedSoftDep}
@@ -577,7 +578,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
       classes={useStyles()}
-      showEmailCheckbox={!(userRole === 'admin')}
+      showEmailCheckbox={!myPermissions.includes('publish')}
     />
   );
 }

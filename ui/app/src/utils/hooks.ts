@@ -75,10 +75,14 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
-export function usePermissions(): GlobalState['content']['items']['permissionsByPath'] {
+export function usePermissionsByPath(): GlobalState['content']['items']['permissionsByPath'] {
   return useSelector<GlobalState, GlobalState['content']['items']['permissionsByPath']>(
     (state) => state.content.items.permissionsByPath
   );
+}
+
+export function usePermissionsBySite(): GlobalState['user']['permissionsBySite'] {
+  return useSelector<GlobalState, GlobalState['user']['permissionsBySite']>((state) => state.user.permissionsBySite);
 }
 
 export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
