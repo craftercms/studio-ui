@@ -98,6 +98,9 @@ $dark-mode-input-border: #ced4da;
     .modal-title {
       color: $dark-mode-font-color;
     }
+    .modal-body {
+      color: $dark-mode-font-color;
+    }
   }
 
   // Panels
@@ -347,6 +350,24 @@ $dark-mode-input-border: #ced4da;
         border-left: none;
         border-right: none;
         border-bottom-color: $dark-mode-background-default-dimmed;
+      }
+    }
+  }
+
+  // logs view
+  .log-details-view {
+    color: $dark-mode-font-color;
+  }
+
+  //audit view
+  .audit-view {
+    .well {
+      background-color: $dark-mode-background-paper;
+    }
+    .date-container {
+      .date-icon {
+        color: $dark-mode-font-color !important;
+        background: none !important;
       }
     }
   }
