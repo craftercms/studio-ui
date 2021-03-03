@@ -138,6 +138,9 @@ $dark-mode-input-border: #ced4da;
     color: $dark-mode-font-color;
     background: none;
   }
+  .btn-default[disabled] {
+    background: none !important;
+  }
 
   .btn-default:hover,
   .btn-transparent:hover {
@@ -359,7 +362,7 @@ $dark-mode-input-border: #ced4da;
     color: $dark-mode-font-color;
   }
 
-  //audit view
+  // audit view
   .audit-view {
     .well {
       background-color: $dark-mode-background-paper;
@@ -369,6 +372,21 @@ $dark-mode-input-border: #ced4da;
         color: $dark-mode-font-color !important;
         background: none !important;
       }
+    }
+  }
+
+  // groups view
+  .groups-view {
+    .page-header {
+      color: $dark-mode-font-color;
+      .close {
+        color: white;
+        text-shadow: none;
+        opacity: 1;
+      }
+    }
+    h3 {
+      color: $dark-mode-font-color;
     }
   }
 }
