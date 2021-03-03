@@ -34,7 +34,7 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
   useEnv,
-  usePermissions,
+  usePermissionsByPath,
   usePreviewGuest,
   usePreviewState,
   useSelection,
@@ -188,7 +188,7 @@ export function AddressBar(props: AddressBarProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const onMenuItemClicked = (option: string) =>
     itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
-  const permissions = usePermissions()?.[path];
+  const permissions = usePermissionsByPath()?.[path];
   const actions = generateSingleItemOptions(item, permissions, formatMessage)?.flatMap((options) => options);
 
   return (
@@ -278,7 +278,7 @@ export default function ToolBar() {
   const { authoringBase } = useEnv();
 
   // region permissions
-  const permissions = usePermissions();
+  const permissions = usePermissionsByPath();
   const write = permissions?.[item?.path]?.['write'];
   const createContent = permissions?.[item?.path]?.['create_content'];
   // endregion

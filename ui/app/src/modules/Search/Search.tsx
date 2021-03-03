@@ -35,7 +35,7 @@ import { History, Location } from 'history';
 import { fetchContentXML } from '../../services/content';
 import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, usePermissionsByPath, useSelection } from '../../utils/hooks';
 import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
@@ -360,7 +360,7 @@ export default function Search(props: SearchProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const dispatch = useDispatch();
-  const permissions = usePermissions();
+  const permissions = usePermissionsByPath();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
