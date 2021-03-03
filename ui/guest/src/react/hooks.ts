@@ -20,7 +20,7 @@ import { useGuestContext } from './GuestContext';
 import { deregister, register } from '../classes/ElementRegistry';
 import { nnou, nou, pluckProps } from '../utils/object';
 import { ICEProps } from '../models/InContextEditing';
-import { models$, byPathFetchIfNotLoaded, model$ } from '../classes/ContentController';
+import { byPathFetchIfNotLoaded, model$, models$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { denormalizeModel } from '../utils/content';
 import * as Model from '../utils/model';
@@ -99,17 +99,19 @@ export function useICE(props: UseICEProps): ICEMaterials {
 
   useEffect(() => {
     // Register
-    elementRegistryId.current = register({
-      element: elementRef.current,
-      modelId: props.model.craftercms.id,
-      fieldId: props.fieldId,
-      index: props.index
-    });
-    return () => {
-      // Deregister
-      deregister(elementRegistryId.current);
-    };
-  }, [props.index, props.fieldId, props.model.craftercms.id]);
+    if (inAuthoring) {
+      elementRegistryId.current = register({
+        element: elementRef.current,
+        modelId: props.model.craftercms.id,
+        fieldId: props.fieldId,
+        index: props.index
+      });
+      return () => {
+        // Deregister
+        deregister(elementRegistryId.current);
+      };
+    }
+  }, [props.index, props.fieldId, props.model.craftercms.id, inAuthoring]);
 
   if (inAuthoring) {
     const isDraggable = nnou(draggable[elementRegistryId.current]) && draggable[elementRegistryId.current] !== false;
