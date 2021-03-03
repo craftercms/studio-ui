@@ -34,7 +34,7 @@ import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import Breadcrumbs from '../../../components/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/PathNavigator/PathNavigatorList';
-import { fetchItemsByPath, fetchItemWithChildrenByPath, fetchChildrenByPath } from '../../../services/content';
+import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../../services/content';
 import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
@@ -214,7 +214,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       } else {
         const nextItems = {
           ...{ ...state.byId, ...createLookupTable(children, 'path') },
-          [parent.path]: parent
+          ...(parent && { [parent.path]: parent })
         };
 
         return {
