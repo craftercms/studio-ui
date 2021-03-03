@@ -37,7 +37,7 @@ const reducer = createReducer<EnhancedUser>(null, {
   [fetchMyPermissionsInSiteComplete.type]: (state, { payload }) => ({
     ...state,
     permissionsBySite: {
-      ...state.rolesBySite,
+      ...state.permissionsBySite,
       [payload.site]: payload.permissions
     }
   })
