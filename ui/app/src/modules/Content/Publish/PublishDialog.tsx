@@ -390,9 +390,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
-  let submit = null;
-
-  submit = myPermissions.includes('publish') ? goLive : submitToGoLive;
+  const submit = myPermissions.includes('publish') ? goLive : submitToGoLive;
 
   const { formatMessage } = useIntl();
 
