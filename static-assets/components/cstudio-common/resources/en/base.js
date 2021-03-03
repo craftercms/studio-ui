@@ -952,6 +952,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabTranslationConfDesc: 'Defines supported languages and how to resolve them',
   confTabSitePolicyConf: 'Site Policy Configuration',
   confTabSitePolicyConfDesc: 'Defines policies to validate content operations',
+  confTabUiConf: 'User Interface Configuration',
+  confTabUiConfDesc: 'Defines the widgets shown in the user interface',
 
   /* Image */
   constraintsError: 'The uploaded file does not meet the specified width & height constraints',
