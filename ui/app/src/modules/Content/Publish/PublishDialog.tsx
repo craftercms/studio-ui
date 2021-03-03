@@ -481,13 +481,21 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [apiState.submitting, checkedItems, publishingChannels]);
 
   const handleSubmit = () => {
+    const {
+      environment,
+      selectedItems: items,
+      scheduling: schedule,
+      emailOnApprove: sendEmail,
+      submissionComment,
+      scheduledDateTime: scheduledDate
+    } = dialog;
     const data = {
-      ...(userRole === 'admin' ? { publishChannel: dialog.environment } : { environment: dialog.environment }),
-      items: dialog.selectedItems,
-      schedule: dialog.scheduling,
-      sendEmail: dialog.emailOnApprove,
-      submissionComment: dialog.submissionComment,
-      ...(dialog.scheduling === 'custom' ? { scheduledDate: dialog.scheduledDateTime } : {})
+      ...(myPermissions.includes('publish') ? { publishChannel: environment } : { environment: environment }),
+      items,
+      schedule,
+      sendEmail,
+      submissionComment,
+      ...(schedule === 'custom' ? { scheduledDate } : {})
     };
 
     setApiState({ ...apiState, submitting: true });
@@ -497,9 +505,9 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         setApiState({ error: null, submitting: false });
         onSuccess?.({
           ...response,
-          schedule: data.schedule,
-          environment: dialog.environment,
-          items: data.items.map((path) => items.find((item) => item.id === path))
+          schedule: schedule,
+          environment: environment,
+          items: items.map((path) => items.find((item) => item.id === path))
         });
       },
       (error) => {
