@@ -69,6 +69,7 @@ import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
+import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -101,7 +102,7 @@ function Guest(props: GuestProps) {
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
-  const refs = useRef({ contentReady: false, firstRender: true });
+  const refs = useRef({ contentReady: false, firstRender: true, keysPressed: {} as LookupTable<boolean> });
   // TODO: Avoid double re-render when draggable changes without coupling to redux on useICE
   const context = useMemo(
     () => ({
@@ -116,6 +117,9 @@ function Guest(props: GuestProps) {
           if (isNullOrUndefined(record)) {
             console.error('No record found for dispatcher element');
           } else {
+            if (refs.current.keysPressed.z && type === 'click') {
+              return false;
+            }
             // HighlightMode validations helps to dont stop the event propagation
             if (
               ['click', 'dblclick'].includes(type) &&
@@ -133,6 +137,22 @@ function Guest(props: GuestProps) {
     }),
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
+
+  // Key press/hold keeper events
+  useEffect(() => {
+    const keydown = (e) => {
+      refs.current.keysPressed[e.key] = true;
+    };
+    const keyup = (e) => {
+      refs.current.keysPressed[e.key] = false;
+    };
+    document.addEventListener('keydown', keydown, false);
+    document.addEventListener('keyup', keyup, false);
+    return () => {
+      document.removeEventListener('keydown', keydown, false);
+      document.removeEventListener('keyup', keyup, false);
+    };
+  }, []);
 
   // Sets document domain
   useEffect(() => {

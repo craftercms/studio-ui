@@ -23,6 +23,7 @@ import { post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
+import $ from 'jquery';
 
 export function initTinyMCE(
   record: ElementRecord,

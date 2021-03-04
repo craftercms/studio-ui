@@ -146,7 +146,9 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
   const stack = props.resource.read();
   const site = useActiveSiteId();
   const { rolesBySite } = useActiveUser();
-  return <>{renderWidgets(props.pages.length ? props.pages : stack, rolesBySite[site])}</>;
+  return (
+    <>{renderWidgets(props.pages.length ? props.pages.slice(props.pages.length - 1) : stack, rolesBySite[site])}</>
+  );
 }
 
 // TODO: Move this to a better place.

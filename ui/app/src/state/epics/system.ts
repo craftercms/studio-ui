@@ -67,12 +67,15 @@ import { sharedWorkerUnauthenticated } from '../actions/auth';
 import { fetchGlobalMenuItems } from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
-  // region storeInitialized & changeSite
+  // region storeInitialized
   (action$) =>
     action$.pipe(
-      ofType(storeInitialized.type, changeSite.type),
+      ofType(storeInitialized.type),
       switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu()])
     ),
+  // endregion
+  // region changeSite
+  (action$) => action$.pipe(ofType(changeSite.type), mapTo(startPublishingStatusFetcher())),
   // endregion
   // region emitSystemEvent
   (action$) =>
@@ -354,7 +357,7 @@ const systemEpics: CrafterCMSEpic[] = [
       ofType(fetchGlobalMenu.type),
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
     )
-  //
+  // endregion
 ];
 
 export default systemEpics;
