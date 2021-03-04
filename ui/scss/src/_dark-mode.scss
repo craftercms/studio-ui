@@ -98,6 +98,9 @@ $dark-mode-input-border: #ced4da;
     .modal-title {
       color: $dark-mode-font-color;
     }
+    .modal-body {
+      color: $dark-mode-font-color;
+    }
   }
 
   // Panels
@@ -134,6 +137,9 @@ $dark-mode-input-border: #ced4da;
     border: 1px solid $dark-mode-button-outlined-border !important;
     color: $dark-mode-font-color;
     background: none;
+  }
+  .btn-default[disabled] {
+    background: none !important;
   }
 
   .btn-default:hover,
@@ -348,6 +354,39 @@ $dark-mode-input-border: #ced4da;
         border-right: none;
         border-bottom-color: $dark-mode-background-default-dimmed;
       }
+    }
+  }
+
+  // logs view
+  .log-details-view {
+    color: $dark-mode-font-color;
+  }
+
+  // audit view
+  .audit-view {
+    .well {
+      background-color: $dark-mode-background-paper;
+    }
+    .date-container {
+      .date-icon {
+        color: $dark-mode-font-color !important;
+        background: none !important;
+      }
+    }
+  }
+
+  // groups view
+  .groups-view {
+    .page-header {
+      color: $dark-mode-font-color;
+      .close {
+        color: white;
+        text-shadow: none;
+        opacity: 1;
+      }
+    }
+    h3 {
+      color: $dark-mode-font-color;
     }
   }
 }

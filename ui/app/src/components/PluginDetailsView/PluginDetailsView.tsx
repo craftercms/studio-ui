@@ -43,7 +43,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   detailsView: {
     height: '100%',
-    background: '#FFFFFF',
     overflow: 'auto'
   },
   topBar: {
@@ -108,7 +107,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '12px',
     color: 'gray',
     marginRight: theme.spacing(1),
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.palette.background.default,
     padding: '5px',
     borderRadius: '5px',
     '& label': {
@@ -117,7 +116,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontWeight: 400
     },
     '& span': {
-      color: '#2F2707'
+      color: theme.palette.text.primary
     }
   },
   link: {
@@ -128,7 +127,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   background: {
-    background: backgroundColor,
+    background: theme.palette.background.default,
     height: '340px'
   },
   detailsNotCompatible: {

@@ -26,14 +26,13 @@ import {
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from '../actions/auth';
-import { delay, ignoreElements, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, delay, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
 import { messageSharedWorker } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
-import { interval } from 'rxjs';
 
 const epics: CrafterCMSEpic[] = [
   // region login
@@ -93,16 +92,12 @@ const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(sharedWorkerUnauthenticated.type),
-      switchMap(() =>
-        // We need the new set of auth cookies to be set
-        // on this window so that if login attempted from the re-login dialog,
-        // it won't fail due to outdated XSRF/auth cookies.
-        interval(1000).pipe(
-          delay(100),
-          switchMap(() => auth.fetchAuthenticationType().pipe(tap(() => setRequestForgeryToken()))),
-          take(1)
-        )
-      ),
+      delay(300),
+      // We need the new set of auth cookies to be set
+      // on this window so that if login attempted from the re-login dialog,
+      // it won't fail due to outdated XSRF/auth cookies.
+      switchMap(() => auth.fetchAuthenticationType().pipe(catchError(() => []))),
+      tap(() => setRequestForgeryToken()),
       ignoreElements()
     ),
   // endregion

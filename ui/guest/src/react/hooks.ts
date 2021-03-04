@@ -97,21 +97,36 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const elementRegistryId = useRef<number>();
   const model = useHotReloadModel(props);
 
+  // Register
   useEffect(() => {
-    // Register
-    if (inAuthoring) {
-      elementRegistryId.current = register({
-        element: elementRef.current,
-        modelId: props.model.craftercms.id,
-        fieldId: props.fieldId,
-        index: props.index
-      });
-      return () => {
-        // Deregister
-        deregister(elementRegistryId.current);
-      };
+    elementRegistryId.current = register({
+      element: elementRef.current,
+      modelId: props.model.craftercms.id,
+      fieldId: props.fieldId,
+      index: props.index
+    });
+    return () => {
+      // Deregister
+      deregister(elementRegistryId.current);
+    };
+  }, [props.index, props.fieldId, props.model.craftercms.id]);
+
+  const ref: ICEMaterials['props']['ref'] = (node) => {
+    // During React update cycles, it may momentarily set the ref to
+    // null and then back to the previous element. We're only paying attention
+    // to the times that there is an element. Final de-registration occurs
+    // at the unmount time.
+    if (node) {
+      elementRef.current = node;
     }
-  }, [props.index, props.fieldId, props.model.craftercms.id, inAuthoring]);
+    if (props.ref) {
+      if (typeof props.ref === 'function') {
+        props.ref(node);
+      } else {
+        (props.ref as MutableRefObject<HTMLElement>).current = node;
+      }
+    }
+  };
 
   if (inAuthoring) {
     const isDraggable = nnou(draggable[elementRegistryId.current]) && draggable[elementRegistryId.current] !== false;
@@ -122,22 +137,6 @@ export function useICE(props: UseICEProps): ICEMaterials {
         event.persist();
       } else {
         props[handlerMap[event.type]]?.();
-      }
-    };
-    const ref: ICEMaterials['props']['ref'] = (node) => {
-      // During React update cycles, it may momentarily set the ref to
-      // null and then back to the previous element. We're only paying attention
-      // to the times that there is an element. Final de-registration occurs
-      // at the unmount time.
-      if (node) {
-        elementRef.current = node;
-      }
-      if (props.ref) {
-        if (typeof props.ref === 'function') {
-          props.ref(node);
-        } else {
-          (props.ref as MutableRefObject<HTMLElement>).current = node;
-        }
       }
     };
     return {
@@ -160,7 +159,7 @@ export function useICE(props: UseICEProps): ICEMaterials {
           : null
     };
   } else {
-    return bypassICE(props);
+    return bypassICE({ ...props, ref });
   }
 }
 

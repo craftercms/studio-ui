@@ -30,6 +30,11 @@
     "rxjs": "^6.5.4",
     "uuid": "^3.3.3"
   },
+  "peerDependencies": {
+    "@types/react": "^16.8.6 || ^17.0.0",
+    "react": "^16.8.0 || ^17.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0"
+  },
   "scripts": {
     "build": "run-s build:install build:app",
     "build:install": "yarn",
