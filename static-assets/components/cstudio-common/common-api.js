@@ -980,7 +980,7 @@ var nodeOpen = false,
         eventNS.typeAction = 'publish';
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
           success: function(response) {
-            var dependenciesObj = JSON.parse(response.responseText).entities,
+            var dependenciesObj = response.entities,
               dependencies = [];
 
             // add dependencies and their own dependencies
@@ -3579,7 +3579,7 @@ var nodeOpen = false,
         var serviceUrl =
           '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site_id=' + CStudioAuthoringContext.site;
 
-        CrafterCMSNext.util.ajax.postJSON(`/studio${serviceUrl}`).subscribe(
+        CrafterCMSNext.util.ajax.postJSON(`/studio${serviceUrl}`, data).subscribe(
           (response) => {
             callback.success(response.response);
           },
