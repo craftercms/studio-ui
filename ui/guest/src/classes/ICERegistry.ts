@@ -327,7 +327,9 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
   let model = contentController.getCachedModel(record.modelId);
   let contentTypeId = Model.getContentTypeId(model);
   let contentType = contentController.getCachedContentType(contentTypeId);
-  let field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
+  let field = record.fieldId
+    ? contentTypeUtils.getField(contentType, record.fieldId, contentController.getCachedContentTypes())
+    : null;
 
   if (!field && record.fieldId && model.craftercms.sourceMap?.[record.fieldId]) {
     model = contentController.getContentInstanceByPath(model.craftercms.sourceMap[record.fieldId]);
@@ -501,7 +503,7 @@ export function findContainerField(
     const value = Model.value(model, field.id);
     if (field.type === 'node-selector' && (value === modelId || value.includes(modelId))) {
       return field;
-    } else if (field.type === 'repeatGroup') {
+    } else if (field.type === 'repeat') {
       // TODO ...
     }
   });
