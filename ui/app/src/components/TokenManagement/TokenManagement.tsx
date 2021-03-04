@@ -50,7 +50,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 const styles = makeStyles((theme) =>
   createStyles({
     title: {
-      marginBottom: '25px'
+      marginBottom: '25px',
+      color: theme.palette.text.primary
     },
     createToken: {
       margin: '10px 0',
