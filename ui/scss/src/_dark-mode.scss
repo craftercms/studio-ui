@@ -389,4 +389,17 @@ $dark-mode-input-border: #ced4da;
       color: $dark-mode-font-color;
     }
   }
+
+  // Global config
+  .mainContainer {
+    .screen-title,
+    .screen-title h1 {
+      color: $dark-mode-font-color;
+      background: none;
+      border-color: $dark-mode-divider;
+    }
+    .divider {
+      border-color: $dark-mode-divider;
+    }
+  }
 }
