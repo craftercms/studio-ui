@@ -62,7 +62,7 @@ export const children = {
   /* [id]: [id, id, id] */
 };
 
-const pathsRequested = {};
+let requestedPaths = {};
 
 const paths$ = new BehaviorSubject<LookupTable<string>>({
   /* 'path': 'modelId' */
@@ -141,14 +141,14 @@ export function fetchById(id: string): Observable<LookupTable<ContentInstance>> 
 export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance> {
   if (nou(path)) {
     return of(null);
-  } else if (pathsRequested[path]) {
+  } else if (requestedPaths[path]) {
     return paths$.pipe(
       filter((paths) => Boolean(paths[path])),
       pluck(path),
       map((modelId) => models$.value[modelId])
     );
   } else {
-    pathsRequested[path] = true;
+    requestedPaths[path] = true;
     return fetchByPath(path).pipe(pluck('model'));
   }
 }
@@ -184,6 +184,10 @@ export function fetchByPath(
       )
     )
   );
+}
+
+export function flushRequestedPaths(): void {
+  requestedPaths = {};
 }
 
 // endregion
@@ -635,7 +639,7 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
   .subscribe(({ modelLookup, childrenMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
     Object.keys(modelIdByPath).forEach((path) => {
-      pathsRequested[path] = true;
+      requestedPaths[path] = true;
     });
     Object.assign(children, childrenMap);
     models$.next({ ...models$.value, ...modelLookup });
