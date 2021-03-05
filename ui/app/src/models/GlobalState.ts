@@ -38,7 +38,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
-import { PathNavigatorStateProps } from '../components/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
@@ -85,7 +85,7 @@ export interface GuestData {
 }
 
 // TODO:
-//   Assses extracting these props from `GuestData` to avoid reloading models
+//   Assess extracting these props from `GuestData` to avoid reloading models
 //   that were already fetched on previews pages as Guest checks in and out.
 // export interface GuestModels {
 //   models: LookupTable<ContentInstance>;
