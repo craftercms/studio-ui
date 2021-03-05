@@ -19,7 +19,7 @@ import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../classes/ICERegistry';
-import { contentTypes$ } from '../classes/ContentController';
+import { contentTypes$, flushRequestedPaths } from '../classes/ContentController';
 import * as elementRegistry from '../classes/ElementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -345,6 +345,8 @@ function Guest(props: GuestProps) {
     return () => {
       post(GUEST_CHECK_OUT);
       nnou(iceId) && iceRegistry.deregister(iceId);
+      refs.current.contentReady = false;
+      flushRequestedPaths();
     };
   }, [documentDomain, path]);
 

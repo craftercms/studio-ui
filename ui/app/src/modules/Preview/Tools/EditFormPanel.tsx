@@ -118,8 +118,8 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   let model = models[item.modelId];
   let contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
   const levelDescriptorPath = model.craftercms.sourceMap?.[fieldId];
-  // is isInheritedField
   if (levelDescriptorPath) {
+    // Is inherited field
     const modelId = modelIdByPath[levelDescriptorPath];
     model = models[modelId];
     contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];

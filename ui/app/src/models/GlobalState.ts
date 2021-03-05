@@ -84,6 +84,15 @@ export interface GuestData {
   itemBeingDragged: boolean;
 }
 
+// TODO:
+//   Assses extracting these props from `GuestData` to avoid reloading models
+//   that were already fetched on previews pages as Guest checks in and out.
+// export interface GuestModels {
+//   models: LookupTable<ContentInstance>;
+//   childrenMap: LookupTable<string[]>;
+//   modelIdByPath: LookupTable<string>;
+// }
+
 export interface Clipboard {
   type: 'CUT' | 'COPY';
   paths: string[];
