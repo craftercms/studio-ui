@@ -217,6 +217,7 @@
       "SITE_NAME": "Nombre del sitio",
       "PRIMARY_TARGET_VALUE": "Valor objetivo primario",
       "TARGET": "Objetivo",
+      "TARGET_TYPE": "Tipo de Objetivo",
       "USERNAME": "Nombre de usuario",
       "NAME": "Nombre",
       "ORIGIN": "Origen",

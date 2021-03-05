@@ -216,6 +216,7 @@
       "SITE_NAME": "Projektname",
       "PRIMARY_TARGET_VALUE": "Primärer Zielwert",
       "TARGET": "Ziel",
+      "TARGET_TYPE": "Zieltyp",
       "USERNAME": "Nutzername",
       "NAME": "Name",
       "ORIGIN": "Ursprung",
