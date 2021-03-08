@@ -119,6 +119,13 @@ $dark-mode-input-border: #ced4da;
     color: $dark-mode-font-color;
   }
 
+  a {
+    color: $dark-mode-button-primary;
+    &:hover {
+      color: $dark-mode-button-primary;
+    }
+  }
+
   // Buttons
 
   .btn-primary {
@@ -365,13 +372,21 @@ $dark-mode-input-border: #ced4da;
   // audit view
   .audit-view {
     .well {
-      background-color: $dark-mode-background-paper;
+      background-color: $dark-mode-background-default;
+      border: 0;
+    }
+    .plus,
+    .minus {
+      color: $dark-mode-font-color;
     }
     .date-container {
       .date-icon {
         color: $dark-mode-font-color !important;
         background: none !important;
       }
+    }
+    .audit-table-container .each-param {
+      background-color: $dark-mode-background-default !important;
     }
   }
 
@@ -387,6 +402,31 @@ $dark-mode-input-border: #ced4da;
     }
     h3 {
       color: $dark-mode-font-color;
+    }
+  }
+
+  // about-us-view
+  .about-us-view {
+    h1 {
+      color: $dark-mode-font-color;
+    }
+    .well {
+      background-color: $dark-mode-background-default;
+      border: 0;
+    }
+  }
+
+  // settings-view
+  .settings-view {
+    h1,
+    h2,
+    .name,
+    .email {
+      color: $dark-mode-font-color;
+    }
+    .well {
+      background-color: $dark-mode-background-default;
+      border: 0;
     }
   }
 
