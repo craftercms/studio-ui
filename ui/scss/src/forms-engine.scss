@@ -99,7 +99,7 @@ div.xdsoft_datetimepicker {
   z-index: 1040 !important;
 }
 
-.tox-tinymce-aux {
+.tox.tox-tinymce:not(.tox-fullscreen) .tox-tinymce-aux {
   z-index: 1040 !important;
 }
 
@@ -115,32 +115,6 @@ div.xdsoft_datetimepicker {
 .tox-dialog.fullscreen .tox-dialog__body-content {
   max-height: 100% !important;
   border: 1px solid #cccccc;
-}
-
-.tox.tox-tinymce:not(.tox-fullscreen) .tox-menubar,
-.tox.tox-tinymce:not(.tox-fullscreen) .tox-toolbar {
-  display: none;
-}
-
-.tox-tinymce.focused:not(.tox-fullscreen) .tox-menubar {
-  display: flex;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  left: 0;
-  z-index: 1001;
-}
-
-.tox-tinymce.focused:not(.tox-fullscreen) .tox-toolbar {
-  display: flex;
-  position: fixed;
-  left: 0;
-  top: 39px;
-  width: 100%;
-  z-index: 1000;
-  -webkit-box-shadow: 0 1px 6px -3px rgba(0, 0, 0, 0.57);
-  -moz-box-shadow: 0 1px 6px -3px rgba(0, 0, 0, 0.57);
-  box-shadow: 0 1px 6px -3px rgba(0, 0, 0, 0.57);
 }
 
 // Popover-mask
