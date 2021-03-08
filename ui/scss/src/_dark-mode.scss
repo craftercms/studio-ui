@@ -442,4 +442,13 @@ $dark-mode-input-border: #ced4da;
       border-color: $dark-mode-divider;
     }
   }
+
+  // Global Menu
+  a.MuiListItem-button {
+    color: inherit !important;
+    outline: none;
+  }
+  a.MuiLink-underlineNone {
+    text-decoration: none !important;
+  }
 }
