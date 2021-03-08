@@ -388,6 +388,9 @@ $dark-mode-input-border: #ced4da;
     .audit-table-container .each-param {
       background-color: $dark-mode-background-default !important;
     }
+    .nav-containers {
+      color: $dark-mode-font-color;
+    }
   }
 
   // groups view
@@ -430,6 +433,20 @@ $dark-mode-input-border: #ced4da;
     }
   }
 
+  // publishing-view
+  .publishing-view {
+    h2,
+    h3 {
+      color: $dark-mode-font-color;
+    }
+    .panel {
+      border: 0;
+    }
+    .panel-body {
+      background-color: $dark-mode-background-default;
+    }
+  }
+
   // Global config
   .mainContainer {
     .screen-title,
@@ -450,5 +467,22 @@ $dark-mode-input-border: #ced4da;
   }
   a.MuiLink-underlineNone {
     text-decoration: none !important;
+  }
+
+  // cstudio-admin-console-workarea-container
+  .cstudio-admin-console-workarea-container {
+    h1 {
+      color: $dark-mode-font-color;
+    }
+    height: calc(100vh - 53px);
+    background-color: $dark-mode-background-paper;
+    margin-top: -2px;
+  }
+
+  // workflow states
+  #statesTable {
+    .cs-statelist-heading a {
+      color: $dark-mode-button-primary;
+    }
   }
 }
