@@ -445,6 +445,27 @@ $dark-mode-input-border: #ced4da;
     .panel-body {
       background-color: $dark-mode-background-default;
     }
+    .nav-tabs {
+      li > a {
+        border: 0;
+      }
+      li > a:hover,
+      li.active > a {
+        color: $dark-mode-font-color;
+        background: $dark-mode-hover;
+        border: 0;
+      }
+      tab-heading {
+        color: $dark-mode-font-color;
+      }
+    }
+  }
+
+  // repositories
+  .repositories {
+    h2 {
+      color: $dark-mode-font-color;
+    }
   }
 
   // Global config
