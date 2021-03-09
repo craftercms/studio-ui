@@ -75,6 +75,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 
   renderStatesTable: function() {
     var stateLisEl = document.getElementById('state-list');
+    stateLisEl.className = 'cstudio-admin-console-workarea-container';
     stateLisEl.innerHTML =
       "<table id='statesTable' class='cs-statelist'>" +
       '<tr>' +

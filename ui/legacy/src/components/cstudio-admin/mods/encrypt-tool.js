@@ -29,6 +29,7 @@
     renderWorkarea() {
       const workarea = document.querySelector('#cstudio-admin-console-workarea');
       const el = document.createElement('div');
+      el.className = 'cstudio-admin-console-workarea-container';
 
       $(workarea).html('');
       workarea.appendChild(el);
