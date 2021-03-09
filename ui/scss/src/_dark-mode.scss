@@ -2,6 +2,7 @@ $dark-mode-background-default: #212121;
 $dark-mode-background-default-dimmed: #21212150;
 $dark-mode-background-paper: #424242;
 $dark-mode-font-color: #fff;
+$dark-mode-font-color-secondary: rgba(255, 255, 255, 0.5);
 $dark-mode-font-highlight: #70d7ff;
 $dark-mode-button-outlined-border: rgba(255, 255, 255, 0.23);
 $dark-mode-button-primary: #409cff;
@@ -124,6 +125,7 @@ $dark-mode-input-border-focus: #007aff;
   .panel-heading,
   .panel-default {
     background: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color !important;
   }
   .panel-title {
     color: $dark-mode-font-color !important;
@@ -218,6 +220,10 @@ $dark-mode-input-border-focus: #007aff;
   }
 
   // Inputs
+  input[disabled] {
+    background: none;
+    color: $dark-mode-font-color-secondary;
+  }
   input,
   .form-control {
     border-color: $dark-mode-input-border;
@@ -544,5 +550,10 @@ $dark-mode-input-border-focus: #007aff;
     .cs-statelist-heading a {
       color: $dark-mode-button-primary;
     }
+  }
+
+  // form engine
+  .cstudio-form-control-asset-picker-preview-block {
+    background: none;
   }
 }
