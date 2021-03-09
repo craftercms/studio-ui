@@ -21,11 +21,15 @@
     </div>
     <div class="col-sm-12">
       <div class="well studio-info">
-        <img id="studio-logo" src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
+        <img class="studio-logo" src="/studio/static-assets/images/logo.svg" alt="Crafter CMS" />
+        <img class="studio-logo dark" src="/studio/static-assets/images/logo-dark.svg" alt="Crafter CMS" />
         <div id="studio-data">
           <p><strong>{{ 'about.STUDIO_VERSION_NUMBER' | translate }}</strong>: {{versionNumber}}</p>
           <p><strong>{{ 'about.BUILD_NUMBER' | translate }}</strong>: {{aboutStudio.packageBuild}}</p>
-          <p><strong>{{ 'about.BUILD_DATE_TIME' | translate }}</strong>: {{aboutStudio.packageBuildDate | date:'MM-dd-yyyy HH:mm:ss Z'}}</p>
+          <p>
+            <strong>{{ 'about.BUILD_DATE_TIME' | translate }}</strong>: {{aboutStudio.packageBuildDate |
+            date:'MM-dd-yyyy HH:mm:ss Z'}}
+          </p>
           <p ng-bind-html="attributionHTML"></p>
         </div>
       </div>

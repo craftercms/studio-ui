@@ -20,10 +20,9 @@
       <h2 class="page-header">{{ 'admin.repositories.REMOTES' | translate }}</h2>
 
       <div class="actions clearfix pull-right mb10">
-        <a
-          class="btn btn-default" ng-click="createGroupDialog()" role="button"
-          style="float: right;"
-        >{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a>
+        <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;"
+          >{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a
+        >
       </div>
 
       <div class="repository-status-msg">
@@ -31,22 +30,21 @@
           <i class="fa fa-info-circle mr10" aria-hidden="true"></i>
           {{ 'admin.repositories.NO_CONFLICTS' | translate }}
         </h5>
-        <h5
-          class="text-warning"
-          ng-show="!repositories.status.clean && repositories.status.conflicting.length > 0"
-        >
+        <h5 class="text-warning" ng-show="!repositories.status.clean && repositories.status.conflicting.length > 0">
           <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
           {{ 'admin.repositories.CONFLICTS_EXIST' | translate }}
         </h5>
         <h5
-          class="text-warning" ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length > 0
+          class="text-warning"
+          ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length > 0
           && repositories.status.conflicting.length < 1"
         >
           <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
           {{ repositories.repoMessages.pendingCommit }}
         </h5>
         <h5
-          class="text-warning" ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length < 1
+          class="text-warning"
+          ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length < 1
           && repositories.status.conflicting.length < 1"
         >
           <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
@@ -55,95 +53,98 @@
       </div>
 
       <div
-        class="mb25" ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length < 1
+        class="mb25"
+        ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length < 1
         && repositories.status.conflicting.length < 1"
       >
-        <hr class="hr">
+        <hr class="hr" />
       </div>
 
       <div class="repositories-table" ng-show="repositories.status.conflicting.length < 1">
         <table class="table table-striped mb0">
           <thead>
-          <tr>
-            <th>{{ 'admin.repositories.NAME' | translate }}</th>
-            <th>{{ 'admin.repositories.URL' | translate }}</th>
-            <th>{{ 'admin.repositories.FETCH' | translate }}</th>
-            <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
+            <tr>
+              <th>{{ 'admin.repositories.NAME' | translate }}</th>
+              <th>{{ 'admin.repositories.URL' | translate }}</th>
+              <th>{{ 'admin.repositories.FETCH' | translate }}</th>
+              <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
           </thead>
           <tbody>
-          <tr id="repo" ng-repeat="repo in repositories.repositories.reachable track by $index">
-            <td>{{repo.name}}</td>
-            <td>{{repo.url}}</td>
-            <td>{{repo.fetch}}</td>
-            <td>{{repo.pushUrl}}</td>
-            <td>
-              <a ng-click="pullRepo(repo)" class="btn btn-sm pull">
-                <i class="fa fa-arrow-down" title="Pull"></i>
-              </a>
-            </td>
-            <td>
-              <a ng-click="pushRepo(repo)" class="btn btn-sm push">
-                <i class="fa fa-arrow-up" title="Push"></i>
-              </a>
-            </td>
-            <td>
-              <a class="btn btn-sm remove" ng-click="removeRepo(repo)" ng-if="repo.removable">
-                <i class="fa fa-trash-o" title="Remove"></i>
-              </a>
-            </td>
-          </tr>
-          <tr ng-repeat="repo in repositories.repositories.unreachable track by $index">
-            <td colspan="6">
-              <h5>{{repositories.repoMessages.unreachableRemote(repo.name)}}</h5>
-              <p>{{repositories.repoMessages.reason}}: {{repo.unreachableReason}}</p>
-            </td>
-            <td>
-              <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
-                <i class="fa fa-trash-o" title="Remove"></i>
-              </a>
-            </td>
-          </tr>
+            <tr id="repo" ng-repeat="repo in repositories.repositories.reachable track by $index">
+              <td>{{repo.name}}</td>
+              <td>{{repo.url}}</td>
+              <td>{{repo.fetch}}</td>
+              <td>{{repo.pushUrl}}</td>
+              <td>
+                <a ng-click="pullRepo(repo)" class="btn btn-sm btn-default pull">
+                  <i class="fa fa-arrow-down" title="Pull"></i>
+                </a>
+              </td>
+              <td>
+                <a ng-click="pushRepo(repo)" class="btn btn-sm btn-default push">
+                  <i class="fa fa-arrow-up" title="Push"></i>
+                </a>
+              </td>
+              <td>
+                <a class="btn btn-sm btn-default remove" ng-click="removeRepo(repo)" ng-if="repo.removable">
+                  <i class="fa fa-trash-o" title="Remove"></i>
+                </a>
+              </td>
+            </tr>
+            <tr ng-repeat="repo in repositories.repositories.unreachable track by $index">
+              <td colspan="6">
+                <h5>{{repositories.repoMessages.unreachableRemote(repo.name)}}</h5>
+                <p>{{repositories.repoMessages.reason}}: {{repo.unreachableReason}}</p>
+              </td>
+              <td>
+                <a ng-click="removeRepo(repo)" class="btn btn-sm btn-default remove">
+                  <i class="fa fa-trash-o" title="Remove"></i>
+                </a>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
     <div
-      class="col-md-12 mb25" ng-show="!repositories.status.clean &&
+      class="col-md-12 mb25"
+      ng-show="!repositories.status.clean &&
       (repositories.status.conflicting.length > 0 ||
       repositories.status.uncommittedChanges.length > 0)"
     >
-      <hr class="hr">
+      <hr class="hr" />
     </div>
     <div class="col-md-12">
       <div
-        class="repository-status" ng-show="!repositories.status.clean &&
+        class="repository-status"
+        ng-show="!repositories.status.clean &&
         (repositories.status.conflicting.length > 0 ||
         repositories.status.uncommittedChanges.length > 0)"
       >
-        <h3
-          class="header header--inline"
-        >{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}
-        </h3>
+        <h3 class="header header--inline">{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}</h3>
         <div class="actions clearfix pull-right">
           <div class="btn-group studio-dropdown mr10" dropdown>
             <button type="button" class="btn btn-outline-danger dropdown-toggle" dropdown-toggle>
               {{ 'admin.repositories.REVERT_ALL' | translate }} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="" ng-click="repositories.revertAll()">
-                {{ 'common.CONFIRM' | translate }}
-                <p class="description">
-                  {{ 'admin.repositories.REVERT_ALL_DESCRIPTION' | translate }}
-                </p>
-              </a></li>
+              <li>
+                <a href="" ng-click="repositories.revertAll()">
+                  {{ 'common.CONFIRM' | translate }}
+                  <p class="description">
+                    {{ 'admin.repositories.REVERT_ALL_DESCRIPTION' | translate }}
+                  </p>
+                </a>
+              </li>
             </ul>
           </div>
           <a
-            class="btn btn-outline-success" role="button"
+            class="btn btn-outline-success"
+            role="button"
             ng-disabled="repositories.status.conflicting.length"
             ng-click="repositories.commitResolutionModal()"
           >
@@ -158,51 +159,49 @@
 
           <table class="table table-striped">
             <tbody>
-            <tr ng-repeat="file in repositories.status.conflicting track by $index">
-              <td>
-                <p class="bold" ng-bind="repositories.getFileName('{{file}}')"></p>
-                <p class="mb0">{{file}}</p>
-              </td>
-              <td class="tar">
-                <div class="btn-group studio-dropdown mr10" dropdown>
-                  <button
-                    type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle
-                  >
-                    {{ 'admin.repositories.ACCEPT_REMOTE' | translate }} <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="" ng-click="repositories.resolveConflict(file, 'theirs')">
-                      {{ 'common.CONFIRM' | translate }}
-                      <p class="description">
-                        {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
-                      </p>
-                    </a></li>
-                  </ul>
-                </div>
-                <div class="btn-group studio-dropdown mr10" dropdown>
-                  <button
-                    type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle
-                  >
-                    {{ 'admin.repositories.KEEP_LOCAL' | translate }} <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="" ng-click="repositories.resolveConflict(file, 'ours')">
-                      {{ 'common.CONFIRM' | translate }}
-                      <p class="description">
-                        {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
-                      </p>
-                    </a></li>
-                  </ul>
-                </div>
-                <a
-                  class="btn btn-default" role="button" ng-click="repositories.diffContent(file)"
-                >Diff</a>
-              </td>
-            </tr>
+              <tr ng-repeat="file in repositories.status.conflicting track by $index">
+                <td>
+                  <p class="bold" ng-bind="repositories.getFileName('{{file}}')"></p>
+                  <p class="mb0">{{file}}</p>
+                </td>
+                <td class="tar">
+                  <div class="btn-group studio-dropdown mr10" dropdown>
+                    <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
+                      {{ 'admin.repositories.ACCEPT_REMOTE' | translate }} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                      <li role="separator" class="divider"></li>
+                      <li>
+                        <a href="" ng-click="repositories.resolveConflict(file, 'theirs')">
+                          {{ 'common.CONFIRM' | translate }}
+                          <p class="description">
+                            {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
+                          </p>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="btn-group studio-dropdown mr10" dropdown>
+                    <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
+                      {{ 'admin.repositories.KEEP_LOCAL' | translate }} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                      <li role="separator" class="divider"></li>
+                      <li>
+                        <a href="" ng-click="repositories.resolveConflict(file, 'ours')">
+                          {{ 'common.CONFIRM' | translate }}
+                          <p class="description">
+                            {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
+                          </p>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <a class="btn btn-default" role="button" ng-click="repositories.diffContent(file)">Diff</a>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -211,12 +210,12 @@
 
           <table class="table table-striped">
             <tbody>
-            <tr ng-repeat="file in repositories.status.uncommittedChanges track by $index">
-              <td>
-                <span class="bold mr10" ng-bind="repositories.getFileName('{{file}}')"></span>
-                <span class="mb0">{{file}}</span>
-              </td>
-            </tr>
+              <tr ng-repeat="file in repositories.status.uncommittedChanges track by $index">
+                <td>
+                  <span class="bold mr10" ng-bind="repositories.getFileName('{{file}}')"></span>
+                  <span class="mb0">{{file}}</span>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -570,7 +569,6 @@
 
     </form>
   </div>
-
 </script>
 
 <script type="text/ng-template" id="diffModal.html">
