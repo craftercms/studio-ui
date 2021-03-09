@@ -10,6 +10,7 @@ $dark-mode-button-primary-color-hover: rgb(44, 109, 178);
 $dark-mode-hover: rgba(255, 255, 255, 0.08);
 $dark-mode-divider: rgba(255, 255, 255, 0.12);
 $dark-mode-input-border: #ced4da;
+$dark-mode-input-border-focus: #007aff;
 
 @media (prefers-color-scheme: light) {
   .craftercms-logo-dark {
@@ -222,6 +223,11 @@ $dark-mode-input-border: #ced4da;
     border-color: $dark-mode-input-border;
     background: none;
     color: $dark-mode-font-color;
+    &:focus {
+      outline: 0;
+      box-shadow: #007aff40 0 0 0 0.2rem;
+      border-color: $dark-mode-input-border-focus;
+    }
   }
 
   .admin-console-view {
