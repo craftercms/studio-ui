@@ -139,9 +139,9 @@ $dark-mode-input-border-focus: #007aff;
   }
 
   a {
-    color: $dark-mode-button-primary;
+    color: $dark-mode-button-primary !important;
     &:hover {
-      color: $dark-mode-button-primary;
+      color: $dark-mode-button-primary !important;
     }
   }
 
@@ -161,8 +161,8 @@ $dark-mode-input-border-focus: #007aff;
   .btn-default,
   .btn-transparent {
     border: 1px solid $dark-mode-button-outlined-border !important;
-    color: $dark-mode-font-color;
-    background: none;
+    color: $dark-mode-font-color !important;
+    background: none !important;
   }
   .btn-default[disabled] {
     background: none !important;
@@ -225,10 +225,11 @@ $dark-mode-input-border-focus: #007aff;
     color: $dark-mode-font-color-secondary;
   }
   input,
+  select,
   .form-control {
-    border-color: $dark-mode-input-border;
-    background: none;
-    color: $dark-mode-font-color;
+    border-color: $dark-mode-input-border !important;
+    background: none !important;
+    color: $dark-mode-font-color !important;
     &:focus {
       outline: 0;
       box-shadow: #007aff40 0 0 0 0.2rem;
