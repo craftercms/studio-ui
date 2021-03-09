@@ -103,8 +103,8 @@ div.xdsoft_datetimepicker {
   z-index: 1040 !important;
 }
 
-.tox-fullscreen .tox.tox-tinymce-aux, .tox-fullscreen~.tox.tox-tinymce-aux {
-  z-index: 1201 !important;
+.tox.tox-tinymce.tox-fullscreen {
+  z-index: 1000 !important;
 }
 
 /*******************/
