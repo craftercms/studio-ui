@@ -314,7 +314,9 @@ CStudioAuthoring.Module.requireModule(
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
-            height: _thisControl.rteHeight,
+            // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window). 
+            // Adding 78px (toolbar's height) so that the toolbar doesn't eat up on the height set on the content modelling tool.
+            height: _thisControl.rteHeight + 78,
             min_height: _thisControl.rteHeight,
             theme: 'silver',
             plugins: pluginList,
@@ -322,6 +324,7 @@ CStudioAuthoring.Module.requireModule(
             toolbar2: toolbarConfig2,
             toolbar3: toolbarConfig3,
             toolbar4: toolbarConfig4,
+            toolbar_sticky: true,
             image_advtab: true,
             encoding: 'xml',
             relative_urls: false,
@@ -371,17 +374,6 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl.editorId = editor.id;
                 _thisControl.editor = editor;
                 _thisControl._onChange(null, _thisControl);
-                _thisControl._hideBars(this.editorContainer);
-              });
-
-              editor.on('focus', function (e) {
-                addPadding();
-                _thisControl._showBars(this.editorContainer);
-              });
-
-              editor.on('blur', function (e) {
-                addPadding();
-                _thisControl._hideBars(this.editorContainer);
               });
 
               editor.on('keyup paste', function (e) {
@@ -421,16 +413,6 @@ CStudioAuthoring.Module.requireModule(
                 if (e.target.nodeName == 'IMG') {
                   tinyMCE.activeEditor.execCommand('mceImage');
                 }
-              });
-
-              editor.on('Focus', function (e) {
-                const id = _thisControl.editorId;
-                $('#' + id + ' + .tox-tinymce').addClass('focused');
-              });
-
-              editor.on('Blur', function (e) {
-                const id = _thisControl.editorId;
-                $('#' + id + ' + .tox-tinymce').removeClass('focused');
               });
             }
           });
@@ -682,25 +664,6 @@ CStudioAuthoring.Module.requireModule(
           controlWidgetContainerEl.appendChild(descriptionEl);
 
           return inputEl;
-        },
-
-        _hideBars(container) {
-          var $container = $(container),
-            currentWidth = this.editor.editorContainer.clientWidth,
-            barsHeight = 98,
-            editorHeight = this.rteHeight;
-
-          // $container.find(".tox-menubar").hide();
-          // $container.find(".tox-toolbar").hide();
-        },
-
-        _showBars(container) {
-          var $container = $(container),
-            currentWidth = this.editor.editorContainer.clientWidth,
-            editorHeight = this.rteHeight;
-
-          // $container.find(".tox-menubar").show();
-          // $container.find(".tox-toolbar").show();
         },
 
         /**
