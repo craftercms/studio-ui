@@ -314,7 +314,9 @@ CStudioAuthoring.Module.requireModule(
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
-            height: _thisControl.rteHeight + 78, // '78px' (editor menu bars height) added to keep editor size as set in configuration
+            // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window). 
+            // Adding 78px (toolbar's height) so that the toolbar doesn't eat up on the height set on the content modelling tool.
+            height: _thisControl.rteHeight + 78,
             min_height: _thisControl.rteHeight,
             theme: 'silver',
             plugins: pluginList,
