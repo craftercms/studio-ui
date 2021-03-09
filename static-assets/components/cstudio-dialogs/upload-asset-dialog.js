@@ -56,10 +56,13 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
       var id = window.frameElement.getAttribute('id').split('-editor-')[1];
       var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
       var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
-      var formSize = getFormSizeVal(id);
-      if (formSize < 320) {
-        setFormSizeVal(320, id);
-        $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease', true);
+      // These functions are not getting located in some cases and hence throwing.
+      if (getFormSizeVal && setFormSizeVal) {
+        var formSize = getFormSizeVal(id);
+        if (formSize < 320) {
+          setFormSizeVal(320, id);
+          $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease', true);
+        }
       }
     }
   },

@@ -29,5 +29,13 @@
     "babel-plugin-macros": "2.7.1",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "babel-preset-react-app": "^9.1.0"
+  },
+  "devDependencies": {
+    "build-if-changed": "^1.5.5"
+  },
+  "bic": {
+    "skip": [
+      "README.md"
+    ]
   }
 }

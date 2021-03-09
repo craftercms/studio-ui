@@ -28,7 +28,7 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { filter, map, take, debounceTime } from 'rxjs/operators';
+import { filter, map, take, debounceTime, pluck, switchMap, tap } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
@@ -90,7 +90,7 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { filter, map, take, debounceTime }
+      operators: { debounceTime, filter, map, switchMap, take, tap, pluck }
     },
 
     components: {

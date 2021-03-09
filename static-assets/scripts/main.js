@@ -1446,7 +1446,7 @@
           });
       });
 
-      $scope.checkDocumentErrors = function() {
+      $scope.checkDocumentErrors = function () {
         const errors = fileErrors(aceEditor);
 
         if (errors.length) {
@@ -1481,11 +1481,15 @@
             });
             globalConfig.isModified = false;
           })
-          .catch(() => {
-            $element.notify(formatMessage(globalConfigMessages.failedSave), {
-              position: 'top left',
-              className: 'error'
-            });
+          .catch((e) => {
+            enableUI(true);
+            $element.notify(
+              (e.data && e.data.response && e.data.response.message) || formatMessage(globalConfigMessages.failedSave),
+              {
+                position: 'top left',
+                className: 'error'
+              }
+            );
           });
       };
 

@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "yarn; react-scripts build; node scripts/build.js",
+    "build": "react-scripts build; node scripts/build.js",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
     "i18n:manage": "node scripts/i18n.js"
@@ -49,9 +49,13 @@
       "prettier",
       "prettier/react"
     ],
-    "plugins": ["prettier"],
+    "plugins": [
+      "prettier"
+    ],
     "rules": {
-      "prettier/prettier": ["error"]
+      "prettier/prettier": [
+        "error"
+      ]
     }
   },
   "browserslist": {
@@ -71,10 +75,19 @@
     "@babel/core": "^7.8.3",
     "@babel/runtime": "^7.8.3",
     "babel-plugin-react-intl": "5.1.11",
+    "build-if-changed": "^1.5.5",
     "ncp": "^2.0.0",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
     "react-intl-translations-manager": "^5.0.3",
     "rimraf": "^3.0.0"
+  },
+  "bic": {
+    "skip": [
+      "scripts",
+      "README.md",
+      "CHANGE_LOG.md",
+      ".babelrc"
+    ]
   }
 }
