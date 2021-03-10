@@ -501,7 +501,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   module.plugin
                     ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${
                         module.plugin.type
-                      }&name=${module.plugin.name || module.name}&filename=${module.plugin.file}`
+                      }&name=${module.plugin.name || module.name}&filename=${module.plugin.file}${
+                        model.plugin.pluginId ? `&pluginId=${module.plugin.pluginId}` : ''
+                      }`
                     : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
                   module,
                   cb

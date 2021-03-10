@@ -6803,6 +6803,11 @@ var nodeOpen = false,
             } else {
               missingProp.push('File name');
             }
+
+            if (item.plugin.pluginId) {
+              path += '&pluginId=' + item.plugin.pluginId;
+            }
+
             if (missingProp.length > 0) {
               path = '';
             }
