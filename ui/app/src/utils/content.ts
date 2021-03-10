@@ -186,7 +186,6 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     systemType: getLegacyItemSystemType(item),
     mimeType: item.mimeType,
     state: null,
-    availableActions: null,
     stateMap: getStateMapFromLegacyItem(item),
     lockOwner: null,
     disabled: null,

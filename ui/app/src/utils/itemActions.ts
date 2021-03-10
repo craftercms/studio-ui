@@ -307,10 +307,6 @@ export function generateSingleItemOptions(
   if (hasHistoryAction(item.availableActions)) {
     sectionA.push(menuOptions.history);
   }
-  if (hasReadAction(item.availableActions)) {
-    // TODO: Not Implemented
-    sectionA.push(menuOptions.preview);
-  }
   // endregion
 
   // region Section B
