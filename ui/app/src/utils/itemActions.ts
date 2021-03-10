@@ -79,22 +79,23 @@ import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
   hasApprovePublishAction,
-  hasBulkPublishAction,
-  hasCancelPublishAction,
   hasCopyAction,
   hasCreateAction,
+  hasCreateFolderAction,
   hasCutAction,
   hasDeleteAction,
+  hasDependenciesAction,
   hasDuplicateAction,
+  hasEditAction,
   hasEditControllerAction,
   hasEditTemplateAction,
   hasHistoryAction,
   hasPasteAction,
   hasReadAction,
-  hasRejectPublishAction,
   hasRenameAction,
   hasRequestPublishAction,
-  hasUpdateAction
+  hasSchedulePublishAction,
+  hasUploadAction
 } from './content';
 
 export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
@@ -269,7 +270,7 @@ export function generateSingleItemOptions(
   );
 
   // region Section A
-  if (hasUpdateAction(item.availableActions)) {
+  if (hasEditAction(item.availableActions)) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.edit);
     } else {
@@ -286,28 +287,24 @@ export function generateSingleItemOptions(
     }
   }
   if (hasCreateAction(item.availableActions)) {
-    if (type === 'page' || type === 'component' || type === 'taxonomy' || (isFolder && !isAsset)) {
-      sectionA.push(menuOptions.createContent);
-      sectionA.push(menuOptions.createFolder);
-    } else if (isFolder) {
-      sectionA.push(menuOptions.createFolder);
-    }
+    sectionA.push(menuOptions.createContent);
+  }
+  if (hasCreateFolderAction(item.availableActions)) {
+    sectionA.push(menuOptions.createFolder);
   }
   if (hasDeleteAction(item.availableActions)) {
     sectionA.push(menuOptions.delete);
   }
-  if (!isFolder) {
+  if (hasDependenciesAction(item.availableActions)) {
     sectionA.push(menuOptions.dependencies);
   }
   if (hasRenameAction(item.availableActions)) {
-    if (isFolder) {
-      sectionA.push(menuOptions.renameFolder);
-    }
+    // isFolder??
+    sectionA.push(menuOptions.renameFolder);
   }
   if (hasHistoryAction(item.availableActions)) {
     sectionA.push(menuOptions.history);
   }
-  sectionA.push(menuOptions.history);
   if (hasReadAction(item.availableActions)) {
     // TODO: Not Implemented
     sectionA.push(menuOptions.preview);
@@ -331,7 +328,8 @@ export function generateSingleItemOptions(
       sectionA.push(menuOptions.duplicateAsset);
     }
   }
-  if (isFolder && isAsset) {
+  if (hasUploadAction(item.availableActions)) {
+    // isFolder && isAsset??
     sectionA.push(menuOptions.upload);
   }
   // endregion
@@ -343,16 +341,8 @@ export function generateSingleItemOptions(
   if (hasApprovePublishAction(item.availableActions)) {
     sectionC.push(menuOptions.approve);
   }
-  if (hasRejectPublishAction(item.availableActions)) {
-    sectionC.push(menuOptions.reject);
-  }
-  if (hasCancelPublishAction(item.availableActions)) {
-    // TODO: Not Implemented
-    sectionC.push(menuOptions.cancel);
-  }
-  if (hasBulkPublishAction(item.availableActions)) {
-    // TODO: Not Implemented
-    sectionC.push(menuOptions.bulkPublish);
+  if (hasSchedulePublishAction(item.availableActions)) {
+    sectionC.push(menuOptions.schedule);
   }
   // endregion
 
@@ -374,7 +364,6 @@ export function generateSingleItemOptions(
   if (sectionA.length) {
     sections.push(sectionA);
   }
-
   if (sectionB.length) {
     sections.push(sectionB);
   }
