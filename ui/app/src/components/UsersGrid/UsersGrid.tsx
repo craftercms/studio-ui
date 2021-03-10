@@ -14,85 +14,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { fetchAll } from '../../services/users';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import TableCell from '@material-ui/core/TableCell';
-import Checkbox from '@material-ui/core/Checkbox';
-import TableRow from '@material-ui/core/TableRow';
-import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
 import User from '../../models/User';
-
-const StyledTableCell = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: '5px'
-    }
-  })
-)(TableCell);
+import { useLogicResource } from '../../utils/hooks';
+import { ApiResponse } from '../../models/ApiResponse';
+import UsersGridUI, { UsersGridSkeletonTable } from './UsersGridUI';
+import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
+import { UserInfoDialog } from './UserInfoDialog';
 
 export default function UsersGrid() {
   const [users, setUsers] = useState<User[]>(null);
+  const [error, setError] = useState<ApiResponse>();
+  const [viewUser, setViewUser] = useState(null);
 
   useEffect(() => {
-    fetchAll().subscribe((users) => {
-      setUsers([...users]);
-      console.log([...users]);
-    });
+    fetchAll().subscribe(
+      (users) => {
+        setUsers([...users]);
+      },
+      ({ response }) => {
+        setError(response);
+      }
+    );
   }, []);
 
+  const resource = useLogicResource<User[], { users: User[]; error: ApiResponse }>(
+    useMemo(() => ({ users, error }), [users, error]),
+    {
+      shouldResolve: (source) => Boolean(source.users) && Boolean(source.users.length),
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: (source) => source.users,
+      errorSelector: () => error
+    }
+  );
+
+  const onRowClicked = (user: User) => {
+    setViewUser(user);
+  };
+
+  const onUserInfoClose = () => {
+    setViewUser(null);
+  };
+
   return (
-    <ConditionalLoadingState isLoading={users === null}>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox checked={false} color="primary" />
-              </TableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.name" defaultMessage="Name" />
-                </Typography>
-              </StyledTableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.userName" defaultMessage="Username" />
-                </Typography>
-              </StyledTableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.email" defaultMessage="E-mail" />
-                </Typography>
-              </StyledTableCell>
-              <StyledTableCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.organization" defaultMessage="Organization" />
-                </Typography>
-              </StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users?.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell padding="checkbox"></TableCell>
-                <TableCell component="th" id={user.id.toString()} scope="row" padding="none">
-                  {user.firstName}
-                </TableCell>
-                <StyledTableCell align="left">{user.username}</StyledTableCell>
-                <StyledTableCell align="left">{user.email}</StyledTableCell>
-                <StyledTableCell align="left">Organization?</StyledTableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </ConditionalLoadingState>
+    <ErrorBoundary>
+      <Suspense fallback={<UsersGridSkeletonTable />}>
+        <UsersGridUI resource={resource} onRowClicked={onRowClicked} />
+        <UserInfoDialog open={Boolean(viewUser)} onClose={onUserInfoClose} user={viewUser} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

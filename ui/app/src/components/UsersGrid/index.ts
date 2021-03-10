@@ -17,3 +17,7 @@
 export { default } from './UsersGrid';
 
 export * from './UsersGrid';
+
+export * from './UsersGridUI';
+
+export * from './UserInfoDialog';
