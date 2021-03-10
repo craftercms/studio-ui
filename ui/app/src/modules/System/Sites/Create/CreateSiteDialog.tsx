@@ -890,7 +890,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             <ApiResponseErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
           ) : (
             <div className={classes.loading}>
-              <Spinner />
+              <Spinner background="none" />
             </div>
           )}
           {site.selectedView !== 0 && (
