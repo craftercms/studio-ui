@@ -15,86 +15,218 @@
  */
 
 import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Divider } from '@material-ui/core';
 import User from '../../models/User';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import EditRoundedIcon from '@material-ui/icons/EditRounded';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import Input from '@material-ui/core/Input';
+import { useSpreadState } from '../../utils/hooks';
+import { update } from '../../services/users';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showSystemNotification } from '../../state/actions/system';
 
 const styles = makeStyles(() =>
   createStyles({
     header: {
-      padding: '20px 30px',
-      display: 'flex'
+      padding: '30px 40px',
+      display: 'flex',
+      alignItems: 'center'
     },
-    body: {},
-    row: {}
+    avatar: {
+      marginRight: '30px',
+      width: '90px',
+      height: '90px'
+    },
+    actions: {
+      marginLeft: 'auto'
+    },
+    userInfo: {},
+    body: {
+      padding: 0
+    },
+    section: {
+      padding: '30px 40px'
+    },
+    row: {
+      display: 'flex',
+      padding: '15px 0',
+      alignItems: 'center'
+    },
+    label: {
+      flexBasis: '180px'
+    },
+    sectionTitle: {
+      textTransform: 'uppercase',
+      marginBottom: '10px'
+    },
+    inputRoot: {
+      pointerEvents: 'none'
+    },
+    readOnlyInput: {
+      background: 'none',
+      borderColor: 'transparent',
+      '&:focus': {
+        boxShadow: 'none'
+      }
+    }
   })
 );
+
+const translations = defineMessages({
+  userUpdated: {
+    id: 'userInfoDialog.userUpdated',
+    defaultMessage: 'User updated successfully'
+  }
+});
 
 interface UserInfoDialogProps {
   open: boolean;
   onClose(): void;
+  onUserEdited(): void;
   user: User;
 }
 
 export function UserInfoDialog(props: UserInfoDialogProps) {
-  const { user, open, onClose } = props;
+  const { open, onClose } = props;
+  const [editMode, setEditMode] = useState(false);
+  const [user, setUser] = useSpreadState(null);
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  useEffect(() => {
+    if (open) {
+      setUser(props.user);
+    }
+  }, [props.user, open, setUser]);
   const classes = styles();
+
+  const onInputChange = (value) => {
+    setUser(value);
+  };
+
+  const onInputBlur = () => {
+    if (!editMode || JSON.stringify(user) === JSON.stringify(props.user)) {
+      return;
+    }
+    update(user).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.userUpdated)
+          })
+        );
+      },
+      ({ response }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+    console.log();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <header className={classes.header}>
-        <Avatar>{user?.firstName.charAt(0)}</Avatar>
-        <Typography variant="h6" component="h2">
-          {user?.firstName} {user?.lastName}
-        </Typography>
-        <Typography variant="subtitle1">{user?.username}</Typography>
+        <Avatar className={classes.avatar}>{props.user?.firstName.charAt(0)}</Avatar>
+        <section className={classes.userInfo}>
+          <Typography variant="h6" component="h2">
+            {props.user?.firstName} {props.user?.lastName}
+          </Typography>
+          <Typography variant="subtitle1">{props.user?.username}</Typography>
+        </section>
+        <section className={classes.actions}>
+          <IconButton onClick={() => setEditMode(!editMode)}>
+            <EditRoundedIcon />
+          </IconButton>
+          <IconButton>
+            <DeleteRoundedIcon />
+          </IconButton>
+          <IconButton edge="end" onClick={onClose}>
+            <CloseRoundedIcon />
+          </IconButton>
+        </section>
       </header>
       <Divider />
       <DialogBody className={classes.body}>
-        <section>
-          <Typography variant="subtitle1">
+        <section className={classes.section}>
+          <Typography variant="subtitle1" className={classes.sectionTitle}>
             <FormattedMessage id="userInfoDialog.userDetails" defaultMessage="User Details" />
           </Typography>
           <form>
             <div className={classes.row}>
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="words.username" defaultMessage="Username" />
               </Typography>
-              <Typography variant="body2">{user?.username}</Typography>
+              <Input
+                onChange={(e) => onInputChange({ userName: e.currentTarget.value })}
+                onBlur={onInputBlur}
+                value={user?.username}
+                fullWidth
+                readOnly
+                classes={{ root: classes.inputRoot, input: classes.readOnlyInput }}
+              />
             </div>
             <div className={classes.row}>
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" className={classes.label}>
+                <FormattedMessage id="userInfoDialog.firstName" defaultMessage="First name" />
+              </Typography>
+              <Input
+                onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
+                onBlur={onInputBlur}
+                value={user?.firstName}
+                fullWidth
+                readOnly={!editMode}
+                classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}
+              />
+            </div>
+            <div className={classes.row}>
+              <Typography variant="subtitle2" className={classes.label}>
+                <FormattedMessage id="userInfoDialog.lastName" defaultMessage="Last name" />
+              </Typography>
+              <Input
+                onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
+                onBlur={onInputBlur}
+                value={user?.lastName}
+                fullWidth
+                readOnly={!editMode}
+                classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}
+              />
+            </div>
+            <div className={classes.row}>
+              <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="words.email" defaultMessage="Email" />
               </Typography>
-              <Typography variant="body2">{user?.email}</Typography>
+              <Input
+                onChange={(e) => onInputChange({ email: e.currentTarget.value })}
+                onBlur={onInputBlur}
+                value={user?.email}
+                fullWidth
+                readOnly={!editMode}
+                classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}
+              />
             </div>
             <div className={classes.row}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="userInfoDialog.authenticationType" defaultMessage="Authentication type" />
-              </Typography>
-              <Typography variant="body2">{user?.authenticationType}</Typography>
-            </div>
-            <div className={classes.row}>
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
               </Typography>
-              <Typography variant="body2">{user?.enabled}</Typography>
             </div>
             <div className={classes.row}>
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="userInfoDialog.externallyManaged" defaultMessage="Externally managed" />
               </Typography>
-              <Typography variant="body2">{user?.externallyManaged}</Typography>
             </div>
           </form>
         </section>
         <Divider />
-        <section>
-          <Typography variant="subtitle1">
+        <section className={classes.section}>
+          <Typography variant="subtitle1" className={classes.sectionTitle}>
             <FormattedMessage id="userInfoDialog.siteMemberships" defaultMessage="Site Memberships" />
           </Typography>
         </section>

@@ -25,18 +25,26 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import React from 'react';
-import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Avatar from '@material-ui/core/Avatar';
 import User from '../../models/User';
+import clsx from 'clsx';
 
-const StyledTableCell = withStyles((theme: Theme) =>
+const styles = makeStyles((theme) =>
   createStyles({
-    root: {
-      padding: '5px'
+    tableCell: {
+      padding: '6px',
+      borderBottom: 0,
+      '&.bordered': {
+        borderBottom: `1px solid ${theme.palette.divider}`
+      },
+      '&.paddedLeft': {
+        paddingLeft: '20px'
+      }
     }
   })
-)(TableCell);
+);
 
 const StyledTableRow = withStyles((theme: Theme) =>
   createStyles({
@@ -56,47 +64,56 @@ interface UsersGridUIProps {
 
 export default function UsersGridUI(props: UsersGridUIProps) {
   const { resource, onRowClicked } = props;
+  const classes = styles();
   const users = resource.read();
   return (
     <TableContainer>
       <Table>
         <TableHead>
           <StyledTableRow>
-            <StyledTableCell padding="checkbox">
+            <TableCell padding="checkbox" className={clsx(classes.tableCell, 'bordered')}>
               <Checkbox checked={false} color="primary" />
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'paddedLeft')}>
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.name" defaultMessage="Name" />
               </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.username" defaultMessage="Username" />
               </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.email" defaultMessage="E-mail" />
               </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.organization" defaultMessage="Organization" />
               </Typography>
-            </StyledTableCell>
+            </TableCell>
           </StyledTableRow>
         </TableHead>
         <TableBody>
           {users?.map((user, i) => (
             <StyledTableRow key={user.id} onClick={() => onRowClicked(user)}>
-              <StyledTableCell>
+              <TableCell align="left" className={classes.tableCell}>
                 <Avatar>{user.firstName.charAt(0)}</Avatar>
-              </StyledTableCell>
-              <StyledTableCell align="left">{user.firstName}</StyledTableCell>
-              <StyledTableCell align="left">{user.username}</StyledTableCell>
-              <StyledTableCell align="left">{user.email}</StyledTableCell>
-              <StyledTableCell align="left">Organization?</StyledTableCell>
+              </TableCell>
+              <TableCell align="left" className={clsx(classes.tableCell, 'paddedLeft')}>
+                {user.firstName} {user.lastName}
+              </TableCell>
+              <TableCell align="left" className={classes.tableCell}>
+                {user.username}
+              </TableCell>
+              <TableCell align="left" className={classes.tableCell}>
+                {user.email}
+              </TableCell>
+              <TableCell align="left" className={classes.tableCell}>
+                Organization?
+              </TableCell>
             </StyledTableRow>
           ))}
         </TableBody>
@@ -120,26 +137,26 @@ export function UsersGridSkeletonTable(props: UsersGridSkeletonTableProps) {
             <TableCell padding="checkbox">
               <Checkbox checked={false} color="primary" />
             </TableCell>
-            <StyledTableCell align="left">
+            <TableCell align="left">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.name" defaultMessage="Name" />
               </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.username" defaultMessage="Username" />
               </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.email" defaultMessage="E-mail" />
               </Typography>
-            </StyledTableCell>
-            <StyledTableCell align="left">
+            </TableCell>
+            <TableCell align="left">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.organization" defaultMessage="Organization" />
               </Typography>
-            </StyledTableCell>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -151,15 +168,15 @@ export function UsersGridSkeletonTable(props: UsersGridSkeletonTableProps) {
               <TableCell component="th" scope="row">
                 <Skeleton />
               </TableCell>
-              <StyledTableCell align="left">
+              <TableCell align="left">
                 <Skeleton />
-              </StyledTableCell>
-              <StyledTableCell align="left">
+              </TableCell>
+              <TableCell align="left">
                 <Skeleton />
-              </StyledTableCell>
-              <StyledTableCell align="left">
+              </TableCell>
+              <TableCell align="left">
                 <Skeleton />
-              </StyledTableCell>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

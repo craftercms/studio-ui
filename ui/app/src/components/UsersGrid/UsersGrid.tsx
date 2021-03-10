@@ -29,6 +29,10 @@ export default function UsersGrid() {
   const [viewUser, setViewUser] = useState(null);
 
   useEffect(() => {
+    refresh();
+  }, []);
+
+  const refresh = () => {
     fetchAll().subscribe(
       (users) => {
         setUsers([...users]);
@@ -37,7 +41,7 @@ export default function UsersGrid() {
         setError(response);
       }
     );
-  }, []);
+  };
 
   const resource = useLogicResource<User[], { users: User[]; error: ApiResponse }>(
     useMemo(() => ({ users, error }), [users, error]),
@@ -58,11 +62,20 @@ export default function UsersGrid() {
     setViewUser(null);
   };
 
+  const onUserEdited = () => {
+    refresh();
+  };
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<UsersGridSkeletonTable />}>
         <UsersGridUI resource={resource} onRowClicked={onRowClicked} />
-        <UserInfoDialog open={Boolean(viewUser)} onClose={onUserInfoClose} user={viewUser} />
+        <UserInfoDialog
+          open={Boolean(viewUser)}
+          onClose={onUserInfoClose}
+          onUserEdited={onUserEdited}
+          user={viewUser}
+        />
       </Suspense>
     </ErrorBoundary>
   );
