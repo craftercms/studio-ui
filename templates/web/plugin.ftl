@@ -65,11 +65,7 @@
 
         const script = document.createElement('script');
 
-        script.src = '/studio/api/2/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}';
-
-        <#if pPluginId?has_content>
-          script.src += '&pluginId=${pPluginId}';
-        </#if>
+        script.src = '/studio/api/2/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}<#if pPluginId?has_content>&pluginId=${pPluginId}</#if>';
 
         script.onload = function () {
           if (['yes', 'true', 'enable', '1'].includes(qs.monitor)) {
