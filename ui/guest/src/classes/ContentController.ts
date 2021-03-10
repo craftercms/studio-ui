@@ -34,7 +34,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { createLookupTable, nou } from '../utils/object';
+import { createLookupTable, nnou, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
@@ -62,7 +62,7 @@ export const children = {
   /* [id]: [id, id, id] */
 };
 
-const pathsRequested = {};
+let requestedPaths = {};
 
 const paths$ = new BehaviorSubject<LookupTable<string>>({
   /* 'path': 'modelId' */
@@ -141,14 +141,14 @@ export function fetchById(id: string): Observable<LookupTable<ContentInstance>> 
 export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance> {
   if (nou(path)) {
     return of(null);
-  } else if (pathsRequested[path]) {
+  } else if (requestedPaths[path]) {
     return paths$.pipe(
       filter((paths) => Boolean(paths[path])),
       pluck(path),
       map((modelId) => models$.value[modelId])
     );
   } else {
-    pathsRequested[path] = true;
+    requestedPaths[path] = true;
     return fetchByPath(path).pipe(pluck('model'));
   }
 }
@@ -184,6 +184,10 @@ export function fetchByPath(
       )
     )
   );
+}
+
+export function flushRequestedPaths(): void {
+  requestedPaths = {};
 }
 
 // endregion
@@ -227,7 +231,33 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   const parentModelId = getParentModelId(modelId, models, children);
   const modelsToUpdate = collectReferrers(modelId);
 
-  Model.value(model, fieldId, value);
+  // Using `index` being present as the factor to determine how to treat this update.
+  // For now, fieldId should only ever have a `.` if the target zone is inside some collection
+  // (node selector, repeat group) which would in turn mean there should be an `index` present.
+  // In the future there may be some object type fields that would need this logic revisited
+  // to account for a nested field without an index.
+  if (nnou(index)) {
+    // Assuming field/index should be asymmetric (one more piece of field than index). e.g.
+    // - field = repeatingGroup_o.textField_s, index = 0
+    // - field = repeatingGroup_o.nodeSelector_o.textField_s, index = 0.0
+    const fieldPieces = fieldId.split('.');
+    const indexPieces = `${index}`.split('.');
+    let target = model;
+    for (let i = 0, length = indexPieces.length; i < length; i++) {
+      const fieldPiece = fieldPieces[i]; // repeatingGroup_o   textField_s
+      const indexPiece = indexPieces[i]; // 0
+      if (i + 1 === length) {
+        // If it is the last iteration, create a new object: avoid mutating the original.
+        // This should be an object (not an array): a repeat group item.
+        target[fieldPiece][indexPiece] = { ...target[fieldPiece][indexPiece] };
+      }
+      target = target[fieldPiece][indexPiece];
+    }
+    const specificFieldId = fieldPieces.pop();
+    target[specificFieldId] = value;
+  } else {
+    Model.value(model, fieldId, value);
+  }
 
   // Update the model cache
   models$.next({
@@ -609,7 +639,7 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
   .subscribe(({ modelLookup, childrenMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
     Object.keys(modelIdByPath).forEach((path) => {
-      pathsRequested[path] = true;
+      requestedPaths[path] = true;
     });
     Object.assign(children, childrenMap);
     models$.next({ ...models$.value, ...modelLookup });

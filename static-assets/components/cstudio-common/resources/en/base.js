@@ -456,7 +456,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   requestApproveDialogTitle: 'Request Publish',
   requestApproveDialogSubTitle: 'When would you like the checked item(s) to be published?',
-  requestApproveDialogEmailMe: 'Email me when items are approved for publish.',
+  requestApproveDialogEmailMe: "Email me the reviewer's feedback",
 
   itemsForPublish: 'Items to Publish',
   selectAll: 'Select All',
@@ -952,6 +952,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabTranslationConfDesc: 'Defines supported languages and how to resolve them',
   confTabSitePolicyConf: 'Site Policy Configuration',
   confTabSitePolicyConfDesc: 'Defines policies to validate content operations',
+  confTabUiConf: 'User Interface Configuration',
+  confTabUiConfDesc: 'Defines the widgets shown in the user interface',
 
   /* Image */
   constraintsError: 'The uploaded file does not meet the specified width & height constraints',

@@ -15,13 +15,28 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  exhaustMap,
+  filter,
+  ignoreElements,
+  map,
+  mapTo,
+  startWith,
+  switchMap,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { itemSuccessMessages } from '../../utils/i18n-legacy';
 import {
   emitSystemEvent,
+  fetchGlobalMenu,
+  fetchGlobalMenuComplete,
+  fetchGlobalMenuFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
+  showCreateFolderSuccessNotification,
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -32,11 +47,37 @@ import {
   showRejectItemSuccessNotification,
   showRevertItemSuccessNotification,
   showSystemNotification,
-  showUnlockItemSuccessNotification
+  showUnlockItemSuccessNotification,
+  storeInitialized
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
+import {
+  fetchPublishingStatus,
+  fetchPublishingStatusComplete,
+  fetchPublishingStatusFailed,
+  startPublishingStatusFetcher,
+  stopPublishingStatusFetcher
+} from '../actions/publishingStatus';
+import { fetchStatus } from '../../services/publishing';
+import { catchAjaxError } from '../../utils/ajax';
+import { changeSite } from '../reducers/sites';
+import { interval } from 'rxjs';
+import { sessionTimeout } from '../actions/user';
+import { sharedWorkerUnauthenticated } from '../actions/auth';
+import { fetchGlobalMenuItems } from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
+  // region storeInitialized
+  (action$) =>
+    action$.pipe(
+      ofType(storeInitialized.type),
+      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu()])
+    ),
+  // endregion
+  // region changeSite
+  (action$) => action$.pipe(ofType(changeSite.type), mapTo(startPublishingStatusFetcher())),
+  // endregion
+  // region emitSystemEvent
   (action$) =>
     action$.pipe(
       ofType(emitSystemEvent.type),
@@ -46,6 +87,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showDeleteItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showDeleteItemSuccessNotification.type),
@@ -61,6 +104,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showPublishItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showPublishItemSuccessNotification.type),
@@ -93,6 +138,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showEditItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditItemSuccessNotification.type),
@@ -112,6 +159,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showCreateItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showCreateItemSuccessNotification.type),
@@ -125,6 +174,23 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showCreateFolderSuccessNotification
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(showCreateFolderSuccessNotification.type),
+      tap(({ payload: { action } }) => {
+        const hostToHost$ = getHostToHostBus();
+        hostToHost$.next(
+          showSystemNotification({
+            message: getIntl().formatMessage(itemSuccessMessages.folderCreated)
+          })
+        );
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region showCopyItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showCopyItemSuccessNotification.type),
@@ -140,6 +206,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showCutItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showCutItemSuccessNotification.type),
@@ -153,6 +221,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showPasteItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showPasteItemSuccessNotification.type),
@@ -166,6 +236,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showUnlockItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showUnlockItemSuccessNotification.type),
@@ -179,6 +251,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showDuplicatedItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showDuplicatedItemSuccessNotification.type),
@@ -192,6 +266,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showRevertItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showRevertItemSuccessNotification.type),
@@ -205,6 +281,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showSystemNotification
   (action$) =>
     action$.pipe(
       ofType(showSystemNotification.type),
@@ -214,6 +292,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region showRejectItemSuccessNotification
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showRejectItemSuccessNotification.type),
@@ -227,6 +307,8 @@ const systemEpics: CrafterCMSEpic[] = [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region messageSharedWorker
   (action$, state$, { worker }) =>
     action$.pipe(
       ofType(messageSharedWorker.type),
@@ -234,7 +316,48 @@ const systemEpics: CrafterCMSEpic[] = [
         worker.port.postMessage(action.payload);
       }),
       ignoreElements()
+    ),
+  // endregion
+  // region fetchPublishingStatus
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchPublishingStatus.type),
+      withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
+      exhaustMap(([, state]) =>
+        fetchStatus(state.sites.active).pipe(
+          map((response) => fetchPublishingStatusComplete({ status: response.status, details: response.message })),
+          catchAjaxError(fetchPublishingStatusFailed)
+        )
+      )
+    ),
+  // endregion
+  // region startPublishingStatusFetcher
+  (action$, state$) =>
+    action$.pipe(
+      ofType(startPublishingStatusFetcher.type),
+      withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
+      switchMap(() =>
+        interval(150000).pipe(
+          startWith(0), // To fetch status immediately
+          mapTo(fetchPublishingStatus()),
+          takeUntil(
+            action$.pipe(
+              ofType(stopPublishingStatusFetcher.type, sessionTimeout.type, sharedWorkerUnauthenticated.type)
+            )
+          )
+        )
+      )
+    ),
+  // endregion
+  // region fetchGlobalMenu
+  (action$) =>
+    action$.pipe(
+      ofType(fetchGlobalMenu.type),
+      exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
     )
+  // endregion
 ];
 
 export default systemEpics;

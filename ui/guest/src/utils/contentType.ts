@@ -15,8 +15,9 @@
  */
 
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
-import { createLookupTable, retrieveProperty } from './object';
+import { createLookupTable } from './object';
 import { loremIpsum } from 'lorem-ipsum';
+import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
   return Object.values(contentType.fields).reduce((accumulator, field) => {
@@ -51,12 +52,39 @@ export function doesFieldAccept(contentType: ContentType, fieldId: string) {
   throw new Error('Not implemented.');
 }
 
-export function getField(type: ContentType, fieldId: string): ContentTypeField {
-  // For repeat groups, the field inside the repeat group field will be
-  // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
-  // we parse it here.
-  const parsedFieldId = fieldId.replace(/\./g, '.fields.');
-  return retrieveProperty(Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields, parsedFieldId);
+export function getField(
+  type: ContentType,
+  fieldId: string,
+  contentTypes?: LookupTable<ContentType>
+): ContentTypeField {
+  const fields = fieldId.split('.');
+  let accumulator = Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields;
+  let parsedFieldId = [];
+  fields.forEach((field) => {
+    parsedFieldId.push(field);
+    if (accumulator.type === 'node-selector') {
+      if (!contentTypes) {
+        throw new Error(
+          `Content types not provided to content type helper \`getField\` method. ` +
+            `Unable to retrieve the field \`${fieldId}\` without full list of content types.`
+        );
+      }
+      const contentTypeWithTargetFieldId = accumulator.validations.allowedContentTypes.value.find((ct) =>
+        Boolean(contentTypes[ct].fields[field])
+      );
+      accumulator = contentTypes[contentTypeWithTargetFieldId].fields[field];
+    } else {
+      if (accumulator.type === 'repeat') {
+        // For repeat groups, the field inside the repeat group field will be
+        // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
+        // we parse it here.
+        accumulator = accumulator.fields[field];
+      } else {
+        accumulator = accumulator[field];
+      }
+    }
+  });
+  return accumulator as ContentTypeField;
 }
 
 export function getFields(type: ContentType, ...ids: string[]): ContentTypeField[] {

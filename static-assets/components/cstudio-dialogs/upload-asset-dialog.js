@@ -56,10 +56,13 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
       var id = window.frameElement.getAttribute('id').split('-editor-')[1];
       var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
       var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
-      var formSize = getFormSizeVal(id);
-      if (formSize < 320) {
-        setFormSizeVal(320, id);
-        $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease', true);
+      // These functions are not getting located in some cases and hence throwing.
+      if (getFormSizeVal && setFormSizeVal) {
+        var formSize = getFormSizeVal(id);
+        if (formSize < 320) {
+          setFormSizeVal(320, id);
+          $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease', true);
+        }
       }
     }
   },
@@ -133,7 +136,12 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
       modal: true,
       close: false,
       constraintoviewport: true,
-      underlay: 'none'
+      underlay: 'none',
+      // It looks like when in browse, the .yui-dialog { z-index: 1040 } rule is missing so the dialog
+      // shows below the mask; however, to avoid potential z-index issues breaking out due to adding this rule
+      // to this location, preferring a localized fix. These dialogs need to go away in favour of next ui dialogs
+      // in any case.
+      zIndex: window.location.href.indexOf('/studio/browse') === -1 ? void 0 : 1032
     });
 
     // Render the Dialog

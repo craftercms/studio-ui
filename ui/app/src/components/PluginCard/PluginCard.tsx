@@ -41,6 +41,7 @@ interface PluginCardProps {
   inUse?: boolean;
   usePermission?: boolean;
   useLabel?: string | JSX.Element;
+  disableCardActionClick?: boolean;
 
   onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 
@@ -199,6 +200,7 @@ function PluginCard(props: PluginCardProps) {
     onDetails,
     inUse = false,
     usePermission = true,
+    disableCardActionClick = false,
     useLabel
   } = props;
   const { media, name, license, id, developer } = plugin;
@@ -307,6 +309,7 @@ function PluginCard(props: PluginCardProps) {
     <Card className={classes.card}>
       {id !== 'GIT' && (
         <CardActionArea
+          disabled={disableCardActionClick}
           onClick={(e) => {
             if (isMarketplacePlugin && !plugin.compatible) {
               onImageClick(e);
@@ -333,7 +336,12 @@ function PluginCard(props: PluginCardProps) {
           />
         </CardActionArea>
       )}
-      <CardActionArea onClick={() => onPluginSelected(plugin, 1)}>
+      <CardActionArea
+        disabled={disableCardActionClick}
+        onClick={() => {
+          onPluginSelected(plugin, 1);
+        }}
+      >
         <AutoPlaySwipeableViews
           index={index}
           interval={changeImageSlideInterval}

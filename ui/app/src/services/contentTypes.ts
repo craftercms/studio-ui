@@ -85,7 +85,7 @@ function bestGuessParse(value: any) {
 
 function getFieldValidations(
   fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
-  receptaclesLookup?: LookupTable<LegacyDataSource>
+  dropTargetsLookup?: LookupTable<LegacyDataSource>
 ): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
     (table, prop) => {
@@ -121,11 +121,11 @@ function getFieldValidations(
 
   Object.keys(map).forEach((key) => {
     if (systemValidationsNames.includes(key)) {
-      if (key === 'itemManager' && receptaclesLookup) {
+      if (key === 'itemManager' && dropTargetsLookup) {
         map.itemManager?.value &&
           map.itemManager.value.split(',').forEach((value) => {
-            if (receptaclesLookup[value]) {
-              asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
+            if (dropTargetsLookup[value]) {
+              asArray(dropTargetsLookup[value].properties?.property).forEach((prop) => {
                 if (systemValidationsKeysMap[prop.name]) {
                   validations[systemValidationsKeysMap[prop.name]] = {
                     id: systemValidationsKeysMap[prop.name],
@@ -161,12 +161,12 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   const fields = {};
   const sections = [];
   // const dataSources = {};
-  const receptaclesLookup: LookupTable<LegacyDataSource> = {};
+  const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
 
   // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (datasource.type === 'receptacles') receptaclesLookup[datasource.id] = datasource;
+      if (datasource.type === 'receptacles') dropTargetsLookup[datasource.id] = datasource;
     });
   }
 
@@ -234,7 +234,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
                 if (field.fields[_fieldId].type === 'node-selector') {
                   field.fields[_fieldId].validations = getFieldValidations(
                     _legacyField.properties.property,
-                    receptaclesLookup
+                    dropTargetsLookup
                   );
                 }
               });
@@ -242,7 +242,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
             case 'node-selector':
               field.validations = {
                 ...field.validations,
-                ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
+                ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
               };
               break;
             case 'input':

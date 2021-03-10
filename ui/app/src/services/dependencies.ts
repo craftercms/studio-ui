@@ -26,7 +26,7 @@ export function fetchDependencies(
   return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`).pipe(pluck('response', 'items'));
 }
 
-export function getSimpleDependencies(siteId: string, path: string): Observable<LegacyItem> {
+export function fetchSimpleDependencies(siteId: string, path: string): Observable<LegacyItem> {
   return post(
     `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${encodeURIComponent(
       path
@@ -34,7 +34,7 @@ export function getSimpleDependencies(siteId: string, path: string): Observable<
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function getDependant(siteId: string, path: string): Observable<LegacyItem> {
+export function fetchDependant(siteId: string, path: string): Observable<LegacyItem> {
   return post(
     `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${encodeURIComponent(path)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));

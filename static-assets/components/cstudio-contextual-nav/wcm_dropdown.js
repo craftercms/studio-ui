@@ -50,27 +50,22 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
     var navBarSiteNameEl = YDom.get('navbar-site-name');
 
-    let unsubscribe;
-    unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
-      const stateSite = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
-      if (stateSite) {
-        const site = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
-        const siteName = site.name || site.id;
-        navBarSiteNameEl.innerHTML = siteName;
-        navBarSiteNameEl.setAttribute('title', siteName);
-        unsubscribe();
-      }
+    CrafterCMSNext.system.getStore().subscribe((store) => {
+      let site = store.getState().sites.byId[CStudioAuthoringContext.site];
+      const siteName = site.name || site.id;
+      navBarSiteNameEl.innerHTML = siteName;
+      navBarSiteNameEl.setAttribute('title', siteName);
     });
 
     if (window.location.pathname.indexOf('browse') > -1 || window.location.pathname.indexOf('site-config') > -1) {
       mainContainerEl.innerHTML = '';
+      CrafterCMSNext.render('#acn-dropdown-wrapper', 'CrafterIcon', {
+        style: { fontSize: '33px', margin: '9px 5px 5px' }
+      });
     } else {
       mainContainerEl.innerHTML = `<div id="acn-dropdown" class="acn-dropdown">
           <div id="acn-dropdown-inner" class="acn-dropdown-inner">
-            <a id="acn-dropdown-toggler" href="#" class="acn-dropdown-toggler">
-              <span class="fa fa-bars"></span>
-              <span class="sr-only">${CMgs.format(contextNavLangBundle, 'sideBar')}</span>
-            </a>
+            <div id="acn-dropdown-toggler"></div>
           </div>
           <div
             style="display:none"
@@ -93,6 +88,10 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
             </div>
           </div>
         </div>`;
+
+      CrafterCMSNext.render('#acn-dropdown-toggler', 'LogoAndMenuBundleButton', {
+        style: { margin: '4px 0' }
+      });
 
       /**
        * WCM Site Dropdown Contextual Nav Widget

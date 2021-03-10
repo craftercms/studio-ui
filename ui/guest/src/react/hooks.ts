@@ -20,7 +20,7 @@ import { useGuestContext } from './GuestContext';
 import { deregister, register } from '../classes/ElementRegistry';
 import { nnou, nou, pluckProps } from '../utils/object';
 import { ICEProps } from '../models/InContextEditing';
-import { models$, byPathFetchIfNotLoaded, model$ } from '../classes/ContentController';
+import { byPathFetchIfNotLoaded, model$, models$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { denormalizeModel } from '../utils/content';
 import * as Model from '../utils/model';
@@ -97,20 +97,8 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const elementRegistryId = useRef<number>();
   const model = useHotReloadModel(props);
 
-  const firstRenderRef = useRef<boolean>(true);
+  // Register
   useEffect(() => {
-    if (firstRenderRef.current) {
-      firstRenderRef.current = false;
-    } else {
-      console.error(
-        '[useICE] An ICE registration changed fieldId and/or model id in a render cycle. ' +
-          `This seems odd. Make sure is intended. Current field is ${props.fieldId}, with model id ${props.model.craftercms.id}`
-      );
-    }
-  }, [props.fieldId, props.model.craftercms.id]);
-
-  useEffect(() => {
-    // Register
     elementRegistryId.current = register({
       element: elementRef.current,
       modelId: props.model.craftercms.id,
@@ -123,6 +111,23 @@ export function useICE(props: UseICEProps): ICEMaterials {
     };
   }, [props.index, props.fieldId, props.model.craftercms.id]);
 
+  const ref: ICEMaterials['props']['ref'] = (node) => {
+    // During React update cycles, it may momentarily set the ref to
+    // null and then back to the previous element. We're only paying attention
+    // to the times that there is an element. Final de-registration occurs
+    // at the unmount time.
+    if (node) {
+      elementRef.current = node;
+    }
+    if (props.ref) {
+      if (typeof props.ref === 'function') {
+        props.ref(node);
+      } else {
+        (props.ref as MutableRefObject<HTMLElement>).current = node;
+      }
+    }
+  };
+
   if (inAuthoring) {
     const isDraggable = nnou(draggable[elementRegistryId.current]) && draggable[elementRegistryId.current] !== false;
     const handler = (event: SyntheticEvent) => {
@@ -132,22 +137,6 @@ export function useICE(props: UseICEProps): ICEMaterials {
         event.persist();
       } else {
         props[handlerMap[event.type]]?.();
-      }
-    };
-    const ref: ICEMaterials['props']['ref'] = (node) => {
-      // During React update cycles, it may momentarily set the ref to
-      // null and then back to the previous element. We're only paying attention
-      // to the times that there is an element. Final de-registration occurs
-      // at the unmount time.
-      if (node) {
-        elementRef.current = node;
-      }
-      if (props.ref) {
-        if (typeof props.ref === 'function') {
-          props.ref(node);
-        } else {
-          (props.ref as MutableRefObject<HTMLElement>).current = node;
-        }
       }
     };
     return {
@@ -170,7 +159,7 @@ export function useICE(props: UseICEProps): ICEMaterials {
           : null
     };
   } else {
-    return bypassICE(props);
+    return bypassICE({ ...props, ref });
   }
 }
 

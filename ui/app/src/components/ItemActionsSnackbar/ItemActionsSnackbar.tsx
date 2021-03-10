@@ -21,7 +21,7 @@ import palette from '../../styles/palette';
 import { defineMessages, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { rand } from '../Navigation/PathNavigator/utils';
+import { rand } from '../PathNavigator/utils';
 import Button from '@material-ui/core/Button';
 import { ContextMenuOption } from '../ContextMenu';
 

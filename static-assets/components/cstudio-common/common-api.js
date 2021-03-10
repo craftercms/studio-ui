@@ -980,7 +980,7 @@ var nodeOpen = false,
         eventNS.typeAction = 'publish';
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
           success: function(response) {
-            var dependenciesObj = JSON.parse(response.responseText).entities,
+            var dependenciesObj = response.entities,
               dependencies = [];
 
             // add dependencies and their own dependencies
@@ -1586,9 +1586,9 @@ var nodeOpen = false,
             }
           }
           if (CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.site] === '2') {
-            window.location = `/studio/next/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+            window.location = `/studio/next/preview#/?page=${url}&site=${CStudioAuthoringContext.site}`;
           } else {
-            window.location = `/studio/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+            window.location = `/studio/preview#/?page=${url}&site=${CStudioAuthoringContext.site}`;
           }
         }
       },
@@ -2523,7 +2523,7 @@ var nodeOpen = false,
                 deletedPage = deletedPage.substring(0, deletedPage.length - 1);
               }
               parentPath = deletedPage.substring(0, deletedPage.lastIndexOf('/'));
-              parentPath = parentPath == '/studio/preview/#/?page=' ? parentPath + '/' : parentPath;
+              parentPath = parentPath == '/studio/preview#/?page=' ? parentPath + '/' : parentPath;
               parentPath = CStudioAuthoringContext.previewAppBaseUri + parentPath;
               if (deletedPage.lastIndexOf('/&') == -1 && nodeName == deletedNodeName) {
                 document.location = parentPath;
@@ -3474,7 +3474,7 @@ var nodeOpen = false,
        */
       getContent: function(path, edit, callback) {
         CrafterCMSNext.services.content
-          .getContentXML(CStudioAuthoringContext.site, encodeURI(path), {
+          .fetchContentXML(CStudioAuthoringContext.site, encodeURI(path), {
             lock: !edit
           })
           .subscribe(
@@ -3579,7 +3579,7 @@ var nodeOpen = false,
         var serviceUrl =
           '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site_id=' + CStudioAuthoringContext.site;
 
-        CrafterCMSNext.util.ajax.postJSON(`/studio${serviceUrl}`).subscribe(
+        CrafterCMSNext.util.ajax.postJSON(`/studio${serviceUrl}`, data).subscribe(
           (response) => {
             callback.success(response.response);
           },
@@ -3656,7 +3656,7 @@ var nodeOpen = false,
         callback.beforeServiceCall();
 
         CrafterCMSNext.services.dashboard
-          .legacyGetGoLiveItems(site, sortBy, sortAscDesc, includeInprogressItems, filterByNumber)
+          .fetchLegacyGetGoLiveItems(site, sortBy, sortAscDesc, includeInprogressItems, filterByNumber)
           .subscribe(
             function(response) {
               CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap = CStudioAuthoring.Service.createFlatMap(
@@ -3680,7 +3680,7 @@ var nodeOpen = false,
         }
 
         CrafterCMSNext.services.dashboard
-          .legacyFetchUserActivities(site, user, sortBy, sortAscDesc, number, filterBy, hideLive)
+          .fetchLegacyUserActivities(site, user, sortBy, sortAscDesc, number, filterBy, hideLive)
           .subscribe(
             function(response) {
               callback.success(response);
@@ -3733,7 +3733,7 @@ var nodeOpen = false,
           filterBy = 'page';
         }
 
-        CrafterCMSNext.services.dashboard.legacyFetchScheduledItems(site, sortBy, sortAscDesc, filterBy).subscribe(
+        CrafterCMSNext.services.dashboard.fetchLegacyScheduledItems(site, sortBy, sortAscDesc, filterBy).subscribe(
           function(response) {
             callback.success(response);
           },
@@ -3753,7 +3753,7 @@ var nodeOpen = false,
         }
 
         CrafterCMSNext.services.dashboard
-          .legacyFetchDeploymentHistory(site, sortBy, sortAscDesc, days, number, filterBy)
+          .fetchLegacyDeploymentHistory(site, sortBy, sortAscDesc, days, number, filterBy)
           .subscribe(
             function(response) {
               callback.success(response);
@@ -3938,7 +3938,7 @@ var nodeOpen = false,
         // encoded again.
         path = decodeURI(path);
 
-        CrafterCMSNext.services.content.getLegacyItem(site, encodeURI(path)).subscribe(
+        CrafterCMSNext.services.content.fetchLegacyItem(site, encodeURI(path)).subscribe(
           function(response) {
             try {
               callback.success(
@@ -3987,7 +3987,7 @@ var nodeOpen = false,
        */
       lookupSiteContent: function(site, path, depth, order, callback) {
         CrafterCMSNext.services.content
-          .getLegacyItemsTree(site, encodeURI(path), {
+          .fetchLegacyItemsTree(site, encodeURI(path), {
             depth,
             order
           })
@@ -8113,11 +8113,6 @@ CStudioAuthoring.FilesDiff = {
     });
   }, w);
 })(window);
-
-if (window.top === window) {
-  const el = document.createElement('craftercms-auth-monitor');
-  CrafterCMSNext.render(el, 'AuthMonitor');
-}
 
 function getTopLegacyWindow(nextWindow) {
   try {

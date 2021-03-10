@@ -45,6 +45,13 @@ interface CreateTokenProps {
   onClosed?(): void;
 }
 
+interface CreateTokenUIProps {
+  disabled: boolean;
+  onOk({ label, expiresAt }): void;
+  onDismiss?(): void;
+  onClosed?(): void;
+}
+
 export const translations = defineMessages({
   placeholder: {
     id: 'words.label',
@@ -56,7 +63,7 @@ export const translations = defineMessages({
   }
 });
 
-const styles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     expiresWrapper: {
       display: 'flex',
@@ -66,45 +73,28 @@ const styles = makeStyles((theme) =>
   })
 );
 
-export default function CreateTokenDialog(props: CreateTokenProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose} onEscapeKeyDown={onClose}>
-      <CreateTokenUI {...props} />
-    </Dialog>
-  );
-}
-
-function CreateTokenUI(props: CreateTokenProps) {
-  const { onClosed, onClose, onCreated } = props;
-  const [inProgress, setInProgress] = useState(false);
+export function CreateTokenUI(props: CreateTokenUIProps) {
+  const classes = useStyles();
+  const { onClosed, onDismiss, onOk, disabled } = props;
   const [expires, setExpires] = useState(false);
   const [expiresAt, setExpiresAt] = useState(moment());
-  const classes = styles();
   const [label, setLabel] = useState('');
   const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
+  const onSubmit = (e) => {
+    if (e.target.tagName === 'form') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    onOk({ label, expiresAt: expires ? expiresAt : null });
+  };
 
   useUnmount(onClosed);
 
-  const onOk = () => {
-    setInProgress(true);
-    createToken(label, expires ? expiresAt : null).subscribe(
-      (token) => {
-        setInProgress(false);
-        onCreated && onCreated(token);
-      },
-      (response) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
-  };
-
   return (
-    <>
+    <form onSubmit={onSubmit}>
       <DialogHeader
         title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
-        onDismiss={onClose}
+        onDismiss={onDismiss}
       />
       <DialogBody>
         <Typography variant="body2">
@@ -125,15 +115,7 @@ function CreateTokenUI(props: CreateTokenProps) {
         />
         <section className={classes.expiresWrapper}>
           <FormControlLabel
-            control={
-              <Switch
-                checked={expires}
-                color="primary"
-                onChange={(e, checked) => {
-                  setExpires(checked);
-                }}
-              />
-            }
+            control={<Switch checked={expires} color="primary" onChange={(e, checked) => setExpires(checked)} />}
             label={formatMessage(translations.expiresLabel)}
           />
           <FormHelperText>
@@ -163,14 +145,40 @@ function CreateTokenUI(props: CreateTokenProps) {
         </Collapse>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose}>
+        <SecondaryButton onClick={onDismiss}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={onOk} autoFocus disabled={inProgress || label === ''}>
-          {inProgress && <CircularProgress size={15} style={{ marginRight: '5px' }} />}
-          <FormattedMessage id="words.submit" defaultMessage="Submit" />
+        <PrimaryButton type="submit" onClick={onSubmit} autoFocus disabled={disabled || label === ''}>
+          {disabled ? (
+            <CircularProgress size={15} style={{ marginRight: '5px' }} />
+          ) : (
+            <FormattedMessage id="words.submit" defaultMessage="Submit" />
+          )}
         </PrimaryButton>
       </DialogFooter>
-    </>
+    </form>
+  );
+}
+
+export default function CreateTokenDialog(props: CreateTokenProps) {
+  const { open, onClose, onCreated, onClosed } = props;
+  const [inProgress, setInProgress] = useState(false);
+  const dispatch = useDispatch();
+  const onOk = ({ label, expiresAt }) => {
+    setInProgress(true);
+    createToken(label, expiresAt).subscribe(
+      (token) => {
+        setInProgress(false);
+        onCreated?.(token);
+      },
+      (response) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+  return (
+    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose} onEscapeKeyDown={onClose}>
+      <CreateTokenUI onOk={onOk} disabled={inProgress} onDismiss={onClose} onClosed={onClosed} />
+    </Dialog>
   );
 }

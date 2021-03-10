@@ -90,7 +90,7 @@ export function register(registration: ICERecordRegistration): number {
     contentTypeUtils.isGroupItem(getReferentialEntries(data).contentType, data.fieldId)
   ) {
     throw new Error(
-      'Group item registration requires the index within the collection that contains the item to be supplied. ' +
+      'Repeating group item registration requires the index within the repeating group to be supplied. ' +
         `Please supply index for '${data.fieldId}' of the ${getReferentialEntries(data).contentType.name} model.`
     );
   }
@@ -180,18 +180,18 @@ export function isRepeatGroupItem(id: number): boolean {
   );
 }
 
-export function getMediaReceptacles(type: string): ICERecord[] {
-  const receptacles = [];
+export function getMediaDropTargets(type: string): ICERecord[] {
+  const dropTargets = [];
   for (const [, record] of registry) {
     const entries = getReferentialEntries(record);
-    if (entries.field && entries.field.type === type) {
-      receptacles.push(record);
+    if (entries.field?.type === type) {
+      dropTargets.push(record);
     }
   }
-  return receptacles;
+  return dropTargets;
 }
 
-export function getRecordReceptacles(id: number): ICERecord[] {
+export function getRecordDropTargets(id: number): ICERecord[] {
   const record = getById(id);
   const { index, field, fieldId, model } = getReferentialEntries(record);
   if (isNullOrUndefined(index)) {
@@ -205,37 +205,37 @@ export function getRecordReceptacles(id: number): ICERecord[] {
     // @ts-ignore TODO: Fix type
     const nestedModel = models[id];
     const contentType = Model.getContentTypeId(nestedModel);
-    return getContentTypeReceptacles(contentType).map((rec) => rec);
+    return getContentTypeDropTargets(contentType).map((rec) => rec);
   } else if (field.type === 'repeat') {
     // const item = Model.extractCollectionItem(model, fieldId, index);
-    return getRepeatGroupItemReceptacles(record);
+    return getRepeatGroupItemDropTargets(record);
   } else {
-    console.error('[ICERegistry/getRecordReceptacles] Unhandled path');
+    console.error('[ICERegistry/getRecordDropTargets] Unhandled path');
     return [];
   }
 }
 
-export function getRepeatGroupItemReceptacles(record: ICERecord): ICERecord[] {
+export function getRepeatGroupItemDropTargets(record: ICERecord): ICERecord[] {
   const entries = getReferentialEntries(record);
-  const receptacles = [];
+  const dropTargets = [];
   const records = registry.values();
   for (const item of records) {
     if (isNullOrUndefined(item.index) && item.fieldId === record.fieldId) {
       const es = getReferentialEntries(item);
       if (es.contentTypeId === entries.contentTypeId) {
-        receptacles.push(item);
+        dropTargets.push(item);
       }
     }
   }
-  return receptacles;
+  return dropTargets;
 }
 
-export function getComponentItemReceptacles(record: ICERecord): number[] {
+export function getComponentItemDropTargets(record: ICERecord): number[] {
   const contentType = getReferentialEntries(record).contentType;
-  return getContentTypeReceptacles(contentType).map((rec) => rec.id);
+  return getContentTypeDropTargets(contentType).map((rec) => rec.id);
 }
 
-export function getContentTypeReceptacles(contentType: string | ContentType): ICERecord[] {
+export function getContentTypeDropTargets(contentType: string | ContentType): ICERecord[] {
   const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
   return Array.from(registry.values()).filter((record) => {
     const { fieldId, index } = record;
@@ -268,9 +268,9 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
   });
 }
 
-export function runReceptaclesValidations(receptacles: ICERecord[]): LookupTable<LookupTable<ValidationResult>> {
+export function runDropTargetsValidations(dropTargets: ICERecord[]): LookupTable<LookupTable<ValidationResult>> {
   const lookup = {};
-  receptacles.forEach((record) => {
+  dropTargets.forEach((record) => {
     const validationResult = {};
     const { fieldId, index } = record;
     let {
@@ -327,7 +327,9 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
   let model = contentController.getCachedModel(record.modelId);
   let contentTypeId = Model.getContentTypeId(model);
   let contentType = contentController.getCachedContentType(contentTypeId);
-  let field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
+  let field = record.fieldId
+    ? contentTypeUtils.getField(contentType, record.fieldId, contentController.getCachedContentTypes())
+    : null;
 
   if (!field && record.fieldId && model.craftercms.sourceMap?.[record.fieldId]) {
     model = contentController.getContentInstanceByPath(model.craftercms.sourceMap[record.fieldId]);
@@ -461,7 +463,7 @@ export function checkComponentMovability(entries): boolean {
       // Would moving the guy away from this zone violate it's minCount?
       (parentCollection.length - 1 >= minCount &&
         // Does anybody else accept this type of component?
-        getComponentItemReceptacles(entries).length > 0)
+        getComponentItemDropTargets(entries).length > 0)
     );
   } else {
     return (
@@ -469,7 +471,7 @@ export function checkComponentMovability(entries): boolean {
       // If the parent field is not required that should be ok
       !parentField.required &&
       // Is this guy accepted elsewhere?
-      getComponentItemReceptacles(entries).length > 0
+      getComponentItemDropTargets(entries).length > 0
     );
   }
 }
@@ -501,7 +503,7 @@ export function findContainerField(
     const value = Model.value(model, field.id);
     if (field.type === 'node-selector' && (value === modelId || value.includes(modelId))) {
       return field;
-    } else if (field.type === 'repeatGroup') {
+    } else if (field.type === 'repeat') {
       // TODO ...
     }
   });

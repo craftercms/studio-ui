@@ -579,6 +579,10 @@ export const codeEditorMessages = defineMessages({
     id: 'codeEditor.saveAndClose',
     defaultMessage: 'Save & Close'
   },
+  saveAndMinimize: {
+    id: 'codeEditor.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
+  },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
     defaultMessage:
@@ -723,6 +727,10 @@ export const formEngineMessages = defineMessages({
     id: 'formEngine.saveAndPreview',
     defaultMessage: 'Save & Preview'
   },
+  saveAndMinimize: {
+    id: 'formEngine.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
+  },
   createPolicy: {
     id: 'formEngine.createPolicy',
     defaultMessage:
@@ -826,23 +834,23 @@ export const transcodedVideoPickerControlMessages = defineMessages({
 
 export const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
-    id: 'GlobalMenu.SitesEntryLabel',
+    id: 'words.sites',
     defaultMessage: 'Sites'
   },
   'home.globalMenu.users': {
-    id: 'GlobalMenu.UsersEntryLabel',
+    id: 'words.users',
     defaultMessage: 'Users'
   },
   'home.globalMenu.groups': {
-    id: 'GlobalMenu.GroupsEntryLabel',
+    id: 'words.groups',
     defaultMessage: 'Groups'
   },
   'home.globalMenu.cluster': {
-    id: 'GlobalMenu.ClusterEntryLabel',
+    id: 'words.cluster',
     defaultMessage: 'Cluster'
   },
   'home.globalMenu.audit': {
-    id: 'GlobalMenu.AuditEntryLabel',
+    id: 'words.audit',
     defaultMessage: 'Audit'
   },
   'home.globalMenu.logging-levels': {
@@ -866,15 +874,15 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Token Management'
   },
   'home.about-us': {
-    id: 'GlobalMenu.AboutUs',
+    id: 'words.about',
     defaultMessage: 'About'
   },
   'home.settings': {
     id: 'GlobalMenu.Settings',
-    defaultMessage: 'Account Management'
+    defaultMessage: 'Account'
   },
   login: {
-    id: 'GlobalMenu.Login',
+    id: 'words.login',
     defaultMessage: 'Login'
   },
   'login.recover': {
@@ -882,6 +890,9 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Password Recovery'
   }
 });
+
+globalMenuMessages['home.globalMenu.about-us'] = globalMenuMessages['home.about-us'];
+globalMenuMessages['home.globalMenu.settings'] = globalMenuMessages['home.settings'];
 
 export const adminConfigurationMessages = defineMessages({
   encryptMarked: {
@@ -1058,57 +1069,57 @@ export const embeddedLegacyFormMessages = defineMessages({
   }
 });
 
-export const receptaclesMessages = defineMessages({
-  receptacles: {
-    id: 'receptaclesMessages.receptacles',
-    defaultMessage: 'Receptacles'
+export const dropTargetsMessages = defineMessages({
+  dropTargets: {
+    id: 'dropTargetsMessages.dropTargets',
+    defaultMessage: 'Drop Targets'
   },
   createNewEmbedded: {
-    id: 'receptaclesMessages.createNewEmbedded',
+    id: 'dropTargetsMessages.createNewEmbedded',
     defaultMessage: 'Create new embedded'
   },
   createNewShared: {
-    id: 'receptaclesMessages.createNewShared',
+    id: 'dropTargetsMessages.createNewShared',
     defaultMessage: 'Create new shared'
   },
   allowShared: {
-    id: 'receptaclesMessages.allowShared',
+    id: 'dropTargetsMessages.allowShared',
     defaultMessage: 'Allow Shared'
   },
   allowEmbedded: {
-    id: 'receptaclesMessages.allowEmbedded',
+    id: 'dropTargetsMessages.allowEmbedded',
     defaultMessage: 'Allow Embedded'
   },
   enableBrowse: {
-    id: 'receptaclesMessages.enableBrowse',
+    id: 'dropTargetsMessages.enableBrowse',
     defaultMessage: 'Enable Browse'
   },
   enableSearch: {
-    id: 'receptaclesMessages.enableSearch',
+    id: 'dropTargetsMessages.enableSearch',
     defaultMessage: 'Enable Search'
   },
   baseRepositoryPath: {
-    id: 'receptaclesMessages.baseRepositoryPath',
+    id: 'dropTargetsMessages.baseRepositoryPath',
     defaultMessage: 'Base Repository Path'
   },
   baseBrowsePath: {
-    id: 'receptaclesMessages.baseBrowsePath',
+    id: 'dropTargetsMessages.baseBrowsePath',
     defaultMessage: 'Base Browse Path'
   },
   contentTypes: {
-    id: 'receptaclesMessages.contentTypes',
+    id: 'dropTargetsMessages.contentTypes',
     defaultMessage: 'Content Types'
   },
   tags: {
-    id: 'receptaclesMessages.tags',
+    id: 'dropTargetsMessages.tags',
     defaultMessage: 'Tags'
   },
   browseExisting: {
-    id: 'receptaclesMessages.browseExisting',
+    id: 'dropTargetsMessages.browseExisting',
     defaultMessage: 'Browse existing'
   },
   searchExisting: {
-    id: 'receptaclesMessages.searchExisting',
+    id: 'dropTargetsMessages.searchExisting',
     defaultMessage: 'Search existing components'
   }
 });
@@ -1487,6 +1498,10 @@ export const itemSuccessMessages = defineMessages({
   itemSavedAsDraft: {
     id: 'item.savedAsDraft',
     defaultMessage: 'Item draft saved'
+  },
+  folderCreated: {
+    id: 'folder.created',
+    defaultMessage: 'Folder created successfully'
   }
 });
 

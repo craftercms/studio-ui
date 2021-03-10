@@ -23,7 +23,7 @@ import {
   clearSelectForEdit,
   COMPONENT_INSTANCE_HTML_REQUEST,
   COMPONENT_INSTANCE_HTML_RESPONSE,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   DELETE_ITEM_OPERATION_COMPLETE,
@@ -49,7 +49,7 @@ import {
   MOVE_ITEM_OPERATION,
   pushToolsPanelPage,
   selectForEdit,
-  setContentTypeReceptacles,
+  setContentTypeDropTargets,
   setHighlightMode,
   setItemBeingDragged,
   setPreviewChoice,
@@ -62,9 +62,9 @@ import {
 } from '../../state/actions/preview';
 import {
   deleteItem,
-  getComponentInstanceHTML,
-  getContentInstance,
-  getContentInstanceDescriptor,
+  fetchComponentInstanceHTML,
+  fetchContentInstance,
+  fetchContentInstanceDescriptor,
   insertComponent,
   insertInstance,
   moveItem,
@@ -84,7 +84,7 @@ import {
   useActiveUser,
   useContentTypes,
   useMount,
-  usePermissions,
+  usePermissionsByPath,
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
@@ -134,9 +134,9 @@ const guestMessages = defineMessages({
     id: 'register.notFound',
     defaultMessage: '{name} is not visible or was not registered by developers'
   },
-  receptaclesNotFound: {
-    id: 'register.receptaclesNotFound',
-    defaultMessage: 'There are no receptacles for {contentType} components'
+  dropTargetsNotFound: {
+    id: 'register.dropTargetsNotFound',
+    defaultMessage: 'There are no drop targets for {contentType} components'
   }
 });
 
@@ -172,7 +172,7 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const permissions = usePermissions();
+  const permissions = usePermissionsByPath();
   const write = permissions?.[currentItemPath]?.write;
 
   useEffect(() => {
@@ -256,6 +256,7 @@ export function PreviewConcierge(props: any) {
           let compatibilityForceStay = compatibilityQueryArg === 'stay';
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
+            // Avoid recurrently showing the notification over and over as long as the page is not refreshed
             previewNextCheckInNotificationRef.current = true;
             if (compatibilityAsk) {
               setPreviewCompatibilityDialogOpen(true);
@@ -277,6 +278,8 @@ export function PreviewConcierge(props: any) {
               .subscribe((k) => {
                 handlePreviewCompatibilityDialogGo();
               });
+          } else if (!compatibilityAsk && !compatibilityForceStay) {
+            handlePreviewCompatibilityDialogGo();
           }
           break;
         case GUEST_CHECK_IN:
@@ -284,7 +287,7 @@ export function PreviewConcierge(props: any) {
           // region const issueDescriptorRequest = () => {...}
           // This request & response processing is common to both of these actions so grouping them together.
           const issueDescriptorRequest = (path, completeAction) =>
-            getContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
+            fetchContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
               .pipe(
                 // If another check in comes while loading, this request should be cancelled.
                 // This may happen if navigating rapidly from one page to another (guest-side).
@@ -294,7 +297,7 @@ export function PreviewConcierge(props: any) {
                   Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
                     if (!requestedSourceMapPaths.current[path]) {
                       requestedSourceMapPaths.current[path] = true;
-                      requests.push(getContentInstance(site, path, contentTypes));
+                      requests.push(fetchContentInstance(site, path, contentTypes));
                     }
                   });
                   if (requests.length) {
@@ -646,12 +649,12 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
-        case CONTENT_TYPE_RECEPTACLES_RESPONSE: {
-          dispatch(setContentTypeReceptacles(payload));
+        case CONTENT_TYPE_DROP_TARGETS_RESPONSE: {
+          dispatch(setContentTypeDropTargets(payload));
           break;
         }
         case COMPONENT_INSTANCE_HTML_REQUEST: {
-          getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
+          fetchComponentInstanceHTML(payload.path).subscribe((htmlString) => {
             hostToGuest$.next({
               type: COMPONENT_INSTANCE_HTML_RESPONSE,
               payload: { response: htmlString, id: payload.id }

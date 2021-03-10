@@ -21,7 +21,7 @@ import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
-import { ContentTypeReceptacle } from './ContentTypeReceptacle';
+import { ContentTypeDropTarget } from './ContentTypeDropTarget';
 import { ConfirmDialogStateProps } from '../components/Dialogs/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
@@ -38,7 +38,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
-import { PathNavigatorStateProps } from '../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
@@ -52,8 +52,12 @@ import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelecti
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
-import { MessageDescriptor } from 'react-intl';
-import { GlobalNavStateProps } from '../components/Navigation/GlobalNav';
+import { LauncherStateProps } from '../components/Launcher';
+import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
+import TranslationOrText from './TranslationOrText';
+import { SystemLinkId } from '../components/LauncherSection';
+import { SystemIconDescriptor } from '../components/SystemIcon';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -79,6 +83,15 @@ export interface GuestData {
   selected: EditSelection[];
   itemBeingDragged: boolean;
 }
+
+// TODO:
+//   Assess extracting these props from `GuestData` to avoid reloading models
+//   that were already fetched on previews pages as Guest checks in and out.
+// export interface GuestModels {
+//   models: LookupTable<ContentInstance>;
+//   childrenMap: LookupTable<string[]>;
+//   modelIdByPath: LookupTable<string>;
+// }
 
 export interface Clipboard {
   type: 'CUT' | 'COPY';
@@ -142,9 +155,9 @@ export interface GlobalState {
       applied: boolean;
     };
     components: PagedEntityState<ContentInstance>;
-    receptacles: {
+    dropTargets: {
       selectedContentType: string;
-      byId: LookupTable<ContentTypeReceptacle>;
+      byId: LookupTable<ContentTypeDropTarget>;
     };
   };
   versions: VersionsStateProps;
@@ -172,22 +185,8 @@ export interface GlobalState {
     pathSelection: PathSelectionDialogStateProps;
     changeContentType: ChangeContentTypeDialogStateProps;
     itemMenu: ItemMenuStateProps;
-    globalNav: GlobalNavStateProps;
-  };
-  translation: {
-    siteLocales: {
-      error: ApiResponse;
-      isFetching: boolean;
-      localeCodes: string[];
-      defaultLocaleCode: string;
-    };
-  };
-  configuration: {
-    publishing: {
-      submission: {
-        commentMaxLength: number;
-      };
-    };
+    launcher: LauncherStateProps;
+    publishingStatus: PublishingStatusDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;
@@ -198,10 +197,33 @@ export interface GlobalState {
         widgets: WidgetDescriptor[];
       };
     };
-    siteNav: {
-      title: string | MessageDescriptor;
-      roles?: string[];
-      widgets: any;
+    launcher: {
+      widgets: WidgetDescriptor[];
+      /**
+       * Whether to render the global nav before or after
+       * the additional widgets coming from configuration
+       **/
+      globalNavigationPosition?: 'before' | 'after';
+      siteCardMenuLinks: Array<{
+        title: TranslationOrText;
+        systemLinkId: SystemLinkId;
+        icon?: SystemIconDescriptor;
+        roles?: string[];
+      }>;
+    };
+    globalNavigation: {
+      error: AjaxError;
+      items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
+      isFetching: boolean;
+    };
+    siteLocales: {
+      error: ApiResponse;
+      isFetching: boolean;
+      localeCodes: string[];
+      defaultLocaleCode: string;
+    };
+    publishing: {
+      submissionCommentMaxLength: number;
     };
   };
   pathNavigator: {

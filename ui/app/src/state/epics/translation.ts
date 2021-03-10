@@ -19,7 +19,7 @@ import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 
 import { exhaustMap, map, withLatestFrom } from 'rxjs/operators';
-import { getSiteLocales } from '../../services/translation';
+import { fetchSiteLocales as fetchSiteLocalesService } from '../../services/translation';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { CrafterCMSEpic } from '../store';
@@ -30,7 +30,10 @@ export default [
       ofType(fetchSiteLocales.type),
       withLatestFrom(state$),
       exhaustMap(([, state]) =>
-        getSiteLocales(state.sites.active).pipe(map(fetchSiteLocalesComplete), catchAjaxError(fetchSiteLocalesFailed))
+        fetchSiteLocalesService(state.sites.active).pipe(
+          map(fetchSiteLocalesComplete),
+          catchAjaxError(fetchSiteLocalesFailed)
+        )
       )
     )
 ] as CrafterCMSEpic[];

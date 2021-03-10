@@ -872,6 +872,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   confTabTranslationConfDesc: '지원되는 언어 및 해결 방법을 정의합니다',
   confTabSitePolicyConf: '사이트 정책 구성',
   confTabSitePolicyConfDesc: '콘텐츠 작업의 유효성을 검사하는 정책을 정의합니다.',
+  confTabUiConf: '사용자 인터페이스 구성',
+  confTabUiConfDesc: '사용자 인터페이스에 표시되는 위젯을 정의합니다.',
 
   /*Postfixes*/
   iDescription: '정수의 경우',

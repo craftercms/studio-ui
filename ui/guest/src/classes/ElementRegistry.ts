@@ -337,8 +337,8 @@ export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData
   }, {} as LookupTable<HighlightData>);
 }
 
-export function getDragContextFromReceptacles(
-  receptacles: ICERecord[],
+export function getDragContextFromDropTargets(
+  dropTargets: ICERecord[],
   validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
   currentRecord?: ElementRecord
 ): { dropZones: any; siblings: any; players: any; containers: any } {
@@ -349,7 +349,7 @@ export function getDragContextFromReceptacles(
     containers: []
   };
 
-  receptacles.forEach(({ id }) => {
+  dropTargets.forEach(({ id }) => {
     const dropZones = compileAllDropZones(id);
     const dropZonesFiltered = currentRecord
       ? dropZones.filter((dropZone) => dropZone.children.includes(currentRecord.element))

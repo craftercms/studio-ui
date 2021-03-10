@@ -16,16 +16,16 @@
 
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import CustomMenu from '../../components/Icons/CustomMenu';
 import IconButton from '@material-ui/core/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
-import GlobalNavOpenerButton from '../Navigation/GlobalNavOpenerButton';
+import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../../components/Controls/SearchBar';
 import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
 import GridViewIcon from '@material-ui/icons/GridOnRounded';
 import ViewToolbar from '../ViewToolbar';
 import Tooltip from '@material-ui/core/Tooltip';
+import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 
 const translations = defineMessages({
   showHideFilters: {
@@ -77,11 +77,8 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
   return (
     <ViewToolbar>
       <section>
-        {!embedded && <GlobalNavOpenerButton sitesRailPosition="right" />}
         <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
-          <IconButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick}>
-            <CustomMenu />
-          </IconButton>
+          <LogoAndMenuBundleButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick} />
         </Tooltip>
         <Typography variant="h5" component="h2" color="textPrimary">
           {formatMessage(translations.search)}
@@ -102,7 +99,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
           </IconButton>
         </Tooltip>
-        {!embedded && <GlobalNavOpenerButton sitesRailPosition="left" icon="apps" />}
+        {!embedded && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
       </section>
     </ViewToolbar>
   );

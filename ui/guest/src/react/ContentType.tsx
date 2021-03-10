@@ -18,16 +18,16 @@ import React, { ComponentType, PropsWithChildren } from 'react';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 
-type PropsWithModel = PropsWithChildren<{ model: ContentInstance }>;
+export type PropsWithModel = PropsWithChildren<{ model: ContentInstance }>;
 
-interface ContentTypeProps<P extends PropsWithModel = PropsWithModel> {
+export interface ContentTypeProps<P extends PropsWithModel = PropsWithModel> {
   model: ContentInstance;
   contentTypeMap: LookupTable<ComponentType<P>>;
   notFoundComponent?: ComponentType<P>;
   notMappedComponent?: ComponentType<P>;
 }
 
-function NotFoundDefault() {
+export function NotFoundDefault() {
   return (
     <section>
       <p>Content not found.</p>
@@ -35,11 +35,11 @@ function NotFoundDefault() {
   );
 }
 
-function NotDevelopedDefault() {
+export function NotDevelopedDefault() {
   return <section>The page you've selected needs to be created by the site developers.</section>;
 }
 
-export default function ContentType(props: ContentTypeProps) {
+export function ContentType(props: ContentTypeProps) {
   if (!props.contentTypeMap) {
     console.error(
       `The content type map was not supplied to ContentType component. ${
@@ -62,3 +62,5 @@ export default function ContentType(props: ContentTypeProps) {
   );
   return <Component model={model} {...rest} />;
 }
+
+export default ContentType;

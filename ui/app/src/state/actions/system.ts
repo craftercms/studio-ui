@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { OptionsObject } from 'notistack';
-import { Clipboard } from '../../models/GlobalState';
+import GlobalState, { Clipboard } from '../../models/GlobalState';
 import { ObtainAuthTokenResponse } from '../../services/auth';
 import User from '../../models/User';
 import { Site } from '../../models/Site';
@@ -54,6 +54,10 @@ export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction('SHO
 export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCreateItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
+
+export const showCreateFolderSuccessNotification = /*#__PURE__*/ createAction(
+  'SHOW_CREATE_FOLDER_SUCCESS_NOTIFICATION'
+);
 
 export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
@@ -92,3 +96,11 @@ export const storeInitialized = /*#__PURE__*/ createAction<{
 }>('STORE_INITIALIZED');
 
 export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('MESSAGE_SHARED_WORKER');
+
+export const fetchGlobalMenu = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU');
+
+export const fetchGlobalMenuComplete = /*#__PURE__*/ createAction<GlobalState['uiConfig']['globalNavigation']['items']>(
+  'FETCH_GLOBAL_MENU_COMPLETE'
+);
+
+export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');

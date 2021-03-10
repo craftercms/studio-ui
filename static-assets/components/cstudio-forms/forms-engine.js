@@ -974,11 +974,10 @@ var CStudioForms =
             })
           ])
             .then(([formDefinition, { ctrlCls, formConfig }, model, contentType, content]) => {
-              const formDef = {
-                ...formDefinition,
+              const formDef = Object.assign({}, formDefinition, {
                 config: formConfig,
                 contentAsFolder: contentType.contentAsFolder
-              };
+              });
 
               if (model && model.item.lockOwner !== '' && model.item.lockOwner !== CStudioAuthoringContext.user) {
                 readonly = true;
@@ -1003,6 +1002,9 @@ var CStudioForms =
               _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
             })
             .catch((reason) => {
+              console.error(reason);
+              CStudioAuthoring.InContextEdit.getIceCallback(cfe.engine.config.editorId).renderFailed &&
+                CStudioAuthoring.InContextEdit.getIceCallback(cfe.engine.config.editorId).renderFailed(reason);
               CStudioAuthoring.Operations.showSimpleDialog(
                 'loadContentError-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -1779,6 +1781,12 @@ var CStudioForms =
                     callback: () => {
                       saveFn(false, false, null, 'saveAndClose');
                     }
+                  },
+                  {
+                    label: formatMessage(formEngineMessages.saveAndMinimize),
+                    callback: () => {
+                      saveFn(false, true, null, 'saveAndMinimize');
+                    }
                   }
                 ];
                 if (type.previewable) {
@@ -2427,11 +2435,10 @@ var CStudioForms =
                   }, 1900);
                 }
               } catch (err) {
-                //console.log(err);
+                console.error(err);
               }
-              form.sectionsMap[section.title].notifyValidation();
             } catch (e) {
-              //alert(e);
+              console.error(e);
             }
           },
 

@@ -48,7 +48,7 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 
-export function getComponentInstanceHTML(path: string): Observable<string> {
+export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
 }
 
@@ -56,21 +56,21 @@ interface GetContentOptions {
   lock: boolean;
 }
 
-export function getContentXML(site: string, path: string, options?: Partial<GetContentOptions>): Observable<string> {
+export function fetchContentXML(site: string, path: string, options?: Partial<GetContentOptions>): Observable<string> {
   options = Object.assign({ lock: false }, options);
   const qs = toQueryString({ site_id: site, path, edit: options.lock });
   return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(pluck('response', 'content'));
 }
 
-export function getContentDOM(site: string, path: string): Observable<XMLDocument> {
-  return getContentXML(site, path).pipe(map(fromString));
+export function fetchContentDOM(site: string, path: string): Observable<XMLDocument> {
+  return fetchContentXML(site, path).pipe(map(fromString));
 }
 
 interface GetDescriptorOptions {
   flatten: boolean;
 }
 
-export function getDescriptorXML(
+export function fetchDescriptorXML(
   site: string,
   path: string,
   options?: Partial<GetDescriptorOptions>
@@ -79,16 +79,16 @@ export function getDescriptorXML(
   return get(`/studio/api/2/content/descriptor${qs}`).pipe(pluck('response', 'xml'));
 }
 
-export function getDescriptorDOM(
+export function fetchDescriptorDOM(
   site: string,
   path: string,
   options?: Partial<GetDescriptorOptions>
 ): Observable<XMLDocument> {
-  return getDescriptorXML(site, path, options).pipe(map(fromString));
+  return fetchDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
-export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
-  return getLegacyItem(site, path).pipe(map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem));
+export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem> {
+  return fetchItemsByPath(site, [path]).pipe(pluck('0'));
 }
 
 export function fetchDetailedItem(
@@ -104,12 +104,12 @@ export function fetchDetailedItem(
   );
 }
 
-export function getContentInstanceLookup(
+export function fetchContentInstanceLookup(
   site: string,
   path: string,
   contentTypesLookup: LookupTable<ContentType>
 ): Observable<LookupTable<ContentInstance>> {
-  return getContentDOM(site, path).pipe(
+  return fetchContentDOM(site, path).pipe(
     map((doc) => {
       const lookup = {};
       parseContentXML(doc, path, contentTypesLookup, lookup);
@@ -118,15 +118,15 @@ export function getContentInstanceLookup(
   );
 }
 
-export function getContentInstance(
+export function fetchContentInstance(
   site: string,
   path: string,
   contentTypesLookup: LookupTable<ContentType>
 ): Observable<ContentInstance> {
-  return getContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
+  return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
-export function getContentInstanceDescriptor(
+export function fetchContentInstanceDescriptor(
   site: string,
   path: string,
   options?: Partial<GetDescriptorOptions>,
@@ -137,7 +137,7 @@ export function getContentInstanceDescriptor(
     : fetchContentTypes(site).pipe(map((contentTypes) => createLookupTable(contentTypes)))
   ).pipe(
     switchMap((contentTypeLookup) =>
-      getDescriptorDOM(site, path, options).pipe(
+      fetchDescriptorDOM(site, path, options).pipe(
         map((doc) => {
           const modelLookup = {};
           const model = parseContentXML(doc, path, contentTypeLookup, modelLookup);
@@ -189,7 +189,7 @@ function performMutation(
   mutation: (doc: XMLDocument) => void
 ): Observable<any> {
   const isEmbeddedTarget = nnou(parentModelId);
-  return getContentDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
+  return fetchContentDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
     switchMap((doc) => {
       const qs = {
         site,
@@ -399,19 +399,19 @@ export function deleteItem(
   });
 }
 
-export function getContentByContentType(
+export function fetchItemsByContentType(
   site: string,
   contentType: string,
   contentTypesLookup: LookupTable<ContentType>,
   options?: ComponentsContentTypeParams
 ): Observable<ContentInstancePage>;
-export function getContentByContentType(
+export function fetchItemsByContentType(
   site: string,
   contentTypes: string[],
   contentTypesLookup: LookupTable<ContentType>,
   options?: ComponentsContentTypeParams
 ): Observable<ContentInstancePage>;
-export function getContentByContentType(
+export function fetchItemsByContentType(
   site: string,
   contentTypes: string[] | string,
   contentTypesLookup: LookupTable<ContentType>,
@@ -434,7 +434,7 @@ export function getContentByContentType(
         paths.length
           ? forkJoin(
               paths.reduce((array, path) => {
-                array.push(getContentInstanceLookup(site, path, contentTypesLookup));
+                array.push(fetchContentInstanceLookup(site, path, contentTypesLookup));
                 return array;
               }, []) as Array<Observable<LookupTable<ContentInstance>>>
             )
@@ -448,8 +448,8 @@ export function getContentByContentType(
   );
 }
 
-export function formatXML(site: string, path: string) {
-  return getContentDOM(site, path).pipe(
+export function formatXML(site: string, path: string): Observable<boolean> {
+  return fetchContentDOM(site, path).pipe(
     switchMap((doc) =>
       post(
         writeContentUrl({
@@ -460,7 +460,8 @@ export function formatXML(site: string, path: string) {
         }),
         serialize(doc)
       )
-    )
+    ),
+    mapTo(true)
   );
 }
 
@@ -737,7 +738,7 @@ export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]
   return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${site}`).pipe(pluck('response', 'items'));
 }
 
-export function getHistory(site: string, path: string): Observable<VersionsResponse> {
+export function fetchItemHistory(site: string, path: string): Observable<VersionsResponse> {
   return get(
     `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${encodeURIComponent(path)}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
@@ -758,7 +759,7 @@ interface VersionDescriptor {
   content: ContentInstance;
 }
 
-export function getVersion(site: string, path: string, versionNumber: string): Observable<VersionDescriptor> {
+export function fetchItemVersion(site: string, path: string, versionNumber: string): Observable<VersionDescriptor> {
   return of({
     site,
     path,
@@ -767,7 +768,7 @@ export function getVersion(site: string, path: string, versionNumber: string): O
   });
 }
 
-export function getVersions(
+export function fetchVersions(
   site: string,
   path: string,
   versionNumbers: [string, string],
@@ -789,12 +790,18 @@ export function getVersions(
   ]);
 }
 
-export function getChildrenByPath(
+export function fetchChildrenByPath(
   siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const qs = toQueryString({ siteId, path, ...options });
+  const qs = toQueryString({
+    siteId,
+    path,
+    ...options,
+    // `excludes` may not come at all or be an array of paths
+    excludes: options?.excludes?.join(',') ?? ''
+  });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>
@@ -853,24 +860,39 @@ export function fetchItemsByPath(
   );
 }
 
+export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: false }
+): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
+): Observable<DetailedItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options: FetchItemsByPathOptions
+): Observable<SandboxItem>;
+export function fetchItemByPath(
+  siteId: string,
+  path: string,
+  options?: FetchItemsByPathOptions
+): Observable<SandboxItem | DetailedItem> {
+  return fetchItemsByPath(siteId, [path], options).pipe(pluck('0'));
+}
+
 export function fetchItemWithChildrenByPath(
   siteId: string,
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetItemWithChildrenResponse> {
-  const requests = [
-    fetchDetailedItem(
-      siteId,
-      path === '/site/website' ? (options?.skipHomePathOverride ? path : '/site/website/index.xml') : path
-    ),
-    getChildrenByPath(siteId, path, options)
-  ];
-  return forkJoin(requests).pipe(
-    map(([item, children]: any) => ({
-      item,
-      children
-    }))
-  );
+  return forkJoin({
+    item: fetchItemByPath(siteId, path, { castAsDetailedItem: true }),
+    children: fetchChildrenByPath(siteId, path, options)
+  });
 }
 
 export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<any> {
@@ -897,7 +919,7 @@ export function deleteItems(site: string, submissionComment: string, data: AnyOb
 }
 
 export function lock(site: string, path: string): Observable<boolean> {
-  return getContentXML(site, path, { lock: true }).pipe(mapTo(true));
+  return fetchContentXML(site, path, { lock: true }).pipe(mapTo(true));
 }
 
 export function unlock(site: string, path: string): Observable<boolean> {
@@ -949,13 +971,13 @@ export function checkPathExistence(site: string, path: string): Observable<boole
   );
 }
 
-export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
+export function fetchLegacyItem(site: string, path: string): Observable<LegacyItem> {
   return get(
     `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${encodeURIComponent(path)}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
-export function getLegacyItemsTree(
+export function fetchLegacyItemsTree(
   site: string,
   path: string,
   options?: Partial<{ depth: number; order: string }>

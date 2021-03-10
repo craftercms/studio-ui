@@ -16,8 +16,9 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { DetailedItem } from '../../models/Item';
-import { PathNavigatorStateProps } from '../../components/Navigation/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import { AjaxError } from 'rxjs/ajax';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -78,7 +79,10 @@ export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ items: DetailedItem[]; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_FETCH_PARENT_ITEMS_COMPLETE');
 
-export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
+export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction<{
+  id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAVIGATOR_FETCH_PATH_FAILED');
 
 export const pathNavigatorSetKeyword = /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>(
   'PATH_NAVIGATOR_SET_KEYWORD'

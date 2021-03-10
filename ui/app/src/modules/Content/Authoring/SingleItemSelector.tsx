@@ -32,16 +32,16 @@ import ApiResponse from '../../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
 import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
-import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
-import { fetchItemsByPath, fetchItemWithChildrenByPath, getChildrenByPath } from '../../../services/content';
+import Breadcrumbs from '../../../components/PathNavigator/PathNavigatorBreadcrumbs';
+import PathNavigatorList from '../../../components/PathNavigator/PathNavigatorList';
+import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../../services/content';
 import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
-import { isFolder } from '../../../components/Navigation/PathNavigator/utils';
+import { isFolder } from '../../../components/PathNavigator/utils';
 import TablePagination from '@material-ui/core/TablePagination';
-import { translations } from '../../../components/Navigation/PathNavigator/translations';
+import { translations } from '../../../components/PathNavigator/translations';
 import { useIntl } from 'react-intl';
 import { parseSandBoxItemToDetailedItem } from '../../../utils/content';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
@@ -193,7 +193,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       return { ...state, isFetching: true };
     }
     case fetchParentsItems.type:
-    case fetchChildrenByPath.type: {
+    case fetchChildrenByPathAction.type: {
       return {
         ...state,
         currentPath: payload,
@@ -214,7 +214,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       } else {
         const nextItems = {
           ...{ ...state.byId, ...createLookupTable(children, 'path') },
-          [parent.path]: parent
+          ...(parent && { [parent.path]: parent })
         };
 
         return {
@@ -272,7 +272,7 @@ const setKeyword = /*#__PURE__*/ createAction<string>('SET_KEYWORD');
 
 const changePage = /*#__PURE__*/ createAction<number>('CHANGE_PAGE');
 
-const fetchChildrenByPath = /*#__PURE__*/ createAction<string>('FETCH_CHILDREN_BY_PATH');
+const fetchChildrenByPathAction = /*#__PURE__*/ createAction<string>('FETCH_CHILDREN_BY_PATH');
 
 const fetchParentsItems = /*#__PURE__*/ createAction<string>('FETCH_PARENTS_ITEMS');
 
@@ -316,20 +316,20 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       const { type, payload } = action;
       switch (type) {
         case setKeyword.type: {
-          getChildrenByPath(site, state.currentPath, { limit: state.limit, keyword: payload }).subscribe(
+          fetchChildrenByPath(site, state.currentPath, { limit: state.limit, keyword: payload }).subscribe(
             (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         }
         case changePage.type: {
-          getChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
+          fetchChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
             (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
           break;
         }
-        case fetchChildrenByPath.type:
+        case fetchChildrenByPathAction.type:
           fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
             ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
             (response) => exec(fetchChildrenByPathFailed(response))
@@ -341,7 +341,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           if (parentsPath.length > 1) {
             forkJoin([
               fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
-              getChildrenByPath(site, payload, {
+              fetchChildrenByPath(site, payload, {
                 limit: state.limit
               })
             ]).subscribe(
@@ -375,7 +375,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   };
 
   const onPathSelected = (item: DetailedItem) => {
-    exec(fetchChildrenByPath(item.path));
+    exec(fetchChildrenByPathAction(item.path));
   };
 
   const onSearch = (keyword) => {
@@ -386,7 +386,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     if (state.breadcrumb.length === 1) {
       handleItemClicked(item);
     } else {
-      exec(fetchChildrenByPath(item.path));
+      exec(fetchChildrenByPathAction(item.path));
     }
   };
 

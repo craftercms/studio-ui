@@ -17,12 +17,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { EnhancedUser } from '../../models/User';
 import { storeInitialized } from '../actions/system';
-import { fetchMyRolesInSiteComplete } from '../actions/user';
+import { fetchMyPermissionsInSiteComplete, fetchMyRolesInSiteComplete } from '../actions/user';
 
 const reducer = createReducer<EnhancedUser>(null, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...payload.user,
     rolesBySite: {},
+    permissionsBySite: {},
     sites: payload.sites.map((id) => id),
     preferences: null // TODO: is this needed?
   }),
@@ -31,6 +32,13 @@ const reducer = createReducer<EnhancedUser>(null, {
     rolesBySite: {
       ...state.rolesBySite,
       [payload.site]: payload.roles
+    }
+  }),
+  [fetchMyPermissionsInSiteComplete.type]: (state, { payload }) => ({
+    ...state,
+    permissionsBySite: {
+      ...state.permissionsBySite,
+      [payload.site]: payload.permissions
     }
   })
 });

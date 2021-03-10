@@ -23,6 +23,7 @@ import { post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
+import $ from 'jquery';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -113,7 +114,7 @@ export function initTinyMCE(
         function save() {
           const content = getContent();
           if (changed) {
-            contentController.updateField(record.modelId, field.id, record.index, content);
+            contentController.updateField(record.modelId, record.fieldId[0], record.index, content);
           }
         }
 

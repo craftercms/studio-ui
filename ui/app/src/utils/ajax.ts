@@ -17,9 +17,8 @@
 import { ajax, AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { catchError } from 'rxjs/operators';
 import { reversePluckProps } from './object';
-import { Observable, of } from 'rxjs';
+import { Observable, ObservableInput, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
-import { ObservableInput } from 'rxjs';
 import StandardAction from '../models/StandardAction';
 
 const HEADERS = {};

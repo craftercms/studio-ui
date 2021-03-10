@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
+  EMBEDDED_LEGACY_FORM_RENDER_FAILED,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
   EMBEDDED_LEGACY_FORM_SUCCESS,
@@ -41,15 +42,20 @@ import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import { getQueryVariable } from '../../utils/path';
 import DialogHeader from './DialogHeader';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const translations = defineMessages({
   title: {
-    id: 'craftercms.edit.title',
+    id: 'legacyFormDialog.title',
     defaultMessage: 'Content Form'
   },
   loadingForm: {
-    id: 'craftercms.edit.loadingForm',
+    id: 'legacyFormDialog.loadingForm',
     defaultMessage: 'Loading...'
+  },
+  error: {
+    id: 'legacyFormDialog.errorLoadingForm',
+    defaultMessage: 'An error occurred trying to load the form'
   }
 });
 
@@ -82,6 +88,7 @@ interface LegacyFormDialogBaseProps {
   open?: boolean;
   src?: string;
   inProgress?: boolean;
+  onMinimized?(): void;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -101,7 +108,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 }
 
 function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
-  const { src, inProgress, onSaveSuccess, onDismiss, onClosed } = props;
+  const { src, inProgress, onSaveSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -139,6 +146,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
             case 'save': {
               break;
             }
+            case 'saveAndMinimize': {
+              onMinimized();
+              break;
+            }
             case 'saveAndPreview':
             case 'saveAndClose': {
               onDismiss();
@@ -158,9 +169,13 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
           if (inProgress) {
-            const config = { inProgress: false };
-            dispatch(updateEditConfig(config));
+            dispatch(updateEditConfig({ inProgress: false }));
           }
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
+          onDismiss();
+          dispatch(showErrorDialog({ error: { message: formatMessage(translations.error) } }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
@@ -191,7 +206,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onDismiss]);
+  }, [inProgress, onSave, messages, dispatch, onDismiss, formatMessage, onMinimized]);
 
   useUnmount(onClosed);
 
@@ -247,7 +262,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
           }
         ]}
       />
-      <EmbeddedLegacyEditor {...props} />
+      <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );
 }

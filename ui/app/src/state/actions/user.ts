@@ -45,3 +45,11 @@ export const fetchMyRolesInSiteComplete = /*#__PURE__*/ createAction<{ site: str
 );
 
 export const fetchMyRolesInSiteFailed = /*#__PURE__*/ createAction('FETCH_MY_ROLES_IN_SITE_FAILED');
+
+export const fetchMyPermissionsInSite = /*#__PURE__*/ createAction('FETCH_MY_PERMISSIONS_IN_SITE');
+
+export const fetchMyPermissionsInSiteComplete = /*#__PURE__*/ createAction<{ site: string; permissions: string[] }>(
+  'FETCH_MY_PERMISSIONS_IN_SITE_COMPLETE'
+);
+
+export const fetchMyPermissionsInSiteFailed = /*#__PURE__*/ createAction('FETCH_MY_PERMISSIONS_IN_SITE_FAILED');

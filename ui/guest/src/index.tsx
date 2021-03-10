@@ -18,29 +18,59 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Guest from './react/Guest';
 import GuestProxy from './react/GuestProxy';
-import DropMarker from './react/DropMarker';
-import CrafterCMSPortal from './react/CrafterCMSPortal';
-import AssetUploaderMask from './react/AssetUploaderMask';
-import { GuestContextProvider, useGuestContext } from './react/GuestContext';
-import ZoneMarker from './react/ZoneMarker';
-import Spinner from './react/Spinner';
-import ContentType from './react/ContentType';
+import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
+import { nnou } from './utils/object';
+import * as elementRegistry from './classes/ElementRegistry';
+import * as iceRegistry from './classes/ICERegistry';
+import * as contentController from './classes/ContentController';
 
-export * from './react/Field';
-export * from './react/hooks';
+export interface BaseCrafterConfig {
+  baseUrl?: string;
+}
 
-export {
-  Guest,
-  Spinner,
-  GuestProxy,
-  ZoneMarker,
-  DropMarker,
-  ContentType,
-  CrafterCMSPortal,
-  AssetUploaderMask,
-  GuestContextProvider,
-  useGuestContext
-};
+export interface ICEAttributes {
+  'data-craftercms-model-path': string;
+  'data-craftercms-model-id': string;
+  'data-craftercms-field-id'?: string;
+  'data-craftercms-index'?: string | number;
+  'data-craftercms-label'?: string;
+}
+
+export interface ICEConfig {
+  model: ContentInstance;
+  fieldId?: string;
+  index?: string | number;
+  label?: string;
+  isAuthoring: boolean;
+}
+
+export function getICEAttributes(config: ICEConfig): ICEAttributes {
+  let { model, fieldId, index, label, isAuthoring = true } = config;
+  let attributes = {} as ICEAttributes;
+
+  if (!isAuthoring) {
+    return attributes;
+  }
+
+  if (label === null || label === undefined) {
+    label = model?.craftercms.label || '';
+  }
+
+  attributes['data-craftercms-model-id'] = model.craftercms.id;
+  attributes['data-craftercms-model-path'] = model.craftercms.path;
+  nnou(fieldId) && (attributes['data-craftercms-field-id'] = fieldId);
+  nnou(index) && (attributes['data-craftercms-index'] = index);
+  nnou(label) && (attributes['data-craftercms-label'] = label);
+
+  return attributes;
+}
+
+export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
+  config = { baseUrl: '', ...(config || {}) };
+  return fetch(`${config.baseUrl}/api/1/config/preview.json`)
+    .then((response) => response.json())
+    .then((response) => response.preview);
+}
 
 export function initPageBuilder({ path, documentDomain }) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
@@ -51,3 +81,5 @@ export function initPageBuilder({ path, documentDomain }) {
     guestProxyElement
   );
 }
+
+export { elementRegistry, iceRegistry, contentController };

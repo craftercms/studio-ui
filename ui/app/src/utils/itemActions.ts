@@ -24,6 +24,7 @@ import {
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
+  closeCreateFolderDialog,
   closeDeleteDialog,
   closePublishDialog,
   closeRejectDialog,
@@ -45,7 +46,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchWorkflowAffectedItems, getLegacyItemsTree } from '../services/content';
+import { fetchLegacyItemsTree, fetchWorkflowAffectedItems } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -57,6 +58,7 @@ import {
   emitSystemEvent,
   itemCut,
   showCopyItemSuccessNotification,
+  showCreateFolderSuccessNotification,
   showCreateItemSuccessNotification,
   showCutItemSuccessNotification,
   showDeleteItemSuccessNotification,
@@ -488,7 +490,8 @@ export const itemActionDispatcher = ({
         dispatch(
           showCreateFolderDialog({
             path: withoutIndex(item.path),
-            allowBraces: item.path.startsWith('/scripts/rest')
+            allowBraces: item.path.startsWith('/scripts/rest'),
+            onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
           })
         );
         break;
@@ -551,7 +554,7 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'copy': {
-        getLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
+        fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
               dispatch(

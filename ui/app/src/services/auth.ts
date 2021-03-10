@@ -25,7 +25,7 @@ import { ApiResponse } from '../models/ApiResponse';
 /**
  * @deprecated Please note API deprecation for Crafter v4.0.0+
  **/
-export function getSSOLogoutURL(): Observable<{ logoutUrl: string }> {
+export function fetchSSOLogoutURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 

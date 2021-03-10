@@ -32,8 +32,9 @@ type States =
   | 'submitted';
 
 export interface BaseItem {
-  id: string;
+  id: number;
   label: string;
+  parentId: number;
   contentTypeId: string;
   path: string;
   previewUrl: string;
@@ -50,9 +51,9 @@ export interface BaseItem {
 
 interface SandboxEnvProps {
   creator: string;
-  createdDate: string;
+  dateCreated: string;
   modifier: string;
-  lastModifiedDate: string;
+  dateModified: string;
   commitId: string;
   sizeInBytes: number;
 }

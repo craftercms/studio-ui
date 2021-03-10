@@ -41,7 +41,7 @@ export function push(siteId: string, remoteName: string, remoteBranch: string, f
   return postJSON(`${repositoryUrl}/push_to_remote`, { siteId, remoteName, remoteBranch, force }).pipe(mapTo(true));
 }
 
-export function status(siteId: string): Observable<RepositoryStatus> {
+export function fetchStatus(siteId: string): Observable<RepositoryStatus> {
   return get(`${repositoryUrl}/status?siteId=${siteId}`).pipe(pluck('response', 'repositoryStatus'));
 }
 

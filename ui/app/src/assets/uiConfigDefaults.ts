@@ -26,6 +26,10 @@ const messages = defineMessages({
     id: 'siteTools.title',
     defaultMessage: 'Site Tools'
   },
+  siteDashboard: {
+    id: 'words.dashboard',
+    defaultMessage: 'Dashboard'
+  },
   configuration: {
     id: 'words.configuration',
     defaultMessage: 'Configuration'
@@ -41,12 +45,20 @@ const messages = defineMessages({
   remoteRepositories: {
     id: 'remoteRepositories.title',
     defaultMessage: 'Remote Repositories'
+  },
+  preview: {
+    id: 'words.preview',
+    defaultMessage: 'Preview'
+  },
+  site: {
+    id: 'launcher.siteSectionTitle',
+    defaultMessage: 'Site <muted>• {siteName}</muted>'
   }
 });
 
 let count = 0;
 
-const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'> = {
+const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = {
   preview: {
     toolsPanel: {
       widgets: [
@@ -231,15 +243,15 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'previewReceptaclesPanel.title',
-                    defaultMessage: 'Component Receptacles'
+                    id: 'previewDropTargetsPanel.title',
+                    defaultMessage: 'Component Drop Targets'
                   },
                   icon: {
                     id: '@material-ui/icons/ExtensionOutlined'
                   },
                   widgets: [
                     {
-                      id: 'craftercms.components.PreviewReceptaclesPanel',
+                      id: 'craftercms.components.PreviewDropTargetsPanel',
                       uiKey: count++
                     }
                   ]
@@ -405,7 +417,7 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
                 uiKey: count++,
                 configuration: {
                   title: {
-                    id: 'receptaclesMessages.contentTypes',
+                    id: 'dropTargetsMessages.contentTypes',
                     defaultMessage: 'Content Types'
                   },
                   icon: {
@@ -591,58 +603,83 @@ const uiConfigDefaults: Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | '
       ]
     }
   },
-  siteNav: {
-    title: {
-      id: 'words.site',
-      defaultMessage: 'Site'
-    },
+  launcher: {
+    siteCardMenuLinks: [
+      {
+        systemLinkId: 'siteDashboard',
+        title: messages.siteDashboard
+      },
+      {
+        systemLinkId: 'preview',
+        title: messages.preview
+      },
+      {
+        systemLinkId: 'siteTools',
+        title: messages.siteTools,
+        roles: ['admin', 'developer']
+      }
+    ],
     widgets: [
       {
-        id: 'craftercms.components.GlobalNavLinkTile',
+        id: 'craftercms.components.LauncherSection',
         uiKey: count++,
         configuration: {
-          title: {
-            id: 'words.dashboard',
-            defaultMessage: 'Dashboard'
-          },
-          systemLinkId: 'siteDashboard',
-          icon: { id: '@material-ui/icons/DashboardRounded' }
-        }
-      },
-      {
-        id: 'craftercms.components.GlobalNavLinkTile',
-        uiKey: count++,
-        configuration: {
-          title: {
-            id: 'words.preview',
-            defaultMessage: 'Preview'
-          },
-          systemLinkId: 'preview',
-          icon: { id: 'craftercms.icons.Preview' }
-        }
-      },
-      {
-        id: 'craftercms.components.GlobalNavLinkTile',
-        uiKey: count++,
-        configuration: {
-          title: {
-            id: 'siteTools.title',
-            defaultMessage: 'Site Tools'
-          },
-          systemLinkId: 'siteTools',
-          icon: { id: '@material-ui/icons/BuildRounded' }
-        }
-      },
-      {
-        id: 'craftercms.components.GlobalNavLinkTile',
-        uiKey: count++,
-        configuration: {
-          title: {
-            id: 'words.search',
-            defaultMessage: 'Search'
-          },
-          systemLinkId: 'siteSearch',
-          icon: { id: '@material-ui/icons/SearchRounded' }
+          title: messages.site,
+          widgets: [
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'words.dashboard',
+                  defaultMessage: 'Dashboard'
+                },
+                systemLinkId: 'siteDashboard',
+                icon: { id: '@material-ui/icons/DashboardRounded' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'words.preview',
+                  defaultMessage: 'Preview'
+                },
+                systemLinkId: 'preview',
+                icon: { id: 'craftercms.icons.Preview' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              roles: ['admin', 'developer'],
+              configuration: {
+                title: {
+                  id: 'siteTools.title',
+                  defaultMessage: 'Site Tools'
+                },
+                systemLinkId: 'siteTools',
+                icon: { id: '@material-ui/icons/BuildRounded' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherLinkTile',
+              uiKey: count++,
+              configuration: {
+                title: {
+                  id: 'words.search',
+                  defaultMessage: 'Search'
+                },
+                systemLinkId: 'siteSearch',
+                icon: { id: '@material-ui/icons/SearchRounded' }
+              }
+            },
+            {
+              id: 'craftercms.components.LauncherPublishingStatusTile',
+              uiKey: count++
+            }
+          ]
         }
       }
     ]

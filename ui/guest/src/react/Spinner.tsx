@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-interface SpinnerProps {
+export interface SpinnerProps {
   width: number;
   height: number;
   strokeWidth: number;
@@ -25,7 +25,7 @@ interface SpinnerProps {
   circleClassName: string;
 }
 
-export default function Spinner(props: SpinnerProps) {
+export function Spinner(props: SpinnerProps) {
   return (
     <svg
       className={props.className}
@@ -55,3 +55,5 @@ Spinner.defaultProps = {
   strokeLineCap: 'round',
   circleClassName: 'path'
 };
+
+export default Spinner;

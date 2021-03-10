@@ -45,95 +45,62 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
    * action called when user clicks insert file
    */
   add: function(control, multiple) {
-    (this._self = this), (me = this);
+    var me = this;
 
     var site = CStudioAuthoringContext.site;
-    var path = this._self.repoPath;
-    var isUploadOverwrite = true;
+    var path = this.repoPath;
 
     for (var i = 0; i < this.properties.length; i++) {
-      if (this.properties[i].name == 'repoPath') {
+      if (this.properties[i].name === 'repoPath') {
         path = this.properties[i].value;
-
         path = this.processPathsForMacros(path);
       }
     }
 
-    var callback = {
-      success: function(fileData) {
-        if (control) {
-          var item = fileData,
-            fileName = item,
-            fileExtension = fileName.split('.').pop();
+    var datasourceDef = this.form.definition.datasources,
+      newElTitle = '';
 
-          control.insertItem(item, item, fileExtension, null, me.id);
-          if (control._renderItems) {
-            control._renderItems();
-          }
-          CStudioAuthoring.Utils.decreaseFormDialog();
-        }
-      },
-
-      failure: function() {
-        if (control) {
-          control.failure('An error occurred while uploading the file.');
-        }
-      },
-
-      context: this
-    };
-
-    if (multiple) {
-      var addContainerEl = null;
-
-      if (!control.addContainerEl) {
-        addContainerEl = document.createElement('div');
-        addContainerEl.create = document.createElement('div');
-        addContainerEl.browse = document.createElement('div');
-
-        addContainerEl.appendChild(addContainerEl.create);
-        addContainerEl.appendChild(addContainerEl.browse);
-        control.containerEl.appendChild(addContainerEl);
-
-        YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-        YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-        YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
-
-        control.addContainerEl = addContainerEl;
-        addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
-        addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
+    for (var x = 0; x < datasourceDef.length; x++) {
+      if (datasourceDef[x].id == this.id) {
+        newElTitle = datasourceDef[x].title;
       }
-
-      var datasourceDef = this.form.definition.datasources,
-        newElTitle = '';
-
-      for (var x = 0; x < datasourceDef.length; x++) {
-        if (datasourceDef[x].id == this.id) {
-          newElTitle = datasourceDef[x].title;
-        }
-      }
-
-      var createEl = document.createElement('div');
-      YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(me.messages.words.upload)} - ${newElTitle}`;
-      control.addContainerEl.create.appendChild(createEl);
-
-      (function(control, me) {
-        var addContainerEl = control.addContainerEl;
-        YAHOO.util.Event.on(
-          createEl,
-          'click',
-          function() {
-            control.addContainerEl = null;
-            control.containerEl.removeChild(addContainerEl);
-            CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback);
-          },
-          createEl
-        );
-      })(control, me);
-    } else {
-      CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback);
     }
+
+    const create = $(
+      `<li class="cstudio-form-controls-create-element">
+        <a class="cstudio-form-control-node-selector-add-container-item">
+          ${CrafterCMSNext.i18n.intl.formatMessage(me.messages.words.upload)} - ${CrafterCMSNext.util.string.escapeHTML(
+        newElTitle
+      )}
+        </a>
+      </li>`
+    );
+
+    create.find('a').on('click', function() {
+      CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, {
+        success: function(fileData) {
+          if (control) {
+            var item = fileData,
+              fileName = item,
+              fileExtension = fileName.split('.').pop();
+
+            control.insertItem(item, item, fileExtension, null, me.id);
+            if (control._renderItems) {
+              control._renderItems();
+            }
+            CStudioAuthoring.Utils.decreaseFormDialog();
+          }
+        },
+        failure: function() {
+          if (control) {
+            control.failure('An error occurred while uploading the file.');
+          }
+        },
+        context: this
+      });
+    });
+
+    control.$dropdownMenu.append(create);
   },
 
   getLabel: function() {

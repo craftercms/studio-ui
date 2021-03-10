@@ -17,7 +17,7 @@
 import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchItemsByPath, fetchItemWithChildrenByPath, getChildrenByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
@@ -69,7 +69,7 @@ export default [
       mergeMap(([{ type, payload: { id } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
-          catchAjaxError(pathNavigatorFetchPathFailed)
+          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
         )
       )
     ),
@@ -98,7 +98,7 @@ export default [
       mergeMap(([{ payload: { id, path } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, path).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
-          catchAjaxError(pathNavigatorFetchPathFailed)
+          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
         )
       )
     ),
@@ -109,12 +109,12 @@ export default [
       ofType(pathNavigatorSetKeyword.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, keyword } }, state]) =>
-        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+        fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
           keyword,
           limit: state.pathNavigator[id].limit
         }).pipe(
           map((children) => pathNavigatorFetchPathComplete({ id, children })),
-          catchAjaxError(pathNavigatorFetchPathFailed)
+          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
         )
       )
     ),
@@ -125,12 +125,13 @@ export default [
       ofType(pathNavigatorChangePage.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, offset } }, state]) =>
-        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+        fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
           limit: state.pathNavigator[id].limit,
+          ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
           offset
         }).pipe(
           map((children) => pathNavigatorFetchPathComplete({ id, children })),
-          catchAjaxError(pathNavigatorFetchPathFailed)
+          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
         )
       )
     ),
@@ -153,18 +154,18 @@ export default [
           if (parentsPath.length > 1) {
             return forkJoin([
               fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
-              getChildrenByPath(site, path, {
+              fetchChildrenByPath(site, path, {
                 excludes,
                 limit
               })
             ]).pipe(
               map(([items, children]) => pathNavigatorFetchParentItemsComplete({ id, items, children })),
-              catchAjaxError(pathNavigatorFetchPathFailed)
+              catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
             );
           } else {
             return fetchItemWithChildrenByPath(site, path, { excludes, limit }).pipe(
               map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
-              catchAjaxError(pathNavigatorFetchPathFailed)
+              catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
             );
           }
         }

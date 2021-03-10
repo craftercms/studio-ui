@@ -2,6 +2,7 @@ $dark-mode-background-default: #212121;
 $dark-mode-background-default-dimmed: #21212150;
 $dark-mode-background-paper: #424242;
 $dark-mode-font-color: #fff;
+$dark-mode-font-color-secondary: rgba(255, 255, 255, 0.5);
 $dark-mode-font-highlight: #70d7ff;
 $dark-mode-button-outlined-border: rgba(255, 255, 255, 0.23);
 $dark-mode-button-primary: #409cff;
@@ -10,6 +11,7 @@ $dark-mode-button-primary-color-hover: rgb(44, 109, 178);
 $dark-mode-hover: rgba(255, 255, 255, 0.08);
 $dark-mode-divider: rgba(255, 255, 255, 0.12);
 $dark-mode-input-border: #ced4da;
+$dark-mode-input-border-focus: #007aff;
 
 @media (prefers-color-scheme: light) {
   .craftercms-logo-dark {
@@ -19,6 +21,22 @@ $dark-mode-input-border: #ced4da;
   .cstudio-form-controls-container,
   .template-editor-button-container {
     background: white;
+  }
+
+  .about-us-view {
+    .studio-info {
+      .studio-logo.dark {
+        display: none;
+      }
+    }
+  }
+
+  .craftercms-entitlement {
+    .craftercms-entitlement-logo {
+      &.dark {
+        display: none;
+      }
+    }
   }
 }
 
@@ -45,7 +63,7 @@ $dark-mode-input-border: #ced4da;
       }
 
       #activeContentActions,
-      #brandGlobalNavOpenerButton {
+      #menuBundleButton {
         border-color: transparent;
       }
     }
@@ -98,12 +116,16 @@ $dark-mode-input-border: #ced4da;
     .modal-title {
       color: $dark-mode-font-color;
     }
+    .modal-body {
+      color: $dark-mode-font-color;
+    }
   }
 
   // Panels
   .panel-heading,
   .panel-default {
     background: $dark-mode-background-paper !important;
+    color: $dark-mode-font-color !important;
   }
   .panel-title {
     color: $dark-mode-font-color !important;
@@ -114,6 +136,13 @@ $dark-mode-input-border: #ced4da;
   p,
   label {
     color: $dark-mode-font-color;
+  }
+
+  a {
+    color: $dark-mode-button-primary !important;
+    &:hover {
+      color: $dark-mode-button-primary !important;
+    }
   }
 
   // Buttons
@@ -132,8 +161,11 @@ $dark-mode-input-border: #ced4da;
   .btn-default,
   .btn-transparent {
     border: 1px solid $dark-mode-button-outlined-border !important;
-    color: $dark-mode-font-color;
-    background: none;
+    color: $dark-mode-font-color !important;
+    background: none !important;
+  }
+  .btn-default[disabled] {
+    background: none !important;
   }
 
   .btn-default:hover,
@@ -188,11 +220,21 @@ $dark-mode-input-border: #ced4da;
   }
 
   // Inputs
-  input,
-  .form-control {
-    border-color: $dark-mode-input-border;
+  input[disabled] {
     background: none;
-    color: $dark-mode-font-color;
+    color: $dark-mode-font-color-secondary;
+  }
+  input,
+  select,
+  .form-control {
+    border-color: $dark-mode-input-border !important;
+    background: none !important;
+    color: $dark-mode-font-color !important;
+    &:focus {
+      outline: 0;
+      box-shadow: #007aff40 0 0 0 0.2rem;
+      border-color: $dark-mode-input-border-focus;
+    }
   }
 
   .admin-console-view {
@@ -292,6 +334,15 @@ $dark-mode-input-border: #ced4da;
     display: none !important;
   }
 
+  .craftercms-entitlement {
+    .craftercms-entitlement-logo {
+      display: none !important;
+      &.dark {
+        display: inline !important;
+      }
+    }
+  }
+
   #preview-tools-panel-container {
     background-color: $dark-mode-background-paper !important;
     color: $dark-mode-font-color;
@@ -349,5 +400,161 @@ $dark-mode-input-border: #ced4da;
         border-bottom-color: $dark-mode-background-default-dimmed;
       }
     }
+  }
+
+  // logs view
+  .log-details-view {
+    color: $dark-mode-font-color;
+  }
+
+  // audit view
+  .audit-view {
+    .well {
+      background-color: $dark-mode-background-default;
+      border: 0;
+    }
+    .plus,
+    .minus {
+      color: $dark-mode-font-color;
+    }
+    .date-container {
+      .date-icon {
+        color: $dark-mode-font-color !important;
+        background: none !important;
+      }
+    }
+    .audit-table-container .each-param {
+      background-color: $dark-mode-background-default !important;
+    }
+    .nav-containers {
+      color: $dark-mode-font-color;
+    }
+  }
+
+  // groups view
+  .groups-view {
+    .page-header {
+      color: $dark-mode-font-color;
+      .close {
+        color: white;
+        text-shadow: none;
+        opacity: 1;
+      }
+    }
+    h3 {
+      color: $dark-mode-font-color;
+    }
+  }
+
+  // about-us-view
+  .about-us-view {
+    h1 {
+      color: $dark-mode-font-color;
+    }
+    .well {
+      background-color: $dark-mode-background-default;
+      border: 0;
+    }
+    .studio-info {
+      .studio-logo {
+        display: none !important;
+      }
+      .studio-logo.dark {
+        display: block !important;
+      }
+    }
+  }
+
+  // settings-view
+  .settings-view {
+    h1,
+    h2,
+    .name,
+    .email {
+      color: $dark-mode-font-color;
+    }
+    .well {
+      background-color: $dark-mode-background-default;
+      border: 0;
+    }
+  }
+
+  // publishing-view
+  .publishing-view {
+    h2,
+    h3 {
+      color: $dark-mode-font-color;
+    }
+    .panel {
+      border: 0;
+    }
+    .panel-body {
+      background-color: $dark-mode-background-default;
+    }
+    .nav-tabs {
+      li > a {
+        border: 0;
+      }
+      li > a:hover,
+      li.active > a {
+        color: $dark-mode-font-color;
+        background: $dark-mode-hover;
+        border: 0;
+      }
+      tab-heading {
+        color: $dark-mode-font-color;
+      }
+    }
+  }
+
+  // repositories
+  .repositories {
+    h2 {
+      color: $dark-mode-font-color;
+    }
+  }
+
+  // Global config
+  .mainContainer {
+    .screen-title,
+    .screen-title h1 {
+      color: $dark-mode-font-color;
+      background: none;
+      border-color: $dark-mode-divider;
+    }
+    .divider {
+      border-color: $dark-mode-divider;
+    }
+  }
+
+  // Global Menu
+  a.MuiListItem-button {
+    color: inherit !important;
+    outline: none;
+  }
+  a.MuiLink-underlineNone {
+    text-decoration: none !important;
+  }
+
+  // cstudio-admin-console-workarea-container
+  .cstudio-admin-console-workarea-container {
+    h1 {
+      color: $dark-mode-font-color;
+    }
+    height: calc(100vh - 53px);
+    background-color: $dark-mode-background-paper;
+    margin-top: -2px;
+  }
+
+  // workflow states
+  #statesTable {
+    .cs-statelist-heading a {
+      color: $dark-mode-button-primary;
+    }
+  }
+
+  // form engine
+  .cstudio-form-control-asset-picker-preview-block {
+    background: none;
   }
 }

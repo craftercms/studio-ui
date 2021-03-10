@@ -14,17 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useActiveUser, useLogicResource, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useActiveUser,
+  useLogicResource,
+  usePreviewState,
+  useSelection,
+  useSiteUIConfig
+} from '../../utils/hooks';
 import ResizeableDrawer from './ResizeableDrawer';
 import ToolsPanelEmbeddedAppViewButton from '../../components/ToolsPanelEmbeddedAppViewButton';
 import ToolsPanelPageButton from '../../components/ToolsPanelPageButton';
-import PathNavigator from '../../components/Navigation/PathNavigator/PathNavigator';
+import PathNavigator from '../../components/PathNavigator/PathNavigator';
 import ToolsPanelPageComponent from '../../components/ToolsPanelPage';
-import { fetchSiteUiConfig } from '../../state/actions/configuration';
 import GlobalState from '../../models/GlobalState';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { components } from '../../services/plugin';
@@ -38,7 +44,7 @@ import { Resource } from '../../models/Resource';
 import PreviewBrowseComponentsPanel from '../../components/PreviewBrowseComponentsPanel/PreviewBrowseComponentsPanel';
 import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
 import PreviewInPageInstancesPanel from '../../components/PreviewInPageInstancesPanel';
-import PreviewReceptaclesPanel from '../../components/PreviewReceptaclesPanel';
+import PreviewDropTargetsPanel from '../../components/PreviewDropTargetsPanel';
 import LegacySiteToolsFrame from '../../components/LegacySiteToolsFrame';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import LegacyDashboardFrame from '../../components/LegacyDashboardFrame';
@@ -84,29 +90,16 @@ export default function ToolsPanel() {
   const { showToolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
-  const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
+  const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
-  const resource = useLogicResource<
-    WidgetDescriptor[],
-    { pages: WidgetDescriptor[]; uiConfig: GlobalState['uiConfig'] }
-  >(
-    useMemo(() => ({ pages, uiConfig, site }), [pages, uiConfig, site]),
-    {
-      errorSelector: (source) => source.uiConfig.error,
-      resultSelector: (source) =>
-        source.pages.length ? pages.slice(pages.length - 1) : source.uiConfig.preview.toolsPanel.widgets,
-      shouldReject: (source) => Boolean(source.uiConfig.error),
-      shouldResolve: (source) => !site || Boolean(source.uiConfig.preview.toolsPanel.widgets),
-      shouldRenew: (source, resource) => source.uiConfig.isFetching || resource.complete
-    }
-  );
-
-  useEffect(() => {
-    if (site) {
-      dispatch(fetchSiteUiConfig({ site }));
-    }
-  }, [dispatch, site]);
+  const resource = useLogicResource<WidgetDescriptor[], GlobalState['uiConfig']>(uiConfig, {
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => source.preview.toolsPanel.widgets,
+    shouldReject: (source) => Boolean(source.error),
+    shouldResolve: (source) => Boolean(source.preview.toolsPanel.widgets),
+    shouldRenew: (source, resource) => source.isFetching || resource.complete
+  });
 
   return (
     <ResizeableDrawer
@@ -138,7 +131,7 @@ export default function ToolsPanel() {
           }
         }}
       >
-        <ToolsPaneBody resource={resource} />
+        <ToolsPaneBody resource={resource} pageStack={pages} />
       </SuspenseWithEmptyState>
     </ResizeableDrawer>
   );
@@ -146,13 +139,15 @@ export default function ToolsPanel() {
 
 interface ToolsPaneBodyProps {
   resource: Resource<WidgetDescriptor[]>;
+  pageStack: WidgetDescriptor[];
 }
 
 function ToolsPaneBody(props: ToolsPaneBodyProps) {
-  const stack = props.resource.read();
+  const root = props.resource.read();
   const site = useActiveSiteId();
+  const { pageStack } = props;
   const { rolesBySite } = useActiveUser();
-  return <>{renderWidgets(stack, rolesBySite[site])}</>;
+  return <>{renderWidgets(pageStack.length ? pageStack.slice(props.pageStack.length - 1) : root, rolesBySite[site])}</>;
 }
 
 // TODO: Move this to a better place.
@@ -178,7 +173,7 @@ Object.entries({
   'craftercms.components.PreviewSimulatorPanel': PreviewSimulatorPanel,
   'craftercms.components.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
   'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
-  'craftercms.components.PreviewReceptaclesPanel': PreviewReceptaclesPanel,
+  'craftercms.components.PreviewDropTargetsPanel': PreviewDropTargetsPanel,
   'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
   'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
   'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,

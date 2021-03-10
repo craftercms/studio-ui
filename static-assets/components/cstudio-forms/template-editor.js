@@ -168,7 +168,7 @@ CStudioAuthoring.Module.requireModule(
 
                 Promise.all([
                   CrafterCMSNext.services.configuration
-                    .getConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
+                    .fetchConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
                     .toPromise(),
                   new Promise((resolve, reject) => {
                     CStudioAuthoring.Service.getContent(templatePath, true, {
@@ -683,6 +683,12 @@ CStudioAuthoring.Module.requireModule(
                           callback: () => {
                             me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndClose');
                           }
+                        },
+                        {
+                          label: formatMessage(messages.saveAndMinimize),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
+                          }
                         }
                       ];
                       CrafterCMSNext.render(saveEl, 'SplitButton', {
@@ -706,7 +712,7 @@ CStudioAuthoring.Module.requireModule(
 
               addLocales: (headerEl, aceEditor, templatePath, filename, defaultContent) => {
                 CrafterCMSNext.services.translation
-                  .getSiteLocales(CStudioAuthoringContext.site)
+                  .fetchSiteLocales(CStudioAuthoringContext.site)
                   .subscribe(({ localeCodes }) => {
                     if (localeCodes === null) {
                       return;

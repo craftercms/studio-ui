@@ -23,100 +23,125 @@
             <h1>{{ 'admin.users.HEADER_LABEL' | translate }}</h1>
           </header>
 
-          <a class="btn btn-default btn-pill btn-padded" id="new-user-btn" ng-click="users.createUserDialog()" role="button">
+          <a
+            class="btn btn-default btn-pill btn-padded"
+            id="new-user-btn"
+            ng-click="users.createUserDialog()"
+            role="button"
+          >
             <i class="fa fa-plus-circle mr5" aria-hidden="true"></i> {{ 'admin.users.NEW_USER' | translate }}
           </a>
 
-          <hr class="divider mt10 mb15"/>
+          <hr class="divider mt10 mb15" />
 
           <table class="table table-striped">
             <thead>
-            <tr>
-              <th></th>
-              <th>{{ 'admin.users.USER_NAME' | translate }}</th>
-              <th>{{ 'admin.users.FIRST_NAME' | translate }}</th>
-              <th>{{ 'admin.users.LAST_NAME' | translate }}</th>
-              <th>{{ 'admin.users.EMAIL' | translate }}</th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tr>
-            <tr>
-              <th colspan="12">
-                <input id="users-search-input" data-ng-change="users.searchUser(q)" ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
-              </th>
-            </tr>
+              <tr>
+                <th></th>
+                <th>{{ 'admin.users.USER_NAME' | translate }}</th>
+                <th>{{ 'admin.users.FIRST_NAME' | translate }}</th>
+                <th>{{ 'admin.users.LAST_NAME' | translate }}</th>
+                <th>{{ 'admin.users.EMAIL' | translate }}</th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+              <tr>
+                <th colspan="12">
+                  <input
+                    id="users-search-input"
+                    data-ng-change="users.searchUser(q)"
+                    ng-model="q"
+                    class="form-control"
+                    placeholder="{{ 'common.SEARCH_LABEL' | translate }}"
+                    type="text"
+                  />
+                </th>
+              </tr>
             </thead>
             <tbody>
+              <tr
+                dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
+                current-page="users.pagination.current"
+                total-items="users.totalLogs"
+                id="user-row-{{user.username}}"
+              >
+                <td>
+                  <span
+                    class="icon-externally-managed"
+                    ng-if="user.externallyManaged"
+                    tooltip-placement="bottom"
+                    uib-tooltip="{{ 'admin.users.EXTERNALLY_MANAGED' | translate }}"
+                  >
+                    <i class="fa fa fa-external-link"></i>
+                  </span>
+                </td>
+                <td class="userName">
+                  <a class="username trim inline-block" ng-click="users.viewUser(user)">
+                    {{user.username}}
+                  </a>
+                </td>
+                <td class="firstName">{{user.firstName}}</td>
+                <td class="lastName">{{user.lastName}}</td>
+                <td class="email">{{user.email}}</td>
 
-            <tr
-              dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
-              current-page="users.pagination.current" total-items="users.totalLogs"
-              id="user-row-{{user.username}}"
-            >
-              <td>
-                <span
-                  class="icon-externally-managed" ng-if="user.externallyManaged"
-                  tooltip-placement="bottom"
-                  uib-tooltip="{{ 'admin.users.EXTERNALLY_MANAGED' | translate }}"
-                >
-                  <i class="fa fa fa-external-link"></i>
-                </span>
-              </td>
-              <td class="userName">
-                <a class="username trim inline-block" ng-click="users.viewUser(user)">
-                  {{user.username}}
-                </a>
-              </td>
-              <td class="firstName">{{user.firstName}}</td>
-              <td class="lastName">{{user.lastName}}</td>
-              <td class="email">{{user.email}}</td>
-
-              <td class="edit">
-                <a
-                  ng-click="users.editUserDialog(user)"
-                  class="btn btn-sm"
-                  tooltip-placement="bottom"
-                  uib-tooltip="{{'common.EDIT' | translate}}"
-                >
-                  <i class="fa fa-pencil">
-                  </i>
-                </a>
-              </td>
-              <td class="reset-password">
-                <a ng-click="users.resetPasswordDialog(user)"
-                   class="btn btn-sm"
-                   tooltip-placement="bottom"
-                   uib-tooltip="{{'common.RESET_PASSWORD' | translate}}">
-                  <i class="fa fa-key fa-flip-horizontal">
-                  </i>
-                </a>
-              </td>
-              <td class="remove">
-                <a ng-click="users.removeUser(user)"
-                   class="btn btn-sm"
-                   tooltip-placement="bottom"
-                   uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
-                  <i class="fa fa-trash-o">
-                  </i>
-                </a>
-              </td>
-            </tr>
+                <td class="edit">
+                  <a
+                    ng-click="users.editUserDialog(user)"
+                    class="btn btn-sm"
+                    tooltip-placement="bottom"
+                    uib-tooltip="{{'common.EDIT' | translate}}"
+                  >
+                    <i class="fa fa-pencil"> </i>
+                  </a>
+                </td>
+                <td class="reset-password">
+                  <a
+                    ng-click="users.resetPasswordDialog(user)"
+                    class="btn btn-sm"
+                    tooltip-placement="bottom"
+                    uib-tooltip="{{'common.RESET_PASSWORD' | translate}}"
+                  >
+                    <i class="fa fa-key fa-flip-horizontal"> </i>
+                  </a>
+                </td>
+                <td class="remove">
+                  <a
+                    ng-click="users.removeUser(user)"
+                    class="btn btn-sm"
+                    tooltip-placement="bottom"
+                    uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
+                  >
+                    <i class="fa fa-trash-o"> </i>
+                  </a>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <div class="global-menu-pagination-wrapper">
             <div ng-show="!users.searchdirty" class="mr10">
               <label class="mr5">{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
-              <input id="users-items-per-page" class="audit-number-logs" type="number" name="input" ng-model="users.itemsPerPage"
-                     min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
+              <input
+                id="users-items-per-page"
+                class="audit-number-logs"
+                type="number"
+                name="input"
+                ng-model="users.itemsPerPage"
+                min="1"
+                max="99"
+                ng-model-options="{debounce: debounceDelay}"
+                only-digits
+              />
             </div>
 
-            <dir-pagination-controls ng-show="!users.searchdirty" on-page-change="users.pageChanged(newPageNumber)"></dir-pagination-controls>
+            <dir-pagination-controls
+              ng-show="!users.searchdirty"
+              on-page-change="users.pageChanged(newPageNumber)"
+            ></dir-pagination-controls>
           </div>
 
           <p class="create-user-helper-text">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</p>
-
         </div>
       </div>
     </div>
@@ -448,8 +473,8 @@
     {{ confirmationText }}
   </div>
   <div class="modal-footer" id="remove-user">
-    <button class="btn no" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
-    <button class="btn yes" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+    <button class="btn btn-default no" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    <button class="btn btn-primary yes" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
   </div>
 </script>
 

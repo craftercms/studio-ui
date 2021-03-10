@@ -23,248 +23,56 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
   /**
    * initialize module
    */
-  initialize: function(config) {
-    this.definePlugin();
-    CStudioAuthoring.ContextualNav.StatusNav.init();
+  initialize: function() {
+    CrafterCMSNext.system.getStore().subscribe((store) => {
+      this.definePlugin(store);
+      CStudioAuthoring.ContextualNav.StatusNav.init();
+    });
   },
 
-  definePlugin: function() {
-    var YDom = YAHOO.util.Dom,
-      YEvent = YAHOO.util.Event;
+  definePlugin: function(store) {
+    var CMgs = CStudioAuthoring.Messages;
     /**
      * WCM preview tools Contextual Nav Widget
      */
     CStudioAuthoring.register({
       'ContextualNav.StatusNav': {
         init: function() {
-          var me = this;
           this.render();
-
           window.onmessage = function(e) {
-            if (e.data == 'status-changed') {
-              me.refreshStatus();
+            if (e.data === 'status-changed') {
+              store.dispatch({ type: 'FETCH_PUBLISHING_STATUS' });
             }
           };
         },
-
-        refreshStatus: function() {
-          var el,
-            iconColor,
+        render: function() {
+          var //
+            $el = $('#acn-status'),
             iconClass,
-            dialogEl,
-            dialogText,
-            me = this,
-            CMgs = CStudioAuthoring.Messages,
-            contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
+            currentStatus = '';
 
-          el = YDom.get('acn-status');
-
-          CrafterCMSNext.services.publishing.status(CStudioAuthoringContext.site).subscribe(
-            (response) => {
-              dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
-              dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
-
-              switch (response.status.toLowerCase()) {
+          store.subscribe(() => {
+            let status = store.getState().dialogs.publishingStatus.status || '';
+            if (currentStatus !== status) {
+              currentStatus = status;
+              switch (status.toLowerCase()) {
                 case 'busy':
-                  iconColor = '#FF8C00';
                   iconClass = 'icon-orange';
-                  if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                   break;
                 case 'stopped':
-                  iconColor = '#FF0000';
                   iconClass = 'icon-red';
-                  if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                   break;
                 default:
-                  iconColor = 'inherit';
                   iconClass = 'icon-default';
-                  if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
               }
-
-              YDom.setStyle(el.children[0], 'color', iconColor);
-              YDom.setStyle(dialogEl, 'color', iconColor);
-
-              // update status message
-              if (dialogText) {
-                dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, response.status);
-              }
-            },
-            (response) => {
-              el = YDom.get('acn-status');
-              YDom.setStyle(el.children[0], 'color', '#777');
+              $el.removeClass('icon-default icon-red icon-orange').addClass(iconClass);
             }
-          );
+          });
+
+          $el.on('click', function() {
+            store.dispatch({ type: 'SHOW_PUBLISHING_STATUS_DIALOG' });
+          });
         },
-
-        render: function() {
-          var el,
-            iconColor,
-            iconClass,
-            dialogEl,
-            dialog,
-            dialogText,
-            me = this,
-            CMgs = CStudioAuthoring.Messages,
-            contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
-
-          el = YDom.get('acn-status');
-
-          function statusLoop(extDelay) {
-            var delay = extDelay ? extDelay : 60000;
-
-            CrafterCMSNext.services.publishing.status(CStudioAuthoringContext.site).subscribe(
-              (response) => {
-                dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
-                dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
-
-                switch (response.status.toLowerCase()) {
-                  case 'busy':
-                    iconColor = '#FF8C00';
-                    iconClass = 'icon-orange';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
-                    break;
-                  case 'stopped':
-                    iconColor = '#FF0000';
-                    iconClass = 'icon-red';
-                    if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
-                    break;
-                  default:
-                    iconColor = 'inherit';
-                    iconClass = 'icon-default';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
-                }
-
-                YDom.setStyle(el.children[0], 'color', iconColor);
-                YDom.setStyle(dialogEl, 'color', iconColor);
-
-                // update status message
-                if (dialogText) {
-                  dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, response.status);
-                }
-
-                if (extDelay) {
-                  if (me.dialogOpen) {
-                    setTimeout(function() {
-                      statusLoop(delay);
-                    }, delay);
-                  }
-                } else {
-                  setTimeout(function() {
-                    statusLoop();
-                  }, delay);
-                }
-              },
-              (response) => {
-                el = YDom.get('acn-status');
-                YDom.setStyle(el.children[0], 'color', '#777');
-
-                if (extDelay) {
-                  if (me.dialogOpen) {
-                    setTimeout(function() {
-                      statusLoop(delay);
-                    }, delay);
-                  }
-                } else {
-                  setTimeout(function() {
-                    statusLoop();
-                  }, delay);
-                }
-              }
-            );
-          }
-
-          statusLoop();
-
-          el.onclick = function() {
-            var dialogOpenDelay = 3000;
-
-            CrafterCMSNext.services.publishing.status(CStudioAuthoringContext.site).subscribe(
-              (response) => {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'status-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  "<span class='dialog-elt-text'>" +
-                    me.getStatusMessage(contextNavLangBundle, response.status) +
-                    '</span>',
-                  [
-                    {
-                      text: CMgs.format(contextNavLangBundle, 'close'),
-                      handler: function() {
-                        me.dialogOpen = false;
-                        this.hide();
-                      },
-                      isDefault: false
-                    }
-                  ], // use default button
-                  'dialog-elt fa fa-circle-o-notch fa-spin fa-spin-fix ' + iconClass,
-                  'studioDialog'
-                );
-
-                dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
-                dialog = YDom.get('status-dialog');
-                YDom.setStyle(dialog.parentNode, 'z-index', '999');
-
-                switch (response.status.toLowerCase()) {
-                  case 'busy':
-                    iconColor = '#FF8C00';
-                    iconClass = 'icon-orange';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
-                    break;
-                  case 'stopped':
-                    iconColor = '#FF0000';
-                    iconClass = 'icon-red';
-                    if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
-                    break;
-                  default:
-                    iconColor = 'inherit';
-                    iconClass = 'icon-default';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
-                }
-
-                YDom.setStyle(el.children[0], 'color', iconColor);
-                YDom.setStyle(dialogEl, 'color', iconColor);
-
-                me.dialogOpen = true;
-                statusLoop(dialogOpenDelay);
-              },
-              (response) => {
-                let message;
-                try {
-                  message = JSON.parse(response.responseText).message;
-                } catch (e) {
-                  message = CMgs.format(CMgs.getBundle('contextnav', CStudioAuthoringContext.lang), 'networkError');
-                }
-
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'error-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  "<span class='dialog-elt-text'>" + message + '</span>',
-                  [
-                    {
-                      text: CMgs.format(contextNavLangBundle, 'close'),
-                      handler: function() {
-                        me.dialogOpen = false;
-                        this.hide();
-                      },
-                      isDefault: false
-                    }
-                  ], // use default button
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-
-                el = YDom.get('acn-status');
-                YDom.setStyle(el.children[0], 'color', '#777');
-
-                me.dialogOpen = true;
-                statusLoop(dialogOpenDelay);
-              }
-            );
-          };
-        },
-
         getStatusMessage: function(contextNavLangBundle, status) {
           return CMgs.format(contextNavLangBundle, status.toLowerCase());
         }

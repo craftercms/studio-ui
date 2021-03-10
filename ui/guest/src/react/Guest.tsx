@@ -19,7 +19,7 @@ import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../classes/ICERegistry';
-import { contentTypes$ } from '../classes/ContentController';
+import { contentTypes$, flushRequestedPaths } from '../classes/ContentController';
 import * as elementRegistry from '../classes/ElementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -34,7 +34,7 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_HIGHLIGHTED_RECEPTACLES,
+  CLEAR_HIGHLIGHTED_DROP_TARGETS,
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
@@ -42,7 +42,7 @@ import {
   COMPONENT_INSTANCE_DRAG_STARTED,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_DROP_TARGETS_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
@@ -56,7 +56,7 @@ import {
   HOST_CHECK_IN,
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
-  SCROLL_TO_RECEPTACLE,
+  SCROLL_TO_DROP_TARGET,
   TRASHED
 } from '../constants';
 import { createGuestStore } from '../store/store';
@@ -64,25 +64,30 @@ import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { isNullOrUndefined, nnou } from '../utils/object';
-import { scrollToReceptacle } from '../utils/dom';
+import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
+import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
 
-const initialDocumentDomain = document.domain;
-const editModeClass = 'craftercms-ice-on';
-
-type GuestProps = PropsWithChildren<{
+export type GuestProps = PropsWithChildren<{
   documentDomain?: string;
   path?: string;
   styleConfig?: GuestStyleConfig;
   isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
 }>;
+
+const initialDocumentDomain = document.domain;
+const editModeClass = 'craftercms-ice-on';
+
+export function getEditModeClass() {
+  return editModeClass;
+}
 
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
@@ -91,13 +96,13 @@ function Guest(props: GuestProps) {
 
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
-  const state = useSelector<GuestState, GuestState>((state) => state);
+  const state = useSelector<GuestState>((state) => state);
   const editMode = state.editMode;
   const highlightMode = state.highlightMode;
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
-  const refs = useRef({ contentReady: false });
+  const refs = useRef({ contentReady: false, firstRender: true, keysPressed: {} as LookupTable<boolean> });
   // TODO: Avoid double re-render when draggable changes without coupling to redux on useICE
   const context = useMemo(
     () => ({
@@ -112,6 +117,9 @@ function Guest(props: GuestProps) {
           if (isNullOrUndefined(record)) {
             console.error('No record found for dispatcher element');
           } else {
+            if (refs.current.keysPressed.z && type === 'click') {
+              return false;
+            }
             // HighlightMode validations helps to dont stop the event propagation
             if (
               ['click', 'dblclick'].includes(type) &&
@@ -130,6 +138,22 @@ function Guest(props: GuestProps) {
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
 
+  // Key press/hold keeper events
+  useEffect(() => {
+    const keydown = (e) => {
+      refs.current.keysPressed[e.key] = true;
+    };
+    const keyup = (e) => {
+      refs.current.keysPressed[e.key] = false;
+    };
+    document.addEventListener('keydown', keydown, false);
+    document.addEventListener('keyup', keyup, false);
+    return () => {
+      document.removeEventListener('keydown', keydown, false);
+      document.removeEventListener('keyup', keyup, false);
+    };
+  }, []);
+
   // Sets document domain
   useEffect(() => {
     if (documentDomain) {
@@ -147,10 +171,17 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     if (editMode === false) {
       $('html').removeClass(editModeClass);
-      document.dispatchEvent(new CustomEvent(editModeClass, { detail: false }));
+      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: false }));
+      // Refreshing the page for now. Will revisit on a later release.
+      if (!refs.current.firstRender) {
+        window.location.reload();
+      }
     } else {
       $('html').addClass(editModeClass);
-      document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
+      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: true }));
+    }
+    if (refs.current.firstRender) {
+      refs.current.firstRender = false;
     }
   }, [editMode]);
 
@@ -204,17 +235,17 @@ function Guest(props: GuestProps) {
           post({ type: GUEST_CHECK_OUT });
           return (window.location.href = payload.url);
         }
-        case CONTENT_TYPE_RECEPTACLES_REQUEST: {
+        case CONTENT_TYPE_DROP_TARGETS_REQUEST: {
           dispatch({
             type,
             payload: { contentTypeId: payload }
           });
           break;
         }
-        case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
+        case SCROLL_TO_DROP_TARGET:
+          scrollToDropTargets([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
           break;
-        case CLEAR_HIGHLIGHTED_RECEPTACLES:
+        case CLEAR_HIGHLIGHTED_DROP_TARGETS:
           dispatch(action);
           break;
         case CONTENT_TREE_FIELD_SELECTED: {
@@ -314,47 +345,48 @@ function Guest(props: GuestProps) {
     return () => {
       post(GUEST_CHECK_OUT);
       nnou(iceId) && iceRegistry.deregister(iceId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      refs.current.contentReady = false;
+      flushRequestedPaths();
     };
   }, [documentDomain, path]);
 
   // Listen for desktop asset drag & drop
+  const shouldNotBypass = hasHost && editMode;
   useEffect(() => {
-    const subscription = fromEvent<DragEvent>(document, 'dragenter')
-      .pipe(filter((e) => e.dataTransfer?.types.includes('Files')))
-      .subscribe((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dispatch({
-          type: DESKTOP_ASSET_DRAG_STARTED,
-          payload: { asset: e.dataTransfer.items[0] }
+    if (shouldNotBypass) {
+      const subscription = fromEvent<DragEvent>(document, 'dragenter')
+        .pipe(filter((e) => e.dataTransfer?.types.includes('Files') && refs.current.contentReady))
+        .subscribe((e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dispatch({
+            type: DESKTOP_ASSET_DRAG_STARTED,
+            payload: { asset: e.dataTransfer.items[0] }
+          });
         });
-      });
-    return () => subscription.unsubscribe();
-  }, [dispatch]);
+      return () => subscription.unsubscribe();
+    }
+  }, [dispatch, shouldNotBypass]);
 
   // Listen for drag events for desktop asset drag & drop
   useEffect(() => {
     if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === status) {
-      const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dragOk(status) && dispatch({ type: DESKTOP_ASSET_DRAG_ENDED });
-      });
-      const dragover$ = fromEvent(document, 'dragover').pipe(
-        tap((e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }),
-        share()
+      const dropSubscription = fromEvent(document, 'drop').subscribe((event) =>
+        dispatch({ type: 'document:drop', payload: { event } })
       );
-      const dragoverSubscription = dragover$.subscribe();
-      const dragleaveSubscription = fromEvent(document, 'dragleave')
-        .pipe(switchMap(() => interval(100).pipe(takeUntil(dragover$))))
-        .subscribe(() => {
-          dragOk(status) && dispatch({ type: DESKTOP_ASSET_DRAG_ENDED });
-        });
+      const dragendSubscription = fromEvent(document, 'dragend').subscribe((event) =>
+        dispatch({ type: 'document:dragend', payload: { event } })
+      );
+      const dragoverSubscription = fromEvent(document, 'dragover').subscribe((event) =>
+        dispatch({ type: 'document:dragover', payload: { event } })
+      );
+      const dragleaveSubscription = fromEvent(document, 'dragleave').subscribe((event) =>
+        dispatch({ type: 'document:dragleave', payload: { event } })
+      );
       return () => {
         dropSubscription.unsubscribe();
+        dragendSubscription.unsubscribe();
         dragoverSubscription.unsubscribe();
         dragleaveSubscription.unsubscribe();
       };
@@ -455,7 +487,7 @@ function Guest(props: GuestProps) {
   );
 }
 
-export default function CrafterCMSGuest(props: GuestProps) {
+function CrafterCMSGuest(props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   return isAuthoring ? (
@@ -466,3 +498,7 @@ export default function CrafterCMSGuest(props: GuestProps) {
     (children as JSX.Element)
   );
 }
+
+export { CrafterCMSGuest as Guest };
+
+export default CrafterCMSGuest;

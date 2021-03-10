@@ -21,9 +21,9 @@ import {
   deleteProperties,
   fetchGlobalProperties,
   fetchMyRolesInSite as fetchMyRolesInSiteService,
-  fetchSiteProperties
+  fetchSiteProperties,
+  getMyPermissions
 } from '../../services/users';
-import { NEVER } from 'rxjs';
 import {
   deleteProperties as deletePropertiesAction,
   deletePropertiesComplete,
@@ -31,6 +31,9 @@ import {
   fetchGlobalProperties as fetchGlobalPropertiesAction,
   fetchGlobalPropertiesComplete,
   fetchGlobalPropertiesFailed,
+  fetchMyPermissionsInSite,
+  fetchMyPermissionsInSiteComplete,
+  fetchMyPermissionsInSiteFailed,
   fetchMyRolesInSite,
   fetchMyRolesInSiteComplete,
   fetchMyRolesInSiteFailed,
@@ -47,14 +50,28 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [fetchSitePropertiesAction(), fetchMyRolesInSite()])
+      switchMap(() => [fetchSitePropertiesAction(), fetchMyRolesInSite(), fetchMyPermissionsInSite()])
     ),
   // endregion
   // region changeSite
   (action$) =>
     action$.pipe(
       ofType(changeSite.type),
-      map(() => fetchMyRolesInSite())
+      map(() => fetchMyRolesInSite(), fetchMyPermissionsInSite())
+    ),
+  // endregion
+  // region fetchMyPermissionsInSite
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchMyPermissionsInSite.type),
+      withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
+      switchMap(([, state]) =>
+        getMyPermissions(state.sites.active).pipe(
+          map((permissions) => fetchMyPermissionsInSiteComplete({ site: state.sites.active, permissions })),
+          catchAjaxError(fetchMyPermissionsInSiteFailed)
+        )
+      )
     ),
   // endregion
   // region changeSite
@@ -85,13 +102,12 @@ export default [
     action$.pipe(
       ofType(fetchSitePropertiesAction.type),
       withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
       switchMap(([, state]) =>
-        state.sites.active
-          ? fetchSiteProperties(state.sites.active).pipe(
-              map(fetchSitePropertiesComplete),
-              catchAjaxError(fetchSitePropertiesFailed)
-            )
-          : NEVER
+        fetchSiteProperties(state.sites.active).pipe(
+          map(fetchSitePropertiesComplete),
+          catchAjaxError(fetchSitePropertiesFailed)
+        )
       )
     ),
   // endregion

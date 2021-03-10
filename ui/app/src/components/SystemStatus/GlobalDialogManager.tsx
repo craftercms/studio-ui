@@ -22,7 +22,6 @@ import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MinimizedBar } from './MinimizedBar';
-import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
@@ -30,7 +29,7 @@ import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
-import GlobalNav from '../Navigation/GlobalNav';
+import Launcher from '../Launcher/Launcher';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -54,6 +53,7 @@ const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
+const PublishingStatusDialog = lazy(() => import('../PublishingStatusDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -417,8 +417,19 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Global Navigation */}
-      <GlobalNav />
+      {/* region Launcher */}
+      <Launcher {...state.launcher} />
+      {/* endregion */}
+
+      {/* region Publishing Status Dialog */}
+      <PublishingStatusDialog
+        open={state.publishingStatus.open}
+        status={state.publishingStatus.status}
+        details={state.publishingStatus.details}
+        isFetching={state.publishingStatus.isFetching}
+        onClose={createCallback(state.publishingStatus.onClose, dispatch)}
+        onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
+      />
       {/* endregion */}
     </Suspense>
   );
@@ -450,13 +461,13 @@ function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialo
 
   return inventory.length
     ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status }) => (
+        inventory.map(({ id, title, subtitle, status, onMaximized }) => (
           <MinimizedBar
             key={id}
             title={title}
             subtitle={subtitle}
             status={status}
-            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+            onMaximized={createCallback(onMaximized, dispatch)}
           />
         )),
         el

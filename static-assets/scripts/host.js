@@ -68,65 +68,63 @@
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
-  // Preview 2 check in
+  // Preview next check in message
   let previewNextCheckInNotification = false;
   let compatibilityQueryArg = CrafterCMSNext.util.path.getQueryVariable(window.location.search, 'compatibility');
   let compatibilityForceStay = compatibilityQueryArg === 'stay';
   let compatibilityAsk = compatibilityQueryArg === 'ask';
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
-    if (!previewNextCheckInNotification && !compatibilityForceStay) {
-      // Avoid recurrently showing the notification over and
-      // over as long as the page is not refreshed
-      previewNextCheckInNotification = true;
-      communicator.addTargetWindow({
-        origin: origin,
-        window: getEngineWindow().contentWindow
+    const doGo = () => {
+      const state = CrafterCMSNext.system.store.getState();
+      window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
+    };
+    const showCompatDialog = () => {
+      let unmount;
+      CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
+        onOk: doGo,
+        onCancel() {
+          unmount({ removeContainer: true });
+        },
+        onClosed() {
+          unmount({ removeContainer: true });
+        }
+      }).then((args) => {
+        unmount = args.unmount;
       });
-      const doGo = () => {
-        const state = CrafterCMSNext.system.store.getState();
-        window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
-      };
-      const showCompatDialog = () => {
-        let unmount;
-        CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
-          onOk: doGo,
-          onCancel() {
-            unmount({ removeContainer: true });
-          },
-          onClosed() {
-            unmount({ removeContainer: true });
-          }
-        }).then((args) => {
-          unmount = args.unmount;
-        });
-      };
-      let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
+    };
+    let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
+    if (!previewNextCheckInNotification && !compatibilityForceStay) {
+      // Avoid recurrently showing the notification over and over as long as the page is not refreshed
+      previewNextCheckInNotification = true;
       if (compatibilityAsk) {
         showCompatDialog();
-      } else if (previousChoice) {
-        if (previousChoice === '2') {
-          doGo();
-        }
-      } /* if (!previousChoice) */ else {
-        const usersService = CrafterCMSNext.services.users;
-        usersService
-          .fetchGlobalProperties()
-          .pipe(
-            CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
-              usersService.setProperties({
-                previewChoice: JSON.stringify(
-                  Object.assign(JSON.parse(prefs.previewChoice || '{}'), {
-                    [CStudioAuthoringContext.siteId]: '2'
-                  })
-                )
-              })
-            )
-          )
-          .subscribe(() => {
-            doGo();
-          });
       }
     }
+    if (previousChoice !== '2') {
+      const usersService = CrafterCMSNext.services.users;
+      usersService
+        .fetchGlobalProperties()
+        .pipe(
+          CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
+            usersService.setProperties({
+              previewChoice: JSON.stringify(
+                Object.assign(JSON.parse(prefs.previewChoice || '{}'), {
+                  [CStudioAuthoringContext.siteId]: '2'
+                })
+              )
+            })
+          )
+        )
+        .subscribe(() => {
+          doGo();
+        });
+    } else if (!compatibilityAsk && !compatibilityForceStay) {
+      doGo();
+    }
+    communicator.addTargetWindow({
+      origin: origin,
+      window: getEngineWindow().contentWindow
+    });
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
   });
 

@@ -17,7 +17,7 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { getZoneMarkerStyle } from '../utils/dom';
 
-interface AssetUploaderMaskProps {
+export interface AssetUploaderMaskProps {
   rect?: DOMRect;
   label?: string;
   id?: number;
@@ -25,7 +25,7 @@ interface AssetUploaderMaskProps {
   progress?: number;
 }
 
-export default function AssetUploaderMask(props: AssetUploaderMaskProps) {
+export function AssetUploaderMask(props: AssetUploaderMaskProps) {
   const { rect, progress } = props,
     [zoneStyle, setZoneStyle] = useState<CSSProperties>();
 
@@ -39,3 +39,5 @@ export default function AssetUploaderMask(props: AssetUploaderMaskProps) {
     </craftercms-asset-uploader-mask-container>
   );
 }
+
+export default AssetUploaderMask;

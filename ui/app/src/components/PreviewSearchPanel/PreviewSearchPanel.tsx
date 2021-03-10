@@ -46,7 +46,7 @@ import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
 import { Resource } from '../../models/Resource';
 import { createLookupTable } from '../../utils/object';
-import { getContentInstance } from '../../services/content';
+import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { useDispatch } from 'react-redux';
@@ -188,7 +188,7 @@ export default function PreviewSearchPanel() {
             const requests: Array<Observable<ContentInstance>> = [];
             result.items.forEach((item) => {
               if (item.type === 'Component') {
-                requests.push(getContentInstance(site, item.path, contentTypesLookup));
+                requests.push(fetchContentInstance(site, item.path, contentTypesLookup));
               }
             });
             return requests.length

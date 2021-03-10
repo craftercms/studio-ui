@@ -76,6 +76,7 @@ interface LegacyCodeEditorDialogBaseProps {
   open?: boolean;
   src?: string;
   inProgress?: boolean;
+  onMinimized?(): void;
 }
 
 export type LegacyCodeEditorDialogProps = PropsWithChildren<
@@ -95,7 +96,7 @@ export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialog
 }
 
 function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
-  const { src, inProgress, onSuccess, onDismiss, onClosed } = props;
+  const { src, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -118,6 +119,10 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
               onDismiss();
               break;
             }
+            case 'saveAndMinimize': {
+              onMinimized();
+              break;
+            }
           }
           break;
         }
@@ -137,7 +142,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSuccess, messages, dispatch, onDismiss]);
+  }, [inProgress, onSuccess, messages, dispatch, onDismiss, onMinimized]);
 
   useUnmount(onClosed);
 
@@ -192,7 +197,7 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
           }
         ]}
       />
-      <EmbeddedLegacyCodeEditor {...props} />
+      <EmbeddedLegacyCodeEditor {...props} onMinimized={onMinimized} />
     </Dialog>
   );
 }

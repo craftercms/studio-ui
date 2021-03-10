@@ -17,13 +17,13 @@
 import { forkJoin, Observable, Observer } from 'rxjs';
 import { get, postJSON } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
-import { getSandboxItem } from './content';
+import { fetchSandboxItem } from './content';
 import TranslationConfig from '../models/TranslationConfig';
 
-export function getItemLocales(site: string, path: string): Observable<any> {
+export function fetchItemLocales(site: string, path: string): Observable<any> {
   return forkJoin({
-    item: getSandboxItem(site, path),
-    locales: getTargetLocales(site, path)
+    item: fetchSandboxItem(site, path),
+    locales: fetchTargetLocales(site, path)
   }).pipe(
     map(({ item, locales }) => ({
       item,
@@ -32,7 +32,7 @@ export function getItemLocales(site: string, path: string): Observable<any> {
   );
 }
 
-export function getTargetLocales(site: string, path: string): Observable<any> {
+export function fetchTargetLocales(site: string, path: string): Observable<any> {
   // /studio/api/2/translation/list_target_locales
   const response = {
     response: {},
@@ -78,6 +78,6 @@ export function markForTranslation(site: string, path: string, locale: string) {
   });
 }
 
-export function getSiteLocales(site: string): Observable<TranslationConfig> {
+export function fetchSiteLocales(site: string): Observable<TranslationConfig> {
   return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(pluck('response', 'config'));
 }

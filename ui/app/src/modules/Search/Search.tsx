@@ -32,10 +32,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import clsx from 'clsx';
 import { History, Location } from 'history';
-import { getContentXML } from '../../services/content';
+import { fetchContentXML } from '../../services/content';
 import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useEnv, usePermissions, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, usePermissionsByPath, useSelection } from '../../utils/hooks';
 import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
@@ -53,6 +53,7 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/c
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 interface SearchProps {
   history: History;
@@ -324,6 +325,10 @@ const messages = defineMessages({
   previousPage: {
     id: 'pagination.previousPage',
     defaultMessage: 'Previous page'
+  },
+  unknownError: {
+    id: 'siteSearch.unknownErrorSearching',
+    defaultMessage: 'An error occurred with the search service.'
   }
 });
 
@@ -355,7 +360,7 @@ export default function Search(props: SearchProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const dispatch = useDispatch();
-  const permissions = usePermissions();
+  const permissions = usePermissionsByPath();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
@@ -402,13 +407,23 @@ export default function Search(props: SearchProps) {
       (result) => {
         setSearchResults(result);
       },
-      ({ response }) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: response });
+      (error) => {
+        const { response } = error;
+        if (response && response.response) {
+          setApiState({ error: true, errorResponse: response.response });
+        } else {
+          console.error(error);
+          dispatch(
+            showErrorDialog({
+              error: {
+                message: formatMessage(messages.unknownError)
+              }
+            })
+          );
         }
       }
     );
-  }, [searchParameters, site]);
+  }, [dispatch, formatMessage, searchParameters, site]);
 
   const handleClearSelected = useCallback(() => {
     selected.forEach((path) => {
@@ -687,7 +702,7 @@ export default function Search(props: SearchProps) {
           })
         );
 
-        getContentXML(site, url).subscribe((content) => {
+        fetchContentXML(site, url).subscribe((content) => {
           dispatch(
             updatePreviewDialog({
               content

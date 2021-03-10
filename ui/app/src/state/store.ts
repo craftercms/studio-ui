@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, EnhancedStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore, DeepPartial, EnhancedStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import reducer from './reducers/root';
 import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware, Epic } from 'redux-observable';
@@ -96,6 +96,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       tap((e) => {
         logWorkerMessage(e);
         if (e.data?.type === sharedWorkerUnauthenticated.type) {
+          window.location.reload();
           throw new Error('User not authenticated.');
         }
       }),
@@ -124,7 +125,7 @@ export function getStoreSync(): CrafterCMSStore {
 }
 
 export function createStoreSync(
-  args: { preloadedState?: Partial<GlobalState>; dependencies?: any } = {}
+  args: { preloadedState?: DeepPartial<GlobalState>; dependencies?: any } = {}
 ): CrafterCMSStore {
   const { preloadedState, dependencies } = args;
   const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({

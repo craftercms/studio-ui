@@ -2,9 +2,9 @@
   "name": "@craftercms/studio-guest",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "build_tsc/index.js",
+  "module": "build_tsc/index.js",
+  "typings": "build_tsc/index.d.ts",
   "craftercms": {
     "id": "craftercms.guest"
   },
@@ -29,6 +29,11 @@
     "redux-observable": "^1.2.0",
     "rxjs": "^6.5.4",
     "uuid": "^3.3.3"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.8.6 || ^17.0.0",
+    "react": "^16.8.0 || ^17.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0"
   },
   "scripts": {
     "build": "run-s build:install build:app",

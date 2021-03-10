@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageDescriptor, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -23,9 +23,10 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { popToolsPanelPage } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
+import TranslationOrText from '../../../models/TranslationOrText';
 
 type ToolPanelProps = PropsWithChildren<{
-  title: string | MessageDescriptor;
+  title: TranslationOrText;
   BackIcon?: ElementType;
   onBack?: () => void;
   classes?: {

@@ -40,7 +40,7 @@ import {
   showEditDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
-import { getVersion } from '../../services/content';
+import { fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
@@ -109,7 +109,7 @@ const dialogEpics: CrafterCMSEpic[] = [
       ofType(fetchContentVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        getVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
+        fetchItemVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
           map(fetchContentVersionComplete),
           catchAjaxError(fetchContentVersionFailed)
         )

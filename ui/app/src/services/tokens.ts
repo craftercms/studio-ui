@@ -19,7 +19,7 @@ import { del, get, postJSON } from '../utils/ajax';
 import { mapTo, pluck } from 'rxjs/operators';
 import { Token } from '../models/Token';
 
-export function getTokens(): Observable<Token[]> {
+export function fetchTokens(): Observable<Token[]> {
   return get('/studio/api/2/security/tokens').pipe(pluck('response', 'tokens'));
 }
 

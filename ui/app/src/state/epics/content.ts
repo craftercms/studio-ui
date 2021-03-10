@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   completeDetailedItem,
   duplicateAsset,
   duplicateItem,
   duplicateWithPolicyValidation,
-  fetchDetailedItem as fetchDetailedItemAction,
+  fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
   fetchQuickCreateList as fetchQuickCreateListAction,
@@ -37,12 +37,18 @@ import {
   unSetClipBoard
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { duplicate, fetchDetailedItem, fetchQuickCreateList, paste, unlock } from '../../services/content';
+import {
+  duplicate,
+  fetchDetailedItem as fetchDetailedItemService,
+  fetchQuickCreateList,
+  paste,
+  unlock
+} from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
-import { NEVER } from 'rxjs';
+import { merge, NEVER, of } from 'rxjs';
 import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
@@ -56,10 +62,13 @@ import {
   showUnlockItemSuccessNotification
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
-import { getParentPath, isValidCutPastePath, withoutIndex } from '../../utils/path';
+import { getParentPath, isValidCutPastePath, withIndex, withoutIndex } from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
+import { CrafterCMSEpic } from '../store';
+import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
+import { nanoid as uuid } from 'nanoid';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -80,9 +89,16 @@ export const itemFailureMessages = defineMessages({
   }
 });
 
-const content = [
+const inProgressMessages = defineMessages({
+  pasting: {
+    id: 'item.pasting',
+    defaultMessage: 'Pasting...'
+  }
+});
+
+const content: CrafterCMSEpic[] = [
   // region Quick Create
-  (action$: ActionsObservable<StandardAction>, $state: StateObservable<GlobalState>) =>
+  (action$, $state) =>
     action$.pipe(
       ofType(fetchQuickCreateListAction.type),
       withLatestFrom($state),
@@ -92,7 +108,7 @@ const content = [
     ),
   // endregion
   // region getUserPermissions
-  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
       filter(({ payload }) => !payload.__CRAFTERCMS_GUEST_LANDING__),
@@ -112,22 +128,22 @@ const content = [
     ),
   // endregion
   // region Items fetchDetailedItem
-  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
-      ofType(fetchDetailedItemAction.type, reloadDetailedItem.type),
+      ofType(fetchDetailedItem.type, reloadDetailedItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload, type }, state]) => {
         if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
           return NEVER;
         } else {
-          return fetchDetailedItem(state.sites.active, payload.path).pipe(
+          return fetchDetailedItemService(state.sites.active, payload.path).pipe(
             map((item) => fetchDetailedItemComplete(item)),
             catchAjaxError(fetchDetailedItemFailed)
           );
         }
       })
     ),
-  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(completeDetailedItem.type),
       withLatestFrom(state$),
@@ -135,7 +151,7 @@ const content = [
         if (state.content.items.byPath?.[payload.path]?.live) {
           return NEVER;
         } else {
-          return fetchDetailedItem(state.sites.active, payload.path).pipe(
+          return fetchDetailedItemService(state.sites.active, payload.path).pipe(
             map((item) => fetchDetailedItemComplete(item)),
             catchAjaxError(fetchDetailedItemFailed)
           );
@@ -144,7 +160,7 @@ const content = [
     ),
   // endregion
   // region Item Duplicate
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(duplicateItem.type),
       withLatestFrom(state$),
@@ -162,7 +178,7 @@ const content = [
         );
       })
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(unlockItem.type),
       withLatestFrom(state$),
@@ -176,7 +192,7 @@ const content = [
     ),
   // endregion
   // region Asset Duplicate
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(duplicateAsset.type),
       withLatestFrom(state$),
@@ -202,7 +218,7 @@ const content = [
     ),
   // endregion
   // region Duplicate with validation policy
-  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(duplicateWithPolicyValidation.type),
       withLatestFrom(state$),
@@ -259,20 +275,35 @@ const content = [
     ),
   // endregion
   // region Item Paste
-  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
+        const id = uuid();
         if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
-          return paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-            map(({ items }) => {
-              return batchActions([
-                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
-                unSetClipBoard(),
-                showPasteItemSuccessNotification()
-              ]);
-            })
+          return merge(
+            of(
+              pushDialog({
+                minimized: true,
+                id,
+                status: 'indeterminate',
+                title: getIntl().formatMessage(inProgressMessages.pasting),
+                onMaximized: null
+              })
+            ),
+            paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+              map(({ items }) => {
+                return batchActions([
+                  emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
+                  unSetClipBoard(),
+                  showPasteItemSuccessNotification(),
+                  popDialog({
+                    id
+                  })
+                ]);
+              })
+            )
           );
         } else {
           const hostToHost$ = getHostToHostBus();
@@ -290,14 +321,23 @@ const content = [
     ),
   // endregion
   // region Item Paste with validation policy
-  (action$, state$: StateObservable<GlobalState>, { getIntl }) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(pasteItemWithPolicyValidation.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
+        let fileName = withoutIndex(state.content.clipboard.sourcePath)
+          .split('/')
+          .pop();
+        if (
+          state.content.clipboard.sourcePath.startsWith('/site/website') &&
+          state.content.clipboard.sourcePath.endsWith('index.xml')
+        ) {
+          fileName = withIndex(fileName);
+        }
         return validateActionPolicy(state.sites.active, {
           type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
-          target: payload.path,
+          target: `${withoutIndex(payload.path)}/${fileName}`,
           source: state.content.clipboard.sourcePath
         }).pipe(
           map(({ allowed, modifiedValue, target }) => {

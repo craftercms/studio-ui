@@ -17,15 +17,9 @@
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { deserialize, fromString, getInnerHtml } from '../utils/xml';
-import ContentType, { ContentTypeField } from '../models/ContentType';
-import {
-  applyDeserializedXMLTransforms,
-  createLookupTable,
-  deepCopy,
-  reversePluckProps,
-  toQueryString
-} from '../utils/object';
+import { deserialize, fromString } from '../utils/xml';
+import { ContentTypeField } from '../models/ContentType';
+import { applyDeserializedXMLTransforms, deepCopy, reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import uiConfigDefaults from '../assets/uiConfigDefaults';
@@ -34,18 +28,18 @@ import GlobalState from '../models/GlobalState';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
-export function getRawConfiguration(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
+export function fetchConfigurationXML(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
   return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
     pluck('response', 'content')
   );
 }
 
-export function getConfigurationDOM(
+export function fetchConfigurationDOM(
   site: string,
   configPath: string,
   module: CrafterCMSModules
 ): Observable<XMLDocument> {
-  return getRawConfiguration(site, configPath, module).pipe(map(fromString));
+  return fetchConfigurationXML(site, configPath, module).pipe(map(fromString));
 }
 
 export function writeConfiguration(
@@ -64,85 +58,10 @@ export function writeConfiguration(
 
 // region AudiencesPanelConfig
 
-const audienceTypesMap: any = {
-  input: 'input',
-  dropdown: 'dropdown',
-  checkboxes: 'checkbox-group',
-  datetime: 'date-time'
-};
-
 interface ActiveTargetingModel {
   id: string;
 
   [prop: string]: string;
-}
-
-export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
-  return getRawConfiguration(site, `/targeting/targeting-config.xml`, 'studio').pipe(
-    map((content) => {
-      try {
-        return JSON.parse(content);
-      } catch (e) {
-        // Not JSON, assuming XML
-        let audiencesPanelContentType: ContentType = {
-          id: 'audiencesPanelConfig',
-          name: 'Audiences Panel Config',
-          type: 'unknown',
-          quickCreate: null,
-          quickCreatePath: null,
-          displayTemplate: null,
-          sections: null,
-          fields: null,
-          dataSources: null,
-          mergeStrategy: null
-        };
-
-        const xml = fromString(content);
-        const properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
-          const name = getInnerHtml(elem.querySelector('name')),
-            label = getInnerHtml(elem.querySelector('label')),
-            type = getInnerHtml(elem.querySelector('type')),
-            hint = getInnerHtml(elem.querySelector('hint'));
-          let defaultValue: any = getInnerHtml(elem.querySelector('default_value'));
-
-          let possibleValues: ContentTypeField['values'];
-
-          if (elem.querySelectorAll('value').length > 0) {
-            possibleValues = Array.from(elem.querySelectorAll('value')).map((element) => {
-              const value = getInnerHtml(element);
-              return {
-                label: element.getAttribute('label') ?? value,
-                value: value
-              };
-            });
-          } else {
-            possibleValues = [];
-          }
-
-          if (type === 'checkboxes') {
-            defaultValue = defaultValue ? defaultValue.split(',') : [];
-          }
-
-          return {
-            id: name,
-            name: label,
-            type: audienceTypesMap[type] || type,
-            sortable: null,
-            validations: null,
-            defaultValue,
-            required: null,
-            fields: null,
-            values: possibleValues,
-            helpText: hint
-          };
-        });
-
-        audiencesPanelContentType.fields = createLookupTable(properties, 'id');
-
-        return audiencesPanelContentType;
-      }
-    })
-  );
 }
 
 // TODO: asses the location of profile methods.
@@ -203,16 +122,12 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
-// region SidebarConfig
-
-export function getSiteUiConfig(
-  site: string
-): Observable<Omit<GlobalState['uiConfig'], 'error' | 'isFetching' | 'currentSite'>> {
-  return getConfigurationDOM(site, '/ui.xml', 'studio').pipe(
+export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['uiConfig'], 'preview' | 'launcher'>> {
+  return fetchConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
       const config = deepCopy(uiConfigDefaults);
       if (xml) {
-        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values'];
+        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
         const renameTable = { permittedRoles: 'roles' };
         const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
         if (toolsPanelPages) {
@@ -227,10 +142,10 @@ export function getSiteUiConfig(
             renameTable
           });
         }
-        const siteNavSection = xml.querySelector('[id="craftercms.components.GlobalNavSiteSection"] > configuration');
-        if (siteNavSection) {
-          siteNavSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          config.siteNav = applyDeserializedXMLTransforms(deserialize(siteNavSection), {
+        const launcher = xml.querySelector('[id="craftercms.components.Launcher"] > configuration');
+        if (launcher) {
+          launcher.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          config.launcher = applyDeserializedXMLTransforms(deserialize(launcher), {
             arrays,
             renameTable
           }).configuration;
@@ -241,17 +156,40 @@ export function getSiteUiConfig(
   );
 }
 
-// endregion
+const legacyToNextMenuIconMap = {
+  'fa-sitemap': 'craftercms.icons.Sites',
+  'fa-user': '@material-ui/icons/PeopleRounded',
+  'fa-users': '@material-ui/icons/SupervisedUserCircleRounded',
+  'fa-database': '@material-ui/icons/StorageRounded',
+  'fa-bars': '@material-ui/icons/SubjectRounded',
+  'fa-level-down': '@material-ui/icons/SettingsApplicationsRounded',
+  'fa-align-left': '@material-ui/icons/FormatAlignCenterRounded',
+  'fa-globe': '@material-ui/icons/PublicRounded',
+  'fa-lock': '@material-ui/icons/LockRounded',
+  'fa-key': '@material-ui/icons/VpnKeyRounded'
+};
 
-export function getGlobalMenuItems(): Observable<{ id: string; icon: string; label: string }[]> {
-  return get('/studio/api/2/ui/views/global_menu.json').pipe(pluck('response', 'menuItems'));
+export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']['items']> {
+  return get('/studio/api/2/ui/views/global_menu.json').pipe(
+    pluck('response', 'menuItems'),
+    map((items) => [
+      ...items.map((item) => ({
+        ...item,
+        icon: legacyToNextMenuIconMap[item.icon]
+          ? { id: legacyToNextMenuIconMap[item.icon] }
+          : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
+      })),
+      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.CrafterIcon' }, label: 'About' },
+      { id: 'home.globalMenu.settings', icon: { id: '@material-ui/icons/AccountCircleRounded' }, label: 'Account' }
+    ])
+  );
 }
 
-export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
+export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
   return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
 }
 
-export function getHistory(
+export function fetchHistory(
   site: string,
   path: string,
   environment: string,

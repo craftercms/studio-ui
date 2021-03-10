@@ -32,14 +32,10 @@
       </button>
     </div>
     <div ui-view>
-      <table class="site-list table table-hover">
+      <table class="site-list table table-hover" style="table-layout: fixed">
         <thead>
           <tr>
-            <th><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
-            <th>
-              <span class="sr-only">{{ 'dashboard.sites.SITE_DASHBOARD_LINK' | translate }}</span>
-            </th>
-            <th><span class="sr-only">{{ 'dashboard.sites.PREVIEW_LINK' | translate }}</span></th>
+            <th width="70%"><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
             <th><span class="sr-only">{{ 'common.EDIT' | translate }}</span></th>
             <th><span class="sr-only">{{ 'common.REMOVE_LABEL' | translate }}</span></th>
           </tr>
@@ -47,24 +43,26 @@
         <tbody>
           <tr
             id="site-row-{{site.id}}"
+            ng-click="editSite(site)"
             dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage"
             current-page="pagination"
             total-items="totalSites"
+            style="cursor: pointer"
           >
             <td class="name site-name trim" title="{{site.name ? site.name : site.id}}">
-              {{site.name ? site.name : site.id }}
-            </td>
-            <td class="preview">
-              <a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a>
-            </td>
-            <td class="dashboard">
-              <a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a>
+              <a ng-click="editSite(site)">{{site.name ? site.name : site.id}} &raquo;</a>
+              <pre
+                ng-if="site.description"
+                ng-bind="site.description"
+                ng-attr-title="{{site.description}}"
+                style="overflow: hidden; text-overflow: ellipsis; background: none; padding: 0; border: none; font-family: 'Source Sans Pro', sans-serif; font-size: 1em; white-space: pre-line"
+              ></pre>
             </td>
             <td class="remove">
               <a
                 ng-show="site.edit"
-                ng-click="editSiteData(site)"
-                class="btn btn-sm"
+                ng-click="editSiteData(site, $event)"
+                class="btn btn-sm btn-default"
                 tooltip-placement="bottom"
                 uib-tooltip="Edit"
               >
@@ -74,8 +72,8 @@
             <td class="remove">
               <a
                 ng-show="site.remove"
-                ng-click="removeSiteSites(site)"
-                class="btn btn-sm"
+                ng-click="removeSiteSites(site, $event)"
+                class="btn btn-sm btn-default"
                 tooltip-placement="bottom"
                 uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
               >

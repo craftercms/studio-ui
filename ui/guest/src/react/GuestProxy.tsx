@@ -49,8 +49,8 @@ import { forEach } from '../utils/array';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { addAnimation } from '../utils/dom';
 
-export default function GuestProxy() {
-  const draggable = useSelector<GuestState, GuestState['draggable']>((state) => state.draggable);
+export function GuestProxy() {
+  const draggable = useSelector<GuestState['draggable']>((state) => state.draggable);
   const { onEvent } = useGuestContext();
   const persistenceRef = useRef({ draggableElement: null, onEvent });
 
@@ -435,3 +435,5 @@ export default function GuestProxy() {
 
   return <></>;
 }
+
+export default GuestProxy;
