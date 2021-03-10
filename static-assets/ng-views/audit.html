@@ -203,6 +203,7 @@
                 <th>{{ 'admin.audit.SITE' | translate }}</th>
                 <th>{{ 'admin.audit.OPERATION' | translate }}</th>
                 <th>{{ 'admin.audit.TARGET' | translate }}</th>
+                <th>{{ 'admin.audit.TARGET_TYPE' | translate }}</th>
                 <th>{{ 'admin.audit.USERNAME' | translate }}</th>
                 <th>{{ 'admin.audit.NAME' | translate }}</th>
                 <th>{{ 'admin.audit.ORIGIN' | translate }}</th>
@@ -218,6 +219,7 @@
                 <td>{{log.siteName}}</td>
                 <td>{{log.operation}}</td>
                 <td class="min-cel-width wrap-content">{{log.primaryTargetValue}}</td>
+                <td class="min-cel-width">{{log.primaryTargetType}}</td>
                 <td><span class="username trim inline-block">{{log.actorId}}</span></td>
                 <td>{{log.actorDetails}}</td>
                 <td>{{log.origin}}</td>

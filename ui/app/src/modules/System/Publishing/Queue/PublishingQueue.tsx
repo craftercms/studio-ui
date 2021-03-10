@@ -22,7 +22,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
-import { cancelPackage, fetchPublishingTargets, fetchPackages } from '../../../../services/publishing';
+import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../../../services/publishing';
 import { CurrentFilters, Package, Selected } from '../../../../models/Publishing';
 import ConfirmDropdown from '../../../../components/Controls/ConfirmDropdown';
 import FilterDropdown from '../../Sites/Create/FilterDropdown';
@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'flex-end'
   },
   secondBar: {
-    background: '#f9f9f9',
+    background: theme.palette.divider,
     padding: '10px',
     borderBottom: '1px solid #dedede'
   },

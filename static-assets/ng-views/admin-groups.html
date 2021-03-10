@@ -26,144 +26,217 @@
           <i class="fa fa-plus-circle mr5" aria-hidden="true"></i>{{ 'admin.groups.NEW_GROUP' | translate }}
         </a>
 
-        <hr class="divider mt10 mb15"/>
-
+        <hr class="divider mt10 mb15" />
       </div>
 
       <div class="">
-        <input id="groups-search-input" data-ng-change="groups.searchGroup(q)" ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
+        <input
+          id="groups-search-input"
+          data-ng-change="groups.searchGroup(q)"
+          ng-model="q"
+          class="form-control"
+          placeholder="{{ 'common.SEARCH_LABEL' | translate }}"
+          type="text"
+        />
 
         <table class="table table-striped">
           <thead>
-          <tr>
-            <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
-            <th class="hidden-sm hidden-xs">{{ 'admin.groups.DESCRIPTION' | translate }}</th>
-            <th>{{ 'admin.groups.EDIT_MEMBERSHIP' | translate }}</th>
-          </tr>
+            <tr>
+              <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
+              <th class="hidden-sm hidden-xs">{{ 'admin.groups.DESCRIPTION' | translate }}</th>
+              <th>{{ 'admin.groups.EDIT_MEMBERSHIP' | translate }}</th>
+            </tr>
           </thead>
           <tbody>
-
-          <tr id="group-{{ group.name | nospace }}" dir-paginate="group in groupsCollection | filter:q | itemsPerPage: groups.itemsPerPage"
-              pagination-id="paginateGroups" current-page="groups.pagination.current" total-items="groups.totalLogs">
-            <td class="group-name trim">{{group.name}}</td>
-            <td class="group-description hidden-sm hidden-xs">{{group.desc}}</td>
-            <td>
-              <a ng-click="groups.viewGroup(group)"
-                 class="btn btn-default btn-sm edit"
-                 tooltip-placement="bottom"
-                 uib-tooltip="{{'common.EDIT' | translate}}">
-                <i class="fa fa-pencil"></i>
-              </a>
-            </td>
-            <td>
-              <a ng-click="removeGroup(group)"
-                 class="btn btn-default btn-sm remove"
-                 tooltip-placement="bottom"
-                 uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
-                <i class="fa fa-trash-o"></i>
-              </a>
-            </td>
-          </tr>
+            <tr
+              id="group-{{ group.name | nospace }}"
+              dir-paginate="group in groupsCollection | filter:q | itemsPerPage: groups.itemsPerPage"
+              pagination-id="paginateGroups"
+              current-page="groups.pagination.current"
+              total-items="groups.totalLogs"
+            >
+              <td class="group-name trim">{{group.name}}</td>
+              <td class="group-description hidden-sm hidden-xs">{{group.desc}}</td>
+              <td>
+                <a
+                  ng-click="groups.viewGroup(group)"
+                  class="btn btn-default btn-sm edit"
+                  tooltip-placement="bottom"
+                  uib-tooltip="{{'common.EDIT' | translate}}"
+                >
+                  <i class="fa fa-pencil"></i>
+                </a>
+              </td>
+              <td>
+                <a
+                  ng-click="removeGroup(group)"
+                  class="btn btn-default btn-sm remove"
+                  tooltip-placement="bottom"
+                  uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
+                >
+                  <i class="fa fa-trash-o"></i>
+                </a>
+              </td>
+            </tr>
           </tbody>
         </table>
 
         <div class="global-menu-pagination-wrapper">
           <div class="mr10">
             <label class="mr5">{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
-            <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
-                   min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
+            <input
+              class="audit-number-logs"
+              type="number"
+              name="input"
+              ng-model="groups.itemsPerPage"
+              min="1"
+              max="100"
+              ng-model-options="{debounce: debounceDelay}"
+              only-digits
+            />
           </div>
-          <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+          <dir-pagination-controls
+            pagination-id="paginateGroups"
+            on-page-change="groups.pageChanged(newPageNumber)"
+          ></dir-pagination-controls>
         </div>
       </div>
     </div>
     <div ng-show="groups.groupView" class="col-md-12 single-group-view">
       <h2 class="page-header">
         {{ groups.selectedGroup.name }}
-        <button class="close mt10" ng-click="groups.groupView = false">« {{ 'admin.groups.BACK_TO_GROUPS'| translate }}</button>
+        <button class="close mt10" ng-click="groups.groupView = false">
+          « {{ 'admin.groups.BACK_TO_GROUPS'| translate }}
+        </button>
       </h2>
       <form class="form-horizontal" style="max-width: 600px;">
         <div class="form-group">
-          <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;">{{ 'admin.groups.GROUP_NAME'| translate }}</label>
+          <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;"
+            >{{ 'admin.groups.GROUP_NAME'| translate }}</label
+          >
           <div class="col-sm-9">
-            <input type="text" class="form-control" id="inputPassword3" disabled="true" ng-model="groups.selectedGroup.name">
+            <input
+              type="text"
+              class="form-control"
+              id="inputPassword3"
+              disabled="true"
+              ng-model="groups.selectedGroup.name"
+            />
           </div>
         </div>
         <div class="form-group">
-          <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
+          <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;"
+            >{{ 'admin.groups.DESCRIPTION' | translate }}</label
+          >
           <div class="col-sm-9">
-            <input type="text" class="form-control" id="inputPassword3" ng-model="groups.selectedGroup.desc">
+            <input type="text" class="form-control" id="inputPassword3" ng-model="groups.selectedGroup.desc" />
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" ng-click="editGroup(groups.selectedGroup)" class="btn btn-default pull-right text-capitalize">{{ 'common.SAVE' | translate }}</button>
+            <button
+              type="submit"
+              ng-click="editGroup(groups.selectedGroup)"
+              class="btn btn-primary pull-right text-capitalize"
+            >
+              {{ 'common.SAVE' | translate }}
+            </button>
           </div>
         </div>
       </form>
-      <hr>
+      <hr />
 
       <h3>{{ 'admin.groups.ADD_NEW_MEMBERS' | translate }}</h3>
 
-      <tags-input id="users-tags-input"
-                  class="tags-input"
-                  ng-model="groups.usersToAdd"
-                  add-on-paste="true"
-                  placeholder="Type names, usernames, email addresses"
-                  display-property="username"
-                  template="tag-template"
-                  add-on-comma="true"
-                  min-length="1"
-                  on-tag-adding="validateTag($tag)">
-        <auto-complete class="auto-complete"
-                       source="loadTags($query)"
-                       min-length="1"
-                       load-on-down-arrow="true"
-                       template="autocomplete-template"></auto-complete>
+      <tags-input
+        id="users-tags-input"
+        class="tags-input"
+        ng-model="groups.usersToAdd"
+        add-on-paste="true"
+        placeholder="Type names, usernames, email addresses"
+        display-property="username"
+        template="tag-template"
+        add-on-comma="true"
+        min-length="1"
+        on-tag-adding="validateTag($tag)"
+      >
+        <auto-complete
+          class="auto-complete"
+          source="loadTags($query)"
+          min-length="1"
+          load-on-down-arrow="true"
+          template="autocomplete-template"
+        ></auto-complete>
       </tags-input>
 
       <div class="actions clearfix">
-        <a id="add-members-btn" class="btn btn-default" ng-disabled="groups.usersToAdd.length <= 0" ng-click="groups.addUsers()" role="button" style="float: right;">{{ 'admin.groups.ADD_MEMBERS' | translate }}</a>
+        <a
+          id="add-members-btn"
+          class="btn btn-default"
+          ng-disabled="groups.usersToAdd.length <= 0"
+          ng-click="groups.addUsers()"
+          role="button"
+          style="float: right;"
+          >{{ 'admin.groups.ADD_MEMBERS' | translate }}</a
+        >
       </div>
 
-      <hr>
+      <hr />
 
       <h3>{{ 'admin.groups.MEMBERS' | translate }}</h3>
 
       <table st-table="displayedCollection" st-safe-src="groups.usersFromGroupCollection" class="table table-striped">
         <thead>
-        <tr>
-          <th colspan="12">
-            <input st-search="" id="groups-members-search-input" data-ng-change="groups.searchGroupMembers(mq)" ng-model="mq" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
-            <button ng-hide="true" id="groups-members-clear-filter" type="button" st-reset-search></button>
-          </th>
-        </tr>
-        <tr>
-          <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
-          <th>Email</th>
-          <th></th>
-        </tr>
+          <tr>
+            <th colspan="12">
+              <input
+                st-search=""
+                id="groups-members-search-input"
+                data-ng-change="groups.searchGroupMembers(mq)"
+                ng-model="mq"
+                class="form-control"
+                placeholder="{{ 'common.SEARCH_LABEL' | translate }}"
+                type="text"
+              />
+              <button ng-hide="true" id="groups-members-clear-filter" type="button" st-reset-search></button>
+            </th>
+          </tr>
+          <tr>
+            <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
+            <th>Email</th>
+            <th></th>
+          </tr>
         </thead>
         <tbody>
-        <tr id="member-{{user.username}}" dir-paginate="user in displayedCollection | itemsPerPage: groups.members.itemsPerPage" current-page="groups.members.pagination.current"
-            pagination-id="paginateMembers" total-items="groups.members.totalLogs">
-          <td><span class="username trim inline-block">{{user.username}}</span></td>
-          <td>{{user.email}}</td>
-          <td>
-            <a ng-click="removeUserFromGroup(user, groups.selectedGroup)"
-               class="btn btn-default btn-sm"
-               tooltip-placement="bottom"
-               uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
-              <i class="glyphicon glyphicon-trash"></i>
-            </a>
-          </td>
-        </tr>
+          <tr
+            id="member-{{user.username}}"
+            dir-paginate="user in displayedCollection | itemsPerPage: groups.members.itemsPerPage"
+            current-page="groups.members.pagination.current"
+            pagination-id="paginateMembers"
+            total-items="groups.members.totalLogs"
+          >
+            <td><span class="username trim inline-block">{{user.username}}</span></td>
+            <td>{{user.email}}</td>
+            <td>
+              <a
+                ng-click="removeUserFromGroup(user, groups.selectedGroup)"
+                class="btn btn-default btn-sm"
+                tooltip-placement="bottom"
+                uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
+              >
+                <i class="glyphicon glyphicon-trash"></i>
+              </a>
+            </td>
+          </tr>
         </tbody>
       </table>
 
       <h5 ng-show="groups.members.getMembersError">{{ groups.members.getMembersError }}</h5>
 
-      <dir-pagination-controls pagination-id="paginateMembers" on-page-change="groups.members.pageChanged(newPageNumber)"></dir-pagination-controls>
+      <dir-pagination-controls
+        pagination-id="paginateMembers"
+        on-page-change="groups.members.pageChanged(newPageNumber)"
+      ></dir-pagination-controls>
     </div>
   </div>
 </div>

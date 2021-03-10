@@ -22,7 +22,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import palette from '../../styles/palette';
 import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles(() =>
@@ -39,8 +38,7 @@ const useStyles = makeStyles(() =>
       }
     },
     helperText: {
-      padding: '10px 16px 10px 16px',
-      background: palette.gray.light0
+      padding: '10px 16px 10px 16px'
     }
   })
 );

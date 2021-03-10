@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
   authBox: {
     padding: '10px',
-    background: '#F2F2F2',
+    background: theme.palette.background.paper,
     borderRadius: '5px',
     marginLeft: '30px',
     display: 'flex',
