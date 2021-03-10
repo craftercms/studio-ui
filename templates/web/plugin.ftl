@@ -65,7 +65,7 @@
 
         const script = document.createElement('script');
 
-        script.src = '/studio/api/2/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}&pluginId=${pPluginId}';
+        script.src = '/studio/api/2/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}';
 
         if(pPluginId !== '') {
           script.src += '&pluginId=${pPluginId}';
