@@ -365,7 +365,9 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
 
   useEffect(() => {
     isMounted.current = true;
-    return () => (isMounted.current = false);
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   if (!node) {

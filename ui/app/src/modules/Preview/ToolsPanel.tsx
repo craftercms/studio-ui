@@ -131,7 +131,7 @@ export default function ToolsPanel() {
           }
         }}
       >
-        <ToolsPaneBody resource={resource} pages={pages} />
+        <ToolsPaneBody resource={resource} pageStack={pages} />
       </SuspenseWithEmptyState>
     </ResizeableDrawer>
   );
@@ -139,16 +139,15 @@ export default function ToolsPanel() {
 
 interface ToolsPaneBodyProps {
   resource: Resource<WidgetDescriptor[]>;
-  pages: WidgetDescriptor[];
+  pageStack: WidgetDescriptor[];
 }
 
 function ToolsPaneBody(props: ToolsPaneBodyProps) {
-  const stack = props.resource.read();
+  const root = props.resource.read();
   const site = useActiveSiteId();
+  const { pageStack } = props;
   const { rolesBySite } = useActiveUser();
-  return (
-    <>{renderWidgets(props.pages.length ? props.pages.slice(props.pages.length - 1) : stack, rolesBySite[site])}</>
-  );
+  return <>{renderWidgets(pageStack.length ? pageStack.slice(props.pageStack.length - 1) : root, rolesBySite[site])}</>;
 }
 
 // TODO: Move this to a better place.

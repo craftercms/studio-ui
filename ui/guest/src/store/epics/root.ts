@@ -22,7 +22,7 @@ import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../classes/ContentController';
-import { merge, NEVER, of, Subject } from 'rxjs';
+import { interval, merge, NEVER, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
 import {
@@ -127,10 +127,27 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ignoreElements()
     );
   },
+  (action$) =>
+    action$.pipe(
+      ofType('document:dragover'),
+      tap(({ payload: { event } }) => event.preventDefault()),
+      ignoreElements()
+    ),
   // endregion
 
   // region dragleave
-  // (action$: Action$, state$: State$) => {},
+  (action$, state$) =>
+    action$.pipe(
+      ofType('dragleave', 'document:dragleave'),
+      withLatestFrom(state$),
+      filter(([, state]) => dragOk(state.status)),
+      switchMap(([{ event }]) =>
+        interval(100).pipe(
+          mapTo({ type: DESKTOP_ASSET_DRAG_ENDED }),
+          takeUntil(action$.pipe(ofType('document:dragover', 'dragover')))
+        )
+      )
+    ),
   // endregion
 
   // region drop
@@ -138,97 +155,101 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType('drop'),
       withLatestFrom(state$),
+      filter(([, state]) => dragOk(state.status) && !state.dragContext.invalidDrop),
       switchMap(([action, state]) => {
-        if (dragOk(state.status) && !state.dragContext.invalidDrop) {
-          const {
-            payload: { event, record }
-          } = action;
-          event.preventDefault();
-          event.stopPropagation();
-          const status = state.status;
-          const dragContext = state.dragContext;
-          switch (status) {
-            case EditingStatus.PLACING_DETACHED_ASSET: {
-              const { dropZone } = dragContext;
-              if (dropZone && dragContext.inZone) {
-                const record = iceRegistry.getById(dropZone.iceId);
-                contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
-              }
-              break;
+        const {
+          payload: { event, record }
+        } = action;
+        event.preventDefault();
+        event.stopPropagation();
+        const status = state.status;
+        const dragContext = state.dragContext;
+        switch (status) {
+          case EditingStatus.PLACING_DETACHED_ASSET: {
+            const { dropZone } = dragContext;
+            if (dropZone && dragContext.inZone) {
+              const record = iceRegistry.getById(dropZone.iceId);
+              contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
             }
-            case EditingStatus.SORTING_COMPONENT: {
-              if (notNullOrUndefined(dragContext.targetIndex)) {
-                moveComponent(dragContext);
-                // return of({ type: 'move_component' });
-              }
-              break;
+            break;
+          }
+          case EditingStatus.SORTING_COMPONENT: {
+            if (notNullOrUndefined(dragContext.targetIndex)) {
+              moveComponent(dragContext);
+              // return of({ type: 'move_component' });
             }
-            case EditingStatus.PLACING_NEW_COMPONENT: {
-              if (notNullOrUndefined(dragContext.targetIndex)) {
-                const { targetIndex, contentType, dropZone } = dragContext;
-                const record = iceRegistry.getById(dropZone.iceId);
-
-                setTimeout(() => {
-                  contentController.insertComponent(
-                    record.modelId,
-                    record.fieldId,
-                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                    contentType
-                  );
+            break;
+          }
+          case EditingStatus.PLACING_NEW_COMPONENT: {
+            if (notNullOrUndefined(dragContext.targetIndex)) {
+              const { targetIndex, contentType, dropZone } = dragContext;
+              const record = iceRegistry.getById(dropZone.iceId);
+              setTimeout(() => {
+                contentController.insertComponent(
+                  record.modelId,
+                  record.fieldId,
+                  record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                  contentType
+                );
+              });
+              // return of({ type: 'insert_component' });
+            }
+            break;
+          }
+          case EditingStatus.PLACING_DETACHED_COMPONENT: {
+            if (notNullOrUndefined(dragContext.targetIndex)) {
+              const { targetIndex, instance, dropZone } = dragContext;
+              const record = iceRegistry.getById(dropZone.iceId);
+              setTimeout(() => {
+                contentController.insertInstance(
+                  record.modelId,
+                  record.fieldId,
+                  record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                  instance
+                );
+              });
+              // return of({ type: 'insert_instance' });
+            }
+            break;
+          }
+          case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
+            if (dragContext.inZone) {
+              const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
+              const stream$ = new Subject();
+              const reader = new FileReader();
+              reader.onload = ((aImg: HTMLImageElement) => (event) => {
+                post(DESKTOP_ASSET_DROP, {
+                  dataUrl: event.target.result,
+                  name: file.name,
+                  type: file.type,
+                  record: reversePluckProps(record, 'element')
                 });
-                // return of({ type: 'insert_component' });
-              }
-              break;
-            }
-            case EditingStatus.PLACING_DETACHED_COMPONENT: {
-              if (notNullOrUndefined(dragContext.targetIndex)) {
-                const { targetIndex, instance, dropZone } = dragContext;
-                const record = iceRegistry.getById(dropZone.iceId);
-
+                aImg.src = event.target.result;
+                // Timeout gives the browser a chance to render the image so later rect
+                // calculations are working with the updated paint.
                 setTimeout(() => {
-                  contentController.insertInstance(
-                    record.modelId,
-                    record.fieldId,
-                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                    instance
-                  );
+                  stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
+                  stream$.next({ type: DESKTOP_ASSET_DRAG_ENDED });
+                  stream$.complete();
+                  stream$.unsubscribe();
                 });
-                // return of({ type: 'insert_instance' });
-              }
-              break;
+              })(record.element as HTMLImageElement);
+              reader.readAsDataURL(file);
+              return stream$;
             }
-            case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
-              if (dragContext.inZone) {
-                const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
-                const stream$ = new Subject();
-                const reader = new FileReader();
-                reader.onload = ((aImg: HTMLImageElement) => (event) => {
-                  post(DESKTOP_ASSET_DROP, {
-                    dataUrl: event.target.result,
-                    name: file.name,
-                    type: file.type,
-                    record: reversePluckProps(record, 'element')
-                  });
-                  aImg.src = event.target.result;
-                  // Timeout gives the browser a chance to render the image so later rect
-                  // calculations are working with the updated paint.
-                  setTimeout(() => {
-                    stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
-                    stream$.complete();
-                    stream$.unsubscribe();
-                  });
-                })(record.element as HTMLImageElement);
-                reader.readAsDataURL(file);
-                return stream$;
-              }
-              break;
-            }
+            break;
           }
         }
-        return NEVER;
+        return of({ type: DESKTOP_ASSET_DRAG_ENDED });
       })
     );
   },
+  (action$) =>
+    action$.pipe(
+      ofType('document:drop'),
+      tap(({ payload: { event } }) => event.preventDefault()),
+      switchMap(() => of({ type: DESKTOP_ASSET_DRAG_ENDED }))
+    ),
   // endregion
 
   // region dragend
@@ -236,13 +257,11 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType('dragend'),
       withLatestFrom(state$),
-      switchMap(([action, state]) => {
-        if (dragOk(state.status)) {
-          action.payload.event.stopPropagation();
-          post({ type: INSTANCE_DRAG_ENDED });
-          return of({ type: 'computed_dragend' });
-        }
-        return NEVER;
+      filter(([, state]) => dragOk(state.status)),
+      switchMap(([action]) => {
+        action.payload.event.stopPropagation();
+        post({ type: INSTANCE_DRAG_ENDED });
+        return of({ type: 'computed_dragend' });
       })
     );
   },

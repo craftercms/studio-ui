@@ -24,7 +24,6 @@ import {
   fetchSiteProperties,
   getMyPermissions
 } from '../../services/users';
-import { NEVER } from 'rxjs';
 import {
   deleteProperties as deletePropertiesAction,
   deletePropertiesComplete,
