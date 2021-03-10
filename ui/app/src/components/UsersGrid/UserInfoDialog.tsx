@@ -33,6 +33,10 @@ import { update } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import clsx from 'clsx';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = makeStyles(() =>
   createStyles({
@@ -54,12 +58,26 @@ const styles = makeStyles(() =>
       padding: 0
     },
     section: {
-      padding: '30px 40px'
+      padding: '30px 40px',
+      '&.noPaddingBottom': {
+        paddingBottom: 0
+      }
     },
     row: {
       display: 'flex',
       padding: '15px 0',
       alignItems: 'center'
+    },
+    formActions: {
+      display: 'flex',
+      paddingBottom: '20px',
+      '&.hidden': {
+        visibility: 'hidden'
+      },
+      '& button:first-child': {
+        marginLeft: 'auto',
+        marginRight: '10px'
+      }
     },
     label: {
       flexBasis: '180px'
@@ -96,9 +114,12 @@ interface UserInfoDialogProps {
 }
 
 export function UserInfoDialog(props: UserInfoDialogProps) {
-  const { open, onClose } = props;
+  const { open, onClose, onUserEdited } = props;
   const [editMode, setEditMode] = useState(false);
   const [user, setUser] = useSpreadState(null);
+  const [lastSavedUser, setLastSavedUser] = useState(null);
+  const [inProgress, setInProgress] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   useEffect(() => {
@@ -109,13 +130,23 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
   const classes = styles();
 
   const onInputChange = (value) => {
+    setDirty(true);
     setUser(value);
   };
 
-  const onInputBlur = () => {
-    if (!editMode || JSON.stringify(user) === JSON.stringify(props.user)) {
+  const onCancelForm = () => {
+    if (lastSavedUser) {
+      setUser(lastSavedUser);
+    } else {
+      setUser(props.user);
+    }
+  };
+
+  const onSave = () => {
+    if (!editMode) {
       return;
     }
+    setInProgress(true);
     update(user).subscribe(
       () => {
         dispatch(
@@ -123,12 +154,15 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
             message: formatMessage(translations.userUpdated)
           })
         );
+        setDirty(false);
+        setInProgress(false);
+        setLastSavedUser(user);
+        onUserEdited();
       },
       ({ response }) => {
         dispatch(showErrorDialog({ error: response }));
       }
     );
-    console.log();
   };
 
   return (
@@ -155,7 +189,7 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
       </header>
       <Divider />
       <DialogBody className={classes.body}>
-        <section className={classes.section}>
+        <section className={clsx(classes.section, 'noPaddingBottom')}>
           <Typography variant="subtitle1" className={classes.sectionTitle}>
             <FormattedMessage id="userInfoDialog.userDetails" defaultMessage="User Details" />
           </Typography>
@@ -166,7 +200,6 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ userName: e.currentTarget.value })}
-                onBlur={onInputBlur}
                 value={user?.username}
                 fullWidth
                 readOnly
@@ -179,7 +212,6 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
-                onBlur={onInputBlur}
                 value={user?.firstName}
                 fullWidth
                 readOnly={!editMode}
@@ -192,7 +224,6 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
-                onBlur={onInputBlur}
                 value={user?.lastName}
                 fullWidth
                 readOnly={!editMode}
@@ -205,7 +236,6 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ email: e.currentTarget.value })}
-                onBlur={onInputBlur}
                 value={user?.email}
                 fullWidth
                 readOnly={!editMode}
@@ -221,6 +251,18 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
               <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="userInfoDialog.externallyManaged" defaultMessage="Externally managed" />
               </Typography>
+            </div>
+            <div className={clsx(classes.formActions, !editMode && 'hidden')}>
+              <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
+                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+              </SecondaryButton>
+              <PrimaryButton disabled={!dirty || inProgress} onClick={onSave}>
+                {inProgress ? (
+                  <CircularProgress size={15} />
+                ) : (
+                  <FormattedMessage id="words.save" defaultMessage="Save" />
+                )}
+              </PrimaryButton>
             </div>
           </form>
         </section>

@@ -67,16 +67,13 @@ export default function UsersGrid() {
   };
 
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<UsersGridSkeletonTable />}>
-        <UsersGridUI resource={resource} onRowClicked={onRowClicked} />
-        <UserInfoDialog
-          open={Boolean(viewUser)}
-          onClose={onUserInfoClose}
-          onUserEdited={onUserEdited}
-          user={viewUser}
-        />
-      </Suspense>
-    </ErrorBoundary>
+    <>
+      <ErrorBoundary>
+        <Suspense fallback={<UsersGridSkeletonTable />}>
+          <UsersGridUI resource={resource} onRowClicked={onRowClicked} />
+        </Suspense>
+      </ErrorBoundary>
+      <UserInfoDialog open={Boolean(viewUser)} onClose={onUserInfoClose} onUserEdited={onUserEdited} user={viewUser} />
+    </>
   );
 }
