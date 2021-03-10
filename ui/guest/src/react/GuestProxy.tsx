@@ -50,7 +50,7 @@ import { popPiece, removeLastPiece } from '../utils/string';
 import { addAnimation } from '../utils/dom';
 
 export function GuestProxy() {
-  const draggable = useSelector<GuestState, GuestState['draggable']>((state) => state.draggable);
+  const draggable = useSelector<GuestState['draggable']>((state) => state.draggable);
   const { onEvent } = useGuestContext();
   const persistenceRef = useRef({ draggableElement: null, onEvent });
 
