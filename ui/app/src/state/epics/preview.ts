@@ -17,6 +17,7 @@
 import { ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
+  goToPage,
   popToolsPanelPage,
   pushToolsPanelPage,
   setHighlightMode,
@@ -36,6 +37,7 @@ import GlobalState from '../../models/GlobalState';
 import { setClipBoard } from '../actions/content';
 import { setProperties } from '../../services/users';
 import { CrafterCMSEpic } from '../store';
+import { getSystemLink } from '../../components/LauncherSection';
 
 export default [
   (action$, state$) =>
@@ -110,6 +112,28 @@ export default [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         setStoredClipboard(state.sites.active, state.user.username, payload);
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region Go To Page
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(goToPage.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        const url = getSystemLink({
+          site: state.sites.active,
+          systemLinkId: 'preview',
+          previewChoice: state.preview.previewChoice,
+          authoringBase: state.env.authoringBase,
+          page: payload.item.previewUrl
+        });
+        if (payload.newTab) {
+          window.open(url);
+        } else {
+          window.location.href = url;
+        }
       }),
       ignoreElements()
     )

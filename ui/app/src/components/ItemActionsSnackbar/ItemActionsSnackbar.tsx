@@ -28,7 +28,7 @@ import { ContextMenuOption } from '../ContextMenu';
 export interface ItemActionsSnackbarProps {
   open: boolean;
   options: Array<ContextMenuOption>;
-  onActionClicked(id: string): void;
+  onActionClicked(id: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   append?: ReactNode;
   prepend?: ReactNode;
 }
@@ -89,7 +89,7 @@ function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
                     variant="text"
                     color="primary"
                     key={option.id}
-                    onClick={() => onActionClicked(option.id)}
+                    onClick={(e) => onActionClicked(option.id, e)}
                   >
                     <ListItemText primary={option.label} />
                   </Button>
