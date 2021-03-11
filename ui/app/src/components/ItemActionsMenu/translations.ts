@@ -25,6 +25,10 @@ export const translations = defineMessages({
     id: 'words.view',
     defaultMessage: 'View'
   },
+  viewForm: {
+    id: 'words.view',
+    defaultMessage: 'View Form'
+  },
   createContent: {
     id: 'itemMenu.newContent',
     defaultMessage: 'New Content'
@@ -48,6 +52,10 @@ export const translations = defineMessages({
   publish: {
     id: 'words.publish',
     defaultMessage: 'Publish'
+  },
+  approve: {
+    id: 'words.approve',
+    defaultMessage: 'Approve'
   },
   reject: {
     id: 'words.reject',
@@ -93,9 +101,17 @@ export const translations = defineMessages({
     id: 'itemMenu.editController',
     defaultMessage: 'Edit Controller'
   },
+  deleteController: {
+    id: 'itemMenu.deleteController',
+    defaultMessage: 'Delete Controller'
+  },
   editTemplate: {
     id: 'itemMenu.editTemplate',
     defaultMessage: 'Edit Template'
+  },
+  deleteTemplate: {
+    id: 'itemMenu.deleteTemplate',
+    defaultMessage: 'Delete Template'
   },
   createTemplate: {
     id: 'itemMenu.createTemplate',
@@ -130,5 +146,17 @@ export const translations = defineMessages({
   unlock: {
     id: 'words.unlock',
     defaultMessage: 'Unlock'
+  },
+  preview: {
+    id: 'words.preview',
+    defaultMessage: 'Preview'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
+  },
+  bulkPublish: {
+    id: 'itemMenu.bulkPublish',
+    defaultMessage: 'Bulk Publish'
   }
 });

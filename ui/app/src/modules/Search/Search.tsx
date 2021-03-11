@@ -380,7 +380,7 @@ export default function Search(props: SearchProps) {
         const path = selected[0];
         const item = items.byPath?.[path];
         if (item) {
-          const options = generateSingleItemOptions(item, permissions[path], formatMessage);
+          const options = generateSingleItemOptions(item, formatMessage);
           return options[0].filter((option) => actionsToBeShown.includes(option.id));
         }
       } else {

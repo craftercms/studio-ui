@@ -163,7 +163,6 @@ export function AddressBar(props: AddressBarProps) {
   const { site, url = '', sites = [], item, onSiteChange = foo, onUrlChange = foo, onRefresh = foo } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
-  const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
 
@@ -188,8 +187,7 @@ export function AddressBar(props: AddressBarProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const onMenuItemClicked = (option: string) =>
     itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
-  const permissions = usePermissionsByPath()?.[path];
-  const actions = generateSingleItemOptions(item, permissions, formatMessage)?.flatMap((options) => options);
+  const actions = generateSingleItemOptions(item, formatMessage)?.flatMap((options) => options);
 
   return (
     <>

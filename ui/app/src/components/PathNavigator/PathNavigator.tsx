@@ -45,7 +45,7 @@ import {
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
 import ItemActionsMenu from '../ItemActionsMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import { completeDetailedItem } from '../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
 import { fetchContentXML } from '../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';
@@ -363,7 +363,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
       path = withIndex(state.currentPath);
     }
     dispatch(completeDetailedItem({ path }));
-    dispatch(fetchUserPermissions({ path }));
     setItemMenu({
       path,
       anchorEl: element,
@@ -373,7 +372,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
     dispatch(completeDetailedItem({ path: item.path }));
-    dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
       anchorEl: element,
