@@ -479,6 +479,15 @@ $dark-mode-input-border-focus: #007aff;
     }
   }
 
+  // sites-view
+  .sites-view {
+    .site-name {
+      pre {
+        color: $dark-mode-font-color;
+      }
+    }
+  }
+
   // publishing-view
   .publishing-view {
     h2,

@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
-import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../classes/ICERegistry';
 import { contentTypes$, flushRequestedPaths } from '../classes/ContentController';
 import * as elementRegistry from '../classes/ElementRegistry';
@@ -43,7 +43,6 @@ import {
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
@@ -459,7 +458,6 @@ function Guest(props: GuestProps) {
               }}
             />
           ))}
-          {/* prettier-ignore */}
           {[
             EditingStatus.SORTING_COMPONENT,
             EditingStatus.PLACING_NEW_COMPONENT,

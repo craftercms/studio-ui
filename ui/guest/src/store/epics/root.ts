@@ -59,15 +59,16 @@ import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
-  function multiEventPropagationStopperEpic(action$: MouseEventActionObservable, state$: GuestStateObservable) {
-    return action$.pipe(
+  // region Multi-event propagation stopper epic
+  (action$: MouseEventActionObservable, state$: GuestStateObservable) =>
+    action$.pipe(
       ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
       filter((args) => args[1].status === EditingStatus.LISTENING),
       tap(([action]) => action.payload.event.stopPropagation()),
       ignoreElements()
-    );
-  },
+    ),
+  // endregion
 
   // region mouseover
   // Propagation stopped by multiEventPropagationStopperEpic
@@ -98,6 +99,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
           const e = unwrapEvent<DragEvent>(event);
           e.dataTransfer.setData('text/plain', `${record.id}`);
+          // noinspection CssInvalidHtmlTagReference
           const image = document.querySelector('craftercms-dragged-element');
           e.dataTransfer.setDragImage(image, 20, 20);
           return initializeDragSubjects(state$);
@@ -334,7 +336,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region computed_dragend
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable) => {
     return action$.pipe(
       ofType('computed_dragend'),
       tap(() => destroyDragSubjects()),
@@ -478,7 +480,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType(COMPONENT_DRAG_STARTED),
       withLatestFrom(state$),
-      switchMap(([action, state]) => {
+      switchMap(([, state]) => {
         const contentType = state.dragContext.contentType;
         if (isNullOrUndefined(contentType.id)) {
           console.error('No contentTypeId found for this drag instance.');
@@ -506,7 +508,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType(COMPONENT_INSTANCE_DRAG_STARTED),
       withLatestFrom(state$),
-      switchMap(([action, state]) => {
+      switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
@@ -533,7 +535,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType(ASSET_DRAG_STARTED),
       withLatestFrom(state$),
-      switchMap(([action, state]) => {
+      switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged.path)) {
           console.error('No path found for this drag asset.');
         } else {
@@ -550,7 +552,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType(DESKTOP_ASSET_DRAG_STARTED),
       withLatestFrom(state$),
-      switchMap(([action, state]) => {
+      switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged)) {
           console.error('No file found for this drag asset.');
         } else {

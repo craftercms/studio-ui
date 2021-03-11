@@ -64,8 +64,7 @@ import {
   showDeleteItemSuccessNotification,
   showEditItemSuccessNotification,
   showPublishItemSuccessNotification,
-  showRejectItemSuccessNotification,
-  showSystemNotification
+  showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
   duplicateWithPolicyValidation,
@@ -81,23 +80,26 @@ import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
   hasApprovePublishAction,
+  hasChangeTypeAction,
+  hasContentDeleteAction,
   hasCopyAction,
   hasCreateAction,
   hasCreateFolderAction,
   hasCutAction,
-  hasDeleteAction,
   hasDeleteControllerAction,
   hasDeleteTemplateAction,
-  hasDependenciesAction,
   hasDuplicateAction,
   hasEditAction,
   hasEditControllerAction,
   hasEditTemplateAction,
-  hasHistoryAction,
+  hasGetDependenciesAction,
   hasPasteAction,
+  hasPublishAction,
+  hasPublishRejectAction,
+  hasPublishRequestAction,
   hasReadAction,
+  hasReadHistoryAction,
   hasRenameAction,
-  hasRequestPublishAction,
   hasSchedulePublishAction,
   hasUploadAction
 } from './content';
@@ -133,9 +135,9 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'createFolder',
     label: translations.createFolder
   },
-  renameFolder: {
-    id: 'renameFolder',
-    label: translations.renameFolder
+  rename: {
+    id: 'rename',
+    label: translations.rename
   },
   delete: {
     id: 'delete',
@@ -185,6 +187,10 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'publish',
     label: translations.publish
   },
+  publishRequest: {
+    id: 'publishRequest',
+    label: translations.publishRequest
+  },
   approve: {
     id: 'approve',
     label: translations.approve
@@ -196,10 +202,6 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   cancel: {
     id: 'cancel',
     label: translations.cancel
-  },
-  bulkPublish: {
-    id: 'bulkPublish',
-    label: translations.bulkPublish
   },
   history: {
     id: 'history',
@@ -287,6 +289,28 @@ export function generateSingleItemOptions(
       sectionA.push(menuOptions.codeEditor);
     }
   }
+  if (hasCreateAction(item.availableActions)) {
+    sectionA.push(menuOptions.createContent);
+  }
+  if (hasCreateFolderAction(item.availableActions)) {
+    sectionA.push(menuOptions.createFolder);
+  }
+  if (hasContentDeleteAction(item.availableActions)) {
+    sectionA.push(menuOptions.delete);
+  }
+  if (hasGetDependenciesAction(item.availableActions)) {
+    sectionA.push(menuOptions.dependencies);
+  }
+  if (hasRenameAction(item.availableActions)) {
+    sectionA.push(menuOptions.rename);
+  }
+  if (hasReadHistoryAction(item.availableActions)) {
+    sectionA.push(menuOptions.history);
+  }
+  if (hasChangeTypeAction(item.availableActions)) {
+    sectionA.push(menuOptions.changeContentType);
+  }
+  // TODO: Preview....
   if (hasReadAction(item.availableActions)) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
@@ -295,24 +319,6 @@ export function generateSingleItemOptions(
     } else {
       sectionA.push(menuOptions.viewCodeEditor);
     }
-  }
-  if (hasCreateAction(item.availableActions)) {
-    sectionA.push(menuOptions.createContent);
-  }
-  if (hasCreateFolderAction(item.availableActions)) {
-    sectionA.push(menuOptions.createFolder);
-  }
-  if (hasDeleteAction(item.availableActions)) {
-    sectionA.push(menuOptions.delete);
-  }
-  if (hasDependenciesAction(item.availableActions)) {
-    sectionA.push(menuOptions.dependencies);
-  }
-  if (hasRenameAction(item.availableActions)) {
-    sectionA.push(menuOptions.renameFolder);
-  }
-  if (hasHistoryAction(item.availableActions)) {
-    sectionA.push(menuOptions.history);
   }
   // endregion
 
@@ -339,14 +345,20 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
-  if (hasRequestPublishAction(item.availableActions)) {
+  if (hasPublishAction(item.availableActions)) {
     sectionC.push(menuOptions.publish);
+  }
+  if (hasPublishRequestAction(item.availableActions)) {
+    sectionC.push(menuOptions.publishRequest);
   }
   if (hasApprovePublishAction(item.availableActions)) {
     sectionC.push(menuOptions.approve);
   }
   if (hasSchedulePublishAction(item.availableActions)) {
     sectionC.push(menuOptions.schedule);
+  }
+  if (hasPublishRejectAction(item.availableActions)) {
+    sectionC.push(menuOptions.reject);
   }
   // endregion
 
@@ -504,7 +516,8 @@ export const itemActionDispatcher = ({
         );
         break;
       }
-      case 'renameFolder': {
+      case 'rename': {
+        // TODO: handle rename of different item types
         dispatch(
           showCreateFolderDialog({
             path: withoutIndex(item.path),
@@ -744,14 +757,6 @@ export const itemActionDispatcher = ({
       }
       case 'preview':
       case 'cancel':
-      case 'bulkPublish': {
-        dispatch(
-          showSystemNotification({
-            message: `${option} not implemented.`
-          })
-        );
-        break;
-      }
       default:
         break;
     }
@@ -772,29 +777,15 @@ export const itemActionDispatcher = ({
       );
       break;
     }
-    case 'schedule': {
-      const items = Array.isArray(item) ? item : [item];
-      dispatch(
-        showPublishDialog({
-          items,
-          scheduling: 'custom',
-          onSuccess: batchActions([
-            showPublishItemSuccessNotification(),
-            ...items.map((item) => reloadDetailedItem({ path: item.path })),
-            closePublishDialog(),
-            ...(onActionSuccess ? [onActionSuccess] : [])
-          ])
-        })
-      );
-      break;
-    }
     case 'approve':
-    case 'publish': {
+    case 'publish':
+    case 'schedule':
+    case 'publishRequest': {
       const items = Array.isArray(item) ? item : [item];
       dispatch(
         showPublishDialog({
           items,
-          scheduling: 'now',
+          scheduling: option === 'schedule' ? 'custom' : 'now',
           onSuccess: batchActions([
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),

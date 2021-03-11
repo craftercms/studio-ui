@@ -37,9 +37,9 @@ export const translations = defineMessages({
     id: 'itemMenu.createFolder',
     defaultMessage: 'New Folder'
   },
-  renameFolder: {
-    id: 'itemMenu.renameFolder',
-    defaultMessage: 'Rename Folder'
+  rename: {
+    id: 'words.rename',
+    defaultMessage: 'Rename'
   },
   changeContentType: {
     id: 'itemMenu.changeContentType',
@@ -52,6 +52,10 @@ export const translations = defineMessages({
   publish: {
     id: 'words.publish',
     defaultMessage: 'Publish'
+  },
+  publishRequest: {
+    id: 'itemMenu.requestPublish',
+    defaultMessage: 'Request Publish'
   },
   approve: {
     id: 'words.approve',
@@ -154,9 +158,5 @@ export const translations = defineMessages({
   cancel: {
     id: 'words.cancel',
     defaultMessage: 'Cancel'
-  },
-  bulkPublish: {
-    id: 'itemMenu.bulkPublish',
-    defaultMessage: 'Bulk Publish'
   }
 });
