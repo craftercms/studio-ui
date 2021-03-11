@@ -1308,10 +1308,11 @@
             var removeProp = false;
             var addProp = false;
             for (var i = 0; i < permissions.length; i++) {
-              if (permissions[i] === 'delete') {
-                addingRemoveProperty(siteId);
-                removeProp = true;
-              }
+              // TODO: Enable this logic when the site_delete permission is added in the BE
+              // if (permissions[i] === 'site_delete') {
+              addingRemoveProperty(siteId);
+              removeProp = true;
+              // }
               if (permissions[i] === 'edit_site') {
                 addingEditProperty(siteId);
                 addProp = true;
