@@ -3070,7 +3070,7 @@ var nodeOpen = false,
       getQuickCreateURL: '/api/2/content/list_quick_create_content.json',
 
       // Plugin
-      getPluginURL: '/api/2/plugin/file',
+      getPluginURL: '/1/plugin/file',
 
       /**
        * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor

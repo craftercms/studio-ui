@@ -499,7 +499,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 CStudioAuthoring.Module.requireModule(
                   module.plugin ? module.plugin.name : module.name,
                   module.plugin
-                    ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${
+                    ? `/1/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${
                         module.plugin.type
                       }&name=${module.plugin.name || module.name}&filename=${module.plugin.file}${
                         module.plugin.pluginId ? `&pluginId=${module.plugin.pluginId}` : ''

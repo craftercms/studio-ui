@@ -84,7 +84,7 @@ export function buildFileUrl(
     file = builder.file;
     id = builder.id;
   }
-  let url = `/studio/api/2/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? DEFAULT_FILE_NAME}`;
+  let url = `/studio/1/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? DEFAULT_FILE_NAME}`;
 
   if (id && id !== '') {
     url += `&pluginId=${id}`;
