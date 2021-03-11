@@ -25,27 +25,27 @@ import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
-  APPROVE_ACTION_MASK,
-  APPROVE_PUBLISH_ACTION_MASK,
-  COPY_ACTION_MASK,
-  CREATE_ACTION_MASK,
-  CREATE_FOLDER_ACTION_MASK,
-  CUT_ACTION_MASK,
-  DELETE_ACTION_MASK,
-  DELETE_CONTROLLER_ACTION_MASK,
-  DELETE_TEMPLATE_ACTION_MASK,
-  DEPENDENCIES_ACTION_MASK,
-  DUPLICATE_ACTION_MASK,
-  EDIT_ACTION_MASK,
-  EDIT_CONTROLLER_ACTION_MASK,
-  EDIT_TEMPLATE_ACTION_MASK,
-  HISTORY_ACTION_MASK,
-  PASTE_ACTION_MASK,
-  READ_ACTION_MASK,
-  RENAME_ACTION_MASK,
-  REQUEST_PUBLISH_ACTION_MASK,
-  REVERT_ACTION_MASK,
-  SCHEDULE_PUBLISH_ACTION_MASK,
+  PUBLISH_MASK,
+  PUBLISH_APPROVE_MASK,
+  CONTENT_COPY_MASK,
+  CONTENT_CREATE_MASK,
+  FOLDER_CREATE_MASK,
+  CONTENT_CUT_MASK,
+  CONTENT_DELETE_MASK,
+  CONTENT_DELETE_CONTROLLER_MASK,
+  CONTENT_DELETE_TEMPLATE_MASK,
+  CONTENT_GET_DEPENDENCIES_ACTION_MASK,
+  CONTENT_DUPLICATE_MASK,
+  CONTENT_EDIT_MASK,
+  CONTENT_EDIT_CONTROLLER_MASK,
+  CONTENT_EDIT_TEMPLATE_MASK,
+  CONTENT_READ_VERSION_HISTORY_MASK,
+  CONTENT_PASTE_MASK,
+  READ_MASK,
+  CONTENT_RENAME_MASK,
+  PUBLISH_REQUEST_MASK,
+  CONTENT_REVERT_MASK,
+  PUBLISH_SCHEDULE_MASK,
   STATE_MASK_DELETED_MASK,
   STATE_MASK_IN_WORKFLOW_MASK,
   STATE_MASK_LIVE_MASK,
@@ -59,7 +59,9 @@ import {
   STATE_MASK_TRANSLATION_IN_PROGRESS_MASK,
   STATE_MASK_TRANSLATION_PENDING_MASK,
   STATE_MASK_TRANSLATION_UP_TO_DATE_MASK,
-  UPLOAD_ACTION_MASK
+  CONTENT_UPLOAD_MASK,
+  CONTENT_CHANGE_TYPE_MASK,
+  PUBLISH_REJECT_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
 
@@ -647,25 +649,27 @@ export const createItemStateMap = (status: number) => {
   };
 };
 
-export const hasReadAction = (value: number) => Boolean(value & READ_ACTION_MASK);
-export const hasCreateAction = (value: number) => Boolean(value & CREATE_ACTION_MASK);
-export const hasEditAction = (value: number) => Boolean(value & EDIT_ACTION_MASK);
-export const hasDeleteAction = (value: number) => Boolean(value & DELETE_ACTION_MASK);
-export const hasCutAction = (value: number) => Boolean(value & CUT_ACTION_MASK);
-export const hasCopyAction = (value: number) => Boolean(value & COPY_ACTION_MASK);
-export const hasPasteAction = (value: number) => Boolean(value & PASTE_ACTION_MASK);
-export const hasRenameAction = (value: number) => Boolean(value & RENAME_ACTION_MASK);
-export const hasDuplicateAction = (value: number) => Boolean(value & DUPLICATE_ACTION_MASK);
-export const hasEditControllerAction = (value: number) => Boolean(value & EDIT_CONTROLLER_ACTION_MASK);
-export const hasEditTemplateAction = (value: number) => Boolean(value & EDIT_TEMPLATE_ACTION_MASK);
-export const hasHistoryAction = (value: number) => Boolean(value & HISTORY_ACTION_MASK);
-export const hasDependenciesAction = (value: number) => Boolean(value & DEPENDENCIES_ACTION_MASK);
-export const hasApproveAction = (value: number) => Boolean(value & APPROVE_ACTION_MASK);
-export const hasUploadAction = (value: number) => Boolean(value & UPLOAD_ACTION_MASK);
-export const hasRevertAction = (value: number) => Boolean(value & REVERT_ACTION_MASK);
-export const hasCreateFolderAction = (value: number) => Boolean(value & CREATE_FOLDER_ACTION_MASK);
-export const hasDeleteControllerAction = (value: number) => Boolean(value & DELETE_CONTROLLER_ACTION_MASK);
-export const hasDeleteTemplateAction = (value: number) => Boolean(value & DELETE_TEMPLATE_ACTION_MASK);
-export const hasRequestPublishAction = (value: number) => Boolean(value & REQUEST_PUBLISH_ACTION_MASK);
-export const hasApprovePublishAction = (value: number) => Boolean(value & APPROVE_PUBLISH_ACTION_MASK);
-export const hasSchedulePublishAction = (value: number) => Boolean(value & SCHEDULE_PUBLISH_ACTION_MASK);
+export const hasReadAction = (value: number) => Boolean(value & READ_MASK);
+export const hasCopyAction = (value: number) => Boolean(value & CONTENT_COPY_MASK);
+export const hasReadHistoryAction = (value: number) => Boolean(value & CONTENT_READ_VERSION_HISTORY_MASK);
+export const hasGetDependenciesAction = (value: number) => Boolean(value & CONTENT_GET_DEPENDENCIES_ACTION_MASK);
+export const hasPublishRequestAction = (value: number) => Boolean(value & PUBLISH_REQUEST_MASK);
+export const hasCreateAction = (value: number) => Boolean(value & CONTENT_CREATE_MASK);
+export const hasPasteAction = (value: number) => Boolean(value & CONTENT_PASTE_MASK);
+export const hasEditAction = (value: number) => Boolean(value & CONTENT_EDIT_MASK);
+export const hasRenameAction = (value: number) => Boolean(value & CONTENT_RENAME_MASK);
+export const hasCutAction = (value: number) => Boolean(value & CONTENT_CUT_MASK);
+export const hasUploadAction = (value: number) => Boolean(value & CONTENT_UPLOAD_MASK);
+export const hasDuplicateAction = (value: number) => Boolean(value & CONTENT_DUPLICATE_MASK);
+export const hasChangeTypeAction = (value: number) => Boolean(value & CONTENT_CHANGE_TYPE_MASK);
+export const hasRevertAction = (value: number) => Boolean(value & CONTENT_REVERT_MASK);
+export const hasEditControllerAction = (value: number) => Boolean(value & CONTENT_EDIT_CONTROLLER_MASK);
+export const hasEditTemplateAction = (value: number) => Boolean(value & CONTENT_EDIT_TEMPLATE_MASK);
+export const hasCreateFolderAction = (value: number) => Boolean(value & FOLDER_CREATE_MASK);
+export const hasContentDeleteAction = (value: number) => Boolean(value & CONTENT_DELETE_MASK);
+export const hasDeleteControllerAction = (value: number) => Boolean(value & CONTENT_DELETE_CONTROLLER_MASK);
+export const hasDeleteTemplateAction = (value: number) => Boolean(value & CONTENT_DELETE_TEMPLATE_MASK);
+export const hasPublishAction = (value: number) => Boolean(value & PUBLISH_MASK);
+export const hasApprovePublishAction = (value: number) => Boolean(value & PUBLISH_APPROVE_MASK);
+export const hasSchedulePublishAction = (value: number) => Boolean(value & PUBLISH_SCHEDULE_MASK);
+export const hasPublishRejectAction = (value: number) => Boolean(value & PUBLISH_REJECT_MASK);
