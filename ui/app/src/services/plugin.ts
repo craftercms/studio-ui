@@ -86,7 +86,7 @@ export function buildFileUrl(
   }
   let url = `/studio/1/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? DEFAULT_FILE_NAME}`;
 
-  if (id && id !== '') {
+  if (id) {
     url += `&pluginId=${id}`;
   }
 
@@ -107,14 +107,14 @@ export function createFileBuilder(
   type: string,
   name: string,
   file: string = DEFAULT_FILE_NAME,
-  id: string = ''
+  id?: string
 ): PluginFileBuilder {
   return {
     site,
     type,
     name,
     file,
-    ...(id !== '' ? { id } : {})
+    ...(id ? { id } : {})
   };
 }
 
