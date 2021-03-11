@@ -44,8 +44,6 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import StandardAction from '../../models/StandardAction';
-import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { merge, NEVER, of } from 'rxjs';

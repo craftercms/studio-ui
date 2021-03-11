@@ -45,7 +45,7 @@ import {
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
 import ItemActionsMenu from '../ItemActionsMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import { completeDetailedItem } from '../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
 import { fetchContentXML } from '../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';

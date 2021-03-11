@@ -86,6 +86,8 @@ import {
   hasCreateFolderAction,
   hasCutAction,
   hasDeleteAction,
+  hasDeleteControllerAction,
+  hasDeleteTemplateAction,
   hasDependenciesAction,
   hasDuplicateAction,
   hasEditAction,
@@ -138,6 +140,14 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   delete: {
     id: 'delete',
     label: translations.delete
+  },
+  deleteController: {
+    id: 'deleteController',
+    label: translations.deleteController
+  },
+  deleteTemplate: {
+    id: 'deleteTemplate',
+    label: translations.deleteTemplate
   },
   changeContentType: {
     id: 'changeContentType',
@@ -262,8 +272,6 @@ export function generateSingleItemOptions(
 
   const type = item.systemType;
   const isImage = item.mimeType?.startsWith('image/');
-  const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) => item.path.includes(str));
-  const isFolder = item.systemType === 'folder';
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
   const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
@@ -301,7 +309,6 @@ export function generateSingleItemOptions(
     sectionA.push(menuOptions.dependencies);
   }
   if (hasRenameAction(item.availableActions)) {
-    // isFolder??
     sectionA.push(menuOptions.renameFolder);
   }
   if (hasHistoryAction(item.availableActions)) {
@@ -327,7 +334,6 @@ export function generateSingleItemOptions(
     }
   }
   if (hasUploadAction(item.availableActions)) {
-    // isFolder && isAsset??
     sectionA.push(menuOptions.upload);
   }
   // endregion
@@ -348,8 +354,14 @@ export function generateSingleItemOptions(
   if (hasEditControllerAction(item.availableActions)) {
     sectionD.push(menuOptions.editController);
   }
+  if (hasDeleteControllerAction(item.availableActions)) {
+    sectionD.push(menuOptions.deleteController);
+  }
   if (hasEditTemplateAction(item.availableActions)) {
     sectionD.push(menuOptions.editTemplate);
+  }
+  if (hasDeleteTemplateAction(item.availableActions)) {
+    sectionD.push(menuOptions.deleteTemplate);
   }
   if (hasCreateAction(item.availableActions) && isTemplate) {
     sectionD.push(menuOptions.createTemplate);

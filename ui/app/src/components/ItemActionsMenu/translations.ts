@@ -101,9 +101,17 @@ export const translations = defineMessages({
     id: 'itemMenu.editController',
     defaultMessage: 'Edit Controller'
   },
+  deleteController: {
+    id: 'itemMenu.deleteController',
+    defaultMessage: 'Delete Controller'
+  },
   editTemplate: {
     id: 'itemMenu.editTemplate',
     defaultMessage: 'Edit Template'
+  },
+  deleteTemplate: {
+    id: 'itemMenu.deleteTemplate',
+    defaultMessage: 'Delete Template'
   },
   createTemplate: {
     id: 'itemMenu.createTemplate',

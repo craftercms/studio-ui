@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import ContextMenu, { ContextMenuProps } from '../ContextMenu';
-import { useActiveSiteId, useEnv, usePermissionsByPath, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useSelection } from '../../utils/hooks';
 import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -59,7 +59,6 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
     anchorPosition
   } = props;
   const site = useActiveSiteId();
-  const permissions = usePermissionsByPath()?.[path];
   const items = useSelection((state) => state.content.items);
   const clipboard = useSelection((state) => state.content.clipboard);
   const item = items.byPath?.[path];

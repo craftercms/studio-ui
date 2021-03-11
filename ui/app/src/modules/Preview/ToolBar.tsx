@@ -163,7 +163,6 @@ export function AddressBar(props: AddressBarProps) {
   const { site, url = '', sites = [], item, onSiteChange = foo, onUrlChange = foo, onRefresh = foo } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
-  const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
 
