@@ -307,7 +307,7 @@ $dark-mode-input-border-focus: #007aff;
     .acn-parent-folder,
     .acn-admin-console,
     .ygtvcell {
-      color: $dark-mode-font-color;
+      color: $dark-mode-font-color !important;
     }
 
     .preview {
