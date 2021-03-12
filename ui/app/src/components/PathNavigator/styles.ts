@@ -193,6 +193,7 @@ export const useStyles = makeStyles(
         fontSize: '1.2rem'
       },
       navItem: {
+        minHeight: '23.5px',
         padding: '0 0 0 10px',
         '&.noLeftPadding': {
           paddingLeft: 0

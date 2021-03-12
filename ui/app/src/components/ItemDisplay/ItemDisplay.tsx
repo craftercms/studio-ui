@@ -48,6 +48,7 @@ import Html from '../Icons/Html';
 import TextIcon from '@material-ui/icons/SubjectRounded';
 import Css from '../Icons/Css';
 import TaxonomyIcon from '@material-ui/icons/LocalOfferOutlined';
+import JsonIcon from '../Icons/Json';
 
 export type ItemDisplayClassKey =
   | 'root'
@@ -233,7 +234,7 @@ export function ItemTypeIcon(props: ItemIconProps) {
             TheIcon = Js;
             break;
           case 'application/json':
-            TheIcon = CodeRounded;
+            TheIcon = JsonIcon;
             break;
           case 'application/x-groovy':
             TheIcon = Groovy;
