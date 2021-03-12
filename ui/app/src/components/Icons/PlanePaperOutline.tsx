@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,14 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
 import { createSvgIcon } from '@material-ui/core/utils';
+import React from 'react';
 
 export default createSvgIcon(
-  <path
-    fillRule="evenodd"
-    clipRule="evenodd"
-    d="M14 2.61523H6C4.9 2.61523 4.01 3.51523 4.01 4.61523L4 20.6152C4 21.7152 4.89 22.6152 5.99 22.6152H18C19.1 22.6152 20 21.7152 20 20.6152V8.61523L14 2.61523ZM17.1759 8.62109L13.1709 4.61613V8.62109H17.1759ZM11.1709 10.6211V4.61523H6V20.6152H18V10.6211H11.1709Z"
-  />,
-  'PageIcon'
+  <>
+    <path d="M19.9169 2.7815L3.50918 12.2452C2.66682 12.7323 2.75105 13.9739 3.64835 14.3438L8.78307 16.468V20.2037C8.78307 21.3097 10.1675 21.7895 10.8597 20.9471L13.0828 18.2443L17.7121 20.1561C18.4116 20.4454 19.2027 20.0022 19.3162 19.2514L21.6602 3.97545C21.8103 2.99758 20.7592 2.2944 19.9169 2.7815ZM9.95505 20.2037V16.9514L11.9511 17.7755L9.95505 20.2037ZM18.1589 19.072L10.607 15.9516L17.9135 7.31559C18.0893 7.11049 17.8073 6.83214 17.6022 7.00794L8.25202 14.9774L4.09516 13.2634L20.5028 3.79599L18.1589 19.072Z" />
+  </>,
+  'PlanePaperOutline'
 );

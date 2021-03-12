@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BaseItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { BaseItem, DetailedItem, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
 import { nnou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
@@ -25,43 +25,42 @@ import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
-  PUBLISH_MASK,
-  PUBLISH_APPROVE_MASK,
+  CONTENT_CHANGE_TYPE_MASK,
   CONTENT_COPY_MASK,
   CONTENT_CREATE_MASK,
-  FOLDER_CREATE_MASK,
   CONTENT_CUT_MASK,
-  CONTENT_DELETE_MASK,
   CONTENT_DELETE_CONTROLLER_MASK,
+  CONTENT_DELETE_MASK,
   CONTENT_DELETE_TEMPLATE_MASK,
-  CONTENT_GET_DEPENDENCIES_ACTION_MASK,
   CONTENT_DUPLICATE_MASK,
-  CONTENT_EDIT_MASK,
   CONTENT_EDIT_CONTROLLER_MASK,
+  CONTENT_EDIT_MASK,
   CONTENT_EDIT_TEMPLATE_MASK,
-  CONTENT_READ_VERSION_HISTORY_MASK,
+  CONTENT_GET_DEPENDENCIES_ACTION_MASK,
   CONTENT_PASTE_MASK,
-  READ_MASK,
+  CONTENT_READ_VERSION_HISTORY_MASK,
   CONTENT_RENAME_MASK,
-  PUBLISH_REQUEST_MASK,
   CONTENT_REVERT_MASK,
-  PUBLISH_SCHEDULE_MASK,
-  STATE_MASK_DELETED_MASK,
-  STATE_MASK_IN_WORKFLOW_MASK,
-  STATE_MASK_LIVE_MASK,
-  STATE_MASK_LOCKED_MASK,
-  STATE_MASK_MODIFIED_MASK,
-  STATE_MASK_NEW_MASK,
-  STATE_MASK_SCHEDULED_MASK,
-  STATE_MASK_STAGED_MASK,
-  STATE_MASK_SUBMITTED_MASK,
-  STATE_MASK_SYSTEM_PROCESSING_MASK,
-  STATE_MASK_TRANSLATION_IN_PROGRESS_MASK,
-  STATE_MASK_TRANSLATION_PENDING_MASK,
-  STATE_MASK_TRANSLATION_UP_TO_DATE_MASK,
   CONTENT_UPLOAD_MASK,
-  CONTENT_CHANGE_TYPE_MASK,
-  PUBLISH_REJECT_MASK
+  FOLDER_CREATE_MASK,
+  PUBLISH_APPROVE_MASK,
+  PUBLISH_MASK,
+  PUBLISH_REJECT_MASK,
+  PUBLISH_REQUEST_MASK,
+  PUBLISH_SCHEDULE_MASK,
+  PUBLISHING_LIVE_MASK,
+  PUBLISHING_STAGED_MASK,
+  READ_MASK,
+  STATE_DELETED_MASK,
+  STATE_LOCKED_MASK,
+  STATE_MODIFIED_MASK,
+  STATE_NEW_MASK,
+  STATE_SCHEDULED_MASK,
+  STATE_SUBMITTED_MASK,
+  STATE_SYSTEM_PROCESSING_MASK,
+  STATE_TRANSLATION_IN_PROGRESS_MASK,
+  STATE_TRANSLATION_PENDING_MASK,
+  STATE_TRANSLATION_UP_TO_DATE_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
 
@@ -617,32 +616,30 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   }
 }
 
-export const isNewState = (value: number) => Boolean(value & STATE_MASK_NEW_MASK);
-export const isModifiedState = (value: number) => Boolean(value & STATE_MASK_MODIFIED_MASK);
-export const isDeletedState = (value: number) => Boolean(value & STATE_MASK_DELETED_MASK);
-export const isLockedState = (value: number) => Boolean(value & STATE_MASK_LOCKED_MASK);
-export const isSystemProcessingState = (value: number) => Boolean(value & STATE_MASK_SYSTEM_PROCESSING_MASK);
-export const isInWorkflowState = (value: number) => Boolean(value & STATE_MASK_IN_WORKFLOW_MASK);
-export const isScheduledState = (value: number) => Boolean(value & STATE_MASK_SCHEDULED_MASK);
-export const isStagedState = (value: number) => Boolean(value & STATE_MASK_STAGED_MASK);
-export const isLiveState = (value: number) => Boolean(value & STATE_MASK_LIVE_MASK);
-export const isSubmittedState = (value: number) => Boolean(value & STATE_MASK_SUBMITTED_MASK);
-export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_UP_TO_DATE_MASK);
-export const isTranslationPendingState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_PENDING_MASK);
-export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_IN_PROGRESS_MASK);
+export const isNewState = (value: number) => Boolean(value & STATE_NEW_MASK);
+export const isModifiedState = (value: number) => Boolean(value & STATE_MODIFIED_MASK);
+export const isDeletedState = (value: number) => Boolean(value & STATE_DELETED_MASK);
+export const isLockedState = (value: number) => Boolean(value & STATE_LOCKED_MASK);
+export const isSystemProcessingState = (value: number) => Boolean(value & STATE_SYSTEM_PROCESSING_MASK);
+export const isSubmittedState = (value: number) => Boolean(value & STATE_SUBMITTED_MASK);
+export const isScheduledState = (value: number) => Boolean(value & STATE_SCHEDULED_MASK);
+export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
+export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
+export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
+export const isTranslationPendingState = (value: number) => Boolean(value & STATE_TRANSLATION_PENDING_MASK);
+export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_TRANSLATION_IN_PROGRESS_MASK);
 
-export const createItemStateMap = (status: number) => {
+export const createItemStateMap: (status: number) => ItemStateMap = (status: number) => {
   return {
     new: isNewState(status),
     modified: isModifiedState(status),
     deleted: isDeletedState(status),
-    userLocked: isLockedState(status),
+    locked: isLockedState(status),
     systemProcessing: isSystemProcessingState(status),
-    inWorkflow: isInWorkflowState(status),
-    scheduled: isScheduledState(status),
-    staged: isStagedState(status),
-    live: isLiveState(status),
     submitted: isSubmittedState(status),
+    scheduled: isScheduledState(status),
+    staged: isStaged(status),
+    live: isLive(status),
     translationUpToDate: isTranslationUpToDateState(status),
     translationPending: isTranslationPendingState(status),
     translationInProgress: isTranslationInProgressState(status)

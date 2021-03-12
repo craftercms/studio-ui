@@ -418,7 +418,7 @@ export function generateMultipleItemOptions(
   const menuOptions = toContextMenuOptionsLookup(unparsedMenuOptions, formatMessage);
 
   if (publish) {
-    const itemsPublish = itemsDetails.filter(({ item }) => !item.stateMap.userLocked && !item.stateMap.live);
+    const itemsPublish = itemsDetails.filter(({ item }) => !item.stateMap.locked && !item.stateMap.live);
     if (itemsPublish.length === itemsDetails.length) {
       options.push(menuOptions.publish);
       options.push(menuOptions.schedule);

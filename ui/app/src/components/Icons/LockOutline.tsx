@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,14 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
 import { createSvgIcon } from '@material-ui/core/utils';
+import React from 'react';
 
 export default createSvgIcon(
   <>
-    <path d="M0.923077 17.75H23.0769C23.5846 17.75 24 18.2 24 18.75C24 19.3 23.5846 19.75 23.0769 19.75H0.923077C0.415385 19.75 0 19.3 0 18.75C0 18.2 0.415385 17.75 0.923077 17.75Z" />
-    <path d="M0.733728 10.875H18.3432C18.7467 10.875 19.0769 11.325 19.0769 11.875C19.0769 12.425 18.7467 12.875 18.3432 12.875H0.733728C0.330178 12.875 0 12.425 0 11.875C0 11.325 0.330178 10.875 0.733728 10.875Z" />
-    <path d="M0.923077 4H23.0769C23.5846 4 24 4.45 24 5C24 5.55 23.5846 6 23.0769 6H0.923077C0.415385 6 0 5.55 0 5C0 4.45 0.415385 4 0.923077 4Z" />
+    <path d="M18.5459 9.10444H17.4103V7.71122C17.4103 4.62416 15.139 2.08004 12.3141 2.07228C9.48922 2.06453 7.18956 4.57374 7.18956 7.65693V9.10444H6.05392C5.11347 9.10444 4.35046 9.93826 4.35046 10.966V20.0672C4.35046 21.095 5.11347 21.9288 6.05392 21.9288H18.5459C19.4864 21.9288 20.2494 21.095 20.2494 20.0672V10.966C20.2494 9.93826 19.4864 9.10444 18.5459 9.10444ZM8.89301 7.65693C8.89301 5.60535 10.4226 3.93383 12.2999 3.93383C14.1773 3.93383 15.7068 5.60535 15.7068 7.65693V9.10444H8.89301V7.65693ZM18.5459 20.0672H6.05392V10.966H18.5459V20.0672Z" />
   </>,
-  'CustomMenu'
+  'LockOutline'
 );

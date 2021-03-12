@@ -16,20 +16,21 @@
 
 import { SystemType } from './SystemType';
 
-type States =
+export type ItemStates =
   | 'new'
   | 'modified'
   | 'deleted'
-  | 'userLocked'
+  | 'locked'
   | 'systemProcessing'
-  | 'inWorkflow'
+  | 'submitted'
   | 'scheduled'
   | 'staged'
   | 'live'
   | 'translationUpToDate'
   | 'translationPending'
-  | 'translationInProgress'
-  | 'submitted';
+  | 'translationInProgress';
+
+export type ItemStateMap = { [key in ItemStates]?: boolean };
 
 export interface BaseItem {
   id: number;
@@ -41,7 +42,7 @@ export interface BaseItem {
   systemType: SystemType;
   mimeType: string;
   state: number;
-  stateMap: { [key in States]?: boolean };
+  stateMap: ItemStateMap;
   lockOwner: string;
   disabled: boolean;
   localeCode: string;
