@@ -20,19 +20,13 @@ import { useStyles } from './styles';
 import ListItem from '@material-ui/core/ListItem';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
-import FolderIcon from '@material-ui/icons/FolderOpenRounded';
-import Typography from '@material-ui/core/Typography';
-import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { isFolder, isNavigable, isPreviewable } from './utils';
-import ComponentIcon from '../Icons/Component';
-import Page from '../Icons/Page';
-import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
-import LevelDescriptorIcon from '../Icons/LevelDescriptor';
+import ItemDisplay from '../ItemDisplay';
 
 export interface NavItemProps {
   item: DetailedItem;
@@ -73,7 +67,6 @@ function PathNavigatorItem(props: NavItemProps) {
     onItemClicked,
     onChangeParent,
     onPreview,
-    locale = null,
     isSelectMode,
     onItemChecked,
     onOpenItemMenu,
@@ -103,7 +96,7 @@ function PathNavigatorItem(props: NavItemProps) {
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      {isSelectMode ? (
+      {isSelectMode && (
         <Checkbox
           color="default"
           className={classes.navItemCheckbox}
@@ -113,89 +106,59 @@ function PathNavigatorItem(props: NavItemProps) {
           }}
           value="primary"
         />
-      ) : isLevelDescriptor ? (
-        <LevelDescriptorIcon className={classes.levelDescriptorIcon} />
-      ) : (
-        <RenderIcon classes={{ iconClass: classes.typeIcon }} item={item} />
       )}
-      <Typography
-        variant="body2"
-        title={item.label}
-        className={clsx(
-          classes.navItemText,
-          !isSelectMode && locale !== item.localeCode && 'opacity',
-          isSelectMode && 'select-mode',
-          folder && 'non-navigable'
-        )}
-      >
-        {item.label}
-        {locale && locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
-      </Typography>
-      <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-        {onOpenItemMenu && (
-          <Tooltip title={formatMessage(translations.itemMenu)}>
-            <IconButton
-              aria-label={formatMessage(translations.itemMenu)}
-              className={classes.itemIconButton}
-              onClick={(event) => {
-                event.stopPropagation();
-                onOpenItemMenu(event.currentTarget, item);
-              }}
+      <ItemDisplay
+        styles={{ root: { maxWidth: over ? 'calc(100% - 50px)' : '100%' } }}
+        item={item}
+        showPublishingTarget={!isSelectMode}
+        showWorkflowState={!isSelectMode}
+        labelTypographyProps={{ variant: 'body2' }}
+      />
+      {(onOpenItemMenu || showItemNavigateToButton) && (
+        <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+          {onOpenItemMenu && (
+            <Tooltip title={formatMessage(translations.itemMenu)}>
+              <IconButton
+                aria-label={formatMessage(translations.itemMenu)}
+                className={classes.itemIconButton}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onOpenItemMenu(event.currentTarget, item);
+                }}
+              >
+                <MoreVertIcon className={classes.icon} />
+              </IconButton>
+            </Tooltip>
+          )}
+          {showItemNavigateToButton && (
+            <Tooltip
+              title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
+              classes={{ tooltip: clsx(isLeaf && classes.leafTooltip) }}
             >
-              <MoreVertIcon className={classes.icon} />
-            </IconButton>
-          </Tooltip>
-        )}
-        {showItemNavigateToButton && (
-          <Tooltip
-            title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
-            classes={{ tooltip: clsx(isLeaf && classes.leafTooltip) }}
-          >
-            <IconButton
-              disableRipple={isLeaf}
-              aria-label={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
-              className={clsx(classes.itemIconButton, isLeaf && 'Mui-disabled')}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (isLeaf) {
-                  return;
-                } else if (navigable || folder) {
-                  onChangeParent?.(item);
-                } else if (previewable) {
-                  onPreview?.(item);
-                }
-              }}
-            >
-              <ChevronRightRoundedIcon className={classes.icon} />
-            </IconButton>
-          </Tooltip>
-        )}
-      </div>
+              <IconButton
+                disableRipple={isLeaf}
+                aria-label={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
+                className={clsx(classes.itemIconButton, isLeaf && 'Mui-disabled')}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (isLeaf) {
+                    return;
+                  } else if (navigable || folder) {
+                    onChangeParent?.(item);
+                  } else if (previewable) {
+                    onPreview?.(item);
+                  }
+                }}
+              >
+                <ChevronRightRoundedIcon className={classes.icon} />
+              </IconButton>
+            </Tooltip>
+          )}
+        </div>
+      )}
     </ListItem>
   );
-}
-
-function RenderIcon({ item, classes }: { item: DetailedItem; classes: any }) {
-  let Icon = Page;
-  switch (item.systemType) {
-    case 'folder': {
-      Icon = FolderIcon;
-      break;
-    }
-    case 'component':
-    case 'taxonomy': {
-      Icon = ComponentIcon;
-      break;
-    }
-    case 'asset': {
-      if (item.mimeType.startsWith('image/')) {
-        Icon = CropOriginalRoundedIcon;
-      }
-      break;
-    }
-  }
-  return <Icon className={classes.iconClass} />;
 }
 
 export default PathNavigatorItem;

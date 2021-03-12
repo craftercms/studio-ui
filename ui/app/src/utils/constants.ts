@@ -15,19 +15,18 @@
  */
 
 // region State
-export const STATE_MASK_NEW_MASK = 0b1;
-export const STATE_MASK_MODIFIED_MASK = 0b10;
-export const STATE_MASK_DELETED_MASK = 0b100;
-export const STATE_MASK_LOCKED_MASK = 0b1000;
-export const STATE_MASK_SYSTEM_PROCESSING_MASK = 0b10000;
-export const STATE_MASK_IN_WORKFLOW_MASK = 0b100000;
-export const STATE_MASK_SCHEDULED_MASK = 0b1000000;
-export const STATE_MASK_STAGED_MASK = 0b10000000;
-export const STATE_MASK_LIVE_MASK = 0b100000000;
-export const STATE_MASK_TRANSLATION_UP_TO_DATE_MASK = 0b1000000000;
-export const STATE_MASK_TRANSLATION_PENDING_MASK = 0b10000000000;
-export const STATE_MASK_TRANSLATION_IN_PROGRESS_MASK = 0b100000000000;
-export const STATE_MASK_SUBMITTED_MASK = 0b1000000000000;
+export const STATE_NEW_MASK /*                      */ = 0b1;
+export const STATE_MODIFIED_MASK /*                 */ = 0b10;
+export const STATE_DELETED_MASK /*                  */ = 0b100;
+export const STATE_LOCKED_MASK /*                   */ = 0b1000;
+export const STATE_SYSTEM_PROCESSING_MASK /*        */ = 0b10000;
+export const STATE_SUBMITTED_MASK /*                */ = 0b100000; // <<= Submitted (STATE_IN_WORKFLOW_MASK)
+export const STATE_SCHEDULED_MASK /*                */ = 0b1000000;
+export const PUBLISHING_STAGED_MASK /*              */ = 0b10000000;
+export const PUBLISHING_LIVE_MASK /*                */ = 0b100000000;
+export const STATE_TRANSLATION_UP_TO_DATE_MASK /*   */ = 0b1000000000;
+export const STATE_TRANSLATION_PENDING_MASK /*      */ = 0b10000000000;
+export const STATE_TRANSLATION_IN_PROGRESS_MASK /*  */ = 0b100000000000;
 // endregion
 
 // region Available Actions Content
