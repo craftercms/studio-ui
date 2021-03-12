@@ -23,7 +23,7 @@ import clsx from 'clsx';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
-import NewStateIcon from '@material-ui/icons/StarOutlineRounded';
+import NewStateIcon from '@material-ui/icons/NewReleasesOutlined';
 import EditedStateIcon from '@material-ui/icons/EditOutlined';
 import DeletedStateIcon from '@material-ui/icons/DeleteOutlineRounded';
 import LockedStateIcon from '../Icons/LockOutline';
