@@ -17,8 +17,8 @@
 import { ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
-  goToPage,
   popToolsPanelPage,
+  previewItem,
   pushToolsPanelPage,
   setHighlightMode,
   setPreviewChoice,
@@ -119,7 +119,7 @@ export default [
   // region Go To Page
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(goToPage.type),
+      ofType(previewItem.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const url = getSystemLink({

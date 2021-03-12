@@ -105,7 +105,7 @@ import {
 } from './content';
 import { isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
-import { goToPage } from '../state/actions/preview';
+import { previewItem } from '../state/actions/preview';
 
 export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
 
@@ -466,7 +466,7 @@ export const itemActionDispatcher = ({
   formatMessage;
   clipboard;
   onActionSuccess?: any;
-  event: React.MouseEvent<HTMLLIElement, MouseEvent> | React.MouseEvent<HTMLButtonElement, MouseEvent>;
+  event: React.MouseEvent<Element, MouseEvent>;
 }) => {
   // actions that support only one item
   if (!Array.isArray(item)) {
@@ -763,7 +763,7 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'preview': {
-        dispatch(goToPage({ item: item, newTab: event.ctrlKey || event.metaKey }));
+        dispatch(previewItem({ item: item, newTab: event.ctrlKey || event.metaKey }));
         break;
       }
       case 'cancel':

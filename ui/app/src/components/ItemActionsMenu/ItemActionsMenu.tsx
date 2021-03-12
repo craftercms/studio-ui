@@ -66,7 +66,7 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const onMenuItemClicked = (option: string, event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const onMenuItemClicked = (option: string, event: React.MouseEvent<Element, MouseEvent>) => {
     itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
     onClose();
   };

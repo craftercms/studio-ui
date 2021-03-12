@@ -289,7 +289,7 @@ export const setPreviewChoice = /*#__PURE__*/ createAction<{ site: string; choic
 
 export const setPreviewChoiceComplete = /*#__PURE__*/ createAction('SET_PREVIEW_CHOICE_COMPLETE');
 
-export const goToPage = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('GO_TO_PAGE');
+export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
 // endregion
 

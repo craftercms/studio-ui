@@ -30,10 +30,7 @@ export interface ActionsGroupProps
   extends StandardProps<React.HTMLAttributes<HTMLDivElement>, ActionsGroupPropsClassKey> {
   max?: number;
   spacing?: 'small' | 'medium' | number;
-  onActionClicked(
-    id: string,
-    e: React.MouseEvent<HTMLLIElement, MouseEvent> | React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void;
+  onActionClicked(id: string, event: React.MouseEvent<Element, MouseEvent>): void;
   actions: Array<ContextMenuOption>;
 }
 

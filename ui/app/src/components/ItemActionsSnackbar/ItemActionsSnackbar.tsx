@@ -28,7 +28,7 @@ import { ContextMenuOption } from '../ContextMenu';
 export interface ItemActionsSnackbarProps {
   open: boolean;
   options: Array<ContextMenuOption>;
-  onActionClicked(id: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onActionClicked(id: string, event: React.MouseEvent<Element, MouseEvent>): void;
   append?: ReactNode;
   prepend?: ReactNode;
 }

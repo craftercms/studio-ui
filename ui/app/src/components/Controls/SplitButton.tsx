@@ -44,7 +44,7 @@ export default function SplitButton(props: SplitButtonProps) {
     options[selectedIndex]?.callback();
   };
 
-  const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+  const handleMenuItemClick = (event: React.MouseEvent<Element, MouseEvent>, index: number) => {
     setSelectedIndex(index);
     setOpen(false);
     options[index]?.callback();
