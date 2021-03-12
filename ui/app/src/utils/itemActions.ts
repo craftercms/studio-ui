@@ -103,6 +103,9 @@ import {
   hasSchedulePublishAction,
   hasUploadAction
 } from './content';
+import { isNavigable } from '../components/PathNavigator/utils';
+import React from 'react';
+import { previewItem } from '../state/actions/preview';
 
 export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
 
@@ -310,7 +313,9 @@ export function generateSingleItemOptions(
   if (hasChangeTypeAction(item.availableActions)) {
     sectionA.push(menuOptions.changeContentType);
   }
-  // TODO: Preview....
+  if (isNavigable(item)) {
+    sectionA.push(menuOptions.preview);
+  }
   if (hasReadAction(item.availableActions)) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
@@ -334,13 +339,13 @@ export function generateSingleItemOptions(
   }
   if (hasDuplicateAction(item.availableActions)) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
-      sectionA.push(menuOptions.duplicate);
+      sectionB.push(menuOptions.duplicate);
     } else {
-      sectionA.push(menuOptions.duplicateAsset);
+      sectionB.push(menuOptions.duplicateAsset);
     }
   }
   if (hasUploadAction(item.availableActions)) {
-    sectionA.push(menuOptions.upload);
+    sectionB.push(menuOptions.upload);
   }
   // endregion
 
@@ -450,7 +455,8 @@ export const itemActionDispatcher = ({
   dispatch,
   formatMessage,
   clipboard,
-  onActionSuccess
+  onActionSuccess,
+  event
 }: {
   site: string;
   item: DetailedItem | DetailedItem[];
@@ -460,6 +466,7 @@ export const itemActionDispatcher = ({
   formatMessage;
   clipboard;
   onActionSuccess?: any;
+  event: React.MouseEvent<Element, MouseEvent>;
 }) => {
   // actions that support only one item
   if (!Array.isArray(item)) {
@@ -755,7 +762,10 @@ export const itemActionDispatcher = ({
         );
         break;
       }
-      case 'preview':
+      case 'preview': {
+        dispatch(previewItem({ item: item, newTab: event.ctrlKey || event.metaKey }));
+        break;
+      }
       case 'cancel':
       default:
         break;
@@ -763,6 +773,8 @@ export const itemActionDispatcher = ({
   }
   // actions that support multiple items
   switch (option) {
+    case 'deleteTemplate':
+    case 'deleteController':
     case 'delete': {
       let items = Array.isArray(item) ? item : [item];
       dispatch(

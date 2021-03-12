@@ -42,7 +42,7 @@ export interface ContextMenuProps extends MenuProps {
     icon?: ElementType;
     message: string;
   };
-  onMenuItemClicked(optionId: string): void;
+  onMenuItemClicked(optionId: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
 export const useStyles = makeStyles(() =>
@@ -99,7 +99,7 @@ export default function ContextMenu(props: ContextMenuProps) {
               dense
               key={option.id}
               divider={i !== options.length - 1 && y === section.length - 1}
-              onClick={() => onMenuItemClicked(option.id)}
+              onClick={(e) => onMenuItemClicked(option.id, e)}
               className={propClasses?.menuItem}
               children={option.label}
             />

@@ -24,6 +24,7 @@ import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, Search
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
+import { DetailedItem } from '../../models/Item';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -287,6 +288,8 @@ export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean
 export const setPreviewChoice = /*#__PURE__*/ createAction<{ site: string; choice: string }>('SET_PREVIEW_CHOICE');
 
 export const setPreviewChoiceComplete = /*#__PURE__*/ createAction('SET_PREVIEW_CHOICE_COMPLETE');
+
+export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
 // endregion
 

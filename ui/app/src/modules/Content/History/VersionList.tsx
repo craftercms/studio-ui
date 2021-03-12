@@ -28,7 +28,6 @@ import { Resource } from '../../../models/Resource';
 import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
-import LookupTable from '../../../models/LookupTable';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({
@@ -90,31 +89,16 @@ export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
 
 interface VersionListProps {
   versions: Resource<LegacyVersion[]>;
-  permissions?: Resource<LookupTable<boolean>>;
   selected?: string[];
   current?: string;
   onItemClick(version: LegacyVersion): void;
-  onOpenMenu?(
-    anchorEl: Element,
-    version: LegacyVersion,
-    isCurrent: boolean,
-    permissions: LookupTable<boolean>,
-    lastOne: boolean
-  ): void;
+  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, lastOne: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const {
-    versions: versionsResource,
-    onOpenMenu,
-    onItemClick,
-    current,
-    selected,
-    permissions: permissionsResource
-  } = props;
+  const { versions: versionsResource, onOpenMenu, onItemClick, current, selected } = props;
   const versions = versionsResource.read();
-  const permissions = permissionsResource?.read();
 
   return (
     <List component="div" className={classes.list} disablePadding>
@@ -151,13 +135,7 @@ export function VersionList(props: VersionListProps) {
                 <IconButton
                   edge="end"
                   onClick={(e) =>
-                    onOpenMenu(
-                      e.currentTarget,
-                      version,
-                      current === version.versionNumber,
-                      permissions,
-                      versions.length === i + 1
-                    )
+                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, versions.length === i + 1)
                   }
                 >
                   <MoreVertIcon />

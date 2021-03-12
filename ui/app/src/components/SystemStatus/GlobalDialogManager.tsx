@@ -111,7 +111,6 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
-  const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
@@ -246,7 +245,6 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
-        permissions={permissions?.[versionsBranch?.item?.path]}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}

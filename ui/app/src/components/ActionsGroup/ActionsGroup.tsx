@@ -30,7 +30,7 @@ export interface ActionsGroupProps
   extends StandardProps<React.HTMLAttributes<HTMLDivElement>, ActionsGroupPropsClassKey> {
   max?: number;
   spacing?: 'small' | 'medium' | number;
-  onActionClicked(id: string): void;
+  onActionClicked(id: string, event: React.MouseEvent<Element, MouseEvent>): void;
   actions: Array<ContextMenuOption>;
 }
 
@@ -59,7 +59,7 @@ const ActionsGroup = forwardRef<HTMLDivElement, ActionsGroupProps>(function Acti
       {actions.slice(0, actions.length - extraActions).map((child, index) => (
         <Button
           key={child.id}
-          onClick={() => onActionClicked?.(child.id)}
+          onClick={(e) => onActionClicked?.(child.id, e)}
           style={{ marginLeft: index === 0 ? undefined : marginLeft }}
           className={clsx(classes.action, propClasses?.action)}
           color="primary"
@@ -89,9 +89,9 @@ const ActionsGroup = forwardRef<HTMLDivElement, ActionsGroupProps>(function Acti
         {actions.slice(actions.length - extraActions).map((child) => (
           <MenuItem
             key={child.id}
-            onClick={() => {
+            onClick={(e) => {
               setShowMenu(void 0);
-              onActionClicked?.(child.id);
+              onActionClicked?.(child.id, e);
             }}
           >
             {child.label}

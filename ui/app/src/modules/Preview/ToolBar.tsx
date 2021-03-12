@@ -165,6 +165,7 @@ export function AddressBar(props: AddressBarProps) {
   const [internalUrl, setInternalUrl] = useState(url);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
+  const disabled = noSiteSet || !item;
 
   useEffect(() => {
     url && setInternalUrl(url);
@@ -185,8 +186,8 @@ export function AddressBar(props: AddressBarProps) {
   const dispatch = useDispatch();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const clipboard = useSelection((state) => state.content.clipboard);
-  const onMenuItemClicked = (option: string) =>
-    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
+  const onMenuItemClicked = (option: string, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
+    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
   const actions = generateSingleItemOptions(item, formatMessage)?.flatMap((options) => options);
 
   return (
@@ -219,7 +220,7 @@ export function AddressBar(props: AddressBarProps) {
         <PagesSearchAhead
           value={internalUrl}
           placeholder={noSiteSet ? '' : '/'}
-          disabled={noSiteSet}
+          disabled={disabled}
           onEnter={(value) => onUrlChange(value)}
           classes={{
             input: classes.input
@@ -228,7 +229,7 @@ export function AddressBar(props: AddressBarProps) {
           onBlur={() => setFocus(false)}
         />
         <SingleItemSelector
-          disabled={noSiteSet}
+          disabled={disabled}
           rootPath="/site/website/index.xml"
           selectedItem={item as DetailedItem}
           open={openSelector}

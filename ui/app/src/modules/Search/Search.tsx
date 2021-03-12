@@ -718,7 +718,7 @@ export default function Search(props: SearchProps) {
     setDrawerOpen(!drawerOpen);
   };
 
-  const onActionClicked = (option: string) => {
+  const onActionClicked = (option: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const legacyFormSrc = `${authoringBase}/legacy/form?`;
     if (selected.length > 1) {
       const detailedItems = [];
@@ -732,12 +732,13 @@ export default function Search(props: SearchProps) {
         legacyFormSrc,
         dispatch,
         formatMessage,
-        clipboard
+        clipboard,
+        event
       });
     } else {
       const path = selected[0];
       const item = items.byPath?.[path];
-      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
+      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
     }
   };
 
