@@ -112,6 +112,7 @@ function PathNavigatorItem(props: NavItemProps) {
         item={item}
         showPublishingTarget={!isSelectMode}
         showWorkflowState={!isSelectMode}
+        labelTypographyProps={{ variant: 'body2' }}
       />
       {(onOpenItemMenu || showItemNavigateToButton) && (
         <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>

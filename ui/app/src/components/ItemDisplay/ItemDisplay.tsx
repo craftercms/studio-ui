@@ -21,7 +21,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
-import Typography from '@material-ui/core/Typography';
+import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
 import NewStateIcon from '@material-ui/icons/StarOutlineRounded';
 import EditedStateIcon from '@material-ui/icons/EditOutlined';
@@ -69,13 +69,15 @@ export type ItemDisplayClassKey =
 
 export type ItemDisplayStyles = Partial<Record<ItemDisplayClassKey, CSSProperties>>;
 
-export interface ItemDisplayProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface ItemDisplayProps<LabelTypographyComponent extends React.ElementType = 'span'>
+  extends React.HTMLAttributes<HTMLSpanElement> {
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
   showItemType?: boolean;
   classes?: Partial<Record<ItemDisplayClassKey, string>>;
   styles?: ItemDisplayStyles;
   item: DetailedItem;
+  labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
 }
 
 export interface ItemIconProps {
@@ -312,6 +314,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showPublishingTarget = true,
     showWorkflowState = true,
     showItemType = true,
+    labelTypographyProps,
     ...rest
   } = props;
   const classes = useStyles(props.styles);
@@ -323,7 +326,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
       <Typography
         noWrap
         component="span"
-        className={clsx(classes.label, isNavigable(item) && classes.labelPreviewable)}
+        {...labelTypographyProps}
+        className={clsx(classes.label, isNavigable(item) && classes.labelPreviewable, labelTypographyProps?.className)}
         title={item.label}
         children={item.label}
       />
