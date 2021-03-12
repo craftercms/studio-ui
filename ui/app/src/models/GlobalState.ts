@@ -58,6 +58,7 @@ import TranslationOrText from './TranslationOrText';
 import { SystemLinkId } from '../components/LauncherSection';
 import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
+import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -228,6 +229,9 @@ export interface GlobalState {
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;
+  };
+  pathNavigatorTree: {
+    [id: string]: PathNavigatorTreeStateProps;
   };
 }
 
