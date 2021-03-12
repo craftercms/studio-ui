@@ -49,6 +49,7 @@ import TextIcon from '@material-ui/icons/SubjectRounded';
 import Css from '../Icons/Css';
 import TaxonomyIcon from '@material-ui/icons/LocalOfferOutlined';
 import JsonIcon from '../Icons/Json';
+import FontIcon from '@material-ui/icons/FontDownloadOutlined';
 
 export type ItemDisplayClassKey =
   | 'root'
@@ -253,6 +254,16 @@ export function ItemTypeIcon(props: ItemIconProps) {
             break;
           case 'application/xml':
             TheIcon = CodeRounded;
+            break;
+          case 'font/ttf':
+          case 'font/otf':
+          case 'font/woff':
+          case 'font/woff2':
+          case 'application/vnd.ms-fontobject':
+            TheIcon = FontIcon;
+            break;
+          case 'image/vnd.microsoft.icon':
+            TheIcon = ImageIcon;
             break;
           default:
             if (item.mimeType.includes('text/')) {
