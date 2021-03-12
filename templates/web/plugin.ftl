@@ -18,6 +18,7 @@
 <#assign pType = RequestParameters.type!''>
 <#assign pName = RequestParameters.name!''>
 <#assign pFile = RequestParameters.file!'index.js'>
+<#assign pPluginId = RequestParameters.pluginId!''>
 <#if pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
   <#assign html = applicationContext.configurationService.getConfigurationAsString(
       pSite,
@@ -64,7 +65,9 @@
 
         const script = document.createElement('script');
 
-        script.src = '/studio/api/2/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}';
+
+
+        script.src = '/studio/1/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}<#if pPluginId?has_content>&pluginId=${pPluginId}</#if>';
 
         script.onload = function () {
           if (['yes', 'true', 'enable', '1'].includes(qs.monitor)) {

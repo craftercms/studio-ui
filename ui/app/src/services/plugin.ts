@@ -25,6 +25,7 @@ export interface PluginFileBuilder {
   type: string;
   name: string;
   file?: string;
+  id?: string;
 }
 
 export interface PluginDescriptor {
@@ -66,11 +67,13 @@ function isPluginFileBuilder(target: any): target is PluginFileBuilder {
 export function buildFileUrl(fileBuilder: PluginFileBuilder): string;
 export function buildFileUrl(site: string, type: string, name: string): string;
 export function buildFileUrl(site: string, type: string, name: string, file: string): string;
+export function buildFileUrl(site: string, type: string, name: string, file: string, id: string): string;
 export function buildFileUrl(
   siteOrBuilder: PluginFileBuilder | string,
   type?: string,
   name?: string,
-  file?: string
+  file?: string,
+  id?: string
 ): string {
   let site = siteOrBuilder;
   if (isPluginFileBuilder(siteOrBuilder)) {
@@ -79,8 +82,15 @@ export function buildFileUrl(
     type = builder.type;
     name = builder.name;
     file = builder.file;
+    id = builder.id;
   }
-  return `/studio/api/2/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? DEFAULT_FILE_NAME}`;
+  let url = `/studio/1/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file ?? DEFAULT_FILE_NAME}`;
+
+  if (id) {
+    url += `&pluginId=${id}`;
+  }
+
+  return url;
 }
 
 export function createFileBuilder(site: string, type: string, name: string): PluginFileBuilder;
@@ -89,24 +99,35 @@ export function createFileBuilder(
   site: string,
   type: string,
   name: string,
-  file: string = DEFAULT_FILE_NAME
+  file: string,
+  id: string
+): PluginFileBuilder;
+export function createFileBuilder(
+  site: string,
+  type: string,
+  name: string,
+  file: string = DEFAULT_FILE_NAME,
+  id?: string
 ): PluginFileBuilder {
   return {
     site,
     type,
     name,
-    file
+    file,
+    ...(id ? { id } : {})
   };
 }
 
 export function importFile(fileBuilder: PluginFileBuilder): Promise<any>;
 export function importFile(site: string, type: string, name: string): Promise<any>;
 export function importFile(site: string, type: string, name: string, file: string): Promise<any>;
+export function importFile(site: string, type: string, name: string, file: string, id: string): Promise<any>;
 export function importFile(
   siteOrBuilder: PluginFileBuilder | string,
   type?: string,
   name?: string,
-  file?: string
+  file?: string,
+  id?: string
 ): Promise<any> {
   // @ts-ignore — methods share same signature
   const url = buildFileUrl(...arguments);
@@ -116,14 +137,16 @@ export function importFile(
 export function importPlugin(fileBuilder: PluginFileBuilder): Promise<any>;
 export function importPlugin(site: string, type: string, name: string): Promise<any>;
 export function importPlugin(site: string, type: string, name: string, file: string): Promise<any>;
+export function importPlugin(site: string, type: string, name: string, file: string, id: string): Promise<any>;
 export function importPlugin(
   siteOrBuilder: PluginFileBuilder | string,
   type?: string,
   name?: string,
-  file?: string
+  file?: string,
+  id?: string
 ): Promise<any> {
   // @ts-ignore — methods share the same signature(s)
-  const args: [string, string, string, string] = arguments;
+  const args: [string, string, string, string, string] = arguments;
   return importFile(...args).then((module) => {
     const plugin = module.plugin ?? module.default;
     if (plugin) {
