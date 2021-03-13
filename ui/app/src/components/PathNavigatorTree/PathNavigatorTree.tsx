@@ -18,8 +18,9 @@ import React from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
 import { useLogicResource, useMount, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { pathNavigatorTreeInit } from '../../state/actions/pathNavigatorTree';
+import { pathNavigatorTreeFetchPathChildren, pathNavigatorTreeInit } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
+import LookupTable from '../../models/LookupTable';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -39,11 +40,14 @@ export interface PathNavigatorTreeStateProps {
   limit: number;
   data: any;
   isFetching: null;
+  expanded: string[];
+  byId: LookupTable<string>;
 }
 
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { label, id = props.label.replace(/\s/g, ''), rootPath: path, excludes, limit, icon, container } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
+  const byId = state?.byId;
   const dispatch = useDispatch();
   useMount(() => {
     dispatch(
@@ -57,12 +61,37 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   });
 
   const resource = useLogicResource<any, PathNavigatorTreeStateProps>(state, {
-    shouldResolve: (source) => source && source.isFetching === false,
+    shouldResolve: (source) => Boolean(source?.data),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
     errorSelector: (source) => null
   });
 
-  return <PathNavigatorTreeUI title={label} icon={icon} container={container} resource={resource} />;
+  const onChangeCollapsed = (collapsed) => {};
+
+  const onNodeToggle = (node, expanded) => {};
+
+  const onNodeSelect = (event, nodeId) => {
+    // TODO: Validate if it is already opened
+    dispatch(
+      pathNavigatorTreeFetchPathChildren({
+        id,
+        path: byId[nodeId],
+        nodeId
+      })
+    );
+  };
+
+  return (
+    <PathNavigatorTreeUI
+      title={label}
+      icon={icon}
+      container={container}
+      resource={resource}
+      onNodeToggle={onNodeToggle}
+      onNodeSelect={onNodeSelect}
+      onChangeCollapsed={onChangeCollapsed}
+    />
+  );
 }

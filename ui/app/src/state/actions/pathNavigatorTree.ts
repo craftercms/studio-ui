@@ -17,6 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { DetailedItem } from '../../models/Item';
 import { AjaxError } from 'rxjs/ajax';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -32,3 +33,16 @@ export const pathNavigatorTreeFetchItemFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_ITEM_FAILED');
+
+export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
+  PayloadWithId<{ nodeId: string; path: string }>
+>('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN');
+
+export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
+  PayloadWithId<{ children: GetChildrenResponse }>
+>('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_COMPLETE');
+
+export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
+  id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_FAILED');

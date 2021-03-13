@@ -17,7 +17,12 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import LookupTable from '../../models/LookupTable';
-import { pathNavigatorTreeFetchItemComplete, pathNavigatorTreeInit } from '../actions/pathNavigatorTree';
+import {
+  pathNavigatorTreeFetchItemComplete,
+  pathNavigatorTreeFetchPathChildren,
+  pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeInit
+} from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
@@ -33,7 +38,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           collapsed,
           limit,
           data: null,
-          isFetching: null
+          isFetching: null,
+          expanded: []
         }
       };
     },
@@ -41,6 +47,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       return {
         ...state,
         [id]: {
+          ...state[id],
           isFetching: false,
           data: {
             id: item.id.toString(),
@@ -50,9 +57,27 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
                 id: 'loading'
               }
             ]
+          },
+          byId: {
+            ...state[id].byId,
+            [item.id.toString()]: item.path
           }
         }
       };
+    },
+    [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, nodeId, path } }) => {
+      // TODO: Re-Calculate Data
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          isFetching: true,
+          expanded: [...state[id].expanded, nodeId]
+        }
+      };
+    },
+    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: id, children }) => {
+      return state;
     },
     [changeSite.type]: () => ({})
   }

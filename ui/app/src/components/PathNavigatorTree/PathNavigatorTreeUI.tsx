@@ -65,33 +65,10 @@ interface RenderTree {
   children?: RenderTree[];
 }
 
-const data: RenderTree = {
-  id: 'root',
-  name: 'Home',
-  children: [
-    {
-      id: '1',
-      name: 'Style'
-    },
-    {
-      id: '3',
-      name: 'Health',
-      children: [
-        {
-          id: '4',
-          name: 'Keeping safe'
-        }
-      ]
-    }
-  ]
-};
-
 export default function PathNavigatorTreeUI(props: any) {
   const classes = useStyles();
-  const { icon, container, title, resource } = props;
+  const { icon, container, title, resource, onNodeToggle, onNodeSelect, onChangeCollapsed } = props;
   const state = resource.read();
-
-  const onChangeCollapsed = (collapsed) => {};
 
   return (
     <Accordion
@@ -125,7 +102,9 @@ export default function PathNavigatorTreeUI(props: any) {
         <TreeView
           className={classes.root}
           defaultCollapseIcon={<ExpandMoreIcon />}
-          // defaultExpanded={['root']}
+          onNodeSelect={onNodeSelect}
+          onNodeToggle={onNodeToggle}
+          expanded={state.expanded}
           defaultExpandIcon={<ChevronRightIcon />}
         >
           <RenderTreeNode nodes={state.data} />

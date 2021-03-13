@@ -17,8 +17,14 @@
 import { ofType } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
-import { pathNavigatorTreeFetchItemComplete, pathNavigatorTreeInit } from '../actions/pathNavigatorTree';
-import { fetchItemByPath } from '../../services/content';
+import {
+  pathNavigatorTreeFetchItemComplete,
+  pathNavigatorTreeFetchPathChildren,
+  pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathChildrenFailed,
+  pathNavigatorTreeInit
+} from '../actions/pathNavigatorTree';
+import { fetchChildrenByPath, fetchItemByPath } from '../../services/content';
 import { pathNavigatorFetchPathFailed } from '../actions/pathNavigator';
 import { catchAjaxError } from '../../utils/ajax';
 
@@ -33,6 +39,20 @@ export default [
         return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
           map((item) => pathNavigatorTreeFetchItemComplete({ id, item })),
           catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+        );
+      })
+    ),
+  // endregion
+  // region pathNavigatorTreeInit
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeFetchPathChildren.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        const { id, path } = payload;
+        return fetchChildrenByPath(state.sites.active, path).pipe(
+          map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, children })),
+          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
         );
       })
     )
