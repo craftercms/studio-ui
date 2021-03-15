@@ -14,28 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TreeItem from '@material-ui/lab/TreeItem';
 import React from 'react';
 import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import clsx from 'clsx';
 import Header from '../PathNavigator/PathNavigatorHeader';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
-import { FormattedMessage } from 'react-intl';
-import { TreeNode } from '../Navigation/FolderBrowserTreeView';
+import { StateStylingProps } from '../../models/UiConfig';
+import PathNavigatorTreeItem from './PathNavigatorTreeItem';
+import LookupTable from '../../models/LookupTable';
+import { DetailedItem } from '../../models/Item';
+import ArrowRightRoundedIcon from '@material-ui/icons/ArrowRightRounded';
+import ArrowDropDownRoundedIcon from '@material-ui/icons/ArrowDropDownRounded';
 
 const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      height: 110,
-      flexGrow: 1,
-      maxWidth: 400
-    },
+    root: {},
     accordion: {
       boxShadow: 'none',
       backgroundColor: 'inherit',
@@ -59,79 +54,82 @@ const useStyles = makeStyles(() =>
   })
 );
 
-interface RenderTree {
+export interface TreeNode {
   id: string;
   name: string;
-  children?: RenderTree[];
+  children?: TreeNode[];
 }
 
-export default function PathNavigatorTreeUI(props: any) {
+interface PathNavigatorTreeUIProps {
+  title: string;
+  icon?: Partial<StateStylingProps>;
+  container?: Partial<StateStylingProps>;
+  data: TreeNode;
+  itemsByPath: LookupTable<DetailedItem>;
+  onIconClick(path: string): void;
+  onLabelClick(path: string): void;
+  onChangeCollapsed(collapsed: boolean): void;
+  isCollapsed: boolean;
+  expandedNodes: string[];
+  classes?: Partial<Record<'root' | 'body', string>>;
+}
+
+export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
   const classes = useStyles();
-  const { icon, container, title, resource, onNodeToggle, onNodeSelect, onChangeCollapsed } = props;
-  const state = resource.read();
+  const {
+    icon,
+    container,
+    title,
+    data,
+    itemsByPath,
+    onIconClick,
+    onLabelClick,
+    onChangeCollapsed,
+    isCollapsed,
+    expandedNodes
+  } = props;
 
   return (
     <Accordion
-      expanded={!state.collapsed}
-      onChange={() => onChangeCollapsed(!state.collapsed)}
+      expanded={!isCollapsed}
+      onChange={() => onChangeCollapsed(!isCollapsed)}
       className={clsx(
         classes.accordion,
         props.classes?.root,
         container?.baseClass,
-        container ? (state.collapsed ? container.collapsedClass : container.expandedClass) : void 0
+        container ? (isCollapsed ? container.collapsedClass : container.expandedClass) : void 0
       )}
       style={{
         ...container?.baseStyle,
-        ...(container ? (state.collapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
+        ...(container ? (isCollapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
       }}
     >
       <Header
-        iconClassName={clsx(
-          icon?.baseClass,
-          icon ? (state.collapsed ? icon.collapsedClass : icon.expandedClass) : null
-        )}
+        iconClassName={clsx(icon?.baseClass, icon ? (isCollapsed ? icon.collapsedClass : icon.expandedClass) : null)}
         iconStyle={{
           ...icon?.baseStyle,
-          ...(icon ? (state.collapsed ? icon.collapsedStyle : icon.expandedStyle) : null)
+          ...(icon ? (isCollapsed ? icon.collapsedStyle : icon.expandedStyle) : null)
         }}
         title={title}
-        locale={state.localeCode}
+        locale={null}
         onContextMenu={() => {}}
       />
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <TreeView
           className={classes.root}
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          onNodeSelect={onNodeSelect}
-          onNodeToggle={onNodeToggle}
-          expanded={state.expanded}
-          defaultExpandIcon={<ChevronRightIcon />}
+          expanded={expandedNodes}
+          defaultExpandIcon={<ArrowRightRoundedIcon />}
+          defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
+          disableSelection={true}
         >
-          <RenderTreeNode nodes={state.data} />
+          <PathNavigatorTreeItem
+            node={data}
+            itemsByPath={itemsByPath}
+            onIconClick={onIconClick}
+            onLabelClick={onLabelClick}
+          />
         </TreeView>
       </AccordionDetails>
     </Accordion>
-  );
-}
-
-interface RenderTreeNodeProps {
-  nodes: TreeNode;
-}
-
-function RenderTreeNode({ nodes }: RenderTreeNodeProps) {
-  const classes = useStyles();
-  return nodes.id === 'loading' ? (
-    <div className={classes.loading}>
-      <CircularProgress size={16} />
-      <Typography>
-        <FormattedMessage id="words.loading" defaultMessage="Loading" />
-      </Typography>
-    </div>
-  ) : (
-    <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node) => <RenderTreeNode key={node.id} nodes={node} />)
-        : null}
-    </TreeItem>
   );
 }

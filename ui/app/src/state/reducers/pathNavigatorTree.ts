@@ -18,10 +18,10 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import LookupTable from '../../models/LookupTable';
 import {
-  pathNavigatorTreeFetchItemComplete,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
-  pathNavigatorTreeInit
+  pathNavigatorTreeInit,
+  pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
 
@@ -33,51 +33,43 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           rootPath: path,
-          hasClipboard: false,
           levelDescriptor: null,
           collapsed,
           limit,
-          data: null,
-          isFetching: null,
-          expanded: []
+          expanded: [],
+          childrenByParentPath: {}
         }
       };
     },
-    [pathNavigatorTreeFetchItemComplete.type]: (state, { payload: { id, item } }) => {
+    [pathNavigatorTreeUpdate.type]: (state, { payload: { id, expanded } }) => {
       return {
         ...state,
         [id]: {
           ...state[id],
-          isFetching: false,
-          data: {
-            id: item.id.toString(),
-            name: item.label,
-            children: [
-              {
-                id: 'loading'
-              }
-            ]
-          },
-          byId: {
-            ...state[id].byId,
-            [item.id.toString()]: item.path
+          expanded
+        }
+      };
+    },
+    [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          expanded: [...state[id].expanded, path]
+        }
+      };
+    },
+    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload }) => {
+      return {
+        ...state,
+        [payload.id]: {
+          ...state[payload.id],
+          childrenByParentPath: {
+            ...state[payload.id].childrenByParentPath,
+            [payload.parentPath]: payload.children.map((item) => item.path)
           }
         }
       };
-    },
-    [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, nodeId, path } }) => {
-      // TODO: Re-Calculate Data
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          isFetching: true,
-          expanded: [...state[id].expanded, nodeId]
-        }
-      };
-    },
-    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: id, children }) => {
-      return state;
     },
     [changeSite.type]: () => ({})
   }

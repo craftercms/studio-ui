@@ -25,6 +25,10 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; collapsed?: boolean; excludes?: string[]; limit: number }>
 >('PATH_NAVIGATOR_TREE_INIT');
 
+export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<PayloadWithId<{ expanded: string[] }>>(
+  'PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN'
+);
+
 export const pathNavigatorTreeFetchItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_TREE_FETCH_ITEM_COMPLETE'
 );
@@ -34,12 +38,12 @@ export const pathNavigatorTreeFetchItemFailed = /*#__PURE__*/ createAction<{
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_ITEM_FAILED');
 
-export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ nodeId: string; path: string }>
->('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN');
+export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
+  'PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN'
+);
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ children: GetChildrenResponse }>
+  PayloadWithId<{ children: GetChildrenResponse; parentPath: string }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_COMPLETE');
 
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{

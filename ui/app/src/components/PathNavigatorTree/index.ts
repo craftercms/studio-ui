@@ -19,3 +19,5 @@ export { default } from './PathNavigatorTree';
 export * from './PathNavigatorTree';
 
 export * from './PathNavigatorTreeUI';
+
+export * from './PathNavigatorTreeItem';

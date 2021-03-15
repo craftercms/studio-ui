@@ -39,6 +39,10 @@ import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
+import {
+  pathNavigatorTreeFetchItemComplete,
+  pathNavigatorTreeFetchPathChildrenComplete
+} from '../actions/pathNavigatorTree';
 
 type ContentState = GlobalState['content'];
 
@@ -148,6 +152,19 @@ const reducer = createReducer<ContentState>(initialState, {
       }
     };
   },
+  [pathNavigatorTreeFetchItemComplete.type]: (state, { payload: { item } }) => {
+    return {
+      ...state,
+      items: {
+        ...state.items,
+        byPath: {
+          ...state.items.byPath,
+          [item.path]: item
+        }
+      }
+    };
+  },
+  [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
   [changeSite.type]: () => initialState
 });
 
