@@ -26,7 +26,7 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
 >('PATH_NAVIGATOR_TREE_INIT');
 
 export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<PayloadWithId<{ expanded: string[] }>>(
-  'PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN'
+  'PATH_NAVIGATOR_TREE_UPDATE'
 );
 
 export const pathNavigatorTreeFetchItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(

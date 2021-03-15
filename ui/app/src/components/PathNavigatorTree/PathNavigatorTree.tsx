@@ -119,7 +119,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       dispatch(
         pathNavigatorTreeUpdate({
           id,
-          expanded: state.expanded.filter((expanded) => expanded != path)
+          expanded: state.expanded.filter((expanded) => expanded !== path)
         })
       );
     } else {
