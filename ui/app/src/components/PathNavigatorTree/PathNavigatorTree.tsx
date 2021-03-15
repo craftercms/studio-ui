@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
-import { useMount, useSelection } from '../../utils/hooks';
+import { useMount, useSelection, useSpreadState } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeFetchPathChildren,
@@ -27,6 +27,9 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { isNavigable } from '../PathNavigator/utils';
+import { ContextMenuOption } from '../ContextMenu';
+import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import ItemActionsMenu from '../ItemActionsMenu';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -47,6 +50,13 @@ export interface PathNavigatorTreeStateProps {
   childrenByParentPath: LookupTable<string[]>;
 }
 
+interface Menu {
+  path?: string;
+  sections?: ContextMenuOption[][];
+  anchorEl: Element;
+  loaderItems?: number;
+}
+
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit, icon, container } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
@@ -54,6 +64,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const childrenByParentPath = state?.childrenByParentPath;
   const rootItem = itemsByPath?.[rootPath];
   const [data, setData] = useState(null);
+  const [itemMenu, setItemMenu] = useSpreadState<Menu>({
+    path: null,
+    anchorEl: null,
+    loaderItems: null
+  });
   const nodesByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
 
@@ -115,6 +130,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onIconClick = (path: string) => {
+    // If the path is already expanded, pathNavigatorTreeUpdate should collapsed it
     if (state.expanded.includes(path)) {
       dispatch(
         pathNavigatorTreeUpdate({
@@ -123,15 +139,36 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
-      fetchingPathsRef.current.push(path);
-      dispatch(
-        pathNavigatorTreeFetchPathChildren({
-          id,
-          path
-        })
-      );
+      // if: the path does not exist on childrenByParentPath, the children was not fetched
+      // else: the tree should expand the selected node
+      if (!childrenByParentPath[path]) {
+        fetchingPathsRef.current.push(path);
+        dispatch(
+          pathNavigatorTreeFetchPathChildren({
+            id,
+            path
+          })
+        );
+      } else {
+        dispatch(
+          pathNavigatorTreeUpdate({
+            id,
+            expanded: [...state.expanded, path]
+          })
+        );
+      }
     }
   };
+
+  const onOpenItemMenu = (element: Element, path: string) => {
+    setItemMenu({
+      path,
+      anchorEl: element,
+      loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
+    });
+  };
+
+  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
 
   return (
     <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !data}>
@@ -146,6 +183,14 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onIconClick={onIconClick}
         onLabelClick={onLabelClick}
         onChangeCollapsed={onChangeCollapsed}
+        onOpenItemMenu={onOpenItemMenu}
+      />
+      <ItemActionsMenu
+        open={Boolean(itemMenu.anchorEl)}
+        path={itemMenu.path}
+        numOfLoaderItems={itemMenu.loaderItems}
+        anchorEl={itemMenu.anchorEl}
+        onClose={onCloseItemMenu}
       />
     </ConditionalLoadingState>
   );

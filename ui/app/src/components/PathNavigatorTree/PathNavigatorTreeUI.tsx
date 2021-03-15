@@ -69,6 +69,7 @@ interface PathNavigatorTreeUIProps {
   onIconClick(path: string): void;
   onLabelClick(path: string): void;
   onChangeCollapsed(collapsed: boolean): void;
+  onOpenItemMenu(element: Element, path: string): void;
   isCollapsed: boolean;
   expandedNodes: string[];
   classes?: Partial<Record<'root' | 'body', string>>;
@@ -85,6 +86,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     onIconClick,
     onLabelClick,
     onChangeCollapsed,
+    onOpenItemMenu,
     isCollapsed,
     expandedNodes
   } = props;
@@ -127,6 +129,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
             itemsByPath={itemsByPath}
             onIconClick={onIconClick}
             onLabelClick={onLabelClick}
+            onOpenItemMenu={onOpenItemMenu}
           />
         </TreeView>
       </AccordionDetails>

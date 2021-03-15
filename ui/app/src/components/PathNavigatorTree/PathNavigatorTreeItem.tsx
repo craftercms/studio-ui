@@ -24,6 +24,9 @@ import { Typography } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ItemDisplay from '../ItemDisplay';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertRoundedIcon from '@material-ui/icons/MoreVertRounded';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -35,9 +38,16 @@ const useStyles = makeStyles((theme) =>
     content: {},
     labelContainer: {
       display: 'flex',
-      padding: '3px 0 3px 0',
+      paddingLeft: 0,
+      height: '26px',
+      '& .options': {
+        display: 'none'
+      },
       '&:hover': {
-        backgroundColor: `${theme.palette.action.hover} !important`
+        backgroundColor: `${theme.palette.action.hover} !important`,
+        '& .options': {
+          display: 'block'
+        }
       }
     },
     iconContainer: {
@@ -65,10 +75,11 @@ interface PathNavigatorTreeItemProps {
   itemsByPath: LookupTable<DetailedItem>;
   onLabelClick(path: string): void;
   onIconClick(path: string): void;
+  onOpenItemMenu(element: Element, path: string): void;
 }
 
 export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
-  const { node, itemsByPath, onLabelClick, onIconClick } = props;
+  const { node, itemsByPath, onLabelClick, onIconClick, onOpenItemMenu } = props;
   const classes = useStyles();
   return node.id === 'loading' ? (
     <div className={classes.loading}>
@@ -84,13 +95,29 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
       onLabelClick={() => onLabelClick(node.id)}
       onIconClick={() => onIconClick(node.id)}
       label={
-        <ItemDisplay
-          styles={{ root: { maxWidth: '100%' } }}
-          item={itemsByPath[node.id]}
-          showPublishingTarget={true}
-          showWorkflowState={true}
-          labelTypographyProps={{ variant: 'body2' }}
-        />
+        <>
+          <ItemDisplay
+            styles={{ root: { maxWidth: '100%', flexGrow: 1 } }}
+            item={itemsByPath[node.id]}
+            showPublishingTarget={true}
+            showWorkflowState={true}
+            labelTypographyProps={{ variant: 'body2' }}
+          />
+          <section className="options">
+            <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenItemMenu(e.currentTarget, node.id);
+                }}
+              >
+                <MoreVertRoundedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </section>
+        </>
       }
       classes={{
         root: classes.root,
@@ -107,6 +134,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
               itemsByPath={itemsByPath}
               onLabelClick={onLabelClick}
               onIconClick={onIconClick}
+              onOpenItemMenu={onOpenItemMenu}
             />
           ))
         : null}
