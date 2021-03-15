@@ -59,14 +59,17 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload }) => {
+    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children } }) => {
       return {
         ...state,
-        [payload.id]: {
-          ...state[payload.id],
+        [id]: {
+          ...state[id],
+          expanded: children.length
+            ? [...state[id].expanded]
+            : [...state[id].expanded.filter((path) => path !== parentPath)],
           childrenByParentPath: {
-            ...state[payload.id].childrenByParentPath,
-            [payload.parentPath]: payload.children.map((item) => item.path)
+            ...state[id].childrenByParentPath,
+            [parentPath]: children.map((item) => item.path)
           }
         }
       };
