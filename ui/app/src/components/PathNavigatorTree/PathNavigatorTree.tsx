@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
-import { useItemsByPath, useMount, useSelection } from '../../utils/hooks';
+import { useItemsByPath, useMount, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeFetchPathChildren,
@@ -33,6 +33,7 @@ import ItemActionsMenu from '../ItemActionsMenu';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
+import { debounceTime } from 'rxjs/operators';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -75,7 +76,7 @@ const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
 };
 
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
-  const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit, icon, container } = props;
+  const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit = 10000, icon, container } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
   const itemsByPath = useItemsByPath();
   const childrenByParentPath = state?.childrenByParentPath;
@@ -86,6 +87,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     anchorEl: null,
     loaderItems: null
   });
+  const [keyword, setKeyword] = useState('');
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: []
@@ -93,6 +95,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { formatMessage } = useIntl();
   const nodesByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
+  const onSearch$ = useSubject<{ keyword: string; path: string }>();
 
   const dispatch = useDispatch();
   useMount(() => {
@@ -139,7 +142,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       }
     });
     fetchingPathsRef.current = nextFetching;
-  }, [data, rootPath, childrenByParentPath]);
+  }, [data, rootPath, childrenByParentPath, itemsByPath]);
 
   const onChangeCollapsed = (collapsed) => {};
 
@@ -220,6 +223,29 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     }
   };
 
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
+      fetchingPathsRef.current.push(path);
+      dispatch(
+        pathNavigatorTreeFetchPathChildren({
+          id,
+          path,
+          options: {
+            keyword
+          }
+        })
+      );
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, id, onSearch$]);
+
+  const onFilterChange = (keyword: string, path: string) => {
+    setKeyword(keyword);
+    onSearch$.next({ keyword, path });
+  };
+
   return (
     <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !data}>
       <PathNavigatorTreeUI
@@ -228,6 +254,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         container={container}
         isCollapsed={state?.collapsed}
         data={data}
+        keyword={keyword}
         itemsByPath={itemsByPath}
         expandedNodes={state?.expanded}
         onIconClick={onIconClick}
@@ -235,6 +262,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onChangeCollapsed={onChangeCollapsed}
         onOpenItemMenu={onOpenItemMenu}
         onHeaderButtonClick={onHeaderButtonClick}
+        onFilterChange={onFilterChange}
       />
       <ItemActionsMenu
         open={Boolean(itemMenu.anchorEl)}

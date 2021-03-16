@@ -49,8 +49,8 @@ export default [
       ofType(pathNavigatorTreeFetchPathChildren.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const { id, path } = payload;
-        return fetchChildrenByPath(state.sites.active, path).pipe(
+        const { id, path, options } = payload;
+        return fetchChildrenByPath(state.sites.active, path, options).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children })),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
         );
