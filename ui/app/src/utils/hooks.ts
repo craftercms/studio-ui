@@ -75,12 +75,6 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
-export function usePermissionsByPath(): GlobalState['content']['items']['permissionsByPath'] {
-  return useSelector<GlobalState, GlobalState['content']['items']['permissionsByPath']>(
-    (state) => state.content.items.permissionsByPath
-  );
-}
-
 export function usePermissionsBySite(): GlobalState['user']['permissionsBySite'] {
   return useSelector<GlobalState, GlobalState['user']['permissionsBySite']>((state) => state.user.permissionsBySite);
 }
@@ -174,6 +168,10 @@ export function useGlobalNavigation(): GlobalState['uiConfig']['globalNavigation
     }
   }, [data.error, data.isFetching, data.items, dispatch]);
   return data;
+}
+
+export function useItemsByPath(): GlobalState['content']['itemsByPath'] {
+  return useSelection((state) => state.content.itemsByPath);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BaseItem, DetailedItem, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
+import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
 import { nnou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
@@ -192,7 +192,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     disabled: null,
     localeCode: 'en',
     translationSourceId: null,
-    availableActions: 0
+    availableActions: 0,
+    availableActionsMap: {}
   };
 }
 
@@ -616,6 +617,7 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   }
 }
 
+// region State checker functions
 export const isNewState = (value: number) => Boolean(value & STATE_NEW_MASK);
 export const isModifiedState = (value: number) => Boolean(value & STATE_MODIFIED_MASK);
 export const isDeletedState = (value: number) => Boolean(value & STATE_DELETED_MASK);
@@ -628,24 +630,24 @@ export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
 export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
 export const isTranslationPendingState = (value: number) => Boolean(value & STATE_TRANSLATION_PENDING_MASK);
 export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_TRANSLATION_IN_PROGRESS_MASK);
+// endregion
 
-export const createItemStateMap: (status: number) => ItemStateMap = (status: number) => {
-  return {
-    new: isNewState(status),
-    modified: isModifiedState(status),
-    deleted: isDeletedState(status),
-    locked: isLockedState(status),
-    systemProcessing: isSystemProcessingState(status),
-    submitted: isSubmittedState(status),
-    scheduled: isScheduledState(status),
-    staged: isStaged(status),
-    live: isLive(status),
-    translationUpToDate: isTranslationUpToDateState(status),
-    translationPending: isTranslationPendingState(status),
-    translationInProgress: isTranslationInProgressState(status)
-  };
-};
+export const createItemStateMap: (status: number) => ItemStateMap = (status: number) => ({
+  new: isNewState(status),
+  modified: isModifiedState(status),
+  deleted: isDeletedState(status),
+  locked: isLockedState(status),
+  systemProcessing: isSystemProcessingState(status),
+  submitted: isSubmittedState(status),
+  scheduled: isScheduledState(status),
+  staged: isStaged(status),
+  live: isLive(status),
+  translationUpToDate: isTranslationUpToDateState(status),
+  translationPending: isTranslationPendingState(status),
+  translationInProgress: isTranslationInProgressState(status)
+});
 
+// region Action presence checker functions
 export const hasReadAction = (value: number) => Boolean(value & READ_MASK);
 export const hasCopyAction = (value: number) => Boolean(value & CONTENT_COPY_MASK);
 export const hasReadHistoryAction = (value: number) => Boolean(value & CONTENT_READ_VERSION_HISTORY_MASK);
@@ -670,3 +672,31 @@ export const hasPublishAction = (value: number) => Boolean(value & PUBLISH_MASK)
 export const hasApprovePublishAction = (value: number) => Boolean(value & PUBLISH_APPROVE_MASK);
 export const hasSchedulePublishAction = (value: number) => Boolean(value & PUBLISH_SCHEDULE_MASK);
 export const hasPublishRejectAction = (value: number) => Boolean(value & PUBLISH_REJECT_MASK);
+// endregion
+
+export const createItemActionMap: (availableActions: number) => ItemActionsMap = (value: number) => ({
+  read: hasReadAction(value),
+  copy: hasCopyAction(value),
+  history: hasReadHistoryAction(value),
+  dependencies: hasGetDependenciesAction(value),
+  requestPublish: hasPublishRequestAction(value),
+  createContent: hasCreateAction(value),
+  paste: hasPasteAction(value),
+  edit: hasEditAction(value),
+  rename: hasRenameAction(value),
+  cut: hasCutAction(value),
+  upload: hasUploadAction(value),
+  duplicate: hasDuplicateAction(value),
+  changeType: hasChangeTypeAction(value),
+  revert: hasRevertAction(value),
+  editController: hasEditControllerAction(value),
+  editTemplate: hasEditTemplateAction(value),
+  createFolder: hasCreateFolderAction(value),
+  deleteContent: hasContentDeleteAction(value),
+  deleteController: hasDeleteControllerAction(value),
+  deleteTemplate: hasDeleteTemplateAction(value),
+  publish: hasPublishAction(value),
+  approvePublish: hasApprovePublishAction(value),
+  schedulePublish: hasSchedulePublishAction(value),
+  rejectPublish: hasPublishRejectAction(value)
+});

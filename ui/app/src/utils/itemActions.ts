@@ -71,7 +71,7 @@ import {
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
-  setClipBoard,
+  setClipboard,
   unlockItem
 } from '../state/actions/content';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
@@ -405,43 +405,44 @@ export function generateSingleItemOptions(
 }
 
 export function generateMultipleItemOptions(
-  itemsDetails: { permissions: LookupTable<boolean>; item: DetailedItem }[],
+  items: DetailedItem[],
   formatMessage: IntlFormatters['formatMessage']
 ): ContextMenuOption[] {
   let publish = true;
+  let requestPublish = true;
+  let approvePublish = true;
+  let schedulePublish = true;
   let deleteItem = true;
   let reject = true;
   let options = [];
-
-  itemsDetails.forEach((details) => {
-    const permissions = details.permissions;
-    publish = publish ? permissions.publish : publish;
-    deleteItem = deleteItem ? permissions.delete : deleteItem;
-    reject = reject ? permissions.cancel_publish : reject;
-  });
-
   const menuOptions = toContextMenuOptionsLookup(unparsedMenuOptions, formatMessage);
 
+  items.forEach((item) => {
+    publish = publish && hasPublishAction(item.availableActions);
+    requestPublish = requestPublish && hasPublishRequestAction(item.availableActions);
+    approvePublish = approvePublish && hasApprovePublishAction(item.availableActions);
+    schedulePublish = schedulePublish && hasSchedulePublishAction(item.availableActions);
+    deleteItem = deleteItem && hasContentDeleteAction(item.availableActions);
+    reject = reject && hasPublishRejectAction(item.availableActions);
+  });
+
   if (publish) {
-    const itemsPublish = itemsDetails.filter(({ item }) => !item.stateMap.locked && !item.stateMap.live);
-    if (itemsPublish.length === itemsDetails.length) {
-      options.push(menuOptions.publish);
-      options.push(menuOptions.schedule);
-    }
+    options.push(menuOptions.publish);
+  }
+  if (schedulePublish) {
+    options.push(menuOptions.schedule);
+  }
+  if (requestPublish) {
+    options.push(menuOptions.publishRequest);
+  }
+  if (approvePublish) {
+    options.push(menuOptions.approve);
   }
   if (deleteItem) {
-    const itemsDelete = itemsDetails.filter(({ item }) => withoutIndex(item.path) !== '/site/website');
-    if (itemsDelete.length === itemsDetails.length) {
-      options.push(menuOptions.delete);
-    }
+    options.push(menuOptions.delete);
   }
   if (reject) {
-    const itemsReject = itemsDetails.filter(
-      ({ item }) => item.stateMap.staged || item.stateMap.scheduled || item.stateMap.deleted || item.stateMap.submitted
-    );
-    if (itemsReject.length === itemsDetails.length) {
-      options.push(menuOptions.reject);
-    }
+    options.push(menuOptions.reject);
   }
 
   return options;
@@ -570,7 +571,7 @@ export const itemActionDispatcher = ({
       case 'cut': {
         dispatch(
           batchActions([
-            setClipBoard({
+            setClipboard({
               type: 'CUT',
               paths: [item.path],
               sourcePath: item.path
@@ -592,7 +593,7 @@ export const itemActionDispatcher = ({
                   item: legacyItem,
                   onOk: batchActions([
                     closeCopyDialog(),
-                    setClipBoard({
+                    setClipboard({
                       type: 'COPY',
                       sourcePath: item.path
                     }),
@@ -603,7 +604,7 @@ export const itemActionDispatcher = ({
             } else {
               dispatch(
                 batchActions([
-                  setClipBoard({
+                  setClipboard({
                     type: 'COPY',
                     paths: [item.path],
                     sourcePath: item.path

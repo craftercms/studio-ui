@@ -34,11 +34,15 @@ export const useStyles = makeStyles(
         marginLeft: '5px'
       },
       optionsWrapper: {
+        top: 0,
+        right: 0,
+        visibility: 'hidden',
+        position: 'absolute',
         marginLeft: 'auto',
-        display: 'none'
+        display: 'flex'
       },
       optionsWrapperOver: {
-        display: 'flex'
+        visibility: 'visible'
       },
       headerTitle: {
         marginLeft: '6px',
@@ -114,7 +118,8 @@ export const useStyles = makeStyles(
       // region Breadcrumbs
       breadcrumbs: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        position: 'relative'
       },
       breadcrumbsList: {
         display: 'flex',

@@ -30,7 +30,35 @@ export type ItemStates =
   | 'translationPending'
   | 'translationInProgress';
 
+export type ItemActions =
+  | 'read'
+  | 'copy'
+  | 'history'
+  | 'dependencies'
+  | 'requestPublish'
+  | 'createContent'
+  | 'paste'
+  | 'edit'
+  | 'rename'
+  | 'cut'
+  | 'upload'
+  | 'duplicate'
+  | 'changeType'
+  | 'revert'
+  | 'editController'
+  | 'editTemplate'
+  | 'createFolder'
+  | 'deleteContent'
+  | 'deleteController'
+  | 'deleteTemplate'
+  | 'publish'
+  | 'approvePublish'
+  | 'schedulePublish'
+  | 'rejectPublish';
+
 export type ItemStateMap = { [key in ItemStates]?: boolean };
+
+export type ItemActionsMap = { [key in ItemActions]?: boolean };
 
 export interface BaseItem {
   id: number;
@@ -48,6 +76,7 @@ export interface BaseItem {
   localeCode: string;
   translationSourceId: string;
   availableActions: number;
+  availableActionsMap: ItemActionsMap;
 }
 
 interface SandboxEnvProps {

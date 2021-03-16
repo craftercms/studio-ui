@@ -34,7 +34,7 @@ import {
   setStoredPreviewToolsPanelPage
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { setClipBoard } from '../actions/content';
+import { setClipboard } from '../actions/content';
 import { setProperties } from '../../services/users';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../components/LauncherSection';
@@ -108,7 +108,7 @@ export default [
   // region Clipboard
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(setClipBoard.type),
+      ofType(setClipboard.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         setStoredClipboard(state.sites.active, state.user.username, payload);
