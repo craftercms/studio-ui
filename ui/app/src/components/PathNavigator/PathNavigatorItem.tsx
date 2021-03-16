@@ -98,6 +98,7 @@ function PathNavigatorItem(props: NavItemProps) {
     >
       {isSelectMode && (
         <Checkbox
+          size="small"
           color="default"
           className={classes.navItemCheckbox}
           onClick={(e) => e.stopPropagation()}
@@ -108,7 +109,7 @@ function PathNavigatorItem(props: NavItemProps) {
         />
       )}
       <ItemDisplay
-        styles={{ root: { maxWidth: over ? 'calc(100% - 50px)' : '100%' } }}
+        styles={{ root: { maxWidth: isSelectMode ? 'calc(100% - 32px)' : over ? 'calc(100% - 50px)' : '100%' } }}
         item={item}
         showPublishingTarget={!isSelectMode}
         showWorkflowState={!isSelectMode}

@@ -21,6 +21,7 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   useActiveSiteId,
   useEnv,
+  useItemsByPath,
   usePreviewState,
   useSelection,
   useSiteLocales,
@@ -140,7 +141,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     computeActiveItems: computeActiveItemsProp
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
-  const itemsByPath = useSelection((state) => state.content.items).byPath;
+  const itemsByPath = useItemsByPath();
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();

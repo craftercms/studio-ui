@@ -33,6 +33,7 @@ import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import {
+  createItemActionMap,
   createItemStateMap,
   parseContentXML,
   parseLegacyItemToSandBoxItem,
@@ -100,7 +101,11 @@ export function fetchDetailedItem(
   const qs = toQueryString({ siteId, path, preferContent });
   return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
     pluck('response', 'item'),
-    map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))
+    map((item: DetailedItem) => ({
+      ...item,
+      stateMap: createItemStateMap(item.state),
+      availableActionsMap: createItemActionMap(item.availableActions)
+    }))
   );
 }
 
@@ -809,12 +814,17 @@ export function fetchChildrenByPath(
         children
           ? children.map((child) => ({
               ...child,
-              stateMap: createItemStateMap(child.state)
+              stateMap: createItemStateMap(child.state),
+              availableActionsMap: createItemActionMap(child.availableActions)
             }))
           : [],
         {
           ...(levelDescriptor && {
-            levelDescriptor: { ...levelDescriptor, stateMap: createItemStateMap(levelDescriptor.state) }
+            levelDescriptor: {
+              ...levelDescriptor,
+              stateMap: createItemStateMap(levelDescriptor.state),
+              availableActionsMap: createItemActionMap(levelDescriptor.availableActions)
+            }
           }),
           total,
           offset,
@@ -854,7 +864,8 @@ export function fetchItemsByPath(
       (items: SandboxItem[]) =>
         items.map((item) => ({
           ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
-          stateMap: createItemStateMap(item.state)
+          stateMap: createItemStateMap(item.state),
+          availableActionsMap: createItemActionMap(item.availableActions)
         })) as SandboxItem[] | DetailedItem[]
     )
   );

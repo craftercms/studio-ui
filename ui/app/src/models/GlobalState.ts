@@ -119,10 +119,7 @@ export interface GlobalState {
       isFetching: boolean;
       items: QuickCreateItem[];
     };
-    items: {
-      byPath: LookupTable<DetailedItem>;
-      permissionsByPath: LookupTable<LookupTable<boolean>>;
-    };
+    itemsByPath: LookupTable<DetailedItem>;
     clipboard: Clipboard;
   };
   contentTypes: EntityState<ContentType>;

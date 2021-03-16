@@ -83,8 +83,8 @@ import {
   useActiveSiteId,
   useActiveUser,
   useContentTypes,
+  useItemsByPath,
   useMount,
-  usePermissionsByPath,
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
@@ -100,9 +100,15 @@ import {
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
-import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
+import { completeDetailedItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
-import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
+import {
+  createChildModelLookup,
+  hasEditAction,
+  normalizeModel,
+  normalizeModelsLookup,
+  parseContentXML
+} from '../../utils/content';
 import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
@@ -146,6 +152,7 @@ export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const user = useActiveUser();
+  const items = useItemsByPath();
   const { guest, currentUrl, computedUrl, editMode, highlightMode, previewChoice } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
@@ -172,8 +179,7 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const permissions = usePermissionsByPath();
-  const write = permissions?.[currentItemPath]?.write;
+  const write = hasEditAction(items[currentItemPath]?.availableActions);
 
   useEffect(() => {
     if (currentItemPath && site) {
@@ -186,6 +192,7 @@ export function PreviewConcierge(props: any) {
       getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
     }
   }, [dispatch, write, editMode]);
+
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -222,7 +229,7 @@ export function PreviewConcierge(props: any) {
         removeStoredClipboard(site, user.username);
       } else {
         dispatch(
-          restoreClipBoard({
+          restoreClipboard({
             type: localClipboard.type,
             paths: localClipboard.paths,
             sourcePath: localClipboard.sourcePath
