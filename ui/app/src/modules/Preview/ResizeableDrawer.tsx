@@ -22,7 +22,14 @@ import clsx from 'clsx';
 import palette from '../../styles/palette';
 import { CSSProperties } from '@material-ui/styles';
 
-export type ResizeableDrawerClassKey = 'root' | 'drawerPaper' | 'resizeHandle' | 'drawerBody';
+export type ResizeableDrawerClassKey =
+  | 'root'
+  | 'drawerBody'
+  | 'drawerPaper'
+  | 'resizeHandle'
+  | 'resizeHandleActive'
+  | 'resizeHandleLeft'
+  | 'resizeHandleRight';
 
 export type ResizeableDrawerStyles = Partial<Record<ResizeableDrawerClassKey, CSSProperties>>;
 
@@ -41,6 +48,7 @@ const useStyles = makeStyles((theme) =>
       ...styles.root
     }),
     drawerBody: (styles) => ({
+      width: '100%',
       overflowY: 'auto',
       ...styles.drawerBody
     }),
@@ -58,39 +66,65 @@ const useStyles = makeStyles((theme) =>
       padding: '4px 0 0',
       position: 'absolute',
       top: 0,
-      right: -1,
       bottom: 0,
       zIndex: 100,
       backgroundColor: 'rgba(0, 0, 0, 0.12)',
       transition: 'width 200ms',
-      '&.hovered, &:hover': {
+      '&:hover': {
         width: '4px',
         visibility: 'visible',
         backgroundColor: palette.blue.tint
       },
       ...styles.resizeHandle
+    }),
+    resizeHandleLeft: (styles) => ({
+      left: -1,
+      ...styles.resizeHandleLeft
+    }),
+    resizeHandleRight: (styles) => ({
+      right: -1,
+      ...styles.resizeHandleRight
+    }),
+    resizeHandleActive: (styles) => ({
+      width: '4px',
+      visibility: 'visible',
+      backgroundColor: palette.blue.tint,
+      ...styles.resizeHandleActive
     })
   })
 );
 
 export default function ResizeableDrawer(props: ResizeableDrawerProps) {
   const classes = useStyles(props.styles);
-  const [hovered, setHovered] = useState(false);
-  const { open, children, width, onWidthChange, className, classes: propsClasses, PaperProps, ...rest } = props;
+  const [resizeActive, setResizeActive] = useState(false);
+  const {
+    open,
+    children,
+    width,
+    onWidthChange,
+    className,
+    classes: propsClasses,
+    PaperProps,
+    anchor = 'left',
+    ...rest
+  } = props;
 
   const handleMouseMove = useCallback(
     (e) => {
       e.preventDefault();
-      const newWidth = e.clientX - document.body.offsetLeft;
-      onWidthChange(newWidth + 5);
+      const newWidth =
+        (anchor === 'left'
+          ? e.clientX - document.body.offsetLeft
+          : window.innerWidth - (e.clientX - document.body.offsetLeft)) + 5;
+      onWidthChange(newWidth);
     },
-    [onWidthChange]
+    [anchor, onWidthChange]
   );
 
   const handleMouseDown = () => {
-    setHovered(true);
+    setResizeActive(true);
     const handleMouseUp = () => {
-      setHovered(false);
+      setResizeActive(false);
       document.removeEventListener('mouseup', handleMouseUp, true);
       document.removeEventListener('mousemove', handleMouseMove, true);
     };
@@ -101,14 +135,21 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
   return (
     <Drawer
       open={open}
-      anchor="left"
+      anchor={anchor}
       variant="persistent"
       className={clsx(classes.root, className)}
       classes={{ ...propsClasses, paper: clsx(classes.drawerPaper, propsClasses?.drawerPaper) }}
       PaperProps={{ ...PaperProps, style: { width } }}
       {...rest}
     >
-      <div onMouseDown={handleMouseDown} className={clsx(classes.resizeHandle, hovered && 'hovered')} />
+      <div
+        onMouseDown={handleMouseDown}
+        className={clsx(
+          classes.resizeHandle,
+          resizeActive && classes.resizeHandleActive,
+          anchor === 'left' ? classes.resizeHandleRight : classes.resizeHandleLeft
+        )}
+      />
       <section className={clsx(classes.drawerBody, propsClasses?.drawerBody)}>{children}</section>
     </Drawer>
   );

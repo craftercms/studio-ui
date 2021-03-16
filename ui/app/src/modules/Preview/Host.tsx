@@ -164,8 +164,7 @@ export default function Host() {
   const classes = useStyles({});
   const site = useActiveSiteId();
   const guestBase = useSelection<string>((state) => state.env.guestBase);
-  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
-  const { hostSize, currentUrl, showToolsPanel } = usePreviewState();
+  const { hostSize, currentUrl, showToolsPanel, toolsPanelWidth, pageBuilderPanelWidth, editMode } = usePreviewState();
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
@@ -175,7 +174,10 @@ export default function Host() {
 
   return (
     <div
-      style={showToolsPanel ? { width: `calc(100% - ${toolsPanelWidth}px)`, marginLeft: toolsPanelWidth } : {}}
+      style={{
+        width: `calc(100% - ${showToolsPanel ? toolsPanelWidth : 0}px - ${editMode ? pageBuilderPanelWidth : 0}px)`,
+        marginLeft: showToolsPanel ? toolsPanelWidth : 0
+      }}
       className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
     >
       <HostUI

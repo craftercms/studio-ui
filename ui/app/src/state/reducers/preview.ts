@@ -40,7 +40,9 @@ import {
   guestModelUpdated,
   guestPathUpdated,
   OPEN_TOOLS,
+  popPageBuilderPanelPage,
   popToolsPanelPage,
+  pushPageBuilderPanelPage,
   pushToolsPanelPage,
   SELECT_FOR_EDIT,
   SET_ACTIVE_TARGETING_MODEL,
@@ -54,6 +56,7 @@ import {
   setHighlightMode,
   setPreviewChoice,
   UPDATE_AUDIENCES_PANEL_MODEL,
+  updatePageBuilderPanelWidth,
   updateToolsPanelWidth
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
@@ -154,6 +157,8 @@ const reducer = createReducer<GlobalState['preview']>(
     toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
     toolsPanelWidth: 240,
+    pageBuilderPanelWidth: 240,
+    pageBuilderPanelStack: [],
     guest: null,
     assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
@@ -524,6 +529,17 @@ const reducer = createReducer<GlobalState['preview']>(
         toolsPanelWidth: payload.width
       };
     },
+    [updatePageBuilderPanelWidth.type]: (state, { payload }) => {
+      const minDrawerWidth = 240;
+      const maxDrawerWidth = 500;
+      if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
+        return state;
+      }
+      return {
+        ...state,
+        pageBuilderPanelWidth: payload.width
+      };
+    },
     [pushToolsPanelPage.type]: (state, { payload }) => {
       return {
         ...state,
@@ -536,6 +552,20 @@ const reducer = createReducer<GlobalState['preview']>(
       return {
         ...state,
         toolsPanelPageStack: stack
+      };
+    },
+    [pushPageBuilderPanelPage.type]: (state, { payload }) => {
+      return {
+        ...state,
+        pageBuilderPanelStack: [...state.pageBuilderPanelStack, payload]
+      };
+    },
+    [popPageBuilderPanelPage.type]: (state) => {
+      let stack = [...state.pageBuilderPanelStack];
+      stack.pop();
+      return {
+        ...state,
+        pageBuilderPanelStack: stack
       };
     },
     [guestPathUpdated.type]: (state, { payload }) => ({

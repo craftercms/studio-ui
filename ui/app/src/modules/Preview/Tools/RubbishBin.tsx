@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import DeleteRounded from '@material-ui/icons/DeleteRounded';
-import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTiltedRight';
+import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
 import { Typography } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) =>
       background: palette.orange.main,
       margin: theme.spacing(1),
       position: 'absolute',
-      left: theme.spacing(1),
+      right: theme.spacing(1),
       bottom: theme.spacing(1),
       color: palette.white,
       zIndex: theme.zIndex.drawer
