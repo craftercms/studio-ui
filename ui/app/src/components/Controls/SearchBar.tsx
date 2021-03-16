@@ -114,6 +114,7 @@ export default function SearchBar(props: SearchBarProps) {
   } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
+  const finalPlaceholder = placeholder || formatMessage(messages.placeholder);
   return (
     <Paper
       variant={focus ? 'elevation' : 'outlined'}
@@ -129,7 +130,7 @@ export default function SearchBar(props: SearchBarProps) {
           setFocus(false);
           onBlur?.();
         }}
-        placeholder={placeholder || formatMessage(messages.placeholder)}
+        placeholder={finalPlaceholder}
         autoFocus={autoFocus}
         disabled={disabled}
         value={keyword}
@@ -137,7 +138,7 @@ export default function SearchBar(props: SearchBarProps) {
           root: clsx(classes.inputRoot, props.classes?.inputRoot),
           input: clsx(classes.inputInput, props.classes?.inputInput)
         }}
-        inputProps={{ 'aria-label': 'search' }}
+        inputProps={{ 'aria-label': finalPlaceholder }}
       />
       {showActionButton && (
         <IconButton onClick={onActionButtonClick ? onActionButtonClick : () => onChange('')} className={classes.icon}>
