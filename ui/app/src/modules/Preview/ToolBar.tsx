@@ -34,7 +34,7 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
   useEnv,
-  usePermissionsByPath,
+  useItemsByPath,
   usePreviewGuest,
   usePreviewState,
   useSelection,
@@ -60,6 +60,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
+import { hasCreateAction, hasEditAction } from '../../utils/content';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -271,16 +272,12 @@ export default function ToolBar() {
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
-  const items = useSelection((state) => state.content.items.byPath);
+  const items = useItemsByPath();
   const item = items?.[models?.[modelId]?.craftercms.path];
   const { previewChoice } = usePreviewState();
   const { authoringBase } = useEnv();
-
-  // region permissions
-  const permissions = usePermissionsByPath();
-  const write = permissions?.[item?.path]?.['write'];
-  const createContent = permissions?.[item?.path]?.['create_content'];
-  // endregion
+  const write = hasEditAction(item?.availableActions);
+  const createContent = hasCreateAction(item?.availableActions);
 
   return (
     <ViewToolbar>

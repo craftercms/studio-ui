@@ -35,10 +35,11 @@ export const useStyles = makeStyles(
       },
       optionsWrapper: {
         marginLeft: 'auto',
-        display: 'none'
+        display: 'flex',
+        visibility: 'hidden'
       },
       optionsWrapperOver: {
-        display: 'flex'
+        visibility: 'visible'
       },
       headerTitle: {
         marginLeft: '6px',
