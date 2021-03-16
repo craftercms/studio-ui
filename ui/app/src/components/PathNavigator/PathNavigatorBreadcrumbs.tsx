@@ -28,6 +28,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import { isNavigable } from './utils';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import { defineMessages, useIntl } from 'react-intl';
 
 export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
 
@@ -40,9 +41,14 @@ export interface BreadcrumbsProps {
   onCrumbSelected(breadcrumb: DetailedItem): void;
 }
 
+const messages = defineMessages({
+  filter: { id: 'pathNavigator.pathFilterInputPlaceholder', defaultMessage: 'Filter children...' }
+});
+
 // PathBreadcrumbs + PathOptions + (Path)Search
 function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
 
@@ -63,6 +69,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             autoFocus
             onChange={onChange}
             keyword={keyword}
+            placeholder={formatMessage(messages.filter)}
             onActionButtonClick={() => {
               onSearch('');
             }}

@@ -50,7 +50,6 @@ import {
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
-import { fetchUserPermissions } from '../../../state/actions/content';
 import { asDayMonthDateTime } from '../../../utils/datetime';
 import { hasRevertAction } from '../../../utils/content';
 
@@ -426,7 +425,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           selectedItem={item}
           onItemClicked={(item) => {
             setOpenSelector(false);
-            dispatch(batchActions([versionsChangeItem({ item }), fetchUserPermissions({ path: item.path })]));
+            dispatch(versionsChangeItem({ item }));
           }}
         />
         <SuspenseWithEmptyState resource={versionsResource}>

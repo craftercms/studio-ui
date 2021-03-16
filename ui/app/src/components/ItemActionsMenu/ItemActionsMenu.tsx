@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import ContextMenu, { ContextMenuProps } from '../ContextMenu';
-import { useActiveSiteId, useEnv, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
 import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -59,9 +59,9 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
     anchorPosition
   } = props;
   const site = useActiveSiteId();
-  const items = useSelection((state) => state.content.items);
+  const items = useItemsByPath();
   const clipboard = useSelection((state) => state.content.clipboard);
-  const item = items.byPath?.[path];
+  const item = items?.[path];
   const { authoringBase } = useEnv();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
