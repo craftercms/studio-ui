@@ -35,7 +35,6 @@ import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 
 interface PathNavigatorTreeItemProps {
   node: TreeNode;
-  keyword: string;
   itemsByPath: LookupTable<DetailedItem>;
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
@@ -146,10 +145,11 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
-  const { node, keyword, itemsByPath, onLabelClick, onIconClick, onOpenItemMenu, onFilterChange } = props;
+  const { node, itemsByPath, onLabelClick, onIconClick, onOpenItemMenu, onFilterChange } = props;
   const classes = useStyles();
   const [over, setOver] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [keyword, setKeyword] = useState('');
   const { formatMessage } = useIntl();
   const onMouseOver = (e) => {
     e.stopPropagation();
@@ -222,11 +222,15 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                 <SearchBar
                   autoFocus
                   onClick={(e) => e.stopPropagation()}
-                  onChange={(keyword) => onFilterChange(keyword, node.id)}
+                  onChange={(keyword) => {
+                    setKeyword(keyword);
+                    onFilterChange(keyword, node.id);
+                  }}
                   keyword={keyword}
                   placeholder={formatMessage(translations.filter)}
                   onActionButtonClick={(e) => {
                     e.stopPropagation();
+                    setKeyword('');
                     onFilterChange('', node.id);
                   }}
                   showActionButton={keyword && true}
@@ -240,6 +244,8 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   size="small"
                   onClick={(e) => {
                     e.stopPropagation();
+                    setKeyword('');
+                    onFilterChange('', node.id);
                     setShowFilter(false);
                   }}
                   className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
@@ -270,7 +276,6 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
         <PathNavigatorTreeItem
           key={node.id}
           node={node}
-          keyword={keyword}
           itemsByPath={itemsByPath}
           onLabelClick={onLabelClick}
           onIconClick={onIconClick}

@@ -98,7 +98,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     anchorEl: null,
     loaderItems: null
   });
-  const [keyword, setKeyword] = useState('');
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: []
@@ -141,7 +140,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const node = {
             id: childPath,
             name: itemsByPath[childPath].label,
-            children: [{ id: 'loading' }]
+            children: nodesByPathRef.current[childPath]?.children
+              ? nodesByPathRef.current[childPath].children
+              : [{ id: 'loading' }]
           };
           nodesByPathRef.current[path].children.push(node);
           nodesByPathRef.current[childPath] = node;
@@ -214,24 +215,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
-      // if: the path does not exist on childrenByParentPath, the children was not fetched
-      // else: the tree should expand the selected node
-      if (!childrenByParentPath[path]) {
-        fetchingPathsRef.current.push(path);
-        dispatch(
-          pathNavigatorTreeFetchPathChildren({
-            id,
-            path
-          })
-        );
-      } else {
-        dispatch(
-          pathNavigatorTreeUpdate({
-            id,
-            expanded: [...state.expanded, path]
-          })
-        );
-      }
+      fetchingPathsRef.current.push(path);
+      dispatch(
+        pathNavigatorTreeFetchPathChildren({
+          id,
+          path
+        })
+      );
     }
   };
 
@@ -276,10 +266,17 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, id, onSearch$]);
+  }, [dispatch, id, onSearch$, rootPath]);
 
   const onFilterChange = (keyword: string, path: string) => {
-    setKeyword(keyword);
+    nodesByPathRef.current[path].children = [{ id: 'loading' }];
+    setData({ ...nodesByPathRef.current[rootPath] });
+    dispatch(
+      pathNavigatorTreeUpdate({
+        id,
+        expanded: state.expanded.includes(path) ? [...state.expanded] : [...state.expanded, path]
+      })
+    );
     onSearch$.next({ keyword, path });
   };
 
@@ -291,7 +288,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         container={container}
         isCollapsed={state?.collapsed}
         data={data}
-        keyword={keyword}
         itemsByPath={itemsByPath}
         expandedNodes={state?.expanded}
         onIconClick={onIconClick}

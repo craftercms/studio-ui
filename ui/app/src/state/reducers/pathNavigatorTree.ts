@@ -25,6 +25,7 @@ import {
   pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
+import { withoutIndex } from '../../utils/path';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -65,17 +66,17 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          expanded: [...state[id].expanded, path]
+          expanded: state[id].expanded.includes(path) ? [...state[id].expanded] : [...state[id].expanded, path]
         }
       };
     },
-    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children } }) => {
+    [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
       return {
         ...state,
         [id]: {
           ...state[id],
           expanded: children.length
-            ? [...state[id].expanded]
+            ? [...state[id].expanded.filter((path) => path === parentPath || !path.includes(withoutIndex(parentPath)))]
             : [...state[id].expanded.filter((path) => path !== parentPath)],
           childrenByParentPath: {
             ...state[id].childrenByParentPath,

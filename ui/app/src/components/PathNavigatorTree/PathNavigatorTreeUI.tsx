@@ -39,7 +39,6 @@ interface PathNavigatorTreeUIProps {
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
   data: TreeNode;
-  keyword: string;
   itemsByPath: LookupTable<DetailedItem>;
   onIconClick(path: string): void;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
@@ -85,7 +84,6 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     container,
     title,
     data,
-    keyword,
     itemsByPath,
     onIconClick,
     onLabelClick,
@@ -134,7 +132,6 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         >
           <PathNavigatorTreeItem
             node={data}
-            keyword={keyword}
             itemsByPath={itemsByPath}
             onIconClick={onIconClick}
             onLabelClick={onLabelClick}
