@@ -15,8 +15,7 @@
  */
 
 import TreeItem from '@material-ui/lab/TreeItem';
-import React from 'react';
-import { TreeNode } from '../Navigation/FolderBrowserTreeView';
+import React, { useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -27,6 +26,16 @@ import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertRoundedIcon from '@material-ui/icons/MoreVertRounded';
+import { TreeNode } from './PathNavigatorTreeUI';
+import clsx from 'clsx';
+
+interface PathNavigatorTreeItemProps {
+  node: TreeNode;
+  itemsByPath: LookupTable<DetailedItem>;
+  onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
+  onIconClick(path: string): void;
+  onOpenItemMenu(element: Element, path: string): void;
+}
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -40,14 +49,8 @@ const useStyles = makeStyles((theme) =>
       display: 'flex',
       paddingLeft: 0,
       height: '26px',
-      '& .options': {
-        display: 'none'
-      },
       '&:hover': {
-        backgroundColor: `${theme.palette.action.hover} !important`,
-        '& .options': {
-          display: 'block'
-        }
+        backgroundColor: `${theme.palette.action.hover} !important`
       }
     },
     iconContainer: {
@@ -57,6 +60,17 @@ const useStyles = makeStyles((theme) =>
         fontSize: '26px',
         color: theme.palette.text.secondary
       }
+    },
+    optionsWrapper: {
+      top: 0,
+      right: 0,
+      visibility: 'hidden',
+      position: 'absolute',
+      marginLeft: 'auto',
+      display: 'flex'
+    },
+    optionsWrapperOver: {
+      visibility: 'visible'
     },
     loading: {
       display: 'flex',
@@ -70,17 +84,12 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-interface PathNavigatorTreeItemProps {
-  node: TreeNode;
-  itemsByPath: LookupTable<DetailedItem>;
-  onLabelClick(path: string): void;
-  onIconClick(path: string): void;
-  onOpenItemMenu(element: Element, path: string): void;
-}
-
 export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const { node, itemsByPath, onLabelClick, onIconClick, onOpenItemMenu } = props;
   const classes = useStyles();
+  const [over, setOver] = useState(false);
+  const onMouseOver = () => setOver(true);
+  const onMouseLeave = () => setOver(false);
   return node.id === 'loading' ? (
     <div className={classes.loading}>
       <CircularProgress size={14} />
@@ -92,18 +101,20 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
     <TreeItem
       key={node.id}
       nodeId={node.id}
-      onLabelClick={() => onLabelClick(node.id)}
+      onLabelClick={(event) => onLabelClick(event, node.id)}
       onIconClick={() => onIconClick(node.id)}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
       label={
         <>
           <ItemDisplay
-            styles={{ root: { maxWidth: '100%', flexGrow: 1 } }}
+            styles={{ root: { maxWidth: over ? 'calc(100% - 50px)' : '100%', flexGrow: 1 } }}
             item={itemsByPath[node.id]}
             showPublishingTarget={true}
             showWorkflowState={true}
             labelTypographyProps={{ variant: 'body2' }}
           />
-          <section className="options">
+          <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
             <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
               <IconButton
                 size="small"
@@ -126,18 +137,16 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
         iconContainer: classes.iconContainer
       }}
     >
-      {Array.isArray(node.children)
-        ? node.children.map((node) => (
-            <PathNavigatorTreeItem
-              key={node.id}
-              node={node}
-              itemsByPath={itemsByPath}
-              onLabelClick={onLabelClick}
-              onIconClick={onIconClick}
-              onOpenItemMenu={onOpenItemMenu}
-            />
-          ))
-        : null}
+      {node.children.map((node) => (
+        <PathNavigatorTreeItem
+          key={node.id}
+          node={node}
+          itemsByPath={itemsByPath}
+          onLabelClick={onLabelClick}
+          onIconClick={onIconClick}
+          onOpenItemMenu={onOpenItemMenu}
+        />
+      ))}
     </TreeItem>
   );
 }

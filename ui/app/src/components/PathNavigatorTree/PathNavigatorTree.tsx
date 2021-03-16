@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
-import { useMount, useSelection, useSpreadState } from '../../utils/hooks';
+import { useItemsByPath, useMount, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeFetchPathChildren,
@@ -27,9 +27,12 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { isNavigable } from '../PathNavigator/utils';
-import { ContextMenuOption } from '../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import ItemActionsMenu from '../ItemActionsMenu';
+import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
+import { defineMessages, useIntl } from 'react-intl';
+import { previewItem } from '../../state/actions/preview';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -57,18 +60,37 @@ interface Menu {
   loaderItems?: number;
 }
 
+const translations = defineMessages({
+  refresh: {
+    id: 'words.refresh',
+    defaultMessage: 'Refresh'
+  }
+});
+
+const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
+  refresh: {
+    id: 'refresh',
+    label: translations.refresh
+  }
+};
+
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit, icon, container } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
-  const itemsByPath = useSelection((state) => state.content.items.byPath);
+  const itemsByPath = useItemsByPath();
   const childrenByParentPath = state?.childrenByParentPath;
   const rootItem = itemsByPath?.[rootPath];
   const [data, setData] = useState(null);
-  const [itemMenu, setItemMenu] = useSpreadState<Menu>({
+  const [itemMenu, setItemMenu] = useState<Menu>({
     path: null,
     anchorEl: null,
     loaderItems: null
   });
+  const [widgetMenu, setWidgetMenu] = useState<Menu>({
+    anchorEl: null,
+    sections: []
+  });
+  const { formatMessage } = useIntl();
   const nodesByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
 
@@ -121,9 +143,22 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   const onChangeCollapsed = (collapsed) => {};
 
-  const onLabelClick = (path: string) => {
+  const onLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
     if (isNavigable(itemsByPath[path])) {
-      console.log('preview: ', path);
+      if (event.ctrlKey || event.metaKey) {
+        dispatch(
+          previewItem({
+            item: itemsByPath[path],
+            newTab: true
+          })
+        );
+      } else {
+        dispatch(
+          previewItem({
+            item: itemsByPath[path]
+          })
+        );
+      }
     } else {
       onIconClick(path);
     }
@@ -160,6 +195,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     }
   };
 
+  const onHeaderButtonClick = (element: Element) => {
+    setWidgetMenu({
+      sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+      anchorEl: element
+    });
+  };
+
   const onOpenItemMenu = (element: Element, path: string) => {
     setItemMenu({
       path,
@@ -169,6 +211,14 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
+
+  const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
+
+  const onSimpleMenuClick = (option: string) => {
+    onCloseWidgetMenu();
+    if (option === 'refresh') {
+    }
+  };
 
   return (
     <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !data}>
@@ -184,6 +234,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onLabelClick={onLabelClick}
         onChangeCollapsed={onChangeCollapsed}
         onOpenItemMenu={onOpenItemMenu}
+        onHeaderButtonClick={onHeaderButtonClick}
       />
       <ItemActionsMenu
         open={Boolean(itemMenu.anchorEl)}
@@ -191,6 +242,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         numOfLoaderItems={itemMenu.loaderItems}
         anchorEl={itemMenu.anchorEl}
         onClose={onCloseItemMenu}
+      />
+      <ContextMenu
+        anchorEl={widgetMenu.anchorEl}
+        options={widgetMenu.sections}
+        open={Boolean(widgetMenu.anchorEl)}
+        onClose={onCloseWidgetMenu}
+        onMenuItemClicked={onSimpleMenuClick}
       />
     </ConditionalLoadingState>
   );

@@ -17,13 +17,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
+  clearClipboard,
   fetchDetailedItemComplete,
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
   restoreClipboard,
-  setClipboard,
-  clearClipboard
+  setClipboard
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
@@ -131,12 +131,9 @@ const reducer = createReducer<ContentState>(initialState, {
   [pathNavigatorTreeFetchItemComplete.type]: (state, { payload: { item } }) => {
     return {
       ...state,
-      items: {
-        ...state.items,
-        byPath: {
-          ...state.items.byPath,
-          [item.path]: item
-        }
+      itemsByPath: {
+        ...state.itemsByPath,
+        [item.path]: item
       }
     };
   },

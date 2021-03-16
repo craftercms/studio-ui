@@ -28,6 +28,28 @@ import { DetailedItem } from '../../models/Item';
 import ArrowRightRoundedIcon from '@material-ui/icons/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@material-ui/icons/ArrowDropDownRounded';
 
+export interface TreeNode {
+  id: string;
+  name: string;
+  children?: TreeNode[];
+}
+
+interface PathNavigatorTreeUIProps {
+  title: string;
+  icon?: Partial<StateStylingProps>;
+  container?: Partial<StateStylingProps>;
+  data: TreeNode;
+  itemsByPath: LookupTable<DetailedItem>;
+  onIconClick(path: string): void;
+  onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
+  onChangeCollapsed(collapsed: boolean): void;
+  onOpenItemMenu(element: Element, path: string): void;
+  onHeaderButtonClick(element: Element): void;
+  isCollapsed: boolean;
+  expandedNodes: string[];
+  classes?: Partial<Record<'root' | 'body', string>>;
+}
+
 const useStyles = makeStyles(() =>
   createStyles({
     root: {},
@@ -54,27 +76,6 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export interface TreeNode {
-  id: string;
-  name: string;
-  children?: TreeNode[];
-}
-
-interface PathNavigatorTreeUIProps {
-  title: string;
-  icon?: Partial<StateStylingProps>;
-  container?: Partial<StateStylingProps>;
-  data: TreeNode;
-  itemsByPath: LookupTable<DetailedItem>;
-  onIconClick(path: string): void;
-  onLabelClick(path: string): void;
-  onChangeCollapsed(collapsed: boolean): void;
-  onOpenItemMenu(element: Element, path: string): void;
-  isCollapsed: boolean;
-  expandedNodes: string[];
-  classes?: Partial<Record<'root' | 'body', string>>;
-}
-
 export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
   const classes = useStyles();
   const {
@@ -87,6 +88,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     onLabelClick,
     onChangeCollapsed,
     onOpenItemMenu,
+    onHeaderButtonClick,
     isCollapsed,
     expandedNodes
   } = props;
@@ -114,7 +116,9 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         }}
         title={title}
         locale={null}
-        onContextMenu={() => {}}
+        onContextMenu={(element) => {
+          onHeaderButtonClick(element);
+        }}
       />
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <TreeView
