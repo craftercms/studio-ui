@@ -30,6 +30,10 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<PayloadWithId<
   'PATH_NAVIGATOR_TREE_UPDATE'
 );
 
+export const pathNavigatorTreeSetCollapsed = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
+  'PATH_NAVIGATOR_TREE_SET_COLLAPSED'
+);
+
 export const pathNavigatorTreeFetchItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_TREE_FETCH_ITEM_COMPLETE'
 );

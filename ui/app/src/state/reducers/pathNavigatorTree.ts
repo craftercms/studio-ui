@@ -21,6 +21,7 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeInit,
+  pathNavigatorTreeSetCollapsed,
   pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
@@ -47,6 +48,15 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         [id]: {
           ...state[id],
           expanded
+        }
+      };
+    },
+    [pathNavigatorTreeSetCollapsed.type]: (state, { payload: { id, collapsed } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          collapsed
         }
       };
     },

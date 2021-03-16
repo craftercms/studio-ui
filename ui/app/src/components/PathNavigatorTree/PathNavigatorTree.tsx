@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeInit,
+  pathNavigatorTreeSetCollapsed,
   pathNavigatorTreeUpdate
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -33,7 +34,17 @@ import ItemActionsMenu from '../ItemActionsMenu';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
+import {
+  folderCreated,
+  folderRenamed,
+  itemCreated,
+  itemDuplicated,
+  itemsDeleted,
+  itemsPasted,
+  itemUpdated
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -144,7 +155,33 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     fetchingPathsRef.current = nextFetching;
   }, [data, rootPath, childrenByParentPath, itemsByPath]);
 
-  const onChangeCollapsed = (collapsed) => {};
+  // TODO: Item Updates Propagation
+  useEffect(() => {
+    const events = [
+      itemsPasted.type,
+      itemUpdated.type,
+      folderCreated.type,
+      folderRenamed.type,
+      itemsDeleted.type,
+      itemDuplicated.type,
+      itemCreated.type
+    ];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        default: {
+          break;
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [state, id, dispatch]);
+
+  const onChangeCollapsed = (collapsed) => {
+    dispatch(pathNavigatorTreeSetCollapsed({ id, collapsed }));
+  };
 
   const onLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
     if (isNavigable(itemsByPath[path])) {
