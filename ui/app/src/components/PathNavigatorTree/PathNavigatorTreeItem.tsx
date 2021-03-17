@@ -200,7 +200,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   <MoreVertRoundedIcon />
                 </IconButton>
               </Tooltip>
-              {Boolean(node.children.length) && (
+              {(Boolean(node.children.length) || showFilter) && (
                 <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                   <IconButton
                     size="small"
@@ -210,7 +210,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                       onFilterButtonClick();
                     }}
                   >
-                    <SearchRoundedIcon />
+                    <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
                   </IconButton>
                 </Tooltip>
               )}
