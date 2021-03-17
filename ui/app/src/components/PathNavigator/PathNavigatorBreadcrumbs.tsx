@@ -38,7 +38,7 @@ export interface BreadcrumbsProps {
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
   onMenu?(element: Element): void;
   onSearch?(keyword: string): void;
-  onCrumbSelected(breadcrumb: DetailedItem): void;
+  onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
 }
 
 const messages = defineMessages({
@@ -110,7 +110,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
                   TypographyClasses={{
                     root: clsx(classes.breadcrumbsTypography, maxIndex === i && classes.breadcrumbLast)
                   }}
-                  onClick={() => onCrumbSelected(item)}
+                  onClick={(e) => onCrumbSelected(item, e)}
                   children={item.label}
                 />
               ) : (
@@ -123,7 +123,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               )
             )}
           </MuiBreadcrumbs>
-          <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
+          <div className={clsx(classes.breadcrumbActionsWrapper)}>
             {onMenu && (
               <IconButton
                 aria-label="options"

@@ -150,6 +150,21 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable
           }).configuration;
         }
+        const pageBuilderPanel = xml.querySelector(
+          '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
+        );
+        if (pageBuilderPanel) {
+          pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
+            e.setAttribute('uiKey', String(index));
+            if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
+              e.querySelector(':scope > configuration')?.setAttribute('target', 'pageBuilderPanel');
+            }
+          });
+          config.preview.pageBuilderPanel = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
+            arrays,
+            renameTable
+          });
+        }
       }
       return config;
     })

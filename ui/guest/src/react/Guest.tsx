@@ -370,7 +370,15 @@ function Guest(props: GuestProps) {
 
   // Listen for drag events for desktop asset drag & drop
   useEffect(() => {
-    if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === status) {
+    if (
+      [
+        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+        EditingStatus.SORTING_COMPONENT,
+        EditingStatus.PLACING_NEW_COMPONENT,
+        EditingStatus.PLACING_DETACHED_COMPONENT,
+        EditingStatus.PLACING_DETACHED_ASSET
+      ].includes(status)
+    ) {
       const dropSubscription = fromEvent(document, 'drop').subscribe((event) =>
         dispatch({ type: 'document:drop', payload: { event } })
       );
