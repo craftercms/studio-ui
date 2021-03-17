@@ -140,9 +140,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const node = {
             id: childPath,
             name: itemsByPath[childPath].label,
-            children: nodesByPathRef.current[childPath]?.children
-              ? nodesByPathRef.current[childPath].children
-              : [{ id: 'loading' }]
+            children: [{ id: 'loading' }]
           };
           nodesByPathRef.current[path].children.push(node);
           nodesByPathRef.current[childPath] = node;
