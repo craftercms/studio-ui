@@ -26,26 +26,30 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; collapsed?: boolean; excludes?: string[]; limit: number }>
 >('PATH_NAVIGATOR_TREE_INIT');
 
-export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<PayloadWithId<{ expanded: string[] }>>(
-  'PATH_NAVIGATOR_TREE_UPDATE'
+export const pathNavigatorTreeExpandPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
+  'PATH_NAVIGATOR_TREE_EXPAND_PATH'
+);
+
+export const pathNavigatorTreeCollapsePath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
+  'PATH_NAVIGATOR_TREE_COLLAPSE_PATH'
 );
 
 export const pathNavigatorTreeSetKeyword = /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string; path: string }>>(
   'PATH_NAVIGATOR_TREE_SET_KEYWORD'
 );
 
-export const pathNavigatorTreeSetCollapsed = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
-  'PATH_NAVIGATOR_TREE_SET_COLLAPSED'
+export const pathNavigatorTreeToggleExpanded = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
+  'PATH_NAVIGATOR_TREE_TOGGLE_EXPANDED'
 );
 
-export const pathNavigatorTreeFetchItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
-  'PATH_NAVIGATOR_TREE_FETCH_ITEM_COMPLETE'
+export const pathNavigatorTreeFetchRootItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
+  'PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_COMPLETE'
 );
 
-export const pathNavigatorTreeFetchItemFailed = /*#__PURE__*/ createAction<{
+export const pathNavigatorTreeFetchRootItemFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_ITEM_FAILED');
+}>('PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_FAILED');
 
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>

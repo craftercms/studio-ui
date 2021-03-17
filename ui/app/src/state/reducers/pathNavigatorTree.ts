@@ -18,12 +18,13 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import LookupTable from '../../models/LookupTable';
 import {
+  pathNavigatorTreeCollapsePath,
+  pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeInit,
-  pathNavigatorTreeSetCollapsed,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
 
@@ -44,16 +45,25 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeUpdate.type]: (state, { payload: { id, expanded } }) => {
+    [pathNavigatorTreeExpandPath.type]: (state, { payload: { id, path } }) => {
       return {
         ...state,
         [id]: {
           ...state[id],
-          expanded
+          expanded: [...state[id].expanded, path]
         }
       };
     },
-    [pathNavigatorTreeSetCollapsed.type]: (state, { payload: { id, collapsed } }) => {
+    [pathNavigatorTreeCollapsePath.type]: (state, { payload: { id, path } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          expanded: state[id].expanded.filter((expanded) => expanded !== path)
+        }
+      };
+    },
+    [pathNavigatorTreeToggleExpanded.type]: (state, { payload: { id, collapsed } }) => {
       return {
         ...state,
         [id]: {

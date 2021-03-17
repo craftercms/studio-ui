@@ -38,8 +38,8 @@ import { createLookupTable } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
 import {
-  pathNavigatorTreeFetchItemComplete,
-  pathNavigatorTreeFetchPathChildrenComplete
+  pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchRootItemComplete
 } from '../actions/pathNavigatorTree';
 
 type ContentState = GlobalState['content'];
@@ -128,7 +128,7 @@ const reducer = createReducer<ContentState>(initialState, {
       }
     };
   },
-  [pathNavigatorTreeFetchItemComplete.type]: (state, { payload: { item } }) => {
+  [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { item } }) => {
     return {
       ...state,
       itemsByPath: {

@@ -18,10 +18,10 @@ import { ofType } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
-  pathNavigatorTreeFetchItemComplete,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenFailed,
+  pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetKeyword
 } from '../actions/pathNavigatorTree';
@@ -38,7 +38,7 @@ export default [
       switchMap(([{ payload }, state]) => {
         const { id, path } = payload;
         return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
-          map((item) => pathNavigatorTreeFetchItemComplete({ id, item })),
+          map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
           catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
         );
       })

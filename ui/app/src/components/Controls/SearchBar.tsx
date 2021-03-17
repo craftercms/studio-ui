@@ -119,13 +119,13 @@ export default function SearchBar(props: SearchBarProps) {
   const finalPlaceholder = placeholder || formatMessage(messages.placeholder);
   return (
     <Paper
+      onClick={onClick}
       variant={focus ? 'elevation' : 'outlined'}
       elevation={focus ? 4 : 0}
       className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && <DecoratorIcon className={classes.searchIcon} />}
       <InputBase
-        onClick={onClick}
         onChange={(e) => onChange(e.target.value)}
         onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}
         onFocus={() => setFocus(true)}

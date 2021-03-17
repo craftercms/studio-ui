@@ -19,11 +19,12 @@ import PathNavigatorTreeUI from './PathNavigatorTreeUI';
 import { useItemsByPath, useMount, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
+  pathNavigatorTreeCollapsePath,
+  pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeInit,
-  pathNavigatorTreeSetCollapsed,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeToggleExpanded
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
@@ -196,7 +197,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [state, id, dispatch]);
 
   const onChangeCollapsed = (collapsed) => {
-    dispatch(pathNavigatorTreeSetCollapsed({ id, collapsed }));
+    dispatch(pathNavigatorTreeToggleExpanded({ id, collapsed }));
   };
 
   const onLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
@@ -221,20 +222,19 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onIconClick = (path: string) => {
-    // If the path is already expanded, pathNavigatorTreeUpdate should collapsed it
     if (state.expanded.includes(path)) {
       dispatch(
-        pathNavigatorTreeUpdate({
+        pathNavigatorTreeCollapsePath({
           id,
-          expanded: state.expanded.filter((expanded) => expanded !== path)
+          path
         })
       );
     } else {
       if (childrenByParentPath[path]) {
         dispatch(
-          pathNavigatorTreeUpdate({
+          pathNavigatorTreeExpandPath({
             id,
-            expanded: [...state.expanded, path]
+            path
           })
         );
       } else {
@@ -295,9 +295,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     setData({ ...nodesByPathRef.current[rootPath] });
     if (!state.expanded.includes(path)) {
       dispatch(
-        pathNavigatorTreeUpdate({
+        pathNavigatorTreeExpandPath({
           id,
-          expanded: [...state.expanded, path]
+          path
         })
       );
     }
