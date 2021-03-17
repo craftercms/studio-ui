@@ -22,7 +22,8 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenFailed,
-  pathNavigatorTreeInit
+  pathNavigatorTreeInit,
+  pathNavigatorTreeSetKeyword
 } from '../actions/pathNavigatorTree';
 import { fetchChildrenByPath, fetchItemByPath } from '../../services/content';
 import { pathNavigatorFetchPathFailed } from '../actions/pathNavigator';
@@ -43,15 +44,37 @@ export default [
       })
     ),
   // endregion
-  // region pathNavigatorTreeInit
+  // region pathNavigatorFetchPathChildren
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorTreeFetchPathChildren.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id, path, options } = payload;
-        return fetchChildrenByPath(state.sites.active, path, options).pipe(
+        return fetchChildrenByPath(state.sites.active, path, {
+          limit: state.pathNavigatorTree[id].limit,
+          ...options
+        }).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
+          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+        );
+      })
+    ),
+  // endregion
+  // region pathNavigatorTreeSetKeyword
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeSetKeyword.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        const { id, path, keyword } = payload;
+        return fetchChildrenByPath(state.sites.active, path, {
+          limit: state.pathNavigatorTree[id].limit,
+          keyword
+        }).pipe(
+          map((children) =>
+            pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options: { keyword } })
+          ),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
         );
       })

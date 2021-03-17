@@ -36,6 +36,7 @@ import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 interface PathNavigatorTreeItemProps {
   node: TreeNode;
   itemsByPath: LookupTable<DetailedItem>;
+  keywordByPath: LookupTable<string>;
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
@@ -87,13 +88,15 @@ const useStyles = makeStyles((theme) =>
       display: 'flex',
       alignItems: 'center'
     },
-    noResultsSection: {
+    empty: {
       color: theme.palette.text.secondary,
       display: 'flex',
       alignItems: 'center',
-      marginBottom: '5px',
+      height: '26px',
+      marginLeft: '10px',
       '& svg': {
-        marginRight: '5px'
+        marginRight: '5px',
+        fontSize: '1.1rem'
       }
     },
     iconContainer: {
@@ -145,11 +148,11 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
-  const { node, itemsByPath, onLabelClick, onIconClick, onOpenItemMenu, onFilterChange } = props;
+  const { node, itemsByPath, keywordByPath, onLabelClick, onIconClick, onOpenItemMenu, onFilterChange } = props;
   const classes = useStyles();
   const [over, setOver] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
-  const [keyword, setKeyword] = useState('');
+  const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[node.id]));
+  const [keyword, setKeyword] = useState(keywordByPath[node.id] ?? '');
   const { formatMessage } = useIntl();
   const onMouseOver = (e) => {
     e.stopPropagation();
@@ -164,6 +167,13 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
     setShowFilter(!showFilter);
   };
 
+  const onCloseFilterBox = () => {
+    if (keyword) {
+      setKeyword('');
+      onFilterChange('', node.id);
+    }
+  };
+
   return node.id === 'loading' ? (
     <div className={classes.loading}>
       <CircularProgress size={14} />
@@ -171,6 +181,13 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
         <FormattedMessage id="words.loading" defaultMessage="Loading" />
       </Typography>
     </div>
+  ) : node.id === 'empty' ? (
+    <section className={classes.empty}>
+      <ErrorOutlineRoundedIcon />
+      <Typography variant="caption">
+        <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
+      </Typography>
+    </section>
   ) : (
     <TreeItem
       key={node.id}
@@ -207,6 +224,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      onCloseFilterBox();
                       onFilterButtonClick();
                     }}
                   >
@@ -230,8 +248,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   placeholder={formatMessage(translations.filter)}
                   onActionButtonClick={(e) => {
                     e.stopPropagation();
-                    setKeyword('');
-                    onFilterChange('', node.id);
+                    onCloseFilterBox();
                   }}
                   showActionButton={keyword && true}
                   classes={{
@@ -244,8 +261,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   size="small"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setKeyword('');
-                    onFilterChange('', node.id);
+                    onCloseFilterBox();
                     setShowFilter(false);
                   }}
                   className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
@@ -253,14 +269,6 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   <CloseIconRounded />
                 </IconButton>
               </section>
-              {keyword && Boolean(node.id !== 'loading' && node.children.length < 1) && (
-                <section className={classes.noResultsSection}>
-                  <ErrorOutlineRoundedIcon />
-                  <Typography variant="caption">
-                    <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
-                  </Typography>
-                </section>
-              )}
             </>
           )}
         </>
@@ -277,6 +285,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
           key={node.id}
           node={node}
           itemsByPath={itemsByPath}
+          keywordByPath={keywordByPath}
           onLabelClick={onLabelClick}
           onIconClick={onIconClick}
           onOpenItemMenu={onOpenItemMenu}

@@ -22,10 +22,10 @@ import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetCollapsed,
+  pathNavigatorTreeSetKeyword,
   pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
-import { withoutIndex } from '../../utils/path';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -39,7 +39,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           collapsed,
           limit,
           expanded: [],
-          childrenByParentPath: {}
+          childrenByParentPath: {},
+          keywordByPath: {}
         }
       };
     },
@@ -61,6 +62,18 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
+    [pathNavigatorTreeSetKeyword.type]: (state, { payload: { id, path, keyword } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          keywordByPath: {
+            ...state[id].keywordByPath,
+            [path]: keyword
+          }
+        }
+      };
+    },
     [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {
       return {
         ...state,
@@ -76,7 +89,9 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         [id]: {
           ...state[id],
           expanded: children.length
-            ? [...state[id].expanded.filter((path) => path === parentPath || !path.includes(withoutIndex(parentPath)))]
+            ? [...state[id].expanded]
+            : options?.keyword
+            ? [...state[id].expanded]
             : [...state[id].expanded.filter((path) => path !== parentPath)],
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
