@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import ToolsPanel from './ToolsPanel';
 import Host from './Host';
 import ToolBar from './ToolBar';
 import { PreviewConcierge } from './PreviewConcierge';
 import usePreviewUrlControl from './usePreviewUrlControl';
+import PageBuilderPanel from '../../components/PageBuilderPanel';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     height: '100%',
     display: 'flex',
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export default function Preview(props) {
+function Preview(props) {
   const classes = useStyles({});
   usePreviewUrlControl(props.history);
   return (
@@ -40,8 +41,11 @@ export default function Preview(props) {
           <ToolBar />
           <Host />
           <ToolsPanel />
+          <PageBuilderPanel />
         </section>
       </PreviewConcierge>
     </>
   );
 }
+
+export default Preview;

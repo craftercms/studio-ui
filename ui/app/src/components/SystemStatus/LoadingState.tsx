@@ -24,9 +24,10 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     loadingView: {
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
       textAlign: 'center',
+      alignItems: 'center',
+      flexDirection: 'column',
+      justifyContent: 'center',
       margin: `${theme.spacing(2)}px auto`
     },
     gearContainer: {

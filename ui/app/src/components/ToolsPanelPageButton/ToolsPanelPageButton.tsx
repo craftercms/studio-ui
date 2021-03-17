@@ -17,14 +17,24 @@
 import React from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { useDispatch } from 'react-redux';
-import { pushToolsPanelPage } from '../../state/actions/preview';
+import { pushPageBuilderPanelPage, pushToolsPanelPage } from '../../state/actions/preview';
 import { createWidgetDescriptor } from '../../utils/state';
+import { SystemIconDescriptor } from '../SystemIcon';
 
-export default function ToolsPanelPageButton(props) {
+export interface ToolsPanelPageButtonProps {
+  title: string;
+  subtitle: string;
+  target?: 'pageBuilderPanel' | 'toolsPanel';
+  icon: SystemIconDescriptor;
+}
+
+export default function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
+  const { target = 'toolsPanel' } = props;
   const dispatch = useDispatch();
+  const pushPage = target === 'toolsPanel' ? pushToolsPanelPage : pushPageBuilderPanelPage;
   const turnPage = () => {
     dispatch(
-      pushToolsPanelPage(
+      pushPage(
         createWidgetDescriptor({
           id: 'craftercms.components.ToolsPanelPage',
           roles: [],
