@@ -107,7 +107,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   });
   const { formatMessage } = useIntl();
   const nodesByPathRef = useRef({});
-  const keywordByPathRef = useRef([]);
+  const keywordByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
 
@@ -140,13 +140,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     fetchingPathsRef.current.forEach((path) => {
       if (childrenByParentPath[path]) {
         nodesByPathRef.current[path].children = [];
-        if (keywordByPathRef.current.includes(path) && childrenByParentPath[path].length === 0) {
+        if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
           nodesByPathRef.current[path].children = [
             {
               id: 'empty'
             }
           ];
-          keywordByPathRef.current = keywordByPathRef.current.filter((p) => p !== path);
         }
         childrenByParentPath[path].forEach((childPath) => {
           const node = {
@@ -165,9 +164,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         nextFetching.push(path);
       }
     });
-    // keywordByPathRef.current = nextFetching;
     fetchingPathsRef.current = nextFetching;
   }, [rootPath, childrenByParentPath, itemsByPath]);
+
+  useEffect(() => {
+    keywordByPathRef.current = keywordByPath;
+  }, [keywordByPath]);
 
   // TODO: Item Updates Propagation
   useEffect(() => {
@@ -275,7 +277,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
       fetchingPathsRef.current.push(path);
-      keywordByPathRef.current.push(path);
       dispatch(
         pathNavigatorTreeSetKeyword({
           id,
