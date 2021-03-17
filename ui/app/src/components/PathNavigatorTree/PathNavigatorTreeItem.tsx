@@ -32,16 +32,20 @@ import clsx from 'clsx';
 import SearchBar from '../Controls/SearchBar';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import Link from '@material-ui/core/Link';
 
 interface PathNavigatorTreeItemProps {
   node: TreeNode;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
+  totalByPath: LookupTable<number>;
+  childrenByParentPath: LookupTable<string[]>;
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
   onOpenItemMenu(element: Element, path: string): void;
   onFilterChange(keyword: string, path: string): void;
+  onMoreClick(path: string): void;
 }
 
 export type BreadcrumbsClassKey = 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
@@ -99,6 +103,13 @@ const useStyles = makeStyles((theme) =>
         fontSize: '1.1rem'
       }
     },
+    more: {
+      color: theme.palette.text.primary,
+      display: 'flex',
+      alignItems: 'center',
+      height: '26px',
+      marginLeft: '10px'
+    },
     iconContainer: {
       width: '26px',
       marginRight: 0,
@@ -148,7 +159,18 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
-  const { node, itemsByPath, keywordByPath, onLabelClick, onIconClick, onOpenItemMenu, onFilterChange } = props;
+  const {
+    node,
+    itemsByPath,
+    keywordByPath,
+    totalByPath,
+    childrenByParentPath,
+    onLabelClick,
+    onIconClick,
+    onOpenItemMenu,
+    onFilterChange,
+    onMoreClick
+  } = props;
   const classes = useStyles();
   const [over, setOver] = useState(false);
   const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[node.id]));
@@ -174,124 +196,156 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
     }
   };
 
-  return node.id === 'loading' ? (
-    <div className={classes.loading}>
-      <CircularProgress size={14} />
-      <Typography variant="caption" color="textSecondary">
-        <FormattedMessage id="words.loading" defaultMessage="Loading" />
-      </Typography>
-    </div>
-  ) : node.id === 'empty' ? (
-    <section className={classes.empty}>
-      <ErrorOutlineRoundedIcon />
-      <Typography variant="caption">
-        <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
-      </Typography>
-    </section>
-  ) : (
-    <TreeItem
-      key={node.id}
-      nodeId={node.id}
-      onLabelClick={(event) => onLabelClick(event, node.id)}
-      onIconClick={() => onIconClick(node.id)}
-      label={
-        <>
-          <section className={classes.itemDisplaySection} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
-            <ItemDisplay
-              styles={{ root: { maxWidth: over ? 'calc(100% - 50px)' : '100%', flexGrow: 1, height: '26px' } }}
-              item={itemsByPath[node.id]}
-              showPublishingTarget={true}
-              showWorkflowState={true}
-              labelTypographyProps={{ variant: 'body2' }}
+  switch (node.id) {
+    case 'loading': {
+      return (
+        <div className={classes.loading}>
+          <CircularProgress size={14} />
+          <Typography variant="caption" color="textSecondary">
+            <FormattedMessage id="words.loading" defaultMessage="Loading" />
+          </Typography>
+        </div>
+      );
+    }
+    case 'empty': {
+      return (
+        <section className={classes.empty}>
+          <ErrorOutlineRoundedIcon />
+          <Typography variant="caption">
+            <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
+          </Typography>
+        </section>
+      );
+    }
+    case 'more': {
+      return (
+        <section className={classes.more}>
+          <Link
+            component="button"
+            variant="body2"
+            onClick={() => {
+              onMoreClick(node.parentPath);
+            }}
+          >
+            <FormattedMessage
+              id="filter.more"
+              defaultMessage="{count, plural, one {...{count} more item} other {...{count} more items}}"
+              values={{ count: totalByPath[node.parentPath] - childrenByParentPath[node.parentPath].length }}
             />
-            <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-              <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenItemMenu(e.currentTarget, node.id);
-                  }}
-                >
-                  <MoreVertRoundedIcon />
-                </IconButton>
-              </Tooltip>
-              {(Boolean(node.children.length) || showFilter) && (
-                <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onCloseFilterBox();
-                      onFilterButtonClick();
-                    }}
-                  >
-                    <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </section>
-          </section>
-          {showFilter && (
-            <>
-              <section className={classes.filterSection}>
-                <SearchBar
-                  autoFocus
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={(keyword) => {
-                    setKeyword(keyword);
-                    onFilterChange(keyword, node.id);
-                  }}
-                  keyword={keyword}
-                  placeholder={formatMessage(translations.filter)}
-                  onActionButtonClick={(e) => {
-                    e.stopPropagation();
-                    onCloseFilterBox();
-                  }}
-                  showActionButton={keyword && true}
-                  classes={{
-                    root: clsx(classes.searchRoot, props.classes?.searchRoot),
-                    inputInput: clsx(classes.searchInput, props.classes?.searchInput),
-                    actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
-                  }}
-                />
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onCloseFilterBox();
-                    setShowFilter(false);
-                  }}
-                  className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
-                >
-                  <CloseIconRounded />
-                </IconButton>
-              </section>
-            </>
-          )}
-        </>
-      }
-      classes={{
-        root: classes.root,
-        content: classes.content,
-        label: classes.labelContainer,
-        iconContainer: classes.iconContainer
-      }}
-    >
-      {node.children.map((node) => (
-        <PathNavigatorTreeItem
+          </Link>
+        </section>
+      );
+    }
+    default: {
+      return (
+        <TreeItem
           key={node.id}
-          node={node}
-          itemsByPath={itemsByPath}
-          keywordByPath={keywordByPath}
-          onLabelClick={onLabelClick}
-          onIconClick={onIconClick}
-          onOpenItemMenu={onOpenItemMenu}
-          onFilterChange={onFilterChange}
-        />
-      ))}
-    </TreeItem>
-  );
+          nodeId={node.id}
+          onLabelClick={(event) => onLabelClick(event, node.id)}
+          onIconClick={() => onIconClick(node.id)}
+          label={
+            <>
+              <section className={classes.itemDisplaySection} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
+                <ItemDisplay
+                  styles={{ root: { maxWidth: over ? 'calc(100% - 50px)' : '100%', flexGrow: 1, height: '26px' } }}
+                  item={itemsByPath[node.id]}
+                  showPublishingTarget={true}
+                  showWorkflowState={true}
+                  labelTypographyProps={{ variant: 'body2' }}
+                />
+                <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+                  <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onOpenItemMenu(e.currentTarget, node.id);
+                      }}
+                    >
+                      <MoreVertRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                  {(Boolean(node.children.length) || showFilter) && (
+                    <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onCloseFilterBox();
+                          onFilterButtonClick();
+                        }}
+                      >
+                        <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </section>
+              </section>
+              {showFilter && (
+                <>
+                  <section className={classes.filterSection}>
+                    <SearchBar
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(keyword) => {
+                        setKeyword(keyword);
+                        onFilterChange(keyword, node.id);
+                      }}
+                      keyword={keyword}
+                      placeholder={formatMessage(translations.filter)}
+                      onActionButtonClick={(e) => {
+                        e.stopPropagation();
+                        onCloseFilterBox();
+                      }}
+                      showActionButton={keyword && true}
+                      classes={{
+                        root: clsx(classes.searchRoot, props.classes?.searchRoot),
+                        inputInput: clsx(classes.searchInput, props.classes?.searchInput),
+                        actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+                      }}
+                    />
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCloseFilterBox();
+                        setShowFilter(false);
+                      }}
+                      className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+                    >
+                      <CloseIconRounded />
+                    </IconButton>
+                  </section>
+                </>
+              )}
+            </>
+          }
+          classes={{
+            root: classes.root,
+            content: classes.content,
+            label: classes.labelContainer,
+            iconContainer: classes.iconContainer
+          }}
+        >
+          {node.children.map((node) => (
+            <PathNavigatorTreeItem
+              key={node.id}
+              node={node}
+              itemsByPath={itemsByPath}
+              keywordByPath={keywordByPath}
+              totalByPath={totalByPath}
+              childrenByParentPath={childrenByParentPath}
+              onLabelClick={onLabelClick}
+              onIconClick={onIconClick}
+              onOpenItemMenu={onOpenItemMenu}
+              onFilterChange={onFilterChange}
+              onMoreClick={onMoreClick}
+            />
+          ))}
+        </TreeItem>
+      );
+    }
+  }
 }

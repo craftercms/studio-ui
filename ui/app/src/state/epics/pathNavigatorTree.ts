@@ -18,6 +18,9 @@ import { ofType } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
+  pathNavigatorTreeFetchNextPathChildren,
+  pathNavigatorTreeFetchNextPathChildrenComplete,
+  pathNavigatorTreeFetchNextPathChildrenFailed,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenFailed,
@@ -76,6 +79,33 @@ export default [
             pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options: { keyword } })
           ),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+        );
+      })
+    ),
+  // endregion
+  // region pathNavigatorTreeSetKeyword
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeFetchNextPathChildren.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        const { id, path } = payload;
+        const keyword = state.pathNavigatorTree[id].keywordByPath[path];
+        const offset = state.pathNavigatorTree[id].childrenByParentPath[path].length;
+        return fetchChildrenByPath(state.sites.active, path, {
+          limit: state.pathNavigatorTree[id].limit,
+          keyword: keyword,
+          offset: state.pathNavigatorTree[id].childrenByParentPath[path].length
+        }).pipe(
+          map((children) =>
+            pathNavigatorTreeFetchNextPathChildrenComplete({
+              id,
+              parentPath: path,
+              children,
+              options: { keyword, offset }
+            })
+          ),
+          catchAjaxError((error) => pathNavigatorTreeFetchNextPathChildrenFailed({ error, id }))
         );
       })
     )

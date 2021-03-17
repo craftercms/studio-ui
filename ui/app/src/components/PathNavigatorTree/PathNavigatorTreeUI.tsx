@@ -32,6 +32,7 @@ export interface TreeNode {
   id: string;
   name: string;
   children?: TreeNode[];
+  parentPath?: string;
 }
 
 interface PathNavigatorTreeUIProps {
@@ -41,12 +42,15 @@ interface PathNavigatorTreeUIProps {
   data: TreeNode;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
+  totalByPath: LookupTable<number>;
+  childrenByParentPath: LookupTable<string[]>;
   onIconClick(path: string): void;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onChangeCollapsed(collapsed: boolean): void;
   onOpenItemMenu(element: Element, path: string): void;
   onHeaderButtonClick(element: Element): void;
   onFilterChange(keyword: string, path: string): void;
+  onMoreClick(path: string): void;
   isCollapsed: boolean;
   expandedNodes: string[];
   classes?: Partial<Record<'root' | 'body', string>>;
@@ -87,12 +91,15 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     data,
     itemsByPath,
     keywordByPath,
+    childrenByParentPath,
+    totalByPath,
     onIconClick,
     onLabelClick,
     onChangeCollapsed,
     onOpenItemMenu,
     onHeaderButtonClick,
     onFilterChange,
+    onMoreClick,
     isCollapsed,
     expandedNodes
   } = props;
@@ -136,10 +143,13 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
             node={data}
             itemsByPath={itemsByPath}
             keywordByPath={keywordByPath}
+            totalByPath={totalByPath}
+            childrenByParentPath={childrenByParentPath}
             onIconClick={onIconClick}
             onLabelClick={onLabelClick}
             onFilterChange={onFilterChange}
             onOpenItemMenu={onOpenItemMenu}
+            onMoreClick={onMoreClick}
           />
         </TreeView>
       </AccordionDetails>

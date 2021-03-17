@@ -20,6 +20,7 @@ import LookupTable from '../../models/LookupTable';
 import {
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
+  pathNavigatorTreeFetchNextPathChildrenComplete,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeInit,
@@ -41,7 +42,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           limit,
           expanded: [],
           childrenByParentPath: {},
-          keywordByPath: {}
+          keywordByPath: {},
+          totalByPath: {}
         }
       };
     },
@@ -106,6 +108,29 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
             [parentPath]: children.map((item) => item.path)
+          },
+          totalByPath: {
+            ...state[id].totalByPath,
+            [parentPath]: children.total
+          }
+        }
+      };
+    },
+    [pathNavigatorTreeFetchNextPathChildrenComplete.type]: (
+      state,
+      { payload: { id, parentPath, children, options } }
+    ) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          childrenByParentPath: {
+            ...state[id].childrenByParentPath,
+            [parentPath]: [...state[id].childrenByParentPath[parentPath], ...children.map((item) => item.path)]
+          },
+          totalByPath: {
+            ...state[id].totalByPath,
+            [parentPath]: children.total
           }
         }
       };

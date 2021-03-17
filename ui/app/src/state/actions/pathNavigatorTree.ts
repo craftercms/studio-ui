@@ -51,6 +51,19 @@ export const pathNavigatorTreeFetchRootItemFailed = /*#__PURE__*/ createAction<{
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_FAILED');
 
+export const pathNavigatorTreeFetchNextPathChildren = /*#__PURE__*/ createAction<
+  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
+>('PATH_NAVIGATOR_TREE_FETCH_NEXT_PATH_CHILDREN');
+
+export const pathNavigatorTreeFetchNextPathChildrenComplete = /*#__PURE__*/ createAction<
+  PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
+>('PATH_NAVIGATOR_TREE_FETCH_NEXT_PATH_CHILDREN_COMPLETE');
+
+export const pathNavigatorTreeFetchNextPathChildrenFailed = /*#__PURE__*/ createAction<{
+  id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAVIGATOR_TREE_FETCH_NEXT_PATH_CHILDREN_FAILED');
+
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN');

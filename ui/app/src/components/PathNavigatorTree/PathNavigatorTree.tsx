@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
+  pathNavigatorTreeFetchNextPathChildren,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetKeyword,
@@ -66,6 +67,7 @@ export interface PathNavigatorTreeStateProps {
   expanded: string[];
   childrenByParentPath: LookupTable<string[]>;
   keywordByPath: LookupTable<string>;
+  totalByPath: LookupTable<number>;
 }
 
 interface Menu {
@@ -90,11 +92,12 @@ const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
 };
 
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
-  const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit = 10000, icon, container } = props;
+  const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit = 10, icon, container } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
   const itemsByPath = useItemsByPath();
   const childrenByParentPath = state?.childrenByParentPath;
   const keywordByPath = state?.keywordByPath;
+  const totalByPath = state?.totalByPath;
   const rootItem = itemsByPath?.[rootPath];
   const [data, setData] = useState(null);
   const [itemMenu, setItemMenu] = useState<Menu>({
@@ -141,6 +144,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     fetchingPathsRef.current.forEach((path) => {
       if (childrenByParentPath[path]) {
         nodesByPathRef.current[path].children = [];
+        // If the children are empty and there are filtered search, we will add a empty node
         if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
           nodesByPathRef.current[path].children = [
             {
@@ -160,13 +164,17 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           nodesByPathRef.current[childPath] = node;
         });
 
+        // If the node children total is less than the total items for the children we will add a more node
+        if (nodesByPathRef.current[path].children.length < totalByPath[path]) {
+          nodesByPathRef.current[path].children.push({ id: 'more', parentPath: path });
+        }
         setData({ ...nodesByPathRef.current[rootPath] });
       } else {
         nextFetching.push(path);
       }
     });
     fetchingPathsRef.current = nextFetching;
-  }, [rootPath, childrenByParentPath, itemsByPath]);
+  }, [rootPath, childrenByParentPath, itemsByPath, totalByPath]);
 
   useEffect(() => {
     keywordByPathRef.current = keywordByPath;
@@ -305,6 +313,18 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     onSearch$.next({ keyword, path });
   };
 
+  const onMoreClick = (path: string) => {
+    // nodesByPathRef.current[path].children.push({ id: 'loading' });
+    fetchingPathsRef.current.push(path);
+    // setData({ ...nodesByPathRef.current[rootPath] });
+    dispatch(
+      pathNavigatorTreeFetchNextPathChildren({
+        id,
+        path
+      })
+    );
+  };
+
   return (
     <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !data}>
       <PathNavigatorTreeUI
@@ -315,6 +335,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         data={data}
         itemsByPath={itemsByPath}
         keywordByPath={keywordByPath}
+        totalByPath={totalByPath}
+        childrenByParentPath={childrenByParentPath}
         expandedNodes={state?.expanded}
         onIconClick={onIconClick}
         onLabelClick={onLabelClick}
@@ -322,6 +344,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onOpenItemMenu={onOpenItemMenu}
         onHeaderButtonClick={onHeaderButtonClick}
         onFilterChange={onFilterChange}
+        onMoreClick={onMoreClick}
       />
       <ItemActionsMenu
         open={Boolean(itemMenu.anchorEl)}

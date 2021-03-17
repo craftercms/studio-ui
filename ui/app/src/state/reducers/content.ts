@@ -38,6 +38,7 @@ import { createLookupTable } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
 import {
+  pathNavigatorTreeFetchNextPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchRootItemComplete
 } from '../actions/pathNavigatorTree';
@@ -138,6 +139,7 @@ const reducer = createReducer<ContentState>(initialState, {
     };
   },
   [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
+  [pathNavigatorTreeFetchNextPathChildrenComplete.type]: updateItemByPath,
   [changeSite.type]: () => initialState
 });
 
