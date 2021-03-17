@@ -567,7 +567,7 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
       const collection: ContentInstance[] = value;
-      if (collection.length) {
+      if (Array.isArray(collection) && collection.length) {
         const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
         if (isNodeSelector) {
           normalized[prop] = collection.map((item) => item.craftercms.id);

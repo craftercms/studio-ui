@@ -315,7 +315,7 @@ export function runValidation(iceId: number, validationId: ValidationKeys, args?
   let {
     field: { validations }
   } = getReferentialEntries(record);
-  if (validations[validationId]) {
+  if (validations?.[validationId]) {
     return validationChecks[validationId](...[...Object.values(validations[validationId]), ...args]);
   } else {
     return null;
