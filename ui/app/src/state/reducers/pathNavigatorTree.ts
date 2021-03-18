@@ -100,11 +100,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          expanded: children.length
-            ? [...state[id].expanded]
-            : options?.keyword
-            ? [...state[id].expanded]
-            : [...state[id].expanded.filter((path) => path !== parentPath)],
+          ...(children.length === 0 &&
+            !options?.keyword && { expanded: state[id].expanded.filter((path) => path !== parentPath) }),
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
             [parentPath]: children.map((item) => item.path)

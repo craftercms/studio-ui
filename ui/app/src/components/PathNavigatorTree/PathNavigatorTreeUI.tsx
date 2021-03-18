@@ -39,7 +39,7 @@ interface PathNavigatorTreeUIProps {
   title: string;
   icon?: Partial<StateStylingProps>;
   container?: Partial<StateStylingProps>;
-  data: TreeNode;
+  rootNode: TreeNode;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
@@ -88,7 +88,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     icon,
     container,
     title,
-    data,
+    rootNode,
     itemsByPath,
     keywordByPath,
     childrenByParentPath,
@@ -140,7 +140,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
           disableSelection={true}
         >
           <PathNavigatorTreeItem
-            node={data}
+            node={rootNode}
             itemsByPath={itemsByPath}
             keywordByPath={keywordByPath}
             totalByPath={totalByPath}

@@ -99,7 +99,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const keywordByPath = state?.keywordByPath;
   const totalByPath = state?.totalByPath;
   const rootItem = itemsByPath?.[rootPath];
-  const [data, setData] = useState(null);
+  const [rootNode, setRootNode] = useState(null);
   const [itemMenu, setItemMenu] = useState<Menu>({
     path: null,
     anchorEl: null,
@@ -135,7 +135,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         children: [{ id: 'loading' }]
       };
       nodesByPathRef.current[rootItem.path] = rootNode;
-      setData(rootNode);
+      setRootNode(rootNode);
     }
   }, [rootItem]);
 
@@ -168,7 +168,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         if (nodesByPathRef.current[path].children.length < totalByPath[path]) {
           nodesByPathRef.current[path].children.push({ id: 'more', parentPath: path });
         }
-        setData({ ...nodesByPathRef.current[rootPath] });
+        setRootNode({ ...nodesByPathRef.current[rootPath] });
       } else {
         nextFetching.push(path);
       }
@@ -182,7 +182,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
-      fetchingPathsRef.current.push(path);
+      if (!fetchingPathsRef.current.includes(path)) {
+        fetchingPathsRef.current.push(path);
+      }
       dispatch(
         pathNavigatorTreeSetKeyword({
           id,
@@ -292,7 +294,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   const onFilterChange = (keyword: string, path: string) => {
     nodesByPathRef.current[path].children = [{ id: 'loading' }];
-    setData({ ...nodesByPathRef.current[rootPath] });
+    setRootNode({ ...nodesByPathRef.current[rootPath] });
     if (!state.expanded.includes(path)) {
       dispatch(
         pathNavigatorTreeExpandPath({
@@ -318,13 +320,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   return (
-    <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !data}>
+    <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !rootNode}>
       <PathNavigatorTreeUI
         title={label}
         icon={icon}
         container={container}
         isCollapsed={state?.collapsed}
-        data={data}
+        rootNode={rootNode}
         itemsByPath={itemsByPath}
         keywordByPath={keywordByPath}
         totalByPath={totalByPath}
