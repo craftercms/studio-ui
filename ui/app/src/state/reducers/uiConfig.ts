@@ -28,6 +28,9 @@ const initialState: GlobalState['uiConfig'] = {
   preview: {
     toolsPanel: {
       widgets: null
+    },
+    pageBuilderPanel: {
+      widgets: null
     }
   },
   launcher: null,

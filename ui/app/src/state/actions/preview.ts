@@ -291,6 +291,10 @@ export const setPreviewChoiceComplete = /*#__PURE__*/ createAction('SET_PREVIEW_
 
 export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
+export const updatePageBuilderPanelWidth = /*#__PURE__#*/ createAction<{ width: number }>(
+  'UPDATE_PAGE_BUILDER_PANEL_WIDTH'
+);
+
 // endregion
 
 // region toolsPanelPageStack
@@ -298,6 +302,14 @@ export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newT
 export const pushToolsPanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_TOOLS_PANEL_PAGE');
 
 export const popToolsPanelPage = /*#__PURE__*/ createAction('POP_TOOLS_PANEL_PAGE');
+
+// endregion
+
+// region Page builder panel stack
+
+export const pushPageBuilderPanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_PAGE_BUILDER_PANEL_PAGE');
+
+export const popPageBuilderPanelPage = /*#__PURE__*/ createAction('POP_PAGE_BUILDER_PANEL_PAGE');
 
 // endregion
 

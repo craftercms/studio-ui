@@ -142,6 +142,8 @@ export interface GlobalState {
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
+    pageBuilderPanelWidth: number;
+    pageBuilderPanelStack: WidgetDescriptor[];
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -192,6 +194,9 @@ export interface GlobalState {
     currentSite: string;
     preview: {
       toolsPanel: {
+        widgets: WidgetDescriptor[];
+      };
+      pageBuilderPanel: {
         widgets: WidgetDescriptor[];
       };
     };

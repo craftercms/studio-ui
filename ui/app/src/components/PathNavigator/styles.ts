@@ -36,10 +36,9 @@ export const useStyles = makeStyles(
       optionsWrapper: {
         top: 0,
         right: 0,
+        display: 'flex',
         visibility: 'hidden',
-        position: 'absolute',
-        marginLeft: 'auto',
-        display: 'flex'
+        position: 'absolute'
       },
       optionsWrapperOver: {
         visibility: 'visible'
@@ -139,6 +138,10 @@ export const useStyles = makeStyles(
       breadcrumbLast: {
         color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
         textDecoration: 'underline'
+      },
+      breadcrumbActionsWrapper: {
+        display: 'flex',
+        marginLeft: 'auto'
       },
       // endregion
       // region Pagination

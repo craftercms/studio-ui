@@ -428,9 +428,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
         }
       });
 
-  const onBreadcrumbSelected = (item: DetailedItem) => {
+  const onBreadcrumbSelected = (item: DetailedItem, e) => {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
-      onItemClicked(item);
+      onItemClicked(item, e);
     } else {
       dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }
