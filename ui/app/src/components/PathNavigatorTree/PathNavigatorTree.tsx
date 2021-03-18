@@ -180,6 +180,22 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     keywordByPathRef.current = keywordByPath;
   }, [keywordByPath]);
 
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
+      fetchingPathsRef.current.push(path);
+      dispatch(
+        pathNavigatorTreeSetKeyword({
+          id,
+          path,
+          keyword
+        })
+      );
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, id, onSearch$, rootPath]);
+
   // TODO: Item Updates Propagation
   useEffect(() => {
     const events = [
@@ -202,7 +218,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [state, id, dispatch]);
+  }, [id, dispatch]);
 
   const onChangeCollapsed = (collapsed) => {
     dispatch(pathNavigatorTreeToggleExpanded({ id, collapsed }));
@@ -210,20 +226,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   const onLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
     if (isNavigable(itemsByPath[path])) {
-      if (event.ctrlKey || event.metaKey) {
-        dispatch(
-          previewItem({
-            item: itemsByPath[path],
-            newTab: true
-          })
-        );
-      } else {
-        dispatch(
-          previewItem({
-            item: itemsByPath[path]
-          })
-        );
-      }
+      dispatch(
+        previewItem({
+          item: itemsByPath[path],
+          newTab: event.ctrlKey || event.metaKey
+        })
+      );
     } else {
       onIconClick(path);
     }
@@ -281,22 +289,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (option === 'refresh') {
     }
   };
-
-  useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
-      fetchingPathsRef.current.push(path);
-      dispatch(
-        pathNavigatorTreeSetKeyword({
-          id,
-          path,
-          keyword
-        })
-      );
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [dispatch, id, onSearch$, rootPath]);
 
   const onFilterChange = (keyword: string, path: string) => {
     nodesByPathRef.current[path].children = [{ id: 'loading' }];
