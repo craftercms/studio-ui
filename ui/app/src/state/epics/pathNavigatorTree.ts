@@ -18,12 +18,12 @@ import { ofType } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
-  pathNavigatorTreeFetchNextPathChildren,
-  pathNavigatorTreeFetchNextPathChildrenComplete,
-  pathNavigatorTreeFetchNextPathChildrenFailed,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenFailed,
+  pathNavigatorTreeFetchPathPage,
+  pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathPageFailed,
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetKeyword
@@ -40,6 +40,10 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id, path } = payload;
+        // if(expanded) {
+        // fetchItemByPath()
+        //  fetchChildrenByPaths()
+        // } else
         return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
           map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
           catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
@@ -86,7 +90,7 @@ export default [
   // region pathNavigatorTreeSetKeyword
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreeFetchNextPathChildren.type),
+      ofType(pathNavigatorTreeFetchPathPage.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id, path } = payload;
@@ -98,14 +102,14 @@ export default [
           offset: state.pathNavigatorTree[id].childrenByParentPath[path].length
         }).pipe(
           map((children) =>
-            pathNavigatorTreeFetchNextPathChildrenComplete({
+            pathNavigatorTreeFetchPathPageComplete({
               id,
               parentPath: path,
               children,
               options: { keyword, offset }
             })
           ),
-          catchAjaxError((error) => pathNavigatorTreeFetchNextPathChildrenFailed({ error, id }))
+          catchAjaxError((error) => pathNavigatorTreeFetchPathPageFailed({ error, id }))
         );
       })
     )

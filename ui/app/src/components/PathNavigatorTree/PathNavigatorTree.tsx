@@ -21,8 +21,8 @@ import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
-  pathNavigatorTreeFetchNextPathChildren,
   pathNavigatorTreeFetchPathChildren,
+  pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
@@ -33,7 +33,6 @@ import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { isNavigable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
-import ItemActionsMenu from '../ItemActionsMenu';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
@@ -48,6 +47,9 @@ import {
   itemUpdated
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
+// @ts-ignore
+import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { showItemMenu } from '../../state/actions/dialogs';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -100,11 +102,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const totalByPath = state?.totalByPath;
   const rootItem = itemsByPath?.[rootPath];
   const [rootNode, setRootNode] = useState(null);
-  const [itemMenu, setItemMenu] = useState<Menu>({
-    path: null,
-    anchorEl: null,
-    loaderItems: null
-  });
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: []
@@ -275,14 +272,18 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onOpenItemMenu = (element: Element, path: string) => {
-    setItemMenu({
-      path,
-      anchorEl: element,
-      loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
-    });
+    const anchorRect = element.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+    dispatch(
+      showItemMenu({
+        path,
+        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path]),
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left }
+      })
+    );
   };
-
-  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
 
   const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
@@ -312,7 +313,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     fetchingPathsRef.current.push(path);
     // setData({ ...nodesByPathRef.current[rootPath] });
     dispatch(
-      pathNavigatorTreeFetchNextPathChildren({
+      pathNavigatorTreeFetchPathPage({
         id,
         path
       })
@@ -339,13 +340,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onHeaderButtonClick={onHeaderButtonClick}
         onFilterChange={onFilterChange}
         onMoreClick={onMoreClick}
-      />
-      <ItemActionsMenu
-        open={Boolean(itemMenu.anchorEl)}
-        path={itemMenu.path}
-        numOfLoaderItems={itemMenu.loaderItems}
-        anchorEl={itemMenu.anchorEl}
-        onClose={onCloseItemMenu}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}

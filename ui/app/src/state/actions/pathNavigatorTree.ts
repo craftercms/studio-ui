@@ -22,9 +22,12 @@ import { GetChildrenOptions } from '../../models/GetChildrenOptions';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; collapsed?: boolean; excludes?: string[]; limit: number }>
->('PATH_NAVIGATOR_TREE_INIT');
+export const pathNavigatorTreeInit = /*#__PURE__*/ createAction(
+  'PATH_NAVIGATOR_TREE_INIT',
+  (payload: PayloadWithId<{ path: string; collapsed?: boolean; excludes?: string[]; limit: number }>) => ({
+    payload
+  })
+);
 
 export const pathNavigatorTreeExpandPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
   'PATH_NAVIGATOR_TREE_EXPAND_PATH'
@@ -51,18 +54,18 @@ export const pathNavigatorTreeFetchRootItemFailed = /*#__PURE__*/ createAction<{
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_FAILED');
 
-export const pathNavigatorTreeFetchNextPathChildren = /*#__PURE__*/ createAction<
+export const pathNavigatorTreeFetchPathPage = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_NEXT_PATH_CHILDREN');
+>('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE');
 
-export const pathNavigatorTreeFetchNextPathChildrenComplete = /*#__PURE__*/ createAction<
+export const pathNavigatorTreeFetchPathPageComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_NEXT_PATH_CHILDREN_COMPLETE');
+>('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE_COMPLETE');
 
-export const pathNavigatorTreeFetchNextPathChildrenFailed = /*#__PURE__*/ createAction<{
+export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_NEXT_PATH_CHILDREN_FAILED');
+}>('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE_FAILED');
 
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>

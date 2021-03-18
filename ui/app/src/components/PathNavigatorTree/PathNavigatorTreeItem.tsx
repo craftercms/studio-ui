@@ -247,7 +247,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
             <>
               <section className={classes.itemDisplaySection} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
                 <ItemDisplay
-                  styles={{ root: { maxWidth: over ? 'calc(100% - 50px)' : '100%', flexGrow: 1, height: '26px' } }}
+                  styles={{ root: { flexGrow: 1, height: '26px' } }}
                   item={itemsByPath[node.id]}
                   showPublishingTarget={true}
                   showWorkflowState={true}

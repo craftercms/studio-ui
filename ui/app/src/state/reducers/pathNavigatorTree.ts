@@ -20,9 +20,9 @@ import LookupTable from '../../models/LookupTable';
 import {
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
-  pathNavigatorTreeFetchNextPathChildrenComplete,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
@@ -113,10 +113,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeFetchNextPathChildrenComplete.type]: (
-      state,
-      { payload: { id, parentPath, children, options } }
-    ) => {
+    [pathNavigatorTreeFetchPathPageComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
       return {
         ...state,
         [id]: {
