@@ -33,7 +33,7 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
   {
-    [pathNavigatorTreeInit.type]: (state, { payload: { id, path, collapsed = false, limit } }) => {
+    [pathNavigatorTreeInit.type]: (state, { payload: { id, path, collapsed = false, limit, expanded = [] } }) => {
       return {
         ...state,
         [id]: {
@@ -41,7 +41,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           levelDescriptor: null,
           collapsed,
           limit,
-          expanded: [],
+          expanded,
           childrenByParentPath: {},
           keywordByPath: {},
           totalByPath: {}
@@ -130,13 +130,28 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, expanded, collapsed } }) => {
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, expanded, collapsed, data } }) => {
+      const children = {};
+      const total = {};
+      Object.keys(data).forEach((path) => {
+        children[path] = [...data[path].map((item) => item.path)];
+        total[path] = data[path].total;
+      });
+
       return {
         ...state,
         [id]: {
           ...state[id],
-          expanded,
-          collapsed
+          // expanded,
+          // collapsed,
+          childrenByParentPath: {
+            ...state[id].childrenByParentPath,
+            ...children
+          },
+          totalByPath: {
+            ...state[id].totalByPath,
+            ...total
+          }
         }
       };
     },

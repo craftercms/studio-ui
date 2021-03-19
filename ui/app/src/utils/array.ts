@@ -40,8 +40,8 @@ export function asArray<T = unknown>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-export function createPresenceTable(list: string[]): LookupTable<boolean> {
+export function createPresenceTable(list: string[], defaultValue: any = true): LookupTable<any> {
   const table = {};
-  list.forEach((value) => (table[value] = true));
+  list.forEach((value) => (table[value] = defaultValue));
   return table;
 }

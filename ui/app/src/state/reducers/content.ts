@@ -40,7 +40,8 @@ import { changeSite } from './sites';
 import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
-  pathNavigatorTreeFetchRootItemComplete
+  pathNavigatorTreeFetchRootItemComplete,
+  pathNavigatorTreeRestoreComplete
 } from '../actions/pathNavigatorTree';
 
 type ContentState = GlobalState['content'];
@@ -140,6 +141,13 @@ const reducer = createReducer<ContentState>(initialState, {
   },
   [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
   [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
+  [pathNavigatorTreeRestoreComplete.type]: (state, { payload }) => {
+    let nextByPath = {};
+    Object.values(payload.data).forEach((children) => {
+      nextByPath = { ...nextByPath, ...updateItemByPath(state, { payload: { parent: null, children } }).itemsByPath };
+    });
+    return { ...state, itemsByPath: nextByPath };
+  },
   [changeSite.type]: () => initialState
 });
 

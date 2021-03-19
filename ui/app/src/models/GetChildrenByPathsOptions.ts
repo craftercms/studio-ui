@@ -19,9 +19,3 @@ export interface GetChildrenByPathsOptions {
   localeCode: string;
   sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
 }
-
-export interface PathsOptions {
-  offset: number;
-  keyword: string;
-  excludes: string[];
-}

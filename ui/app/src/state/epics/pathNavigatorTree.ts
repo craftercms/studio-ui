@@ -27,11 +27,15 @@ import {
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRestoreComplete,
+  pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeSetKeyword
 } from '../actions/pathNavigatorTree';
-import { fetchChildrenByPath, fetchItemByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
+import { merge } from 'rxjs';
+import { createPresenceTable } from '../../utils/array';
 
 export default [
   // region pathNavigatorTreeInit
@@ -41,26 +45,22 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id, path, expanded, collapsed } = payload;
-        // fetchChildrenByPaths(state.sites.active, { '/site/website/index.xml': {} }).pipe(
-        //   map((response) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, data: response.data })),
-        //   catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
-        // );
+        const streams = [
+          fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
+            map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
+            catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
+          )
+        ];
+
         if (expanded) {
-          // return [
-          //   fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
-          //     map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
-          //     catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
-          //   )
-          // ];
+          streams.push(
+            fetchChildrenByPaths(state.sites.active, createPresenceTable(expanded, {})).pipe(
+              map((data) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, data })),
+              catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
+            )
+          );
         }
-        // if(expanded) {
-        // fetchItemByPath()
-        //  fetchChildrenByPaths()
-        // } else
-        return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
-          map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
-          catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
-        );
+        return streams.length === 1 ? streams[0] : merge(...streams);
       })
     ),
   // endregion
@@ -142,4 +142,5 @@ export default [
       }),
       ignoreElements()
     )
+  // endregion
 ] as CrafterCMSEpic[];

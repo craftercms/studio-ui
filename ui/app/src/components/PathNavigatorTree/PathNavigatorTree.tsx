@@ -52,6 +52,7 @@ import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { showItemMenu } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
+import { nnou } from '../../utils/object';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -123,7 +124,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === site) {
-      const { expanded, collapsed } = getStoredPathNavigatorTree(site, user.username, id);
+      const { expanded, collapsed } = getStoredPathNavigatorTree(site, user.username, id) ?? {};
+      if (expanded) {
+        expanded.forEach((path) => {
+          fetchingPathsRef.current.push(path);
+        });
+      }
       dispatch(
         pathNavigatorTreeInit({
           id,
@@ -131,7 +137,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           excludes,
           limit,
           ...(expanded && { expanded }),
-          ...(collapsed && { collapsed })
+          ...(nnou(collapsed) && { collapsed })
         })
       );
     }
@@ -152,7 +158,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const nextFetching = [];
     fetchingPathsRef.current.forEach((path) => {
-      if (childrenByParentPath[path]) {
+      if (childrenByParentPath && childrenByParentPath[path]) {
         nodesByPathRef.current[path].children = [];
         // If the children are empty and there are filtered search, we will add a empty node
         if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
