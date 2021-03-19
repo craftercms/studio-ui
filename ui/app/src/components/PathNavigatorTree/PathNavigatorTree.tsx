@@ -29,7 +29,6 @@ import {
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { isNavigable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
@@ -53,6 +52,7 @@ import { showItemMenu } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
+import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -117,6 +117,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const fetchingPathsRef = useRef([]);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
+  const { expanded, collapsed } = getStoredPathNavigatorTree(site, user.username, id) ?? {};
 
   const dispatch = useDispatch();
 
@@ -124,7 +125,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === site) {
-      const { expanded, collapsed } = getStoredPathNavigatorTree(site, user.username, id) ?? {};
       if (expanded) {
         expanded.forEach((path) => {
           fetchingPathsRef.current.push(path);
@@ -141,7 +141,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     }
-  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite]);
+  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, expanded, collapsed]);
 
   useEffect(() => {
     if (rootItem) {
@@ -237,6 +237,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       subscription.unsubscribe();
     };
   }, [id, dispatch]);
+
+  // return skeleton
+
+  if (!rootItem || !Boolean(state) || !rootNode) {
+    return <PathNavigatorSkeletonTree numOfItems={expanded ? 5 : 1} />;
+  }
 
   const onChangeCollapsed = (collapsed) => {
     dispatch(pathNavigatorTreeToggleExpanded({ id, collapsed }));
@@ -340,7 +346,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   return (
-    <ConditionalLoadingState isLoading={!rootItem || !Boolean(state) || !rootNode}>
+    <>
       <PathNavigatorTreeUI
         title={label}
         icon={icon}
@@ -367,6 +373,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onClose={onCloseWidgetMenu}
         onMenuItemClicked={onSimpleMenuClick}
       />
-    </ConditionalLoadingState>
+    </>
   );
 }
