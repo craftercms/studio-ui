@@ -142,7 +142,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     action$.pipe(
       ofType('dragleave', 'document:dragleave'),
       withLatestFrom(state$),
-      filter(([, state]) => dragOk(state.status)),
+      filter(([, state]) => state.status === EditingStatus.UPLOAD_ASSET_FROM_DESKTOP),
       switchMap(([{ event }]) =>
         interval(100).pipe(
           mapTo({ type: DESKTOP_ASSET_DRAG_ENDED }),
@@ -238,19 +238,32 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               })(record.element as HTMLImageElement);
               reader.readAsDataURL(file);
               return stream$;
+            } else {
+              return of({ type: DESKTOP_ASSET_DRAG_ENDED });
             }
-            break;
           }
         }
-        return of({ type: DESKTOP_ASSET_DRAG_ENDED });
+        return NEVER;
       })
     );
   },
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType('document:drop'),
-      tap(({ payload: { event } }) => event.preventDefault()),
-      switchMap(() => of({ type: DESKTOP_ASSET_DRAG_ENDED }))
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+        const {
+          payload: { event }
+        } = action;
+        const status = state.status;
+        event.preventDefault();
+        event.stopPropagation();
+        switch (status) {
+          case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
+            return of({ type: DESKTOP_ASSET_DRAG_ENDED });
+        }
+        return NEVER;
+      })
     ),
   // endregion
 
@@ -261,12 +274,20 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       withLatestFrom(state$),
       filter(([, state]) => dragOk(state.status)),
       switchMap(([action]) => {
-        action.payload.event.stopPropagation();
+        const { event } = action.payload;
+        event.preventDefault();
+        event.stopPropagation();
         post({ type: INSTANCE_DRAG_ENDED });
         return of({ type: 'computed_dragend' });
       })
     );
   },
+  (action$) =>
+    action$.pipe(
+      ofType('document:dragend'),
+      tap(({ payload }) => payload.event.preventDefault()),
+      ignoreElements()
+    ),
   // endregion
 
   // region dragend_listener
