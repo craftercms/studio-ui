@@ -807,7 +807,7 @@ export function fetchChildrenByPath(
     path,
     ...options,
     // `excludes` may not come at all or be an array of paths
-    excludes: options?.excludes?.join(',') ?? ''
+    ...(options?.excludes ? { excludes: options.excludes.join(',') } : {})
   });
   return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
     pluck('response'),
