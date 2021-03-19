@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeFetchPathChildren,
@@ -25,12 +25,13 @@ import {
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathPageFailed,
   pathNavigatorTreeFetchRootItemComplete,
+  pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
   pathNavigatorTreeSetKeyword
 } from '../actions/pathNavigatorTree';
 import { fetchChildrenByPath, fetchItemByPath } from '../../services/content';
-import { pathNavigatorFetchPathFailed } from '../actions/pathNavigator';
 import { catchAjaxError } from '../../utils/ajax';
+import { setStoredPathNavigatorTree } from '../../utils/state';
 
 export default [
   // region pathNavigatorTreeInit
@@ -39,14 +40,26 @@ export default [
       ofType(pathNavigatorTreeInit.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const { id, path } = payload;
+        const { id, path, expanded, collapsed } = payload;
+        // fetchChildrenByPaths(state.sites.active, { '/site/website/index.xml': {} }).pipe(
+        //   map((response) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, data: response.data })),
+        //   catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
+        // );
+        if (expanded) {
+          // return [
+          //   fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
+          //     map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
+          //     catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
+          //   )
+          // ];
+        }
         // if(expanded) {
         // fetchItemByPath()
         //  fetchChildrenByPaths()
         // } else
         return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
           map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
-          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+          catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
         );
       })
     ),
@@ -87,7 +100,7 @@ export default [
       })
     ),
   // endregion
-  // region pathNavigatorTreeSetKeyword
+  // region pathNavigatorTreeFetchPathPage
   (action$, state$) =>
     action$.pipe(
       ofType(pathNavigatorTreeFetchPathPage.type),
@@ -112,6 +125,21 @@ export default [
           catchAjaxError((error) => pathNavigatorTreeFetchPathPageFailed({ error, id }))
         );
       })
-    )
+    ),
   // endregion
+  // region pathNavigatorTreeLocalStore
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeFetchPathChildrenComplete.type, pathNavigatorTreeFetchPathPageComplete.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        const { id } = payload;
+        const { expanded, collapsed } = state.pathNavigatorTree[id];
+        setStoredPathNavigatorTree(state.sites.active, state.user.username, id, {
+          expanded,
+          collapsed
+        });
+      }),
+      ignoreElements()
+    )
 ] as CrafterCMSEpic[];

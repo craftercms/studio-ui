@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
-import { useItemsByPath, useMount, useSelection, useSubject } from '../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
@@ -50,6 +50,8 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { showItemMenu } from '../../state/actions/dialogs';
+import { getStoredPathNavigatorTree } from '../../utils/state';
+import GlobalState from '../../models/GlobalState';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -96,6 +98,8 @@ const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit = 10, icon, container } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
+  const site = useActiveSiteId();
+  const user = useActiveUser();
   const itemsByPath = useItemsByPath();
   const childrenByParentPath = state?.childrenByParentPath;
   const keywordByPath = state?.keywordByPath;
@@ -111,18 +115,27 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const keywordByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
+  const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
 
   const dispatch = useDispatch();
-  useMount(() => {
-    dispatch(
-      pathNavigatorTreeInit({
-        id,
-        path: rootPath,
-        excludes,
-        limit
-      })
-    );
-  });
+
+  useEffect(() => {
+    // Adding uiConfig as means to stop navigator from trying to
+    // initialize with previous state information when switching sites
+    if (!state && uiConfig.currentSite === site) {
+      const { expanded, collapsed } = getStoredPathNavigatorTree(site, user.username, id);
+      dispatch(
+        pathNavigatorTreeInit({
+          id,
+          path: rootPath,
+          excludes,
+          limit,
+          ...(expanded && { expanded }),
+          ...(collapsed && { collapsed })
+        })
+      );
+    }
+  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite]);
 
   useEffect(() => {
     if (rootItem) {

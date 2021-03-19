@@ -48,6 +48,8 @@ import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
+import { GetChildrenByPathsOptions, PathsOptions } from '../models/GetChildrenByPathsOptions';
+import { GetChildrenByPathsResponse } from '../models/GetChildrenByPathsResponse';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -832,6 +834,24 @@ export function fetchChildrenByPath(
         }
       )
     )
+  );
+}
+
+export function fetchChildrenByPaths(
+  siteId: string,
+  paths: LookupTable<Partial<PathsOptions>>,
+  options?: GetChildrenByPathsOptions
+): Observable<GetChildrenByPathsResponse> {
+  const requests = Object.keys(paths).map((path) => fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }));
+  return forkJoin(requests).pipe(
+    map((responses) => {
+      const data = {};
+      Object.keys(paths).forEach((path, i) => (data[path] = responses[i]));
+      return {
+        response: {},
+        data
+      };
+    })
   );
 }
 

@@ -24,6 +24,7 @@ import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
@@ -126,6 +127,16 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].totalByPath,
             [parentPath]: children.total
           }
+        }
+      };
+    },
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, expanded, collapsed } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          expanded,
+          collapsed
         }
       };
     },

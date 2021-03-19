@@ -19,15 +19,28 @@ import { DetailedItem } from '../../models/Item';
 import { AjaxError } from 'rxjs/ajax';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../../models/GetChildrenOptions';
+import LookupTable from '../../models/LookupTable';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorTreeInit = /*#__PURE__*/ createAction(
-  'PATH_NAVIGATOR_TREE_INIT',
-  (payload: PayloadWithId<{ path: string; collapsed?: boolean; excludes?: string[]; limit: number }>) => ({
-    payload
-  })
-);
+export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
+  PayloadWithId<{
+    path: string;
+    collapsed?: boolean;
+    excludes?: string[];
+    limit: number;
+    expanded?: string[];
+  }>
+>('PATH_NAVIGATOR_TREE_INIT');
+
+export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<
+  PayloadWithId<{ expanded: string[]; collapsed: boolean; data: LookupTable<GetChildrenResponse> }>
+>('PATH_NAVIGATOR_TREE_RESTORE_COMPLETE');
+
+export const pathNavigatorTreeRestoreFailed = /*#__PURE__*/ createAction<{
+  id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAVIGATOR_TREE_RESTORE_FAILED');
 
 export const pathNavigatorTreeExpandPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
   'PATH_NAVIGATOR_TREE_EXPAND_PATH'
