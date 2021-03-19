@@ -227,7 +227,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
                   name: _legacyField.title,
                   type: typeMap[_legacyField.type] || _legacyField.type,
                   sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                  validations: null,
+                  validations: {},
                   defaultValue: '',
                   required: false
                 };
