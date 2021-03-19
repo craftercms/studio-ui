@@ -126,7 +126,7 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
         console.error('[createElements] Path not implemented.');
       } else if (content instanceof Element) {
         elem.appendChild(content);
-      } else {
+      } else if (content) {
         createElements(doc, elem, content);
       }
       element.appendChild(elem);
