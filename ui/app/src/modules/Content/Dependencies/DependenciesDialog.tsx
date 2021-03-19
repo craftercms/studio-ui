@@ -50,7 +50,6 @@ import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../.
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import { getRootPath } from '../../../utils/path';
-import { fetchUserPermissions } from '../../../state/actions/content';
 
 const assetsTypes = {
   'all-deps': {
@@ -487,9 +486,6 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
   const handleHistoryDisplay = (item: DetailedItem) => {
     dispatch(
       batchActions([
-        fetchUserPermissions({
-          path: item.path
-        }),
         fetchItemVersions({
           item,
           rootPath: getRootPath(item.path)

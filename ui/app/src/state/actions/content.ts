@@ -28,14 +28,6 @@ export const fetchQuickCreateListComplete = /*#__PURE__*/ createAction<QuickCrea
 export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
-// region Permissions
-export const fetchUserPermissions = /*#__PURE__*/ createAction<{ path: string }>('FETCH_USER_PERMISSIONS');
-export const fetchUserPermissionsComplete = /*#__PURE__*/ createAction<{ path: string; permissions: string[] }>(
-  'FETCH_USER_PERMISSIONS_COMPLETE'
-);
-export const fetchUserPermissionsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
-// endregion
-
 // region Items
 export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_DETAILED_ITEM');
 export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
@@ -45,19 +37,19 @@ export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FE
 // endregion
 
 // region clipboard
-export const setClipBoard = /*#__PURE__*/ createAction<{
+export const setClipboard = /*#__PURE__*/ createAction<{
   type: 'CUT' | 'COPY';
   paths?: string[];
   sourcePath: string;
 }>('SET_CLIPBOARD');
 
-export const restoreClipBoard = /*#__PURE__*/ createAction<{
+export const restoreClipboard = /*#__PURE__*/ createAction<{
   type: 'CUT' | 'COPY';
   paths?: string[];
   sourcePath: string;
-}>('SET_CLIPBOARD');
+}>('RESTORE_CLIPBOARD');
 
-export const unSetClipBoard = /*#__PURE__*/ createAction('UNSET_CLIPBOARD');
+export const clearClipboard = /*#__PURE__*/ createAction('CLEAR_CLIPBOARD');
 // endregion
 
 // region item

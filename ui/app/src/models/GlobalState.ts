@@ -118,10 +118,7 @@ export interface GlobalState {
       isFetching: boolean;
       items: QuickCreateItem[];
     };
-    items: {
-      byPath: LookupTable<DetailedItem>;
-      permissionsByPath: LookupTable<LookupTable<boolean>>;
-    };
+    itemsByPath: LookupTable<DetailedItem>;
     clipboard: Clipboard;
   };
   contentTypes: EntityState<ContentType>;
@@ -144,6 +141,8 @@ export interface GlobalState {
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
+    pageBuilderPanelWidth: number;
+    pageBuilderPanelStack: WidgetDescriptor[];
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -194,6 +193,9 @@ export interface GlobalState {
     currentSite: string;
     preview: {
       toolsPanel: {
+        widgets: WidgetDescriptor[];
+      };
+      pageBuilderPanel: {
         widgets: WidgetDescriptor[];
       };
     };

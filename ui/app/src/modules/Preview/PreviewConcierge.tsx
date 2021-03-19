@@ -83,8 +83,8 @@ import {
   useActiveSiteId,
   useActiveUser,
   useContentTypes,
+  useItemsByPath,
   useMount,
-  usePermissionsByPath,
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
@@ -100,14 +100,23 @@ import {
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
-import { completeDetailedItem, restoreClipBoard } from '../../state/actions/content';
+import { completeDetailedItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
-import { createChildModelLookup, normalizeModel, normalizeModelsLookup, parseContentXML } from '../../utils/content';
+import {
+  createChildModelLookup,
+  hasEditAction,
+  normalizeModel,
+  normalizeModelsLookup,
+  parseContentXML
+} from '../../utils/content';
 import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
 import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import { fetchGlobalProperties, setProperties } from '../../services/users';
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseRounded from '@material-ui/icons/CloseRounded';
+import IconButton from '@material-ui/core/IconButton';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -142,10 +151,16 @@ const guestMessages = defineMessages({
 
 const originalDocDomain = document.domain;
 
+const startGuestDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000) => {
+  clearTimeout(timeoutRef.current);
+  timeoutRef.current = setTimeout(() => setShowSnackbar(true), timeout);
+};
+
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const user = useActiveUser();
+  const items = useItemsByPath();
   const { guest, currentUrl, computedUrl, editMode, highlightMode, previewChoice } = usePreviewState();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
@@ -164,6 +179,9 @@ export function PreviewConcierge(props: any) {
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
+  // guestDetectionSnackbarOpen, guestDetectionTimeout
+  const guestDetectionTimeoutRef = useRef<number>();
+  const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
@@ -172,8 +190,7 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const permissions = usePermissionsByPath();
-  const write = permissions?.[currentItemPath]?.write;
+  const write = hasEditAction(items[currentItemPath]?.availableActions);
 
   useEffect(() => {
     if (currentItemPath && site) {
@@ -186,6 +203,7 @@ export function PreviewConcierge(props: any) {
       getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
     }
   }, [dispatch, write, editMode]);
+
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -203,10 +221,9 @@ export function PreviewConcierge(props: any) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
-    const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
+    startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
     return () => {
-      sub.unsubscribe();
       contentTypes$.complete();
       contentTypes$.unsubscribe();
       document.domain = originalDocDomain;
@@ -222,7 +239,7 @@ export function PreviewConcierge(props: any) {
         removeStoredClipboard(site, user.username);
       } else {
         dispatch(
-          restoreClipBoard({
+          restoreClipboard({
             type: localClipboard.type,
             paths: localClipboard.paths,
             sourcePath: localClipboard.sourcePath
@@ -248,6 +265,13 @@ export function PreviewConcierge(props: any) {
     const hostToHost$ = getHostToHostBus();
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
+      switch (type) {
+        case GUEST_SITE_LOAD:
+        case GUEST_CHECK_IN:
+          clearTimeout(guestDetectionTimeoutRef.current);
+          setGuestDetectionSnackbarOpen(false);
+          break;
+      }
       switch (type) {
         case GUEST_SITE_LOAD:
           // Legacy sites (guest v1) send this message.
@@ -390,10 +414,12 @@ export function PreviewConcierge(props: any) {
           }
           break;
         }
-        case GUEST_CHECK_OUT:
+        case GUEST_CHECK_OUT: {
           requestedSourceMapPaths.current = {};
           dispatch(checkOutGuest());
+          startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
+        }
         case SORT_ITEM_OPERATION: {
           const { fieldId, currentIndex, targetIndex } = payload;
           let { modelId, parentModelId } = payload;
@@ -697,7 +723,7 @@ export function PreviewConcierge(props: any) {
   useEffect(() => {
     if (priorState.current.site !== site) {
       priorState.current.site = site;
-      beginGuestDetection(enqueueSnackbar, closeSnackbar);
+      startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -724,30 +750,27 @@ export function PreviewConcierge(props: any) {
           setPreviewCompatibilityDialogOpen(false);
         }}
       />
-    </>
-  );
-}
-
-function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
-  const guestToHost$ = getGuestToHostBus();
-  return interval(5000)
-    .pipe(
-      take(1),
-      takeUntil(guestToHost$.pipe(filter(({ type }) => type === GUEST_CHECK_IN || type === 'GUEST_SITE_LOAD')))
-    )
-    .subscribe(() => {
-      enqueueSnackbar(
-        <FormattedMessage
-          id="guestDetectionMessage"
-          defaultMessage="Communication with guest site was not detected."
-        />,
-        {
-          action: (key) => (
-            <Button key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}>
+      <Snackbar
+        open={guestDetectionSnackbarOpen}
+        onClose={() => setGuestDetectionSnackbarOpen(false)}
+        message={
+          <FormattedMessage id="guestDetectionMessage" defaultMessage="Communication with guest site not detected." />
+        }
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        action={
+          <>
+            <Button key="learnMore" color="secondary" size="small">
               Learn More
             </Button>
-          )
+            <IconButton color="secondary" size="small" onClick={() => setGuestDetectionSnackbarOpen(false)}>
+              <CloseRounded />
+            </IconButton>
+          </>
         }
-      );
-    });
+      />
+    </>
+  );
 }

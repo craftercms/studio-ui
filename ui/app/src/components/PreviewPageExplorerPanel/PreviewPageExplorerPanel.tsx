@@ -59,7 +59,7 @@ import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import ItemActionsMenu from '../ItemActionsMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import { completeDetailedItem } from '../../state/actions/content';
 import SearchBar from '../Controls/SearchBar';
 import Divider from '@material-ui/core/Divider';
 
@@ -365,7 +365,9 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
 
   useEffect(() => {
     isMounted.current = true;
-    return () => (isMounted.current = false);
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   if (!node) {
@@ -695,7 +697,6 @@ export default function PreviewPageExplorerPanel() {
         path,
         anchorEl: event.currentTarget
       });
-      dispatch(fetchUserPermissions({ path }));
       dispatch(completeDetailedItem({ path }));
     }
   };

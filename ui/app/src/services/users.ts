@@ -201,7 +201,7 @@ export function deleteProperties(properties: string[], siteId?: string): Observa
   );
 }
 
-export function getMyPermissions(site: string): Observable<string[]> {
+export function fetchMyPermissions(site: string): Observable<string[]> {
   return get(`/studio/api/2/users/me/sites/${site}/permissions`).pipe(pluck('response', 'permissions'));
 }
 

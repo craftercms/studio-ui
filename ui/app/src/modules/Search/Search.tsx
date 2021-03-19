@@ -35,8 +35,8 @@ import { History, Location } from 'history';
 import { fetchContentXML } from '../../services/content';
 import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useEnv, usePermissionsByPath, useSelection } from '../../utils/hooks';
-import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
+import { completeDetailedItem } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
@@ -360,7 +360,6 @@ export default function Search(props: SearchProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const dispatch = useDispatch();
-  const permissions = usePermissionsByPath();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
@@ -371,34 +370,30 @@ export default function Search(props: SearchProps) {
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
   const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
-  const items = useSelection((state) => state.content.items);
+  const items = useItemsByPath();
   const selectionOptions = useMemo(() => {
     if (selected.length === 0) {
       return null;
-    } else if (permissions && selected.length) {
+    } else if (selected.length) {
       if (selected.length === 1) {
         const path = selected[0];
-        const item = items.byPath?.[path];
+        const item = items[path];
         if (item) {
-          const options = generateSingleItemOptions(item, permissions[path], formatMessage);
+          const options = generateSingleItemOptions(item, formatMessage);
           return options[0].filter((option) => actionsToBeShown.includes(option.id));
         }
       } else {
         let itemsDetails = [];
         selected.forEach((itemPath) => {
-          const itemPermissions = permissions[itemPath];
-          const item = items.byPath?.[itemPath];
-          if (itemPermissions && item) {
-            itemsDetails.push({
-              permissions: itemPermissions,
-              item
-            });
+          const item = items[itemPath];
+          if (item) {
+            itemsDetails.push({ item });
           }
         });
         return generateMultipleItemOptions(itemsDetails, formatMessage);
       }
     }
-  }, [formatMessage, items.byPath, permissions, selected]);
+  }, [formatMessage, items, selected]);
 
   refs.current.createQueryString = createQueryString;
 
@@ -596,7 +591,6 @@ export default function Search(props: SearchProps) {
 
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
-      dispatch(fetchUserPermissions({ path }));
       dispatch(completeDetailedItem({ path }));
       setSelected([...selected, path]);
     } else {
@@ -638,7 +632,6 @@ export default function Search(props: SearchProps) {
 
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
     const path = item.path;
-    dispatch(fetchUserPermissions({ path }));
     dispatch(completeDetailedItem({ path }));
     dispatch(
       showItemMenu({
@@ -718,12 +711,12 @@ export default function Search(props: SearchProps) {
     setDrawerOpen(!drawerOpen);
   };
 
-  const onActionClicked = (option: string) => {
+  const onActionClicked = (option: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const legacyFormSrc = `${authoringBase}/legacy/form?`;
     if (selected.length > 1) {
       const detailedItems = [];
       selected.forEach((path) => {
-        items.byPath?.[path] && detailedItems.push(items.byPath[path]);
+        items?.[path] && detailedItems.push(items[path]);
       });
       itemActionDispatcher({
         site,
@@ -732,12 +725,13 @@ export default function Search(props: SearchProps) {
         legacyFormSrc,
         dispatch,
         formatMessage,
-        clipboard
+        clipboard,
+        event
       });
     } else {
       const path = selected[0];
-      const item = items.byPath?.[path];
-      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
+      const item = items?.[path];
+      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
     }
   };
 
@@ -928,7 +922,7 @@ export default function Search(props: SearchProps) {
             variant="contained"
             color="primary"
             disabled={selected.length === 0}
-            onClick={() => onAcceptSelection?.(selected.map((path) => items.byPath?.[path]))}
+            onClick={() => onAcceptSelection?.(selected.map((path) => items?.[path]))}
           >
             {formatMessage(messages.acceptSelection)}
           </Button>

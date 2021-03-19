@@ -34,9 +34,11 @@ export const useStyles = makeStyles(
         marginLeft: '5px'
       },
       optionsWrapper: {
-        marginLeft: 'auto',
+        top: 0,
+        right: 0,
         display: 'flex',
-        visibility: 'hidden'
+        visibility: 'hidden',
+        position: 'absolute'
       },
       optionsWrapperOver: {
         visibility: 'visible'
@@ -115,7 +117,8 @@ export const useStyles = makeStyles(
       // region Breadcrumbs
       breadcrumbs: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        position: 'relative'
       },
       breadcrumbsList: {
         display: 'flex',
@@ -135,6 +138,10 @@ export const useStyles = makeStyles(
       breadcrumbLast: {
         color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
         textDecoration: 'underline'
+      },
+      breadcrumbActionsWrapper: {
+        display: 'flex',
+        marginLeft: 'auto'
       },
       // endregion
       // region Pagination
@@ -194,6 +201,7 @@ export const useStyles = makeStyles(
         fontSize: '1.2rem'
       },
       navItem: {
+        minHeight: '23.5px',
         padding: '0 0 0 10px',
         '&.noLeftPadding': {
           paddingLeft: 0

@@ -21,16 +21,16 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronRounded from '@material-ui/icons/ChevronRightRounded';
 import React from 'react';
-import SystemIcon from '../SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { usePossibleTranslation } from '../../utils/hooks';
 
 export interface ToolsPanelListItemButtonProps {
   title: string;
   subtitle: string;
-  icon: { id: string; baseClass: string; baseStyle: object };
-  onClick(): void;
+  icon: SystemIconDescriptor;
   displaySecondaryAction?: boolean;
   secondaryActionIcon?: React.ReactNode;
+  onClick(): void;
   onSecondaryActionClick?(): void;
 }
 

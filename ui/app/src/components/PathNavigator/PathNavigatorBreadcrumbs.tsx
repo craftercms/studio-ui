@@ -28,6 +28,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import { isNavigable } from './utils';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import { defineMessages, useIntl } from 'react-intl';
 
 export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
 
@@ -37,12 +38,17 @@ export interface BreadcrumbsProps {
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
   onMenu?(element: Element): void;
   onSearch?(keyword: string): void;
-  onCrumbSelected(breadcrumb: DetailedItem): void;
+  onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
 }
+
+const messages = defineMessages({
+  filter: { id: 'pathNavigator.pathFilterInputPlaceholder', defaultMessage: 'Filter children...' }
+});
 
 // PathBreadcrumbs + PathOptions + (Path)Search
 function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
 
@@ -63,6 +69,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             autoFocus
             onChange={onChange}
             keyword={keyword}
+            placeholder={formatMessage(messages.filter)}
             onActionButtonClick={() => {
               onSearch('');
             }}
@@ -103,7 +110,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
                   TypographyClasses={{
                     root: clsx(classes.breadcrumbsTypography, maxIndex === i && classes.breadcrumbLast)
                   }}
-                  onClick={() => onCrumbSelected(item)}
+                  onClick={(e) => onCrumbSelected(item, e)}
                   children={item.label}
                 />
               ) : (
@@ -116,7 +123,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               )
             )}
           </MuiBreadcrumbs>
-          <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
+          <div className={clsx(classes.breadcrumbActionsWrapper)}>
             {onMenu && (
               <IconButton
                 aria-label="options"

@@ -18,6 +18,7 @@ import { ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   popToolsPanelPage,
+  previewItem,
   pushToolsPanelPage,
   setHighlightMode,
   setPreviewChoice,
@@ -33,9 +34,10 @@ import {
   setStoredPreviewToolsPanelPage
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { setClipBoard } from '../actions/content';
+import { setClipboard } from '../actions/content';
 import { setProperties } from '../../services/users';
 import { CrafterCMSEpic } from '../store';
+import { getSystemLink } from '../../components/LauncherSection';
 
 export default [
   (action$, state$) =>
@@ -106,10 +108,32 @@ export default [
   // region Clipboard
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(setClipBoard.type),
+      ofType(setClipboard.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         setStoredClipboard(state.sites.active, state.user.username, payload);
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region Go To Page
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(previewItem.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        const url = getSystemLink({
+          site: state.sites.active,
+          systemLinkId: 'preview',
+          previewChoice: state.preview.previewChoice,
+          authoringBase: state.env.authoringBase,
+          page: payload.item.previewUrl
+        });
+        if (payload.newTab) {
+          window.open(url);
+        } else {
+          window.location.href = url;
+        }
       }),
       ignoreElements()
     )

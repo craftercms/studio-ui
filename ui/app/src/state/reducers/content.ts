@@ -21,15 +21,13 @@ import {
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
-  fetchUserPermissionsComplete,
-  restoreClipBoard,
-  setClipBoard,
-  unSetClipBoard
+  restoreClipboard,
+  setClipboard,
+  clearClipboard
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
-import { createPresenceTable } from '../../utils/array';
 import {
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItemsComplete,
@@ -48,16 +46,13 @@ const initialState: ContentState = {
     isFetching: false,
     items: null
   },
-  items: {
-    byPath: null,
-    permissionsByPath: null
-  },
+  itemsByPath: {},
   clipboard: null
 };
 
-const updateItemByPath = (state, { payload: { parent, children } }) => {
+const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
   const nextByPath = {
-    ...state.items.byPath,
+    ...state.itemsByPath,
     ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path')
   };
   if (children.levelDescriptor) {
@@ -68,10 +63,7 @@ const updateItemByPath = (state, { payload: { parent, children } }) => {
   }
   return {
     ...state,
-    items: {
-      ...state.items,
-      byPath: nextByPath
-    }
+    itemsByPath: nextByPath
   };
 };
 
@@ -99,34 +91,21 @@ const reducer = createReducer<ContentState>(initialState, {
       error: error.payload.response
     }
   }),
-  [fetchUserPermissionsComplete.type]: (state, { payload }) => ({
-    ...state,
-    items: {
-      ...state.items,
-      permissionsByPath: {
-        ...state.items.permissionsByPath,
-        [payload.path]: createPresenceTable(payload.permissions.map((value) => value.replace(/[\s-]/g, '_')))
-      }
-    }
-  }),
   [fetchDetailedItemComplete.type]: (state, { payload }) => {
     return {
       ...state,
-      items: {
-        ...state.items,
-        byPath: { ...state.items.byPath, [payload.path]: payload }
-      }
+      itemsByPath: { ...state.itemsByPath, [payload.path]: payload }
     };
   },
-  [restoreClipBoard.type]: (state, { payload }) => ({
+  [restoreClipboard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
   }),
-  [setClipBoard.type]: (state, { payload }) => ({
+  [setClipboard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
   }),
-  [unSetClipBoard.type]: (state) => ({
+  [clearClipboard.type]: (state) => ({
     ...state,
     clipboard: null
   }),
@@ -135,16 +114,13 @@ const reducer = createReducer<ContentState>(initialState, {
   [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
     return {
       ...state,
-      items: {
-        ...state.items,
-        byPath: {
-          ...state.items.byPath,
-          ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
-          ...(children.levelDescriptor && {
-            [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
-          }),
-          ...createLookupTable(items, 'path')
-        }
+      itemsByPath: {
+        ...state.itemsByPath,
+        ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+        ...(children.levelDescriptor && {
+          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
+        }),
+        ...createLookupTable(items, 'path')
       }
     };
   },

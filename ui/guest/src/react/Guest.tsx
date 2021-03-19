@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
-import { filter, pluck, share, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../classes/ICERegistry';
 import { contentTypes$, flushRequestedPaths } from '../classes/ContentController';
 import * as elementRegistry from '../classes/ElementRegistry';
@@ -43,7 +43,6 @@ import {
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
@@ -96,7 +95,7 @@ function Guest(props: GuestProps) {
 
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
-  const state = useSelector<GuestState, GuestState>((state) => state);
+  const state = useSelector<GuestState>((state) => state);
   const editMode = state.editMode;
   const highlightMode = state.highlightMode;
   const status = state.status;
@@ -345,49 +344,56 @@ function Guest(props: GuestProps) {
     return () => {
       post(GUEST_CHECK_OUT);
       nnou(iceId) && iceRegistry.deregister(iceId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       refs.current.contentReady = false;
       flushRequestedPaths();
     };
   }, [documentDomain, path]);
 
   // Listen for desktop asset drag & drop
+  const shouldNotBypass = hasHost && editMode;
   useEffect(() => {
-    const subscription = fromEvent<DragEvent>(document, 'dragenter')
-      .pipe(filter((e) => e.dataTransfer?.types.includes('Files')))
-      .subscribe((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dispatch({
-          type: DESKTOP_ASSET_DRAG_STARTED,
-          payload: { asset: e.dataTransfer.items[0] }
+    if (shouldNotBypass) {
+      const subscription = fromEvent<DragEvent>(document, 'dragenter')
+        .pipe(filter((e) => e.dataTransfer?.types.includes('Files') && refs.current.contentReady))
+        .subscribe((e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dispatch({
+            type: DESKTOP_ASSET_DRAG_STARTED,
+            payload: { asset: e.dataTransfer.items[0] }
+          });
         });
-      });
-    return () => subscription.unsubscribe();
-  }, [dispatch]);
+      return () => subscription.unsubscribe();
+    }
+  }, [dispatch, shouldNotBypass]);
 
   // Listen for drag events for desktop asset drag & drop
   useEffect(() => {
-    if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === status) {
-      const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dragOk(status) && dispatch({ type: DESKTOP_ASSET_DRAG_ENDED });
-      });
-      const dragover$ = fromEvent(document, 'dragover').pipe(
-        tap((e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }),
-        share()
+    if (
+      [
+        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+        EditingStatus.SORTING_COMPONENT,
+        EditingStatus.PLACING_NEW_COMPONENT,
+        EditingStatus.PLACING_DETACHED_COMPONENT,
+        EditingStatus.PLACING_DETACHED_ASSET
+      ].includes(status)
+    ) {
+      const dropSubscription = fromEvent(document, 'drop').subscribe((event) =>
+        dispatch({ type: 'document:drop', payload: { event } })
       );
-      const dragoverSubscription = dragover$.subscribe();
-      const dragleaveSubscription = fromEvent(document, 'dragleave')
-        .pipe(switchMap(() => interval(100).pipe(takeUntil(dragover$))))
-        .subscribe(() => {
-          dragOk(status) && dispatch({ type: DESKTOP_ASSET_DRAG_ENDED });
-        });
+      const dragendSubscription = fromEvent(document, 'dragend').subscribe((event) =>
+        dispatch({ type: 'document:dragend', payload: { event } })
+      );
+      const dragoverSubscription = fromEvent(document, 'dragover').subscribe((event) =>
+        dispatch({ type: 'document:dragover', payload: { event } })
+      );
+      const dragleaveSubscription = fromEvent(document, 'dragleave').subscribe((event) =>
+        dispatch({ type: 'document:dragleave', payload: { event } })
+      );
       return () => {
         dropSubscription.unsubscribe();
+        dragendSubscription.unsubscribe();
         dragoverSubscription.unsubscribe();
         dragleaveSubscription.unsubscribe();
       };
@@ -460,7 +466,6 @@ function Guest(props: GuestProps) {
               }}
             />
           ))}
-          {/* prettier-ignore */}
           {[
             EditingStatus.SORTING_COMPONENT,
             EditingStatus.PLACING_NEW_COMPONENT,

@@ -80,7 +80,7 @@ function Graphi(props: GraphiQLProps) {
   const [query, setQuery] = useState(window.localStorage.getItem(`${props.storageKey}graphiql:query`));
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
-  const graphiql: GraphiQL = useRef();
+  const graphiql = useRef<GraphiQL>();
 
   // Updates localStorage and query variable used by graphiQL and graphiQL explorer
   function onEditQuery(newQuery: string) {

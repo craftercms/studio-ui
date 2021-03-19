@@ -166,7 +166,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (datasource.type === 'receptacles') dropTargetsLookup[datasource.id] = datasource;
+      if (datasource.type === 'dropTargets') dropTargetsLookup[datasource.id] = datasource;
     });
   }
 

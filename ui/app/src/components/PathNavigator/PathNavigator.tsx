@@ -21,6 +21,7 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   useActiveSiteId,
   useEnv,
+  useItemsByPath,
   usePreviewState,
   useSelection,
   useSiteLocales,
@@ -45,7 +46,7 @@ import {
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
 import ItemActionsMenu from '../ItemActionsMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
+import { completeDetailedItem } from '../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
 import { fetchContentXML } from '../../services/content';
 import { isFolder, isNavigable, isPreviewable } from './utils';
@@ -140,7 +141,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     computeActiveItems: computeActiveItemsProp
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
-  const itemsByPath = useSelection((state) => state.content.items).byPath;
+  const itemsByPath = useItemsByPath();
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
@@ -363,7 +364,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
       path = withIndex(state.currentPath);
     }
     dispatch(completeDetailedItem({ path }));
-    dispatch(fetchUserPermissions({ path }));
     setItemMenu({
       path,
       anchorEl: element,
@@ -373,7 +373,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
     dispatch(completeDetailedItem({ path: item.path }));
-    dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
       anchorEl: element,
@@ -429,9 +428,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
         }
       });
 
-  const onBreadcrumbSelected = (item: DetailedItem) => {
+  const onBreadcrumbSelected = (item: DetailedItem, e) => {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
-      onItemClicked(item);
+      onItemClicked(item, e);
     } else {
       dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }

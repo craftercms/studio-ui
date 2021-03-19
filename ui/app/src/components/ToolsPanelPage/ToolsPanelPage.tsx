@@ -18,21 +18,24 @@ import React from 'react';
 import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { useDispatch } from 'react-redux';
-import { popToolsPanelPage } from '../../state/actions/preview';
+import { popPageBuilderPanelPage, popToolsPanelPage } from '../../state/actions/preview';
 import { useActiveSiteId, useActiveUser, usePossibleTranslation } from '../../utils/hooks';
 
 export interface ToolsPanelPageDescriptor {
-  widgets: WidgetDescriptor[];
   title: string;
+  widgets: WidgetDescriptor[];
+  target?: 'pageBuilderPanel' | 'toolsPanel';
 }
 
 export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
 
 export default function ToolsPanelPage(props: ToolsPanelPageProps) {
+  const { target = 'toolsPanel' } = props;
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { rolesBySite } = useActiveUser();
-  const pop = () => dispatch(popToolsPanelPage());
+  const popPage = target === 'toolsPanel' ? popToolsPanelPage : popPageBuilderPanelPage;
+  const pop = () => dispatch(popPage());
   return (
     <ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>
       {renderWidgets(props.widgets, rolesBySite[site])}

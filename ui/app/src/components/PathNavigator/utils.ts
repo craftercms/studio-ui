@@ -17,7 +17,7 @@
 import { DetailedItem } from '../../models/Item';
 
 export function isNavigable(item: DetailedItem): boolean {
-  return item.systemType === 'page';
+  return item.previewUrl !== null;
 }
 
 export function isPreviewable(item: DetailedItem): boolean {
