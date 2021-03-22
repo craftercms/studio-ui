@@ -48,7 +48,7 @@ export default [
       ofType(pathNavigatorTreeInit.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const { id, path, expanded, collapsed } = payload;
+        const { id, path, expanded, collapsed, keywordByPath } = payload;
         if (expanded?.length) {
           let paths = [];
           expanded.forEach((expandedPath) => {
@@ -62,7 +62,12 @@ export default [
             fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
             fetchChildrenByPaths(
               state.sites.active,
-              createPresenceTable(expanded, () => ({}))
+              createPresenceTable(expanded, (value) => {
+                if (keywordByPath[value]) {
+                  return { keyword: keywordByPath[value] };
+                }
+                return {};
+              })
             )
           ).pipe(
             map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),

@@ -238,7 +238,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      console.log(type);
       switch (type) {
         case folderCreated.type: {
           const path = withoutIndex(rootPath) === payload.target ? withIndex(payload.target) : payload.target;
@@ -265,7 +264,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, dispatch, rootPath, totalByPath]);
+  }, [id, dispatch, rootPath, totalByPath, limit]);
 
   // return skeleton
 

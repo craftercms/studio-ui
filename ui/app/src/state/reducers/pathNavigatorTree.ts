@@ -33,7 +33,10 @@ import { changeSite } from './sites';
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
   {
-    [pathNavigatorTreeInit.type]: (state, { payload: { id, path, collapsed = false, limit, expanded = [] } }) => {
+    [pathNavigatorTreeInit.type]: (
+      state,
+      { payload: { id, path, collapsed = false, limit, expanded = [], keywordByPath = {} } }
+    ) => {
       return {
         ...state,
         [id]: {
@@ -43,7 +46,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           limit,
           expanded,
           childrenByParentPath: {},
-          keywordByPath: {},
+          keywordByPath,
           totalByPath: {}
         }
       };
