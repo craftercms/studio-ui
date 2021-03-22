@@ -39,7 +39,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
 import { forkJoin } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
-import { getParentsFromPath, withoutIndex } from '../../utils/path';
+import { getIndividualPaths, withoutIndex } from '../../utils/path';
 
 export default [
   // region pathNavigatorTreeInit
@@ -49,10 +49,10 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id, path, expanded, collapsed } = payload;
-        if (expanded) {
+        if (expanded?.length) {
           let paths = [];
           expanded.forEach((expandedPath) => {
-            getParentsFromPath(expandedPath, withoutIndex(path)).forEach((parentPath) => {
+            getIndividualPaths(expandedPath, withoutIndex(path)).forEach((parentPath) => {
               if (!paths.includes(parentPath)) {
                 paths.push(parentPath);
               }

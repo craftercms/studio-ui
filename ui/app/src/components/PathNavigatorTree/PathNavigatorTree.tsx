@@ -53,6 +53,7 @@ import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
+import { withIndex, withoutIndex } from '../../utils/path';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -237,7 +238,25 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      console.log(type);
       switch (type) {
+        case folderCreated.type: {
+          const path = withoutIndex(rootPath) === payload.target ? withIndex(payload.target) : payload.target;
+          if (nodesByPathRef.current[path]) {
+            fetchingPathsRef.current.push(path);
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path,
+                options: {
+                  limit: totalByPath[path] ?? limit
+                }
+              })
+            );
+          }
+
+          break;
+        }
         default: {
           break;
         }
@@ -246,7 +265,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, dispatch]);
+  }, [id, dispatch, rootPath, totalByPath]);
 
   // return skeleton
 
@@ -258,7 +277,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     dispatch(pathNavigatorTreeToggleExpanded({ id, collapsed }));
   };
 
-  const onLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
+  const onNodeLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
     if (isNavigable(itemsByPath[path])) {
       dispatch(
         previewItem({
@@ -267,11 +286,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
-      onIconClick(path);
+      onToggleNodeClick(path);
     }
   };
 
-  const onIconClick = (path: string) => {
+  const onToggleNodeClick = (path: string) => {
     if (state.expanded.includes(path)) {
       dispatch(
         pathNavigatorTreeCollapsePath({
@@ -368,8 +387,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         totalByPath={totalByPath}
         childrenByParentPath={childrenByParentPath}
         expandedNodes={state?.expanded}
-        onIconClick={onIconClick}
-        onLabelClick={onLabelClick}
+        onIconClick={onToggleNodeClick}
+        onLabelClick={onNodeLabelClick}
         onChangeCollapsed={onChangeCollapsed}
         onOpenItemMenu={onOpenItemMenu}
         onHeaderButtonClick={onHeaderButtonClick}
