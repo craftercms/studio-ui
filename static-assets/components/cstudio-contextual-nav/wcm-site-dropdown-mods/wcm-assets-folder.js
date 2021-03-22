@@ -554,13 +554,8 @@ var storage = CStudioAuthoring.Storage;
           var closedConfig = childIcons.closed;
           var openConfig = childIcons.open;
 
-          const stackedClass = CStudioAuthoring.Utils.getContentItemWorkflowStatus(treeNodeTO);
-          closedConfig.icon.stackedclass = stackedClass;
-          openConfig.icon.stackedclass = stackedClass;
-
-          const statusClass = `${stackedClass !== 'live' ? 'cs-item-icon' : ''}`;
-          var childClosed = CStudioAuthoring.Utils.createIcon(closedConfig, '', `on-closed ${statusClass}`);
-          var childOpen = CStudioAuthoring.Utils.createIcon(openConfig, '', `on-open ${statusClass}`);
+          var childClosed = CStudioAuthoring.Utils.createIcon(closedConfig, '', 'on-closed');
+          var childOpen = CStudioAuthoring.Utils.createIcon(openConfig, '', 'on-open');
 
           nodeSpan.appendChild(childClosed);
           nodeSpan.appendChild(childOpen);
