@@ -145,7 +145,7 @@ const reducer = createReducer<ContentState>(initialState, {
   [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
   [pathNavigatorTreeRestoreComplete.type]: (
     state,
-    { payload: { data, item } }: { payload: { data: LookupTable<GetChildrenResponse>; item: DetailedItem } }
+    { payload: { data, items } }: { payload: { data: LookupTable<GetChildrenResponse>; items: DetailedItem[] } }
   ) => {
     let nextByPath = {};
     Object.values(data).forEach((children) => {
@@ -153,8 +153,12 @@ const reducer = createReducer<ContentState>(initialState, {
       if (children.levelDescriptor) {
         nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
       }
+    });
+
+    items.forEach((item) => {
       nextByPath[item.path] = item;
     });
+
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [changeSite.type]: () => initialState

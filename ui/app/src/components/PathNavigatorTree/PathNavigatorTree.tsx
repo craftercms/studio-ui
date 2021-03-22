@@ -163,6 +163,14 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const nextFetching = [];
     fetchingPathsRef.current.forEach((path) => {
       if (childrenByParentPath?.[path]) {
+        if (!nodesByPathRef.current[path]) {
+          // if the nodeByPath dont exist, it means the node comes from restoring the localStorage
+          nodesByPathRef.current[path] = {
+            id: path,
+            name: itemsByPath[path].label,
+            children: nodesByPathRef.current[path]?.children ?? [{ id: 'loading' }]
+          };
+        }
         nodesByPathRef.current[path].children = [];
         // If the children are empty and there are filtered search, we will add a empty node
         if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
@@ -243,7 +251,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // return skeleton
 
   if (!rootItem || !Boolean(state) || !rootNode) {
-    return <PathNavigatorSkeletonTree numOfItems={storedState.expanded ? 5 : 1} />;
+    return <PathNavigatorSkeletonTree numOfItems={storedState.expanded?.includes(rootPath) ? 5 : 1} />;
   }
 
   const onChangeCollapsed = (collapsed) => {

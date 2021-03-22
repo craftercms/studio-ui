@@ -31,13 +31,15 @@ import {
   pathNavigatorTreeInit,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
-  pathNavigatorTreeSetKeyword
+  pathNavigatorTreeSetKeyword,
+  pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
-import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemByPath, fetchItemsByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
 import { forkJoin } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
+import { getParentsFromPath, withoutIndex } from '../../utils/path';
 
 export default [
   // region pathNavigatorTreeInit
@@ -48,14 +50,22 @@ export default [
       switchMap(([{ payload }, state]) => {
         const { id, path, expanded, collapsed } = payload;
         if (expanded) {
+          let paths = [];
+          expanded.forEach((expandedPath) => {
+            getParentsFromPath(expandedPath, withoutIndex(path)).forEach((parentPath) => {
+              if (!paths.includes(parentPath)) {
+                paths.push(parentPath);
+              }
+            });
+          });
           return forkJoin(
-            fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }),
+            fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
             fetchChildrenByPaths(
               state.sites.active,
               createPresenceTable(expanded, () => ({}))
             )
           ).pipe(
-            map(([item, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, item, data })),
+            map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
             catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
           );
         }
@@ -136,7 +146,8 @@ export default [
         pathNavigatorTreeCollapsePath.type,
         pathNavigatorTreeExpandPath.type,
         pathNavigatorTreeFetchPathChildrenComplete.type,
-        pathNavigatorTreeFetchPathPageComplete.type
+        pathNavigatorTreeFetchPathPageComplete.type,
+        pathNavigatorTreeToggleExpanded.type
       ),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
