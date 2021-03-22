@@ -5908,7 +5908,7 @@ var nodeOpen = false,
           statusClass = workflowIcons.neverpublished + ' never-published';
         } else if (statusObj.live) {
           //live
-          statusClass = workflowIcons.live + ' live';
+          statusClass = 'live';
         } else if (statusObj.deleted) {
           //deleted
           statusClass = workflowIcons.deleted + ' deleted';
