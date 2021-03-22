@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
 import { useActiveSiteId, useActiveUser, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
@@ -117,7 +117,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const fetchingPathsRef = useRef([]);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
-  const { expanded, collapsed } = getStoredPathNavigatorTree(site, user.username, id) ?? {};
+  const storedState = useMemo(() => {
+    return getStoredPathNavigatorTree(site, user.username, id) ?? {};
+  }, [id, site, user.username]);
 
   const dispatch = useDispatch();
 
@@ -125,6 +127,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === site) {
+      const { expanded, collapsed, keywordByPath } = storedState;
       if (expanded) {
         expanded.forEach((path) => {
           fetchingPathsRef.current.push(path);
@@ -137,11 +140,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           excludes,
           limit,
           ...(expanded && { expanded }),
+          ...(keywordByPath && { keywordByPath }),
           ...(nnou(collapsed) && { collapsed })
         })
       );
     }
-  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, expanded, collapsed]);
+  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
     if (rootItem) {
@@ -158,7 +162,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const nextFetching = [];
     fetchingPathsRef.current.forEach((path) => {
-      if (childrenByParentPath && childrenByParentPath[path]) {
+      if (childrenByParentPath?.[path]) {
         nodesByPathRef.current[path].children = [];
         // If the children are empty and there are filtered search, we will add a empty node
         if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
@@ -172,9 +176,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const node = {
             id: childPath,
             name: itemsByPath[childPath].label,
-            children: nodesByPathRef.current[childPath]?.children
-              ? nodesByPathRef.current[childPath].children
-              : [{ id: 'loading' }]
+            children: nodesByPathRef.current[childPath]?.children ?? [{ id: 'loading' }]
           };
           nodesByPathRef.current[path].children.push(node);
           nodesByPathRef.current[childPath] = node;
@@ -241,7 +243,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // return skeleton
 
   if (!rootItem || !Boolean(state) || !rootNode) {
-    return <PathNavigatorSkeletonTree numOfItems={expanded ? 5 : 1} />;
+    return <PathNavigatorSkeletonTree numOfItems={storedState.expanded ? 5 : 1} />;
   }
 
   const onChangeCollapsed = (collapsed) => {
@@ -310,10 +312,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     );
   };
 
-  const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
+  const onCloseWidgetOptions = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
-  const onSimpleMenuClick = (option: string) => {
-    onCloseWidgetMenu();
+  const onWidgetOptionsClick = (option: string) => {
+    onCloseWidgetOptions();
     if (option === 'refresh') {
     }
   };
@@ -370,8 +372,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         anchorEl={widgetMenu.anchorEl}
         options={widgetMenu.sections}
         open={Boolean(widgetMenu.anchorEl)}
-        onClose={onCloseWidgetMenu}
-        onMenuItemClicked={onSimpleMenuClick}
+        onClose={onCloseWidgetOptions}
+        onMenuItemClicked={onWidgetOptionsClick}
       />
     </>
   );

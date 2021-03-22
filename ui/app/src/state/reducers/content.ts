@@ -35,7 +35,7 @@ import {
 } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
 import {
   pathNavigatorTreeFetchPathChildrenComplete,
@@ -43,6 +43,8 @@ import {
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeRestoreComplete
 } from '../actions/pathNavigatorTree';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import LookupTable from '../../models/LookupTable';
 
 type ContentState = GlobalState['content'];
 
@@ -141,12 +143,19 @@ const reducer = createReducer<ContentState>(initialState, {
   },
   [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
   [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
-  [pathNavigatorTreeRestoreComplete.type]: (state, { payload }) => {
+  [pathNavigatorTreeRestoreComplete.type]: (
+    state,
+    { payload: { data, item } }: { payload: { data: LookupTable<GetChildrenResponse>; item: DetailedItem } }
+  ) => {
     let nextByPath = {};
-    Object.values(payload.data).forEach((children) => {
-      nextByPath = { ...nextByPath, ...updateItemByPath(state, { payload: { parent: null, children } }).itemsByPath };
+    Object.values(data).forEach((children) => {
+      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      if (children.levelDescriptor) {
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+      }
+      nextByPath[item.path] = item;
     });
-    return { ...state, itemsByPath: nextByPath };
+    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [changeSite.type]: () => initialState
 });

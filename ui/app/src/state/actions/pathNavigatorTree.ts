@@ -34,7 +34,7 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
 >('PATH_NAVIGATOR_TREE_INIT');
 
 export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ expanded: string[]; collapsed: boolean; data: LookupTable<GetChildrenResponse> }>
+  PayloadWithId<{ expanded: string[]; collapsed: boolean; item: DetailedItem; data: LookupTable<GetChildrenResponse> }>
 >('PATH_NAVIGATOR_TREE_RESTORE_COMPLETE');
 
 export const pathNavigatorTreeRestoreFailed = /*#__PURE__*/ createAction<{

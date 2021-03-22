@@ -18,6 +18,8 @@ import { ofType } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
+  pathNavigatorTreeCollapsePath,
+  pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenFailed,
@@ -34,7 +36,7 @@ import {
 import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
-import { merge } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 
 export default [
@@ -45,22 +47,22 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id, path, expanded, collapsed } = payload;
-        const streams = [
-          fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
-            map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
-            catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
-          )
-        ];
-
         if (expanded) {
-          streams.push(
-            fetchChildrenByPaths(state.sites.active, createPresenceTable(expanded, {})).pipe(
-              map((data) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, data })),
-              catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
+          return forkJoin(
+            fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }),
+            fetchChildrenByPaths(
+              state.sites.active,
+              createPresenceTable(expanded, () => ({}))
             )
+          ).pipe(
+            map(([item, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, item, data })),
+            catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
           );
         }
-        return streams.length === 1 ? streams[0] : merge(...streams);
+        return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
+          map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
+          catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
+        );
       })
     ),
   // endregion
@@ -130,14 +132,20 @@ export default [
   // region pathNavigatorTreeLocalStore
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreeFetchPathChildrenComplete.type, pathNavigatorTreeFetchPathPageComplete.type),
+      ofType(
+        pathNavigatorTreeCollapsePath.type,
+        pathNavigatorTreeExpandPath.type,
+        pathNavigatorTreeFetchPathChildrenComplete.type,
+        pathNavigatorTreeFetchPathPageComplete.type
+      ),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const { id } = payload;
-        const { expanded, collapsed } = state.pathNavigatorTree[id];
+        const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
         setStoredPathNavigatorTree(state.sites.active, state.user.username, id, {
           expanded,
-          collapsed
+          collapsed,
+          keywordByPath
         });
       }),
       ignoreElements()

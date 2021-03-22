@@ -52,7 +52,7 @@ export type BreadcrumbsClassKey = 'searchRoot' | 'searchInput' | 'searchCleanBut
 
 const translations = defineMessages({
   filter: {
-    id: 'filter.placeholder',
+    id: 'pathNavigatorTreeItemFilter.placeholder',
     defaultMessage: 'Filter children...'
   }
 });

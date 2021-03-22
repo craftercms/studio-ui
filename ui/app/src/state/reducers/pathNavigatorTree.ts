@@ -92,7 +92,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          expanded: state[id].expanded.includes(path) ? [...state[id].expanded] : [...state[id].expanded, path]
+          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] })
         }
       };
     },
@@ -101,6 +101,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
+          // if the expanded node has not children and is not a result from a filtering it means is a leaf node
           ...(children.length === 0 &&
             !options?.keyword && { expanded: state[id].expanded.filter((path) => path !== parentPath) }),
           childrenByParentPath: {
@@ -130,7 +131,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, expanded, collapsed, data } }) => {
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
       const children = {};
       const total = {};
       Object.keys(data).forEach((path) => {
@@ -142,8 +143,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          // expanded,
-          // collapsed,
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
             ...children
