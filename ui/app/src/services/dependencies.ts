@@ -47,8 +47,8 @@ export function fetchDeleteDependencies(
   childItems: string[];
   dependentItems: string[];
 }> {
-  return postJSON('/studio/api/2/content/get_delete_package', {
+  return postJSON(`/studio/api/2/content/get_delete_package`, {
     siteId,
-    paths: paths.map((path) => path)
+    paths
   }).pipe(pluck('response', 'items'));
 }
