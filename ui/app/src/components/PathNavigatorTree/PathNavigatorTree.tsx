@@ -53,7 +53,7 @@ import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { withIndex, withoutIndex } from '../../utils/path';
+import { getParentPath, withIndex } from '../../utils/path';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -240,8 +240,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
         case folderCreated.type: {
-          const path = withoutIndex(rootPath) === payload.target ? withIndex(payload.target) : payload.target;
-          if (nodesByPathRef.current[path]) {
+          const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+          const path = node?.id;
+          if (path) {
             fetchingPathsRef.current.push(path);
             dispatch(
               pathNavigatorTreeFetchPathChildren({
@@ -254,6 +255,28 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             );
           }
 
+          break;
+        }
+        case itemCreated.type: {
+          const node =
+            nodesByPathRef.current[getParentPath(payload.target)] ??
+            nodesByPathRef.current[withIndex(getParentPath(payload.target))];
+          const path = node?.id;
+          if (path) {
+            fetchingPathsRef.current.push(path);
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path,
+                options: {
+                  limit: totalByPath[path] ?? limit
+                }
+              })
+            );
+          }
+          break;
+        }
+        case itemsDeleted.type: {
           break;
         }
         default: {

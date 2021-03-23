@@ -32,7 +32,7 @@ import clsx from 'clsx';
 import SearchBar from '../Controls/SearchBar';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 
 interface PathNavigatorTreeItemProps {
   node: TreeNode;
@@ -220,9 +220,9 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
     case 'more': {
       return (
         <section className={classes.more}>
-          <Link
-            component="button"
-            variant="body2"
+          <Button
+            color="primary"
+            size="small"
             onClick={() => {
               onMoreClick(node.parentPath);
             }}
@@ -232,7 +232,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
               defaultMessage="{count, plural, one {...{count} more item} other {...{count} more items}}"
               values={{ count: totalByPath[node.parentPath] - childrenByParentPath[node.parentPath].length }}
             />
-          </Link>
+          </Button>
         </section>
       );
     }
