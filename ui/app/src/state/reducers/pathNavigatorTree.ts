@@ -100,6 +100,13 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       };
     },
     [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
+      const nextChildren = [];
+      if (children.levelDescriptor) {
+        nextChildren.push(children.levelDescriptor.path);
+      }
+
+      children.forEach((item) => nextChildren.push(item.path));
+
       return {
         ...state,
         [id]: {
@@ -109,7 +116,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             !options?.keyword && { expanded: state[id].expanded.filter((path) => path !== parentPath) }),
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
-            [parentPath]: children.map((item) => item.path)
+            [parentPath]: nextChildren
           },
           totalByPath: {
             ...state[id].totalByPath,
@@ -138,7 +145,11 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       const children = {};
       const total = {};
       Object.keys(data).forEach((path) => {
-        children[path] = data[path].map((item) => item.path);
+        children[path] = [];
+        if (data[path].levelDescriptor) {
+          children[path].push(data[path].levelDescriptor.path);
+        }
+        data[path].forEach((item) => children[path].push(item.path));
         total[path] = data[path].total;
       });
 

@@ -318,6 +318,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return <PathNavigatorSkeletonTree numOfItems={storedState.expanded?.includes(rootPath) ? 5 : 1} />;
   }
 
+  // region Handlers
   const onChangeCollapsed = (collapsed) => {
     dispatch(pathNavigatorTreeToggleExpanded({ id, collapsed }));
   };
@@ -418,6 +419,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       })
     );
   };
+  // endregion
 
   return (
     <>
