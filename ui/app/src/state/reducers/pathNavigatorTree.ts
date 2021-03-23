@@ -104,7 +104,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          // if the expanded node has not children and is not a result from a filtering it means is a leaf node
+          // If the expanded node has no children and is not filtered, it's a leaf node and there's no point keeping it in `expanded`
           ...(children.length === 0 &&
             !options?.keyword && { expanded: state[id].expanded.filter((path) => path !== parentPath) }),
           childrenByParentPath: {
@@ -138,7 +138,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       const children = {};
       const total = {};
       Object.keys(data).forEach((path) => {
-        children[path] = [...data[path].map((item) => item.path)];
+        children[path] = data[path].map((item) => item.path);
         total[path] = data[path].total;
       });
 
