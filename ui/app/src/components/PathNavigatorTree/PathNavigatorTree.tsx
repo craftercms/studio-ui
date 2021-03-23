@@ -42,8 +42,7 @@ import {
   itemCreated,
   itemDuplicated,
   itemsDeleted,
-  itemsPasted,
-  itemUpdated
+  itemsPasted
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
@@ -181,6 +180,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             }
           ];
         }
+
         childrenByParentPath[path].forEach((childPath) => {
           const node = {
             id: childPath,
@@ -225,11 +225,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     };
   }, [dispatch, id, onSearch$, rootPath]);
 
-  // TODO: Item Updates Propagation
+  // region Item Updates Propagation
   useEffect(() => {
     const events = [
       itemsPasted.type,
-      itemUpdated.type,
+      // itemUpdated is not needed because when the item is updated itemsByPath is also updated and the tree will re-render and updates the items
       folderCreated.type,
       folderRenamed.type,
       itemsDeleted.type,
@@ -239,24 +239,31 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
+        case itemsPasted.type:
         case folderCreated.type: {
-          const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
-          const path = node?.id;
-          if (path) {
-            fetchingPathsRef.current.push(path);
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path,
-                options: {
-                  limit: totalByPath[path] ?? limit
-                }
-              })
-            );
+          if (payload.clipboard.type === 'CUT') {
+            debugger;
+          } else {
+            const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+            const path = node?.id;
+            if (path) {
+              fetchingPathsRef.current.push(path);
+              dispatch(
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path,
+                  options: {
+                    limit: childrenByParentPath[path]?.length + 1 ?? limit
+                  }
+                })
+              );
+            }
           }
 
           break;
         }
+        case folderRenamed.type:
+        case itemDuplicated.type:
         case itemCreated.type: {
           const node =
             nodesByPathRef.current[getParentPath(payload.target)] ??
@@ -269,7 +276,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                 id,
                 path,
                 options: {
-                  limit: totalByPath[path] ?? limit
+                  limit: childrenByParentPath[path]?.length + (type === itemCreated.type ? 1 : 0) ?? limit
                 }
               })
             );
@@ -277,6 +284,23 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           break;
         }
         case itemsDeleted.type: {
+          payload.targets.forEach((target) => {
+            const node =
+              nodesByPathRef.current[getParentPath(target)] ?? nodesByPathRef.current[withIndex(getParentPath(target))];
+            const path = node?.id;
+            if (path) {
+              fetchingPathsRef.current.push(path);
+              dispatch(
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path,
+                  options: {
+                    limit: childrenByParentPath[path]?.length ?? limit
+                  }
+                })
+              );
+            }
+          });
           break;
         }
         default: {
@@ -287,9 +311,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, dispatch, rootPath, totalByPath, limit]);
-
-  // return skeleton
+  }, [id, dispatch, rootPath, totalByPath, limit, childrenByParentPath]);
+  // endregion
 
   if (!rootItem || !Boolean(state) || !rootNode) {
     return <PathNavigatorSkeletonTree numOfItems={storedState.expanded?.includes(rootPath) ? 5 : 1} />;
