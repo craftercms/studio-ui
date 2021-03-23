@@ -544,7 +544,7 @@ var storage = CStudioAuthoring.Storage;
       if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
         var nodeSpan = document.createElement('span');
 
-        if (treeNodeTO.style.match(/\bfolder\b/)) {
+        if (treeNodeTO.contentType === 'folder') {
           var key = instance.label;
           key = key.replace(/\s/g, '');
 
@@ -553,15 +553,6 @@ var storage = CStudioAuthoring.Storage;
           var childIcons = WcmAssets.customIcons[key].childIcons;
           var closedConfig = childIcons.closed;
           var openConfig = childIcons.open;
-
-          // adding stackedclass to folders if inProgress
-          if (treeNodeTO.statusObj.inProgress) {
-            closedConfig.icon.stackedclass = `${CStudioAuthoring.Constants.WORKFLOWICONS.edited} edited`;
-            openConfig.icon.stackedclass = `${CStudioAuthoring.Constants.WORKFLOWICONS.edited} edited`;
-          } else {
-            closedConfig.icon.stackedclass = null;
-            openConfig.icon.stackedclass = null;
-          }
 
           var childClosed = CStudioAuthoring.Utils.createIcon(closedConfig, '', 'on-closed');
           var childOpen = CStudioAuthoring.Utils.createIcon(openConfig, '', 'on-open');
