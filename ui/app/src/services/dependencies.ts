@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get, post } from '../utils/ajax';
+import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
 import { catchError, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LegacyItem } from '../models/Item';
@@ -47,7 +47,8 @@ export function fetchDeleteDependencies(
   childItems: string[];
   dependentItems: string[];
 }> {
-  return get(
-    `/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths.map((path) => encodeURIComponent(path))}`
-  ).pipe(pluck('response', 'items'));
+  return postJSON('/studio/api/2/content/get_delete_package', {
+    siteId,
+    paths
+  }).pipe(pluck('response', 'items'));
 }
