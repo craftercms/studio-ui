@@ -249,8 +249,6 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                 <ItemDisplay
                   styles={{ root: { flexGrow: 1, height: '26px' } }}
                   item={itemsByPath[node.id]}
-                  showPublishingTarget={true}
-                  showWorkflowState={true}
                   labelTypographyProps={{ variant: 'body2' }}
                 />
                 <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>

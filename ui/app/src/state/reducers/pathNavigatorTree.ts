@@ -112,8 +112,10 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         [id]: {
           ...state[id],
           // If the expanded node has no children and is not filtered, it's a leaf node and there's no point keeping it in `expanded`
-          ...(children.length === 0 &&
-            !options?.keyword && { expanded: state[id].expanded.filter((path) => path !== parentPath) }),
+          expanded:
+            children.length === 0 && !options?.keyword
+              ? state[id].expanded.filter((path) => path !== parentPath)
+              : state[id].expanded,
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
             [parentPath]: nextChildren
