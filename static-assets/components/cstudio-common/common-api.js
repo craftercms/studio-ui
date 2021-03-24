@@ -3989,7 +3989,7 @@ var nodeOpen = false,
        */
       lookupSiteContent: function(site, path, depth, order, callback) {
         CrafterCMSNext.services.content
-          .fetchLegacyItemsTree(site, encodeURI(path), {
+          .fetchLegacyItemsTree(site, path, {
             depth,
             order
           })
