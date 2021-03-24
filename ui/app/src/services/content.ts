@@ -835,6 +835,21 @@ export function fetchChildrenByPath(
   );
 }
 
+export function fetchChildrenByPaths(
+  siteId: string,
+  paths: LookupTable<Partial<GetChildrenOptions>>,
+  options?: Partial<GetChildrenOptions>
+): Observable<LookupTable<GetChildrenResponse>> {
+  const requests = Object.keys(paths).map((path) => fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }));
+  return forkJoin(requests).pipe(
+    map((responses) => {
+      const data = {};
+      Object.keys(paths).forEach((path, i) => (data[path] = responses[i]));
+      return data;
+    })
+  );
+}
+
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<SandboxItem[]>;
 export function fetchItemsByPath(
   siteId: string,

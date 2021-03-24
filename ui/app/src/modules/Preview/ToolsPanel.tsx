@@ -59,6 +59,7 @@ import BrushOutlinedIcon from '@material-ui/icons/BrushOutlined';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 import PluginManagement from '../../components/PluginManagement';
+import PathNavigatorTree from '../../components/PathNavigatorTree';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -164,6 +165,7 @@ Object.entries({
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,
+  'craftercms.components.PathNavigatorTree': PathNavigatorTree,
   'craftercms.components.ToolsPanelPage': ToolsPanelPageComponent,
   'craftercms.components.PreviewSearchPanel': PreviewSearchPanel,
   'craftercms.components.PreviewComponentsPanel': PreviewComponentsPanel,

@@ -146,7 +146,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 }
               },
               {
-                id: 'craftercms.components.PathNavigator',
+                id: 'craftercms.components.PathNavigatorTree',
                 uiKey: count++,
                 configuration: {
                   label: 'Templates',
@@ -158,12 +158,17 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 }
               },
               {
-                id: 'craftercms.components.PathNavigator',
+                id: 'craftercms.components.PathNavigatorTree',
                 uiKey: count++,
                 configuration: {
                   label: 'Scripts',
                   icon: {
                     baseClass: 'fa fa-code'
+                  },
+                  container: {
+                    baseStyle: {
+                      marginBottom: '20px'
+                    }
                   },
                   rootPath: '/scripts',
                   locale: 'en'
