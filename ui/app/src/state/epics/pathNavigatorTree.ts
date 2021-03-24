@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeCollapsePath,
@@ -47,7 +47,7 @@ export default [
     action$.pipe(
       ofType(pathNavigatorTreeInit.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
+      mergeMap(([{ payload }, state]) => {
         const { id, path, expanded, collapsed, keywordByPath } = payload;
         if (expanded?.length) {
           let paths = [];

@@ -165,6 +165,11 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                   icon: {
                     baseClass: 'fa fa-code'
                   },
+                  container: {
+                    baseStyle: {
+                      marginBottom: '20px'
+                    }
+                  },
                   rootPath: '/scripts',
                   locale: 'en'
                 }

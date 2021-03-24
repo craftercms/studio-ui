@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme) =>
       display: 'flex',
       paddingLeft: 0,
       flexWrap: 'wrap',
+      overflow: 'hidden',
       '&:hover': {
         background: 'none'
       },
@@ -247,7 +248,12 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
             <>
               <section className={classes.itemDisplaySection} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
                 <ItemDisplay
-                  styles={{ root: { flexGrow: 1, height: '26px' } }}
+                  styles={{
+                    root: {
+                      width: over ? 'calc(100% - 60px)' : '100%',
+                      height: '26px'
+                    }
+                  }}
                   item={itemsByPath[node.id]}
                   labelTypographyProps={{ variant: 'body2' }}
                 />
