@@ -165,7 +165,7 @@ export function PreviewConcierge(props: any) {
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
@@ -731,7 +731,7 @@ export function PreviewConcierge(props: any) {
         dispatch(checkOutGuest());
       }
     }
-  }, [site, guest, guestBase, dispatch, enqueueSnackbar, closeSnackbar]);
+  }, [site, guest, dispatch]);
 
   return (
     <>
@@ -752,7 +752,7 @@ export function PreviewConcierge(props: any) {
       />
       <Snackbar
         open={guestDetectionSnackbarOpen}
-        onClose={() => setGuestDetectionSnackbarOpen(false)}
+        onClose={() => void 0}
         message={
           <FormattedMessage id="guestDetectionMessage" defaultMessage="Communication with guest site not detected." />
         }

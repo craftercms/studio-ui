@@ -2816,15 +2816,17 @@ var nodeOpen = false,
           path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        if (path.indexOf('{parentPath}') != -1) {
-          path = path.replace(
-            '{parentPath}',
-            CStudioAuthoring.Utils.getQueryParameterByName('path').replace(
-              /\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/,
-              '$1'
-            )
-          );
-        }
+        const fullParentPath = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        const parentPathPieces = fullParentPath.substr(1).split('/');
+        path = path.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function(fullMatch, indexExp, index) {
+          if (indexExp === void 0) {
+            // Handle simple exp `{parentPath}`
+            return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
+          } else {
+            // Handle indexed exp `{parentPath[i]}`
+            return parentPathPieces[index];
+          }
+        });
 
         if (path.indexOf('{yyyy}') != -1) {
           path = path.replace('{yyyy}', currentDate.getFullYear());
