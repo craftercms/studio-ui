@@ -19,7 +19,7 @@ import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../classes/ICERegistry';
-import { contentTypes$, flushRequestedPaths } from '../classes/ContentController';
+import { contentTypes$, flushRequestedPaths, operations$ } from '../classes/ContentController';
 import * as elementRegistry from '../classes/ElementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -101,7 +101,12 @@ function Guest(props: GuestProps) {
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
-  const refs = useRef({ contentReady: false, firstRender: true, keysPressed: {} as LookupTable<boolean> });
+  const refs = useRef({
+    contentReady: false,
+    firstRender: true,
+    keysPressed: {} as LookupTable<boolean>,
+    hasChanges: false
+  });
   // TODO: Avoid double re-render when draggable changes without coupling to redux on useICE
   const context = useMemo(
     () => ({
@@ -172,7 +177,7 @@ function Guest(props: GuestProps) {
       $('html').removeClass(editModeClass);
       document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: false }));
       // Refreshing the page for now. Will revisit on a later release.
-      if (!refs.current.firstRender) {
+      if (!refs.current.firstRender && refs.current.hasChanges) {
         window.location.reload();
       }
     } else {
@@ -326,6 +331,9 @@ function Guest(props: GuestProps) {
     let iceId;
     const location = createLocationArgument();
     const site = Cookies.get('crafterSite');
+    const operationsSubscription = operations$.pipe(take(1)).subscribe(() => (refs.current.hasChanges = true));
+
+    refs.current.hasChanges = false;
 
     fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       .pipe(
@@ -347,6 +355,7 @@ function Guest(props: GuestProps) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       refs.current.contentReady = false;
       flushRequestedPaths();
+      operationsSubscription.unsubscribe();
     };
   }, [documentDomain, path]);
 
