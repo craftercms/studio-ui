@@ -1050,7 +1050,7 @@
 
       function renderDashboard() {
         var state = store.getState().dialogs.publishingStatus;
-        if (currentStatus !== state.status) {
+        if (state.status && currentStatus !== state.status) {
           publish.stopDisabled = false;
           publish.startDisabled = false;
           if (state.status.toLowerCase() === 'stopped') {
