@@ -52,12 +52,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
 
-  const onChange = (keyword: string) => {
-    if (keyword === '') {
-      setShowSearch(false);
-    }
-    onSearch(keyword);
-  };
+  const onChange = (keyword: string) => onSearch(keyword);
 
   const maxIndex = breadcrumb.length - 1;
 
@@ -70,10 +65,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             onChange={onChange}
             keyword={keyword}
             placeholder={formatMessage(messages.filter)}
-            onActionButtonClick={() => {
-              onSearch('');
-            }}
-            showActionButton={keyword && true}
+            showActionButton={Boolean(keyword)}
             classes={{
               root: clsx(classes.searchRoot, props.classes?.searchRoot),
               inputInput: clsx(classes.searchInput, props.classes?.searchInput),
@@ -82,7 +74,10 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           />
           <IconButton
             size="small"
-            onClick={() => setShowSearch(false)}
+            onClick={() => {
+              onSearch('');
+              setShowSearch(false);
+            }}
             className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
           >
             <CloseIconRounded />

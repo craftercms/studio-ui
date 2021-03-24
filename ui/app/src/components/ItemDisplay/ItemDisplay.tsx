@@ -76,6 +76,7 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
   showItemType?: boolean;
+  showNavigableAsLinks?: boolean;
   classes?: Partial<Record<ItemDisplayClassKey, string>>;
   styles?: ItemDisplayStyles;
   item: DetailedItem;
@@ -326,6 +327,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showPublishingTarget = true,
     showWorkflowState = true,
     showItemType = true,
+    showNavigableAsLinks = true,
     labelTypographyProps,
     ...rest
   } = props;
@@ -339,7 +341,11 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         noWrap
         component="span"
         {...labelTypographyProps}
-        className={clsx(classes.label, isNavigable(item) && classes.labelPreviewable, labelTypographyProps?.className)}
+        className={clsx(
+          classes.label,
+          showNavigableAsLinks && isNavigable(item) && classes.labelPreviewable,
+          labelTypographyProps?.className
+        )}
         title={item.label}
         children={item.label}
       />
