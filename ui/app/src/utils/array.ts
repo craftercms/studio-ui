@@ -40,8 +40,21 @@ export function asArray<T = unknown>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-export function createPresenceTable(list: string[]): LookupTable<boolean> {
+export function createPresenceTable(list: string[]): LookupTable<boolean>;
+export function createPresenceTable<T extends string | number | boolean>(list: string[], value: T): LookupTable<T>;
+export function createPresenceTable<T extends any>(
+  list: string[],
+  valueGenerator: (listItem: string) => T
+): LookupTable<T>;
+export function createPresenceTable<T extends any = boolean>(
+  list: string[],
+  valueOrGenerator: string | number | boolean | ((listItem: string) => T) = true
+): LookupTable<T> {
   const table = {};
-  list.forEach((value) => (table[value] = true));
+  const callback =
+    typeof valueOrGenerator === 'function'
+      ? (value) => (table[value] = valueOrGenerator(table[value]))
+      : (value) => (table[value] = valueOrGenerator);
+  list.forEach(callback);
   return table;
 }

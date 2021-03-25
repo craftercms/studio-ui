@@ -17,13 +17,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
+  clearClipboard,
   fetchDetailedItemComplete,
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
   restoreClipboard,
-  setClipboard,
-  clearClipboard
+  setClipboard
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
@@ -35,8 +35,16 @@ import {
 } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
+import {
+  pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchRootItemComplete,
+  pathNavigatorTreeRestoreComplete
+} from '../actions/pathNavigatorTree';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import LookupTable from '../../models/LookupTable';
 
 type ContentState = GlobalState['content'];
 
@@ -123,6 +131,35 @@ const reducer = createReducer<ContentState>(initialState, {
         ...createLookupTable(items, 'path')
       }
     };
+  },
+  [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { item } }) => {
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        [item.path]: item
+      }
+    };
+  },
+  [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
+  [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
+  [pathNavigatorTreeRestoreComplete.type]: (
+    state,
+    { payload: { data, items } }: { payload: { data: LookupTable<GetChildrenResponse>; items: DetailedItem[] } }
+  ) => {
+    let nextByPath = {};
+    Object.values(data).forEach((children) => {
+      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      if (children.levelDescriptor) {
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+      }
+    });
+
+    items.forEach((item) => {
+      nextByPath[item.path] = item;
+    });
+
+    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [changeSite.type]: () => initialState
 });

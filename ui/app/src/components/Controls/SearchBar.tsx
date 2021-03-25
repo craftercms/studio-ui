@@ -91,9 +91,10 @@ interface SearchBarProps {
     actionIcon?: any;
   };
   onBlur?(): void;
+  onClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onChange(value: string, event: React.SyntheticEvent): void;
   onKeyPress?(key: string): void;
-  onActionButtonClick?(): void;
+  onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }
 
 export default function SearchBar(props: SearchBarProps) {
@@ -110,7 +111,8 @@ export default function SearchBar(props: SearchBarProps) {
     showDecoratorIcon = true,
     decoratorIcon: DecoratorIcon = SearchIcon,
     onActionButtonClick,
-    onBlur
+    onBlur,
+    onClick
   } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
@@ -118,6 +120,7 @@ export default function SearchBar(props: SearchBarProps) {
   const inputRef = useRef<HTMLInputElement>();
   return (
     <Paper
+      onClick={onClick}
       variant={focus ? 'elevation' : 'outlined'}
       elevation={focus ? 4 : 0}
       className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
