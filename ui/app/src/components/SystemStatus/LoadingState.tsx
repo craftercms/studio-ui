@@ -19,31 +19,41 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Gears from './Gears';
 import clsx from 'clsx';
+import { CSSProperties } from '@material-ui/styles';
+
+type LoadingStateClassKey = 'root' | 'title' | 'subtitle' | 'graphic' | 'graphicRoot';
+
+type LoadingStateStyles = Partial<Record<LoadingStateClassKey, CSSProperties>>;
 
 const useStyles = makeStyles((theme) =>
-  createStyles({
-    loadingView: {
+  createStyles<LoadingStateClassKey, LoadingStateStyles>({
+    root: (styles) => ({
       display: 'flex',
       textAlign: 'center',
       alignItems: 'center',
       flexDirection: 'column',
       justifyContent: 'center',
-      margin: `${theme.spacing(2)}px auto`
-    },
-    gearContainer: {
+      margin: `${theme.spacing(2)}px auto`,
+      ...styles.root
+    }),
+    graphicRoot: (styles) => ({
       display: 'flex',
-      justifyContent: 'center'
-    },
-    title: {
+      justifyContent: 'center',
+      ...styles.graphicRoot
+    }),
+    title: (styles) => ({
       marginTop: '40px',
-      marginBottom: '15px'
-    },
-    paragraph: {
-      marginBottom: '10px'
-    },
-    graphic: {
-      width: 120
-    }
+      marginBottom: '15px',
+      ...styles.title
+    }),
+    subtitle: (styles) => ({
+      marginBottom: '10px',
+      ...styles.subtitle
+    }),
+    graphic: (styles) => ({
+      width: 120,
+      ...styles.graphic
+    })
   })
 );
 
@@ -52,33 +62,28 @@ export interface LoadingStateProps {
   subtitle?: string;
   graphic?: ElementType;
   graphicProps?: any;
-  classes?: {
-    root?: string;
-    title?: string;
-    subtitle?: string;
-    graphic?: string;
-    graphicRoot?: string;
-  };
+  classes?: Partial<Record<LoadingStateClassKey, string>>;
+  styles?: LoadingStateStyles;
 }
 
 export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren<{ isLoading: boolean }>;
 
 export default function LoadingState(props: LoadingStateProps) {
-  const classes = useStyles();
+  const classes = useStyles(props.styles);
   const { graphic: Graphic = Gears, classes: propClasses } = props;
   return (
-    <div className={clsx(classes.loadingView, propClasses?.root)}>
+    <div className={clsx(classes.root, propClasses?.root)}>
       {props.title && (
         <Typography variant="h6" component="h3" className={clsx(classes.title, propClasses?.title)}>
           {props.title}
         </Typography>
       )}
       {props.subtitle && (
-        <Typography variant="subtitle1" component="p" className={clsx(classes.paragraph, propClasses?.subtitle)}>
+        <Typography variant="subtitle1" component="p" className={clsx(classes.subtitle, propClasses?.subtitle)}>
           {props.subtitle}
         </Typography>
       )}
-      <div className={clsx(classes.gearContainer, propClasses?.graphicRoot)}>
+      <div className={clsx(classes.graphicRoot, propClasses?.graphicRoot)}>
         <Graphic className={clsx(classes.graphic, propClasses?.graphic)} {...props.graphicProps} />
       </div>
     </div>

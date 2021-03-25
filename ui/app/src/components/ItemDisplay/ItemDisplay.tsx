@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import { forwardRef } from 'react';
-import { DetailedItem, ItemStateMap } from '../../models/Item';
+import { DetailedItem, ItemStateMap, SandboxItem } from '../../models/Item';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
@@ -76,14 +76,15 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
   showItemType?: boolean;
+  showNavigableAsLinks?: boolean;
   classes?: Partial<Record<ItemDisplayClassKey, string>>;
   styles?: ItemDisplayStyles;
-  item: DetailedItem;
+  item: DetailedItem | SandboxItem;
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
 }
 
 export interface ItemIconProps {
-  item: DetailedItem;
+  item: DetailedItem | SandboxItem;
   classes: ItemDisplayProps['classes'];
 }
 
@@ -177,7 +178,7 @@ export function getItemStateText(stateMap: ItemStateMap) {
   }
 }
 
-export function getItemTypeText(item: DetailedItem) {
+export function getItemTypeText(item: DetailedItem | SandboxItem) {
   return `${capitalize(item.systemType ?? 'Unknown')} - ${item.mimeType}`;
 }
 
@@ -326,6 +327,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showPublishingTarget = true,
     showWorkflowState = true,
     showItemType = true,
+    showNavigableAsLinks = true,
     labelTypographyProps,
     ...rest
   } = props;
@@ -339,7 +341,11 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         noWrap
         component="span"
         {...labelTypographyProps}
-        className={clsx(classes.label, isNavigable(item) && classes.labelPreviewable, labelTypographyProps?.className)}
+        className={clsx(
+          classes.label,
+          showNavigableAsLinks && isNavigable(item) && classes.labelPreviewable,
+          labelTypographyProps?.className
+        )}
         title={item.label}
         children={item.label}
       />

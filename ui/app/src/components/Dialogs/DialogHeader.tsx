@@ -110,6 +110,7 @@ export type DialogTitleProps<
     subtitleWrapper?: string;
   };
   className?: string;
+  disableDismiss?: boolean;
   onDismiss?(): void;
   onBack?(): void;
 }>;
@@ -121,6 +122,7 @@ export default function DialogHeader(props: DialogTitleProps) {
   const {
     id,
     onDismiss,
+    disableDismiss = false,
     onBack,
     title,
     children,
@@ -172,7 +174,7 @@ export default function DialogHeader(props: DialogTitleProps) {
             ))}
             {onDismiss && (
               <Tooltip title={formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onDismiss}>
+                <IconButton aria-label="close" onClick={onDismiss} disabled={disableDismiss}>
                   <CloseIcon />
                 </IconButton>
               </Tooltip>

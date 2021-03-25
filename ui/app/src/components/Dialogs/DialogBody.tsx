@@ -19,6 +19,8 @@ import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogCo
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
+export type DialogBodyProps = DialogContentProps & { minHeight?: boolean };
+
 const styles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -27,11 +29,20 @@ const styles = makeStyles((theme: Theme) =>
       flexDirection: 'column',
       padding: theme.spacing(2),
       backgroundColor: theme.palette.background.default
+    },
+    minHeight: {
+      minHeight: '50vh'
     }
   })
 );
 
-export default function DialogBody(props: DialogContentProps) {
+export default function DialogBody(props: DialogBodyProps) {
   const classes = styles();
-  return <MuiDialogContent {...props} className={clsx(classes.root, props.className)} />;
+  const { minHeight, ...dialogContentProps } = props;
+  return (
+    <MuiDialogContent
+      {...dialogContentProps}
+      className={clsx(classes.root, props.className, props.minHeight && classes.minHeight)}
+    />
+  );
 }

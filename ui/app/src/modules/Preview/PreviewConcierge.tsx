@@ -74,7 +74,7 @@ import {
 } from '../../services/content';
 import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
-import { forkJoin, interval, Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';

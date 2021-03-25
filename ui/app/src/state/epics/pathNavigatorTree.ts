@@ -86,7 +86,7 @@ export default [
     action$.pipe(
       ofType(pathNavigatorTreeFetchPathChildren.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
+      mergeMap(([{ payload }, state]) => {
         const { id, path, options } = payload;
         return fetchChildrenByPath(state.sites.active, path, {
           limit: state.pathNavigatorTree[id].limit,
@@ -122,7 +122,7 @@ export default [
     action$.pipe(
       ofType(pathNavigatorTreeFetchPathPage.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
+      mergeMap(([{ payload }, state]) => {
         const { id, path } = payload;
         const keyword = state.pathNavigatorTree[id].keywordByPath[path];
         const offset = state.pathNavigatorTree[id].childrenByParentPath[path].length;
