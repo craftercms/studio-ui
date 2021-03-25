@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { del, errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -800,14 +800,13 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const qs = toQueryString({
+  return postJSON('/studio/api/2/content/children_by_path', {
     siteId,
     path,
     ...options,
     // `excludes` may not come at all or be an array of paths
     ...(options?.excludes ? { excludes: options.excludes.join(',') } : {})
-  });
-  return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
+  }).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>
       Object.assign(
@@ -872,8 +871,7 @@ export function fetchItemsByPath(
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem[] | DetailedItem[]> {
   const { castAsDetailedItem = false, preferContent = true } = options ?? {};
-  const qs = toQueryString({ siteId, paths, preferContent });
-  return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
+  return postJSON('/studio/api/2/content/sandbox_items_by_path', { siteId, paths, preferContent }).pipe(
     pluck('response', 'items'),
     map(
       (items: SandboxItem[]) =>
@@ -939,9 +937,11 @@ export function duplicate(siteId: string, path: string): Observable<any> {
 
 export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
   const paths = encodeURIComponent(data.items.join(','));
-  return del(`/studio/api/2/content/delete?siteId=${site}&submissionComment=${submissionComment}&paths=${paths}`).pipe(
-    pluck('response', 'response')
-  );
+  return postJSON('/studio/api/2/content/delete', {
+    siteId: site,
+    submissionComment,
+    paths
+  }).pipe(pluck('response', 'response'));
 }
 
 export function lock(site: string, path: string): Observable<boolean> {

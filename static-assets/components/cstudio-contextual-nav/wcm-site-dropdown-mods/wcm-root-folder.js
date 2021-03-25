@@ -1453,7 +1453,7 @@
         }
 
         var plainpath = node.treeNodeTO.path,
-          path = encodeURI(plainpath),
+          path = plainpath,
           site = node.treeNodeTO.site,
           pathToOpenTo = node.openToPath;
 
