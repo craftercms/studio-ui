@@ -82,10 +82,6 @@ const messages = defineMessages({
     id: 'createSiteDialog.nameExist',
     defaultMessage: 'The name already exists.'
   },
-  pushSiteToRemote: {
-    id: 'createSiteDialog.pushSiteToRemote',
-    defaultMessage: 'Push the site to a remote Git repository after creation'
-  },
   descriptionMaxLength: {
     id: 'createSiteDialog.descriptionMaxLength',
     defaultMessage: 'Max length: {maxLength} characters.'
@@ -332,32 +328,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             onKeyPress={onKeyPress}
           />
         )}
-        {blueprint.id !== 'GIT' && blueprint.source !== 'GIT' && (
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  name="pushSite"
-                  checked={inputs.pushSite}
-                  onChange={(event) => handleInputChange(event)}
-                  color="primary"
-                />
-              }
-              label={formatMessage(messages.pushSiteToRemote)}
-            />
-          </Grid>
-        )}
-        <Collapse in={inputs.pushSite} timeout={300}>
-          {inputs.pushSite && blueprint.source !== 'GIT' && (
-            <GitForm
-              inputs={inputs}
-              setInputs={setInputs}
-              type="push"
-              handleInputChange={handleInputChange}
-              onKeyPress={onKeyPress}
-            />
-          )}
-        </Collapse>
         {blueprint.id === 'GIT' && (
           <GitForm
             type="clone"
