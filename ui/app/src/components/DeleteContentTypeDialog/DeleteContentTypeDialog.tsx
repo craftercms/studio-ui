@@ -22,7 +22,6 @@ import { deleteContentType, fetchContentTypeUsage } from '../../services/content
 import { createResource, useActiveSiteId, useUnmount } from '../../utils/hooks';
 import ContentType from '../../models/ContentType';
 import Suspencified from '../SystemStatus/Suspencified';
-import { useSnackbar } from 'notistack';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
 import { useDispatch } from 'react-redux';
 

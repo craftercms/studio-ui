@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 
-export function isNavigable(item: DetailedItem): boolean {
+export function isNavigable(item: DetailedItem | SandboxItem): boolean {
   return item.previewUrl !== null;
 }
 
-export function isPreviewable(item: DetailedItem): boolean {
+export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
   return (
     item.systemType === 'component' ||
     item.systemType === 'asset' ||
@@ -30,7 +30,7 @@ export function isPreviewable(item: DetailedItem): boolean {
   );
 }
 
-export function isFolder(item: DetailedItem): boolean {
+export function isFolder(item: DetailedItem | SandboxItem): boolean {
   return item.systemType === 'folder';
 }
 

@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import { forwardRef } from 'react';
-import { DetailedItem, ItemStateMap } from '../../models/Item';
+import { DetailedItem, ItemStateMap, SandboxItem } from '../../models/Item';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
@@ -79,12 +79,12 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   showNavigableAsLinks?: boolean;
   classes?: Partial<Record<ItemDisplayClassKey, string>>;
   styles?: ItemDisplayStyles;
-  item: DetailedItem;
+  item: DetailedItem | SandboxItem;
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
 }
 
 export interface ItemIconProps {
-  item: DetailedItem;
+  item: DetailedItem | SandboxItem;
   classes: ItemDisplayProps['classes'];
 }
 
@@ -178,7 +178,7 @@ export function getItemStateText(stateMap: ItemStateMap) {
   }
 }
 
-export function getItemTypeText(item: DetailedItem) {
+export function getItemTypeText(item: DetailedItem | SandboxItem) {
   return `${capitalize(item.systemType ?? 'Unknown')} - ${item.mimeType}`;
 }
 
