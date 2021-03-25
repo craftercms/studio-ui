@@ -406,10 +406,11 @@ export function PreviewConcierge(props: any) {
               issueDescriptorRequest(path, fetchPrimaryGuestModelComplete);
             }
           } /* else if (type === FETCH_GUEST_MODEL) */ else {
-            if (payload.path?.startsWith('/')) {
-              issueDescriptorRequest(payload.path, fetchGuestModelComplete);
+            const path = payload?.path ? payload.path : guest.path;
+            if (path?.startsWith('/')) {
+              issueDescriptorRequest(path, fetchGuestModelComplete);
             } else {
-              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
+              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${path}" is not a valid path.`);
             }
           }
           break;
@@ -446,6 +447,7 @@ export function PreviewConcierge(props: any) {
                 updatedModels
               );
               dispatch(guestModelUpdated({ model: normalizeModel(updatedModels[modelId]) }));
+              guestToHost$.next({ type: FETCH_GUEST_MODEL });
               hostToHost$.next({
                 type: SORT_ITEM_OPERATION_COMPLETE,
                 payload
@@ -479,6 +481,7 @@ export function PreviewConcierge(props: any) {
             shared
           ).subscribe(
             () => {
+              guestToHost$.next({ type: FETCH_GUEST_MODEL });
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
                 payload: { ...payload, currentUrl }
@@ -510,6 +513,7 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
+              guestToHost$.next({ type: FETCH_GUEST_MODEL });
               enqueueSnackbar('Insert component operation completed.');
             },
             (error) => {
@@ -548,6 +552,7 @@ export function PreviewConcierge(props: any) {
             targetParentModelId ? models[targetParentModelId].craftercms.path : null
           ).subscribe(
             () => {
+              guestToHost$.next({ type: FETCH_GUEST_MODEL });
               enqueueSnackbar('Move operation completed.');
             },
             (error) => {
@@ -574,6 +579,7 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
+              guestToHost$.next({ type: FETCH_GUEST_MODEL });
               hostToHost$.next({
                 type: DELETE_ITEM_OPERATION_COMPLETE,
                 payload
