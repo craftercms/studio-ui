@@ -27,9 +27,9 @@ import {
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
-import { forkJoin, interval, Observable, of, zip } from 'rxjs';
+import { forkJoin, Observable, of, zip } from 'rxjs';
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap, take } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
@@ -392,10 +392,9 @@ export function fetchContentTypeUsage(site: string, contentTypeId: string): Obse
 }
 
 export function deleteContentType(site: string, contentTypeId: string): Observable<boolean> {
-  // return postJSON(`/studio/api/2/configuration/content-type/delete`, {
-  //   siteId: site,
-  //   contentType: contentTypeId,
-  //   deleteDependencies: true
-  // }).pipe(mapTo(true));
-  return interval(2000).pipe(take(1), mapTo(true));
+  return postJSON(`/studio/api/2/configuration/content-type/delete`, {
+    siteId: site,
+    contentType: contentTypeId,
+    deleteDependencies: true
+  }).pipe(mapTo(true));
 }
