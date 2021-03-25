@@ -39,7 +39,7 @@ import LevelDescriptorIcon from '../Icons/LevelDescriptor';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import { capitalize } from '../../utils/string';
-import { isNavigable } from '../PathNavigator/utils';
+import { isPreviewable } from '../PathNavigator/utils';
 import Js from '../Icons/Js';
 import CodeRounded from '@material-ui/icons/CodeRounded';
 import Groovy from '../Icons/Groovy';
@@ -81,6 +81,7 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   styles?: ItemDisplayStyles;
   item: DetailedItem | SandboxItem;
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
+  isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
 }
 
 export interface ItemIconProps {
@@ -328,6 +329,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showWorkflowState = true,
     showItemType = true,
     showNavigableAsLinks = true,
+    isNavigableFn = isPreviewable,
     labelTypographyProps,
     ...rest
   } = props;
@@ -343,7 +345,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         {...labelTypographyProps}
         className={clsx(
           classes.label,
-          showNavigableAsLinks && isNavigable(item) && classes.labelPreviewable,
+          showNavigableAsLinks && isNavigableFn(item) && classes.labelPreviewable,
           labelTypographyProps?.className
         )}
         title={item.label}
