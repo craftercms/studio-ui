@@ -16,7 +16,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI from './PathNavigatorTreeUI';
-import { useActiveSiteId, useActiveUser, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useEnv, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
@@ -29,7 +29,7 @@ import {
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
-import { isNavigable } from '../PathNavigator/utils';
+import { isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
@@ -47,12 +47,14 @@ import {
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { showItemMenu } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
 import { getParentPath, withIndex } from '../../utils/path';
+import { DetailedItem } from '../../models/Item';
+import { fetchContentXML } from '../../services/content';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -120,6 +122,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const storedState = useMemo(() => {
     return getStoredPathNavigatorTree(site, user.username, id) ?? {};
   }, [id, site, user.username]);
+  const { authoringBase } = useEnv();
+  const legacyFormSrc = `${authoringBase}/legacy/form?`;
 
   const dispatch = useDispatch();
 
@@ -331,6 +335,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           newTab: event.ctrlKey || event.metaKey
         })
       );
+    } else if (isPreviewable(itemsByPath[path])) {
+      onPreview(itemsByPath[path]);
     } else {
       onToggleNodeClick(path);
     }
@@ -419,6 +425,46 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       })
     );
   };
+
+  const onPreview = (item: DetailedItem) => {
+    if (item.systemType === 'component' || item.systemType === 'taxonomy') {
+      const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
+      dispatch(showEditDialog({ src }));
+    } else if (item.mimeType.startsWith('image/')) {
+      dispatch(
+        showPreviewDialog({
+          type: 'image',
+          title: item.label,
+          url: item.path
+        })
+      );
+    } else {
+      fetchContentXML(site, item.path).subscribe((content) => {
+        let mode = 'txt';
+
+        if (item.systemType === 'renderingTemplate') {
+          mode = 'ftl';
+        } else if (item.systemType === 'script') {
+          mode = 'groovy';
+        } else if (item.mimeType === 'application/javascript') {
+          mode = 'javascript';
+        } else if (item.mimeType === 'text/css') {
+          mode = 'css';
+        }
+
+        dispatch(
+          showPreviewDialog({
+            type: 'editor',
+            title: item.label,
+            url: item.path,
+            mode,
+            content
+          })
+        );
+      });
+    }
+  };
+
   // endregion
 
   return (
