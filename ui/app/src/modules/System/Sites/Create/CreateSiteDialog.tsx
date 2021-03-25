@@ -52,7 +52,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
-import { PrimaryButton } from '../../../../components/PrimaryButton';
+import PrimaryButton from '../../../../components/PrimaryButton';
 import Button from '@material-ui/core/Button';
 
 const messages = defineMessages({

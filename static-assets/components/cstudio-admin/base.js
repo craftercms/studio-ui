@@ -107,10 +107,6 @@
         YDom.addClass(catEl, 'work-area-active');
       });
 
-      if (!config.tools.tool.length) {
-        config.tools.tool = [config.tools.tool];
-      }
-
       if (config.tools.tool.length) {
         this.toolsModules = {};
         this.initRouter(config.tools.tool);
@@ -120,7 +116,7 @@
             this.toolContainerEls[this.toolContainerEls.length] = toolContainerEl;
             panelEl && panelEl.appendChild(toolContainerEl);
 
-            if (j == 0) {
+            if (j === 0) {
               YDom.addClass(toolContainerEl, 'cstudio-admin-console-item-first');
             }
 
@@ -171,6 +167,8 @@
             console.log(err);
           }
         }
+      } else {
+        config.tools.tool = [config.tools.tool];
       }
 
       if (!$('body').hasClass('embedded')) {

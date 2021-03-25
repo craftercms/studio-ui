@@ -44,8 +44,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import LookupTable from '../../../models/LookupTable';
-import { SecondaryButton } from '../../../components/SecondaryButton';
-import { PrimaryButton } from '../../../components/PrimaryButton';
+import SecondaryButton from '../../../components/SecondaryButton';
+import PrimaryButton from '../../../components/PrimaryButton';
 
 // region Typings
 

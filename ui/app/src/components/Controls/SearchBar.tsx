@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
@@ -91,9 +91,10 @@ interface SearchBarProps {
     actionIcon?: any;
   };
   onBlur?(): void;
-  onChange(value: string): void;
+  onClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onChange(value: string, event: React.SyntheticEvent): void;
   onKeyPress?(key: string): void;
-  onActionButtonClick?(): void;
+  onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }
 
 export default function SearchBar(props: SearchBarProps) {
@@ -110,20 +111,23 @@ export default function SearchBar(props: SearchBarProps) {
     showDecoratorIcon = true,
     decoratorIcon: DecoratorIcon = SearchIcon,
     onActionButtonClick,
-    onBlur
+    onBlur,
+    onClick
   } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   const finalPlaceholder = placeholder || formatMessage(messages.placeholder);
+  const inputRef = useRef<HTMLInputElement>();
   return (
     <Paper
+      onClick={onClick}
       variant={focus ? 'elevation' : 'outlined'}
       elevation={focus ? 4 : 0}
       className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && <DecoratorIcon className={classes.searchIcon} />}
       <InputBase
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value, e)}
         onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}
         onFocus={() => setFocus(true)}
         onBlur={() => {
@@ -138,10 +142,20 @@ export default function SearchBar(props: SearchBarProps) {
           root: clsx(classes.inputRoot, props.classes?.inputRoot),
           input: clsx(classes.inputInput, props.classes?.inputInput)
         }}
-        inputProps={{ 'aria-label': finalPlaceholder }}
+        inputProps={{ 'aria-label': finalPlaceholder, ref: inputRef }}
       />
       {showActionButton && (
-        <IconButton onClick={onActionButtonClick ? onActionButtonClick : () => onChange('')} className={classes.icon}>
+        <IconButton
+          onClick={
+            onActionButtonClick
+              ? onActionButtonClick
+              : (e) => {
+                  onChange('', e);
+                  inputRef.current?.focus();
+                }
+          }
+          className={classes.icon}
+        >
           <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       )}

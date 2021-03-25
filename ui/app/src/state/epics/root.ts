@@ -31,6 +31,7 @@ import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
 import configuration from './configuration';
 import pathNavigator from './pathNavigator';
+import pathNavigatorTree from './pathNavigatorTree';
 import misc from './misc';
 import system from './system';
 import users from './users';
@@ -56,6 +57,7 @@ const epic: CrafterCMSEpic = combineEpics.apply(this, [
   ...translation,
   ...configuration,
   ...pathNavigator,
+  ...pathNavigatorTree,
   ...misc,
   ...system,
   ...users

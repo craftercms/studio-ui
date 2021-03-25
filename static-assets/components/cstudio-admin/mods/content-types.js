@@ -39,14 +39,12 @@
   });
 
   function moduleLoaded() {
-    CStudioAdminConsole.Tool.ContentTypes =
-      CStudioAdminConsole.Tool.ContentTypes ||
-      function(config, el) {
-        this.containerEl = el;
-        this.config = config;
-        this.types = [];
-        return this;
-      };
+    CStudioAdminConsole.Tool.ContentTypes = function(config, el) {
+      this.containerEl = el;
+      this.config = config;
+      this.types = [];
+      return this;
+    };
 
     getPostfixData();
 
@@ -245,6 +243,7 @@
                           'studioDialog'
                         );
                       } else {
+                        console.log(_self, CStudioAdminConsole === self, CStudioAdminConsole);
                         CStudioAdminConsole.isDirty = false;
                         _self.renderWorkarea();
                         CStudioAdminConsole.CommandBar.hide();
@@ -1040,17 +1039,44 @@
         this.formVisualContainerEl = formVisualContainerEl;
         var formTarget = new YAHOO.util.DDTarget(formVisualContainerEl);
 
+        var header = document.createElement('header');
+        header.style.position = 'relative';
+
         var formNameEl = document.createElement('div');
         YDom.addClass(formNameEl, 'content-form-name');
         formNameEl.textContent = this.definition.title;
-        formVisualContainerEl.appendChild(formNameEl);
 
         var divPropertiesEl = document.createElement('div');
         YDom.addClass(divPropertiesEl, 'content-form-link');
+
         var linkPropertiesEl = document.createElement('a');
         linkPropertiesEl.innerHTML = CMgs.format(langBundle, 'basicContentTypeProp');
         divPropertiesEl.appendChild(linkPropertiesEl);
-        formVisualContainerEl.appendChild(divPropertiesEl);
+
+        var deleteTypeApp = document.createElement('div');
+        deleteTypeApp.style.position = 'absolute';
+        deleteTypeApp.style.top = '0';
+        deleteTypeApp.style.right = '0';
+        deleteTypeApp.style.bottom = '0';
+
+        header.appendChild(formNameEl);
+        header.appendChild(divPropertiesEl);
+        header.appendChild(deleteTypeApp);
+        formVisualContainerEl.appendChild(header);
+
+        let unmount;
+        CrafterCMSNext.render(deleteTypeApp, 'DeleteContentTypeButton', {
+          contentType: {
+            id: this.definition.contentType,
+            name: this.definition.title
+          },
+          onComplete() {
+            CStudioAdminConsole.renderWorkArea(null, {
+              tool: CStudioAdminConsole.toolsModules['content-types'],
+              toolbar: CStudioAdminConsole.toolbar
+            });
+          }
+        }).then((result) => (unmount = result.unmount));
 
         formVisualContainerEl.definition = this.definition;
 

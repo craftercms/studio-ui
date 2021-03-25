@@ -27,6 +27,7 @@ import dialogs from './dialogs';
 import versions from './versions';
 import content from './content';
 import pathNavigator from './pathNavigator';
+import pathNavigatorTree from './pathNavigatorTree';
 import uiConfig from './uiConfig';
 
 const reducer: ReducersMapObject<GlobalState, StandardAction> = {
@@ -40,6 +41,7 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   versions,
   content,
   pathNavigator,
+  pathNavigatorTree,
   uiConfig
 };
 
