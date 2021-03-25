@@ -30,8 +30,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import { PrimaryButton } from '../PrimaryButton';
-import { SecondaryButton } from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 const messages = defineMessages({
   copy: {

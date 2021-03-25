@@ -42,8 +42,8 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { getCurrentLocale } from '../../utils/i18n';
-import { SecondaryButton } from '../SecondaryButton';
-import { PrimaryButton } from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 import Typography from '@material-ui/core/Typography';
 import ListSubheader from '@material-ui/core/ListSubheader';
 

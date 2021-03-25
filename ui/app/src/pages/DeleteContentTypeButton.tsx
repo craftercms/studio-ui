@@ -21,19 +21,26 @@ import DeleteRounded from '@material-ui/icons/DeleteRounded';
 import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
 
-function DeleteContentTypeButton() {
-  const [open, setOpen] = useState(true);
-  const [contentTypeId, setContentTypeId] = useState('/component/responsive_columns');
+export interface DeleteContentTypeButtonProps {
+  contentType: ContentType;
+  onComplete?(): void;
+}
+
+function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
+  const [open, setOpen] = useState(false);
   return (
     <>
-      <input type="text" value={contentTypeId} onChange={(e) => setContentTypeId(e.target.value)} />
       <IconButton onClick={() => setOpen(true)}>
         <DeleteRounded />
       </IconButton>
       <DeleteContentTypeDialog
         open={open}
         onClose={() => setOpen(false)}
-        contentType={{ id: contentTypeId, name: 'My Content Type' } as ContentType}
+        contentType={contentType}
+        onComplete={() => {
+          setOpen(false);
+          onComplete?.();
+        }}
       />
     </>
   );

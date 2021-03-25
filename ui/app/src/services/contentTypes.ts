@@ -27,9 +27,9 @@ import {
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
-import { forkJoin, Observable, of, zip } from 'rxjs';
+import { forkJoin, interval, Observable, of, zip } from 'rxjs';
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck, switchMap, take } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
@@ -374,7 +374,7 @@ export function fetchContentTypeUsage(site: string, contentTypeId: string): Obse
     pluck('response', 'usage'),
     switchMap((usage: FetchContentTypeUsageResponse<string>) =>
       usage.templates.length + usage.scripts.length + usage.content.length === 0
-        ? // @ts-ignore
+        ? // @ts-ignore - avoiding creating new object with the exact same structure just for typescript's sake
           of(usage as FetchContentTypeUsageResponse)
         : fetchItemsByPath(site, [...usage.templates, ...usage.scripts, ...usage.content]).pipe(
             map((items) => {
@@ -392,9 +392,10 @@ export function fetchContentTypeUsage(site: string, contentTypeId: string): Obse
 }
 
 export function deleteContentType(site: string, contentTypeId: string): Observable<boolean> {
-  return postJSON(`/studio/api/2/configuration/content-type/delete`, {
-    siteId: site,
-    contentType: contentTypeId,
-    deleteDependencies: true
-  }).pipe(mapTo(true));
+  // return postJSON(`/studio/api/2/configuration/content-type/delete`, {
+  //   siteId: site,
+  //   contentType: contentTypeId,
+  //   deleteDependencies: true
+  // }).pipe(mapTo(true));
+  return interval(2000).pipe(take(1), mapTo(true));
 }

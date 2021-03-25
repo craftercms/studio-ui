@@ -31,8 +31,8 @@ import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
-import { PrimaryButton } from '../PrimaryButton';
-import { SecondaryButton } from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 import { ApiResponse } from '../../models/ApiResponse';
 import TranslationOrText from '../../models/TranslationOrText';
 
