@@ -146,6 +146,58 @@ const guestMessages = defineMessages({
   dropTargetsNotFound: {
     id: 'register.dropTargetsNotFound',
     defaultMessage: 'There are no drop targets for {contentType} components'
+  },
+  sortOperationComplete: {
+    id: 'operations.sortOperationComplete',
+    defaultMessage: 'Sort operation completed.'
+  },
+  sortOperationFailed: {
+    id: 'operations.sortOperationFailed',
+    defaultMessage: 'Sort operation failed.'
+  },
+  insertOperationComplete: {
+    id: 'operations.insertOperationComplete',
+    defaultMessage: 'Insert component operation completed.'
+  },
+  insertOperationFailed: {
+    id: 'operations.insertOperationFailed',
+    defaultMessage: 'Insert component operation failed.'
+  },
+  insertItemOperation: {
+    id: 'operations.insertItemOperation',
+    defaultMessage: 'Insert item operation not implemented.'
+  },
+  moveOperationComplete: {
+    id: 'operations.moveOperationComplete',
+    defaultMessage: 'Move operation completed'
+  },
+  moveOperationFailed: {
+    id: 'operations.moveOperationFailed',
+    defaultMessage: 'Move operation failed.'
+  },
+  deleteOperationComplete: {
+    id: 'operations.deleteOperationComplete',
+    defaultMessage: 'Delete operation completed.'
+  },
+  deleteOperationFailed: {
+    id: 'operations.deleteOperationFailed',
+    defaultMessage: 'Delete operation failed.'
+  },
+  updateOperationComplete: {
+    id: 'operations.updateOperationComplete',
+    defaultMessage: 'Update operation completed.'
+  },
+  updateOperationFailed: {
+    id: 'operations.updateOperationFailed',
+    defaultMessage: 'Update operation failed.'
+  },
+  assetUploadStarted: {
+    id: 'operations.assetUploadStarted',
+    defaultMessage: 'Asset upload started.'
+  },
+  assetUploadFailed: {
+    id: 'operations.assetUploadFailed',
+    defaultMessage: 'Asset Upload failed.'
   }
 });
 
@@ -452,11 +504,11 @@ export function PreviewConcierge(props: any) {
                 type: SORT_ITEM_OPERATION_COMPLETE,
                 payload
               });
-              enqueueSnackbar('Sort operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Sort operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
           );
           break;
@@ -486,11 +538,11 @@ export function PreviewConcierge(props: any) {
                 type: INSERT_OPERATION_COMPLETE,
                 payload: { ...payload, currentUrl }
               });
-              enqueueSnackbar('Insert component operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Sort operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           );
           break;
@@ -514,16 +566,16 @@ export function PreviewConcierge(props: any) {
           ).subscribe(
             () => {
               guestToHost$.next({ type: FETCH_GUEST_MODEL });
-              enqueueSnackbar('Insert component operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Sort operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           );
           break;
         case INSERT_ITEM_OPERATION: {
-          enqueueSnackbar('Insert item operation not implemented.');
+          enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
           break;
         }
         case MOVE_ITEM_OPERATION: {
@@ -553,11 +605,11 @@ export function PreviewConcierge(props: any) {
           ).subscribe(
             () => {
               guestToHost$.next({ type: FETCH_GUEST_MODEL });
-              enqueueSnackbar('Move operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Move operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
           );
           break;
@@ -584,11 +636,11 @@ export function PreviewConcierge(props: any) {
                 type: DELETE_ITEM_OPERATION_COMPLETE,
                 payload
               });
-              enqueueSnackbar('Delete operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Delete operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
           );
           break;
@@ -611,10 +663,10 @@ export function PreviewConcierge(props: any) {
             value
           ).subscribe(
             () => {
-              enqueueSnackbar('Update operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
             () => {
-              enqueueSnackbar('Update operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
             }
           );
           break;
@@ -633,7 +685,7 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP: {
-          enqueueSnackbar('Asset upload started.');
+          enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
           hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
           const uppySubscription = uploadDataUrl(
             site,
@@ -660,7 +712,7 @@ export function PreviewConcierge(props: any) {
               },
               (error) => {
                 console.log(error);
-                enqueueSnackbar('Asset Upload failed.');
+                enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
               },
               () => {
                 hostToGuest$.next({
