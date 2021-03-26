@@ -208,6 +208,79 @@ const startGuestDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000)
   timeoutRef.current = setTimeout(() => setShowSnackbar(true), timeout);
 };
 
+// region const issueDescriptorRequest = () => {...}
+const issueDescriptorRequest = (props) => {
+  const { site, path, contentTypes, requestedSourceMapPaths, flatten = true, dispatch, completeAction } = props;
+  const hostToGuest$ = getHostToGuestBus();
+  const guestToHost$ = getGuestToHostBus();
+
+  fetchContentInstanceDescriptor(site, path, { flatten }, contentTypes)
+    .pipe(
+      // If another check in comes while loading, this request should be cancelled.
+      // This may happen if navigating rapidly from one page to another (guest-side).
+      takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
+      switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
+        let requests: Array<Observable<ContentInstance>> = [];
+        Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
+          if (!requestedSourceMapPaths.current[path]) {
+            requestedSourceMapPaths.current[path] = true;
+            requests.push(fetchContentInstance(site, path, contentTypes));
+          }
+        });
+        if (requests.length) {
+          return forkJoin(requests).pipe(
+            map((response) => {
+              let lookup = obj.modelLookup;
+              response.forEach((contentInstance) => {
+                lookup = {
+                  ...lookup,
+                  [contentInstance.craftercms.id]: contentInstance
+                };
+              });
+              return {
+                ...obj,
+                modelLookup: lookup
+              };
+            })
+          );
+        } else {
+          return of(obj);
+        }
+      })
+    )
+    .subscribe(({ model, modelLookup }) => {
+      const childrenMap = createChildModelLookup(modelLookup, contentTypes);
+      const normalizedModels = normalizeModelsLookup(modelLookup);
+      const normalizedModel = normalizedModels[model.craftercms.id];
+      const modelIdByPath = {};
+      Object.values(modelLookup).forEach((model) => {
+        // Embedded components don't have a path.
+        if (model.craftercms.path) {
+          modelIdByPath[model.craftercms.path] = model.craftercms.id;
+        }
+      });
+      dispatch(
+        completeAction({
+          model: normalizedModel,
+          modelLookup: normalizedModels,
+          modelIdByPath: modelIdByPath,
+          childrenMap
+        })
+      );
+      hostToGuest$.next({
+        type: 'FETCH_GUEST_MODEL_COMPLETE',
+        payload: {
+          path,
+          model: normalizedModel,
+          modelLookup: normalizedModels,
+          childrenMap,
+          modelIdByPath: modelIdByPath
+        }
+      });
+    });
+};
+// endregion
+
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -360,74 +433,6 @@ export function PreviewConcierge(props: any) {
           break;
         case GUEST_CHECK_IN:
         case FETCH_GUEST_MODEL: {
-          // region const issueDescriptorRequest = () => {...}
-          // This request & response processing is common to both of these actions so grouping them together.
-          const issueDescriptorRequest = (path, completeAction) =>
-            fetchContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
-              .pipe(
-                // If another check in comes while loading, this request should be cancelled.
-                // This may happen if navigating rapidly from one page to another (guest-side).
-                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
-                switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
-                  let requests: Array<Observable<ContentInstance>> = [];
-                  Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
-                    if (!requestedSourceMapPaths.current[path]) {
-                      requestedSourceMapPaths.current[path] = true;
-                      requests.push(fetchContentInstance(site, path, contentTypes));
-                    }
-                  });
-                  if (requests.length) {
-                    return forkJoin(requests).pipe(
-                      map((response) => {
-                        let lookup = obj.modelLookup;
-                        response.forEach((contentInstance) => {
-                          lookup = {
-                            ...lookup,
-                            [contentInstance.craftercms.id]: contentInstance
-                          };
-                        });
-                        return {
-                          ...obj,
-                          modelLookup: lookup
-                        };
-                      })
-                    );
-                  } else {
-                    return of(obj);
-                  }
-                })
-              )
-              .subscribe(({ model, modelLookup }) => {
-                const childrenMap = createChildModelLookup(modelLookup, contentTypes);
-                const normalizedModels = normalizeModelsLookup(modelLookup);
-                const normalizedModel = normalizedModels[model.craftercms.id];
-                const modelIdByPath = {};
-                Object.values(modelLookup).forEach((model) => {
-                  // Embedded components don't have a path.
-                  if (model.craftercms.path) {
-                    modelIdByPath[model.craftercms.path] = model.craftercms.id;
-                  }
-                });
-                dispatch(
-                  completeAction({
-                    model: normalizedModel,
-                    modelLookup: normalizedModels,
-                    modelIdByPath: modelIdByPath,
-                    childrenMap
-                  })
-                );
-                hostToGuest$.next({
-                  type: 'FETCH_GUEST_MODEL_COMPLETE',
-                  payload: {
-                    path,
-                    model: normalizedModel,
-                    modelLookup: normalizedModels,
-                    childrenMap,
-                    modelIdByPath: modelIdByPath
-                  }
-                });
-              });
-          // endregion
           if (type === GUEST_CHECK_IN) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
@@ -455,14 +460,28 @@ export function PreviewConcierge(props: any) {
               contentTypes$.pipe(take(1)).subscribe((payload) => {
                 hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
               });
-              issueDescriptorRequest(path, fetchPrimaryGuestModelComplete);
+
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchPrimaryGuestModelComplete
+              });
             }
           } /* else if (type === FETCH_GUEST_MODEL) */ else {
-            const path = payload?.path ? payload.path : guest.path;
-            if (path?.startsWith('/')) {
-              issueDescriptorRequest(path, fetchGuestModelComplete);
+            if (payload.path?.startsWith('/')) {
+              issueDescriptorRequest({
+                site,
+                path: payload.path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
             } else {
-              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${path}" is not a valid path.`);
+              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
             }
           }
           break;
@@ -476,7 +495,7 @@ export function PreviewConcierge(props: any) {
         case SORT_ITEM_OPERATION: {
           const { fieldId, currentIndex, targetIndex } = payload;
           let { modelId, parentModelId } = payload;
-
+          const path = guest.models[modelId ?? parentModelId].craftercms.path;
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
             parentModelId = findParentModelId(modelId, childrenMap, models);
@@ -499,7 +518,15 @@ export function PreviewConcierge(props: any) {
                 updatedModels
               );
               dispatch(guestModelUpdated({ model: normalizeModel(updatedModels[modelId]) }));
-              guestToHost$.next({ type: FETCH_GUEST_MODEL });
+
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
               hostToHost$.next({
                 type: SORT_ITEM_OPERATION_COMPLETE,
                 payload
@@ -516,6 +543,7 @@ export function PreviewConcierge(props: any) {
         case INSERT_COMPONENT_OPERATION: {
           const { fieldId, targetIndex, instance, shared } = payload;
           let { modelId, parentModelId } = payload;
+          const path = guest.models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -533,7 +561,15 @@ export function PreviewConcierge(props: any) {
             shared
           ).subscribe(
             () => {
-              guestToHost$.next({ type: FETCH_GUEST_MODEL });
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
+
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
                 payload: { ...payload, currentUrl }
@@ -550,6 +586,7 @@ export function PreviewConcierge(props: any) {
         case INSERT_INSTANCE_OPERATION:
           const { fieldId, targetIndex, instance } = payload;
           let { modelId, parentModelId } = payload;
+          const path = guest.models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -565,7 +602,15 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              guestToHost$.next({ type: FETCH_GUEST_MODEL });
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
+
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
@@ -604,7 +649,6 @@ export function PreviewConcierge(props: any) {
             targetParentModelId ? models[targetParentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              guestToHost$.next({ type: FETCH_GUEST_MODEL });
               enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
             (error) => {
@@ -617,6 +661,7 @@ export function PreviewConcierge(props: any) {
         case DELETE_ITEM_OPERATION: {
           const { fieldId, index } = payload;
           let { modelId, parentModelId } = payload;
+          const path = guest.models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -631,7 +676,15 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              guestToHost$.next({ type: FETCH_GUEST_MODEL });
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
+
               hostToHost$.next({
                 type: DELETE_ITEM_OPERATION_COMPLETE,
                 payload
