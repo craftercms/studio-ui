@@ -110,7 +110,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
     }
   };
   return (
-    <form onSubmit={onSubmit}>
+    <>
       <DialogHeader
         title={<FormattedMessage id="deleteContentTypeDialog.headerTitle" defaultMessage="Delete Content Type" />}
         subtitle={
@@ -163,6 +163,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
                 className={classes.confirmationInput}
                 value={passwordFieldValue}
                 onChange={(e) => setPasswordFieldValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && onSubmit(e)}
               />
             </Alert>
           </>
@@ -172,7 +173,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
         <SecondaryButton onClick={onClose} autoFocus disabled={submitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || submitting} type="submit">
+        <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || submitting} onClick={onSubmit}>
           <FormattedMessage id="deleteContentTypeDialog.submitButton" defaultMessage="Delete" />
         </PrimaryButton>
       </DialogFooter>
@@ -181,7 +182,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
           <LoadingState />
         </div>
       )}
-    </form>
+    </>
   );
 }
 

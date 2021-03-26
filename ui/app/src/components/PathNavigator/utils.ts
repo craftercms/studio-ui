@@ -17,17 +17,13 @@
 import { DetailedItem, SandboxItem } from '../../models/Item';
 
 export function isNavigable(item: DetailedItem | SandboxItem): boolean {
-  return item.previewUrl !== null;
+  // Assets have a valid previewUrl but we don't want assets to show in the
+  // Guest iFrame but rather as a preview dialog.
+  return item.previewUrl !== null && item.systemType !== 'asset';
 }
 
 export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
-  return (
-    item.systemType === 'component' ||
-    item.systemType === 'asset' ||
-    item.systemType === 'renderingTemplate' ||
-    item.systemType === 'script' ||
-    item.systemType === 'taxonomy'
-  );
+  return ['page', 'component', 'asset', 'renderingTemplate', 'script', 'taxonomy'].includes(item.systemType);
 }
 
 export function isFolder(item: DetailedItem | SandboxItem): boolean {
