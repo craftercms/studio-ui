@@ -29,7 +29,7 @@ import {
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
-import { isNavigable, isPreviewable } from '../PathNavigator/utils';
+import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
@@ -47,7 +47,7 @@ import {
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { showEditDialog, showItemMenu, showPreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
@@ -427,10 +427,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onPreview = (item: DetailedItem) => {
-    if (item.systemType === 'component' || item.systemType === 'taxonomy') {
-      const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
-      dispatch(showEditDialog({ src }));
-    } else if (item.mimeType.startsWith('image/')) {
+    if (isEditableViaFormEditor(item)) {
+      dispatch(showEditDialog({ path: item.path, authoringBase, site, readonly: true }));
+    } else if (isImage(item)) {
       dispatch(
         showPreviewDialog({
           type: 'image',
@@ -439,25 +438,18 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
+      const mode = getEditorMode(item);
+      dispatch(
+        showPreviewDialog({
+          type: 'editor',
+          title: item.label,
+          url: item.path,
+          mode
+        })
+      );
       fetchContentXML(site, item.path).subscribe((content) => {
-        let mode = 'txt';
-
-        if (item.systemType === 'renderingTemplate') {
-          mode = 'ftl';
-        } else if (item.systemType === 'script') {
-          mode = 'groovy';
-        } else if (item.mimeType === 'application/javascript') {
-          mode = 'javascript';
-        } else if (item.mimeType === 'text/css') {
-          mode = 'css';
-        }
-
         dispatch(
-          showPreviewDialog({
-            type: 'editor',
-            title: item.label,
-            url: item.path,
-            mode,
+          updatePreviewDialog({
             content
           })
         );

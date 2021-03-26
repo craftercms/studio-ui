@@ -189,12 +189,38 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]
   );
 
+  const getEditDialogProps = useCallback(() => {
+    if (path) {
+      return {
+        authoringBase,
+        site,
+        path
+      };
+    } else {
+      let parentPath;
+      if (model === models[selectedId]) {
+        let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+        parentPath = models[parentId].craftercms.path;
+      } else {
+        parentPath = models[model.craftercms.id].craftercms.path;
+      }
+
+      return {
+        authoringBase,
+        site,
+        path: parentPath,
+        isHidden: true,
+        modelId: selectedId
+      };
+    }
+  }, [authoringBase, childrenMap, model, models, path, selectedId, site]);
+
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
       dispatch(
         showEditDialog({
-          src: getSrc(type)
+          ...getEditDialogProps()
         })
       );
     } else {

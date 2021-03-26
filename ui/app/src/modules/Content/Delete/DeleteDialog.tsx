@@ -272,10 +272,10 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     }
   }, [dispatch, selectedItems, setApiState, siteId]);
 
-  const onEditDependency = (src) => {
+  const onEditDependency = (props) => {
     dispatch(
       showEditDialog({
-        src,
+        ...props,
         onClosed: fetchDeleteDependencies(selectedItems)
       })
     );

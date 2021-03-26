@@ -21,7 +21,12 @@ import { useQuickCreateListResource, useSystemVersionResource } from '../utils/h
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   onNewContentSelected?(): void;
-  onQuickCreateItemSelected?(src: string): void;
+  onQuickCreateItemSelected?(props: {
+    authoringBase: string;
+    path: string;
+    contentTypeId: string;
+    isNewContent: boolean;
+  }): void;
   onClose?(): void;
 }
 
@@ -58,9 +63,9 @@ export default function QuickCreateMenuApp(props: QuickCreateMenuProps) {
         closeMenu();
         onNewContentSelected();
       }}
-      onQuickCreateItemSelected={(src) => {
+      onQuickCreateItemSelected={(props) => {
         closeMenu();
-        onQuickCreateItemSelected(src);
+        onQuickCreateItemSelected(props);
       }}
     />
   );

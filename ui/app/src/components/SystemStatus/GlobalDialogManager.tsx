@@ -157,7 +157,13 @@ function GlobalDialogManager() {
       {/* region Edit (LegacyFormDialog) */}
       <LegacyFormDialog
         open={state.edit.open}
-        src={state.edit.src}
+        path={state.edit.path}
+        site={state.edit.site}
+        authoringBase={state.edit.authoringBase}
+        readonly={state.edit.readonly}
+        isHidden={state.edit.isHidden}
+        modelId={state.edit.modelId}
+        changeTemplate={state.edit.changeTemplate}
         inProgress={state.edit.inProgress}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}

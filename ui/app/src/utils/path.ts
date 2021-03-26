@@ -16,6 +16,7 @@
 
 import { parse, ParsedQuery } from 'query-string';
 import { PasteItem } from '../models/Item';
+import { toQueryString } from './object';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -143,4 +144,39 @@ export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
 
 export function isValidCutPastePath(targetPath, sourcePath): boolean {
   return !getIndividualPaths(targetPath).includes(sourcePath);
+}
+
+export function getEditFormSrc({
+  path,
+  site,
+  authoringBase,
+  readonly = null,
+  isHidden,
+  modelId,
+  changeTemplate,
+  contentTypeId,
+  isNewContent
+}: {
+  path: string;
+  site: string;
+  authoringBase: string;
+  readonly: boolean;
+  isHidden?: boolean;
+  modelId?: string;
+  changeTemplate?: string;
+  contentTypeId?: string;
+  isNewContent?: boolean;
+}): string {
+  const qs = toQueryString({
+    site,
+    path,
+    type: 'form',
+    readonly,
+    isHidden,
+    modelId,
+    changeTemplate,
+    contentTypeId,
+    isNewContent
+  });
+  return `${authoringBase}/legacy/form${qs}`;
 }

@@ -20,10 +20,10 @@ import { NEVER, Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
   batchActions,
-  editTemplate,
   changeContentType as changeContentTypeAction,
   editContentTypeTemplate,
-  editController
+  editController,
+  editTemplate
 } from '../actions/misc';
 import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
@@ -40,11 +40,13 @@ const epics = [
         const newContentTypeId = payload.newContentTypeId;
         const path = payload.path;
         if (payload.originalContentTypeId !== newContentTypeId) {
-          let src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form&changeTemplate=${newContentTypeId}`;
           return changeContentType(state.sites.active, path, newContentTypeId).pipe(
             map(() =>
               showEditDialog({
-                src,
+                site: state.sites.active,
+                path,
+                authoringBase: state.env.authoringBase,
+                changeTemplate: newContentTypeId,
                 onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
               })
             )

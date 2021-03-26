@@ -143,7 +143,9 @@ const content: CrafterCMSEpic[] = [
             batchActions([
               emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
               showEditDialog({
-                src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
+                site: state.sites.active,
+                path,
+                authoringBase: state.env.authoringBase,
                 onSaveSuccess: payload.onSuccess
               })
             ])

@@ -250,7 +250,6 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
   const [checked, _setChecked] = useState<any>(createCheckedItems(items));
   const siteId = useActiveSiteId();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const defaultFormSrc = `${authoringBase}/legacy/form`;
 
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
@@ -264,8 +263,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
   }, [checked, onChange]);
 
   const onEditClick = (uri: string) => {
-    const src = `${defaultFormSrc}?site=${siteId}&path=${uri}&type=form`;
-    onEditDependency(src);
+    onEditDependency({ site: siteId, path: uri, authoringBase });
   };
 
   return (

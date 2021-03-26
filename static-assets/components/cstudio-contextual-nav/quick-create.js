@@ -78,8 +78,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       const showEditDialog = function(payload) {
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_EDIT_DIALOG',
-          payload: {
-            ...payload,
+          payload: Object.assign(payload, {
             onSaveSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
@@ -100,7 +99,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
                 { type: 'NEW_CONTENT_DIALOG_CLOSED' }
               ]
             }
-          }
+          })
         });
 
         let unsubscribe, cancelUnsubscribe;
@@ -173,9 +172,9 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         });
       };
 
-      const onQuickCreateItemSelected = (src) => {
+      const onQuickCreateItemSelected = (props) => {
         showEditDialog({
-          src,
+          ...props,
           inProgress: false
         });
       };

@@ -821,8 +821,6 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
 
   if (['page', 'component', 'taxonomy'].includes(type)) {
-    const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-
     CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
       let eventIdSuccess = 'editDialogSuccess';
       let eventIdDismissed = 'editDialogDismissed';
@@ -835,7 +833,9 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
             onContinue: {
               type: 'SHOW_EDIT_DIALOG',
               payload: {
-                src,
+                site,
+                path,
+                authoringBase,
                 onSaveSuccess: {
                   type: 'BATCH_ACTIONS',
                   payload: [
@@ -889,7 +889,9 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_EDIT_DIALOG',
           payload: {
-            src,
+            site,
+            path,
+            authoringBase,
             onSaveSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
@@ -992,11 +994,13 @@ WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
 
   if (['page', 'component', 'taxonomy'].includes(type)) {
-    const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
     CrafterCMSNext.system.store.dispatch({
       type: 'SHOW_EDIT_DIALOG',
       payload: {
-        src: `${src}&readonly=true`
+        site,
+        path,
+        authoringBase,
+        readonly: true
       }
     });
   } else if (['config', 'template', 'asset', 'script'].includes(type)) {

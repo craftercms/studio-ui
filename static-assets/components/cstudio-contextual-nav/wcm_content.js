@@ -791,8 +791,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   const path = content[0].uri;
                   const site = CrafterCMSNext.system.store.getState().sites.active;
                   const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
-                  const legacyFormSrc = `${authoringBase}/legacy/form?`;
-                  const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
                   if (isWrite) {
                     // Edit Mode
                     CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
@@ -807,7 +805,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                             onContinue: {
                               type: 'SHOW_EDIT_DIALOG',
                               payload: {
-                                src,
+                                authoringBase,
+                                site,
+                                path,
                                 onSaveSuccess: {
                                   type: 'BATCH_ACTIONS',
                                   payload: [
@@ -858,7 +858,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                         CrafterCMSNext.system.store.dispatch({
                           type: 'SHOW_EDIT_DIALOG',
                           payload: {
-                            src,
+                            authoringBase,
+                            site,
+                            path,
                             onSaveSuccess: {
                               type: 'BATCH_ACTIONS',
                               payload: [
@@ -985,7 +987,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     CrafterCMSNext.system.store.dispatch({
                       type: 'SHOW_EDIT_DIALOG',
                       payload: {
-                        src: `${src}&readonly=true`
+                        authoringBase,
+                        site,
+                        path,
+                        readonly: true
                       }
                     });
                   }

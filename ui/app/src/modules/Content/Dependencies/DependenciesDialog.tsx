@@ -477,7 +477,7 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
     const src = `${defaultFormSrc}?site=${siteId}&path=${item.path}&type=${type}`;
 
     if (type === 'form') {
-      dispatch(showEditDialog({ src }));
+      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId }));
     } else {
       dispatch(showCodeEditorDialog({ src }));
     }
