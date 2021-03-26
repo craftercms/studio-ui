@@ -150,7 +150,7 @@ export function getEditFormSrc({
   path,
   site,
   authoringBase,
-  readonly = null,
+  readonly,
   isHidden,
   modelId,
   changeTemplate,
@@ -160,7 +160,7 @@ export function getEditFormSrc({
   path: string;
   site: string;
   authoringBase: string;
-  readonly: boolean;
+  readonly?: boolean;
   isHidden?: boolean;
   modelId?: string;
   changeTemplate?: string;

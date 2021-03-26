@@ -164,6 +164,8 @@ function GlobalDialogManager() {
         isHidden={state.edit.isHidden}
         modelId={state.edit.modelId}
         changeTemplate={state.edit.changeTemplate}
+        contentTypeId={state.edit.contentTypeId}
+        isNewContent={state.edit.isNewContent}
         inProgress={state.edit.inProgress}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}

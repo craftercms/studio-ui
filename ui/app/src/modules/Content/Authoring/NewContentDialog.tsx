@@ -167,7 +167,10 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   const onSelectedContentType = (contentType: LegacyFormConfig) => {
     const path = selectedItem?.path.endsWith('.xml') ? selectedItem.path.replace(/[^/]*$/, '') : selectedItem?.path;
     onContentTypeSelected?.({
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
+      authoringBase,
+      path,
+      isNewContent: true,
+      contentTypeId: contentType.form,
       onSaveSuccess: batchActions([closeNewContentDialog(), newContentCreationComplete()])
     });
   };

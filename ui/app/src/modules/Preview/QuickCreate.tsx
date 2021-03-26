@@ -132,7 +132,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected } = props;
   const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const baseFormSrc = `${authoringBase}/legacy/form`;
 
   const onFormDisplay = ({ contentTypeId, path }: QuickCreateItem) => {
     const today = new Date();

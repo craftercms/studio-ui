@@ -40,7 +40,7 @@ import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
-import { getEditFormSrc, getQueryVariable } from '../../utils/path';
+import { getEditFormSrc } from '../../utils/path';
 import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
@@ -168,11 +168,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
       if (data.isNew) {
         dispatch(emitSystemEvent(itemCreated({ target: data.item.uri })));
       } else {
-        const path = getQueryVariable(src, 'path') as string;
         dispatch(emitSystemEvent(itemUpdated({ target: path })));
       }
     },
-    [dispatch, onSaveSuccess, src]
+    [dispatch, onSaveSuccess, path]
   );
 
   useEffect(() => {

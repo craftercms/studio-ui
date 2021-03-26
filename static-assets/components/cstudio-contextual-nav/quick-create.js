@@ -173,10 +173,11 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       };
 
       const onQuickCreateItemSelected = (props) => {
-        showEditDialog({
-          ...props,
-          inProgress: false
-        });
+        showEditDialog(
+          Object.assign(props, {
+            inProgress: false
+          })
+        );
       };
 
       // Render quick create menu
