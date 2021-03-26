@@ -250,7 +250,7 @@
 
       //PUBLISHING
       this.getPublishStatus = function (site) {
-        return $http.get(publish('status', 'site_id=' + site));
+        return $http.get(`${Constants.SERVICE2}publish/status.json?siteId=${site}`);
       };
 
       this.startPublishStatus = function (site) {
@@ -1039,13 +1039,14 @@
         adminService
           .getPublishStatus(publish.site)
           .success(function (data) {
+            data = data.publishingStatus;
             publish.stopDisabled = false;
             publish.startDisabled = false;
             switch (data.status.toLowerCase()) {
-              case 'busy':
+              case 'stopped':
                 currentIconColor = 'orange';
                 break;
-              case 'stopped':
+              case 'error':
                 currentIconColor = 'red';
                 publish.stopDisabled = true;
                 break;
@@ -1078,6 +1079,7 @@
           false
         );
       };
+
       renderStatusView();
 
       publish.startPublish = function () {
@@ -1114,6 +1116,46 @@
             }
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
           });
+      };
+
+      publish.showUnlockDialog = function () {
+        let unmount;
+        CrafterCMSNext.render('#unlockDialogTarget', 'UnlockPublisherDialog', {
+          open: true,
+          site: publish.site,
+          onClosed() {
+            unmount();
+          },
+          onCancel() {
+            unmount();
+          },
+          onComplete() {
+            unmount();
+            publish.getPublish(publish.site);
+            $.notify(formatMessage(publishingMessages.unlockComplete), {
+              globalPosition: 'top right',
+              className: 'success',
+              autoHideDelay: 4000
+            });
+          },
+          onError(e) {
+            let message = formatMessage(publishingMessages.unlockFailed);
+            if (e) {
+              if (e.response && e.response.response && e.response.response.message) {
+                message = e.response.response.message;
+              } else if (e.response && e.response.message) {
+                message = e.response.message;
+              } else if (e.message) {
+                message = e.message;
+              }
+            }
+            $.notify(message, {
+              globalPosition: 'top right',
+              className: 'error',
+              autoHideDelay: 4000
+            });
+          }
+        }).then((result) => (unmount = result.unmount));
       };
 
       //BULK PUBLISH

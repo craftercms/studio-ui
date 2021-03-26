@@ -28,7 +28,8 @@
                 <div class='panel' id='publisherDashboard'>
                     <div class='panel-heading'>
                         <span class="capitalize" id='statusText'>{{publish.statusText}} &nbsp;</span>
-                        <a id='refreshPublish' class='btn btn-primary mr15 fa fa-refresh pull-right' ng-click="publish.getPublish()"></a>
+                        <a id="refreshPublish" class='btn btn-primary mr15 fa fa-refresh pull-right' ng-click="publish.getPublish()"></a>
+                        <a class='btn btn-primary mr15 fa fa-unlock pull-right publishing-status-header-button' ng-click="publish.showUnlockDialog()" ng-if="publish.lockOwner"></a>
                         </div>
                     <div class='panel-body'>
                         <span class='fa fa-cloud-upload f18 mr10 {{publish.iconColor}}' id='publishIcon'></span>
@@ -78,7 +79,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="submissionComment" class="control-label">{{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }} 
+                                    <label for="submissionComment" class="control-label">{{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }}
                                         <span ng-show="publish.isValidateCommentOn" >*</span>
                                     </label>
                                     <textarea class="form-control submission-comment" id="submissionComment" name="submissionComment" ng-model="publish.submissionComment" ng-required="publish.isValidateCommentOn">
@@ -183,6 +184,8 @@
     </tabset>
 
 </div>
+
+<div id="unlockDialogTarget"></div>
 
 <script type="text/ng-template" id="confirmationModal.html">
     <div class="modal-header">

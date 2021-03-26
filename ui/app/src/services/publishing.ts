@@ -14,7 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from '../utils/ajax';
+import { get, post, postJSON } from '../utils/ajax';
+import { Observable } from 'rxjs';
+import { mapTo, pluck } from 'rxjs/operators';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
@@ -37,6 +39,22 @@ export function cancelPackage(siteId: string, packageIds: any) {
 
 export function fetchEnvironments(siteId: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`);
+}
+
+export function fetchStatus(
+  siteId: string
+): Observable<{
+  enabled: boolean;
+  status: 'ready' | 'publishing' | 'queued' | 'stopped' | 'error';
+  message: string;
+  lockOwner: string;
+  lockTTL: string;
+}> {
+  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(pluck('response'));
+}
+
+export function clearLock(siteId: string): Observable<boolean> {
+  return postJSON('/studio/api/2/publish/clear_lock', { siteId }).pipe(mapTo(true));
 }
 
 export default {

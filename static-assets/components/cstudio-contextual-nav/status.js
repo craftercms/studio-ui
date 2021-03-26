@@ -65,12 +65,12 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
               dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
               switch (response.status.toLowerCase()) {
-                case 'busy':
+                case 'stopped':
                   iconColor = '#FF8C00';
                   iconClass = 'icon-orange';
                   if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                   break;
-                case 'stopped':
+                case 'error':
                   iconColor = '#FF0000';
                   iconClass = 'icon-red';
                   if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
