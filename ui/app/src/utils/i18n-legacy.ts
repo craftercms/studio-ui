@@ -579,6 +579,14 @@ const publishingMessages = defineMessages({
   queued: {
     id: 'publishing.queued',
     defaultMessage: 'Queued'
+  },
+  unlockComplete: {
+    id: 'unlockPublisherDialog.unlockCompleteMessage',
+    defaultMessage: 'Publisher lock released successfully.'
+  },
+  unlockFailed: {
+    id: 'unlockPublisherDialog.unlockFailedMessage',
+    defaultMessage: 'Error releasing publisher lock.'
   }
 });
 

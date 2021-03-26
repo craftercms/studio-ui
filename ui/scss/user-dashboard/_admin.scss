@@ -516,7 +516,8 @@ table {
       font-size: 19px;
       font-weight: bold;
 
-      #refreshPublish{
+      .publishing-status-header-button,
+      #refreshPublish {
         font-size: 12px;
       }
 
