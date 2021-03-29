@@ -59,6 +59,7 @@ import { SystemLinkId } from '../components/LauncherSection';
 import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
+import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -187,6 +188,7 @@ export interface GlobalState {
     itemMenu: ItemMenuStateProps;
     launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
+    unlockPublisher: UnlockPublisherDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;

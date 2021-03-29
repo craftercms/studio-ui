@@ -20,10 +20,17 @@ import { catchError, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { fetchDependencies } from './dependencies';
 import { toQueryString } from '../utils/object';
+import { PublishingStatus } from '../models/Publishing';
 
-export function fetchPackages(siteId: string, filters: any) {
-  let queryS = new URLSearchParams(filters).toString();
-  return get(`/studio/api/2/publish/packages?siteId=${siteId}&${queryS}`);
+export function fetchPackages(
+  siteId: string,
+  filters: Partial<{ environment: string; path: string; states: string; offset: number; limit: number }>
+) {
+  let qs = toQueryString({
+    siteId,
+    ...filters
+  });
+  return get(`/studio/api/2/publish/packages${qs}`);
 }
 
 export function fetchPackage(siteId: string, packageId: string) {
@@ -85,8 +92,8 @@ export function reject(
   );
 }
 
-export function fetchStatus(siteId: string): Observable<{ message: string; status: string }> {
-  return get(`/studio/api/1/services/api/1/publish/status.json?site_id=${siteId}`).pipe(pluck('response'));
+export function fetchStatus(siteId: string): Observable<PublishingStatus> {
+  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(pluck('response', 'publishingStatus'));
 }
 
 export function start(siteId: string): Observable<true> {
@@ -119,4 +126,8 @@ export function publishByCommits(
     environment,
     comment
   }).pipe(mapTo(true));
+}
+
+export function clearLock(siteId: string): Observable<boolean> {
+  return postJSON('/studio/api/2/publish/clear_lock', { siteId }).pipe(mapTo(true));
 }

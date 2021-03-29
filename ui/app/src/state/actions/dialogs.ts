@@ -40,6 +40,7 @@ import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 import { LauncherStateProps } from '../../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
+import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -229,5 +230,15 @@ export const showPublishingStatusDialog = /*#__PURE__*/ createAction<Partial<Pub
 );
 
 export const closePublishingStatusDialog = /*#__PURE__*/ createAction('HIDE_PUBLISHING_STATUS_DIALOG');
+
+// endregion
+
+// region Unlock Publisher Dialog
+
+export const showUnlockPublisherDialog = /*#__PURE__*/ createAction<Partial<UnlockPublisherDialogStateProps>>(
+  'SHOW_UNLOCK_PUBLISHER_DIALOG'
+);
+
+export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('HIDE_UNLOCK_PUBLISHER_DIALOG');
 
 // endregion

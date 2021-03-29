@@ -1062,8 +1062,15 @@
             onClose: null,
             isFetching: false,
             status: state.status,
-            details: state.details,
-            onRefresh: publish.getPublish
+            details: state.message,
+            onRefresh: publish.getPublish,
+            onUnlock: state.lockOwner
+              ? () => {
+                  store.dispatch({
+                    type: 'SHOW_UNLOCK_PUBLISHER_DIALOG'
+                  });
+                }
+              : void 0
           });
           $scope.$apply();
         }
