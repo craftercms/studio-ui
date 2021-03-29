@@ -495,7 +495,7 @@ export function PreviewConcierge(props: any) {
         case SORT_ITEM_OPERATION: {
           const { fieldId, currentIndex, targetIndex } = payload;
           let { modelId, parentModelId } = payload;
-          const path = guest.models[modelId ?? parentModelId].craftercms.path;
+          const path = models[modelId ?? parentModelId].craftercms.path;
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
             parentModelId = findParentModelId(modelId, childrenMap, models);
@@ -543,7 +543,7 @@ export function PreviewConcierge(props: any) {
         case INSERT_COMPONENT_OPERATION: {
           const { fieldId, targetIndex, instance, shared } = payload;
           let { modelId, parentModelId } = payload;
-          const path = guest.models[modelId ?? parentModelId].craftercms.path;
+          const path = models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -586,7 +586,7 @@ export function PreviewConcierge(props: any) {
         case INSERT_INSTANCE_OPERATION:
           const { fieldId, targetIndex, instance } = payload;
           let { modelId, parentModelId } = payload;
-          const path = guest.models[modelId ?? parentModelId].craftercms.path;
+          const path = models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -661,7 +661,7 @@ export function PreviewConcierge(props: any) {
         case DELETE_ITEM_OPERATION: {
           const { fieldId, index } = payload;
           let { modelId, parentModelId } = payload;
-          const path = guest.models[modelId ?? parentModelId].craftercms.path;
+          const path = models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
