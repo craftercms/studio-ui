@@ -41,3 +41,11 @@ export interface CurrentFilters {
   limit: number;
   page: number;
 }
+
+export interface PublishingStatus {
+  enabled: boolean;
+  status: 'ready' | 'publishing' | 'queued' | 'stopped' | 'error';
+  message: string;
+  lockOwner: string;
+  lockTTL: string;
+}

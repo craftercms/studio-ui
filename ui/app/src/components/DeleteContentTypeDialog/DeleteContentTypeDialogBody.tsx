@@ -101,7 +101,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
   const [confirmPasswordPassed, setConfirmPasswordPassed] = useState(false);
   const [passwordFieldValue, setPasswordFieldValue] = useState('');
   useEffect(() => {
-    setConfirmPasswordPassed(passwordFieldValue === password);
+    setConfirmPasswordPassed(passwordFieldValue.toLowerCase() === password.toLowerCase());
   }, [password, passwordFieldValue]);
   const onSubmit = (e) => {
     e.preventDefault();

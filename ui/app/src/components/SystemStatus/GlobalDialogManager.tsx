@@ -30,6 +30,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
+import UnlockPublisherDialog from '../UnlockPublisherDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -422,11 +423,24 @@ function GlobalDialogManager() {
       {/* region Publishing Status Dialog */}
       <PublishingStatusDialog
         open={state.publishingStatus.open}
+        enabled={state.publishingStatus.enabled}
         status={state.publishingStatus.status}
-        details={state.publishingStatus.details}
+        message={state.publishingStatus.message}
+        lockOwner={state.publishingStatus.lockOwner}
+        lockTTL={state.publishingStatus.lockTTL}
         isFetching={state.publishingStatus.isFetching}
         onClose={createCallback(state.publishingStatus.onClose, dispatch)}
         onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
+        onUnlock={createCallback(state.publishingStatus.onUnlock, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Unlock Publisher Dialog */}
+      <UnlockPublisherDialog
+        open={state.unlockPublisher.open}
+        onError={createCallback(state.unlockPublisher.onError, dispatch)}
+        onCancel={createCallback(state.unlockPublisher.onCancel, dispatch)}
+        onComplete={createCallback(state.unlockPublisher.onComplete, dispatch)}
       />
       {/* endregion */}
     </Suspense>

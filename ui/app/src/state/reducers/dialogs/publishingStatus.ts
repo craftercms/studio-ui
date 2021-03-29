@@ -17,7 +17,11 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { PublishingStatusDialogStateProps } from '../../../components/PublishingStatusDialog';
-import { closePublishingStatusDialog, showPublishingStatusDialog } from '../../actions/dialogs';
+import {
+  closePublishingStatusDialog,
+  showPublishingStatusDialog,
+  showUnlockPublisherDialog
+} from '../../actions/dialogs';
 import {
   fetchPublishingStatus,
   fetchPublishingStatusComplete,
@@ -27,15 +31,25 @@ import {
 
 const initialState: PublishingStatusDialogStateProps = {
   open: false,
+  enabled: null,
   status: null,
-  details: null,
+  message: null,
+  lockOwner: null,
+  lockTTL: null,
   isFetching: false,
   onClose: closePublishingStatusDialog(),
-  onRefresh: fetchPublishingStatus()
+  onRefresh: fetchPublishingStatus(),
+  onUnlock: null
 };
 
 const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus']>(initialState, {
-  [showPublishingStatusDialog.type]: (state, { payload }) => ({ ...state, ...payload, open: true }),
+  [showPublishingStatusDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload,
+    // Only show unlock if there is a lockOwner (i.e. if there's a lock)
+    onUnlock: payload.lockOwner ? showUnlockPublisherDialog({}) : null,
+    open: true
+  }),
   [closePublishingStatusDialog.type]: (state) => ({ ...state, open: false }),
   [updatePublishingStatus.type]: (state, { payload }) => ({ ...state, ...payload }),
   [fetchPublishingStatus.type]: (state) => ({ ...state, isFetching: true }),

@@ -24,17 +24,40 @@ import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { ElementType } from 'react';
 import Skeleton from '@material-ui/lab/Skeleton';
+import palette from '../../styles/palette';
+import { Theme } from '@material-ui/core/styles';
+import { PublishingStatus } from '../../models/Publishing';
 
 type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
 type PublishingStatusTileStyles = Partial<Record<PublishingStatusTileClassKey, CSSProperties>>;
 
 export interface PublishingStatusTileProps extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement> {
-  status: 'ready' | 'busy' | 'publishing' | 'queued' | 'stopped' | 'started';
+  status: PublishingStatus['status'];
   isFetching?: boolean;
   styles?: PublishingStatusTileStyles;
   classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
 }
+
+export const getBackgroundColourByStatusCode = (code: PublishingStatusTileProps['status'], theme: Theme) => {
+  switch (code) {
+    case 'ready': {
+      return theme.palette.success.main;
+    }
+    case 'publishing': {
+      return theme.palette.info.main;
+    }
+    case 'queued': {
+      return palette.indigo.main;
+    }
+    case 'stopped': {
+      return theme.palette.warning.main;
+    }
+    case 'error': {
+      return theme.palette.error.main;
+    }
+  }
+};
 
 const usePublishingStatusTileStyles = makeStyles((theme) =>
   createStyles<PublishingStatusTileClassKey, PublishingStatusTileStyles>({
@@ -65,22 +88,19 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
       marginBottom: theme.spacing(1),
       // Please revisit PublishingStatusDialog styles too if these are changed.
       '&.ready': {
-        background: theme.palette.success.main
-      },
-      '&.busy': {
-        background: theme.palette.warning.main
+        background: getBackgroundColourByStatusCode('ready', theme)
       },
       '&.publishing': {
-        background: theme.palette.warning.main
+        background: getBackgroundColourByStatusCode('publishing', theme)
       },
       '&.queued': {
-        background: theme.palette.warning.main
+        background: getBackgroundColourByStatusCode('queued', theme)
       },
       '&.stopped': {
-        background: theme.palette.error.main
+        background: getBackgroundColourByStatusCode('stopped', theme)
       },
-      '&.started': {
-        background: theme.palette.success.main
+      '&.error': {
+        background: getBackgroundColourByStatusCode('error', theme)
       },
       ...styles.avatar
     }),
@@ -96,10 +116,6 @@ export const publishingStatusTileMessages = defineMessages({
     id: 'words.ready',
     defaultMessage: 'Ready'
   },
-  busy: {
-    id: 'words.busy',
-    defaultMessage: 'Busy'
-  },
   publishing: {
     id: 'words.publishing',
     defaultMessage: 'Publishing'
@@ -112,17 +128,33 @@ export const publishingStatusTileMessages = defineMessages({
     id: 'words.stopped',
     defaultMessage: 'Stopped'
   },
-  started: {
-    id: 'words.started',
-    defaultMessage: 'Started'
+  error: {
+    id: 'words.error',
+    defaultMessage: 'Error'
   },
   refresh: {
     id: 'words.refresh',
     defaultMessage: 'Refresh'
   },
+  unlock: {
+    id: 'words.unlock',
+    defaultMessage: 'Unlock'
+  },
   publishingStatus: {
     id: 'publishingStatusTile.publishingStatus',
     defaultMessage: 'Publishing Status'
+  },
+  lockOwner: {
+    id: 'publishingStatusTile.lockOwnerDisplayMessage',
+    defaultMessage: 'Locked by {lockOwner}'
+  },
+  lockTTL: {
+    id: 'publishingStatusTile.lockTTLMessage',
+    defaultMessage: 'TTL {lockTTL}'
+  },
+  disabled: {
+    id: 'publishingStatusTile.isDisabledMessage',
+    defaultMessage: 'The publisher is disabled.'
   }
 });
 

@@ -143,6 +143,13 @@ export const errorSelectorApi1: <T, O extends ObservableInput<any>>(err: any, ca
           message: 'Unauthorized',
           remedialAction: "You don't have permission to perform this task, please contact your administrator"
         };
+      case 404: {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          code: 404,
+          message: 'Resource not found'
+        };
+      }
       case 500:
       default:
         // eslint-disable-next-line no-throw-literal

@@ -17,8 +17,9 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../Dialogs/DialogHeader';
-import { publishingStatusTileMessages } from '../PublishingStatusTile';
+import { getBackgroundColourByStatusCode, publishingStatusTileMessages } from '../PublishingStatusTile';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
+import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import { ListItem } from '@material-ui/core';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -28,31 +29,34 @@ import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
 import ListItemText from '@material-ui/core/ListItemText';
 import Skeleton from '@material-ui/lab/Skeleton';
 import * as React from 'react';
-import { PublishingStatusDialogProps } from './PublishingStatusDialog';
+import { Alert } from '@material-ui/lab';
+import { PublishingStatus } from '../../models/Publishing';
 
-export type PublishingStatusDialogBodyProps = Omit<PublishingStatusDialogProps, 'open'>;
+export type PublishingStatusDialogBodyProps = PublishingStatus & {
+  isFetching: boolean;
+  onClose(): void;
+  onRefresh?(): void;
+  onUnlock?(): void;
+};
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     avatar: {
       // Please revisit PublishingStatusTile styles too if these are changed.
       '&.ready': {
-        background: theme.palette.success.main
-      },
-      '&.busy': {
-        background: theme.palette.warning.main
+        background: getBackgroundColourByStatusCode('ready', theme)
       },
       '&.publishing': {
-        background: theme.palette.warning.main
+        background: getBackgroundColourByStatusCode('publishing', theme)
       },
       '&.queued': {
-        background: theme.palette.warning.main
+        background: getBackgroundColourByStatusCode('queued', theme)
       },
       '&.stopped': {
-        background: theme.palette.error.main
+        background: getBackgroundColourByStatusCode('stopped', theme)
       },
-      '&.started': {
-        background: theme.palette.success.main
+      '&.error': {
+        background: getBackgroundColourByStatusCode('error', theme)
       }
     },
     body: {
@@ -63,7 +67,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
-  const { onClose, onRefresh, status, details, isFetching } = props;
+  const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, isFetching } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
@@ -71,19 +75,25 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
       <DialogHeader
         title={formatMessage(publishingStatusTileMessages.publishingStatus)}
         onDismiss={onClose}
-        rightActions={
-          onRefresh
-            ? [
-                {
-                  icon: RefreshRoundedIcon,
-                  onClick: onRefresh,
-                  tooltip: formatMessage(publishingStatusTileMessages.refresh)
-                }
-              ]
-            : null
-        }
+        rightActions={[
+          onUnlock && {
+            icon: LockOpenRoundedIcon,
+            onClick: onUnlock,
+            tooltip: formatMessage(publishingStatusTileMessages.unlock)
+          },
+          onRefresh && {
+            icon: RefreshRoundedIcon,
+            onClick: onRefresh,
+            tooltip: formatMessage(publishingStatusTileMessages.refresh)
+          }
+        ].filter(Boolean)}
       />
       <DialogBody className={classes.body}>
+        {!enabled && (
+          <Alert severity="warning" style={{ marginBottom: '1em' }}>
+            {formatMessage(publishingStatusTileMessages.disabled)}
+          </Alert>
+        )}
         <ListItem component="div">
           <ListItemAvatar>
             <Avatar className={clsx(classes.avatar, !isFetching && status)}>
@@ -100,7 +110,17 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
                 status
               )
             }
-            secondary={isFetching ? null : details}
+            secondary={
+              isFetching ? (
+                <Skeleton />
+              ) : (
+                <>
+                  {message && <div>{message}</div>}
+                  {lockOwner && <div>{formatMessage(publishingStatusTileMessages.lockOwner, { lockOwner })}</div>}
+                  {lockTTL && <div>{formatMessage(publishingStatusTileMessages.lockTTL, { lockTTL })}</div>}
+                </>
+              )
+            }
           />
         </ListItem>
       </DialogBody>
