@@ -904,8 +904,16 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
     'Estos archivos configuran 0 o más repositorios capaces de CMIS como fuentes de datos que los autores de contenido pueden elegir',
   confTabEngineSiteConfiguration: 'Configuración de Sitio de Engine',
   confTabEngineSiteConfigurationDesc: 'Configuración del Sitio usada por Crafter Engine',
+  confTabEngineSiteConfigurationPreview: 'Configuración de Sitio de Engine - Preview',
+  confTabEngineSiteConfigurationStaging: 'Configuración de Sitio de Engine - Staging',
+  confTabEngineSiteConfigurationLive: 'Configuración de Sitio de Engine - Live',
   confTabEngineSiteAppContextConfiguration: 'Configuración de Contexto de Aplicación de Sitio de Engine',
   confTabEngineSiteAppContextConfigurationDesc: 'Configuración del Contexto de Aplicación para el Sitio de Engine',
+  confTabEngineSiteAppContextConfigurationPreview:
+    'Configuración de Contexto de Aplicación de Sitio de Engine - Preview',
+  confTabEngineSiteAppContextConfigurationStaging:
+    'Configuración de Contexto de Aplicación de Sitio de Engine - Staging',
+  confTabEngineSiteAppContextConfigurationLive: 'Configuración de Contexto de Aplicación de Sitio de Engine - Live',
   confTabTranslationConf: 'Configuración de Traducciones',
   confTabTranslationConfDesc: 'Define los lenguajes soportados y su resolución',
   confTabSitePolicyConf: 'Configuración de Políticas de Sitio',
@@ -916,6 +924,9 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabMimeTypesDesc: 'Este archivo configura los íconos para este sitio/blueprint.',
   confTabEngineUrlRewriteConf: 'Configuración de reescritura del motor de URL (estilo XML).',
   confTabEngineUrlRewriteConfDesc: 'Este archivo configura propiedades del sitio utilizadas por Crafter Engine',
+  confTabEngineUrlRewriteConfPreview: 'Engine URL Rewrite Configuration (XML Style) - Preview',
+  confTabEngineUrlRewriteConfStaging: 'Engine URL Rewrite Configuration (XML Style) - Staging',
+  confTabEngineUrlRewriteConfLive: 'Engine URL Rewrite Configuration (XML Style) - Live',
   confTabDependencyResolverConf: 'Configuración del solucionador de dependencias',
   confTabDependencyResolverConfDesc:
     'Este archivo configura qué rutas de archivos son consideradas por Crafter como dependencias y como deberían ser extraídas.',

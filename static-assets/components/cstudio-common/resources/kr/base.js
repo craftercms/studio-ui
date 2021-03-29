@@ -878,6 +878,9 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   confTabMimeTypesDesc: '이 파일은이 사이트 / 청사진에 대한 MIME 유형 아이콘 재정의를 구성합니다.',
   confTabEngineUrlRewriteConf: '엔진 URL 재 작성 구성 (XML 스타일)',
   confTabEngineUrlRewriteConfDesc: '이 파일은 Crafter Engine에서 사용하는 사이트 속성을 구성합니다.',
+  confTabEngineUrlRewriteConfPreview: '엔진 URL 재 작성 구성 (XML 스타일) - 시사',
+  confTabEngineUrlRewriteConfStaging: '엔진 URL 재 작성 구성 (XML 스타일) - 각색',
+  confTabEngineUrlRewriteConfLive: '엔진 URL 재 작성 구성 (XML 스타일) - 라이브',
   confTabDependencyResolverConf: '종속성 해결 프로그램 구성',
   confTabDependencyResolverConfDesc:
     '이 파일은 Crafter가 종속성으로 간주하는 파일 경로와 추출 방법을 구성합니다.',
@@ -893,6 +896,16 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   confTabBlobStoresDesc: 'Blob은 구성 파일을 저장합니다.',
   confTabProxyConfig: '프록시 구성',
   confTabProxyConfigDesc: '이 파일은 미리보기를 위해 프록시 서버를 구성합니다.',
+  confTabEngineSiteConfiguration: '엔진 사이트 구성',
+  confTabEngineSiteConfigurationDesc: 'Crafter Engine에서 사용하는 사이트 구성',
+  confTabEngineSiteConfigurationPreview: '엔진 사이트 구성 - 시사',
+  confTabEngineSiteConfigurationStaging: '엔진 사이트 구성 - 각색',
+  confTabEngineSiteConfigurationLive: '엔진 사이트 구성 - 라이브',
+  confTabEngineSiteAppContextConfiguration: '엔진 사이트 애플리케이션 컨텍스트',
+  confTabEngineSiteAppContextConfigurationDesc: 'Crafter Engine에서 사용하는 사이트 애플리케이션 컨텍스트',
+  confTabEngineSiteAppContextConfigurationPreview: '엔진 사이트 애플리케이션 컨텍스트 - 시사',
+  confTabEngineSiteAppContextConfigurationStaging: '엔진 사이트 애플리케이션 컨텍스트 - 라이브',
+  confTabEngineSiteAppContextConfigurationLive: '엔진 사이트 애플리케이션 컨텍스트 - 라이브',
 
   /*Postfixes*/
   iDescription: '정수의 경우',
