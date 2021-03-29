@@ -309,7 +309,6 @@
                                     197,
                                     'saveContentType'
                                   );
-                                  _self.clearCache();
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -420,8 +419,6 @@
                 $('#cstudio-admin-console-command-bar').addClass('content-types-command-bar');
 
                 amplify.publish('/content-type/loaded');
-
-                _self.clearCache();
               },
               failure: function() {}
             });
@@ -460,12 +457,6 @@
         html += '</div>';
 
         return html;
-      },
-
-      clearCache: function() {
-        CrafterCMSNext.util.ajax
-          .get(`/studio/api/1/services/api/1/site/clear-configuration-cache.json?site=${CStudioAuthoringContext.site}`)
-          .subscribe();
       },
 
       /**
