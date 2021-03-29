@@ -177,7 +177,11 @@ function GlobalDialogManager() {
       {/* region LegacyCodeEditorDialog */}
       <LegacyCodeEditorDialog
         open={state.codeEditor.open}
-        src={state.codeEditor.src}
+        path={state.codeEditor.path}
+        site={state.codeEditor.site}
+        type={state.codeEditor.type}
+        authoringBase={state.codeEditor.authoringBase}
+        readonly={state.codeEditor.readonly}
         inProgress={state.codeEditor.inProgress}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}

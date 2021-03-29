@@ -728,15 +728,19 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'codeEditor': {
-        let src = `${authoringBase}/legacy/form?site=${site}&path=${encodeURIComponent(item.path)}&type=asset`;
-        dispatch(showCodeEditorDialog({ src }));
+        dispatch(showCodeEditorDialog({ site, authoringBase, path: item.path, type: 'asset' }));
         break;
       }
       case 'viewCodeEditor': {
-        let src = `${authoringBase}/legacy/form?site=${site}&path=${encodeURIComponent(
-          item.path
-        )}&type=asset&readonly=true`;
-        dispatch(showCodeEditorDialog({ src }));
+        dispatch(
+          showCodeEditorDialog({
+            site,
+            authoringBase,
+            path: item.path,
+            type: 'asset',
+            readonly: true
+          })
+        );
         break;
       }
       case 'viewImage': {

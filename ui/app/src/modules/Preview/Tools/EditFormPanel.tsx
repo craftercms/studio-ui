@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
@@ -184,37 +184,6 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   const path = ModelHelper.prop(models[selectedId], 'path');
   const selectedContentType = ModelHelper.prop(models[selectedId], 'contentTypeId');
 
-  const getSrc = useCallback(
-    (type: string) => {
-      switch (type) {
-        case 'form': {
-          if (path) {
-            return `${defaultSrc}site=${site}&path=${path}&type=form`;
-          } else {
-            let parentPath;
-            if (model === models[selectedId]) {
-              let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
-              parentPath = models[parentId].craftercms.path;
-            } else {
-              parentPath = models[model.craftercms.id].craftercms.path;
-            }
-            return `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
-          }
-        }
-        case 'template': {
-          const template = contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate;
-          return `${defaultSrc}site=${site}&path=${template}&type=template`;
-        }
-        case 'controller': {
-          let pageName = popPiece(selectedContentType, '/');
-          let groovyPath = `/scripts/pages/${pageName}.groovy`;
-          return `${defaultSrc}site=${site}&path=${groovyPath}&type=controller`;
-        }
-      }
-    },
-    [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]
-  );
-
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
@@ -224,7 +193,13 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     } else {
       dispatch(
         showCodeEditorDialog({
-          src: getSrc(type)
+          authoringBase,
+          site,
+          path:
+            type === 'template'
+              ? contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate
+              : `/scripts/pages/${popPiece(selectedContentType, '/')}.groovy`,
+          type: type === 'template' ? 'template' : 'controller'
         })
       );
     }

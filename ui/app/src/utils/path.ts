@@ -180,3 +180,25 @@ export function getEditFormSrc({
   });
   return `${authoringBase}/legacy/form${qs}`;
 }
+
+export function getCodeEditorSrc({
+  path,
+  site,
+  type,
+  authoringBase,
+  readonly
+}: {
+  path: string;
+  site: string;
+  type: string;
+  authoringBase: string;
+  readonly: boolean;
+}): string {
+  const qs = toQueryString({
+    site,
+    path,
+    type,
+    readonly
+  });
+  return `${authoringBase}/legacy/form${qs}`;
+}

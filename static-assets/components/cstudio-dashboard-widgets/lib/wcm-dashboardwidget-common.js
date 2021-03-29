@@ -974,11 +974,13 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
       });
     });
   } else if (['unknown', 'template', 'asset', 'script'].includes(type)) {
-    const src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(path)}&type=asset`;
     CrafterCMSNext.system.store.dispatch({
       type: 'SHOW_CODE_EDITOR_DIALOG',
       payload: {
-        src: src
+        site,
+        path,
+        type: 'asset',
+        authoringBase
       }
     });
   } else {
@@ -1004,11 +1006,14 @@ WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
       }
     });
   } else if (['config', 'template', 'asset', 'script'].includes(type)) {
-    const src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(path)}&type=asset`;
     CrafterCMSNext.system.store.dispatch({
       type: 'SHOW_CODE_EDITOR_DIALOG',
       payload: {
-        src: `${src}&readonly=true`
+        site,
+        path,
+        authoringBase,
+        type: 'asset',
+        readonly: true
       }
     });
   } else {

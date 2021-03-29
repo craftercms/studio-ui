@@ -26,6 +26,10 @@ import { LegacyCodeEditorDialogStateProps } from '../../../components/Dialogs/Le
 
 const initialState: LegacyCodeEditorDialogStateProps = {
   open: false,
+  site: null,
+  path: null,
+  type: null,
+  authoringBase: null,
   inProgress: true
 };
 

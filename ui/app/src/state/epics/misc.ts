@@ -61,13 +61,24 @@ const epics = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const path = state.contentTypes.byId[payload.contentTypeId].displayTemplate;
-        const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=template`;
         return fetchWorkflowAffectedItems(state.sites.active, path).pipe(
           map((items) => {
             if (items?.length > 0) {
-              return showWorkflowCancellationDialog({ onContinue: showCodeEditorDialog({ src }) });
+              return showWorkflowCancellationDialog({
+                onContinue: showCodeEditorDialog({
+                  authoringBase: state.env.authoringBase,
+                  site: state.sites.active,
+                  path,
+                  type: 'template'
+                })
+              });
             } else {
-              return showCodeEditorDialog({ src });
+              return showCodeEditorDialog({
+                authoringBase: state.env.authoringBase,
+                site: state.sites.active,
+                path,
+                type: 'template'
+              });
             }
           })
         );
@@ -81,14 +92,23 @@ const epics = [
       switchMap(([action, state]) => {
         const { payload, type } = action;
         const path = `${payload.path}/${payload.fileName}`.replace(/\/{2,}/g, '/');
-        const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=${
-          editTemplate.type === type ? 'template' : 'controller'
-        }`;
         return fetchWorkflowAffectedItems(state.sites.active, path).pipe(
           map((items) =>
             items?.length > 0
-              ? showWorkflowCancellationDialog({ onContinue: showCodeEditorDialog({ src }) })
-              : showCodeEditorDialog({ src })
+              ? showWorkflowCancellationDialog({
+                  onContinue: showCodeEditorDialog({
+                    authoringBase: state.env.authoringBase,
+                    site: state.sites.active,
+                    path,
+                    type: editTemplate.type === type ? 'template' : 'controller'
+                  })
+                })
+              : showCodeEditorDialog({
+                  authoringBase: state.env.authoringBase,
+                  site: state.sites.active,
+                  path,
+                  type: editTemplate.type === type ? 'template' : 'controller'
+                })
           )
         );
       })
