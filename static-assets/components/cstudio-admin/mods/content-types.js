@@ -1405,6 +1405,7 @@
 
         var fieldTypeEl = document.createElement('span');
         YDom.addClass(fieldTypeEl, 'content-field-type');
+        fieldTypeEl.dataset.fieldType = field.id;
         fieldTypeEl.textContent = field.type;
         fieldContainerEl.appendChild(fieldTypeEl);
 
@@ -1461,11 +1462,17 @@
             // add delete control
             var deleteEl = YDom.getElementsByClassName('deleteControl', null, listeningEl)[0];
 
-            if (!deleteEl) {
+            let showDeleteBtn = !defaultField;
+            // if is a default field, and there are more than one in the content-type, delete button should be displayed
+            if (defaultField) {
+              showDeleteBtn = $(`.content-type-visual-container [data-field-type='${field.id}']`).length > 1;
+            }
+
+            if (!deleteEl && showDeleteBtn) {
               deleteEl = document.createElement('i');
               YDom.addClass(deleteEl, 'deleteControl fa fa-times-circle');
 
-              !defaultField && listeningEl.appendChild(deleteEl);
+              listeningEl.appendChild(deleteEl);
 
               var deleteFieldFn = function(evt) {
                 CStudioAdminConsole.isDirty = true;
