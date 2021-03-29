@@ -24,6 +24,7 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../../state/actions/pathNavigatorTree';
@@ -68,7 +69,6 @@ interface PathNavigatorTreeProps {
 
 export interface PathNavigatorTreeStateProps {
   rootPath: string;
-  levelDescriptor: string;
   collapsed: boolean;
   limit: number;
   expanded: string[];
@@ -123,7 +123,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return getStoredPathNavigatorTree(site, user.username, id) ?? {};
   }, [id, site, user.username]);
   const { authoringBase } = useEnv();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
 
   const dispatch = useDispatch();
 
@@ -245,10 +244,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       switch (type) {
         case itemsPasted.type:
         case folderCreated.type: {
-          if (payload.clipboard.type === 'CUT') {
-            debugger;
-          } else {
-            const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+          if (payload.clipboard?.type === 'CUT') {
+            const node =
+              nodesByPathRef.current[getParentPath(payload.clipboard.sourcePath)] ??
+              nodesByPathRef.current[withIndex(getParentPath(payload.target))];
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
@@ -257,11 +256,25 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                   id,
                   path,
                   options: {
-                    limit: childrenByParentPath[path]?.length + 1 ?? limit
+                    limit: childrenByParentPath[path]?.length ?? limit
                   }
                 })
               );
             }
+          }
+          const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+          const path = node?.id;
+          if (path) {
+            fetchingPathsRef.current.push(path);
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path,
+                options: {
+                  limit: childrenByParentPath[path]?.length + 1 ?? limit
+                }
+              })
+            );
           }
 
           break;
@@ -396,6 +409,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const onWidgetOptionsClick = (option: string) => {
     onCloseWidgetOptions();
     if (option === 'refresh') {
+      state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
+      dispatch(
+        pathNavigatorTreeRefresh({
+          id
+        })
+      );
     }
   };
 

@@ -29,6 +29,7 @@ import {
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeSetKeyword,
@@ -45,10 +46,18 @@ export default [
   // region pathNavigatorTreeInit
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreeInit.type),
+      ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
-        const { id, path, expanded, collapsed, keywordByPath } = payload;
+        console.log(state);
+        const {
+          id,
+          path = state.pathNavigatorTree[id].rootPath,
+          expanded = state.pathNavigatorTree[id].expanded,
+          collapsed = state.pathNavigatorTree[id].collapsed,
+          keywordByPath = state.pathNavigatorTree[id].keywordByPath,
+          limit = state.pathNavigatorTree[id].limit
+        } = payload;
         if (expanded?.length) {
           let paths = [];
           expanded.forEach((expandedPath) => {
@@ -67,7 +76,8 @@ export default [
                   return { keyword: keywordByPath[value] };
                 }
                 return {};
-              })
+              }),
+              { limit }
             )
           ).pipe(
             map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),

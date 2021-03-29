@@ -41,7 +41,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           rootPath: path,
-          levelDescriptor: null,
           collapsed,
           limit,
           expanded,

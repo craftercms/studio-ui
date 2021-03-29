@@ -33,6 +33,8 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
   }>
 >('PATH_NAVIGATOR_TREE_INIT');
 
+export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_TREE_REFRESH');
+
 export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{
     expanded: string[];
