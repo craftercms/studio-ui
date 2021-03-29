@@ -188,10 +188,6 @@ export function ItemStateIcon(props: ItemIconProps) {
   let TheIcon = UnknownStateIcon;
   let stateSpecificClass;
   switch (true) {
-    case item.stateMap.new:
-      TheIcon = NewStateIcon;
-      stateSpecificClass = classes.stateNewIcon;
-      break;
     case item.stateMap.modified:
       TheIcon = EditedStateIcon;
       stateSpecificClass = classes.stateModifiedIcon;
@@ -215,6 +211,10 @@ export function ItemStateIcon(props: ItemIconProps) {
     case item.stateMap.scheduled:
       TheIcon = ScheduledStateIcon;
       stateSpecificClass = classes.stateScheduledIcon;
+      break;
+    case item.stateMap.new:
+      TheIcon = NewStateIcon;
+      stateSpecificClass = classes.stateNewIcon;
       break;
   }
   return (
