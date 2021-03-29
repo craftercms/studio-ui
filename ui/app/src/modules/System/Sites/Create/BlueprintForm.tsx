@@ -330,7 +330,6 @@ function BlueprintForm(props: BlueprintFormProps) {
         )}
         {blueprint.id === 'GIT' && (
           <GitForm
-            type="clone"
             inputs={inputs}
             setInputs={setInputs}
             handleInputChange={handleInputChange}
