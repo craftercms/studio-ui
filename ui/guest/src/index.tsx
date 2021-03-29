@@ -23,6 +23,7 @@ import { nnou } from './utils/object';
 import * as elementRegistry from './classes/ElementRegistry';
 import * as iceRegistry from './classes/ICERegistry';
 import * as contentController from './classes/ContentController';
+import { fromTopic } from './utils/communicator';
 
 export interface BaseCrafterConfig {
   baseUrl?: string;
@@ -82,4 +83,4 @@ export function initPageBuilder({ path, documentDomain }) {
   );
 }
 
-export { elementRegistry, iceRegistry, contentController };
+export { elementRegistry, iceRegistry, contentController, fromTopic };
