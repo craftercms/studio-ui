@@ -407,19 +407,17 @@ export default function PathNavigator(props: PathNavigatorProps) {
     ? onItemClickedProp
     : createItemClickedHandler((item: DetailedItem, e) => {
         if (isNavigable(item)) {
-          if (item.previewUrl) {
-            const url = getSystemLink({
-              site,
-              systemLinkId: 'preview',
-              previewChoice,
-              authoringBase,
-              page: item.previewUrl
-            });
-            if (e.ctrlKey || e.metaKey) {
-              window.open(url);
-            } else {
-              window.location.href = url;
-            }
+          const url = getSystemLink({
+            site,
+            systemLinkId: 'preview',
+            previewChoice,
+            authoringBase,
+            page: item.previewUrl
+          });
+          if (e.ctrlKey || e.metaKey) {
+            window.open(url);
+          } else {
+            window.location.href = url;
           }
         } else if (isFolder(item)) {
           onPathSelected(item);

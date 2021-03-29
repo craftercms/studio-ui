@@ -24,6 +24,7 @@ import ContentType from '../../models/ContentType';
 import Suspencified from '../SystemStatus/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
 import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../state/actions/system';
 
 export interface DeleteContentTypeDialogProps {
   open: boolean;
@@ -62,15 +63,18 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogP
     deleteContentType(site, contentType.id).subscribe(
       () => {
         setSubmitting(false);
-        dispatch({ type: 'SHOW_SYSTEM_NOTIFICATION', payload: { message: formatMessage(messages.deleteComplete) } });
+        dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
         onComplete?.();
       },
-      () => {
+      (e) => {
         setSubmitting(false);
-        dispatch({
-          type: 'SHOW_SYSTEM_NOTIFICATION',
-          payload: { message: formatMessage(messages.deleteComplete), options: { variant: 'error' } }
-        });
+        const response = e.response?.response ?? e.response;
+        dispatch(
+          showSystemNotification({
+            message: response?.message ?? formatMessage(messages.deleteFailed),
+            options: { variant: 'error' }
+          })
+        );
       }
     );
   };

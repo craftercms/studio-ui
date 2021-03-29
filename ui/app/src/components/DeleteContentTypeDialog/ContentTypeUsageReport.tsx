@@ -45,7 +45,7 @@ function ContentTypeUsageReport(props: ContentTypeUsageReportProps) {
           key={type}
           subheader={
             <ListSubheader className={classes?.listHeader} disableSticky>
-              {messages[type] ?? type}
+              {messages[type] ?? type} ({items.length})
             </ListSubheader>
           }
         >
