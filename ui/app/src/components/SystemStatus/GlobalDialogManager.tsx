@@ -165,7 +165,9 @@ function GlobalDialogManager() {
         modelId={state.edit.modelId}
         changeTemplate={state.edit.changeTemplate}
         contentTypeId={state.edit.contentTypeId}
-        isNewContent={state.edit.isNewContent}
+        isNewContent={
+          state.edit.isNewContentstatic - assets / components / cstudio - contextual - nav / quick - create.js
+        }
         inProgress={state.edit.inProgress}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}

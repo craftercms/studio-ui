@@ -23,7 +23,7 @@ export function isNavigable(item: DetailedItem | SandboxItem): boolean {
 }
 
 export function isEditableViaFormEditor(item: DetailedItem | SandboxItem): boolean {
-  return item.systemType === 'component' || item.systemType === 'taxonomy';
+  return ['page', 'component', 'taxonomy'].includes(item.systemType);
 }
 
 export function isImage(item: DetailedItem | SandboxItem): boolean {
