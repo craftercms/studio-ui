@@ -245,6 +245,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case itemsPasted.type:
         case folderCreated.type: {
           if (payload.clipboard?.type === 'CUT') {
+            // TODO: This needs to be refactor creating a pathNavigatorTreeFetchPathsChildren
             const node =
               nodesByPathRef.current[getParentPath(payload.clipboard.sourcePath)] ??
               nodesByPathRef.current[withIndex(getParentPath(payload.target))];

@@ -49,7 +49,6 @@ export default [
       ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
-        console.log(state);
         const {
           id,
           path = state.pathNavigatorTree[id].rootPath,
