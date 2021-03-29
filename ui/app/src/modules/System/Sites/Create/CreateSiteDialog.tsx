@@ -627,7 +627,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       };
       if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;
-        params.useRemote = site.pushSite;
       } else {
         params.useRemote = true;
       }

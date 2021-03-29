@@ -200,14 +200,14 @@ function GitForm(props: GitFormProps) {
             value={inputs.repoUsername}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
-            error={inputs.submitted && !inputs.repoUsername && (gitType === 'clone' || inputs.pushSite)}
+            error={inputs.submitted && !inputs.repoUsername && gitType === 'clone'}
             helperText={renderHelperText(
               formatMessage(messages.userName),
               inputs.repoUsername,
               '',
               true,
               inputs.submitted,
-              gitType === 'clone' ? true : inputs.pushSite
+              gitType === 'clone'
             )}
           />
         )}
@@ -222,14 +222,14 @@ function GitForm(props: GitFormProps) {
             value={inputs.repoPassword}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
-            error={inputs.submitted && !inputs.repoPassword && (gitType === 'clone' || inputs.pushSite)}
+            error={inputs.submitted && !inputs.repoPassword && gitType === 'clone'}
             helperText={renderHelperText(
               formatMessage(messages.password),
               inputs.repoPassword,
               '',
               true,
               inputs.submitted,
-              gitType === 'clone' ? true : inputs.pushSite
+              gitType === 'clone'
             )}
             InputProps={{
               endAdornment: (
@@ -251,14 +251,14 @@ function GitForm(props: GitFormProps) {
             label={formatMessage(messages.token)}
             required
             value={inputs.repoToken}
-            error={inputs.submitted && !inputs.repoToken && (gitType === 'clone' || inputs.pushSite)}
+            error={inputs.submitted && !inputs.repoToken && gitType === 'clone'}
             helperText={renderHelperText(
               formatMessage(messages.token),
               inputs.repoToken,
               '',
               true,
               inputs.submitted,
-              gitType === 'clone' ? true : inputs.pushSite
+              gitType === 'clone'
             )}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
@@ -282,14 +282,14 @@ function GitForm(props: GitFormProps) {
             fullWidth
             multiline
             className={classes.margin}
-            error={inputs.submitted && !inputs.repoKey && (gitType === 'clone' || inputs.pushSite)}
+            error={inputs.submitted && !inputs.repoKey && gitType === 'clone'}
             helperText={renderHelperText(
               formatMessage(messages.privateKey),
               inputs.repoKey,
               '',
               true,
               inputs.submitted,
-              gitType === 'clone' ? true : inputs.pushSite
+              gitType === 'clone'
             )}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
@@ -315,7 +315,7 @@ function GitForm(props: GitFormProps) {
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
           value={inputs.repoUrl}
-          error={inputs.submitted && !inputs.repoUrl && (inputs.pushSite || type === 'clone')}
+          error={inputs.submitted && !inputs.repoUrl && type === 'clone'}
           helperText={
             type === 'push'
               ? renderHelperText(
@@ -324,7 +324,7 @@ function GitForm(props: GitFormProps) {
                   formatMessage(pushMessages.push_url_label),
                   true,
                   inputs.submitted,
-                  inputs.pushSite
+                  true // TODO: check this conditional thing
                 )
               : renderHelperText(
                   formatMessage(messages.repoUrl),
