@@ -103,10 +103,10 @@ export const newContentDialogClosed = /*#__PURE__*/ createAction('NEW_CONTENT_DI
 export const showChangeContentTypeDialog = /*#__PURE__*/ createAction<Partial<ChangeContentTypeDialogStateProps>>(
   'SHOW_CHANGE_CONTENT_TYPE_DIALOG'
 );
-export const CloseChangeContentTypeDialog = /*#__PURE__*/ createAction<StandardAction>(
+export const closeChangeContentTypeDialog = /*#__PURE__*/ createAction<StandardAction>(
   'CLOSE_CHANGE_CONTENT_TYPE_DIALOG'
 );
-export const ChangeContentTypeDialogClosed = /*#__PURE__*/ createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
+export const changeContentTypeDialogClosed = /*#__PURE__*/ createAction('CHANGE_CONTENT_TYPE_DIALOG_CLOSED');
 // endregion
 
 // region Dependencies
@@ -239,6 +239,6 @@ export const showUnlockPublisherDialog = /*#__PURE__*/ createAction<Partial<Unlo
   'SHOW_UNLOCK_PUBLISHER_DIALOG'
 );
 
-export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('HIDE_UNLOCK_PUBLISHER_DIALOG');
+export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('CLOSE_UNLOCK_PUBLISHER_DIALOG');
 
 // endregion

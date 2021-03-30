@@ -828,7 +828,8 @@
     ) {
       $scope.publish = {};
       var store;
-      var currentStatus;
+      var relevantProps = ['enabled', 'status', 'lockOwner', 'lockTTL', 'message'];
+      var currentStatus = {};
       var publish = $scope.publish;
       publish.error = '';
 
@@ -1050,29 +1051,38 @@
 
       function renderDashboard() {
         var state = store.getState().dialogs.publishingStatus;
-        if (state.status && currentStatus !== state.status) {
-          publish.stopDisabled = false;
-          publish.startDisabled = false;
-          if (state.status.toLowerCase() === 'stopped') {
-            publish.stopDisabled = true;
-          } else {
-            publish.startDisabled = true;
+        if (state.status) {
+          var hasChanges = false;
+          for (let prop of relevantProps) {
+            if (currentStatus[prop] !== state[prop]) {
+              hasChanges = true;
+            }
+            currentStatus[prop] = state[prop];
           }
-          CrafterCMSNext.render('#publisherDashboard', 'PublishingStatusDialogBody', {
-            onClose: null,
-            isFetching: false,
-            status: state.status,
-            details: state.message,
-            onRefresh: publish.getPublish,
-            onUnlock: state.lockOwner
-              ? () => {
-                  store.dispatch({
-                    type: 'SHOW_UNLOCK_PUBLISHER_DIALOG'
-                  });
-                }
-              : void 0
-          });
-          $scope.$apply();
+          if (hasChanges) {
+            publish.stopDisabled = false;
+            publish.startDisabled = false;
+            if (state.status.toLowerCase() === 'stopped') {
+              publish.stopDisabled = true;
+            } else {
+              publish.startDisabled = true;
+            }
+            CrafterCMSNext.render('#publisherDashboard', 'PublishingStatusDialogBody', {
+              onClose: null,
+              isFetching: false,
+              status: state.status,
+              details: state.message,
+              onRefresh: publish.getPublish,
+              onUnlock: state.lockOwner
+                ? () => {
+                    store.dispatch({
+                      type: 'SHOW_UNLOCK_PUBLISHER_DIALOG'
+                    });
+                  }
+                : void 0
+            });
+            $scope.$apply();
+          }
         }
       }
     }
