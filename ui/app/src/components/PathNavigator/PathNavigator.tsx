@@ -145,7 +145,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [widgetMenu, setWidgetMenu] = useState<Menu>({

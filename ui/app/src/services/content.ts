@@ -24,7 +24,7 @@ import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
-import { AjaxResponse } from 'rxjs/ajax';
+import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
@@ -839,7 +839,19 @@ export function fetchChildrenByPaths(
   paths: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const requests = Object.keys(paths).map((path) => fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }));
+  const requests = Object.keys(paths).map((path) =>
+    fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }).pipe(
+      catchError((error: AjaxError) => {
+        if (error.status === 404) {
+          console.log('return []');
+          return of([]);
+        } else {
+          console.log('return error');
+          throw error;
+        }
+      })
+    )
+  );
   return forkJoin(requests).pipe(
     map((responses) => {
       const data = {};
@@ -935,8 +947,7 @@ export function duplicate(siteId: string, path: string): Observable<any> {
   }).pipe(pluck('response'));
 }
 
-export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
-  const paths = encodeURIComponent(data.items.join(','));
+export function deleteItems(site: string, paths: string[], submissionComment = ''): Observable<ApiResponse> {
   return postJSON('/studio/api/2/content/delete', {
     siteId: site,
     submissionComment,

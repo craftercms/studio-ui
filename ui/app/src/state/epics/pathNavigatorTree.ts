@@ -66,7 +66,7 @@ export default [
               }
             });
           });
-          return forkJoin(
+          return forkJoin([
             fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
             fetchChildrenByPaths(
               state.sites.active,
@@ -78,7 +78,7 @@ export default [
               }),
               { limit }
             )
-          ).pipe(
+          ]).pipe(
             map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
             catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
           );

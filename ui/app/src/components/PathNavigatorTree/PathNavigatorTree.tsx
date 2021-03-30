@@ -166,15 +166,22 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const nextFetching = [];
     fetchingPathsRef.current.forEach((path) => {
       if (childrenByParentPath?.[path]) {
+        if (!itemsByPath[path]) {
+          // if itemsByPath[path] doesn't exist it means is the result from a 404 getChildren and should be ignore
+          return null;
+        }
+
         if (!nodesByPathRef.current[path]) {
-          // if the nodeByPath dont exist, it means the node comes from restoring the localStorage
+          // if nodesByPathRef[path] doesn't exist, it means the node comes from restoring the localStorage and the parent node is collapsed
           nodesByPathRef.current[path] = {
             id: path,
             name: itemsByPath[path].label,
-            children: nodesByPathRef.current[path]?.children ?? [{ id: 'loading' }]
+            children: []
           };
+        } else {
+          nodesByPathRef.current[path].children = [];
         }
-        nodesByPathRef.current[path].children = [];
+
         // If the children are empty and there are filtered search, we will add a empty node
         if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
           nodesByPathRef.current[path].children = [
@@ -208,7 +215,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   useEffect(() => {
     keywordByPathRef.current = keywordByPath;
-  }, [keywordByPath]);
+  }, [keywordByPath, itemsByPath]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {

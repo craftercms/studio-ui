@@ -99,3 +99,16 @@ export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createActi
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_FAILED');
+
+export const pathNavigatorTreeFetchPathsChildren = /*#__PURE__*/ createAction<
+  PayloadWithId<{ paths: string[]; options?: Partial<GetChildrenOptions> }>
+>('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN');
+
+export const pathNavigatorTreeFetchPathsChildrenComplete = /*#__PURE__*/ createAction<
+  PayloadWithId<{ children: GetChildrenResponse[]; options?: Partial<GetChildrenOptions> }>
+>('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_COMPLETE');
+
+export const pathNavigatorTreeFetchPathsChildrenFailed = /*#__PURE__*/ createAction<{
+  id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_FAILED');
