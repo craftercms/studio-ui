@@ -2824,7 +2824,7 @@ var nodeOpen = false,
             return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
           } else {
             // Handle indexed exp `{parentPath[i]}`
-            return parentPathPieces[index];
+            return parentPathPieces[index + 2];
           }
         });
 
@@ -3770,7 +3770,7 @@ var nodeOpen = false,
        * get version history for given content path
        */
       getVersionHistory: function(site, contentTO, callback) {
-        CrafterCMSNext.services.content.getHistory(site, contentTO.uri).subscribe(
+        CrafterCMSNext.services.content.fetchItemHistory(site, contentTO.uri).subscribe(
           function(response) {
             callback.success(response);
           },
