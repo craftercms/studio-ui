@@ -16,8 +16,8 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  ChangeContentTypeDialogClosed,
-  CloseChangeContentTypeDialog,
+  changeContentTypeDialogClosed,
+  closeChangeContentTypeDialog,
   showChangeContentTypeDialog
 } from '../../actions/dialogs';
 import { ChangeContentTypeDialogStateProps } from '../../../modules/Content/Authoring/ChangeContentTypeDialog';
@@ -33,15 +33,15 @@ const initialState: ChangeContentTypeDialogStateProps = {
 export default createReducer<ChangeContentTypeDialogStateProps>(initialState, {
   [showChangeContentTypeDialog.type]: (state, { payload }) => ({
     ...state,
-    onClose: CloseChangeContentTypeDialog(),
-    onClosed: ChangeContentTypeDialogClosed(),
-    onDismiss: CloseChangeContentTypeDialog(),
+    onClose: closeChangeContentTypeDialog(),
+    onClosed: changeContentTypeDialogClosed(),
+    onDismiss: closeChangeContentTypeDialog(),
     ...payload,
     open: true
   }),
-  [CloseChangeContentTypeDialog.type]: (state) => ({
+  [closeChangeContentTypeDialog.type]: (state) => ({
     ...state,
     open: false
   }),
-  [ChangeContentTypeDialogClosed.type]: () => initialState
+  [changeContentTypeDialogClosed.type]: () => initialState
 });

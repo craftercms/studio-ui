@@ -20,7 +20,7 @@ import LookupTable from '../models/LookupTable';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
-  CloseChangeContentTypeDialog,
+  closeChangeContentTypeDialog,
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
@@ -559,7 +559,7 @@ export const itemActionDispatcher = ({
                 rootPath: getRootPath(item.path),
                 selectedContentType: item.contentTypeId,
                 onContentTypeSelected: batchActions([
-                  CloseChangeContentTypeDialog(),
+                  closeChangeContentTypeDialog(),
                   changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
                 ])
               })

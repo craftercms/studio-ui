@@ -25,6 +25,7 @@ import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import StandardAction from '../../models/StandardAction';
+import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 
 export interface UnlockPublisherDialogProps {
   open: boolean;
@@ -74,6 +75,7 @@ function UnlockPublisherDialog(props: UnlockPublisherDialogProps) {
         () => {
           setSubmitting(false);
           dispatch(showSystemNotification({ message: formatMessage(messages.unlockComplete) }));
+          dispatch(fetchPublishingStatus());
           onComplete?.();
         },
         (error) => {

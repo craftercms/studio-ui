@@ -16,6 +16,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
+import { PublishingStatus } from '../../models/Publishing';
 
 export const updatePublishingStatus = /*#__PURE__*/ createAction<Partial<PublishingStatusDialogStateProps>>(
   'UPDATE_PUBLISHING_STATUS'
@@ -23,10 +24,9 @@ export const updatePublishingStatus = /*#__PURE__*/ createAction<Partial<Publish
 
 export const fetchPublishingStatus = /*#__PURE__*/ createAction('FETCH_PUBLISHING_STATUS');
 
-export const fetchPublishingStatusComplete = /*#__PURE__*/ createAction<{
-  status: string;
-  details: string;
-}>('FETCH_PUBLISHING_STATUS_COMPLETE');
+export const fetchPublishingStatusComplete = /*#__PURE__*/ createAction<PublishingStatus>(
+  'FETCH_PUBLISHING_STATUS_COMPLETE'
+);
 
 export const fetchPublishingStatusFailed = /*#__PURE__*/ createAction('FETCH_PUBLISHING_STATUS_FAILED');
 

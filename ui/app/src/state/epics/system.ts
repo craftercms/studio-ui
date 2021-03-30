@@ -326,7 +326,7 @@ const systemEpics: CrafterCMSEpic[] = [
       filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
         fetchStatus(state.sites.active).pipe(
-          map((response) => fetchPublishingStatusComplete({ status: response.status, details: response.message })),
+          map((response) => fetchPublishingStatusComplete(response)),
           catchAjaxError(fetchPublishingStatusFailed)
         )
       )

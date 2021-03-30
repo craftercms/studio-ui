@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -100,7 +100,8 @@ const dialogEpics: CrafterCMSEpic[] = [
           ...asArray(onClose?.type === batchActions.type ? onClose.payload : onClose)
         ].filter((action) => Boolean(action) && action.type && action.type !== type);
       }),
-      switchMap((actions) => (actions.length ? actions : NEVER))
+      filter((actions) => actions.length > 0),
+      switchMap((actions) => actions)
     ),
   // endregion
   // region View Version Dialog
