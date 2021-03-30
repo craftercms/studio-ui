@@ -843,10 +843,8 @@ export function fetchChildrenByPaths(
     fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }).pipe(
       catchError((error: AjaxError) => {
         if (error.status === 404) {
-          console.log('return []');
           return of([]);
         } else {
-          console.log('return error');
           throw error;
         }
       })
