@@ -146,6 +146,58 @@ const guestMessages = defineMessages({
   dropTargetsNotFound: {
     id: 'register.dropTargetsNotFound',
     defaultMessage: 'There are no drop targets for {contentType} components'
+  },
+  sortOperationComplete: {
+    id: 'operations.sortOperationComplete',
+    defaultMessage: 'Sort operation completed.'
+  },
+  sortOperationFailed: {
+    id: 'operations.sortOperationFailed',
+    defaultMessage: 'Sort operation failed.'
+  },
+  insertOperationComplete: {
+    id: 'operations.insertOperationComplete',
+    defaultMessage: 'Insert component operation completed.'
+  },
+  insertOperationFailed: {
+    id: 'operations.insertOperationFailed',
+    defaultMessage: 'Insert component operation failed.'
+  },
+  insertItemOperation: {
+    id: 'operations.insertItemOperation',
+    defaultMessage: 'Insert item operation not implemented.'
+  },
+  moveOperationComplete: {
+    id: 'operations.moveOperationComplete',
+    defaultMessage: 'Move operation completed'
+  },
+  moveOperationFailed: {
+    id: 'operations.moveOperationFailed',
+    defaultMessage: 'Move operation failed.'
+  },
+  deleteOperationComplete: {
+    id: 'operations.deleteOperationComplete',
+    defaultMessage: 'Delete operation completed.'
+  },
+  deleteOperationFailed: {
+    id: 'operations.deleteOperationFailed',
+    defaultMessage: 'Delete operation failed.'
+  },
+  updateOperationComplete: {
+    id: 'operations.updateOperationComplete',
+    defaultMessage: 'Update operation completed.'
+  },
+  updateOperationFailed: {
+    id: 'operations.updateOperationFailed',
+    defaultMessage: 'Update operation failed.'
+  },
+  assetUploadStarted: {
+    id: 'operations.assetUploadStarted',
+    defaultMessage: 'Asset upload started.'
+  },
+  assetUploadFailed: {
+    id: 'operations.assetUploadFailed',
+    defaultMessage: 'Asset Upload failed.'
   }
 });
 
@@ -155,6 +207,79 @@ const startGuestDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000)
   clearTimeout(timeoutRef.current);
   timeoutRef.current = setTimeout(() => setShowSnackbar(true), timeout);
 };
+
+// region const issueDescriptorRequest = () => {...}
+const issueDescriptorRequest = (props) => {
+  const { site, path, contentTypes, requestedSourceMapPaths, flatten = true, dispatch, completeAction } = props;
+  const hostToGuest$ = getHostToGuestBus();
+  const guestToHost$ = getGuestToHostBus();
+
+  fetchContentInstanceDescriptor(site, path, { flatten }, contentTypes)
+    .pipe(
+      // If another check in comes while loading, this request should be cancelled.
+      // This may happen if navigating rapidly from one page to another (guest-side).
+      takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
+      switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
+        let requests: Array<Observable<ContentInstance>> = [];
+        Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
+          if (!requestedSourceMapPaths.current[path]) {
+            requestedSourceMapPaths.current[path] = true;
+            requests.push(fetchContentInstance(site, path, contentTypes));
+          }
+        });
+        if (requests.length) {
+          return forkJoin(requests).pipe(
+            map((response) => {
+              let lookup = obj.modelLookup;
+              response.forEach((contentInstance) => {
+                lookup = {
+                  ...lookup,
+                  [contentInstance.craftercms.id]: contentInstance
+                };
+              });
+              return {
+                ...obj,
+                modelLookup: lookup
+              };
+            })
+          );
+        } else {
+          return of(obj);
+        }
+      })
+    )
+    .subscribe(({ model, modelLookup }) => {
+      const childrenMap = createChildModelLookup(modelLookup, contentTypes);
+      const normalizedModels = normalizeModelsLookup(modelLookup);
+      const normalizedModel = normalizedModels[model.craftercms.id];
+      const modelIdByPath = {};
+      Object.values(modelLookup).forEach((model) => {
+        // Embedded components don't have a path.
+        if (model.craftercms.path) {
+          modelIdByPath[model.craftercms.path] = model.craftercms.id;
+        }
+      });
+      dispatch(
+        completeAction({
+          model: normalizedModel,
+          modelLookup: normalizedModels,
+          modelIdByPath: modelIdByPath,
+          childrenMap
+        })
+      );
+      hostToGuest$.next({
+        type: 'FETCH_GUEST_MODEL_COMPLETE',
+        payload: {
+          path,
+          model: normalizedModel,
+          modelLookup: normalizedModels,
+          childrenMap,
+          modelIdByPath: modelIdByPath
+        }
+      });
+    });
+};
+// endregion
 
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
@@ -308,74 +433,6 @@ export function PreviewConcierge(props: any) {
           break;
         case GUEST_CHECK_IN:
         case FETCH_GUEST_MODEL: {
-          // region const issueDescriptorRequest = () => {...}
-          // This request & response processing is common to both of these actions so grouping them together.
-          const issueDescriptorRequest = (path, completeAction) =>
-            fetchContentInstanceDescriptor(site, path, { flatten: true }, contentTypes)
-              .pipe(
-                // If another check in comes while loading, this request should be cancelled.
-                // This may happen if navigating rapidly from one page to another (guest-side).
-                takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
-                switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
-                  let requests: Array<Observable<ContentInstance>> = [];
-                  Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
-                    if (!requestedSourceMapPaths.current[path]) {
-                      requestedSourceMapPaths.current[path] = true;
-                      requests.push(fetchContentInstance(site, path, contentTypes));
-                    }
-                  });
-                  if (requests.length) {
-                    return forkJoin(requests).pipe(
-                      map((response) => {
-                        let lookup = obj.modelLookup;
-                        response.forEach((contentInstance) => {
-                          lookup = {
-                            ...lookup,
-                            [contentInstance.craftercms.id]: contentInstance
-                          };
-                        });
-                        return {
-                          ...obj,
-                          modelLookup: lookup
-                        };
-                      })
-                    );
-                  } else {
-                    return of(obj);
-                  }
-                })
-              )
-              .subscribe(({ model, modelLookup }) => {
-                const childrenMap = createChildModelLookup(modelLookup, contentTypes);
-                const normalizedModels = normalizeModelsLookup(modelLookup);
-                const normalizedModel = normalizedModels[model.craftercms.id];
-                const modelIdByPath = {};
-                Object.values(modelLookup).forEach((model) => {
-                  // Embedded components don't have a path.
-                  if (model.craftercms.path) {
-                    modelIdByPath[model.craftercms.path] = model.craftercms.id;
-                  }
-                });
-                dispatch(
-                  completeAction({
-                    model: normalizedModel,
-                    modelLookup: normalizedModels,
-                    modelIdByPath: modelIdByPath,
-                    childrenMap
-                  })
-                );
-                hostToGuest$.next({
-                  type: 'FETCH_GUEST_MODEL_COMPLETE',
-                  payload: {
-                    path,
-                    model: normalizedModel,
-                    modelLookup: normalizedModels,
-                    childrenMap,
-                    modelIdByPath: modelIdByPath
-                  }
-                });
-              });
-          // endregion
           if (type === GUEST_CHECK_IN) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
@@ -403,11 +460,26 @@ export function PreviewConcierge(props: any) {
               contentTypes$.pipe(take(1)).subscribe((payload) => {
                 hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
               });
-              issueDescriptorRequest(path, fetchPrimaryGuestModelComplete);
+
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchPrimaryGuestModelComplete
+              });
             }
           } /* else if (type === FETCH_GUEST_MODEL) */ else {
             if (payload.path?.startsWith('/')) {
-              issueDescriptorRequest(payload.path, fetchGuestModelComplete);
+              issueDescriptorRequest({
+                site,
+                path: payload.path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
             } else {
               return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
             }
@@ -423,7 +495,7 @@ export function PreviewConcierge(props: any) {
         case SORT_ITEM_OPERATION: {
           const { fieldId, currentIndex, targetIndex } = payload;
           let { modelId, parentModelId } = payload;
-
+          const path = models[modelId ?? parentModelId].craftercms.path;
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
             parentModelId = findParentModelId(modelId, childrenMap, models);
@@ -446,15 +518,24 @@ export function PreviewConcierge(props: any) {
                 updatedModels
               );
               dispatch(guestModelUpdated({ model: normalizeModel(updatedModels[modelId]) }));
+
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
               hostToHost$.next({
                 type: SORT_ITEM_OPERATION_COMPLETE,
                 payload
               });
-              enqueueSnackbar('Sort operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Sort operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
           );
           break;
@@ -462,6 +543,7 @@ export function PreviewConcierge(props: any) {
         case INSERT_COMPONENT_OPERATION: {
           const { fieldId, targetIndex, instance, shared } = payload;
           let { modelId, parentModelId } = payload;
+          const path = models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -479,15 +561,24 @@ export function PreviewConcierge(props: any) {
             shared
           ).subscribe(
             () => {
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
+
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
                 payload: { ...payload, currentUrl }
               });
-              enqueueSnackbar('Insert component operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Sort operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           );
           break;
@@ -495,6 +586,7 @@ export function PreviewConcierge(props: any) {
         case INSERT_INSTANCE_OPERATION:
           const { fieldId, targetIndex, instance } = payload;
           let { modelId, parentModelId } = payload;
+          const path = models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -510,16 +602,25 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              enqueueSnackbar('Insert component operation completed.');
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
+
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Sort operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           );
           break;
         case INSERT_ITEM_OPERATION: {
-          enqueueSnackbar('Insert item operation not implemented.');
+          enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
           break;
         }
         case MOVE_ITEM_OPERATION: {
@@ -548,11 +649,11 @@ export function PreviewConcierge(props: any) {
             targetParentModelId ? models[targetParentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              enqueueSnackbar('Move operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Move operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
           );
           break;
@@ -560,6 +661,7 @@ export function PreviewConcierge(props: any) {
         case DELETE_ITEM_OPERATION: {
           const { fieldId, index } = payload;
           let { modelId, parentModelId } = payload;
+          const path = models[modelId ?? parentModelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -574,15 +676,24 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
+              issueDescriptorRequest({
+                site,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete
+              });
+
               hostToHost$.next({
                 type: DELETE_ITEM_OPERATION_COMPLETE,
                 payload
               });
-              enqueueSnackbar('Delete operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
             (error) => {
               console.error(`${type} failed`, error);
-              enqueueSnackbar('Delete operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
           );
           break;
@@ -605,10 +716,10 @@ export function PreviewConcierge(props: any) {
             value
           ).subscribe(
             () => {
-              enqueueSnackbar('Update operation completed.');
+              enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
             () => {
-              enqueueSnackbar('Update operation failed.');
+              enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
             }
           );
           break;
@@ -627,7 +738,7 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP: {
-          enqueueSnackbar('Asset upload started.');
+          enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
           hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
           const uppySubscription = uploadDataUrl(
             site,
@@ -654,7 +765,7 @@ export function PreviewConcierge(props: any) {
               },
               (error) => {
                 console.log(error);
-                enqueueSnackbar('Asset Upload failed.');
+                enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
               },
               () => {
                 hostToGuest$.next({
