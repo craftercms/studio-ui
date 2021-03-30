@@ -23,6 +23,7 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathPage,
+  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
@@ -252,10 +253,34 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case itemsPasted.type:
         case folderCreated.type: {
           if (payload.clipboard?.type === 'CUT') {
-            // TODO: This needs to be refactor creating a pathNavigatorTreeFetchPathsChildren
-            const node =
+            const sourceNode =
               nodesByPathRef.current[getParentPath(payload.clipboard.sourcePath)] ??
-              nodesByPathRef.current[withIndex(getParentPath(payload.target))];
+              nodesByPathRef.current[withIndex(getParentPath(payload.clipboard.sourcePath))];
+            const targetNode =
+              nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+            const paths = {};
+            if (sourceNode) {
+              fetchingPathsRef.current.push(sourceNode.id);
+              paths[sourceNode.id] = {
+                limit: childrenByParentPath[sourceNode.id]?.length ?? limit
+              };
+            }
+            if (targetNode) {
+              fetchingPathsRef.current.push(targetNode.id);
+              paths[targetNode.id] = {
+                limit: childrenByParentPath[targetNode] ? childrenByParentPath[targetNode].length + 1 : limit
+              };
+            }
+            if (sourceNode || targetNode) {
+              dispatch(
+                pathNavigatorTreeFetchPathsChildren({
+                  id,
+                  paths
+                })
+              );
+            }
+          } else {
+            const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
@@ -264,25 +289,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                   id,
                   path,
                   options: {
-                    limit: childrenByParentPath[path]?.length ?? limit
+                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
                   }
                 })
               );
             }
-          }
-          const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
-          const path = node?.id;
-          if (path) {
-            fetchingPathsRef.current.push(path);
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path,
-                options: {
-                  limit: childrenByParentPath[path]?.length + 1 ?? limit
-                }
-              })
-            );
           }
 
           break;
@@ -301,7 +312,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                 id,
                 path,
                 options: {
-                  limit: childrenByParentPath[path]?.length + (type === itemCreated.type ? 1 : 0) ?? limit
+                  limit: childrenByParentPath[path]
+                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
+                    : limit
                 }
               })
             );
@@ -309,23 +322,26 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           break;
         }
         case itemsDeleted.type: {
+          const paths = {};
           payload.targets.forEach((target) => {
             const node =
               nodesByPathRef.current[getParentPath(target)] ?? nodesByPathRef.current[withIndex(getParentPath(target))];
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
-              dispatch(
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path,
-                  options: {
-                    limit: childrenByParentPath[path]?.length ?? limit
-                  }
-                })
-              );
+              paths[path] = {
+                limit: childrenByParentPath[path]?.length ?? limit
+              };
             }
           });
+          if (Object.keys(paths).length) {
+            dispatch(
+              pathNavigatorTreeFetchPathsChildren({
+                id,
+                paths
+              })
+            );
+          }
           break;
         }
         default: {

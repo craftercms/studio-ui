@@ -23,6 +23,7 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeInit,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
@@ -139,6 +140,28 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].totalByPath,
             [parentPath]: children.total
           }
+        }
+      };
+    },
+    [pathNavigatorTreeFetchPathsChildrenComplete.type]: (state, { payload: { id, data } }) => {
+      const childrenByParentPath = { ...state[id].childrenByParentPath };
+      const totalByPath = { ...state[id].totalByPath };
+
+      Object.keys(data).forEach((path) => {
+        childrenByParentPath[path] = [];
+        if (data[path].levelDescriptor) {
+          childrenByParentPath[path].push(data[path].levelDescriptor.path);
+        }
+        data[path].forEach((item) => childrenByParentPath[path].push(item.path));
+        totalByPath[path] = data[path].total;
+      });
+
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          childrenByParentPath,
+          totalByPath
         }
       };
     },

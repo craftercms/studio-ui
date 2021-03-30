@@ -101,11 +101,11 @@ export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createActi
 }>('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeFetchPathsChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ paths: string[]; options?: Partial<GetChildrenOptions> }>
+  PayloadWithId<{ paths: LookupTable<Partial<GetChildrenOptions>>; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN');
 
 export const pathNavigatorTreeFetchPathsChildrenComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ children: GetChildrenResponse[]; options?: Partial<GetChildrenOptions> }>
+  PayloadWithId<{ data: LookupTable<GetChildrenResponse>; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_COMPLETE');
 
 export const pathNavigatorTreeFetchPathsChildrenFailed = /*#__PURE__*/ createAction<{

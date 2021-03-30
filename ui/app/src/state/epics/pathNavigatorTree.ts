@@ -26,6 +26,9 @@ import {
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathPageFailed,
+  pathNavigatorTreeFetchPathsChildren,
+  pathNavigatorTreeFetchPathsChildrenComplete,
+  pathNavigatorTreeFetchPathsChildrenFailed,
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
@@ -103,6 +106,22 @@ export default [
         }).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+        );
+      })
+    ),
+  // endregion
+  // region pathNavigatorFetchPathsChildren
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeFetchPathsChildren.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { id, paths, options } = payload;
+        return fetchChildrenByPaths(state.sites.active, paths, {
+          ...options
+        }).pipe(
+          map((data) => pathNavigatorTreeFetchPathsChildrenComplete({ id, data, options })),
+          catchAjaxError((error) => pathNavigatorTreeFetchPathsChildrenFailed({ error, id }))
         );
       })
     ),
