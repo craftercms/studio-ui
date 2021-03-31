@@ -180,7 +180,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   const [inProgress, setInProgress] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  const editMode = !props.user.externallyManaged;
+  const editMode = !props.user?.externallyManaged;
 
   useEffect(() => {
     if (open) {
@@ -309,7 +309,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               </Typography>
               <section className={classes.userNameWrapper}>
                 <Typography variant="body2">{user?.username}</Typography>
-                {props.user.externallyManaged && (
+                {props.user?.externallyManaged && (
                   <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
                 )}
               </section>
