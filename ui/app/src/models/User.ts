@@ -24,7 +24,7 @@ export interface User {
   username: string;
   enabled: boolean;
   externallyManaged: boolean;
-  authenticationType: 'db' | 'ldap' | 'headers' | 'saml';
+  authenticationType?: 'db' | 'ldap' | 'headers' | 'saml';
 }
 
 export interface EnhancedUser extends User {

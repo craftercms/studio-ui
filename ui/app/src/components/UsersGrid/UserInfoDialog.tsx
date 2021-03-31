@@ -18,18 +18,17 @@ import Dialog from '@material-ui/core/Dialog';
 import React, { useEffect, useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Divider } from '@material-ui/core';
+import { Chip, Divider, Grid, Switch } from '@material-ui/core';
 import User from '../../models/User';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import Input from '@material-ui/core/Input';
-import { useSpreadState } from '../../utils/hooks';
-import { update } from '../../services/users';
+import { useSitesBranch, useSpreadState } from '../../utils/hooks';
+import { disable, enable, update } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
@@ -38,12 +37,17 @@ import PrimaryButton from '../PrimaryButton';
 import clsx from 'clsx';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-const styles = makeStyles(() =>
+const styles = makeStyles((theme) =>
   createStyles({
     header: {
       padding: '30px 40px',
       display: 'flex',
       alignItems: 'center'
+    },
+    chip: {
+      background: theme.palette.info.main,
+      color: theme.palette.text.primary,
+      marginLeft: 'auto'
     },
     avatar: {
       marginRight: '30px',
@@ -68,12 +72,18 @@ const styles = makeStyles(() =>
       padding: '15px 0',
       alignItems: 'center'
     },
+    userNameWrapper: {
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center'
+    },
+    switchWrapper: {
+      width: '100%',
+      marginLeft: '-12px'
+    },
     formActions: {
       display: 'flex',
       paddingBottom: '20px',
-      '&.hidden': {
-        visibility: 'hidden'
-      },
       '& button:first-child': {
         marginLeft: 'auto',
         marginRight: '10px'
@@ -92,17 +102,44 @@ const styles = makeStyles(() =>
     readOnlyInput: {
       background: 'none',
       borderColor: 'transparent',
+      paddingLeft: 0,
       '&:focus': {
         boxShadow: 'none'
       }
+    },
+    membershipsWrapper: {
+      marginTop: '13px'
+    },
+    siteItem: {
+      margin: '10px 0'
     }
   })
 );
 
 const translations = defineMessages({
+  externallyManaged: {
+    id: 'userInfoDialog.externallyManaged',
+    defaultMessage: 'Externally managed'
+  },
   userUpdated: {
     id: 'userInfoDialog.userUpdated',
     defaultMessage: 'User updated successfully'
+  },
+  userEnabled: {
+    id: 'userInfoDialog.userEnabled',
+    defaultMessage: 'User enabled successfully'
+  },
+  userDisabled: {
+    id: 'userInfoDialog.userDisabled',
+    defaultMessage: 'User disabled successfully'
+  },
+  siteName: {
+    id: 'userInfoDialog.siteName',
+    defaultMessage: 'Site name'
+  },
+  roles: {
+    id: 'words.roles',
+    defaultMessage: 'Roles'
   }
 });
 
@@ -114,20 +151,47 @@ interface UserInfoDialogProps {
 }
 
 export function UserInfoDialog(props: UserInfoDialogProps) {
+  const { open, onClose } = props;
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <UserInfoDialogUI {...props} />
+    </Dialog>
+  );
+}
+
+export function UserInfoDialogUI(props: UserInfoDialogProps) {
   const { open, onClose, onUserEdited } = props;
-  const [editMode, setEditMode] = useState(false);
-  const [user, setUser] = useSpreadState(null);
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const classes = styles();
+  const [user, setUser] = useSpreadState<User>({
+    id: null,
+    firstName: '',
+    lastName: '',
+    email: '',
+    username: '',
+    enabled: false,
+    externallyManaged: false
+  });
+  const sites = useSitesBranch();
+  const sitesById = sites.byId;
   const [lastSavedUser, setLastSavedUser] = useState(null);
   const [inProgress, setInProgress] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
+
+  const editMode = !props.user.externallyManaged;
+
   useEffect(() => {
     if (open) {
       setUser(props.user);
     }
   }, [props.user, open, setUser]);
-  const classes = styles();
+
+  useEffect(() => {
+    if (Object.keys(sites).length) {
+    }
+  }, [sites]);
 
   const onInputChange = (value) => {
     setDirty(true);
@@ -139,6 +203,38 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
       setUser(lastSavedUser);
     } else {
       setUser(props.user);
+    }
+    setDirty(false);
+  };
+
+  const onEnableChange = (value) => {
+    setUser(value);
+    if (value.enabled) {
+      enable(user.username).subscribe(
+        () => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.userEnabled)
+            })
+          );
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+    } else {
+      disable(user.username).subscribe(
+        () => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.userDisabled)
+            })
+          );
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
     }
   };
 
@@ -159,14 +255,14 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
         setLastSavedUser(user);
         onUserEdited();
       },
-      ({ response }) => {
+      ({ response: { response } }) => {
         dispatch(showErrorDialog({ error: response }));
       }
     );
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <>
       <header className={classes.header}>
         <Avatar className={classes.avatar}>{props.user?.firstName.charAt(0)}</Avatar>
         <section className={classes.userInfo}>
@@ -176,9 +272,6 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
           <Typography variant="subtitle1">{props.user?.username}</Typography>
         </section>
         <section className={classes.actions}>
-          <IconButton onClick={() => setEditMode(!editMode)}>
-            <EditRoundedIcon />
-          </IconButton>
           <IconButton>
             <DeleteRoundedIcon />
           </IconButton>
@@ -196,15 +289,30 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
           <form>
             <div className={classes.row}>
               <Typography variant="subtitle2" className={classes.label}>
+                <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
+              </Typography>
+              <div className={classes.switchWrapper}>
+                <Switch
+                  disabled={!editMode}
+                  checked={user?.enabled}
+                  onChange={(e) => onEnableChange({ enabled: e.target.checked })}
+                  color="primary"
+                  name="enabled"
+                  inputProps={{ 'aria-label': 'enabled checkbox' }}
+                />
+              </div>
+            </div>
+            <Divider />
+            <div className={classes.row}>
+              <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="words.username" defaultMessage="Username" />
               </Typography>
-              <Input
-                onChange={(e) => onInputChange({ userName: e.currentTarget.value })}
-                value={user?.username}
-                fullWidth
-                readOnly
-                classes={{ root: classes.inputRoot, input: classes.readOnlyInput }}
-              />
+              <section className={classes.userNameWrapper}>
+                <Typography variant="body2">{user?.username}</Typography>
+                {props.user.externallyManaged && (
+                  <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
+                )}
+              </section>
             </div>
             <div className={classes.row}>
               <Typography variant="subtitle2" className={classes.label}>
@@ -242,28 +350,20 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
                 classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}
               />
             </div>
-            <div className={classes.row}>
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
-              </Typography>
-            </div>
-            <div className={classes.row}>
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="userInfoDialog.externallyManaged" defaultMessage="Externally managed" />
-              </Typography>
-            </div>
-            <div className={clsx(classes.formActions, !editMode && 'hidden')}>
-              <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
-                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-              </SecondaryButton>
-              <PrimaryButton disabled={!dirty || inProgress} onClick={onSave}>
-                {inProgress ? (
-                  <CircularProgress size={15} />
-                ) : (
-                  <FormattedMessage id="words.save" defaultMessage="Save" />
-                )}
-              </PrimaryButton>
-            </div>
+            {editMode && (
+              <div className={classes.formActions}>
+                <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
+                  <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+                </SecondaryButton>
+                <PrimaryButton disabled={!dirty || inProgress} onClick={onSave}>
+                  {inProgress ? (
+                    <CircularProgress size={15} />
+                  ) : (
+                    <FormattedMessage id="words.save" defaultMessage="Save" />
+                  )}
+                </PrimaryButton>
+              </div>
+            )}
           </form>
         </section>
         <Divider />
@@ -271,8 +371,25 @@ export function UserInfoDialog(props: UserInfoDialogProps) {
           <Typography variant="subtitle1" className={classes.sectionTitle}>
             <FormattedMessage id="userInfoDialog.siteMemberships" defaultMessage="Site Memberships" />
           </Typography>
+          <Grid container spacing={3} className={classes.membershipsWrapper}>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                {formatMessage(translations.siteName)}
+              </Typography>
+              {Object.values(sitesById).map((site) => (
+                <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                  {site.name}
+                </Typography>
+              ))}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                {formatMessage(translations.roles)}
+              </Typography>
+            </Grid>
+          </Grid>
         </section>
       </DialogBody>
-    </Dialog>
+    </>
   );
 }
