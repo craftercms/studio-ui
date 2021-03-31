@@ -89,14 +89,6 @@ const messages = defineMessages({
     id: 'createSiteDialog.additionalOptions',
     defaultMessage: 'Additional Options'
   },
-  pushSite: {
-    id: 'createSiteDialog.pushSite',
-    defaultMessage: 'Push the site to a remote Git repository after creation'
-  },
-  noPushSite: {
-    id: 'createSiteDialog.noPushSite',
-    defaultMessage: "Don't push the site to a remote Git repository after creation"
-  },
   remoteName: {
     id: 'createSiteDialog.remoteName',
     defaultMessage: 'Git Remote Name'
@@ -304,18 +296,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
               <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
             )}
           </Typography>
-          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
+          {blueprint.source !== 'GIT' && blueprint.id === 'GIT' && renderGitOptions()}
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}:</span>
             {` ${inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}`}
           </Typography>
-          {blueprint.id !== 'GIT' && inputs.pushSite && (
-            <div>
-              <Typography variant="body2" gutterBottom>
-                {formatMessage(messages.pushSite)}
-              </Typography>
-            </div>
-          )}
         </Grid>
         {blueprint.parameters && !!blueprint.parameters.length && (
           <Grid item xs={12}>

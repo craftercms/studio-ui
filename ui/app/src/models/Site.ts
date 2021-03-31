@@ -34,7 +34,6 @@ export interface SiteState {
   siteNameExist: boolean;
   invalidSiteId: boolean;
   description: string;
-  pushSite: boolean;
   useRemote: boolean;
   createAsOrphan: boolean;
   repoUrl: string;
