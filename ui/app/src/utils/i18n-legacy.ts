@@ -556,29 +556,25 @@ const globalConfigMessages = defineMessages({
 });
 
 const publishingMessages = defineMessages({
-  idle: {
-    id: 'publishing.idle',
-    defaultMessage: 'Idle'
-  },
-  busy: {
-    id: 'publishing.busy',
-    defaultMessage: 'Busy'
-  },
   ready: {
-    id: 'publishing.ready',
+    id: 'words.ready',
     defaultMessage: 'Ready'
   },
-  stopped: {
-    id: 'publishing.stopped',
-    defaultMessage: 'Stopped'
-  },
-  started: {
-    id: 'publishing.started',
-    defaultMessage: 'Started'
+  publishing: {
+    id: 'words.publishing',
+    defaultMessage: 'Publishing'
   },
   queued: {
-    id: 'publishing.queued',
+    id: 'words.queued',
     defaultMessage: 'Queued'
+  },
+  stopped: {
+    id: 'words.stopped',
+    defaultMessage: 'Stopped'
+  },
+  error: {
+    id: 'words.error',
+    defaultMessage: 'Error'
   },
   unlockComplete: {
     id: 'unlockPublisherDialog.unlockCompleteMessage',
