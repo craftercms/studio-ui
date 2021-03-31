@@ -901,7 +901,6 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   contentTypeNotFound: '구성 요소의 콘텐츠 형식을 찾을 수 없습니다.',
   failConfig: '구성을로드하지 못했습니다.',
   noConfPathError: '구성 경로가 정의되지 않았습니다.',
-  clearCacheError: '구성 캐시를 지우지 못했습니다.',
   endpointsError: '엔드 포인트로드 실패.',
   jobsError: '작업을로드하지 못했습니다.',
   cancelDeploymentError: '배포를 취소하지 못했습니다.',

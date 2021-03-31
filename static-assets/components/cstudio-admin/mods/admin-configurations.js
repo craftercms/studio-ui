@@ -462,7 +462,6 @@
                       197,
                       'saveConf'
                     );
-                    me.clearCache();
                   },
                   () => {
                     CStudioAuthoring.Operations.showSimpleDialog(
@@ -656,28 +655,6 @@
           editorContainer.style.height = this.height;
           editor.resize();
         }
-      },
-
-      clearCache: function() {
-        var serviceUri =
-          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' + CStudioAuthoringContext.site;
-
-        CrafterCMSNext.util.ajax
-          .get(`/studio/api/1/services/api/1/site/clear-configuration-cache.json?site=${CStudioAuthoringContext.site}`)
-          .subscribe(
-            () => {},
-            () => {
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'cacheError-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(langBundle, 'notification'),
-                CMgs.format(langBundle, 'clearCacheError'),
-                null, // use default button
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
-            }
-          );
       }
     });
 

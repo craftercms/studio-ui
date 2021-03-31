@@ -939,7 +939,6 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   contentTypeNotFound: 'El content type del componente no fue encontrado.',
   failConfig: 'La configuracioón no pudo ser cargada.',
   noConfPathError: 'No se ha definido ninguna ruta de configuración',
-  clearCacheError: 'Error al borrar la caché de configuración.',
   endpointsError: 'Error al cargar los puntos finales.',
   jobsError: 'Error al cargar trabajos.',
   cancelDeploymentError: 'Error al cancelar la implementación.',
