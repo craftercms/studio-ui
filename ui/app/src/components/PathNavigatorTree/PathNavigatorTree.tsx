@@ -54,9 +54,10 @@ import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { getParentPath, withIndex } from '../../utils/path';
+import { getParentPath } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
+import { lookupNodeByPath } from './utils';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -216,7 +217,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   useEffect(() => {
     keywordByPathRef.current = keywordByPath;
-  }, [keywordByPath, itemsByPath]);
+  }, [keywordByPath]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
@@ -253,11 +254,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case itemsPasted.type:
         case folderCreated.type: {
           if (payload.clipboard?.type === 'CUT') {
-            const sourceNode =
-              nodesByPathRef.current[getParentPath(payload.clipboard.sourcePath)] ??
-              nodesByPathRef.current[withIndex(getParentPath(payload.clipboard.sourcePath))];
-            const targetNode =
-              nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+            const parentPath = getParentPath(payload.clipboard.sourcePath);
+            const sourceNode = lookupNodeByPath(parentPath, nodesByPathRef.current);
+            const targetNode = lookupNodeByPath(payload.target, nodesByPathRef.current);
+
             const paths = {};
             if (sourceNode) {
               fetchingPathsRef.current.push(sourceNode.id);
@@ -268,7 +268,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             if (targetNode) {
               fetchingPathsRef.current.push(targetNode.id);
               paths[targetNode.id] = {
-                limit: childrenByParentPath[targetNode] ? childrenByParentPath[targetNode].length + 1 : limit
+                limit: childrenByParentPath[targetNode.id] ? childrenByParentPath[targetNode.id].length + 1 : limit
               };
             }
             if (sourceNode || targetNode) {
@@ -280,7 +280,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               );
             }
           } else {
-            const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+            const node = lookupNodeByPath(payload.target, nodesByPathRef.current);
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
@@ -301,9 +301,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case folderRenamed.type:
         case itemDuplicated.type:
         case itemCreated.type: {
-          const node =
-            nodesByPathRef.current[getParentPath(payload.target)] ??
-            nodesByPathRef.current[withIndex(getParentPath(payload.target))];
+          const parentPath = getParentPath(payload.target);
+          const node = lookupNodeByPath(parentPath, nodesByPathRef.current);
           const path = node?.id;
           if (path) {
             fetchingPathsRef.current.push(path);
@@ -324,8 +323,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case itemsDeleted.type: {
           const paths = {};
           payload.targets.forEach((target) => {
-            const node =
-              nodesByPathRef.current[getParentPath(target)] ?? nodesByPathRef.current[withIndex(getParentPath(target))];
+            const parentPath = getParentPath(target);
+            const node = lookupNodeByPath(parentPath, nodesByPathRef.current);
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
