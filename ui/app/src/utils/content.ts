@@ -18,7 +18,7 @@ import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, Sandb
 import { getStateMapFromLegacyItem } from './state';
 import { nnou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
-import LookupTable, { LookupTable } from '../models/LookupTable';
+import LookupTable from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
