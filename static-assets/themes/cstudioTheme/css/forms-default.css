@@ -206,6 +206,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     width: 300px;
     margin-left: 8px;
  }
+.cstudio-form-control-node-selector-items-container.node-selector-min-height {
+  min-height: 27px;
+}
 .cstudio-form-control-page-url-container {
     display: inline-block;
     width: 74%;

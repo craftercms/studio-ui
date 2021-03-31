@@ -191,6 +191,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var nodeItemsContainerEl = document.createElement('div');
     nodeItemsContainerEl.id = this.id + '-target';
     YAHOO.util.Dom.addClass(nodeItemsContainerEl, 'cstudio-form-control-node-selector-items-container');
+    if (this.maxSize === 1) {
+      YAHOO.util.Dom.addClass(nodeItemsContainerEl, 'node-selector-min-height');
+    }
     nodeControlboxEl.appendChild(nodeItemsContainerEl);
     this.itemsContainerEl = nodeItemsContainerEl;
 
