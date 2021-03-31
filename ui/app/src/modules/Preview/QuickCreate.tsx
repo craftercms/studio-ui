@@ -105,7 +105,12 @@ interface QuickCreateMenuProps {
     quickCreate: Resource<QuickCreateItem[]>;
   };
   onNewContentSelected?(): void;
-  onQuickCreateItemSelected?(src: string): void;
+  onQuickCreateItemSelected?(props: {
+    authoringBase: string;
+    path: string;
+    contentTypeId: string;
+    isNewContent: boolean;
+  }): void;
   onClose?(): void;
 }
 
@@ -127,15 +132,18 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected } = props;
   const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const baseFormSrc = `${authoringBase}/legacy/form`;
 
   const onFormDisplay = ({ contentTypeId, path }: QuickCreateItem) => {
     const today = new Date();
     const formatPath = path
       .replace('{year}', `${today.getFullYear()}`)
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
-    const src = `${baseFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
-    onQuickCreateItemSelected?.(src);
+    onQuickCreateItemSelected?.({
+      path: formatPath,
+      contentTypeId,
+      isNewContent: true,
+      authoringBase
+    });
   };
 
   return (
@@ -252,11 +260,11 @@ const QuickCreate = React.forwardRef<HTMLButtonElement, { disabled?: boolean }>(
     );
   };
 
-  const onQuickCreateItemSelected = (src: string) => {
+  const onQuickCreateItemSelected = (props) => {
     onMenuClose();
     dispatch(
       showEditDialog({
-        src,
+        ...props,
         inProgress: false,
         onSaveSuccess: newContentCreationComplete()
       })

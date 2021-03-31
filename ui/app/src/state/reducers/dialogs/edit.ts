@@ -21,6 +21,9 @@ import { LegacyFormDialogStateProps } from '../../../components/Dialogs/LegacyFo
 
 const initialState: LegacyFormDialogStateProps = {
   open: false,
+  path: null,
+  site: null,
+  authoringBase: null,
   inProgress: true
 };
 

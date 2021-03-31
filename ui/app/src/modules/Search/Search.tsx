@@ -671,8 +671,7 @@ export default function Search(props: SearchProps) {
       }
       case 'Component':
       case 'Taxonomy': {
-        const src = `${authoringBase}/legacy/form?site=${site}&path=${item.path}&type=form&readonly=true`;
-        dispatch(showEditDialog({ src }));
+        dispatch(showEditDialog({ site, path: item.path, authoringBase, readonly: true }));
         break;
       }
       default: {
@@ -712,7 +711,6 @@ export default function Search(props: SearchProps) {
   };
 
   const onActionClicked = (option: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const legacyFormSrc = `${authoringBase}/legacy/form?`;
     if (selected.length > 1) {
       const detailedItems = [];
       selected.forEach((path) => {
@@ -722,7 +720,7 @@ export default function Search(props: SearchProps) {
         site,
         item: detailedItems,
         option,
-        legacyFormSrc,
+        authoringBase,
         dispatch,
         formatMessage,
         clipboard,
@@ -731,7 +729,16 @@ export default function Search(props: SearchProps) {
     } else {
       const path = selected[0];
       const item = items?.[path];
-      itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
+      itemActionDispatcher({
+        site,
+        item,
+        option,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        clipboard,
+        event
+      });
     }
   };
 

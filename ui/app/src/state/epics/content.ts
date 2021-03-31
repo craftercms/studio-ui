@@ -143,7 +143,9 @@ const content: CrafterCMSEpic[] = [
             batchActions([
               emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
               showEditDialog({
-                src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
+                site: state.sites.active,
+                path,
+                authoringBase: state.env.authoringBase,
                 onSaveSuccess: payload.onSuccess
               })
             ])
@@ -174,11 +176,13 @@ const content: CrafterCMSEpic[] = [
           map(({ item: path }) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
-              const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
               return batchActions([
                 emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
                 showCodeEditorDialog({
-                  src,
+                  authoringBase: state.env.authoringBase,
+                  site: state.sites.active,
+                  path,
+                  type: 'asset',
                   onSuccess: payload.onSuccess
                 })
               ]);

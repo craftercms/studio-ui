@@ -40,6 +40,7 @@ import { changeSite } from './sites';
 import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeRestoreComplete
 } from '../actions/pathNavigatorTree';
@@ -157,6 +158,20 @@ const reducer = createReducer<ContentState>(initialState, {
 
     items.forEach((item) => {
       nextByPath[item.path] = item;
+    });
+
+    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
+  },
+  [pathNavigatorTreeFetchPathsChildrenComplete.type]: (
+    state,
+    { payload: { data } }: { payload: { data: LookupTable<GetChildrenResponse> } }
+  ) => {
+    let nextByPath = {};
+    Object.values(data).forEach((children) => {
+      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      if (children.levelDescriptor) {
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+      }
     });
 
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };

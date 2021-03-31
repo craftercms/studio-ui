@@ -452,7 +452,7 @@ export const itemActionDispatcher = ({
   site,
   item,
   option,
-  legacyFormSrc,
+  authoringBase,
   dispatch,
   formatMessage,
   clipboard,
@@ -462,7 +462,7 @@ export const itemActionDispatcher = ({
   site: string;
   item: DetailedItem | DetailedItem[];
   option: string;
-  legacyFormSrc: string;
+  authoringBase: string;
   dispatch;
   formatMessage;
   clipboard;
@@ -474,8 +474,7 @@ export const itemActionDispatcher = ({
     switch (option) {
       case 'view': {
         const path = item.path;
-        const src = `${legacyFormSrc}site=${site}&path=${path}&type=form&readonly=true`;
-        dispatch(showEditDialog({ src }));
+        dispatch(showEditDialog({ site, path, authoringBase, readonly: true }));
         break;
       }
       case 'edit': {
@@ -483,14 +482,15 @@ export const itemActionDispatcher = ({
         //  we need the modelId that's not supplied to this function.
         // const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
         const path = item.path;
-        const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(
               showWorkflowCancellationDialog({
                 items,
                 onContinue: showEditDialog({
-                  src,
+                  site,
+                  path,
+                  authoringBase,
                   onSaveSuccess: batchActions([
                     showEditItemSuccessNotification(),
                     reloadDetailedItem({ path }),
@@ -502,7 +502,9 @@ export const itemActionDispatcher = ({
           } else {
             dispatch(
               showEditDialog({
-                src,
+                site,
+                path,
+                authoringBase,
                 onSaveSuccess: batchActions([
                   showEditItemSuccessNotification(),
                   reloadDetailedItem({ path }),
@@ -726,13 +728,19 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'codeEditor': {
-        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset`;
-        dispatch(showCodeEditorDialog({ src }));
+        dispatch(showCodeEditorDialog({ site, authoringBase, path: item.path, type: 'asset' }));
         break;
       }
       case 'viewCodeEditor': {
-        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset&readonly=true`;
-        dispatch(showCodeEditorDialog({ src }));
+        dispatch(
+          showCodeEditorDialog({
+            site,
+            authoringBase,
+            path: item.path,
+            type: 'asset',
+            readonly: true
+          })
+        );
         break;
       }
       case 'viewImage': {

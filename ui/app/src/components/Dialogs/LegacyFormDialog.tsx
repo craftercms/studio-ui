@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
@@ -40,7 +40,7 @@ import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
-import { getQueryVariable } from '../../utils/path';
+import { getEditFormSrc } from '../../utils/path';
 import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
@@ -86,7 +86,15 @@ const styles = makeStyles(() =>
 
 interface LegacyFormDialogBaseProps {
   open?: boolean;
-  src?: string;
+  path: string;
+  authoringBase: string;
+  site?: string;
+  isHidden?: boolean;
+  modelId?: string;
+  readonly?: boolean;
+  changeTemplate?: string;
+  contentTypeId?: string;
+  isNewContent?: boolean;
   inProgress?: boolean;
   onMinimized?(): void;
 }
@@ -108,7 +116,38 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 }
 
 function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
-  const { src, inProgress, onSaveSuccess, onDismiss, onClosed, onMinimized } = props;
+  const {
+    path,
+    authoringBase,
+    readonly,
+    site,
+    isHidden,
+    modelId,
+    contentTypeId,
+    isNewContent,
+    changeTemplate,
+    inProgress,
+    onSaveSuccess,
+    onDismiss,
+    onClosed,
+    onMinimized
+  } = props;
+
+  const src = useMemo(
+    () =>
+      getEditFormSrc({
+        path,
+        site,
+        authoringBase,
+        readonly,
+        isHidden,
+        modelId,
+        changeTemplate,
+        contentTypeId,
+        isNewContent
+      }),
+    [authoringBase, changeTemplate, contentTypeId, isHidden, isNewContent, modelId, path, readonly, site]
+  );
 
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -129,11 +168,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
       if (data.isNew) {
         dispatch(emitSystemEvent(itemCreated({ target: data.item.uri })));
       } else {
-        const path = getQueryVariable(src, 'path') as string;
         dispatch(emitSystemEvent(itemUpdated({ target: path })));
       }
     },
-    [dispatch, onSaveSuccess, src]
+    [dispatch, onSaveSuccess, path]
   );
 
   useEffect(() => {

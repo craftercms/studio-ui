@@ -185,10 +185,18 @@ export function AddressBar(props: AddressBarProps) {
 
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const clipboard = useSelection((state) => state.content.clipboard);
   const onMenuItemClicked = (option: string, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
-    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
+    itemActionDispatcher({
+      site,
+      item,
+      option,
+      authoringBase,
+      dispatch,
+      formatMessage,
+      clipboard,
+      event
+    });
   const actions = generateSingleItemOptions(item, formatMessage)?.flatMap((options) => options);
 
   return (

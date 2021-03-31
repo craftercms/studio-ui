@@ -63,11 +63,10 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
   const clipboard = useSelection((state) => state.content.clipboard);
   const item = items?.[path];
   const { authoringBase } = useEnv();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const onMenuItemClicked = (option: string, event: React.MouseEvent<Element, MouseEvent>) => {
-    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard, event });
+    itemActionDispatcher({ site, item, option, authoringBase, dispatch, formatMessage, clipboard, event });
     onClose();
   };
   const hasClipboard =

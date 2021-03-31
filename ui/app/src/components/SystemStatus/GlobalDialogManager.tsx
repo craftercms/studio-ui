@@ -158,7 +158,15 @@ function GlobalDialogManager() {
       {/* region Edit (LegacyFormDialog) */}
       <LegacyFormDialog
         open={state.edit.open}
-        src={state.edit.src}
+        path={state.edit.path}
+        site={state.edit.site}
+        authoringBase={state.edit.authoringBase}
+        readonly={state.edit.readonly}
+        isHidden={state.edit.isHidden}
+        modelId={state.edit.modelId}
+        changeTemplate={state.edit.changeTemplate}
+        contentTypeId={state.edit.contentTypeId}
+        isNewContent={state.edit.isNewContent}
         inProgress={state.edit.inProgress}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
@@ -170,7 +178,11 @@ function GlobalDialogManager() {
       {/* region LegacyCodeEditorDialog */}
       <LegacyCodeEditorDialog
         open={state.codeEditor.open}
-        src={state.codeEditor.src}
+        path={state.codeEditor.path}
+        site={state.codeEditor.site}
+        type={state.codeEditor.type}
+        authoringBase={state.codeEditor.authoringBase}
+        readonly={state.codeEditor.readonly}
         inProgress={state.codeEditor.inProgress}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}

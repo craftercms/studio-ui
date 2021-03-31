@@ -23,6 +23,7 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeInit,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
@@ -41,7 +42,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           rootPath: path,
-          levelDescriptor: null,
           collapsed,
           limit,
           expanded,
@@ -143,22 +143,54 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
-      const children = {};
-      const total = {};
+    [pathNavigatorTreeFetchPathsChildrenComplete.type]: (state, { payload: { id, data } }) => {
+      const childrenByParentPath = { ...state[id].childrenByParentPath };
+      const totalByPath = { ...state[id].totalByPath };
+
       Object.keys(data).forEach((path) => {
-        children[path] = [];
+        childrenByParentPath[path] = [];
         if (data[path].levelDescriptor) {
-          children[path].push(data[path].levelDescriptor.path);
+          childrenByParentPath[path].push(data[path].levelDescriptor.path);
         }
-        data[path].forEach((item) => children[path].push(item.path));
-        total[path] = data[path].total;
+        data[path].forEach((item) => childrenByParentPath[path].push(item.path));
+        totalByPath[path] = data[path].total;
       });
 
       return {
         ...state,
         [id]: {
           ...state[id],
+          childrenByParentPath,
+          totalByPath
+        }
+      };
+    },
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
+      const children = {};
+      const total = {};
+      const keywordByPath = state[id].keywordByPath;
+      const expanded = [];
+      Object.keys(data).forEach((path) => {
+        children[path] = [];
+        if (data[path].levelDescriptor) {
+          children[path].push(data[path].levelDescriptor.path);
+        }
+        data[path].forEach((item) => {
+          children[path].push(item.path);
+        });
+        total[path] = data[path].total;
+
+        if (!keywordByPath[path] && children[path].length) {
+          // If the expanded node has no children and is not filtered, it's a leaf node and there's no point keeping it in `expanded`
+          expanded.push(path);
+        }
+      });
+
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          expanded,
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
             ...children

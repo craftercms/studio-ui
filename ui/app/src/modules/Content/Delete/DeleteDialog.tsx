@@ -272,23 +272,19 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     }
   }, [dispatch, selectedItems, setApiState, siteId]);
 
-  const onEditDependency = (src) => {
+  const onEditDependency = (props) => {
     dispatch(
       showEditDialog({
-        src,
+        ...props,
         onClosed: fetchDeleteDependencies(selectedItems)
       })
     );
   };
 
   const handleSubmit = () => {
-    const data = {
-      items: selectedItems
-    };
-
     setApiState({ submitting: true });
 
-    deleteItems(siteId, submissionComment, data).subscribe(
+    deleteItems(siteId, selectedItems, submissionComment).subscribe(
       (response) => {
         setApiState({ submitting: false });
 

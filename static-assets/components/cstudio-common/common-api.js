@@ -3609,7 +3609,7 @@ var nodeOpen = false,
        */
       isWrite: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'write') {
+          if (permissions[i] === 'content_write') {
             return true;
           }
         }
@@ -4027,7 +4027,7 @@ var nodeOpen = false,
       // is this really a service and not a util, can we rename it to something descriptive?
       isCreateFolder: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'create folder') {
+          if (permissions[i] === 'folder_create') {
             return true;
           }
         }
@@ -4047,7 +4047,7 @@ var nodeOpen = false,
       // is this really a service and not a util, can we rename it to something descriptive?
       isDeleteAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'delete') {
+          if (permissions[i] === 'content_delete') {
             return true;
           }
         }
@@ -4067,7 +4067,7 @@ var nodeOpen = false,
       // is this really a service and not a util, can we rename it to something descriptive?
       isCreateContentAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'create content') {
+          if (permissions[i] === 'content_create') {
             return true;
           }
         }

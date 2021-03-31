@@ -26,9 +26,13 @@ import {
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathPageFailed,
+  pathNavigatorTreeFetchPathsChildren,
+  pathNavigatorTreeFetchPathsChildrenComplete,
+  pathNavigatorTreeFetchPathsChildrenFailed,
   pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeSetKeyword,
@@ -45,10 +49,17 @@ export default [
   // region pathNavigatorTreeInit
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreeInit.type),
+      ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
-        const { id, path, expanded, collapsed, keywordByPath } = payload;
+        const {
+          id,
+          path = state.pathNavigatorTree[id].rootPath,
+          expanded = state.pathNavigatorTree[id].expanded,
+          collapsed = state.pathNavigatorTree[id].collapsed,
+          keywordByPath = state.pathNavigatorTree[id].keywordByPath,
+          limit = state.pathNavigatorTree[id].limit
+        } = payload;
         if (expanded?.length) {
           let paths = [];
           expanded.forEach((expandedPath) => {
@@ -58,7 +69,7 @@ export default [
               }
             });
           });
-          return forkJoin(
+          return forkJoin([
             fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
             fetchChildrenByPaths(
               state.sites.active,
@@ -67,9 +78,10 @@ export default [
                   return { keyword: keywordByPath[value] };
                 }
                 return {};
-              })
+              }),
+              { limit }
             )
-          ).pipe(
+          ]).pipe(
             map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
             catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
           );
@@ -94,6 +106,22 @@ export default [
         }).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+        );
+      })
+    ),
+  // endregion
+  // region pathNavigatorFetchPathsChildren
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeFetchPathsChildren.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { id, paths, options } = payload;
+        return fetchChildrenByPaths(state.sites.active, paths, {
+          ...options
+        }).pipe(
+          map((data) => pathNavigatorTreeFetchPathsChildrenComplete({ id, data, options })),
+          catchAjaxError((error) => pathNavigatorTreeFetchPathsChildrenFailed({ error, id }))
         );
       })
     ),

@@ -15,23 +15,25 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import PathNavigatorTreeUI from './PathNavigatorTreeUI';
-import { useActiveSiteId, useActiveUser, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
+import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
+import { useActiveSiteId, useActiveUser, useEnv, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathPage,
+  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
-import { isNavigable } from '../PathNavigator/utils';
+import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
-import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
@@ -47,12 +49,14 @@ import {
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { showItemMenu } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { getParentPath, withIndex } from '../../utils/path';
+import { getParentPath } from '../../utils/path';
+import { DetailedItem } from '../../models/Item';
+import { fetchContentXML } from '../../services/content';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -66,7 +70,6 @@ interface PathNavigatorTreeProps {
 
 export interface PathNavigatorTreeStateProps {
   rootPath: string;
-  levelDescriptor: string;
   collapsed: boolean;
   limit: number;
   expanded: string[];
@@ -112,7 +115,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     sections: []
   });
   const { formatMessage } = useIntl();
-  const nodesByPathRef = useRef({});
+  const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const keywordByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
@@ -120,6 +123,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const storedState = useMemo(() => {
     return getStoredPathNavigatorTree(site, user.username, id) ?? {};
   }, [id, site, user.username]);
+  const { authoringBase } = useEnv();
 
   const dispatch = useDispatch();
 
@@ -163,15 +167,22 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const nextFetching = [];
     fetchingPathsRef.current.forEach((path) => {
       if (childrenByParentPath?.[path]) {
+        if (!itemsByPath[path]) {
+          // if itemsByPath[path] doesn't exist it means is the result from a 404 getChildren and should be ignore
+          return null;
+        }
+
         if (!nodesByPathRef.current[path]) {
-          // if the nodeByPath dont exist, it means the node comes from restoring the localStorage
+          // if nodesByPathRef[path] doesn't exist, it means the node comes from restoring the localStorage and the parent node is collapsed
           nodesByPathRef.current[path] = {
             id: path,
             name: itemsByPath[path].label,
-            children: nodesByPathRef.current[path]?.children ?? [{ id: 'loading' }]
+            children: []
           };
+        } else {
+          nodesByPathRef.current[path].children = [];
         }
-        nodesByPathRef.current[path].children = [];
+
         // If the children are empty and there are filtered search, we will add a empty node
         if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
           nodesByPathRef.current[path].children = [
@@ -241,10 +252,34 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       switch (type) {
         case itemsPasted.type:
         case folderCreated.type: {
-          if (payload.clipboard.type === 'CUT') {
-            debugger;
+          if (payload.clipboard?.type === 'CUT') {
+            const parentPath = getParentPath(payload.clipboard.sourcePath);
+            const sourceNode = lookupItemByPath(parentPath, nodesByPathRef.current);
+            const targetNode = lookupItemByPath(payload.target, nodesByPathRef.current);
+
+            const paths = {};
+            if (sourceNode) {
+              fetchingPathsRef.current.push(sourceNode.id);
+              paths[sourceNode.id] = {
+                limit: childrenByParentPath[sourceNode.id]?.length ?? limit
+              };
+            }
+            if (targetNode) {
+              fetchingPathsRef.current.push(targetNode.id);
+              paths[targetNode.id] = {
+                limit: childrenByParentPath[targetNode.id] ? childrenByParentPath[targetNode.id].length + 1 : limit
+              };
+            }
+            if (sourceNode || targetNode) {
+              dispatch(
+                pathNavigatorTreeFetchPathsChildren({
+                  id,
+                  paths
+                })
+              );
+            }
           } else {
-            const node = nodesByPathRef.current[payload.target] ?? nodesByPathRef.current[withIndex(payload.target)];
+            const node = lookupItemByPath(payload.target, nodesByPathRef.current);
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
@@ -253,7 +288,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                   id,
                   path,
                   options: {
-                    limit: childrenByParentPath[path]?.length + 1 ?? limit
+                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
                   }
                 })
               );
@@ -265,9 +300,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case folderRenamed.type:
         case itemDuplicated.type:
         case itemCreated.type: {
-          const node =
-            nodesByPathRef.current[getParentPath(payload.target)] ??
-            nodesByPathRef.current[withIndex(getParentPath(payload.target))];
+          const parentPath = getParentPath(payload.target);
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
           const path = node?.id;
           if (path) {
             fetchingPathsRef.current.push(path);
@@ -276,7 +310,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                 id,
                 path,
                 options: {
-                  limit: childrenByParentPath[path]?.length + (type === itemCreated.type ? 1 : 0) ?? limit
+                  limit: childrenByParentPath[path]
+                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
+                    : limit
                 }
               })
             );
@@ -284,23 +320,26 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           break;
         }
         case itemsDeleted.type: {
+          const paths = {};
           payload.targets.forEach((target) => {
-            const node =
-              nodesByPathRef.current[getParentPath(target)] ?? nodesByPathRef.current[withIndex(getParentPath(target))];
+            const parentPath = getParentPath(target);
+            const node = lookupItemByPath(parentPath, nodesByPathRef.current);
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
-              dispatch(
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path,
-                  options: {
-                    limit: childrenByParentPath[path]?.length ?? limit
-                  }
-                })
-              );
+              paths[path] = {
+                limit: childrenByParentPath[path]?.length ?? limit
+              };
             }
           });
+          if (Object.keys(paths).length) {
+            dispatch(
+              pathNavigatorTreeFetchPathsChildren({
+                id,
+                paths
+              })
+            );
+          }
           break;
         }
         default: {
@@ -331,6 +370,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           newTab: event.ctrlKey || event.metaKey
         })
       );
+    } else if (isPreviewable(itemsByPath[path])) {
+      onPreview(itemsByPath[path]);
     } else {
       onToggleNodeClick(path);
     }
@@ -390,6 +431,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const onWidgetOptionsClick = (option: string) => {
     onCloseWidgetOptions();
     if (option === 'refresh') {
+      state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
+      dispatch(
+        pathNavigatorTreeRefresh({
+          id
+        })
+      );
     }
   };
 
@@ -419,6 +466,38 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       })
     );
   };
+
+  const onPreview = (item: DetailedItem) => {
+    if (isEditableViaFormEditor(item)) {
+      dispatch(showEditDialog({ path: item.path, authoringBase, site, readonly: true }));
+    } else if (isImage(item)) {
+      dispatch(
+        showPreviewDialog({
+          type: 'image',
+          title: item.label,
+          url: item.path
+        })
+      );
+    } else {
+      const mode = getEditorMode(item);
+      dispatch(
+        showPreviewDialog({
+          type: 'editor',
+          title: item.label,
+          url: item.path,
+          mode
+        })
+      );
+      fetchContentXML(site, item.path).subscribe((content) => {
+        dispatch(
+          updatePreviewDialog({
+            content
+          })
+        );
+      });
+    }
+  };
+
   // endregion
 
   return (
