@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import PathNavigatorTreeUI from './PathNavigatorTreeUI';
+import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
 import { useActiveSiteId, useActiveUser, useEnv, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
@@ -33,7 +33,7 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
-import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
@@ -57,7 +57,6 @@ import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
 import { getParentPath } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
-import { lookupNodeByPath } from './utils';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -116,7 +115,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     sections: []
   });
   const { formatMessage } = useIntl();
-  const nodesByPathRef = useRef({});
+  const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const keywordByPathRef = useRef({});
   const fetchingPathsRef = useRef([]);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
@@ -255,8 +254,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case folderCreated.type: {
           if (payload.clipboard?.type === 'CUT') {
             const parentPath = getParentPath(payload.clipboard.sourcePath);
-            const sourceNode = lookupNodeByPath(parentPath, nodesByPathRef.current);
-            const targetNode = lookupNodeByPath(payload.target, nodesByPathRef.current);
+            const sourceNode = lookupItemByPath(parentPath, nodesByPathRef.current);
+            const targetNode = lookupItemByPath(payload.target, nodesByPathRef.current);
 
             const paths = {};
             if (sourceNode) {
@@ -280,7 +279,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               );
             }
           } else {
-            const node = lookupNodeByPath(payload.target, nodesByPathRef.current);
+            const node = lookupItemByPath(payload.target, nodesByPathRef.current);
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);
@@ -302,7 +301,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         case itemDuplicated.type:
         case itemCreated.type: {
           const parentPath = getParentPath(payload.target);
-          const node = lookupNodeByPath(parentPath, nodesByPathRef.current);
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
           const path = node?.id;
           if (path) {
             fetchingPathsRef.current.push(path);
@@ -324,7 +323,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const paths = {};
           payload.targets.forEach((target) => {
             const parentPath = getParentPath(target);
-            const node = lookupNodeByPath(parentPath, nodesByPathRef.current);
+            const node = lookupItemByPath(parentPath, nodesByPathRef.current);
             const path = node?.id;
             if (path) {
               fetchingPathsRef.current.push(path);

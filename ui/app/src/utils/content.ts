@@ -18,11 +18,11 @@ import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, Sandb
 import { getStateMapFromLegacyItem } from './state';
 import { nnou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
-import { LookupTable } from '../models/LookupTable';
+import LookupTable, { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
-import { getRootPath, isRootPath } from './path';
+import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
   CONTENT_CHANGE_TYPE_MASK,
@@ -700,3 +700,7 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
   schedulePublish: hasSchedulePublishAction(value),
   rejectPublish: hasPublishRejectAction(value)
 });
+
+export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
+  return lookupTable[withoutIndex(path)] ?? lookupTable[withIndex(path)];
+}

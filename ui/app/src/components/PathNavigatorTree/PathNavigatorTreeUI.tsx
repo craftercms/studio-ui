@@ -30,7 +30,7 @@ import ArrowDropDownRoundedIcon from '@material-ui/icons/ArrowDropDownRounded';
 
 export interface TreeNode {
   id: string;
-  name: string;
+  name?: string;
   children?: TreeNode[];
   parentPath?: string;
 }
