@@ -52,7 +52,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
-import { PrimaryButton } from '../../../../components/PrimaryButton';
+import PrimaryButton from '../../../../components/PrimaryButton';
 import Button from '@material-ui/core/Button';
 
 const messages = defineMessages({
@@ -627,7 +627,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       };
       if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;
-        params.useRemote = site.pushSite;
       } else {
         params.useRemote = true;
       }
@@ -890,7 +889,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             <ApiResponseErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
           ) : (
             <div className={classes.loading}>
-              <Spinner />
+              <Spinner background="none" />
             </div>
           )}
           {site.selectedView !== 0 && (

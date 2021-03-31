@@ -56,10 +56,10 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
             if (currentStatus !== status) {
               currentStatus = status;
               switch (status.toLowerCase()) {
-                case 'busy':
+                case 'stopped':
                   iconClass = 'icon-orange';
                   break;
-                case 'stopped':
+                case 'error':
                   iconClass = 'icon-red';
                   break;
                 default:

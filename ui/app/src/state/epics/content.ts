@@ -17,6 +17,7 @@
 import { ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
+  clearClipboard,
   completeDetailedItem,
   duplicateAsset,
   duplicateItem,
@@ -27,14 +28,10 @@ import {
   fetchQuickCreateList as fetchQuickCreateListAction,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
-  fetchUserPermissions,
-  fetchUserPermissionsComplete,
-  fetchUserPermissionsFailed,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
-  unlockItem,
-  unSetClipBoard
+  unlockItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
@@ -44,9 +41,7 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { GUEST_CHECK_IN } from '../actions/preview';
-import { getUserPermissions } from '../../services/security';
-import { merge, NEVER, of } from 'rxjs';
+import { merge, of } from 'rxjs';
 import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
@@ -105,56 +100,36 @@ const content: CrafterCMSEpic[] = [
       )
     ),
   // endregion
-  // region getUserPermissions
-  (action$, state$) =>
-    action$.pipe(
-      ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
-      filter(({ payload }) => !payload.__CRAFTERCMS_GUEST_LANDING__),
-      withLatestFrom(state$),
-      filter(([{ payload }, state]) => !state.content.items.permissionsByPath?.[payload.path]),
-      mergeMap(([{ payload }, state]) =>
-        getUserPermissions(state.sites.active, payload.path).pipe(
-          map((permissions: string[]) =>
-            fetchUserPermissionsComplete({
-              path: payload.path,
-              permissions
-            })
-          ),
-          catchAjaxError(fetchUserPermissionsFailed)
-        )
-      )
-    ),
-  // endregion
   // region Items fetchDetailedItem
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDetailedItem.type, reloadDetailedItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload, type }, state]) => {
-        if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
-          return NEVER;
-        } else {
-          return fetchDetailedItemService(state.sites.active, payload.path).pipe(
-            map((item) => fetchDetailedItemComplete(item)),
-            catchAjaxError(fetchDetailedItemFailed)
-          );
-        }
-      })
+      filter(
+        ([{ payload, type }, state]) =>
+          // Only fetch if the item isn't already in state or it is an explicit re-fetch
+          // request (via reloadDetailedItem action)
+          !state.content.itemsByPath?.[payload.path] || type === reloadDetailedItem.type
+      ),
+      switchMap(([{ payload }, state]) =>
+        fetchDetailedItemService(state.sites.active, payload.path).pipe(
+          map((item) => fetchDetailedItemComplete(item)),
+          catchAjaxError(fetchDetailedItemFailed)
+        )
+      )
     ),
   (action$, state$) =>
     action$.pipe(
       ofType(completeDetailedItem.type),
       withLatestFrom(state$),
-      mergeMap(([{ payload, type }, state]) => {
-        if (state.content.items.byPath?.[payload.path]?.live) {
-          return NEVER;
-        } else {
-          return fetchDetailedItemService(state.sites.active, payload.path).pipe(
-            map((item) => fetchDetailedItemComplete(item)),
-            catchAjaxError(fetchDetailedItemFailed)
-          );
-        }
-      })
+      // Only fetch if the item isn't fully loaded (i.e. it's a parsed SandboxItem and need the DetailedItems)
+      filter(([{ payload }, state]) => !state.content.itemsByPath?.[payload.path]?.live),
+      mergeMap(([{ payload }, state]) =>
+        fetchDetailedItemService(state.sites.active, payload.path).pipe(
+          map((item) => fetchDetailedItemComplete(item)),
+          catchAjaxError(fetchDetailedItemFailed)
+        )
+      )
     ),
   // endregion
   // region Item Duplicate
@@ -168,7 +143,9 @@ const content: CrafterCMSEpic[] = [
             batchActions([
               emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
               showEditDialog({
-                src: `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`,
+                site: state.sites.active,
+                path,
+                authoringBase: state.env.authoringBase,
                 onSaveSuccess: payload.onSuccess
               })
             ])
@@ -199,11 +176,13 @@ const content: CrafterCMSEpic[] = [
           map(({ item: path }) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
-              const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=asset`;
               return batchActions([
                 emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
                 showCodeEditorDialog({
-                  src,
+                  authoringBase: state.env.authoringBase,
+                  site: state.sites.active,
+                  path,
+                  type: 'asset',
                   onSuccess: payload.onSuccess
                 })
               ]);
@@ -277,44 +256,42 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(pasteItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        const id = uuid();
+      filter(([{ payload }, state]) => {
         if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
-          return merge(
-            of(
-              pushDialog({
-                minimized: true,
-                id,
-                status: 'indeterminate',
-                title: getIntl().formatMessage(inProgressMessages.pasting),
-                onMaximized: null
-              })
-            ),
-            paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-              map(({ items }) => {
-                return batchActions([
-                  emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
-                  unSetClipBoard(),
-                  showPasteItemSuccessNotification(),
-                  popDialog({
-                    id
-                  })
-                ]);
-              })
-            )
-          );
+          return true;
         } else {
-          const hostToHost$ = getHostToHostBus();
-          hostToHost$.next(
+          getHostToHostBus().next(
             showSystemNotification({
               message: getIntl().formatMessage(itemFailureMessages.itemPasteToChildNotAllowed),
-              options: {
-                variant: 'error'
-              }
+              options: { variant: 'error' }
             })
           );
-          return NEVER;
+          return false;
         }
+      }),
+      switchMap(([{ payload }, state]) => {
+        const id = uuid();
+        return merge(
+          of(
+            pushDialog({
+              minimized: true,
+              id,
+              status: 'indeterminate',
+              title: getIntl().formatMessage(inProgressMessages.pasting),
+              onMaximized: null
+            })
+          ),
+          paste(state.sites.active, payload.path, state.content.clipboard).pipe(
+            map(() =>
+              batchActions([
+                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
+                clearClipboard(),
+                showPasteItemSuccessNotification(),
+                popDialog({ id })
+              ])
+            )
+          )
+        );
       })
     ),
   // endregion

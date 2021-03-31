@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { del, errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -24,7 +24,7 @@ import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
-import { AjaxResponse } from 'rxjs/ajax';
+import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
@@ -33,6 +33,7 @@ import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import {
+  createItemActionMap,
   createItemStateMap,
   parseContentXML,
   parseLegacyItemToSandBoxItem,
@@ -100,7 +101,11 @@ export function fetchDetailedItem(
   const qs = toQueryString({ siteId, path, preferContent });
   return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
     pluck('response', 'item'),
-    map((item) => ({ ...item, stateMap: createItemStateMap(item.state) }))
+    map((item: DetailedItem) => ({
+      ...item,
+      stateMap: createItemStateMap(item.state),
+      availableActionsMap: createItemActionMap(item.availableActions)
+    }))
   );
 }
 
@@ -795,26 +800,30 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const qs = toQueryString({
+  return postJSON('/studio/api/2/content/children_by_path', {
     siteId,
     path,
     ...options,
     // `excludes` may not come at all or be an array of paths
-    excludes: options?.excludes?.join(',') ?? ''
-  });
-  return get(`/studio/api/2/content/children_by_path${qs}`).pipe(
+    ...(options?.excludes ? { excludes: options.excludes.join(',') } : {})
+  }).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>
       Object.assign(
         children
           ? children.map((child) => ({
               ...child,
-              stateMap: createItemStateMap(child.state)
+              stateMap: createItemStateMap(child.state),
+              availableActionsMap: createItemActionMap(child.availableActions)
             }))
           : [],
         {
           ...(levelDescriptor && {
-            levelDescriptor: { ...levelDescriptor, stateMap: createItemStateMap(levelDescriptor.state) }
+            levelDescriptor: {
+              ...levelDescriptor,
+              stateMap: createItemStateMap(levelDescriptor.state),
+              availableActionsMap: createItemActionMap(levelDescriptor.availableActions)
+            }
           }),
           total,
           offset,
@@ -822,6 +831,31 @@ export function fetchChildrenByPath(
         }
       )
     )
+  );
+}
+
+export function fetchChildrenByPaths(
+  siteId: string,
+  paths: LookupTable<Partial<GetChildrenOptions>>,
+  options?: Partial<GetChildrenOptions>
+): Observable<LookupTable<GetChildrenResponse>> {
+  const requests = Object.keys(paths).map((path) =>
+    fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }).pipe(
+      catchError((error: AjaxError) => {
+        if (error.status === 404) {
+          return of([]);
+        } else {
+          throw error;
+        }
+      })
+    )
+  );
+  return forkJoin(requests).pipe(
+    map((responses) => {
+      const data = {};
+      Object.keys(paths).forEach((path, i) => (data[path] = responses[i]));
+      return data;
+    })
   );
 }
 
@@ -847,14 +881,14 @@ export function fetchItemsByPath(
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem[] | DetailedItem[]> {
   const { castAsDetailedItem = false, preferContent = true } = options ?? {};
-  const qs = toQueryString({ siteId, paths, preferContent });
-  return get(`/studio/api/2/content/sandbox_items_by_path${qs}`).pipe(
+  return postJSON('/studio/api/2/content/sandbox_items_by_path', { siteId, paths, preferContent }).pipe(
     pluck('response', 'items'),
     map(
       (items: SandboxItem[]) =>
         items.map((item) => ({
           ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
-          stateMap: createItemStateMap(item.state)
+          stateMap: createItemStateMap(item.state),
+          availableActionsMap: createItemActionMap(item.availableActions)
         })) as SandboxItem[] | DetailedItem[]
     )
   );
@@ -911,11 +945,12 @@ export function duplicate(siteId: string, path: string): Observable<any> {
   }).pipe(pluck('response'));
 }
 
-export function deleteItems(site: string, submissionComment: string, data: AnyObject): Observable<ApiResponse> {
-  const paths = encodeURIComponent(data.items.join(','));
-  return del(`/studio/api/2/content/delete?siteId=${site}&submissionComment=${submissionComment}&paths=${paths}`).pipe(
-    pluck('response', 'response')
-  );
+export function deleteItems(site: string, paths: string[], submissionComment = ''): Observable<ApiResponse> {
+  return postJSON('/studio/api/2/content/delete', {
+    siteId: site,
+    submissionComment,
+    paths
+  }).pipe(pluck('response', 'response'));
 }
 
 export function lock(site: string, path: string): Observable<boolean> {

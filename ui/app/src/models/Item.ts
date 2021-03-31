@@ -16,20 +16,49 @@
 
 import { SystemType } from './SystemType';
 
-type States =
+export type ItemStates =
   | 'new'
   | 'modified'
   | 'deleted'
-  | 'userLocked'
+  | 'locked'
   | 'systemProcessing'
-  | 'inWorkflow'
+  | 'submitted'
   | 'scheduled'
   | 'staged'
   | 'live'
   | 'translationUpToDate'
   | 'translationPending'
-  | 'translationInProgress'
-  | 'submitted';
+  | 'translationInProgress';
+
+export type ItemActions =
+  | 'read'
+  | 'copy'
+  | 'history'
+  | 'dependencies'
+  | 'requestPublish'
+  | 'createContent'
+  | 'paste'
+  | 'edit'
+  | 'rename'
+  | 'cut'
+  | 'upload'
+  | 'duplicate'
+  | 'changeType'
+  | 'revert'
+  | 'editController'
+  | 'editTemplate'
+  | 'createFolder'
+  | 'deleteContent'
+  | 'deleteController'
+  | 'deleteTemplate'
+  | 'publish'
+  | 'approvePublish'
+  | 'schedulePublish'
+  | 'rejectPublish';
+
+export type ItemStateMap = { [key in ItemStates]?: boolean };
+
+export type ItemActionsMap = { [key in ItemActions]?: boolean };
 
 export interface BaseItem {
   id: number;
@@ -41,12 +70,13 @@ export interface BaseItem {
   systemType: SystemType;
   mimeType: string;
   state: number;
-  stateMap: { [key in States]?: boolean };
+  stateMap: ItemStateMap;
   lockOwner: string;
   disabled: boolean;
   localeCode: string;
   translationSourceId: string;
   availableActions: number;
+  availableActionsMap: ItemActionsMap;
 }
 
 interface SandboxEnvProps {

@@ -50,7 +50,6 @@ import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../.
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import { getRootPath } from '../../../utils/path';
-import { fetchUserPermissions } from '../../../state/actions/content';
 
 const assetsTypes = {
   'all-deps': {
@@ -475,21 +474,16 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
       type = 'template';
     }
 
-    const src = `${defaultFormSrc}?site=${siteId}&path=${item.path}&type=${type}`;
-
     if (type === 'form') {
-      dispatch(showEditDialog({ src }));
+      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId }));
     } else {
-      dispatch(showCodeEditorDialog({ src }));
+      dispatch(showCodeEditorDialog({ site: siteId, authoringBase, path: item.path, type }));
     }
   };
 
   const handleHistoryDisplay = (item: DetailedItem) => {
     dispatch(
       batchActions([
-        fetchUserPermissions({
-          path: item.path
-        }),
         fetchItemVersions({
           item,
           rootPath: getRootPath(item.path)

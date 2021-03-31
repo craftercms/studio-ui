@@ -36,8 +36,8 @@ import CheckboxGroup from '../Controls/FormEngine/CheckboxGroup';
 import DateTime from '../Controls/FormEngine/DateTime';
 import LookupTable from '../../models/LookupTable';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import { PrimaryButton } from '../PrimaryButton';
-import { SecondaryButton } from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

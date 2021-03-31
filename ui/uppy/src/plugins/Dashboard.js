@@ -167,6 +167,7 @@ class Dashboard extends UppyDashboard {
       }
     });
     this.setPluginState({ invalidFiles });
+    this.opts.onPendingChanges(false);
   };
 
   clearCompleted = () => {

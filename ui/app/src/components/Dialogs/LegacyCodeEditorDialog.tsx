@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useRef } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useRef } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
@@ -35,6 +35,7 @@ import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 import DialogHeader from './DialogHeader';
+import { getCodeEditorSrc } from '../../utils/path';
 
 const translations = defineMessages({
   title: {
@@ -74,7 +75,11 @@ const styles = makeStyles(() =>
 
 interface LegacyCodeEditorDialogBaseProps {
   open?: boolean;
-  src?: string;
+  site: string;
+  path: string;
+  type: string;
+  authoringBase: string;
+  readonly?: boolean;
   inProgress?: boolean;
   onMinimized?(): void;
 }
@@ -96,7 +101,15 @@ export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialog
 }
 
 function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
-  const { src, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
+  const { site, path, type, readonly, authoringBase, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
+
+  const src = useMemo(() => getCodeEditorSrc({ site, path, type, readonly, authoringBase }), [
+    authoringBase,
+    path,
+    readonly,
+    site,
+    type
+  ]);
 
   const { formatMessage } = useIntl();
   const classes = styles({});

@@ -22,9 +22,8 @@ import {
   fetchGlobalProperties,
   fetchMyRolesInSite as fetchMyRolesInSiteService,
   fetchSiteProperties,
-  getMyPermissions
+  fetchMyPermissions
 } from '../../services/users';
-import { NEVER } from 'rxjs';
 import {
   deleteProperties as deletePropertiesAction,
   deletePropertiesComplete,
@@ -68,7 +67,7 @@ export default [
       withLatestFrom(state$),
       filter(([, state]) => Boolean(state.sites.active)),
       switchMap(([, state]) =>
-        getMyPermissions(state.sites.active).pipe(
+        fetchMyPermissions(state.sites.active).pipe(
           map((permissions) => fetchMyPermissionsInSiteComplete({ site: state.sites.active, permissions })),
           catchAjaxError(fetchMyPermissionsInSiteFailed)
         )

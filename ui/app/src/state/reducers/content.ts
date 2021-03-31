@@ -17,19 +17,17 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
+  clearClipboard,
   fetchDetailedItemComplete,
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
-  fetchUserPermissionsComplete,
-  restoreClipBoard,
-  setClipBoard,
-  unSetClipBoard
+  restoreClipboard,
+  setClipboard
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
-import { createPresenceTable } from '../../utils/array';
 import {
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItemsComplete,
@@ -37,8 +35,17 @@ import {
 } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
+import {
+  pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildrenComplete,
+  pathNavigatorTreeFetchRootItemComplete,
+  pathNavigatorTreeRestoreComplete
+} from '../actions/pathNavigatorTree';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import LookupTable from '../../models/LookupTable';
 
 type ContentState = GlobalState['content'];
 
@@ -48,16 +55,13 @@ const initialState: ContentState = {
     isFetching: false,
     items: null
   },
-  items: {
-    byPath: null,
-    permissionsByPath: null
-  },
+  itemsByPath: {},
   clipboard: null
 };
 
-const updateItemByPath = (state, { payload: { parent, children } }) => {
+const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
   const nextByPath = {
-    ...state.items.byPath,
+    ...state.itemsByPath,
     ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path')
   };
   if (children.levelDescriptor) {
@@ -68,10 +72,7 @@ const updateItemByPath = (state, { payload: { parent, children } }) => {
   }
   return {
     ...state,
-    items: {
-      ...state.items,
-      byPath: nextByPath
-    }
+    itemsByPath: nextByPath
   };
 };
 
@@ -99,34 +100,21 @@ const reducer = createReducer<ContentState>(initialState, {
       error: error.payload.response
     }
   }),
-  [fetchUserPermissionsComplete.type]: (state, { payload }) => ({
-    ...state,
-    items: {
-      ...state.items,
-      permissionsByPath: {
-        ...state.items.permissionsByPath,
-        [payload.path]: createPresenceTable(payload.permissions.map((value) => value.replace(/[\s-]/g, '_')))
-      }
-    }
-  }),
   [fetchDetailedItemComplete.type]: (state, { payload }) => {
     return {
       ...state,
-      items: {
-        ...state.items,
-        byPath: { ...state.items.byPath, [payload.path]: payload }
-      }
+      itemsByPath: { ...state.itemsByPath, [payload.path]: payload }
     };
   },
-  [restoreClipBoard.type]: (state, { payload }) => ({
+  [restoreClipboard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
   }),
-  [setClipBoard.type]: (state, { payload }) => ({
+  [setClipboard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
   }),
-  [unSetClipBoard.type]: (state) => ({
+  [clearClipboard.type]: (state) => ({
     ...state,
     clipboard: null
   }),
@@ -135,18 +123,58 @@ const reducer = createReducer<ContentState>(initialState, {
   [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
     return {
       ...state,
-      items: {
-        ...state.items,
-        byPath: {
-          ...state.items.byPath,
-          ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
-          ...(children.levelDescriptor && {
-            [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
-          }),
-          ...createLookupTable(items, 'path')
-        }
+      itemsByPath: {
+        ...state.itemsByPath,
+        ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+        ...(children.levelDescriptor && {
+          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
+        }),
+        ...createLookupTable(items, 'path')
       }
     };
+  },
+  [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { item } }) => {
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        [item.path]: item
+      }
+    };
+  },
+  [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
+  [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
+  [pathNavigatorTreeRestoreComplete.type]: (
+    state,
+    { payload: { data, items } }: { payload: { data: LookupTable<GetChildrenResponse>; items: DetailedItem[] } }
+  ) => {
+    let nextByPath = {};
+    Object.values(data).forEach((children) => {
+      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      if (children.levelDescriptor) {
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+      }
+    });
+
+    items.forEach((item) => {
+      nextByPath[item.path] = item;
+    });
+
+    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
+  },
+  [pathNavigatorTreeFetchPathsChildrenComplete.type]: (
+    state,
+    { payload: { data } }: { payload: { data: LookupTable<GetChildrenResponse> } }
+  ) => {
+    let nextByPath = {};
+    Object.values(data).forEach((children) => {
+      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      if (children.levelDescriptor) {
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+      }
+    });
+
+    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [changeSite.type]: () => initialState
 });

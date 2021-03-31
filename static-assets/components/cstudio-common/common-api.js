@@ -2816,15 +2816,17 @@ var nodeOpen = false,
           path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        if (path.indexOf('{parentPath}') != -1) {
-          path = path.replace(
-            '{parentPath}',
-            CStudioAuthoring.Utils.getQueryParameterByName('path').replace(
-              /\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/,
-              '$1'
-            )
-          );
-        }
+        const fullParentPath = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        const parentPathPieces = fullParentPath.substr(1).split('/');
+        path = path.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function(fullMatch, indexExp, index) {
+          if (indexExp === void 0) {
+            // Handle simple exp `{parentPath}`
+            return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
+          } else {
+            // Handle indexed exp `{parentPath[i]}`
+            return parentPathPieces[index + 2];
+          }
+        });
 
         if (path.indexOf('{yyyy}') != -1) {
           path = path.replace('{yyyy}', currentDate.getFullYear());
@@ -3070,7 +3072,7 @@ var nodeOpen = false,
       getQuickCreateURL: '/api/2/content/list_quick_create_content.json',
 
       // Plugin
-      getPluginURL: '/api/2/plugin/file',
+      getPluginURL: '/1/plugin/file',
 
       /**
        * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
@@ -3607,7 +3609,7 @@ var nodeOpen = false,
        */
       isWrite: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'write') {
+          if (permissions[i] === 'content_write') {
             return true;
           }
         }
@@ -3768,7 +3770,7 @@ var nodeOpen = false,
        * get version history for given content path
        */
       getVersionHistory: function(site, contentTO, callback) {
-        CrafterCMSNext.services.content.getHistory(site, contentTO.uri).subscribe(
+        CrafterCMSNext.services.content.fetchItemHistory(site, contentTO.uri).subscribe(
           function(response) {
             callback.success(response);
           },
@@ -3987,7 +3989,7 @@ var nodeOpen = false,
        */
       lookupSiteContent: function(site, path, depth, order, callback) {
         CrafterCMSNext.services.content
-          .fetchLegacyItemsTree(site, encodeURI(path), {
+          .fetchLegacyItemsTree(site, path, {
             depth,
             order
           })
@@ -4025,7 +4027,7 @@ var nodeOpen = false,
       // is this really a service and not a util, can we rename it to something descriptive?
       isCreateFolder: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'create folder') {
+          if (permissions[i] === 'folder_create') {
             return true;
           }
         }
@@ -4045,7 +4047,7 @@ var nodeOpen = false,
       // is this really a service and not a util, can we rename it to something descriptive?
       isDeleteAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'delete') {
+          if (permissions[i] === 'content_delete') {
             return true;
           }
         }
@@ -4065,7 +4067,7 @@ var nodeOpen = false,
       // is this really a service and not a util, can we rename it to something descriptive?
       isCreateContentAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'create content') {
+          if (permissions[i] === 'content_create') {
             return true;
           }
         }
@@ -5908,7 +5910,7 @@ var nodeOpen = false,
           statusClass = workflowIcons.neverpublished + ' never-published';
         } else if (statusObj.live) {
           //live
-          statusClass = workflowIcons.live + ' live';
+          statusClass = 'live';
         } else if (statusObj.deleted) {
           //deleted
           statusClass = workflowIcons.deleted + ' deleted';
@@ -6803,6 +6805,11 @@ var nodeOpen = false,
             } else {
               missingProp.push('File name');
             }
+
+            if (item.plugin.pluginId) {
+              path += '&pluginId=' + item.plugin.pluginId;
+            }
+
             if (missingProp.length > 0) {
               path = '';
             }

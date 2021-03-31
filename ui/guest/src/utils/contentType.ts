@@ -120,6 +120,8 @@ export function getDefaultValue(field: ContentTypeField): string {
         return text;
       case 'boolean':
         return 'false';
+      case 'date-time':
+        return new Date().toISOString();
     }
   }
 }

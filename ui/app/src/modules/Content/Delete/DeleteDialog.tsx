@@ -36,8 +36,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { deleteItems } from '../../../services/content';
 import { emitSystemEvent, itemsDeleted } from '../../../state/actions/system';
-import { SecondaryButton } from '../../../components/SecondaryButton';
-import { PrimaryButton } from '../../../components/PrimaryButton';
+import SecondaryButton from '../../../components/SecondaryButton';
+import PrimaryButton from '../../../components/PrimaryButton';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -272,23 +272,19 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     }
   }, [dispatch, selectedItems, setApiState, siteId]);
 
-  const onEditDependency = (src) => {
+  const onEditDependency = (props) => {
     dispatch(
       showEditDialog({
-        src,
+        ...props,
         onClosed: fetchDeleteDependencies(selectedItems)
       })
     );
   };
 
   const handleSubmit = () => {
-    const data = {
-      items: selectedItems
-    };
-
     setApiState({ submitting: true });
 
-    deleteItems(siteId, submissionComment, data).subscribe(
+    deleteItems(siteId, selectedItems, submissionComment).subscribe(
       (response) => {
         setApiState({ submitting: false });
 

@@ -59,6 +59,7 @@ import BrushOutlinedIcon from '@material-ui/icons/BrushOutlined';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 import PluginManagement from '../../components/PluginManagement';
+import PathNavigatorTree from '../../components/PathNavigatorTree';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -131,7 +132,7 @@ export default function ToolsPanel() {
           }
         }}
       >
-        <ToolsPaneBody resource={resource} pages={pages} />
+        <ToolsPaneBody resource={resource} pageStack={pages} />
       </SuspenseWithEmptyState>
     </ResizeableDrawer>
   );
@@ -139,16 +140,15 @@ export default function ToolsPanel() {
 
 interface ToolsPaneBodyProps {
   resource: Resource<WidgetDescriptor[]>;
-  pages: WidgetDescriptor[];
+  pageStack: WidgetDescriptor[];
 }
 
 function ToolsPaneBody(props: ToolsPaneBodyProps) {
-  const stack = props.resource.read();
+  const root = props.resource.read();
   const site = useActiveSiteId();
+  const { pageStack } = props;
   const { rolesBySite } = useActiveUser();
-  return (
-    <>{renderWidgets(props.pages.length ? props.pages.slice(props.pages.length - 1) : stack, rolesBySite[site])}</>
-  );
+  return <>{renderWidgets(pageStack.length ? pageStack.slice(props.pageStack.length - 1) : root, rolesBySite[site])}</>;
 }
 
 // TODO: Move this to a better place.
@@ -165,6 +165,7 @@ Object.entries({
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,
+  'craftercms.components.PathNavigatorTree': PathNavigatorTree,
   'craftercms.components.ToolsPanelPage': ToolsPanelPageComponent,
   'craftercms.components.PreviewSearchPanel': PreviewSearchPanel,
   'craftercms.components.PreviewComponentsPanel': PreviewComponentsPanel,

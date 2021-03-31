@@ -104,7 +104,7 @@ export interface PathNavigatorUIProps {
   /**
    * Prop fired when a breadcrumb item is clicked
    **/
-  onBreadcrumbSelected: (item: DetailedItem) => void;
+  onBreadcrumbSelected: (item: DetailedItem, event: React.SyntheticEvent) => void;
   /**
    * Prop fired when an item is checked in when the widget is in "selection" mode
    **/
@@ -271,6 +271,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             />
           )}
           <ItemList
+            isSelectMode={false}
             leaves={state.leaves}
             locale={state.localeCode}
             resource={resource}

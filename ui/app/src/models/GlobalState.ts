@@ -58,6 +58,8 @@ import TranslationOrText from './TranslationOrText';
 import { SystemLinkId } from '../components/LauncherSection';
 import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
+import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
+import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -118,10 +120,7 @@ export interface GlobalState {
       isFetching: boolean;
       items: QuickCreateItem[];
     };
-    items: {
-      byPath: LookupTable<DetailedItem>;
-      permissionsByPath: LookupTable<LookupTable<boolean>>;
-    };
+    itemsByPath: LookupTable<DetailedItem>;
     clipboard: Clipboard;
   };
   contentTypes: EntityState<ContentType>;
@@ -144,6 +143,8 @@ export interface GlobalState {
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
+    pageBuilderPanelWidth: number;
+    pageBuilderPanelStack: WidgetDescriptor[];
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -187,6 +188,7 @@ export interface GlobalState {
     itemMenu: ItemMenuStateProps;
     launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
+    unlockPublisher: UnlockPublisherDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;
@@ -194,6 +196,9 @@ export interface GlobalState {
     currentSite: string;
     preview: {
       toolsPanel: {
+        widgets: WidgetDescriptor[];
+      };
+      pageBuilderPanel: {
         widgets: WidgetDescriptor[];
       };
     };
@@ -228,6 +233,9 @@ export interface GlobalState {
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;
+  };
+  pathNavigatorTree: {
+    [id: string]: PathNavigatorTreeStateProps;
   };
 }
 

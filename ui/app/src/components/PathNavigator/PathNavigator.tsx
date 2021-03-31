@@ -21,6 +21,7 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   useActiveSiteId,
   useEnv,
+  useItemsByPath,
   usePreviewState,
   useSelection,
   useSiteLocales,
@@ -45,10 +46,10 @@ import {
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
 import ItemActionsMenu from '../ItemActionsMenu';
-import { completeDetailedItem, fetchUserPermissions } from '../../state/actions/content';
-import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showEditDialog, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { fetchContentXML } from '../../services/content';
-import { isFolder, isNavigable, isPreviewable } from './utils';
+import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { debounceTime, filter } from 'rxjs/operators';
@@ -140,11 +141,10 @@ export default function PathNavigator(props: PathNavigatorProps) {
     computeActiveItems: computeActiveItemsProp
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
-  const itemsByPath = useSelection((state) => state.content.items).byPath;
+  const itemsByPath = useItemsByPath();
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
@@ -297,10 +297,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   const onPreview = (item: DetailedItem) => {
-    if (item.systemType === 'component' || item.systemType === 'taxonomy') {
-      const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
-      dispatch(showEditDialog({ src }));
-    } else if (item.mimeType.startsWith('image/')) {
+    if (isEditableViaFormEditor(item)) {
+      dispatch(showEditDialog({ path: item.path, authoringBase, site, readonly: true }));
+    } else if (isImage(item)) {
       dispatch(
         showPreviewDialog({
           type: 'image',
@@ -309,25 +308,18 @@ export default function PathNavigator(props: PathNavigatorProps) {
         })
       );
     } else {
+      const mode = getEditorMode(item);
+      dispatch(
+        showPreviewDialog({
+          type: 'editor',
+          title: item.label,
+          url: item.path,
+          mode
+        })
+      );
       fetchContentXML(site, item.path).subscribe((content) => {
-        let mode = 'txt';
-
-        if (item.systemType === 'renderingTemplate') {
-          mode = 'ftl';
-        } else if (item.systemType === 'script') {
-          mode = 'groovy';
-        } else if (item.mimeType === 'application/javascript') {
-          mode = 'javascript';
-        } else if (item.mimeType === 'text/css') {
-          mode = 'css';
-        }
-
         dispatch(
-          showPreviewDialog({
-            type: 'editor',
-            title: item.label,
-            url: item.path,
-            mode,
+          updatePreviewDialog({
             content
           })
         );
@@ -363,7 +355,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
       path = withIndex(state.currentPath);
     }
     dispatch(completeDetailedItem({ path }));
-    dispatch(fetchUserPermissions({ path }));
     setItemMenu({
       path,
       anchorEl: element,
@@ -373,7 +364,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
     dispatch(completeDetailedItem({ path: item.path }));
-    dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
       anchorEl: element,
@@ -408,19 +398,17 @@ export default function PathNavigator(props: PathNavigatorProps) {
     ? onItemClickedProp
     : createItemClickedHandler((item: DetailedItem, e) => {
         if (isNavigable(item)) {
-          if (item.previewUrl) {
-            const url = getSystemLink({
-              site,
-              systemLinkId: 'preview',
-              previewChoice,
-              authoringBase,
-              page: item.previewUrl
-            });
-            if (e.ctrlKey || e.metaKey) {
-              window.open(url);
-            } else {
-              window.location.href = url;
-            }
+          const url = getSystemLink({
+            site,
+            systemLinkId: 'preview',
+            previewChoice,
+            authoringBase,
+            page: item.previewUrl
+          });
+          if (e.ctrlKey || e.metaKey) {
+            window.open(url);
+          } else {
+            window.location.href = url;
           }
         } else if (isFolder(item)) {
           onPathSelected(item);
@@ -429,9 +417,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
         }
       });
 
-  const onBreadcrumbSelected = (item: DetailedItem) => {
+  const onBreadcrumbSelected = (item: DetailedItem, e) => {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
-      onItemClicked(item);
+      onItemClicked(item, e);
     } else {
       dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }

@@ -139,9 +139,9 @@ $dark-mode-input-border-focus: #007aff;
   }
 
   a {
-    color: $dark-mode-button-primary !important;
+    color: $dark-mode-button-primary;
     &:hover {
-      color: $dark-mode-button-primary !important;
+      color: $dark-mode-button-primary;
     }
   }
 
@@ -227,9 +227,9 @@ $dark-mode-input-border-focus: #007aff;
   input,
   select,
   .form-control {
-    border-color: $dark-mode-input-border !important;
-    background: none !important;
-    color: $dark-mode-font-color !important;
+    border-color: $dark-mode-input-border;
+    background: none;
+    color: $dark-mode-font-color;
     &:focus {
       outline: 0;
       box-shadow: #007aff40 0 0 0 0.2rem;
@@ -476,6 +476,15 @@ $dark-mode-input-border-focus: #007aff;
     .well {
       background-color: $dark-mode-background-default;
       border: 0;
+    }
+  }
+
+  // sites-view
+  .sites-view {
+    .site-name {
+      pre {
+        color: $dark-mode-font-color;
+      }
     }
   }
 

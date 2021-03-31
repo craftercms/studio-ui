@@ -17,7 +17,7 @@
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
@@ -26,8 +26,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import questionGraphicUrl from '../../assets/question.svg';
 import { CSSProperties } from '@material-ui/styles';
-import { PrimaryButton } from '../PrimaryButton';
-import { SecondaryButton } from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 const messages = defineMessages({
   accept: {
@@ -85,8 +85,8 @@ const useStyles = makeStyles(() =>
 
 interface ConfirmDialogBaseProps {
   open: boolean;
-  title?: string;
-  body?: string;
+  title?: ReactNode;
+  body?: ReactNode;
   hideBackdrop?: boolean;
   imageUrl?: string;
   disableEnforceFocus?: boolean;
@@ -98,6 +98,8 @@ interface ConfirmDialogBaseProps {
 export type ConfirmDialogProps = PropsWithChildren<
   ConfirmDialogBaseProps & {
     classes?: Partial<Record<ConfirmDialogStateClassKey, string>>;
+    disableOkButton?: boolean;
+    disableCancelButton?: boolean;
     onOk?(): void;
     onCancel?(): void;
     onClose?(): void;
@@ -136,7 +138,17 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
 }
 
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
-  const { onOk, onCancel, body, title, children, classes, imageUrl = questionGraphicUrl } = props;
+  const {
+    onOk,
+    onCancel,
+    body,
+    title,
+    children,
+    classes,
+    imageUrl = questionGraphicUrl,
+    disableOkButton = false,
+    disableCancelButton = false
+  } = props;
   const { formatMessage } = useIntl();
   useUnmount(props.onClosed);
   return (
@@ -157,12 +169,12 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
       </DialogContent>
       <DialogFooter className={classes.dialogFooter}>
         {onOk && (
-          <PrimaryButton onClick={onOk} autoFocus fullWidth size="large">
+          <PrimaryButton onClick={onOk} autoFocus fullWidth size="large" disabled={disableOkButton}>
             {formatMessage(messages.accept)}
           </PrimaryButton>
         )}
         {onCancel && (
-          <SecondaryButton onClick={onCancel} fullWidth size="large">
+          <SecondaryButton onClick={onCancel} fullWidth size="large" disabled={disableCancelButton}>
             {formatMessage(messages.cancel)}
           </SecondaryButton>
         )}

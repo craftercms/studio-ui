@@ -34,7 +34,7 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
   useEnv,
-  usePermissionsByPath,
+  useItemsByPath,
   usePreviewGuest,
   usePreviewState,
   useSelection,
@@ -60,6 +60,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
+import { hasCreateAction, hasEditAction } from '../../utils/content';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -163,9 +164,9 @@ export function AddressBar(props: AddressBarProps) {
   const { site, url = '', sites = [], item, onSiteChange = foo, onUrlChange = foo, onRefresh = foo } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
-  const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
+  const disabled = noSiteSet || !item;
 
   useEffect(() => {
     url && setInternalUrl(url);
@@ -184,12 +185,19 @@ export function AddressBar(props: AddressBarProps) {
 
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const clipboard = useSelection((state) => state.content.clipboard);
-  const onMenuItemClicked = (option: string) =>
-    itemActionDispatcher({ site, item, option, legacyFormSrc, dispatch, formatMessage, clipboard });
-  const permissions = usePermissionsByPath()?.[path];
-  const actions = generateSingleItemOptions(item, permissions, formatMessage)?.flatMap((options) => options);
+  const onMenuItemClicked = (option: string, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
+    itemActionDispatcher({
+      site,
+      item,
+      option,
+      authoringBase,
+      dispatch,
+      formatMessage,
+      clipboard,
+      event
+    });
+  const actions = generateSingleItemOptions(item, formatMessage)?.flatMap((options) => options);
 
   return (
     <>
@@ -221,7 +229,7 @@ export function AddressBar(props: AddressBarProps) {
         <PagesSearchAhead
           value={internalUrl}
           placeholder={noSiteSet ? '' : '/'}
-          disabled={noSiteSet}
+          disabled={disabled}
           onEnter={(value) => onUrlChange(value)}
           classes={{
             input: classes.input
@@ -230,7 +238,7 @@ export function AddressBar(props: AddressBarProps) {
           onBlur={() => setFocus(false)}
         />
         <SingleItemSelector
-          disabled={noSiteSet}
+          disabled={disabled}
           rootPath="/site/website/index.xml"
           selectedItem={item as DetailedItem}
           open={openSelector}
@@ -272,16 +280,12 @@ export default function ToolBar() {
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
-  const items = useSelection((state) => state.content.items.byPath);
+  const items = useItemsByPath();
   const item = items?.[models?.[modelId]?.craftercms.path];
   const { previewChoice } = usePreviewState();
   const { authoringBase } = useEnv();
-
-  // region permissions
-  const permissions = usePermissionsByPath();
-  const write = permissions?.[item?.path]?.['write'];
-  const createContent = permissions?.[item?.path]?.['create_content'];
-  // endregion
+  const write = hasEditAction(item?.availableActions);
+  const createContent = hasCreateAction(item?.availableActions);
 
   return (
     <ViewToolbar>

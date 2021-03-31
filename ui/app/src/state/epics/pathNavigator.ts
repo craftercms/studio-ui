@@ -18,7 +18,7 @@ import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
-import { getIndividualPaths } from '../../utils/path';
+import { getIndividualPaths, getRootPath } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
   pathNavigatorChangePage,
@@ -39,6 +39,7 @@ import {
 import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
 import { showErrorDialog } from '../reducers/dialogs/error';
+import { AjaxError } from 'rxjs/ajax';
 
 export default [
   // region pathNavigatorInit
@@ -69,7 +70,13 @@ export default [
       mergeMap(([{ type, payload: { id } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
-          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+          catchAjaxError((error: AjaxError) => {
+            if (error.status === 404 && state.pathNavigator[id].rootPath !== state.pathNavigator[id].currentPath) {
+              return pathNavigatorConditionallySetPath({ id, path: state.pathNavigator[id].rootPath });
+            } else {
+              return pathNavigatorFetchPathFailed({ error, id });
+            }
+          })
         )
       )
     ),
@@ -160,7 +167,13 @@ export default [
               })
             ]).pipe(
               map(([items, children]) => pathNavigatorFetchParentItemsComplete({ id, items, children })),
-              catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+              catchAjaxError((error: AjaxError) => {
+                if (error.status === 404) {
+                  return pathNavigatorConditionallySetPath({ id, path: getRootPath(path) });
+                } else {
+                  return pathNavigatorFetchPathFailed({ error, id });
+                }
+              })
             );
           } else {
             return fetchItemWithChildrenByPath(site, path, { excludes, limit }).pipe(

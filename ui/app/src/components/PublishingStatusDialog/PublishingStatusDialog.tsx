@@ -16,25 +16,20 @@
 
 import Dialog from '@material-ui/core/Dialog';
 import * as React from 'react';
-import { PublishingStatusTileProps } from '../PublishingStatusTile';
 import StandardAction from '../../models/StandardAction';
-import PublishingStatusDialogBody from './PublishingStatusDialogBody';
+import PublishingStatusDialogBody, { PublishingStatusDialogBodyProps } from './PublishingStatusDialogBody';
+import { PublishingStatus } from '../../models/Publishing';
 
-export interface PublishingStatusDialogBaseProps {
+export interface PublishingStatusDialogProps extends PublishingStatusDialogBodyProps {
   open: boolean;
-  status: PublishingStatusTileProps['status'];
-  details: string;
+}
+
+export interface PublishingStatusDialogStateProps extends PublishingStatus {
+  open: boolean;
   isFetching: boolean;
-}
-
-export interface PublishingStatusDialogProps extends PublishingStatusDialogBaseProps {
-  onClose(): void;
-  onRefresh?(): void;
-}
-
-export interface PublishingStatusDialogStateProps extends PublishingStatusDialogBaseProps {
   onClose: StandardAction;
   onRefresh: StandardAction;
+  onUnlock: StandardAction;
 }
 
 function PublishingStatusDialog(props: PublishingStatusDialogProps) {

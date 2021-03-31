@@ -39,14 +39,12 @@
   });
 
   function moduleLoaded() {
-    CStudioAdminConsole.Tool.ContentTypes =
-      CStudioAdminConsole.Tool.ContentTypes ||
-      function(config, el) {
-        this.containerEl = el;
-        this.config = config;
-        this.types = [];
-        return this;
-      };
+    CStudioAdminConsole.Tool.ContentTypes = function(config, el) {
+      this.containerEl = el;
+      this.config = config;
+      this.types = [];
+      return this;
+    };
 
     getPostfixData();
 
@@ -245,6 +243,7 @@
                           'studioDialog'
                         );
                       } else {
+                        console.log(_self, CStudioAdminConsole === self, CStudioAdminConsole);
                         CStudioAdminConsole.isDirty = false;
                         _self.renderWorkarea();
                         CStudioAdminConsole.CommandBar.hide();
@@ -310,7 +309,6 @@
                                     197,
                                     'saveContentType'
                                   );
-                                  _self.clearCache();
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -421,8 +419,6 @@
                 $('#cstudio-admin-console-command-bar').addClass('content-types-command-bar');
 
                 amplify.publish('/content-type/loaded');
-
-                _self.clearCache();
               },
               failure: function() {}
             });
@@ -461,12 +457,6 @@
         html += '</div>';
 
         return html;
-      },
-
-      clearCache: function() {
-        CrafterCMSNext.util.ajax
-          .get(`/studio/api/1/services/api/1/site/clear-configuration-cache.json?site=${CStudioAuthoringContext.site}`)
-          .subscribe();
       },
 
       /**
@@ -1040,17 +1030,44 @@
         this.formVisualContainerEl = formVisualContainerEl;
         var formTarget = new YAHOO.util.DDTarget(formVisualContainerEl);
 
+        var header = document.createElement('header');
+        header.style.position = 'relative';
+
         var formNameEl = document.createElement('div');
         YDom.addClass(formNameEl, 'content-form-name');
         formNameEl.textContent = this.definition.title;
-        formVisualContainerEl.appendChild(formNameEl);
 
         var divPropertiesEl = document.createElement('div');
         YDom.addClass(divPropertiesEl, 'content-form-link');
+
         var linkPropertiesEl = document.createElement('a');
         linkPropertiesEl.innerHTML = CMgs.format(langBundle, 'basicContentTypeProp');
         divPropertiesEl.appendChild(linkPropertiesEl);
-        formVisualContainerEl.appendChild(divPropertiesEl);
+
+        var deleteTypeApp = document.createElement('div');
+        deleteTypeApp.style.position = 'absolute';
+        deleteTypeApp.style.top = '0';
+        deleteTypeApp.style.right = '0';
+        deleteTypeApp.style.bottom = '0';
+
+        header.appendChild(formNameEl);
+        header.appendChild(divPropertiesEl);
+        header.appendChild(deleteTypeApp);
+        formVisualContainerEl.appendChild(header);
+
+        let unmount;
+        CrafterCMSNext.render(deleteTypeApp, 'DeleteContentTypeButton', {
+          contentType: {
+            id: this.definition.contentType,
+            name: this.definition.title
+          },
+          onComplete() {
+            CStudioAdminConsole.renderWorkArea(null, {
+              tool: CStudioAdminConsole.toolsModules['content-types'],
+              toolbar: CStudioAdminConsole.toolbar
+            });
+          }
+        }).then((result) => (unmount = result.unmount));
 
         formVisualContainerEl.definition = this.definition;
 
@@ -1379,6 +1396,7 @@
 
         var fieldTypeEl = document.createElement('span');
         YDom.addClass(fieldTypeEl, 'content-field-type');
+        fieldTypeEl.dataset.fieldType = field.id;
         fieldTypeEl.textContent = field.type;
         fieldContainerEl.appendChild(fieldTypeEl);
 
@@ -1435,11 +1453,17 @@
             // add delete control
             var deleteEl = YDom.getElementsByClassName('deleteControl', null, listeningEl)[0];
 
-            if (!deleteEl) {
+            let showDeleteBtn = !defaultField;
+            // if is a default field, and there are more than one in the content-type, delete button should be displayed
+            if (defaultField) {
+              showDeleteBtn = $(`.content-type-visual-container [data-field-type='${field.id}']`).length > 1;
+            }
+
+            if (!deleteEl && showDeleteBtn) {
               deleteEl = document.createElement('i');
               YDom.addClass(deleteEl, 'deleteControl fa fa-times-circle');
 
-              !defaultField && listeningEl.appendChild(deleteEl);
+              listeningEl.appendChild(deleteEl);
 
               var deleteFieldFn = function(evt) {
                 CStudioAdminConsole.isDirty = true;

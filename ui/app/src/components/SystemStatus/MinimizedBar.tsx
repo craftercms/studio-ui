@@ -56,7 +56,7 @@ export function MinimizedBar(props: MinimizedBarProps) {
         <LinearProgress
           className={classes.indeterminateProgressBar}
           variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
-          value={status as number}
+          value={status === 'indeterminate' ? null : status}
         />
       )}
     </Paper>

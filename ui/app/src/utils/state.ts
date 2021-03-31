@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyItem } from '../models/Item';
+import { ItemStateMap, LegacyItem } from '../models/Item';
 import { WidgetDescriptor } from '../components/Widget';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 
-export function getStateMapFromLegacyItem(item: LegacyItem) {
+export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
     ...(item.isDeleted && { deleted: true }),
     ...(item.isSubmitted && { submitted: true }),
@@ -76,6 +76,14 @@ export function setStoredPathNavigator(site: string, user: string, id: string, v
 
 export function getStoredPathNavigator(site: string, user: string, id: string) {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${site}.${id}`));
+}
+
+export function setStoredPathNavigatorTree(site: string, user: string, id: string, value: object) {
+  return window.localStorage.setItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`, JSON.stringify(value));
+}
+
+export function getStoredPathNavigatorTree(site: string, user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`));
 }
 
 export function createToolsPanelPage(title: TranslationOrText, widgets: WidgetDescriptor[]): WidgetDescriptor {

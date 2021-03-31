@@ -40,6 +40,7 @@ import changeContentType from './changeContentType';
 import itemMenu from './itemMenu';
 import launcher from './launcher';
 import publishingStatus from './publishingStatus';
+import unlockPublisher from './unlockPublisher';
 
 export default combineReducers({
   confirm,
@@ -66,5 +67,6 @@ export default combineReducers({
   changeContentType,
   itemMenu,
   launcher,
-  publishingStatus
+  publishingStatus,
+  unlockPublisher
 });

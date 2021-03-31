@@ -28,9 +28,11 @@ import {
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { errorSelectorApi1, get } from '../utils/ajax';
-import { catchError, map, pluck, switchMap } from 'rxjs/operators';
-import { nou, toQueryString } from '../utils/object';
+import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
+import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { createLookupTable, nou, toQueryString } from '../utils/object';
+import { fetchItemsByPath } from './content';
+import { SandboxItem } from '../models/Item';
 
 const typeMap = {
   input: 'text',
@@ -166,7 +168,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (datasource.type === 'receptacles') dropTargetsLookup[datasource.id] = datasource;
+      if (datasource.type === 'dropTargets') dropTargetsLookup[datasource.id] = datasource;
     });
   }
 
@@ -227,7 +229,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
                   name: _legacyField.title,
                   type: typeMap[_legacyField.type] || _legacyField.type,
                   sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                  validations: null,
+                  validations: {},
                   defaultValue: '',
                   required: false
                 };
@@ -358,4 +360,41 @@ export function fetchLegacyFormDefinition(site: string, contentTypeId: string): 
   return get(
     `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`
   ).pipe(pluck('response'));
+}
+
+export interface FetchContentTypeUsageResponse<T = SandboxItem> {
+  templates: T[];
+  scripts: T[];
+  content: T[];
+}
+
+export function fetchContentTypeUsage(site: string, contentTypeId: string): Observable<FetchContentTypeUsageResponse> {
+  const qs = toQueryString({ siteId: site, contentType: contentTypeId });
+  return get(`/studio/api/2/configuration/content-type/usage${qs}`).pipe(
+    pluck('response', 'usage'),
+    switchMap((usage: FetchContentTypeUsageResponse<string>) =>
+      usage.templates.length + usage.scripts.length + usage.content.length === 0
+        ? // @ts-ignore - avoiding creating new object with the exact same structure just for typescript's sake
+          of(usage as FetchContentTypeUsageResponse)
+        : fetchItemsByPath(site, [...usage.templates, ...usage.scripts, ...usage.content]).pipe(
+            map((items) => {
+              const itemLookup = createLookupTable(items, 'path');
+              const mapper = (path) => itemLookup[path];
+              return {
+                templates: usage.templates.map(mapper).filter(Boolean),
+                scripts: usage.scripts.map(mapper).filter(Boolean),
+                content: usage.content.map(mapper).filter(Boolean)
+              };
+            })
+          )
+    )
+  );
+}
+
+export function deleteContentType(site: string, contentTypeId: string): Observable<boolean> {
+  return postJSON(`/studio/api/2/configuration/content-type/delete`, {
+    siteId: site,
+    contentType: contentTypeId,
+    deleteDependencies: true
+  }).pipe(mapTo(true));
 }

@@ -14,30 +14,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BaseItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
 import { nnou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
-import { LookupTable } from '../models/LookupTable';
+import LookupTable, { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
-import { getRootPath, isRootPath } from './path';
+import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
-  STATE_MASK_DELETED_MASK,
-  STATE_MASK_IN_WORKFLOW_MASK,
-  STATE_MASK_LIVE_MASK,
-  STATE_MASK_LOCKED_MASK,
-  STATE_MASK_MODIFIED_MASK,
-  STATE_MASK_NEW_MASK,
-  STATE_MASK_SCHEDULED_MASK,
-  STATE_MASK_STAGED_MASK,
-  STATE_MASK_SUBMITTED_MASK,
-  STATE_MASK_SYSTEM_PROCESSING_MASK,
-  STATE_MASK_TRANSLATION_IN_PROGRESS_MASK,
-  STATE_MASK_TRANSLATION_PENDING_MASK,
-  STATE_MASK_TRANSLATION_UP_TO_DATE_MASK
+  CONTENT_CHANGE_TYPE_MASK,
+  CONTENT_COPY_MASK,
+  CONTENT_CREATE_MASK,
+  CONTENT_CUT_MASK,
+  CONTENT_DELETE_CONTROLLER_MASK,
+  CONTENT_DELETE_MASK,
+  CONTENT_DELETE_TEMPLATE_MASK,
+  CONTENT_DUPLICATE_MASK,
+  CONTENT_EDIT_CONTROLLER_MASK,
+  CONTENT_EDIT_MASK,
+  CONTENT_EDIT_TEMPLATE_MASK,
+  CONTENT_GET_DEPENDENCIES_ACTION_MASK,
+  CONTENT_PASTE_MASK,
+  CONTENT_READ_VERSION_HISTORY_MASK,
+  CONTENT_RENAME_MASK,
+  CONTENT_REVERT_MASK,
+  CONTENT_UPLOAD_MASK,
+  FOLDER_CREATE_MASK,
+  PUBLISH_APPROVE_MASK,
+  PUBLISH_MASK,
+  PUBLISH_REJECT_MASK,
+  PUBLISH_REQUEST_MASK,
+  PUBLISH_SCHEDULE_MASK,
+  PUBLISHING_LIVE_MASK,
+  PUBLISHING_STAGED_MASK,
+  READ_MASK,
+  STATE_DELETED_MASK,
+  STATE_LOCKED_MASK,
+  STATE_MODIFIED_MASK,
+  STATE_NEW_MASK,
+  STATE_SCHEDULED_MASK,
+  STATE_SUBMITTED_MASK,
+  STATE_SYSTEM_PROCESSING_MASK,
+  STATE_TRANSLATION_IN_PROGRESS_MASK,
+  STATE_TRANSLATION_PENDING_MASK,
+  STATE_TRANSLATION_UP_TO_DATE_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
 
@@ -169,7 +192,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     disabled: null,
     localeCode: 'en',
     translationSourceId: null,
-    availableActions: 0
+    availableActions: 0,
+    availableActionsMap: {}
   };
 }
 
@@ -543,7 +567,7 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
       const collection: ContentInstance[] = value;
-      if (collection.length) {
+      if (Array.isArray(collection) && collection.length) {
         const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
         if (isNodeSelector) {
           normalized[prop] = collection.map((item) => item.craftercms.id);
@@ -593,34 +617,90 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   }
 }
 
-export const isNewState = (value: number) => Boolean(value & STATE_MASK_NEW_MASK);
-export const isModifiedState = (value: number) => Boolean(value & STATE_MASK_MODIFIED_MASK);
-export const isDeletedState = (value: number) => Boolean(value & STATE_MASK_DELETED_MASK);
-export const isLockedState = (value: number) => Boolean(value & STATE_MASK_LOCKED_MASK);
-export const isSystemProcessingState = (value: number) => Boolean(value & STATE_MASK_SYSTEM_PROCESSING_MASK);
-export const isInWorkflowState = (value: number) => Boolean(value & STATE_MASK_IN_WORKFLOW_MASK);
-export const isScheduledState = (value: number) => Boolean(value & STATE_MASK_SCHEDULED_MASK);
-export const isStagedState = (value: number) => Boolean(value & STATE_MASK_STAGED_MASK);
-export const isLiveState = (value: number) => Boolean(value & STATE_MASK_LIVE_MASK);
-export const isSubmittedState = (value: number) => Boolean(value & STATE_MASK_SUBMITTED_MASK);
-export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_UP_TO_DATE_MASK);
-export const isTranslationPendingState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_PENDING_MASK);
-export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_MASK_TRANSLATION_IN_PROGRESS_MASK);
+// region State checker functions
+export const isNewState = (value: number) => Boolean(value & STATE_NEW_MASK);
+export const isModifiedState = (value: number) => Boolean(value & STATE_MODIFIED_MASK);
+export const isDeletedState = (value: number) => Boolean(value & STATE_DELETED_MASK);
+export const isLockedState = (value: number) => Boolean(value & STATE_LOCKED_MASK);
+export const isSystemProcessingState = (value: number) => Boolean(value & STATE_SYSTEM_PROCESSING_MASK);
+export const isSubmittedState = (value: number) => Boolean(value & STATE_SUBMITTED_MASK);
+export const isScheduledState = (value: number) => Boolean(value & STATE_SCHEDULED_MASK);
+export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
+export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
+export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
+export const isTranslationPendingState = (value: number) => Boolean(value & STATE_TRANSLATION_PENDING_MASK);
+export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_TRANSLATION_IN_PROGRESS_MASK);
+// endregion
 
-export const createItemStateMap = (status: number) => {
-  return {
-    new: isNewState(status),
-    modified: isModifiedState(status),
-    deleted: isDeletedState(status),
-    userLocked: isLockedState(status),
-    systemProcessing: isSystemProcessingState(status),
-    inWorkflow: isInWorkflowState(status),
-    scheduled: isScheduledState(status),
-    staged: isStagedState(status),
-    live: isLiveState(status),
-    submitted: isSubmittedState(status),
-    translationUpToDate: isTranslationUpToDateState(status),
-    translationPending: isTranslationPendingState(status),
-    translationInProgress: isTranslationInProgressState(status)
-  };
-};
+export const createItemStateMap: (status: number) => ItemStateMap = (status: number) => ({
+  new: isNewState(status),
+  modified: isModifiedState(status),
+  deleted: isDeletedState(status),
+  locked: isLockedState(status),
+  systemProcessing: isSystemProcessingState(status),
+  submitted: isSubmittedState(status),
+  scheduled: isScheduledState(status),
+  staged: isStaged(status),
+  live: isLive(status),
+  translationUpToDate: isTranslationUpToDateState(status),
+  translationPending: isTranslationPendingState(status),
+  translationInProgress: isTranslationInProgressState(status)
+});
+
+// region Action presence checker functions
+export const hasReadAction = (value: number) => Boolean(value & READ_MASK);
+export const hasCopyAction = (value: number) => Boolean(value & CONTENT_COPY_MASK);
+export const hasReadHistoryAction = (value: number) => Boolean(value & CONTENT_READ_VERSION_HISTORY_MASK);
+export const hasGetDependenciesAction = (value: number) => Boolean(value & CONTENT_GET_DEPENDENCIES_ACTION_MASK);
+export const hasPublishRequestAction = (value: number) => Boolean(value & PUBLISH_REQUEST_MASK);
+export const hasCreateAction = (value: number) => Boolean(value & CONTENT_CREATE_MASK);
+export const hasPasteAction = (value: number) => Boolean(value & CONTENT_PASTE_MASK);
+export const hasEditAction = (value: number) => Boolean(value & CONTENT_EDIT_MASK);
+export const hasRenameAction = (value: number) => Boolean(value & CONTENT_RENAME_MASK);
+export const hasCutAction = (value: number) => Boolean(value & CONTENT_CUT_MASK);
+export const hasUploadAction = (value: number) => Boolean(value & CONTENT_UPLOAD_MASK);
+export const hasDuplicateAction = (value: number) => Boolean(value & CONTENT_DUPLICATE_MASK);
+export const hasChangeTypeAction = (value: number) => Boolean(value & CONTENT_CHANGE_TYPE_MASK);
+export const hasRevertAction = (value: number) => Boolean(value & CONTENT_REVERT_MASK);
+export const hasEditControllerAction = (value: number) => Boolean(value & CONTENT_EDIT_CONTROLLER_MASK);
+export const hasEditTemplateAction = (value: number) => Boolean(value & CONTENT_EDIT_TEMPLATE_MASK);
+export const hasCreateFolderAction = (value: number) => Boolean(value & FOLDER_CREATE_MASK);
+export const hasContentDeleteAction = (value: number) => Boolean(value & CONTENT_DELETE_MASK);
+export const hasDeleteControllerAction = (value: number) => Boolean(value & CONTENT_DELETE_CONTROLLER_MASK);
+export const hasDeleteTemplateAction = (value: number) => Boolean(value & CONTENT_DELETE_TEMPLATE_MASK);
+export const hasPublishAction = (value: number) => Boolean(value & PUBLISH_MASK);
+export const hasApprovePublishAction = (value: number) => Boolean(value & PUBLISH_APPROVE_MASK);
+export const hasSchedulePublishAction = (value: number) => Boolean(value & PUBLISH_SCHEDULE_MASK);
+export const hasPublishRejectAction = (value: number) => Boolean(value & PUBLISH_REJECT_MASK);
+// endregion
+
+export const createItemActionMap: (availableActions: number) => ItemActionsMap = (value: number) => ({
+  read: hasReadAction(value),
+  copy: hasCopyAction(value),
+  history: hasReadHistoryAction(value),
+  dependencies: hasGetDependenciesAction(value),
+  requestPublish: hasPublishRequestAction(value),
+  createContent: hasCreateAction(value),
+  paste: hasPasteAction(value),
+  edit: hasEditAction(value),
+  rename: hasRenameAction(value),
+  cut: hasCutAction(value),
+  upload: hasUploadAction(value),
+  duplicate: hasDuplicateAction(value),
+  changeType: hasChangeTypeAction(value),
+  revert: hasRevertAction(value),
+  editController: hasEditControllerAction(value),
+  editTemplate: hasEditTemplateAction(value),
+  createFolder: hasCreateFolderAction(value),
+  deleteContent: hasContentDeleteAction(value),
+  deleteController: hasDeleteControllerAction(value),
+  deleteTemplate: hasDeleteTemplateAction(value),
+  publish: hasPublishAction(value),
+  approvePublish: hasApprovePublishAction(value),
+  schedulePublish: hasSchedulePublishAction(value),
+  rejectPublish: hasPublishRejectAction(value)
+});
+
+export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
+  return lookupTable[withoutIndex(path)] ?? lookupTable[withIndex(path)];
+}

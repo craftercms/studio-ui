@@ -146,7 +146,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 }
               },
               {
-                id: 'craftercms.components.PathNavigator',
+                id: 'craftercms.components.PathNavigatorTree',
                 uiKey: count++,
                 configuration: {
                   label: 'Templates',
@@ -158,245 +158,20 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 }
               },
               {
-                id: 'craftercms.components.PathNavigator',
+                id: 'craftercms.components.PathNavigatorTree',
                 uiKey: count++,
                 configuration: {
                   label: 'Scripts',
                   icon: {
                     baseClass: 'fa fa-code'
                   },
+                  container: {
+                    baseStyle: {
+                      marginBottom: '20px'
+                    }
+                  },
                   rootPath: '/scripts',
                   locale: 'en'
-                }
-              }
-            ]
-          }
-        },
-        {
-          id: 'craftercms.components.ToolsPanelPageButton',
-          uiKey: count++,
-          configuration: {
-            title: messages.pageBuilder,
-            icon: {
-              id: '@material-ui/icons/BrushOutlined'
-            },
-            widgets: [
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewSearchPanel.title',
-                    defaultMessage: 'Search'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/SearchRounded'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewSearchPanel',
-                      uiKey: count++
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewComponentsPanel.title',
-                    defaultMessage: 'Add Components'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/ExtensionOutlined'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewComponentsPanel',
-                      uiKey: count++
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewBrowseComponentsPanel.title',
-                    defaultMessage: 'Browse Components'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/ExtensionOutlined'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewBrowseComponentsPanel',
-                      uiKey: count++
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewDropTargetsPanel.title',
-                    defaultMessage: 'Component Drop Targets'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/ExtensionOutlined'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewDropTargetsPanel',
-                      uiKey: count++
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewAssetsPanel.title',
-                    defaultMessage: 'Assets'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/ImageOutlined'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewAssetsPanel',
-                      uiKey: count++
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewAudiencesPanel.title',
-                    defaultMessage: 'Audience Targeting'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/EmojiPeopleRounded'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewAudiencesPanel',
-                      uiKey: count++,
-                      configuration: {
-                        fields: {
-                          segment: {
-                            id: 'segment',
-                            name: 'Segment',
-                            description: 'User segment.',
-                            type: 'dropdown',
-                            defaultValue: 'anonymous',
-                            values: [
-                              {
-                                label: 'Guy',
-                                value: 'guy'
-                              },
-                              {
-                                label: 'Gal',
-                                value: 'gal'
-                              },
-                              {
-                                label: 'Anonymous',
-                                value: 'anonymous'
-                              }
-                            ],
-                            helpText: 'Setting the segment will change content targeting to the audience selected.'
-                          },
-                          name: {
-                            id: 'name',
-                            name: 'Name',
-                            description: "User's first and last name.",
-                            type: 'input',
-                            helpText: "Enter user's first and last name."
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewPageExplorerPanel.title',
-                    defaultMessage: 'Page Explorer'
-                  },
-                  icon: {
-                    id: 'craftercms.icons.PageExplorer'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewPageExplorerPanel',
-                      uiKey: count++
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'previewSimulatorPanel.title',
-                    defaultMessage: 'Device Simulator'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/DevicesRounded'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewSimulatorPanel',
-                      uiKey: count++,
-                      configuration: {
-                        devices: [
-                          {
-                            title: 'smartPhone',
-                            width: 375,
-                            height: 667
-                          },
-                          {
-                            title: 'tablet',
-                            width: 768,
-                            height: 1024
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                id: 'craftercms.components.ToolsPanelPageButton',
-                uiKey: count++,
-                configuration: {
-                  title: {
-                    id: 'words.settings',
-                    defaultMessage: 'Settings'
-                  },
-                  icon: {
-                    id: '@material-ui/icons/SettingsOutlined'
-                  },
-                  widgets: [
-                    {
-                      id: 'craftercms.components.PreviewSettingsPanel',
-                      uiKey: count++
-                    }
-                  ]
                 }
               }
             ]
@@ -596,6 +371,237 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     }
                   }
                 }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    pageBuilderPanel: {
+      widgets: [
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewSearchPanel.title',
+              defaultMessage: 'Search'
+            },
+            icon: {
+              id: '@material-ui/icons/SearchRounded'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewSearchPanel',
+                uiKey: count++
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewComponentsPanel.title',
+              defaultMessage: 'Add Components'
+            },
+            icon: {
+              id: '@material-ui/icons/ExtensionOutlined'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewComponentsPanel',
+                uiKey: count++
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewBrowseComponentsPanel.title',
+              defaultMessage: 'Browse Components'
+            },
+            icon: {
+              id: '@material-ui/icons/ExtensionOutlined'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewBrowseComponentsPanel',
+                uiKey: count++
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewDropTargetsPanel.title',
+              defaultMessage: 'Component Drop Targets'
+            },
+            icon: {
+              id: '@material-ui/icons/ExtensionOutlined'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewDropTargetsPanel',
+                uiKey: count++
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewAssetsPanel.title',
+              defaultMessage: 'Assets'
+            },
+            icon: {
+              id: '@material-ui/icons/ImageOutlined'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewAssetsPanel',
+                uiKey: count++
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewAudiencesPanel.title',
+              defaultMessage: 'Audience Targeting'
+            },
+            icon: {
+              id: '@material-ui/icons/EmojiPeopleRounded'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewAudiencesPanel',
+                uiKey: count++,
+                configuration: {
+                  fields: {
+                    segment: {
+                      id: 'segment',
+                      name: 'Segment',
+                      description: 'User segment.',
+                      type: 'dropdown',
+                      defaultValue: 'anonymous',
+                      values: [
+                        {
+                          label: 'Guy',
+                          value: 'guy'
+                        },
+                        {
+                          label: 'Gal',
+                          value: 'gal'
+                        },
+                        {
+                          label: 'Anonymous',
+                          value: 'anonymous'
+                        }
+                      ],
+                      helpText: 'Setting the segment will change content targeting to the audience selected.'
+                    },
+                    name: {
+                      id: 'name',
+                      name: 'Name',
+                      description: "User's first and last name.",
+                      type: 'input',
+                      helpText: "Enter user's first and last name."
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewPageExplorerPanel.title',
+              defaultMessage: 'Page Explorer'
+            },
+            icon: {
+              id: 'craftercms.icons.PageExplorer'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewPageExplorerPanel',
+                uiKey: count++
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'previewSimulatorPanel.title',
+              defaultMessage: 'Device Simulator'
+            },
+            icon: {
+              id: '@material-ui/icons/DevicesRounded'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewSimulatorPanel',
+                uiKey: count++,
+                configuration: {
+                  devices: [
+                    {
+                      title: 'smartPhone',
+                      width: 375,
+                      height: 667
+                    },
+                    {
+                      title: 'tablet',
+                      width: 768,
+                      height: 1024
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: 'craftercms.components.ToolsPanelPageButton',
+          uiKey: count++,
+          configuration: {
+            target: 'pageBuilderPanel',
+            title: {
+              id: 'words.settings',
+              defaultMessage: 'Settings'
+            },
+            icon: {
+              id: '@material-ui/icons/SettingsOutlined'
+            },
+            widgets: [
+              {
+                id: 'craftercms.components.PreviewSettingsPanel',
+                uiKey: count++
               }
             ]
           }

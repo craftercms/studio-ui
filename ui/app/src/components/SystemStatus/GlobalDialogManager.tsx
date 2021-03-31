@@ -30,6 +30,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
+import UnlockPublisherDialog from '../UnlockPublisherDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -111,7 +112,6 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
-  const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
@@ -158,7 +158,15 @@ function GlobalDialogManager() {
       {/* region Edit (LegacyFormDialog) */}
       <LegacyFormDialog
         open={state.edit.open}
-        src={state.edit.src}
+        path={state.edit.path}
+        site={state.edit.site}
+        authoringBase={state.edit.authoringBase}
+        readonly={state.edit.readonly}
+        isHidden={state.edit.isHidden}
+        modelId={state.edit.modelId}
+        changeTemplate={state.edit.changeTemplate}
+        contentTypeId={state.edit.contentTypeId}
+        isNewContent={state.edit.isNewContent}
         inProgress={state.edit.inProgress}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
@@ -170,7 +178,11 @@ function GlobalDialogManager() {
       {/* region LegacyCodeEditorDialog */}
       <LegacyCodeEditorDialog
         open={state.codeEditor.open}
-        src={state.codeEditor.src}
+        path={state.codeEditor.path}
+        site={state.codeEditor.site}
+        type={state.codeEditor.type}
+        authoringBase={state.codeEditor.authoringBase}
+        readonly={state.codeEditor.readonly}
         inProgress={state.codeEditor.inProgress}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
@@ -246,7 +258,6 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
-        permissions={permissions?.[versionsBranch?.item?.path]}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
@@ -424,11 +435,24 @@ function GlobalDialogManager() {
       {/* region Publishing Status Dialog */}
       <PublishingStatusDialog
         open={state.publishingStatus.open}
+        enabled={state.publishingStatus.enabled}
         status={state.publishingStatus.status}
-        details={state.publishingStatus.details}
+        message={state.publishingStatus.message}
+        lockOwner={state.publishingStatus.lockOwner}
+        lockTTL={state.publishingStatus.lockTTL}
         isFetching={state.publishingStatus.isFetching}
         onClose={createCallback(state.publishingStatus.onClose, dispatch)}
         onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
+        onUnlock={createCallback(state.publishingStatus.onUnlock, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Unlock Publisher Dialog */}
+      <UnlockPublisherDialog
+        open={state.unlockPublisher.open}
+        onError={createCallback(state.unlockPublisher.onError, dispatch)}
+        onCancel={createCallback(state.unlockPublisher.onCancel, dispatch)}
+        onComplete={createCallback(state.unlockPublisher.onComplete, dispatch)}
       />
       {/* endregion */}
     </Suspense>

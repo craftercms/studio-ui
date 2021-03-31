@@ -50,8 +50,8 @@ import {
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
-import { fetchUserPermissions } from '../../../state/actions/content';
 import { asDayMonthDateTime } from '../../../utils/datetime';
+import { hasRevertAction } from '../../../utils/content';
 
 const translations = defineMessages({
   previousPage: {
@@ -194,7 +194,6 @@ interface HistoryDialogBaseProps {
 export type HistoryDialogProps = PropsWithChildren<
   HistoryDialogBaseProps & {
     versionsBranch: VersionsStateProps;
-    permissions: LookupTable<boolean>;
     onClose?(): void;
     onClosed?(): void;
     onDismiss?(): void;
@@ -216,7 +215,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
 }
 
 function HistoryDialogBody(props: HistoryDialogProps) {
-  const { onDismiss, versionsBranch, permissions } = props;
+  const { onDismiss, versionsBranch } = props;
   const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
@@ -236,17 +235,8 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(permissions, {
-    shouldResolve: (permissions) => Boolean(permissions),
-    shouldReject: () => false,
-    shouldRenew: (permissions, resource) => resource.complete,
-    resultSelector: (permissions) => permissions,
-    errorSelector: () => null
-  });
-
   const handleOpenMenu = useCallback(
-    (anchorEl, version, isCurrent = false, permissions, initialCommit) => {
-      const write = permissions?.write;
+    (anchorEl, version, isCurrent = false, initialCommit) => {
       const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
       const contextMenuOptions: { [prop in keyof typeof menuOptions]: ContextMenuOption } = {};
       Object.entries(menuOptions).forEach(([key, value]) => {
@@ -270,7 +260,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
             ]);
           }
         }
-        if (write) {
+        if (hasRevertAction(item.availableActions)) {
           sections.push([isCurrent ? contextMenuOptions.revertToPrevious : contextMenuOptions.revertToThisVersion]);
         }
       }
@@ -280,7 +270,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
         activeItem: version
       });
     },
-    [count, item.systemType, setMenu, formatMessage]
+    [item.systemType, item.availableActions, count, setMenu, formatMessage]
   );
 
   const compareVersionDialogWithActions = () =>
@@ -435,13 +425,12 @@ function HistoryDialogBody(props: HistoryDialogProps) {
           selectedItem={item}
           onItemClicked={(item) => {
             setOpenSelector(false);
-            dispatch(batchActions([versionsChangeItem({ item }), fetchUserPermissions({ path: item.path })]));
+            dispatch(versionsChangeItem({ item }));
           }}
         />
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             versions={versionsResource}
-            permissions={permissionsResource}
             onOpenMenu={handleOpenMenu}
             onItemClick={handleViewItem}
             current={current}

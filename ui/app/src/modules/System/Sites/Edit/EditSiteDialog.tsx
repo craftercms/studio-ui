@@ -32,8 +32,8 @@ import GlobalState from '../../../../models/GlobalState';
 import { LookupTable } from '../../../../models/LookupTable';
 import { fetchSites } from '../../../../state/reducers/sites';
 import Grid from '@material-ui/core/Grid';
-import { SecondaryButton } from '../../../../components/SecondaryButton';
-import { PrimaryButton } from '../../../../components/PrimaryButton';
+import SecondaryButton from '../../../../components/SecondaryButton';
+import PrimaryButton from '../../../../components/PrimaryButton';
 import { isBlank } from '../../../../utils/string';
 
 type Source = { site: Site; error: Error };
