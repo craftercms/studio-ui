@@ -1064,7 +1064,9 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
+            publish.statusText = publishingMessages[data.status.toLowerCase()]
+              ? formatMessage(publishingMessages[data.status.toLowerCase()])
+              : data.status;
             publish.lockOwner = data.lockOwner;
           })
           .error(function (err) {});
