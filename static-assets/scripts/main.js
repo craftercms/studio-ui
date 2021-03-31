@@ -508,7 +508,7 @@
       var configurationApi = CrafterCMSNext.services.configuration;
 
       this.getSites = function(params) {
-        return sitesApi.fetchAll().toPromise();
+        return sitesApi.fetchAll(params).toPromise();
       };
 
       this.setCookie = function(cookieGenName, value) {
