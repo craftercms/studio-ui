@@ -192,7 +192,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     nodeItemsContainerEl.id = this.id + '-target';
     YAHOO.util.Dom.addClass(nodeItemsContainerEl, 'cstudio-form-control-node-selector-items-container');
     if (this.maxSize === 1) {
-      nodeItemsContainerEl.style.minHeight = "27px";
+      YAHOO.util.Dom.addClass(nodeItemsContainerEl, 'node-selector-min-height');
     }
     nodeControlboxEl.appendChild(nodeItemsContainerEl);
     this.itemsContainerEl = nodeItemsContainerEl;
