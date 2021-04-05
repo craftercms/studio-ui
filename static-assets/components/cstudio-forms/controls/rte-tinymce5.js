@@ -307,14 +307,12 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
-          const codeEditorWrap = rteConfig.codeEditorWrap
-            ? rteConfig.codeEditorWrap === 'true'
-            : false;
+          const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
-            // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window). 
+            // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window).
             // Adding 78px (toolbar's height) so that the toolbar doesn't eat up on the height set on the content modelling tool.
             height: _thisControl.rteHeight + 78,
             min_height: _thisControl.rteHeight,
@@ -357,8 +355,9 @@ CStudioAuthoring.Module.requireModule(
 
             content_css: rteStylesheets,
             content_style: rteStyleOverride,
-
             code_editor_wrap: codeEditorWrap,
+
+            external_plugins: rteConfig.external_plugins,
 
             setup: function (editor) {
               var addPadding = function () {
