@@ -404,6 +404,8 @@ CStudioAuthoring.Module.requireModule(
             content_style: rteStyleOverride,
             code_editor_wrap: codeEditorWrap,
 
+            external_plugins: rteConfig.external_plugins,
+
             setup: function(editor) {
               editor.on('init', function(e) {
                 amplify.publish('/field/init/completed');
