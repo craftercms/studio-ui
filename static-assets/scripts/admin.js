@@ -2055,7 +2055,7 @@
         CrafterCMSNext.system.getStore().subscribe(() => {
           repositories.getRepositoryStatus();
           adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
-            $scope.showError(error.response);
+            $scope.showError(error.response.response);
           });
         });
       };
@@ -2086,7 +2086,7 @@
             });
           },
           function(error) {
-            $scope.showError(error.response);
+            $scope.showError(error.response.response);
             repositories.spinnerOverlay.close();
           }
         );
@@ -2104,7 +2104,7 @@
               $rootScope.showNotification(`'${repo.name}' ${$translate.instant('admin.repositories.REPO_DELETED')}.`);
             },
             function(error) {
-              $scope.showError(error.response);
+              $scope.showError(error.response.response);
             }
           );
         };
@@ -2134,7 +2134,7 @@
             function(error) {
               repositories.getRepositoryStatus();
               repositories.spinnerOverlay.close();
-              $scope.showError(error.response);
+              $scope.showError(error.response.response);
             }
           );
         };
