@@ -263,9 +263,10 @@
         "PUBLISHSTARTED":"대량 게시 프로세스가 시작되었습니다.",
         "PUBLISHBYCOMMITS": "커밋 ID로 게시",
         "PUBLISHBYCOMMITS_SUCCESS": "성공적으로 커밋 됨",
-        "COMMITIDS": "커밋 ID",
+        "COMMITIDS": "커밋 ID 또는 태그",
         "COMMENT": "논평",
-        "COMMITIDSEXAMPLE": "(예 : bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbb5b91fb31841303b0c428f14b0e66f8a7)"
+        "COMMITIDSEXAMPLE": "",
+        "COMMITIDSTIP": "Puede escribir multiples separados por coma"
     },
     "repositories": {
         "REPOSITORIES": "저장소",

@@ -160,7 +160,11 @@
                   ng-pattern-restrict="^[A-Za-z0-9,\s]*$"
                   required
                 ></textarea>
-
+                <div>
+                  <small>
+                    {{ 'admin.publishing.COMMITIDSTIP' | translate }}
+                  </small>
+                </div>
                 <div
                   class="error-container"
                   ng-show="(commitsForm.commitIds.$dirty && commitsForm.commitIds.$invalid) || (commitsForm.commitIds.$touched && commitsForm.commitIds.$invalid)"
