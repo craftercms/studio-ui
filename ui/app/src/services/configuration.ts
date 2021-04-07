@@ -222,3 +222,18 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
     `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
+
+export function fetchSiteLocale(site: string): Observable<any> {
+  return fetchConfigurationDOM(site, '/site-config.xml', 'studio').pipe(
+    map((xml) => {
+      let settings = {};
+      if (xml) {
+        const localeXML = xml.querySelector('locale');
+        if (localeXML) {
+          settings = deserialize(localeXML).locale;
+        }
+      }
+      return settings;
+    })
+  );
+}

@@ -34,9 +34,9 @@ import {
   fetchGlobalMenu,
   fetchGlobalMenuComplete,
   fetchGlobalMenuFailed,
-  fetchLocaleSettings,
-  fetchLocaleSettingsComplete,
-  fetchLocaleSettingsFailed,
+  fetchSiteLocale,
+  fetchSiteLocaleComplete,
+  fetchSiteLocaleFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
@@ -67,22 +67,21 @@ import { changeSite } from '../reducers/sites';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
-import { fetchGlobalMenuItems } from '../../services/configuration';
-import { fetchLocaleSettings as fetchLocaleSettingsService } from '../../services/locale';
+import { fetchGlobalMenuItems, fetchSiteLocale as fetchSiteLocaleService } from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu(), fetchLocaleSettings()])
+      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu(), fetchSiteLocale()])
     ),
   // endregion
   // region changeSite
   (action$) =>
     action$.pipe(
       ofType(changeSite.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchLocaleSettings()])
+      switchMap(() => [startPublishingStatusFetcher(), fetchSiteLocale()])
     ),
   // endregion
   // region emitSystemEvent
@@ -359,16 +358,16 @@ const systemEpics: CrafterCMSEpic[] = [
       )
     ),
   // endregion
-  // region fetchLocaleSettings
+  // region fetchSiteLocale
   (action$, state$) =>
     action$.pipe(
-      ofType(fetchLocaleSettings.type),
+      ofType(fetchSiteLocale.type),
       withLatestFrom(state$),
       filter(([, state]) => Boolean(state.sites.active)),
       switchMap(([, state]) =>
-        fetchLocaleSettingsService(state.sites.active).pipe(
-          map(fetchLocaleSettingsComplete),
-          catchAjaxError(fetchLocaleSettingsFailed)
+        fetchSiteLocaleService(state.sites.active).pipe(
+          map(fetchSiteLocaleComplete),
+          catchAjaxError(fetchSiteLocaleFailed)
         )
       )
     ),

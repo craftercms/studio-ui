@@ -21,9 +21,9 @@ import { changeSite } from './sites';
 import {
   fetchGlobalMenuComplete,
   fetchGlobalMenuFailed,
-  fetchLocaleSettings,
-  fetchLocaleSettingsComplete,
-  fetchLocaleSettingsFailed
+  fetchSiteLocale,
+  fetchSiteLocaleComplete,
+  fetchSiteLocaleFailed
 } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 
@@ -128,14 +128,14 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     }
   }),
   [changeSite.type]: () => initialState,
-  [fetchLocaleSettings.type]: (state) => ({
+  [fetchSiteLocale.type]: (state) => ({
     ...state,
     locale: {
       ...state.locale,
       isFetching: true
     }
   }),
-  [fetchLocaleSettingsComplete.type]: (state, { payload }) => ({
+  [fetchSiteLocaleComplete.type]: (state, { payload }) => ({
     ...state,
     locale: {
       ...state.locale,
@@ -144,7 +144,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       dateFormatOptions: payload.dateFormatOptions ?? state.locale.dateFormatOptions
     }
   }),
-  [fetchLocaleSettingsFailed.type]: (state, { payload }) => ({
+  [fetchSiteLocaleFailed.type]: (state, { payload }) => ({
     ...state,
     locale: {
       ...state.locale,
