@@ -261,11 +261,12 @@
         "WRNINGGPBODY":" Bulk publish will force publish all items that match the pattern requested including their dependencies. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
         "PUBLISHQUEUE":"Publishing Queue",
         "PUBLISHSTARTED":"Bulk Publish process has been started.",
-        "PUBLISHBYCOMMITS": "Publish by Commit ID(s)",
+        "PUBLISHBYCOMMITS": "Publish by...",
         "PUBLISHBYCOMMITS_SUCCESS": "Committed successfully",
-        "COMMITIDS": "Commit IDs",
+        "COMMITIDS": "Commit or tag IDs",
         "COMMENT": "Comment",
-        "COMMITIDSEXAMPLE": "(e.g. bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"
+        "COMMITIDSEXAMPLE": "",
+        "COMMITIDSTIP": "You may enter multiple separated by comma"
     },
     "repositories": {
         "REPOSITORIES": "Repositories",
