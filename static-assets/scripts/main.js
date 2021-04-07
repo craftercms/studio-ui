@@ -1755,6 +1755,24 @@
     };
   });
 
+  app.filter('formatDate', function() {
+    return function(date, timeZone) {
+      if (date) {
+        const locale = CrafterCMSNext.system.store.getState().uiConfig.locale;
+        const options = locale.dateFormatOptions;
+        const localeCode = locale.localeCode;
+
+        if (timeZone) {
+          options.timeZone = timeZone;
+        }
+
+        return new Intl.DateTimeFormat(localeCode, options).format(new Date(date));
+      } else {
+        return date;
+      }
+    };
+  });
+
   app.directive('stResetSearch', function() {
     return {
       restrict: 'EA',

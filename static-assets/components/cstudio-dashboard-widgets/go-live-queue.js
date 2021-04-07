@@ -210,7 +210,6 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
         var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
           displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 50 - removeCharCount),
           uri = item.uri,
-          fmt = CStudioAuthoring.Utils.formatDateFromString,
           environment = item.submittedToEnvironment ? item.submittedToEnvironment : '';
 
         editLinkId = encodeURIComponent(
@@ -287,14 +286,14 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
           '</td>',
           '<td class="">',
           item.scheduled
-            ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat')
+            ? CStudioAuthoring.Utils.dateFormat(item.scheduledDate, studioTimeZone)
             : '',
           '</td>',
           "<td class='alignRight username trim'>",
           WcmDashboardWidgetCommon.getDisplayName(item),
           '</td>',
           "<td class='alignRight ttThColLast'>",
-          CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
+          CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone),
           '</td>'
         ]);
       }

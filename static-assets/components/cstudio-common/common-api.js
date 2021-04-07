@@ -6887,6 +6887,18 @@ var nodeOpen = false,
             'studioDialog'
           );
         }
+      },
+
+      dateFormat: function(date, timeZone) {
+        const locale = CrafterCMSNext.system.store.getState().uiConfig.locale;
+        const options = locale.dateFormatOptions;
+        const localeCode = locale.localeCode;
+
+        if (timeZone) {
+          options.timeZone = timeZone;
+        }
+
+        return new Intl.DateTimeFormat(localeCode, options).format(new Date(date));
       }
     },
     'Utils.Doc': {

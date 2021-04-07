@@ -283,13 +283,13 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       /**/ fullUri,
       '</td>',
       '<td class="">',
-      /**/ item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '',
+      /**/ item.published ? CStudioAuthoring.Utils.dateFormat(item.publishedDate, studioTimeZone) : '',
       '</td>',
       '<td class="alignRight username trim">',
       /**/ WcmDashboardWidgetCommon.getDisplayName(item),
       '</td>',
       '<td class="ttThColLast alignRight">',
-      /**/ CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
+      /**/ CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone),
       '</td>'
     ];
 
@@ -324,13 +324,13 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       fullUri,
       '</td>',
       '<td class="">',
-      item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '',
+      item.published ? CStudioAuthoring.Utils.dateFormat(item.publishedDate, studioTimeZone) : '',
       '</td>',
       '<td class="alignRight">',
       WcmDashboardWidgetCommon.getDisplayName(item),
       '</td>',
       '<td class="ttThColLast alignRight">',
-      CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
+      CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone) + '---',
       '</td>'
     ];
 

@@ -277,7 +277,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function(widgetId, pageId) {
           displayEndpoint,
           '</td>',
           "<td class='alignRight ttThColLast'>",
-          CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
+          CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone),
           '</td>',
           "<td class='alignRight ttThColLast'>",
           item.user,
