@@ -397,9 +397,10 @@
       >{{ 'common.CANCEL_LABEL' | translate }}
       </button>
       <button
+        id="createRepoSubmit"
         class="btn btn-primary text-capitalize"
         type="submit"
-        ng-disabled="createNameForm.$invalid"
+        ng-class="{'disabled': createNameForm.$invalid}"
       >
         {{ 'common.' + dialogMode | translate }}
       </button>
