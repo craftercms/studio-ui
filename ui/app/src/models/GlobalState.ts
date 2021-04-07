@@ -227,6 +227,14 @@ export interface GlobalState {
       localeCodes: string[];
       defaultLocaleCode: string;
     };
+    locale: {
+      error: ApiResponse;
+      isFetching: boolean;
+      localeCode: string;
+      dateFormatOptions?: {
+        [id: string]: string;
+      };
+    };
     publishing: {
       submissionCommentMaxLength: number;
     };
