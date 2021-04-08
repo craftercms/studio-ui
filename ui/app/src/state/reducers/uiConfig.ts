@@ -54,8 +54,10 @@ const initialState: GlobalState['uiConfig'] = {
   locale: {
     error: null,
     isFetching: false,
-    localeCode: '',
-    dateFormatOptions: {}
+    localeCode: 'en-US',
+    dateFormatOptions: {
+      timeZone: 'EST5EDT'
+    }
   },
   publishing: {
     submissionCommentMaxLength: 250
