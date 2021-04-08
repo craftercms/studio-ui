@@ -263,9 +263,10 @@
         "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado.",
         "PUBLISHBYCOMMITS": "Públicar por id(s) de commit",
         "PUBLISHBYCOMMITS_SUCCESS": "Publicado exitosamente",
-        "COMMITIDS": "ID de commits",
+        "COMMITIDS": "IDs de commits o etiquetas",
         "COMMENT": "Comentario",
-        "COMMITIDSEXAMPLE": "(por ejemplo, bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"
+        "COMMITIDSEXAMPLE": "",
+        "COMMITIDSTIP": "여러 개를 쉼표로 구분하여 입력 할 수 있습니다."
     },
     "repositories": {
         "REPOSITORIES": "Repositorios",

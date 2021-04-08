@@ -70,22 +70,6 @@ interface GitFormProps {
   setInputs(state: any): any;
 }
 
-const pushMessages = defineMessages({
-  push_url_label: {
-    id: 'createSiteDialog.push_url_label',
-    defaultMessage: 'The git repository URL to push.'
-  },
-  push_remoteBranch_label: {
-    id: 'createSiteDialog.push_remoteBranch_label',
-    defaultMessage: 'The site will get created pushing that branch to the repo.'
-  },
-  push_remoteName_label: {
-    id: 'createSiteDialog.push_remoteName_label',
-    defaultMessage:
-      'Name the remote that will refer to the source repo to push. Typically named “upstream” or “origin”.'
-  }
-});
-
 const cloneMessages = defineMessages({
   clone_url_label: {
     id: 'createSiteDialog.clone_url_label',

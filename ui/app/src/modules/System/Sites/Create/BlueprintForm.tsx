@@ -19,7 +19,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Collapse from '@material-ui/core/Collapse';
 import GitForm from './GitForm';
 import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { SiteState } from '../../../../models/Site';
@@ -164,7 +163,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   };
 
   const onKeyPress = (event: React.KeyboardEvent) => {
-    if (event.charCode === 13) {
+    if (event.key === 'Enter') {
       onSubmit(event);
     }
   };

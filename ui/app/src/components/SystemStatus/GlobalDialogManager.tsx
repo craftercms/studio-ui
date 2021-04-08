@@ -93,7 +93,7 @@ function createCallback(action: StandardAction, dispatch: Dispatch): (output?: u
 }
 // @formatter:on
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
     wrapper: {
       right: '0',
@@ -103,7 +103,8 @@ export const useStyles = makeStyles(() =>
       flexDirection: 'row-reverse',
       width: '100%',
       overflow: 'auto',
-      padding: '2px 20px'
+      padding: '2px 20px',
+      zIndex: theme.zIndex.modal
     }
   })
 );

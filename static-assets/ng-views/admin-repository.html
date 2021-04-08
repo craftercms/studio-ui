@@ -228,7 +228,7 @@
   <div class="modal-header">
     <h3 class="modal-title">{{dialogTitle}}</h3>
   </div>
-  <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+  <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required" ng-submit="okModalFunction(repo)">
     <div class="modal-body clearfix">
       <div class="col-md-12">
         <div class="form-group">
@@ -392,13 +392,14 @@
 
     <div class="modal-footer">
       <button
+        type="button"
         class="btn btn-default" ng-click="hideModal()"
       >{{ 'common.CANCEL_LABEL' | translate }}
       </button>
       <button
         class="btn btn-primary text-capitalize"
-        ng-click="okModalFunction(repo)"
-        ng-disabled="createNameForm.$invalid"
+        type="submit"
+        ng-class="{'disabled': createNameForm.$invalid}"
       >
         {{ 'common.' + dialogMode | translate }}
       </button>
