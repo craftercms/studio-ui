@@ -305,6 +305,19 @@
         $cookies.put(Constants.AUDIT_TIMEZONE_COOKIE, audit.timeZone);
       };
 
+      let store;
+      CrafterCMSNext.system.getStore().subscribe((_store_) => {
+        store = _store_;
+        let currentLocale = store.getState().uiConfig.locale;
+        $scope.locale = currentLocale;
+        store.subscribe(() => {
+          const locale = store.getState().uiConfig.locale;
+          if (currentLocale !== locale) {
+            currentLocale = locale;
+          }
+        });
+      });
+
       var getUsers = function(site) {
         adminService.getUsers(site).then(
           function(data) {

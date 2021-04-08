@@ -860,6 +860,19 @@
         no: formatMessage(words.no)
       };
 
+      let store;
+      CrafterCMSNext.system.getStore().subscribe((_store_) => {
+        store = _store_;
+        let currentLocale = store.getState().uiConfig.locale;
+        $scope.locale = currentLocale;
+        store.subscribe(() => {
+          const locale = store.getState().uiConfig.locale;
+          if (currentLocale !== locale) {
+            currentLocale = locale;
+          }
+        });
+      });
+
       $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
@@ -1756,9 +1769,8 @@
   });
 
   app.filter('formatDate', function() {
-    return function(date, timeZone) {
-      if (date) {
-        const locale = CrafterCMSNext.system.store.getState().uiConfig.locale;
+    return function(date, locale, timeZone) {
+      if (date && locale) {
         const options = locale.dateFormatOptions;
         const localeCode = locale.localeCode;
 

@@ -215,7 +215,7 @@
 
             <tr dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
                 current-page="audit.pagination.current" total-items="audit.totalLogs">
-                <td class="min-cel-width">{{log.operationTimestamp | formatDate:audit.timeZone}}</td>
+                <td class="min-cel-width">{{log.operationTimestamp | formatDate:locale:audit.timeZone}}</td>
                 <td>{{log.siteName}}</td>
                 <td>{{log.operation}}</td>
                 <td class="min-cel-width wrap-content">{{log.primaryTargetValue}}</td>

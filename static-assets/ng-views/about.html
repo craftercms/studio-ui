@@ -28,7 +28,7 @@
           <p><strong>{{ 'about.BUILD_NUMBER' | translate }}</strong>: {{aboutStudio.packageBuild}}</p>
           <p>
             <strong>{{ 'about.BUILD_DATE_TIME' | translate }}</strong>:
-            {{aboutStudio.packageBuildDate | formatDate}}
+            {{aboutStudio.packageBuildDate | formatDate:locale}}
           </p>
           <p ng-bind-html="attributionHTML"></p>
         </div>
