@@ -286,14 +286,14 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
           '</td>',
           '<td class="">',
           item.scheduled
-            ? CStudioAuthoring.Utils.dateFormat(item.scheduledDate, studioTimeZone)
+            ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone)
             : '',
           '</td>',
           "<td class='alignRight username trim'>",
           WcmDashboardWidgetCommon.getDisplayName(item),
           '</td>',
           "<td class='alignRight ttThColLast'>",
-          CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone),
+          CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
           '</td>'
         ]);
       }

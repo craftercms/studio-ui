@@ -227,9 +227,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
         // to resolve page display issue
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-        var lastEditTime = CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone);
+        var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone);
         if (item.lastEditDateAsString !== undefined && item.lastEditDateAsString !== '') {
-          lastEditTime = CStudioAuthoring.Utils.dateFormat(item.eventDate, studioTimeZone);
+          lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone);
         }
 
         WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
