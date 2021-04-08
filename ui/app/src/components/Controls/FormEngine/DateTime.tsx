@@ -22,12 +22,17 @@ import { DateTimeControl } from '../../../models/FormsEngine';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { controlBaseStyles } from './commonStyles';
+import { useSelection } from '../../../utils/hooks';
+import GlobalState from '../../../models/GlobalState';
 
 const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 
 export default function DateTime(props: DateTimeControl) {
   const { field, value, timezone, onChange, disabled } = props;
   const classes = useStyles({});
+  const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
+    (state) => state.uiConfig.locale.localeCode
+  );
 
   return (
     <FormControl className={classes.formControl}>
@@ -42,6 +47,7 @@ export default function DateTime(props: DateTimeControl) {
         timeZonePickerProps={{
           timezone: timezone
         }}
+        localeCode={localeCode}
       />
     </FormControl>
   );
