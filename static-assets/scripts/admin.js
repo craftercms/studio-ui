@@ -2073,23 +2073,25 @@
       };
 
       $scope.createRepo = function(repo) {
-        repositories.spinnerOverlay = $scope.spinnerOverlay();
-        repo.siteId = repositories.site;
-        repo.authenticationType = repo.authenticationType ? repo.authenticationType : 'none';
+        if (createNameForm.checkValidity()) {
+          repositories.spinnerOverlay = $scope.spinnerOverlay();
+          repo.siteId = repositories.site;
+          repo.authenticationType = repo.authenticationType ? repo.authenticationType : 'none';
 
-        adminService.createRepository(repo).then(
-          function(data) {
-            $scope.hideModal();
-            adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
-              $scope.showError(error.response);
+          adminService.createRepository(repo).then(
+            function() {
+              $scope.hideModal();
+              adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
+                $scope.showError(error.response);
+                repositories.spinnerOverlay.close();
+              });
+            },
+            function(error) {
+              $scope.showError(error.response.response);
               repositories.spinnerOverlay.close();
-            });
-          },
-          function(error) {
-            $scope.showError(error.response.response);
-            repositories.spinnerOverlay.close();
-          }
-        );
+            }
+          );
+        }
       };
 
       $scope.removeRepo = function(repo) {
