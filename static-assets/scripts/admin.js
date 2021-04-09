@@ -1058,7 +1058,7 @@
             var date = null;
             if (stringDate && stringDate.length) {
               publish.date = stringDate[0];
-              data.message = data.message.replace(stringDate[0], '');
+              data.message = data.message.replace(stringDate[0], moment(stringDate[0]).format('MM-DD-YYYY hh:mm:ss a'));
             } else {
               publish.date = '';
             }
