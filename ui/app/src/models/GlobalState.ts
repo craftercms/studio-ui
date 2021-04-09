@@ -232,6 +232,8 @@ export interface GlobalState {
       isFetching: boolean;
       localeCode: string;
       dateFormatOptions?: {
+        // @ts-ignore
+        hour12?: boolean;
         [id: string]: string;
       };
     };
