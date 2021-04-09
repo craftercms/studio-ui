@@ -569,7 +569,20 @@
         }, audit.defaultDelay);
       };
 
-      audit.generalUpdate = function(action) {
+      audit.updateDate = function(dateField) {
+        const locale = $scope.locale;
+        const options = locale.dateFormatOptions;
+        const localeCode = locale.localeCode;
+
+        // dateFrom and dateTo are the values (not formatted) used for service calls
+        audit[dateField] = audit[`${dateField}Input`];
+        // dateFromInput and dateToInput are the values used to be displayed in the input fields
+        audit[`${dateField}Input`] = new Intl.DateTimeFormat(localeCode, options).format(new Date(audit[`${dateField}Input`]));
+
+        audit.generalUpdate();
+      };
+
+      audit.generalUpdate = function() {
         $timeout.cancel(delayTimer);
         delayTimer = $timeout(function() {
           getAudit(audit.site);
