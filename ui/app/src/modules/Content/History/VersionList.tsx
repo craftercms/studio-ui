@@ -28,6 +28,8 @@ import { Resource } from '../../../models/Resource';
 import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
+import GlobalState from '../../../models/GlobalState';
+import { useSelection } from '../../../utils/hooks';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({
@@ -66,12 +68,16 @@ const versionListStyles = makeStyles((theme) =>
 
 interface FancyFormattedDateProps {
   date: string;
+  locale?: GlobalState['uiConfig']['locale'];
 }
 
 export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
   const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
+  const { date, locale } = props;
+  const hour12 = locale?.dateFormatOptions?.hour12 ?? true;
+
   return (
-    <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">
+    <FormattedDateParts value={date} month="long" day="numeric" weekday="long" year="numeric">
       {(parts) => (
         <>
           {`${parts[0].value} ${parts[2].value} `}
@@ -80,7 +86,7 @@ export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
             defaultMessage={`{day, ${ordinals}}`}
             values={{ day: parts[4].value }}
           />{' '}
-          {parts[6].value} @ <FormattedTime value={props.date} />
+          {parts[6].value} @ <FormattedTime value={date} hour12={hour12} />
         </>
       )}
     </FormattedDateParts>
@@ -99,6 +105,7 @@ export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
   const { versions: versionsResource, onOpenMenu, onItemClick, current, selected } = props;
   const versions = versionsResource.read();
+  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   return (
     <List component="div" className={classes.list} disablePadding>
@@ -119,7 +126,7 @@ export function VersionList(props: VersionListProps) {
               }}
               primary={
                 <>
-                  <AsDayMonthDateTime date={version.lastModifiedDate} />
+                  <AsDayMonthDateTime date={version.lastModifiedDate} locale={locale} />
                   {current === version.versionNumber && (
                     <Chip
                       label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
