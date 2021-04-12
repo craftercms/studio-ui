@@ -28,7 +28,7 @@ import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import Input from '@material-ui/core/Input';
 import { useSitesBranch, useSpreadState } from '../../utils/hooks';
-import { disable, enable, update } from '../../services/users';
+import { disable, enable, fetchMyRolesInSite, update } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
@@ -36,6 +36,8 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import clsx from 'clsx';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { forkJoin } from 'rxjs';
+import LookupTable from '../../models/LookupTable';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -176,8 +178,10 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   });
   const sites = useSitesBranch();
   const sitesById = sites.byId;
+  const mySites = Object.keys(sitesById);
   const [lastSavedUser, setLastSavedUser] = useState(null);
   const [inProgress, setInProgress] = useState(false);
+  const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
   const [dirty, setDirty] = useState(false);
 
   const editMode = !props.user?.externallyManaged;
@@ -189,9 +193,20 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   }, [props.user, open, setUser]);
 
   useEffect(() => {
-    if (Object.keys(sites).length) {
+    if (mySites.length) {
+      const requests = mySites.map((siteId) => {
+        console.log(siteId);
+        return fetchMyRolesInSite(siteId);
+      });
+      forkJoin(requests).subscribe((responses) => {
+        const lookup = {};
+        responses.forEach((roles, i) => {
+          lookup[mySites[i]] = roles;
+        });
+        console.log(lookup);
+      });
     }
-  }, [sites]);
+  }, [mySites]);
 
   const onInputChange = (value) => {
     setDirty(true);

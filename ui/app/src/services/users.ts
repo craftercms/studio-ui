@@ -127,7 +127,6 @@ export function fetchRolesInSite(username: string, siteId: string): Observable<s
   return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
 
-// renamed from fetchRolesInSiteForCurrent
 export function fetchMyRolesInSite(siteId: string): Observable<string[]> {
   return get(`/studio/api/2/users/me/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
