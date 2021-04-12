@@ -58,6 +58,7 @@ export function fetchAll(options?: PaginationOptions): Observable<PagedArray<Use
   return get(`/studio/api/2/users${qs}`).pipe(
     map(({ response }) =>
       Object.assign(response.users, {
+        // TODO: limit is not returning the same limit we sent on the parameters
         limit: response.limit,
         offset: response.offset,
         total: response.total

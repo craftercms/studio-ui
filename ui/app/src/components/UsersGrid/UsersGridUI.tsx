@@ -30,9 +30,15 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import Avatar from '@material-ui/core/Avatar';
 import User from '../../models/User';
 import clsx from 'clsx';
+import { PagedArray } from '../../models/PagedArray';
+import Pagination from '../Pagination';
 
 const styles = makeStyles((theme) =>
   createStyles({
+    root: {
+      display: 'flex',
+      flexDirection: 'column'
+    },
     tableCell: {
       padding: '6px',
       borderBottom: 0,
@@ -42,6 +48,9 @@ const styles = makeStyles((theme) =>
       '&.paddedLeft': {
         paddingLeft: '20px'
       }
+    },
+    paginationRoot: {
+      marginLeft: 'auto'
     }
   })
 );
@@ -58,67 +67,78 @@ const StyledTableRow = withStyles((theme: Theme) =>
 )(TableRow);
 
 interface UsersGridUIProps {
-  resource: Resource<any>;
+  resource: Resource<PagedArray<User>>;
   onRowClicked(user: User): void;
+  onChangePage(page: number): void;
 }
 
 export default function UsersGridUI(props: UsersGridUIProps) {
-  const { resource, onRowClicked } = props;
+  const { resource, onRowClicked, onChangePage } = props;
   const classes = styles();
   const users = resource.read();
   return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <StyledTableRow>
-            <TableCell padding="checkbox" className={clsx(classes.tableCell, 'bordered')}>
-              <Checkbox checked={false} color="primary" />
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'paddedLeft')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.username" defaultMessage="Username" />
-              </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.email" defaultMessage="E-mail" />
-              </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.organization" defaultMessage="Organization" />
-              </Typography>
-            </TableCell>
-          </StyledTableRow>
-        </TableHead>
-        <TableBody>
-          {users?.map((user, i) => (
-            <StyledTableRow key={user.id} onClick={() => onRowClicked(user)}>
-              <TableCell align="left" className={classes.tableCell}>
-                <Avatar>{user.firstName.charAt(0)}</Avatar>
+    <section className={classes.root}>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <StyledTableRow>
+              <TableCell padding="checkbox" className={clsx(classes.tableCell, 'bordered')}>
+                <Checkbox checked={false} color="primary" />
               </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'paddedLeft')}>
-                {user.firstName} {user.lastName}
+              <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'paddedLeft')}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.name" defaultMessage="Name" />
+                </Typography>
               </TableCell>
-              <TableCell align="left" className={classes.tableCell}>
-                {user.username}
+              <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.username" defaultMessage="Username" />
+                </Typography>
               </TableCell>
-              <TableCell align="left" className={classes.tableCell}>
-                {user.email}
+              <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.email" defaultMessage="E-mail" />
+                </Typography>
               </TableCell>
-              <TableCell align="left" className={classes.tableCell}>
-                Organization?
+              <TableCell align="left" className={clsx(classes.tableCell, 'bordered')}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.organization" defaultMessage="Organization" />
+                </Typography>
               </TableCell>
             </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {users?.map((user, i) => (
+              <StyledTableRow key={user.id} onClick={() => onRowClicked(user)}>
+                <TableCell align="left" className={classes.tableCell}>
+                  <Avatar>{user.firstName.charAt(0)}</Avatar>
+                </TableCell>
+                <TableCell align="left" className={clsx(classes.tableCell, 'paddedLeft')}>
+                  {user.firstName} {user.lastName}
+                </TableCell>
+                <TableCell align="left" className={classes.tableCell}>
+                  {user.username}
+                </TableCell>
+                <TableCell align="left" className={classes.tableCell}>
+                  {user.email}
+                </TableCell>
+                <TableCell align="left" className={classes.tableCell}>
+                  Organization?
+                </TableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Pagination
+        rowsPerPageOptions={[5, 10, 15]}
+        classes={{ root: classes.paginationRoot }}
+        count={users.total}
+        rowsPerPage={users.limit}
+        page={users && Math.ceil(users.offset / users.limit)}
+        onChangePage={(page: number) => onChangePage(page)}
+      />
+    </section>
   );
 }
 

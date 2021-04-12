@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchAll } from '../../services/users';
 import User from '../../models/User';
 import { useLogicResource } from '../../utils/hooks';
@@ -22,28 +22,35 @@ import { ApiResponse } from '../../models/ApiResponse';
 import UsersGridUI, { UsersGridSkeletonTable } from './UsersGridUI';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { UserInfoDialog } from './UserInfoDialog';
+import { PagedArray } from '../../models/PagedArray';
 
-export default function UsersGrid() {
-  const [users, setUsers] = useState<User[]>(null);
+interface UsersGridProps {
+  limit?: number;
+}
+
+export default function UsersGrid(props) {
+  const { limit = 10 } = props;
+  const [offset, setOffset] = useState(0);
+  const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [viewUser, setViewUser] = useState(null);
 
-  useEffect(() => {
-    refresh();
-  }, []);
-
-  const refresh = () => {
-    fetchAll().subscribe(
+  const refresh = useCallback(() => {
+    fetchAll({ limit, offset }).subscribe(
       (users) => {
-        setUsers([...users]);
+        setUsers(users);
       },
       ({ response }) => {
         setError(response);
       }
     );
-  };
+  }, [limit, offset]);
 
-  const resource = useLogicResource<User[], { users: User[]; error: ApiResponse }>(
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const resource = useLogicResource<PagedArray<User>, { users: PagedArray<User>; error: ApiResponse }>(
     useMemo(() => ({ users, error }), [users, error]),
     {
       shouldResolve: (source) => Boolean(source.users) && Boolean(source.users.length),
@@ -66,11 +73,13 @@ export default function UsersGrid() {
     refresh();
   };
 
+  const onChangePage = (page: number) => {};
+
   return (
     <>
       <ErrorBoundary>
         <Suspense fallback={<UsersGridSkeletonTable />}>
-          <UsersGridUI resource={resource} onRowClicked={onRowClicked} />
+          <UsersGridUI resource={resource} onRowClicked={onRowClicked} onChangePage={onChangePage} />
         </Suspense>
       </ErrorBoundary>
       <UserInfoDialog open={Boolean(viewUser)} onClose={onUserInfoClose} onUserEdited={onUserEdited} user={viewUser} />

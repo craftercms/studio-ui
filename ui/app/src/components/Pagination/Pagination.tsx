@@ -18,6 +18,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +46,13 @@ const useStyles = makeStyles((theme: Theme) =>
       '& .MuiButtonBase-root': {
         padding: 0
       }
+    },
+    caption: {
+      order: -1,
+      marginRight: '25px'
+    },
+    selectRoot: {
+      marginRight: 0
     }
   })
 );
@@ -67,6 +75,7 @@ interface PaginationProps {
   onChangePage(page: number): void;
   labelRowsPerPage?: React.ReactNode;
   rowsPerPageOptions?: Array<number | { value: number; label: string }>;
+  classes?: Partial<Record<'root', string>>;
 }
 
 export default function Pagination(props: PaginationProps) {
@@ -76,8 +85,9 @@ export default function Pagination(props: PaginationProps) {
   return (
     <TablePagination
       classes={{
-        root: classes.pagination,
-        selectRoot: 'hidden',
+        root: clsx(classes.pagination, props.classes.root),
+        caption: rowsPerPageOptions ? classes.caption : '',
+        selectRoot: rowsPerPageOptions ? classes.selectRoot : 'hidden',
         toolbar: classes.paginationToolbar
       }}
       component="div"
