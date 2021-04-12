@@ -650,6 +650,10 @@
         return configurationApi.fetchGlobalMenuItems().toPromise();
       };
 
+      this.fetchSiteLocale = function(site) {
+        return configurationApi.fetchSiteLocale(site).toPromise();
+      };
+
       return this;
     }
   ]);
@@ -860,20 +864,6 @@
         no: formatMessage(words.no)
       };
 
-      let store;
-      CrafterCMSNext.system.getStore().subscribe((_store_) => {
-        store = _store_;
-        let currentLocale = store.getState().uiConfig.locale;
-        $scope.locale = currentLocale;
-        store.subscribe(() => {
-          const locale = store.getState().uiConfig.locale;
-          if (currentLocale !== locale) {
-            $scope.locale = locale;
-            $scope.$apply();
-          }
-        });
-      });
-
       $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
@@ -1000,7 +990,11 @@
         $scope.data.email = $scope.user.email;
       });
 
-      CrafterCMSNext.system.getStore().subscribe(() => {
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        // Retrieve current site to call fetchSiteLocale, this will be replaced with a global config (no site needed)
+        // No site selected?
+        const activeSite = store.getState().sites.active ?? 'editorial';
+
         if ($scope.user && $scope.user.username) {
           sitesService.getPermissions('', '/', $scope.user.username || $scope.user).then(function(permissions) {
             if (permissions.includes('create-site')) {
@@ -1009,22 +1003,30 @@
           });
         }
         if (authService.getUser()) {
-          authService.getStudioInfo().then(function(data) {
-            const packageVersion = data.packageVersion;
-            const simpleVersion = packageVersion.substr(0, 3);
-            $scope.aboutStudio = data;
-            $scope.versionNumber = `${packageVersion}-${data.packageBuild.substring(0, 6)}`;
-            $scope.simpleVersion = simpleVersion;
-            $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
-            $scope.attributionHTML = CrafterCMSNext.i18n.intl
-              .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
-                a: (msg) =>
-                  `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
-              })
-              .join('');
+          CrafterCMSNext.rxjs
+            .forkJoin({
+              studioInfo: authService.getStudioInfo(),
+              locale: sitesService.fetchSiteLocale(activeSite)
+            })
+            .subscribe(({ studioInfo, locale }) => {
+              // setting locale before setting build date/time info (under 'studioInfo')
+              $scope.locale = locale;
 
-            $scope.$apply();
-          });
+              const packageVersion = studioInfo.packageVersion;
+              const simpleVersion = packageVersion.substr(0, 3);
+              $scope.aboutStudio = studioInfo;
+              $scope.versionNumber = `${packageVersion}-${studioInfo.packageBuild.substring(0, 6)}`;
+              $scope.simpleVersion = simpleVersion;
+              $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
+              $scope.attributionHTML = CrafterCMSNext.i18n.intl
+                .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
+                  a: (msg) =>
+                    `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
+                })
+                .join('');
+
+              $scope.$apply();
+            });
         }
       });
 

@@ -305,20 +305,6 @@
         $cookies.put(Constants.AUDIT_TIMEZONE_COOKIE, audit.timeZone);
       };
 
-      let store;
-      CrafterCMSNext.system.getStore().subscribe((_store_) => {
-        store = _store_;
-        let currentLocale = store.getState().uiConfig.locale;
-        $scope.locale = currentLocale;
-        store.subscribe(() => {
-          const locale = store.getState().uiConfig.locale;
-          if (currentLocale !== locale) {
-            $scope.locale = locale;
-            $scope.$apply();
-          }
-        });
-      });
-
       var getUsers = function(site) {
         adminService.getUsers(site).then(
           function(data) {
@@ -578,7 +564,9 @@
         // dateFrom and dateTo are the values (not formatted) used for service calls
         audit[dateField] = audit[`${dateField}Input`];
         // dateFromInput and dateToInput are the values used to be displayed in the input fields
-        audit[`${dateField}Input`] = new Intl.DateTimeFormat(localeCode, options).format(new Date(audit[`${dateField}Input`]));
+        audit[`${dateField}Input`] = new Intl.DateTimeFormat(localeCode, options).format(
+          new Date(audit[`${dateField}Input`])
+        );
 
         audit.generalUpdate();
       };
@@ -628,7 +616,15 @@
 
       CrafterCMSNext.system.getStore().subscribe((store) => {
         $scope.sites = store.getState().sites.byId;
-        audit.getAuditInfo();
+
+        // Retrieve current site to call fetchSiteLocale, this will be replaced with a global config (no site needed)
+        // No site selected?
+        // TODO: we need store in order to get activeSite, when updating to a global config, this can be a forkJoin
+        const activeSite = store.getState().sites.active ?? 'editorial';
+        sitesService.fetchSiteLocale(activeSite).then(function(locale) {
+          $scope.locale = locale;
+          audit.getAuditInfo();
+        });
       });
     }
   ]);
