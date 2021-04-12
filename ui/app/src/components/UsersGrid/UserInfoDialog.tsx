@@ -15,7 +15,7 @@
  */
 
 import Dialog from '@material-ui/core/Dialog';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Chip, Divider, Grid, Switch } from '@material-ui/core';
@@ -38,6 +38,8 @@ import clsx from 'clsx';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { forkJoin } from 'rxjs';
 import LookupTable from '../../models/LookupTable';
+import { Skeleton } from '@material-ui/lab';
+import { rand } from '../PathNavigator/utils';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -178,7 +180,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   });
   const sites = useSitesBranch();
   const sitesById = sites.byId;
-  const mySites = Object.keys(sitesById);
+  const mySites = useMemo(() => Object.keys(sitesById), [sitesById]);
   const [lastSavedUser, setLastSavedUser] = useState(null);
   const [inProgress, setInProgress] = useState(false);
   const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
@@ -194,16 +196,13 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
 
   useEffect(() => {
     if (mySites.length) {
-      const requests = mySites.map((siteId) => {
-        console.log(siteId);
-        return fetchMyRolesInSite(siteId);
-      });
+      const requests = mySites.map((siteId) => fetchMyRolesInSite(siteId));
       forkJoin(requests).subscribe((responses) => {
         const lookup = {};
         responses.forEach((roles, i) => {
           lookup[mySites[i]] = roles;
         });
-        console.log(lookup);
+        setRolesBySite(lookup);
       });
     }
   }, [mySites]);
@@ -387,7 +386,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
             <FormattedMessage id="userInfoDialog.siteMemberships" defaultMessage="Site Memberships" />
           </Typography>
           <Grid container spacing={3} className={classes.membershipsWrapper}>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <Typography variant="subtitle2" color="textSecondary">
                 {formatMessage(translations.siteName)}
               </Typography>
@@ -397,10 +396,19 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
                 </Typography>
               ))}
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={8}>
               <Typography variant="subtitle2" color="textSecondary">
                 {formatMessage(translations.roles)}
               </Typography>
+              {Object.values(sitesById).map((site, i) =>
+                rolesBySite[site.id] ? (
+                  <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                    {rolesBySite[site.id].join(', ')}
+                  </Typography>
+                ) : (
+                  <Skeleton key={i} variant="text" className={classes.siteItem} style={{ width: `${rand(50, 90)}%` }} />
+                )
+              )}
             </Grid>
           </Grid>
         </section>
