@@ -869,6 +869,7 @@
           const locale = store.getState().uiConfig.locale;
           if (currentLocale !== locale) {
             currentLocale = locale;
+            $scope.$apply();
           }
         });
       });
