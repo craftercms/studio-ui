@@ -195,9 +195,7 @@ function PublishForm(props: PublishFormProps) {
     setSubmitDisabled,
     disabled = true
   } = props;
-  const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
-    (state) => state.uiConfig.locale.localeCode
-  );
+  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   useEffect(
     () => {
@@ -301,7 +299,8 @@ function PublishForm(props: PublishFormProps) {
             onChange={dateTimePickerChange}
             onError={() => setSubmitDisabled(true)}
             date={inputs.scheduledDateTime}
-            localeCode={localeCode}
+            localeCode={locale.localeCode}
+            hour12={locale.dateFormatOptions?.hour12 ?? true}
             timeZonePickerProps={{
               timezone: inputs.scheduledTimeZone
             }}

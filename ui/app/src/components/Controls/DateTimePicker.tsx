@@ -70,6 +70,7 @@ interface DateTimePickerProps {
     onTimezoneChange?: Function;
   };
   localeCode?: string;
+  hour12?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -160,7 +161,8 @@ function DateTimePicker(props: DateTimePickerProps) {
     datePickerProps = {},
     timePickerProps = {},
     timeZonePickerProps = {},
-    localeCode
+    localeCode,
+    hour12
   } = props;
   const classes = useStyles({});
   const [pickerState, setPickerState] = useState({
@@ -303,6 +305,7 @@ function DateTimePicker(props: DateTimePickerProps) {
             disabled={disabled}
             error={!pickerState.timeValid}
             helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
+            ampm={hour12}
           />
         )}
       </MuiPickersUtilsProvider>
