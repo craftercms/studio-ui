@@ -868,7 +868,7 @@
         store.subscribe(() => {
           const locale = store.getState().uiConfig.locale;
           if (currentLocale !== locale) {
-            currentLocale = locale;
+            $scope.locale = locale;
             $scope.$apply();
           }
         });
