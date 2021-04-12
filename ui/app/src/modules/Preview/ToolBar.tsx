@@ -61,6 +61,8 @@ import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
 import { hasCreateAction, hasEditAction } from '../../utils/content';
+import ItemDisplay from '../../components/ItemDisplay';
+// import PathNavigatorTreeSkeletonItem from '../../components/PathNavigatorTree/PathNavigatorTreeSkeletonItem';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -144,6 +146,14 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
     itemActionSkeleton: {
       width: 40,
       margin: '0 5px'
+    },
+    itemDisplayWrapper: {
+      marginRight: 'auto',
+      overflow: 'hidden'
+    },
+    itemDisplaySkeleton: {
+      marginLeft: '5px',
+      width: '100%'
     }
   })
 );
@@ -226,17 +236,25 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           ))}
         </Select>
-        <PagesSearchAhead
-          value={internalUrl}
-          placeholder={noSiteSet ? '' : '/'}
-          disabled={disabled}
-          onEnter={(value) => onUrlChange(value)}
-          classes={{
-            input: classes.input
-          }}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-        />
+        {/* {!item && <PathNavigatorTreeSkeletonItem classes={{ root: classes.itemDisplaySkeleton }} textWidth="80%" />} */}
+        {!focus && item && (
+          <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
+            <ItemDisplay item={item} showPath={true} styles={{ root: { maxWidth: '100%' } }} />
+          </div>
+        )}
+        {(focus || !item) && (
+          <PagesSearchAhead
+            value={internalUrl}
+            placeholder={noSiteSet ? '' : '/'}
+            disabled={disabled}
+            onEnter={(value) => onUrlChange(value)}
+            classes={{
+              input: classes.input
+            }}
+            onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
+          />
+        )}
         <SingleItemSelector
           disabled={disabled}
           rootPath="/site/website/index.xml"
