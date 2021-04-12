@@ -618,6 +618,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         if (cursorPosition > -1 && cursorPosition < 3) {
           if (hourValue.charAt(0) == '0') hourValue = hourValue.charAt(1);
 
+          if (hourValue === "11") {
+            amPmValue = amPmValue === 'am' ? 'pm': 'am';
+          }
           hourValue = (parseInt(hourValue, 10) % 12) + 1;
 
           if (hourValue.toString().length < 2) hourValue = '0' + hourValue;
@@ -686,6 +689,10 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
         if (cursorPosition > -1 && cursorPosition < 3) {
           if (hourValue.charAt(0) == '0') hourValue = hourValue.charAt(1);
+
+          if (hourValue === "12") {
+            amPmValue = amPmValue === 'am' ? 'pm': 'am';
+          }
 
           if (parseInt(hourValue, 10) == 1) {
             hourValue = 12;
