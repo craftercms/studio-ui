@@ -29,33 +29,40 @@ interface UsersGridProps {
 }
 
 export default function UsersGrid(props: UsersGridProps) {
-  const { limit = 2 } = props;
   const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(props.limit ?? 10);
+  const [fetching, setFetching] = useState(false);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [viewUser, setViewUser] = useState(null);
 
-  const refresh = useCallback(() => {
+  const fetchUsers = useCallback(() => {
+    setFetching(true);
     fetchAll({ limit, offset }).subscribe(
       (users) => {
+        setFetching(false);
         setUsers(users);
       },
       ({ response }) => {
+        setFetching(false);
         setError(response);
       }
     );
   }, [limit, offset]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    fetchUsers();
+  }, [fetchUsers]);
 
-  const resource = useLogicResource<PagedArray<User>, { users: PagedArray<User>; error: ApiResponse }>(
-    useMemo(() => ({ users, error }), [users, error]),
+  const resource = useLogicResource<
+    PagedArray<User>,
+    { users: PagedArray<User>; error: ApiResponse; fetching: boolean }
+  >(
+    useMemo(() => ({ users, error, fetching }), [users, error, fetching]),
     {
-      shouldResolve: (source) => Boolean(source.users) && Boolean(source.users.length),
+      shouldResolve: (source) => Boolean(source.users) && Boolean(source.users.length) && !fetching,
       shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => resource.complete,
+      shouldRenew: (source, resource) => resource.complete && !fetching,
       resultSelector: (source) => source.users,
       errorSelector: () => error
     }
@@ -70,16 +77,28 @@ export default function UsersGrid(props: UsersGridProps) {
   };
 
   const onUserEdited = () => {
-    refresh();
+    fetchUsers();
   };
 
-  const onChangePage = (page: number) => {};
+  const onChangePage = (page: number) => {
+    setOffset(page * limit);
+    fetchUsers();
+  };
+
+  const onChangeRowsPerPage = (e) => {
+    setLimit(e.target.value);
+  };
 
   return (
     <>
       <ErrorBoundary>
-        <Suspense fallback={<UsersGridSkeletonTable />}>
-          <UsersGridUI resource={resource} onRowClicked={onRowClicked} onChangePage={onChangePage} />
+        <Suspense fallback={<UsersGridSkeletonTable numOfItems={limit} />}>
+          <UsersGridUI
+            resource={resource}
+            onRowClicked={onRowClicked}
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+          />
         </Suspense>
       </ErrorBoundary>
       <UserInfoDialog open={Boolean(viewUser)} onClose={onUserInfoClose} onUserEdited={onUserEdited} user={viewUser} />
