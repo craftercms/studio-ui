@@ -16,7 +16,15 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
-import { useActiveSiteId, useActiveUser, useEnv, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useActiveUser,
+  useEnv,
+  useItemsByPath,
+  useMount,
+  useSelection,
+  useSubject
+} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
@@ -126,6 +134,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { authoringBase } = useEnv();
 
   const dispatch = useDispatch();
+
+  useMount(() => {
+    if (state) {
+      // Restoring state from state;
+      state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
+    }
+  });
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -386,7 +401,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
-      if (childrenByParentPath[path]) {
+      if (nodesByPathRef[path]) {
         dispatch(
           pathNavigatorTreeExpandPath({
             id,
@@ -456,9 +471,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
-    // nodesByPathRef.current[path].children.push({ id: 'loading' });
     fetchingPathsRef.current.push(path);
-    // setData({ ...nodesByPathRef.current[rootPath] });
     dispatch(
       pathNavigatorTreeFetchPathPage({
         id,
