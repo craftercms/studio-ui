@@ -28,8 +28,8 @@ interface UsersGridProps {
   limit?: number;
 }
 
-export default function UsersGrid(props) {
-  const { limit = 10 } = props;
+export default function UsersGrid(props: UsersGridProps) {
+  const { limit = 2 } = props;
   const [offset, setOffset] = useState(0);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();

@@ -50,16 +50,15 @@ export function trash(username: string): Observable<true> {
 }
 
 export function fetchAll(options?: PaginationOptions): Observable<PagedArray<User>> {
-  const qs = toQueryString({
+  const mergedOptions = {
     limit: 100,
     offset: 0,
     ...options
-  });
-  return get(`/studio/api/2/users${qs}`).pipe(
+  };
+  return get(`/studio/api/2/users${toQueryString(mergedOptions)}`).pipe(
     map(({ response }) =>
       Object.assign(response.users, {
-        // TODO: limit is not returning the same limit we sent on the parameters
-        limit: response.limit,
+        limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
         offset: response.offset,
         total: response.total
       })
