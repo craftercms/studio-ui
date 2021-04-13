@@ -148,8 +148,9 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       margin: '0 5px'
     },
     itemDisplayWrapper: {
-      marginRight: 'auto',
-      overflow: 'hidden'
+      width: '100%',
+      overflow: 'hidden',
+      cursor: 'pointer'
     },
     itemDisplaySkeleton: {
       marginLeft: '5px',
@@ -236,10 +237,9 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           ))}
         </Select>
-        {/* {!item && <PathNavigatorTreeSkeletonItem classes={{ root: classes.itemDisplaySkeleton }} textWidth="80%" />} */}
         {!focus && item && (
           <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
-            <ItemDisplay item={item} showPath={true} styles={{ root: { maxWidth: '100%' } }} />
+            <ItemDisplay item={item} showPreviewUrl={true} styles={{ root: { maxWidth: '100%' } }} />
           </div>
         )}
         {(focus || !item) && (

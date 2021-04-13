@@ -77,7 +77,7 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
   showItemType?: boolean;
-  showPath?: boolean;
+  showPreviewUrl?: boolean;
   showNavigableAsLinks?: boolean;
   classes?: Partial<Record<ItemDisplayClassKey, string>>;
   styles?: ItemDisplayStyles;
@@ -337,7 +337,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showItemType = true,
     showNavigableAsLinks = true,
     isNavigableFn = isPreviewable,
-    showPath = false,
+    showPreviewUrl = false,
     labelTypographyProps,
     pathTypographyProps,
     ...rest
@@ -349,7 +349,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
       {showWorkflowState && <ItemStateIcon item={item} classes={classes} />}
       {showItemType && <ItemTypeIcon item={item} classes={classes} />}
       <Typography
-        noWrap={!showPath}
+        noWrap={!showPreviewUrl}
         component="span"
         {...labelTypographyProps}
         className={clsx(
@@ -360,14 +360,14 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         title={item.label}
         children={item.label}
       />
-      {showPath && (
+      {showPreviewUrl && (
         <Typography
           noWrap
           color="textSecondary"
           {...pathTypographyProps}
           className={clsx(classes.path, labelTypographyProps?.className)}
           title={item.path}
-          children={item.path}
+          children={`• ${item.previewUrl}`}
         />
       )}
     </span>
