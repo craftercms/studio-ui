@@ -617,12 +617,20 @@
       CrafterCMSNext.system.getStore().subscribe((store) => {
         $scope.sites = store.getState().sites.byId;
 
-        // Retrieve current site to call fetchSiteLocale, this will be replaced with a global config (no site needed)
-        // No site selected?
         // TODO: we need store in order to get activeSite, when updating to a global config, this can be a forkJoin
-        const activeSite = store.getState().sites.active ?? 'editorial';
-        sitesService.fetchSiteLocale(activeSite).then(function(locale) {
-          $scope.locale = locale;
+        const activeSite = store.getState().sites.active;
+        sitesService.fetchSiteLocale(activeSite).then((locale) => {
+          if (Object.keys(locale).length === 0) {
+            $scope.locale = {
+              localeCode: 'en-US',
+              dateFormatOptions: {
+                timeZone: 'EST5EDT'
+              }
+            };
+          } else {
+            $scope.locale = locale;
+          }
+
           audit.getAuditInfo();
         });
       });

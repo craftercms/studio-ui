@@ -992,8 +992,7 @@
 
       CrafterCMSNext.system.getStore().subscribe((store) => {
         // Retrieve current site to call fetchSiteLocale, this will be replaced with a global config (no site needed)
-        // No site selected?
-        const activeSite = store.getState().sites.active ?? 'editorial';
+        const activeSite = store.getState().sites.active;
 
         if ($scope.user && $scope.user.username) {
           sitesService.getPermissions('', '/', $scope.user.username || $scope.user).then(function(permissions) {
@@ -1010,7 +1009,16 @@
             })
             .subscribe(({ studioInfo, locale }) => {
               // setting locale before setting build date/time info (under 'studioInfo')
-              $scope.locale = locale;
+              if (Object.keys(locale).length === 0) {
+                $scope.locale = {
+                  localeCode: 'en-US',
+                  dateFormatOptions: {
+                    timeZone: 'EST5EDT'
+                  }
+                };
+              } else {
+                $scope.locale = locale;
+              }
 
               const packageVersion = studioInfo.packageVersion;
               const simpleVersion = packageVersion.substr(0, 3);
