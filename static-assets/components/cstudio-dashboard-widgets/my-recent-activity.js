@@ -330,7 +330,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       WcmDashboardWidgetCommon.getDisplayName(item),
       '</td>',
       '<td class="ttThColLast alignRight">',
-      CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone) + '---',
+      CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
       '</td>'
     ];
 
