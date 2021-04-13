@@ -71,7 +71,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
               defaultMessage: 'Dashboard'
             },
             icon: {
-              baseClass: 'fa fa-tasks'
+              id: '@material-ui/icons/DashboardOutlined'
             },
             widget: {
               id: 'craftercms.components.LegacyDashboardFrame',
@@ -98,9 +98,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                   id: 'Pages',
                   label: 'Pages',
                   icon: {
-                    baseClass: 'fa',
-                    expandedClass: 'fa-file-text-o',
-                    collapsedClass: 'fa-file-text'
+                    expanded: '@material-ui/icons/DescriptionOutlined',
+                    collapsed: '@material-ui/icons/DescriptionRounded'
                   },
                   rootPath: '/site/website/index.xml',
                   locale: 'en'
@@ -113,7 +112,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                   id: 'Components',
                   label: 'Components',
                   icon: {
-                    baseClass: 'fa fa-puzzle-piece'
+                    expanded: '@material-ui/icons/ExtensionOutlined',
+                    collapsed: '@material-ui/icons/ExtensionRounded'
                   },
                   rootPath: '/site/components',
                   locale: 'en'
@@ -126,7 +126,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                   id: 'Taxonomy',
                   label: 'Taxonomy',
                   icon: {
-                    baseClass: 'fa fa-tags'
+                    expanded: '@material-ui/icons/LocalOfferOutlined',
+                    collapsed: '@material-ui/icons/LocalOfferRounded'
                   },
                   rootPath: '/site/taxonomy',
                   locale: 'en'
@@ -139,7 +140,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                   id: 'StaticAssets',
                   label: 'Static Assets',
                   icon: {
-                    baseClass: 'fa fa-image'
+                    expanded: '@material-ui/icons/ImageOutlined',
+                    collapsed: '@material-ui/icons/ImageRounded'
                   },
                   rootPath: '/static-assets',
                   locale: 'en'
@@ -151,7 +153,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   label: 'Templates',
                   icon: {
-                    baseClass: 'fa fa-file-code-o'
+                    expanded: '@material-ui/icons/InsertDriveFileOutlined',
+                    collapsed: '@material-ui/icons/InsertDriveFileRounded'
                   },
                   rootPath: '/templates',
                   locale: 'en'
@@ -163,7 +166,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   label: 'Scripts',
                   icon: {
-                    baseClass: 'fa fa-code'
+                    expanded: '@material-ui/icons/CodeRounded',
+                    collapsed: '@material-ui/icons/CodeRounded'
                   },
                   container: {
                     baseStyle: {
@@ -184,7 +188,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
           configuration: {
             title: messages.siteTools,
             icon: {
-              baseClass: 'fa fa-sliders'
+              id: '@material-ui/icons/TuneRounded'
             },
             widgets: [
               {
@@ -196,7 +200,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Content Types'
                   },
                   icon: {
-                    baseClass: 'fa fa-th-large'
+                    id: '@material-ui/icons/WidgetsOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -216,7 +220,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Encryption Tool'
                   },
                   icon: {
-                    baseClass: 'fa fa-lock'
+                    id: '@material-ui/icons/LockOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -233,7 +237,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   title: messages.configuration,
                   icon: {
-                    baseClass: 'fa fa-cogs'
+                    id: '@material-ui/icons/SettingsApplicationsOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -253,7 +257,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Audit'
                   },
                   icon: {
-                    baseClass: 'fa fa-align-justify'
+                    id: '@material-ui/icons/FormatAlignJustifyRounded'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -270,7 +274,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   title: messages.workflowStates,
                   icon: {
-                    baseClass: 'fa fa-cog'
+                    id: '@material-ui/icons/SettingsOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -290,7 +294,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Log Console'
                   },
                   icon: {
-                    baseClass: 'fa fa-align-left'
+                    id: '@material-ui/icons/FormatAlignLeftRounded'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -307,7 +311,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   title: messages.publishing,
                   icon: {
-                    baseClass: 'fa fa-cloud-upload'
+                    id: '@material-ui/icons/CloudUploadOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -324,7 +328,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   title: messages.remoteRepositories,
                   icon: {
-                    baseClass: 'fa fa-database'
+                    id: '@material-ui/icons/StorageRounded'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -341,7 +345,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   title: 'GraphQL',
                   icon: {
-                    baseClass: 'fa fa-line-chart'
+                    id: '@material-ui/icons/PollOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -361,7 +365,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Plugin Management'
                   },
                   icon: {
-                    baseClass: 'fa fa-puzzle-piece'
+                    id: '@material-ui/icons/ExtensionOutlined'
                   },
                   widget: {
                     id: 'craftercms.components.PluginManagement',

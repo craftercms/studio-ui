@@ -222,6 +222,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           icon?.baseClass,
           icon ? (state.collapsed ? icon.collapsedClass : icon.expandedClass) : null
         )}
+        icon={icon ? (state.collapsed ? icon.collapsed : icon.expanded) : null}
         iconStyle={{
           ...icon?.baseStyle,
           ...(icon ? (state.collapsed ? icon.collapsedStyle : icon.expandedStyle) : null)
