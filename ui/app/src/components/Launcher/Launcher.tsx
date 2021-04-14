@@ -77,27 +77,12 @@ import FormatAlignCenterRounded from '@material-ui/icons/FormatAlignCenterRounde
 import LockRounded from '@material-ui/icons/LockRounded';
 import PublicRounded from '@material-ui/icons/PublicRounded';
 import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
-import DashboardOutlined from '@material-ui/icons/DashboardOutlined';
-import TuneRoundedIcon from '@material-ui/icons/TuneRounded';
-import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined';
-import DescriptionRounded from '@material-ui/icons/DescriptionRounded';
-import ExtensionRoundedIcon from '@material-ui/icons/ExtensionRounded';
-import ExtensionOutlined from '@material-ui/icons/ExtensionOutlined';
-import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
-import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
-import ImageRoundedIcon from '@material-ui/icons/ImageRounded';
-import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
-import CodeRoundedIcon from '@material-ui/icons/CodeRounded';
-import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
+
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import WidgetsOutlinedIcon from '@material-ui/icons/WidgetsOutlined';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import SettingsApplicationsOutlinedIcon from '@material-ui/icons/SettingsApplicationsOutlined';
-import FormatAlignJustifyRoundedIcon from '@material-ui/icons/FormatAlignJustifyRounded';
-import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
-import FormatAlignLeftRoundedIcon from '@material-ui/icons/FormatAlignLeftRounded';
-import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
-import PollOutlinedIcon from '@material-ui/icons/PollOutlined';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import CodeRoundedIcon from '@material-ui/icons/CodeRounded';
+import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
+import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
 
 export interface LauncherProps {
   open: boolean;
@@ -501,27 +486,12 @@ Object.entries({
   '@material-ui/icons/LockRounded': LockRounded,
   '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
   '@material-ui/icons/PublicRounded': PublicRounded,
-  '@material-ui/icons/DashboardOutlined': DashboardOutlined,
-  '@material-ui/icons/TuneRounded': TuneRoundedIcon,
-  '@material-ui/icons/DescriptionOutlined': DescriptionOutlined,
-  '@material-ui/icons/DescriptionRounded': DescriptionRounded,
-  '@material-ui/icons/ExtensionRounded': ExtensionRoundedIcon,
-  '@material-ui/icons/ExtensionOutlined': ExtensionOutlined,
-  '@material-ui/icons/LocalOfferOutlined': LocalOfferOutlinedIcon,
-  '@material-ui/icons/LocalOfferRounded': LocalOfferRoundedIcon,
-  '@material-ui/icons/ImageRounded': ImageRoundedIcon,
-  '@material-ui/icons/ImageOutlined': ImageOutlinedIcon,
-  '@material-ui/icons/CodeRounded': CodeRoundedIcon,
-  '@material-ui/icons/InsertDriveFileRounded': InsertDriveFileRoundedIcon,
+
   '@material-ui/icons/InsertDriveFileOutlined': InsertDriveFileOutlinedIcon,
-  '@material-ui/icons/WidgetsOutlined': WidgetsOutlinedIcon,
-  '@material-ui/icons/LockOutlined': LockOutlinedIcon,
-  '@material-ui/icons/SettingsApplicationsOutlined': SettingsApplicationsOutlinedIcon,
-  '@material-ui/icons/FormatAlignJustifyRounded': FormatAlignJustifyRoundedIcon,
-  '@material-ui/icons/SettingsOutlined': SettingsOutlinedIcon,
-  '@material-ui/icons/FormatAlignLeftRounded': FormatAlignLeftRoundedIcon,
-  '@material-ui/icons/CloudUploadOutlined': CloudUploadOutlinedIcon,
-  '@material-ui/icons/PollOutlined': PollOutlinedIcon
+  '@material-ui/icons/VideocamOutlined': VideocamOutlinedIcon,
+  '@material-ui/icons/CodeRounded': CodeRoundedIcon,
+  '@material-ui/icons/ExtensionOutlined': ExtensionOutlinedIcon,
+  '@material-ui/icons/LocalOfferOutlined': LocalOfferOutlinedIcon
 }).forEach(([id, component]) => {
   components.set(id, component);
 });
