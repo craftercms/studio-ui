@@ -26,7 +26,7 @@ interface NonReactWidgetProps {
 
 function NonReactWidget(props: NonReactWidgetProps) {
   const ref = useRef();
-  useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration }));
+  useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration ?? {} }));
   return <div ref={ref} />;
 }
 
