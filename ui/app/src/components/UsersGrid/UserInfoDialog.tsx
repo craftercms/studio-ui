@@ -42,6 +42,7 @@ import LookupTable from '../../models/LookupTable';
 import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ResetPasswordDialog from './ResetPasswordDialog';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -203,6 +204,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   const [inProgress, setInProgress] = useState(false);
   const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
   const [dirty, setDirty] = useState(false);
+  const [openResetPassword, setOpenResetPassword] = useState(false);
 
   const editMode = !props.user?.externallyManaged;
 
@@ -324,7 +326,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
           <Typography variant="subtitle1">{user.username}</Typography>
         </section>
         <section className={classes.actions}>
-          <IconButton>
+          <IconButton onClick={() => setOpenResetPassword(true)}>
             <PasswordRoundedIcon />
           </IconButton>
           <ConfirmDropdown
@@ -421,7 +423,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
                 </SecondaryButton>
                 <PrimaryButton disabled={!dirty || inProgress} onClick={onSave}>
                   {inProgress ? (
-                    <CircularProgress size={15} />
+                    <CircularProgress size={20} />
                   ) : (
                     <FormattedMessage id="words.save" defaultMessage="Save" />
                   )}
@@ -463,6 +465,13 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
           </Grid>
         </section>
       </DialogBody>
+      <ResetPasswordDialog
+        open={openResetPassword}
+        user={user}
+        onClose={() => {
+          setOpenResetPassword(false);
+        }}
+      />
     </>
   );
 }

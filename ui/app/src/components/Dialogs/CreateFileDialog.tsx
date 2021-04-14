@@ -236,7 +236,7 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
         <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''}>
-          {inProgress ? <CircularProgress size={15} /> : <FormattedMessage id="words.create" defaultMessage="Create" />}
+          {inProgress ? <CircularProgress size={20} /> : <FormattedMessage id="words.create" defaultMessage="Create" />}
         </PrimaryButton>
       </DialogFooter>
       <ConfirmDialog

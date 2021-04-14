@@ -21,3 +21,5 @@ export * from './UsersGrid';
 export * from './UsersGridUI';
 
 export * from './UserInfoDialog';
+
+export * from './ResetPasswordDialog';

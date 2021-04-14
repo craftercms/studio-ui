@@ -149,11 +149,7 @@ export function CreateTokenUI(props: CreateTokenUIProps) {
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton type="submit" onClick={onSubmit} autoFocus disabled={disabled || label === ''}>
-          {disabled ? (
-            <CircularProgress size={15} style={{ marginRight: '5px' }} />
-          ) : (
-            <FormattedMessage id="words.submit" defaultMessage="Submit" />
-          )}
+          {disabled ? <CircularProgress size={20} /> : <FormattedMessage id="words.submit" defaultMessage="Submit" />}
         </PrimaryButton>
       </DialogFooter>
     </form>

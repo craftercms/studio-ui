@@ -1203,71 +1203,6 @@
         }).then((done) => (unmount = done.unmount));
       };
 
-      var getUsers = function() {
-        users.totalUsers = 0;
-        users.searchdirty = false;
-        getResultsPage(1);
-
-        users.pagination = {
-          current: 1,
-          goToLast: () => {
-            const total = users.totalLogs,
-              itemsPerPage = users.itemsPerPage,
-              lastPage = Math.ceil(total / itemsPerPage);
-            users.pagination.current = lastPage;
-          }
-        };
-
-        users.pageChanged = function(newPage) {
-          getResultsPage(newPage);
-        };
-
-        function getResultsPage(pageNumber) {
-          var params = {};
-
-          if (users.totalLogs && users.totalLogs > 0) {
-            var offset = (pageNumber - 1) * users.itemsPerPage,
-              end = offset + users.itemsPerPage;
-            params.offset = offset;
-            params.limit = users.itemsPerPage;
-          } else {
-            params.offset = 0;
-            params.limit = users.itemsPerPage;
-          }
-          params.sort = 'desc';
-
-          adminService.getUsers(params).then(function(data) {
-            users.totalLogs = data.total;
-            $scope.usersCollection = data;
-            $scope.$apply();
-          });
-        }
-      };
-
-      CrafterCMSNext.system.getStore().subscribe(() => {
-        getUsers();
-      });
-
-      users.searchUser = function(query) {
-        if ('' === query) {
-          $scope.usersCollection = users.usersCollectionBackup;
-          users.itemsPerPage = users.itemsPerPageBackup;
-          users.searchdirty = false;
-        } else {
-          if (!users.searchdirty) {
-            users.searchdirty = true;
-
-            adminService.getUsers().then(function(data) {
-              users.usersCollectionBackup = $scope.usersCollection;
-              users.itemsPerPageBackup = users.itemsPerPage;
-              $scope.usersCollection = data;
-              users.itemsPerPage = adminService.maxInt;
-              $scope.$apply();
-            });
-          }
-        }
-      };
-
       users.createUserDialog = function() {
         $scope.user = {};
         $scope.okModalFunction = users.createUser;
@@ -1276,6 +1211,7 @@
         $scope.dialogMode = 'CREATE';
         $scope.dialogEdit = false;
       };
+
       users.createUser = function(user) {
         adminService.createUser(user).then(
           function(data) {
@@ -1300,48 +1236,7 @@
           }
         );
       };
-      users.resetPasswordDialog = function(user) {
-        $scope.editedUser = user;
-        $scope.user = {};
-        $scope.okModalFunction = users.editPassword;
 
-        $scope.adminModal = $scope.showModal('resetPassword.html', null, null, 'modal-top-override modal-reset-pass');
-
-        adminService.getUser(user.username).then(
-          function(data) {
-            data = { user: data };
-            $scope.user = data.user;
-            $scope.user.enabled = data.user.enabled;
-            $scope.$apply();
-          },
-          function(error) {
-            console.log(error);
-          }
-        );
-      };
-      users.editPassword = function(user) {
-        user.password = user.newPassword;
-        adminService
-          .resetPassword({
-            username: user.username,
-            new: user.newPassword
-          })
-          .then(
-            function() {
-              $rootScope.showNotification(formatMessage(usersAdminMessages.userEdited, { username: user.username }));
-              $scope.hideModal();
-            },
-            function(error) {
-              $rootScope.showNotification(
-                error.response.message + '. ' + error.response.remedialAction,
-                null,
-                null,
-                'error'
-              );
-            }
-          );
-        delete user.newPassword;
-      };
       users.editUserDialog = function(user) {
         $scope.editedUser = user;
         $scope.user = {};
@@ -1424,29 +1319,6 @@
         // user.status.enabled = $('#enabled').is(':checked');
 
         adminService.toggleUserStatus(user, newStatus);
-      };
-      users.removeUser = function(user) {
-        var deleteUser = function() {
-          adminService.deleteUser(user).then(
-            function(data) {
-              var index = $scope.usersCollection.indexOf(user);
-              if (index !== -1) {
-                $scope.usersCollection.splice(index, 1);
-                $scope.users.totalLogs--;
-              }
-              $rootScope.showNotification(formatMessage(usersAdminMessages.userDeleted, { username: user.username }));
-            },
-            function(data) {
-              $scope.error = data.response.message;
-              $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
-            }
-          );
-        };
-
-        $scope.confirmationAction = deleteUser;
-        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${user.username}?`;
-
-        $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, 'studioMedium');
       };
     }
   ]);

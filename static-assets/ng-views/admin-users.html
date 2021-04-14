@@ -36,113 +36,6 @@
 
           <div id="users-grid" ng-init="initGrid()"></div>
 
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th></th>
-                <th>{{ 'admin.users.USER_NAME' | translate }}</th>
-                <th>{{ 'admin.users.FIRST_NAME' | translate }}</th>
-                <th>{{ 'admin.users.LAST_NAME' | translate }}</th>
-                <th>{{ 'admin.users.EMAIL' | translate }}</th>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-              <tr>
-                <th colspan="12">
-                  <input
-                    id="users-search-input"
-                    data-ng-change="users.searchUser(q)"
-                    ng-model="q"
-                    class="form-control"
-                    placeholder="{{ 'common.SEARCH_LABEL' | translate }}"
-                    type="text"
-                  />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
-                current-page="users.pagination.current"
-                total-items="users.totalLogs"
-                id="user-row-{{user.username}}"
-              >
-                <td>
-                  <span
-                    class="icon-externally-managed"
-                    ng-if="user.externallyManaged"
-                    tooltip-placement="bottom"
-                    uib-tooltip="{{ 'admin.users.EXTERNALLY_MANAGED' | translate }}"
-                  >
-                    <i class="fa fa fa-external-link"></i>
-                  </span>
-                </td>
-                <td class="userName">
-                  <a class="username trim inline-block" ng-click="users.viewUser(user)">
-                    {{user.username}}
-                  </a>
-                </td>
-                <td class="firstName">{{user.firstName}}</td>
-                <td class="lastName">{{user.lastName}}</td>
-                <td class="email">{{user.email}}</td>
-
-                <td class="edit">
-                  <a
-                    ng-click="users.editUserDialog(user)"
-                    class="btn btn-sm"
-                    tooltip-placement="bottom"
-                    uib-tooltip="{{'common.EDIT' | translate}}"
-                  >
-                    <i class="fa fa-pencil"> </i>
-                  </a>
-                </td>
-                <td class="reset-password">
-                  <a
-                    ng-click="users.resetPasswordDialog(user)"
-                    class="btn btn-sm"
-                    tooltip-placement="bottom"
-                    uib-tooltip="{{'common.RESET_PASSWORD' | translate}}"
-                  >
-                    <i class="fa fa-key fa-flip-horizontal"> </i>
-                  </a>
-                </td>
-                <td class="remove">
-                  <a
-                    ng-click="users.removeUser(user)"
-                    class="btn btn-sm"
-                    tooltip-placement="bottom"
-                    uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
-                  >
-                    <i class="fa fa-trash-o"> </i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="global-menu-pagination-wrapper">
-            <div ng-show="!users.searchdirty" class="mr10">
-              <label class="mr5">{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
-              <input
-                id="users-items-per-page"
-                class="audit-number-logs"
-                type="number"
-                name="input"
-                ng-model="users.itemsPerPage"
-                min="1"
-                max="99"
-                ng-model-options="{debounce: debounceDelay}"
-                only-digits
-              />
-            </div>
-
-            <dir-pagination-controls
-              ng-show="!users.searchdirty"
-              on-page-change="users.pageChanged(newPageNumber)"
-            ></dir-pagination-controls>
-          </div>
-
           <p class="create-user-helper-text">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</p>
         </div>
       </div>
@@ -398,66 +291,6 @@
   </form>
 </script>
 
-<script type="text/ng-template" id="resetPassword.html">
-  <div class="modal-header">
-    <h3 class="modal-title">{{ 'common.RESET_PASSWORD' | translate }}</h3>
-  </div>
-  <form name="passwordForm" id="password-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-    <div class="modal-body clearfix edit-edit admin-dialog">
-      <div class="col-md-12">
-        <fieldset ng-disabled="user.externallyManaged">
-          <div class="form-group">
-            <label for="userName" class="control-label">
-              {{ 'admin.users.USER_NAME' | translate }}
-            </label>
-            <input
-              name="userName" type="text" readonly value="{{user.username}}" disabled
-              class="form-control"
-            />
-          </div>
-          <div class="form-group">
-            <label for="newPassword" class="control-label">
-              {{ 'common.RESET_PASSWORD' | translate }}
-            </label>
-            <input
-              type="password" class="form-control" id="newPassword" name="newPassword"
-              ng-model="user.newPassword"
-              placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
-              required ng-init="newPasswordRequirements()"
-            >
-            <div
-              class="error-container"
-              ng-show="(passwordForm.newPassword.$dirty && passwordForm.newPassword.$invalid) || (passwordForm.newPassword.$touched && passwordForm.newPassword.$invalid)"
-            >
-              <small
-                class="error"
-                ng-show="passwordForm.newPassword.$error.required"
-              >
-                {{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-              </small>
-            </div>
-            <div class="error-container" ng-show="validResetPass">
-              <small class="error ng-binding" ng-show="validResetPass">
-                {{ users.messages.fulfillAllReqErrorMessage }}
-              </small>
-            </div>
-          </div>
-        </fieldset>
-        <div class="alert alert-danger" ng-if="usersError">
-          {{usersError.message}}. {{usersError.remedialAction}}
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer" id="new-user-dialog-footer">
-      <button type="button" ng-if="!dialogMode" class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-      <button type="button" ng-if="dialogMode" class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
-      <button class="btn btn-primary text-capitalize"
-              ng-click="okModalFunction(user)" ng-disabled="passwordForm.$invalid || user.externallyManaged || validResetPass">{{ 'admin.users.SAVE' | translate }}</button>
-    </div>
-  </form>
-</script>
-
 <script type="text/ng-template" id="creatingUserConfirmation.html">
   <div class="modal-header">
     <h3 class="modal-title">Creating User</h3>  <!-- TODO: pending display current action & translate -->
@@ -489,18 +322,5 @@
       <span class="icon fa fa-{{ notificationType }}"></span>
       <span class="text"> {{ notificationText }}</span>
     </p>
-  </div>
-</script>
-
-<script type="text/ng-template" id="deleteUserError.html">
-  <div class="modal-header">
-    <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
-  </div>
-  <div id="delete-user-error" class="modal-body">
-    <p class="errorTitle">{{ 'admin.users.DELETE_ERROR' | translate }}</p>
-    <p class="word-wrap errorMessage">{{ 'admin.users.ERROR' | translate }} {{error}}</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
   </div>
 </script>
