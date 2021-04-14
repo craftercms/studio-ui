@@ -3294,7 +3294,7 @@ var nodeOpen = false,
             return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
           } else {
             // Handle indexed exp `{parentPath[i]}`
-            return parentPathPieces[index + 2];
+            return parentPathPieces[parseInt(index) + 2];
           }
         });
 
