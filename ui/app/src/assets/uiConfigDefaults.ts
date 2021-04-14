@@ -97,8 +97,12 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Pages',
                   label: 'Pages',
-                  expandedIcon: { id: '@material-ui/icons/DescriptionOutlined' },
-                  collapsedIcon: { id: '@material-ui/icons/DescriptionRounded' },
+                  expandedIcon: {
+                    id: '@material-ui/icons/DescriptionOutlined'
+                  },
+                  collapsedIcon: {
+                    id: '@material-ui/icons/DescriptionRounded'
+                  },
                   rootPath: '/site/website/index.xml',
                   locale: 'en'
                 }
