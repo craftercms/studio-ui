@@ -1194,6 +1194,15 @@
       users.itemsPerPage = 10;
       $scope.usersCollection = [];
 
+      let unmount = () => {};
+
+      $scope.initGrid = () => {
+        unmount();
+        CrafterCMSNext.render(document.getElementById('users-grid'), 'UsersGrid', {
+          onClose: () => unmount()
+        }).then((done) => (unmount = done.unmount));
+      };
+
       var getUsers = function() {
         users.totalUsers = 0;
         users.searchdirty = false;
@@ -1271,12 +1280,15 @@
         adminService.createUser(user).then(
           function(data) {
             $scope.hideModal();
-            user = data;
-            $scope.usersCollection.push(user);
-            $scope.users.totalLogs++;
-            $scope.users.pagination.goToLast();
+            // user = data;
+            // $scope.usersCollection.push(user);
+            // $scope.users.totalLogs++;
+            // $scope.users.pagination.goToLast();
             $rootScope.showNotification(formatMessage(usersAdminMessages.userCreated, { username: user.username }));
-            $scope.$apply();
+            // $scope.$apply();
+            debugger;
+            console.log('refresh');
+            $scope.initGrid();
           },
           function(response) {
             $rootScope.showNotification(

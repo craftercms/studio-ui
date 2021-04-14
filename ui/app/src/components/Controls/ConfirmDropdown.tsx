@@ -23,6 +23,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
+import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
+import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -54,7 +56,8 @@ interface ConfirmDropdownProps {
     button?: string;
     menuPaper?: string;
   };
-  icon?: any;
+  icon?: OverridableComponent<SvgIconTypeMap>;
+  iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
   onConfirm(): any;
 }
 
@@ -69,7 +72,8 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     confirmHelperText,
     disabled = false,
     buttonVariant = 'outlined',
-    icon: Icon
+    icon: Icon,
+    iconColor = 'primary'
   } = props;
 
   const handleClick = (event: any) => {
@@ -89,7 +93,7 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     <>
       {Icon ? (
         <IconButton onClick={handleClick}>
-          <Icon color="primary" />
+          <Icon color={iconColor} />
         </IconButton>
       ) : (
         <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>

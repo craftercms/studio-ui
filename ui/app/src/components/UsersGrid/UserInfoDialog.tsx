@@ -26,9 +26,10 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import PasswordRoundedIcon from '@material-ui/icons/VpnKeyRounded';
 import Input from '@material-ui/core/Input';
 import { useSitesBranch, useSpreadState } from '../../utils/hooks';
-import { disable, enable, fetchMyRolesInSite, update } from '../../services/users';
+import { disable, enable, fetchMyRolesInSite, trash, update } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
@@ -40,6 +41,7 @@ import { forkJoin } from 'rxjs';
 import LookupTable from '../../models/LookupTable';
 import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
+import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -125,6 +127,10 @@ const translations = defineMessages({
     id: 'userInfoDialog.externallyManaged',
     defaultMessage: 'Externally managed'
   },
+  userDeleted: {
+    id: 'userInfoDialog.userDeleted',
+    defaultMessage: 'User deleted successfully'
+  },
   userUpdated: {
     id: 'userInfoDialog.userUpdated',
     defaultMessage: 'User updated successfully'
@@ -144,6 +150,18 @@ const translations = defineMessages({
   roles: {
     id: 'words.roles',
     defaultMessage: 'Roles'
+  },
+  confirmHelperText: {
+    id: 'userInfoDialog.helperText',
+    defaultMessage: 'Delete "{username}" user?'
+  },
+  confirmOk: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmCancel: {
+    id: 'words.no',
+    defaultMessage: 'No'
   }
 });
 
@@ -275,20 +293,52 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
     );
   };
 
+  const onDelete = (username: string) => {
+    trash(username).subscribe(
+      () => {
+        onClose();
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.userDeleted)
+          })
+        );
+        onUserEdited();
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
   return (
     <>
       <header className={classes.header}>
-        <Avatar className={classes.avatar}>{props.user?.firstName.charAt(0)}</Avatar>
+        <Avatar className={classes.avatar}>
+          {user.firstName.charAt(0)}
+          {user.lastName?.charAt(0) ?? ''}
+        </Avatar>
         <section className={classes.userInfo}>
           <Typography variant="h6" component="h2">
-            {props.user?.firstName} {props.user?.lastName}
+            {user.firstName} {user.lastName}
           </Typography>
-          <Typography variant="subtitle1">{props.user?.username}</Typography>
+          <Typography variant="subtitle1">{user.username}</Typography>
         </section>
         <section className={classes.actions}>
           <IconButton>
-            <DeleteRoundedIcon />
+            <PasswordRoundedIcon />
           </IconButton>
+          <ConfirmDropdown
+            cancelText={formatMessage(translations.confirmCancel)}
+            confirmText={formatMessage(translations.confirmOk)}
+            confirmHelperText={formatMessage(translations.confirmHelperText, {
+              username: user.username
+            })}
+            icon={DeleteRoundedIcon}
+            iconColor="action"
+            onConfirm={() => {
+              onDelete(user.username);
+            }}
+          />
           <IconButton edge="end" onClick={onClose}>
             <CloseRoundedIcon />
           </IconButton>
@@ -308,7 +358,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               <div className={classes.switchWrapper}>
                 <Switch
                   disabled={!editMode}
-                  checked={user?.enabled}
+                  checked={user.enabled}
                   onChange={(e) => onEnableChange({ enabled: e.target.checked })}
                   color="primary"
                   name="enabled"
@@ -322,7 +372,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
                 <FormattedMessage id="words.username" defaultMessage="Username" />
               </Typography>
               <section className={classes.userNameWrapper}>
-                <Typography variant="body2">{user?.username}</Typography>
+                <Typography variant="body2">{user.username}</Typography>
                 {props.user?.externallyManaged && (
                   <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
                 )}
@@ -334,7 +384,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
-                value={user?.firstName}
+                value={user.firstName}
                 fullWidth
                 readOnly={!editMode}
                 classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}
@@ -346,7 +396,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
-                value={user?.lastName}
+                value={user.lastName}
                 fullWidth
                 readOnly={!editMode}
                 classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}
@@ -358,7 +408,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               </Typography>
               <Input
                 onChange={(e) => onInputChange({ email: e.currentTarget.value })}
-                value={user?.email}
+                value={user.email}
                 fullWidth
                 readOnly={!editMode}
                 classes={{ ...(!editMode && { root: classes.inputRoot, input: classes.readOnlyInput }) }}

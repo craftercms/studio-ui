@@ -32,7 +32,9 @@
             <i class="fa fa-plus-circle mr5" aria-hidden="true"></i> {{ 'admin.users.NEW_USER' | translate }}
           </a>
 
-          <hr class="divider mt10 mb15" />
+          <hr class="divider mt10 mb0" />
+
+          <div id="users-grid" ng-init="initGrid()"></div>
 
           <table class="table table-striped">
             <thead>

@@ -129,7 +129,7 @@ const translations = defineMessages({
     defaultMessage: 'Never'
   },
   confirmHelperText: {
-    id: 'words.helperText',
+    id: 'tokenManagement.helperText',
     defaultMessage: 'Delete "{label}" token?'
   },
   confirmOk: {

@@ -61,12 +61,12 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
 import palette from '../styles/palette';
 import {
-  getCurrentIntl,
-  intl$,
-  getStoredLanguage,
-  setStoredLanguage,
   buildStoredLanguageKey,
-  dispatchLanguageChange
+  dispatchLanguageChange,
+  getCurrentIntl,
+  getStoredLanguage,
+  intl$,
+  setStoredLanguage
 } from './i18n';
 import { getHostToHostBus } from '../modules/Preview/previewContext';
 import { StandardAction } from '../models/StandardAction';
@@ -188,7 +188,8 @@ export function createCodebaseBridge() {
       LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
       CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
       LauncherGlobalNav: lazy(() => import('../components/LauncherGlobalNav/LauncherGlobalNav')),
-      DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton'))
+      DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
+      UsersGrid: lazy(() => import('../components/UsersGrid'))
     },
 
     system: {

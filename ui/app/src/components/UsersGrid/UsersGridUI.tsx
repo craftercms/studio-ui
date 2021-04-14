@@ -133,7 +133,10 @@ export default function UsersGridUI(props: UsersGridUIProps) {
             {users?.map((user, i) => (
               <StyledTableRow key={user.id} onClick={() => onRowClicked(user)}>
                 <TableCell align="center" className={clsx(classes.tableCell, 'avatar')}>
-                  <Avatar className={classes.avatar}>{user.firstName.charAt(0)}</Avatar>
+                  <Avatar className={classes.avatar}>
+                    {user.firstName.charAt(0)}
+                    {user.lastName?.charAt(0) ?? ''}
+                  </Avatar>
                 </TableCell>
                 <TableCell align="left" className={clsx(classes.tableCell, 'paddedLeft', 'width30')}>
                   {user.firstName} {user.lastName}
