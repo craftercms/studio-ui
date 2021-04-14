@@ -257,7 +257,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Audit'
                   },
                   icon: {
-                    id: '@material-ui/icons/FormatAlignJustifyRounded'
+                    id: '@material-ui/icons/SubjectRounded'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
@@ -294,7 +294,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                     defaultMessage: 'Log Console'
                   },
                   icon: {
-                    id: '@material-ui/icons/FormatAlignLeftRounded'
+                    id: '@material-ui/icons/FormatAlignCenterRounded'
                   },
                   widget: {
                     id: 'craftercms.components.LegacySiteToolsFrame',
