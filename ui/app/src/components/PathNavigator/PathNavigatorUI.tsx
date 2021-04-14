@@ -56,7 +56,7 @@ export interface PathNavigatorUIProps {
   /**
    * Styling props (classes and/or styles) applied to the widget's header icon element
    **/
-  icon?: Partial<StateStylingProps & { id: string }>;
+  icon?: Partial<StateStylingProps & { collapsed: string; expanded: string }>;
   /**
    * Styling props (classes and/or styles) applied to the widget's container element
    **/
@@ -218,10 +218,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       }}
     >
       <Header
-        iconClassName={clsx(
-          icon?.baseClass,
-          icon ? (state.collapsed ? icon.collapsedClass : icon.expandedClass) : null
-        )}
         icon={icon ? (state.collapsed ? icon.collapsed : icon.expanded) : null}
         iconStyle={{
           ...icon?.baseStyle,

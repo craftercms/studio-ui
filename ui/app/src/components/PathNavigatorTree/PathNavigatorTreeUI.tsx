@@ -37,7 +37,7 @@ export interface TreeNode {
 
 interface PathNavigatorTreeUIProps {
   title: string;
-  icon?: Partial<StateStylingProps>;
+  icon?: Partial<StateStylingProps & { collapsed: string; expanded: string }>;
   container?: Partial<StateStylingProps>;
   rootNode: TreeNode;
   itemsByPath: LookupTable<DetailedItem>;
@@ -120,7 +120,6 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
       }}
     >
       <Header
-        iconClassName={clsx(icon?.baseClass, icon ? (isCollapsed ? icon.collapsedClass : icon.expandedClass) : null)}
         icon={icon ? (isCollapsed ? icon.collapsed : icon.expanded) : null}
         iconStyle={{
           ...icon?.baseStyle,

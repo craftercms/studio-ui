@@ -26,8 +26,7 @@ import SystemIcon from '../SystemIcon';
 interface HeaderProps {
   locale: string;
   title: string;
-  iconClassName: string;
-  icon?: 'string';
+  icon?: string;
   iconStyle: object;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
@@ -36,12 +35,12 @@ interface HeaderProps {
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
-  const { title, iconClassName, iconStyle, locale, onLanguageMenu, onContextMenu } = props;
+  const { title, icon, iconStyle, locale, onLanguageMenu, onContextMenu } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
       <div className={classes.accordionSummaryTitle}>
-        {icon && <SystemIcon icon={{ id: icon }} />}
+        {icon && <SystemIcon icon={{ id: icon }} svgIconProps={{ style: iconStyle }} />}
         <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
       </div>
       <div className={classes.accordionSummaryActions}>
