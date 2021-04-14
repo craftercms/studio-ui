@@ -241,7 +241,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         <Breadcrumbs
           keyword={keyword}
           breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
-          onMenu={onCurrentParentMenu}
           onSearch={onSearch}
           onCrumbSelected={onBreadcrumbSelected}
           classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
@@ -261,6 +260,16 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
           }}
         >
+          {state.currentPath === state.rootPath && (
+            <NavItem
+              item={itemsByPath[state.rootPath]}
+              locale={state.localeCode}
+              isLevelDescriptor={false}
+              onOpenItemMenu={onCurrentParentMenu}
+              onItemClicked={onItemClicked}
+              isRoot={true}
+            />
+          )}
           {levelDescriptor && (
             <NavItem
               item={levelDescriptor}

@@ -33,6 +33,7 @@ export interface NavItemProps {
   locale: string;
   isLeaf?: boolean;
   isActive?: boolean;
+  isRoot?: boolean;
   isLevelDescriptor?: boolean;
   isSelectMode?: boolean;
   showItemNavigateToButton?: boolean;
@@ -64,6 +65,7 @@ function PathNavigatorItem(props: NavItemProps) {
   const {
     item,
     isActive = false,
+    isRoot = false,
     onItemClicked,
     onChangeParent,
     onPreview,
@@ -90,7 +92,8 @@ function PathNavigatorItem(props: NavItemProps) {
       className={clsx(
         classes.navItem,
         isSelectMode && 'noLeftPadding',
-        isLevelDescriptor && classes.navItemLevelDescriptor
+        isLevelDescriptor && classes.navItemLevelDescriptor,
+        isRoot && classes.rootNavItem
       )}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
