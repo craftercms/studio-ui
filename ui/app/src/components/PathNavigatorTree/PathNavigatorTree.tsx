@@ -57,6 +57,7 @@ import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
 import { getParentPath } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -64,7 +65,9 @@ interface PathNavigatorTreeProps {
   rootPath: string;
   excludes?: string[];
   limit?: number;
-  icon?: Partial<StateStylingProps>;
+  icon?: SystemIconDescriptor;
+  expandedIcon?: SystemIconDescriptor;
+  collapsedIcon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
 }
 
@@ -100,7 +103,17 @@ const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
 };
 
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
-  const { label, id = props.label.replace(/\s/g, ''), rootPath, excludes, limit = 10, icon, container } = props;
+  const {
+    label,
+    id = props.label.replace(/\s/g, ''),
+    rootPath,
+    excludes,
+    limit = 10,
+    icon,
+    expandedIcon,
+    collapsedIcon,
+    container
+  } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -504,7 +517,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     <>
       <PathNavigatorTreeUI
         title={label}
-        icon={icon}
+        icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
         isCollapsed={state?.collapsed}
         rootNode={rootNode}

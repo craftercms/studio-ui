@@ -27,6 +27,7 @@ import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
 import ArrowRightRoundedIcon from '@material-ui/icons/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@material-ui/icons/ArrowDropDownRounded';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface TreeNode {
   id: string;
@@ -37,7 +38,7 @@ export interface TreeNode {
 
 interface PathNavigatorTreeUIProps {
   title: string;
-  icon?: Partial<StateStylingProps & { collapsed: string; expanded: string }>;
+  icon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
   rootNode: TreeNode;
   itemsByPath: LookupTable<DetailedItem>;
@@ -120,11 +121,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
       }}
     >
       <Header
-        icon={icon ? (isCollapsed ? icon.collapsed : icon.expanded) : null}
-        iconStyle={{
-          ...icon?.baseStyle,
-          ...(icon ? (isCollapsed ? icon.collapsedStyle : icon.expandedStyle) : null)
-        }}
+        icon={icon}
         title={title}
         locale={null}
         onContextMenu={(element) => {

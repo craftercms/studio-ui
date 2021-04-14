@@ -97,10 +97,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Pages',
                   label: 'Pages',
-                  icon: {
-                    expanded: '@material-ui/icons/DescriptionOutlined',
-                    collapsed: '@material-ui/icons/DescriptionRounded'
-                  },
+                  expandedIcon: { id: '@material-ui/icons/DescriptionOutlined' },
+                  collapsedIcon: { id: '@material-ui/icons/DescriptionRounded' },
                   rootPath: '/site/website/index.xml',
                   locale: 'en'
                 }
@@ -111,9 +109,11 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Components',
                   label: 'Components',
-                  icon: {
-                    expanded: '@material-ui/icons/ExtensionOutlined',
-                    collapsed: '@material-ui/icons/ExtensionRounded'
+                  expandedIcon: {
+                    id: '@material-ui/icons/ExtensionOutlined'
+                  },
+                  collapsedIcon: {
+                    id: '@material-ui/icons/ExtensionRounded'
                   },
                   rootPath: '/site/components',
                   locale: 'en'
@@ -125,9 +125,11 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Taxonomy',
                   label: 'Taxonomy',
-                  icon: {
-                    expanded: '@material-ui/icons/LocalOfferOutlined',
-                    collapsed: '@material-ui/icons/LocalOfferRounded'
+                  expandedIcon: {
+                    id: '@material-ui/icons/LocalOfferOutlined'
+                  },
+                  collapsedIcon: {
+                    id: '@material-ui/icons/LocalOfferRounded'
                   },
                   rootPath: '/site/taxonomy',
                   locale: 'en'
@@ -139,9 +141,11 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'StaticAssets',
                   label: 'Static Assets',
-                  icon: {
-                    expanded: '@material-ui/icons/ImageOutlined',
-                    collapsed: '@material-ui/icons/ImageRounded'
+                  expandedIcon: {
+                    id: '@material-ui/icons/ImageOutlined'
+                  },
+                  collapsedIcon: {
+                    id: '@material-ui/icons/ImageRounded'
                   },
                   rootPath: '/static-assets',
                   locale: 'en'
@@ -152,9 +156,11 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 uiKey: count++,
                 configuration: {
                   label: 'Templates',
-                  icon: {
-                    expanded: '@material-ui/icons/InsertDriveFileOutlined',
-                    collapsed: '@material-ui/icons/InsertDriveFileRounded'
+                  expandedIcon: {
+                    id: '@material-ui/icons/InsertDriveFileOutlined'
+                  },
+                  collapsedIcon: {
+                    id: '@material-ui/icons/InsertDriveFileRounded'
                   },
                   rootPath: '/templates',
                   locale: 'en'
@@ -166,7 +172,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   label: 'Scripts',
                   icon: {
-                    expanded: '@material-ui/icons/CodeRounded',
+                    id: '@material-ui/icons/CodeRounded',
                     collapsed: '@material-ui/icons/CodeRounded'
                   },
                   container: {
