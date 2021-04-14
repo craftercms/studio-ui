@@ -47,6 +47,9 @@ export const useStyles = makeStyles(
         marginLeft: '6px',
         flexGrow: 1
       },
+      headerIcon: {
+        fontSize: '1.2em'
+      },
       accordion: {
         boxShadow: 'none',
         backgroundColor: 'inherit',

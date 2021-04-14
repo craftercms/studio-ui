@@ -39,7 +39,7 @@ export function PathNavigatorHeader(props: HeaderProps) {
   return (
     <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
       <div className={classes.accordionSummaryTitle}>
-        {icon && <SystemIcon icon={icon} />}
+        {icon && <SystemIcon icon={icon} svgIconProps={{ className: classes.headerIcon }} />}
         <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
       </div>
       <div className={classes.accordionSummaryActions}>
