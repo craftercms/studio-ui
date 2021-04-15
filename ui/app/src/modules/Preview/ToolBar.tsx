@@ -248,7 +248,7 @@ export function AddressBar(props: AddressBarProps) {
           <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
             <ItemDisplay item={item} styles={{ root: { maxWidth: '100%' } }} />
             <Typography className={classes.itemPreviewUrl} color="textSecondary">
-              • {item.path}
+              • {item.previewUrl}
             </Typography>
           </div>
         )}
