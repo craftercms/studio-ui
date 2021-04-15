@@ -42,7 +42,7 @@ import LookupTable from '../../models/LookupTable';
 import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import ResetPasswordDialog from './ResetPasswordDialog';
+import ResetPasswordDialog from '../ResetPasswordDialog/ResetPasswordDialog';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -173,7 +173,7 @@ interface UserInfoDialogProps {
   user: User;
 }
 
-export function UserInfoDialog(props: UserInfoDialogProps) {
+export default function UserInfoDialog(props: UserInfoDialogProps) {
   const { open, onClose } = props;
 
   return (

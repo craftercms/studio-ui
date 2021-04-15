@@ -14,12 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './UsersGrid';
+export { default } from './SitesManagement';
 
-export * from './UsersGrid';
+export * from './SitesManagement';
 
-export * from './UsersGridUI';
-
-export * from '../UserInfoDialog/UserInfoDialog';
-
-export * from '../ResetPasswordDialog/ResetPasswordDialog';
+export * from '../SitesGrid/SiteCard';

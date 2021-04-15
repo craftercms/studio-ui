@@ -21,7 +21,7 @@ import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import SitesGrid from './SitesGrid';
+import SitesGrid from '../SitesGrid';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -42,11 +42,11 @@ const styles = makeStyles((theme) =>
   })
 );
 
-interface SitesProps {
+interface SitesManagementProps {
   limit?: number;
 }
 
-export default function Sites(props: SitesProps) {
+export default function SitesManagement(props: SitesManagementProps) {
   const classes = styles();
   const onCreateSite = () => {};
   return (

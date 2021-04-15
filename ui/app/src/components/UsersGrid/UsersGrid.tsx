@@ -21,7 +21,7 @@ import { useLogicResource } from '../../utils/hooks';
 import { ApiResponse } from '../../models/ApiResponse';
 import UsersGridUI, { UsersGridSkeletonTable } from './UsersGridUI';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
-import { UserInfoDialog } from './UserInfoDialog';
+import UserInfoDialog from '../UserInfoDialog';
 import { PagedArray } from '../../models/PagedArray';
 
 interface UsersGridProps {
