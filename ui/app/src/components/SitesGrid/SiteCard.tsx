@@ -25,15 +25,33 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
 import Tooltip from '@material-ui/core/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import cardTitleStyles from '../../styles/card';
 import { Typography } from '@material-ui/core';
+import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 interface SiteCardProps {
   site: Site;
   onSiteClick(site: Site): void;
+  onDeleteSiteClick(site: Site): void;
+  onEditSiteClick(site: Site): void;
 }
+
+const translations = defineMessages({
+  confirmHelperText: {
+    id: 'siteCard.helperText',
+    defaultMessage: 'Delete "{site}" site?'
+  },
+  confirmOk: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmCancel: {
+    id: 'words.no',
+    defaultMessage: 'No'
+  }
+});
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -60,8 +78,9 @@ const styles = makeStyles((theme) =>
 );
 
 export default function SiteCard(props: SiteCardProps) {
-  const { site, onSiteClick } = props;
+  const { site, onSiteClick, onDeleteSiteClick, onEditSiteClick } = props;
   const classes = styles();
+  const { formatMessage } = useIntl();
 
   const onDescriptionIconClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -98,15 +117,23 @@ export default function SiteCard(props: SiteCardProps) {
       </CardActionArea>
       <CardActions disableSpacing>
         <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-          <IconButton>
+          <IconButton onClick={() => onEditSiteClick(site)}>
             <EditRoundedIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title={<FormattedMessage id="words.delete" defaultMessage="Delete" />}>
-          <IconButton>
-            <DeleteRoundedIcon />
-          </IconButton>
-        </Tooltip>
+        <ConfirmDropdown
+          cancelText={formatMessage(translations.confirmCancel)}
+          confirmText={formatMessage(translations.confirmOk)}
+          confirmHelperText={formatMessage(translations.confirmHelperText, {
+            site: site.name
+          })}
+          iconTooltip={<FormattedMessage id="siteCard.delete" defaultMessage="Delete site" />}
+          icon={DeleteRoundedIcon}
+          iconColor="action"
+          onConfirm={() => {
+            onDeleteSiteClick(site);
+          }}
+        />
       </CardActions>
     </Card>
   );

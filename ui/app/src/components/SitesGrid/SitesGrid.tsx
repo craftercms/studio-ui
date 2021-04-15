@@ -18,16 +18,29 @@ import React, { Suspense, useMemo, useState } from 'react';
 import { ApiResponse } from '../../models/ApiResponse';
 import { PagedArray } from '../../models/PagedArray';
 import { Site } from '../../models/Site';
-import { fetchAll } from '../../services/sites';
+import { fetchAll, trash } from '../../services/sites';
 import { useLogicResource, useMount } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import SitesGridUI from './SitesGridUI';
+import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../state/actions/system';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { defineMessages, useIntl } from 'react-intl';
 
 interface SitesGridProps {
   limit?: number;
 }
 
+const translations = defineMessages({
+  siteDeleted: {
+    id: 'sitesGrid.siteDeleted',
+    defaultMessage: 'Site deleted successfully'
+  }
+});
+
 export default function SitesGrid(props: SitesGridProps) {
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(props.limit ?? 10);
   const [error, setError] = useState<ApiResponse>();
@@ -63,10 +76,34 @@ export default function SitesGrid(props: SitesGridProps) {
     console.log(site);
   };
 
+  const onDeleteSiteClick = (site: Site) => {
+    trash(site.id).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.siteDeleted)
+          })
+        );
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onEditSiteClick = (site: Site) => {
+    console.log(site);
+  };
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<></>}>
-        <SitesGridUI resource={resource} onSiteClick={onSiteClick} />
+        <SitesGridUI
+          resource={resource}
+          onSiteClick={onSiteClick}
+          onDeleteSiteClick={onDeleteSiteClick}
+          onEditSiteClick={onEditSiteClick}
+        />
       </Suspense>
     </ErrorBoundary>
   );

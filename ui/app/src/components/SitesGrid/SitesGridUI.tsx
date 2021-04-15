@@ -24,16 +24,24 @@ import SiteCard from './SiteCard';
 interface SitesGridUIProps {
   resource: Resource<PagedArray<Site>>;
   onSiteClick(site: Site): void;
+  onDeleteSiteClick(site: Site): void;
+  onEditSiteClick(site: Site): void;
 }
 
 export default function SitesGridUI(props: SitesGridUIProps) {
-  const sites = props.resource.read();
+  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick } = props;
+  const sites = resource.read();
 
   return (
     <Grid container spacing={3}>
       {sites.map((site) => (
         <Grid item key={site.id}>
-          <SiteCard site={site} onSiteClick={props.onSiteClick} />
+          <SiteCard
+            site={site}
+            onSiteClick={onSiteClick}
+            onDeleteSiteClick={onDeleteSiteClick}
+            onEditSiteClick={onEditSiteClick}
+          />
         </Grid>
       ))}
     </Grid>

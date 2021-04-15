@@ -189,7 +189,8 @@ export function createCodebaseBridge() {
       CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
       LauncherGlobalNav: lazy(() => import('../components/LauncherGlobalNav/LauncherGlobalNav')),
       DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
-      UsersGrid: lazy(() => import('../components/UsersGrid'))
+      UsersGrid: lazy(() => import('../components/UsersGrid')),
+      SitesManagement: lazy(() => import('../components/SitesManagement'))
     },
 
     system: {
