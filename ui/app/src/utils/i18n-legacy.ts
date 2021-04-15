@@ -583,6 +583,15 @@ const publishingMessages = defineMessages({
   unlockFailed: {
     id: 'unlockPublisherDialog.unlockFailedMessage',
     defaultMessage: 'Error releasing publisher lock.'
+  },
+  bulkPublishNote: {
+    id: 'publishing.bulkPublishNote',
+    defaultMessage: 'Bulk publish should be used to publish changes made in Studio via the UI.'
+  },
+  publishByNote: {
+    id: 'publishing.publishByNote',
+    defaultMessage:
+      'Publish by commit ID(s) must be used for changes made via direct git actions against the repository or pulled from a remote repository.'
   }
 });
 
