@@ -210,7 +210,7 @@ export const useStyles = makeStyles(
           backgroundColor: 'rgba(0, 0, 0, 0.08)'
         }
       },
-      rootNavItem: {
+      currentPathItem: {
         borderBottom: `1px solid ${theme.palette.divider}`
       },
       navItemLevelDescriptor: {},

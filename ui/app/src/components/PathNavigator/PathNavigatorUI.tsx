@@ -260,16 +260,14 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
           }}
         >
-          {state.currentPath === state.rootPath && (
-            <NavItem
-              item={itemsByPath[state.rootPath]}
-              locale={state.localeCode}
-              isLevelDescriptor={false}
-              onOpenItemMenu={onCurrentParentMenu}
-              onItemClicked={onItemClicked}
-              isRoot={true}
-            />
-          )}
+          <NavItem
+            item={itemsByPath[state.currentPath]}
+            locale={state.localeCode}
+            isLevelDescriptor={false}
+            onOpenItemMenu={onCurrentParentMenu}
+            onItemClicked={onItemClicked}
+            isCurrentPath
+          />
           {levelDescriptor && (
             <NavItem
               item={levelDescriptor}
