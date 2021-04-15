@@ -20,44 +20,22 @@ import { Resource } from '../../models/Resource';
 import { PagedArray } from '../../models/PagedArray';
 import { Site } from '../../models/Site';
 import SiteCard from './SiteCard';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface SitesGridUIProps {
   resource: Resource<PagedArray<Site>>;
   onSiteClick(site: Site): void;
 }
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    container: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(402px, max-content))',
-      gridGap: '20px',
-      padding: 'initial',
-      justifyContent: 'center'
-    }
-  })
-);
-
 export default function SitesGridUI(props: SitesGridUIProps) {
   const sites = props.resource.read();
-  const classes = styles();
 
   return (
     <Grid container spacing={3}>
       {sites.map((site) => (
-        <Grid item>
-          <SiteCard site={site} onSiteClick={props.onSiteClick} key={site.id} />
+        <Grid item key={site.id}>
+          <SiteCard site={site} onSiteClick={props.onSiteClick} />
         </Grid>
       ))}
     </Grid>
   );
-
-  // return (
-  //   <section className={classes.container}>
-  //     {sites.map((site) => (
-  //       <SiteCard site={site} onSiteClick={props.onSiteClick} key={site.id} />
-  //     ))}
-  //   </section>
-  // );
 }

@@ -18,7 +18,6 @@ import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import { Site } from '../../models/Site';
@@ -29,6 +28,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import cardTitleStyles from '../../styles/card';
+import { Typography } from '@material-ui/core';
 
 interface SiteCardProps {
   site: Site;
@@ -42,14 +42,10 @@ const styles = makeStyles((theme) =>
       paddingTop: '56.25%'
     },
     card: {
-      width: '402px',
-      height: '360px'
+      width: '402px'
     },
     cardHeader: {
-      cursor: 'pointer',
-      '&:hover': {
-        background: theme.palette.action.hover
-      },
+      height: '77px',
       '& .cardTitle': {
         ...cardTitleStyles
       },
@@ -74,31 +70,26 @@ export default function SiteCard(props: SiteCardProps) {
 
   return (
     <Card className={classes.card}>
-      <CardHeader
-        title={site.name}
-        className={classes.cardHeader}
-        subheader={site.description ?? '(No description)'}
-        onClick={() => onSiteClick(site)}
-        action={
-          <Tooltip title={<FormattedMessage id="words.description" defaultMessage="Description" />}>
-            <IconButton onClick={onDescriptionIconClick}>
-              <InfoRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        }
-        titleTypographyProps={{
-          variant: 'subtitle2',
-          component: 'h2',
-          className: 'cardTitle'
-        }}
-        subheaderTypographyProps={{
-          variant: 'subtitle2',
-          component: 'h2',
-          className: 'cardSubtitle',
-          color: 'textSecondary'
-        }}
-      />
       <CardActionArea onClick={() => onSiteClick(site)}>
+        <CardHeader
+          title={site.name}
+          className={classes.cardHeader}
+          subheader={
+            site.description && (
+              <Tooltip title={site.description}>
+                <Typography color="textSecondary" component="h2" variant="subtitle2" className="cardSubtitle">
+                  {site.description}
+                </Typography>
+              </Tooltip>
+            )
+          }
+          onClick={() => onSiteClick(site)}
+          titleTypographyProps={{
+            variant: 'subtitle2',
+            component: 'h2',
+            className: 'cardTitle'
+          }}
+        />
         <CardMedia
           className={classes.media}
           image={`/static-assets/images/screenshots/site.png?crafterSite=editorial`}
