@@ -27,17 +27,19 @@ export interface SystemIconProps {
   icon: SystemIconDescriptor;
   fontIconProps?: IconProps;
   svgIconProps?: SvgIconProps;
+  className?: string;
+  style?: object;
 }
 
 export default function SystemIcon(props: SystemIconProps) {
-  let { icon } = props;
+  let { icon, className, style } = props;
   if ('id' in icon) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
-    const style = { ...icon.style, ...props.svgIconProps?.style };
-    const className = clsx(icon.class, props.svgIconProps?.className);
+    const iconStyle = { ...icon.style, ...style, ...props.svgIconProps?.style };
+    const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
 
     return IconComponent ? (
-      <IconComponent {...props.svgIconProps} style={style} className={className} />
+      <IconComponent {...props.svgIconProps} style={iconStyle} className={iconClassName} />
     ) : (
       <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
         <ErrorRounded />
@@ -49,7 +51,7 @@ export default function SystemIcon(props: SystemIconProps) {
         className={icon.class}
         children={icon.content}
         {...props.fontIconProps}
-        style={{ ...icon.style, ...props.fontIconProps?.style }}
+        style={{ ...icon.style, ...style, ...props.fontIconProps?.style }}
       />
     );
   }
