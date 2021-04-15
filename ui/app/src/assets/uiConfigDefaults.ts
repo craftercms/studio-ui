@@ -71,7 +71,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
               defaultMessage: 'Dashboard'
             },
             icon: {
-              id: '@material-ui/icons/DashboardOutlined'
+              id: '@material-ui/icons/DashboardRounded'
             },
             widget: {
               id: 'craftercms.components.LegacyDashboardFrame',
@@ -97,11 +97,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Pages',
                   label: 'Pages',
-                  expandedIcon: {
+                  icon: {
                     id: '@material-ui/icons/DescriptionOutlined'
-                  },
-                  collapsedIcon: {
-                    id: '@material-ui/icons/DescriptionRounded'
                   },
                   rootPath: '/site/website/index.xml',
                   locale: 'en'
@@ -113,11 +110,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Components',
                   label: 'Components',
-                  expandedIcon: {
-                    id: '@material-ui/icons/ExtensionOutlined'
-                  },
-                  collapsedIcon: {
-                    id: '@material-ui/icons/ExtensionRounded'
+                  icon: {
+                    id: 'craftercms.icons.Component'
                   },
                   rootPath: '/site/components',
                   locale: 'en'
@@ -129,11 +123,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'Taxonomy',
                   label: 'Taxonomy',
-                  expandedIcon: {
+                  icon: {
                     id: '@material-ui/icons/LocalOfferOutlined'
-                  },
-                  collapsedIcon: {
-                    id: '@material-ui/icons/LocalOfferRounded'
                   },
                   rootPath: '/site/taxonomy',
                   locale: 'en'
@@ -145,11 +136,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   id: 'StaticAssets',
                   label: 'Static Assets',
-                  expandedIcon: {
+                  icon: {
                     id: '@material-ui/icons/ImageOutlined'
-                  },
-                  collapsedIcon: {
-                    id: '@material-ui/icons/ImageRounded'
                   },
                   rootPath: '/static-assets',
                   locale: 'en'
@@ -160,11 +148,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 uiKey: count++,
                 configuration: {
                   label: 'Templates',
-                  expandedIcon: {
+                  icon: {
                     id: '@material-ui/icons/InsertDriveFileOutlined'
-                  },
-                  collapsedIcon: {
-                    id: '@material-ui/icons/InsertDriveFileRounded'
                   },
                   rootPath: '/templates',
                   locale: 'en'
@@ -176,8 +161,7 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
                 configuration: {
                   label: 'Scripts',
                   icon: {
-                    id: '@material-ui/icons/CodeRounded',
-                    collapsed: '@material-ui/icons/CodeRounded'
+                    id: '@material-ui/icons/CodeRounded'
                   },
                   container: {
                     baseStyle: {

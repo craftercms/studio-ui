@@ -486,7 +486,6 @@ Object.entries({
   '@material-ui/icons/LockRounded': LockRounded,
   '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
   '@material-ui/icons/PublicRounded': PublicRounded,
-
   '@material-ui/icons/InsertDriveFileOutlined': InsertDriveFileOutlinedIcon,
   '@material-ui/icons/VideocamOutlined': VideocamOutlinedIcon,
   '@material-ui/icons/CodeRounded': CodeRoundedIcon,

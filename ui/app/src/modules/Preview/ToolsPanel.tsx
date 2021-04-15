@@ -78,6 +78,8 @@ import FormatAlignJustifyRoundedIcon from '@material-ui/icons/FormatAlignJustify
 import FormatAlignLeftRoundedIcon from '@material-ui/icons/FormatAlignLeftRounded';
 import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
 import PollOutlinedIcon from '@material-ui/icons/PollOutlined';
+import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
+import Component from '../../components/Icons/Component';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -179,6 +181,7 @@ Object.entries({
   '@material-ui/icons/BrushOutlined': BrushOutlinedIcon,
   '@material-ui/icons/SettingsOutlined': SettingsOutlinedIcon,
   '@material-ui/icons/DashboardOutlined': DashboardOutlined,
+  '@material-ui/icons/DashboardRounded': DashboardRoundedIcon,
   '@material-ui/icons/TuneRounded': TuneRoundedIcon,
   '@material-ui/icons/DescriptionOutlined': DescriptionOutlined,
   '@material-ui/icons/DescriptionRounded': DescriptionRounded,
@@ -198,6 +201,7 @@ Object.entries({
   '@material-ui/icons/PollOutlined': PollOutlinedIcon,
   'craftercms.icons.PageExplorer': PageExplorer,
   'craftercms.icons.SiteExplorer': SiteExplorer,
+  'craftercms.icons.Component': Component,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,
