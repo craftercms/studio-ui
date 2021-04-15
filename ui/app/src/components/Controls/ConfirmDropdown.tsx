@@ -25,6 +25,7 @@ import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
 import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -58,6 +59,7 @@ interface ConfirmDropdownProps {
   };
   icon?: OverridableComponent<SvgIconTypeMap>;
   iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+  iconTooltip?: React.ReactNode;
   onConfirm(): any;
 }
 
@@ -73,7 +75,8 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     disabled = false,
     buttonVariant = 'outlined',
     icon: Icon,
-    iconColor = 'primary'
+    iconColor = 'primary',
+    iconTooltip
   } = props;
 
   const handleClick = (event: any) => {
@@ -92,9 +95,17 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
   return (
     <>
       {Icon ? (
-        <IconButton onClick={handleClick}>
-          <Icon color={iconColor} />
-        </IconButton>
+        iconTooltip ? (
+          <Tooltip title={iconTooltip}>
+            <IconButton onClick={handleClick}>
+              <Icon color={iconColor} />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <IconButton onClick={handleClick}>
+            <Icon color={iconColor} />
+          </IconButton>
+        )
       ) : (
         <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>
           {text} <ArrowDown />

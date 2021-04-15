@@ -18,7 +18,11 @@ import Dialog from '@material-ui/core/Dialog';
 import React, { useEffect, useMemo, useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Chip, Divider, Grid, Switch } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import User from '../../models/User';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
@@ -326,24 +330,31 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
           <Typography variant="subtitle1">{user.username}</Typography>
         </section>
         <section className={classes.actions}>
-          <IconButton onClick={() => setOpenResetPassword(true)}>
-            <PasswordRoundedIcon />
-          </IconButton>
+          {
+            <Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
+              <IconButton onClick={() => setOpenResetPassword(true)}>
+                <PasswordRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          }
           <ConfirmDropdown
             cancelText={formatMessage(translations.confirmCancel)}
             confirmText={formatMessage(translations.confirmOk)}
             confirmHelperText={formatMessage(translations.confirmHelperText, {
               username: user.username
             })}
+            iconTooltip={<FormattedMessage id="userInfoDialog.deleteUser" defaultMessage="Delete user" />}
             icon={DeleteRoundedIcon}
             iconColor="action"
             onConfirm={() => {
               onDelete(user.username);
             }}
           />
-          <IconButton edge="end" onClick={onClose}>
-            <CloseRoundedIcon />
-          </IconButton>
+          <Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
+            <IconButton edge="end" onClick={onClose}>
+              <CloseRoundedIcon />
+            </IconButton>
+          </Tooltip>
         </section>
       </header>
       <Divider />
