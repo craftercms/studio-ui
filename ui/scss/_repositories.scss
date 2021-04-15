@@ -1,5 +1,6 @@
 $diff-modal-size: 350px;
 $split-view-size: $diff-modal-size / 2;
+$note-highlight: #ff9300;
 
 .repositories {
   padding-top: 34px;
@@ -32,11 +33,27 @@ $split-view-size: $diff-modal-size / 2;
   }
 
   hr{
-    height: 5px; 
+    height: 5px;
     background-color: #f2f2f2;
     margin: 5px 0 10px 0 ;
   }
 
+  .note {
+    display: inline-block;
+    border: 3px solid $note-highlight;
+    padding: 10px;
+
+    .note-title {
+      font-weight: bold;
+      color: $note-highlight;
+    }
+
+    .note-description {
+      color: #919191;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+  }
 }
 
 .diff-header {
