@@ -54,7 +54,6 @@ import FontIcon from '@material-ui/icons/FontDownloadOutlined';
 export type ItemDisplayClassKey =
   | 'root'
   | 'label'
-  | 'path'
   | 'labelPreviewable'
   | 'publishingIcon'
   | 'icon'
@@ -77,13 +76,11 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
   showItemType?: boolean;
-  showPreviewUrl?: boolean;
   showNavigableAsLinks?: boolean;
   classes?: Partial<Record<ItemDisplayClassKey, string>>;
   styles?: ItemDisplayStyles;
   item: DetailedItem | SandboxItem;
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
-  pathTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
   isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
 }
 
@@ -102,10 +99,6 @@ const useStyles = makeStyles((theme) =>
     }),
     label: (styles) => ({
       ...styles.label
-    }),
-    path: (styles) => ({
-      marginLeft: '5px',
-      ...styles.path
     }),
     labelPreviewable: (styles) => ({
       color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
@@ -337,9 +330,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showItemType = true,
     showNavigableAsLinks = true,
     isNavigableFn = isPreviewable,
-    showPreviewUrl = false,
     labelTypographyProps,
-    pathTypographyProps,
     ...rest
   } = props;
   const classes = useStyles(props.styles);
@@ -349,7 +340,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
       {showWorkflowState && <ItemStateIcon item={item} classes={classes} />}
       {showItemType && <ItemTypeIcon item={item} classes={classes} />}
       <Typography
-        noWrap={!showPreviewUrl}
+        noWrap
         component="span"
         {...labelTypographyProps}
         className={clsx(
@@ -360,16 +351,6 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         title={item.label}
         children={item.label}
       />
-      {showPreviewUrl && (
-        <Typography
-          noWrap
-          color="textSecondary"
-          {...pathTypographyProps}
-          className={clsx(classes.path, labelTypographyProps?.className)}
-          title={item.path}
-          children={`• ${item.previewUrl}`}
-        />
-      )}
     </span>
   );
 });

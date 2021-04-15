@@ -185,7 +185,7 @@ export default function PagesSearchAhead(props) {
             inputProps.onFocus(e);
             onClean();
           }}
-          autoFocus={true}
+          autoFocus
           placeholder={placeholder}
           disabled={disabled}
           classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}

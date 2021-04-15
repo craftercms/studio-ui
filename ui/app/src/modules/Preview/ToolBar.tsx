@@ -62,7 +62,7 @@ import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
 import { hasCreateAction, hasEditAction } from '../../utils/content';
 import ItemDisplay from '../../components/ItemDisplay';
-// import PathNavigatorTreeSkeletonItem from '../../components/PathNavigatorTree/PathNavigatorTreeSkeletonItem';
+import Typography from '@material-ui/core/Typography';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -150,7 +150,14 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
     itemDisplayWrapper: {
       width: '100%',
       overflow: 'hidden',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      display: 'flex'
+    },
+    itemPreviewUrl: {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      marginLeft: '4px'
     },
     itemDisplaySkeleton: {
       marginLeft: '5px',
@@ -239,7 +246,10 @@ export function AddressBar(props: AddressBarProps) {
         </Select>
         {!focus && item && (
           <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
-            <ItemDisplay item={item} showPreviewUrl={true} styles={{ root: { maxWidth: '100%' } }} />
+            <ItemDisplay item={item} styles={{ root: { maxWidth: '100%' } }} />
+            <Typography className={classes.itemPreviewUrl} color="textSecondary">
+              • {item.path}
+            </Typography>
           </div>
         )}
         {(focus || !item) && (
