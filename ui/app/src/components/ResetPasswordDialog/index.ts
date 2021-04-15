@@ -15,3 +15,5 @@
  */
 
 export { default } from './ResetPasswordDialog';
+
+export * from './ResetPasswordDialog';

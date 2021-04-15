@@ -16,6 +16,8 @@
 
 export { default } from './SitesGrid';
 
+export * from './SitesGrid';
+
 export * from './SitesGridUI';
 
 export * from './SiteCard';

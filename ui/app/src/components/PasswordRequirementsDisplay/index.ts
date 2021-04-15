@@ -15,3 +15,5 @@
  */
 
 export { default } from './PasswordRequirementsDisplay';
+
+export * from './PasswordRequirementsDisplay';
