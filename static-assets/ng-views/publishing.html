@@ -50,6 +50,9 @@
       </tab-heading>
       <div class="m10 mt25 bulkContainer">
         <h3 class="mt5 mb15">{{ 'admin.publishing.BULKPUBLISH' | translate }}</h3>
+        <p class="section-note">
+          {{ publish.bulkPublishNote }}
+        </p>
 
         <form class="ng-dirty ng-invalid ng-invalid-required" id="bulk-form" name="bulkOperationForm" novalidate>
           <div class="panel">
@@ -144,6 +147,9 @@
       </tab-heading>
       <div class="m10 mt25 commitsContainer">
         <h3 class="mt5 mb15">{{ 'admin.publishing.PUBLISHBYCOMMITS' | translate }}</h3>
+        <p class="section-note">
+          {{ publish.publishByNote }}
+        </p>
 
         <form class="ng-dirty ng-invalid ng-invalid-required" id="commits-form" name="commitsForm" novalidate>
           <div class="panel">
