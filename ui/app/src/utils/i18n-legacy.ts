@@ -497,6 +497,10 @@ export const words = defineMessages({
   select: {
     id: 'words.select',
     defaultMessage: 'Select'
+  },
+  note: {
+    id: 'words.note',
+    defaultMessage: 'Note'
   }
 });
 
