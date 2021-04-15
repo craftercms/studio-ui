@@ -1199,6 +1199,7 @@
       $scope.initGrid = () => {
         unmount();
         CrafterCMSNext.render(document.getElementById('users-grid'), 'UsersGrid', {
+          passwordRequirementsRegex,
           onClose: () => unmount()
         }).then((done) => (unmount = done.unmount));
       };

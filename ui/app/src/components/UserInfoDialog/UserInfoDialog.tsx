@@ -175,6 +175,7 @@ interface UserInfoDialogProps {
   onClose(): void;
   onUserEdited(): void;
   user: User;
+  passwordRequirementsRegex: string;
 }
 
 export default function UserInfoDialog(props: UserInfoDialogProps) {
@@ -188,7 +189,7 @@ export default function UserInfoDialog(props: UserInfoDialogProps) {
 }
 
 export function UserInfoDialogUI(props: UserInfoDialogProps) {
-  const { open, onClose, onUserEdited } = props;
+  const { open, onClose, onUserEdited, passwordRequirementsRegex } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();
@@ -478,6 +479,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
       </DialogBody>
       <ResetPasswordDialog
         open={openResetPassword}
+        passwordRequirementsRegex={passwordRequirementsRegex}
         user={user}
         onClose={() => {
           setOpenResetPassword(false);

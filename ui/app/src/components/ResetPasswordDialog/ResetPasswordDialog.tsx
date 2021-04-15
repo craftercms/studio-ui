@@ -30,15 +30,15 @@ import { setPassword } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
-import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import palette from '../../styles/palette';
+import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 
 interface ResetPasswordDialogProps {
   open: boolean;
   onClose(): void;
   user: User;
+  passwordRequirementsRegex: string;
 }
 
 const styles = makeStyles((theme) =>
@@ -56,6 +56,25 @@ const styles = makeStyles((theme) =>
     },
     specialCharacters: {
       marginLeft: '5px'
+    },
+    // Password requirements
+    listOfConditions: {
+      listStyle: 'none',
+      padding: 0,
+      margin: `${theme.spacing(1.5)}px 0`
+    },
+    conditionItem: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    conditionItemIcon: {
+      marginRight: theme.spacing(1)
+    },
+    conditionItemNotMet: {
+      color: palette.yellow.shade
+    },
+    conditionItemMet: {
+      color: palette.green.shade
     }
   })
 );
@@ -78,16 +97,9 @@ export default function ResetPasswordDialog(props: ResetPasswordDialogProps) {
 }
 
 function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
-  const { onClose, user } = props;
+  const { onClose, user, passwordRequirementsRegex } = props;
   const [newPassword, setNewPassword] = useState('');
-  const [validPassword, setValidPassword] = useState({
-    number: null,
-    lowerCase: null,
-    upperCase: null,
-    specialCharacter: null,
-    length: null,
-    valid: null
-  });
+  const [isValid, setValid] = useState<boolean>(null);
   const [updating, setUpdating] = useState(false);
   const classes = styles();
   const dispatch = useDispatch();
@@ -112,27 +124,6 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
     );
   };
 
-  const validatePassword = (password: string) => {
-    const numberValidation = /\d+/g;
-    const lowerCaseLetterValidation = /[a-z]+/g;
-    const upperCaseLetterValidation = /[A-Z]+/g;
-    const specialCharacterValidation = /[~,|,!,`,\,,;,\\,/,@,#,$,%,^,&,+,=]+/g;
-    const lengthValidation = /^.{8,}$/g;
-    const validation = { ...validPassword };
-    validation.number = numberValidation.test(password);
-    validation.lowerCase = lowerCaseLetterValidation.test(password);
-    validation.upperCase = upperCaseLetterValidation.test(password);
-    validation.specialCharacter = specialCharacterValidation.test(password);
-    validation.length = lengthValidation.test(password);
-    validation.valid =
-      validation.number &&
-      validation.lowerCase &&
-      validation.upperCase &&
-      validation.specialCharacter &&
-      validation.length;
-    setValidPassword(validation);
-  };
-
   return (
     <form onSubmit={onSubmit}>
       <DialogHeader
@@ -155,79 +146,22 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
           placeholder="●●●●●●●●"
           margin="normal"
           onChange={(e) => {
-            validatePassword(e.target.value);
             setNewPassword(e.target.value);
           }}
         />
-        <FormHelperText className={classes.helperText}>
-          {validPassword.number === false || validPassword.number === null ? (
-            <CancelRoundedIcon fontSize="small" className={classes.iconWarning} />
-          ) : (
-            <CheckCircleRoundedIcon fontSize="small" className={classes.iconSuccess} />
-          )}
-          <FormattedMessage
-            id="resetPasswordDialog.numberValidation"
-            defaultMessage="Must contain at least one number"
-          />
-        </FormHelperText>
-        <FormHelperText className={classes.helperText}>
-          {validPassword.lowerCase === false || validPassword.lowerCase === null ? (
-            <CancelRoundedIcon fontSize="small" className={classes.iconWarning} />
-          ) : (
-            <CheckCircleRoundedIcon fontSize="small" className={classes.iconSuccess} />
-          )}
-          <FormattedMessage
-            id="resetPasswordDialog.lowerCaseValidation"
-            defaultMessage="Must contain at least one lowercase letter"
-          />
-        </FormHelperText>
-        <FormHelperText className={classes.helperText}>
-          {validPassword.upperCase === false || validPassword.upperCase === null ? (
-            <CancelRoundedIcon fontSize="small" className={classes.iconWarning} />
-          ) : (
-            <CheckCircleRoundedIcon fontSize="small" className={classes.iconSuccess} />
-          )}
-          <FormattedMessage
-            id="resetPasswordDialog.upperCaseValidation"
-            defaultMessage="Must contain at least one uppercase letter"
-          />
-        </FormHelperText>
-        <FormHelperText className={classes.helperText}>
-          {validPassword.specialCharacter === false || validPassword.specialCharacter === null ? (
-            <CancelRoundedIcon fontSize="small" className={classes.iconWarning} />
-          ) : (
-            <CheckCircleRoundedIcon fontSize="small" className={classes.iconSuccess} />
-          )}
-          <FormattedMessage
-            id="resetPasswordDialog.specialCharacterValidation"
-            defaultMessage="Must contain at least one special character <b> ~|!,;`\/@#$%^&+= </b>"
-            values={{
-              b: (message) => <strong className={classes.specialCharacters}>{message}</strong>
-            }}
-          />
-        </FormHelperText>
-        <FormHelperText className={classes.helperText}>
-          {validPassword.length === false || validPassword.length === null ? (
-            <CancelRoundedIcon fontSize="small" className={classes.iconWarning} />
-          ) : (
-            <CheckCircleRoundedIcon fontSize="small" className={classes.iconSuccess} />
-          )}
-          <FormattedMessage
-            id="resetPasswordDialog.lengthValidation"
-            defaultMessage="Length must be at least 8 characters "
-          />
-        </FormHelperText>
+        <PasswordRequirementsDisplay
+          classes={classes}
+          value={newPassword}
+          onValidStateChanged={setValid}
+          formatMessage={formatMessage}
+          passwordRequirementsRegex={passwordRequirementsRegex}
+        />
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton
-          type="submit"
-          onClick={onSubmit}
-          autoFocus
-          disabled={newPassword === '' || updating || !validPassword.valid}
-        >
+        <PrimaryButton type="submit" onClick={onSubmit} autoFocus disabled={newPassword === '' || updating || !isValid}>
           {updating ? <CircularProgress size={20} /> : <FormattedMessage id="words.submit" defaultMessage="Submit" />}
         </PrimaryButton>
       </DialogFooter>

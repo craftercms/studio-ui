@@ -26,11 +26,16 @@ import { PagedArray } from '../../models/PagedArray';
 
 interface UsersGridProps {
   limit?: number;
+  passwordRequirementsRegex?: string;
 }
 
 export default function UsersGrid(props: UsersGridProps) {
+  const {
+    limit: defaultLimit,
+    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
+  } = props;
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(props.limit ?? 10);
+  const [limit, setLimit] = useState(defaultLimit ?? 10);
   const [fetching, setFetching] = useState(false);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -101,7 +106,13 @@ export default function UsersGrid(props: UsersGridProps) {
           />
         </Suspense>
       </ErrorBoundary>
-      <UserInfoDialog open={Boolean(viewUser)} onClose={onUserInfoClose} onUserEdited={onUserEdited} user={viewUser} />
+      <UserInfoDialog
+        open={Boolean(viewUser)}
+        onClose={onUserInfoClose}
+        onUserEdited={onUserEdited}
+        user={viewUser}
+        passwordRequirementsRegex={passwordRequirementsRegex}
+      />
     </>
   );
 }
