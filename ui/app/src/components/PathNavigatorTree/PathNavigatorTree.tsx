@@ -16,15 +16,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useEnv,
-  useItemsByPath,
-  useMount,
-  useSelection,
-  useSubject
-} from '../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useEnv, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
@@ -125,7 +117,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { formatMessage } = useIntl();
   const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const keywordByPathRef = useRef({});
-  const fetchingPathsRef = useRef([]);
+  const fetchingPathsRef = useRef(null);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
@@ -135,12 +127,15 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   const dispatch = useDispatch();
 
-  useMount(() => {
-    if (state) {
-      // Restoring state from state;
-      state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
-    }
-  });
+  if (state && fetchingPathsRef.current === null) {
+    // Restoring previously loaded state from redux
+    fetchingPathsRef.current = [];
+    Object.keys(state.childrenByParentPath).forEach((path) => {
+      fetchingPathsRef.current.push(path, ...state.childrenByParentPath[path]);
+    });
+  } else if (fetchingPathsRef.current === null) {
+    fetchingPathsRef.current = [];
+  }
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -401,7 +396,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
-      if (nodesByPathRef[path]) {
+      if (childrenByParentPath[path]) {
         dispatch(
           pathNavigatorTreeExpandPath({
             id,
