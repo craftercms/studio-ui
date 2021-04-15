@@ -160,6 +160,18 @@
         }
       };
 
+      $rootScope.locale = {
+        localeCode: 'en-US',
+        dateFormatOptions: {
+          timeZone: 'EST5EDT',
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric'
+        }
+      };
+
       CrafterCMSNext.renderBackgroundUI();
     }
   ]);
@@ -1010,12 +1022,7 @@
             .subscribe(({ studioInfo, locale }) => {
               // setting locale before setting build date/time info (under 'studioInfo')
               if (Object.keys(locale).length === 0) {
-                $scope.locale = {
-                  localeCode: 'en-US',
-                  dateFormatOptions: {
-                    timeZone: 'EST5EDT'
-                  }
-                };
+                $scope.locale = $rootScope.locale;
               } else {
                 $scope.locale = locale;
               }

@@ -253,6 +253,7 @@
   ]);
 
   app.controller('AuditCtrl', [
+    '$rootScope',
     '$scope',
     '$state',
     '$window',
@@ -267,6 +268,7 @@
     '$cookies',
     'Constants',
     function(
+      $rootScope,
       $scope,
       $state,
       $window,
@@ -621,12 +623,7 @@
         const activeSite = store.getState().sites.active;
         sitesService.fetchSiteLocale(activeSite).then((locale) => {
           if (Object.keys(locale).length === 0) {
-            $scope.locale = {
-              localeCode: 'en-US',
-              dateFormatOptions: {
-                timeZone: 'EST5EDT'
-              }
-            };
+            $scope.locale = $rootScope.locale;
           } else {
             $scope.locale = locale;
           }

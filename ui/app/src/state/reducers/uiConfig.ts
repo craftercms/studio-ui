@@ -56,7 +56,12 @@ const initialState: GlobalState['uiConfig'] = {
     isFetching: false,
     localeCode: 'en-US',
     dateFormatOptions: {
-      timeZone: 'EST5EDT'
+      timeZone: 'EST5EDT',
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
     }
   },
   publishing: {
