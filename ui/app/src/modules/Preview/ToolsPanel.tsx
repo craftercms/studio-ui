@@ -60,7 +60,6 @@ import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 import PluginManagement from '../../components/PluginManagement';
 import PathNavigatorTree from '../../components/PathNavigatorTree';
-import DashboardOutlined from '@material-ui/icons/DashboardOutlined';
 import TuneRoundedIcon from '@material-ui/icons/TuneRounded';
 import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined';
 import DescriptionRounded from '@material-ui/icons/DescriptionRounded';
@@ -180,7 +179,6 @@ Object.entries({
   '@material-ui/icons/DevicesRounded': Simulator,
   '@material-ui/icons/BrushOutlined': BrushOutlinedIcon,
   '@material-ui/icons/SettingsOutlined': SettingsOutlinedIcon,
-  '@material-ui/icons/DashboardOutlined': DashboardOutlined,
   '@material-ui/icons/DashboardRounded': DashboardRoundedIcon,
   '@material-ui/icons/TuneRounded': TuneRoundedIcon,
   '@material-ui/icons/DescriptionOutlined': DescriptionOutlined,
