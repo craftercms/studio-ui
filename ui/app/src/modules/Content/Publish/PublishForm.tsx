@@ -300,7 +300,7 @@ function PublishForm(props: PublishFormProps) {
             onError={() => setSubmitDisabled(true)}
             date={inputs.scheduledDateTime}
             localeCode={locale.localeCode}
-            hour12={locale.dateFormatOptions?.hour12 ?? true}
+            hour12={locale.dateTimeFormatOptions?.hour12 ?? true}
             timeZonePickerProps={{
               timezone: inputs.scheduledTimeZone
             }}

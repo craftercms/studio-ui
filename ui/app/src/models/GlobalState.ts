@@ -232,7 +232,7 @@ export interface GlobalState {
       error: ApiResponse;
       isFetching: boolean;
       localeCode: string;
-      dateFormatOptions?: DateTimeFormatOptions;
+      dateTimeFormatOptions?: DateTimeFormatOptions;
     };
     publishing: {
       submissionCommentMaxLength: number;

@@ -4910,7 +4910,7 @@ var nodeOpen = false,
        */
       formatDateFromUTC: function(date, timeZone) {
         const locale = CrafterCMSNext.system.store.getState().uiConfig.locale;
-        const options = locale.dateFormatOptions;
+        const options = locale.dateTimeFormatOptions;
         const localeCode = locale.localeCode;
 
         if (timeZone) {

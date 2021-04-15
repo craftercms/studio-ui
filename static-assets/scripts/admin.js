@@ -560,7 +560,7 @@
 
       audit.updateDate = function(dateField) {
         const locale = $scope.locale;
-        const options = locale.dateFormatOptions;
+        const options = locale.dateTimeFormatOptions;
         const localeCode = locale.localeCode;
 
         // dateFrom and dateTo are the values (not formatted) used for service calls

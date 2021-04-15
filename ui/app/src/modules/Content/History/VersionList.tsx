@@ -74,7 +74,7 @@ interface FancyFormattedDateProps {
 export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
   const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
   const { date, locale } = props;
-  const hour12 = locale?.dateFormatOptions?.hour12 ?? true;
+  const hour12 = locale?.dateTimeFormatOptions?.hour12 ?? true;
 
   return (
     <FormattedDateParts value={date} month="long" day="numeric" weekday="long" year="numeric">

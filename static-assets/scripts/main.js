@@ -162,7 +162,7 @@
 
       $rootScope.locale = {
         localeCode: 'en-US',
-        dateFormatOptions: {
+        dateTimeFormatOptions: {
           timeZone: 'EST5EDT',
           day: 'numeric',
           month: 'numeric',
@@ -1789,7 +1789,7 @@
   app.filter('formatDate', function() {
     return function(date, locale, timeZone) {
       if (date && locale) {
-        const options = locale.dateFormatOptions;
+        const options = locale.dateTimeFormatOptions;
         const localeCode = locale.localeCode;
 
         if (timeZone) {

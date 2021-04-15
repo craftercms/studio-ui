@@ -55,7 +55,7 @@ const initialState: GlobalState['uiConfig'] = {
     error: null,
     isFetching: false,
     localeCode: 'en-US',
-    dateFormatOptions: {
+    dateTimeFormatOptions: {
       timeZone: 'EST5EDT',
       day: 'numeric',
       month: 'numeric',
@@ -148,7 +148,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       ...state.locale,
       isFetching: false,
       localeCode: payload.localeCode ?? state.locale.localeCode,
-      dateFormatOptions: payload.dateFormatOptions ?? state.locale.dateFormatOptions
+      dateTimeFormatOptions: payload.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
     }
   }),
   [fetchSiteLocaleFailed.type]: (state, { payload }) => ({
