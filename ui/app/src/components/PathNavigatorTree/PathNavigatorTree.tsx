@@ -130,7 +130,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { formatMessage } = useIntl();
   const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const keywordByPathRef = useRef({});
-  const fetchingPathsRef = useRef([]);
+  const fetchingPathsRef = useRef(null);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
@@ -139,6 +139,16 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const { authoringBase } = useEnv();
 
   const dispatch = useDispatch();
+
+  if (state && fetchingPathsRef.current === null) {
+    // Restoring previously loaded state from redux
+    fetchingPathsRef.current = [];
+    Object.keys(state.childrenByParentPath).forEach((path) => {
+      fetchingPathsRef.current.push(path, ...state.childrenByParentPath[path]);
+    });
+  } else if (fetchingPathsRef.current === null) {
+    fetchingPathsRef.current = [];
+  }
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -469,9 +479,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
-    // nodesByPathRef.current[path].children.push({ id: 'loading' });
     fetchingPathsRef.current.push(path);
-    // setData({ ...nodesByPathRef.current[rootPath] });
     dispatch(
       pathNavigatorTreeFetchPathPage({
         id,
