@@ -445,7 +445,7 @@ const words = defineMessages({
   reason: {
     id: 'words.reason',
     defaultMessage: 'Reason'
-  },
+  }
 });
 
 const siteComponentDSMessages = defineMessages({
