@@ -21,3 +21,5 @@ export * from './PathNavigatorTree';
 export * from './PathNavigatorTreeUI';
 
 export * from './PathNavigatorTreeItem';
+
+export * from './PathNavigatorTreeSkeletonItem';
