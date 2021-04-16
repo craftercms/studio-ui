@@ -83,12 +83,12 @@
 }
 
 .#{$class-prefix}-dnd-controller-overlay {
-  z-index: 1;
+  z-index: 100;
   display: none;
   position: fixed;
   background: rgba(#555, .7);
   bottom: 0;
-  right: 0;
+  right: 265px;
   left: 0;
   top: 0;
   &.fadeIn {
