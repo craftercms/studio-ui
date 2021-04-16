@@ -64,7 +64,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
               dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
               dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
-              switch (response.status.toLowerCase()) {
+              const status = response.status?.toLowerCase() ?? '';
+              switch (status) {
                 case 'stopped':
                   iconColor = '#FF8C00';
                   iconClass = 'icon-orange';
@@ -86,7 +87,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
               // update status message
               if (dialogText) {
-                dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, response.status);
+                dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, status);
               }
             },
             failure: function (response) {
@@ -117,7 +118,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
                 dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
-                switch (response.status.toLowerCase()) {
+                const status = response.status?.toLowerCase() ?? '';
+                switch (status) {
                   case 'busy':
                     iconColor = '#FF8C00';
                     iconClass = 'icon-orange';
@@ -139,7 +141,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
                 // update status message
                 if (dialogText) {
-                  dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, response.status);
+                  dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, status);
                 }
 
                 if (extDelay) {
@@ -180,13 +182,12 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
             CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
               success: function (response) {
+                const status = response.status?.toLowerCase() ?? '';
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'status-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  "<span class='dialog-elt-text'>" +
-                    me.getStatusMessage(contextNavLangBundle, response.status) +
-                    '</span>',
+                  "<span class='dialog-elt-text'>" + me.getStatusMessage(contextNavLangBundle, status) + '</span>',
                   [
                     {
                       text: CMgs.format(contextNavLangBundle, 'close'),
@@ -205,7 +206,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 dialog = YDom.get('status-dialog');
                 YDom.setStyle(dialog.parentNode, 'z-index', '999');
 
-                switch (response.status.toLowerCase()) {
+                switch (status) {
                   case 'busy':
                     iconColor = '#FF8C00';
                     iconClass = 'icon-orange';

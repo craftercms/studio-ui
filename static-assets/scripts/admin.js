@@ -1042,7 +1042,11 @@
             data = data.publishingStatus;
             publish.stopDisabled = false;
             publish.startDisabled = false;
-            switch (data.status.toLowerCase()) {
+
+            const status = data.status?.toLowerCase() ?? '';
+            let message = data.message ?? '';
+
+            switch (status) {
               case 'stopped':
                 currentIconColor = 'orange';
                 break;
@@ -1054,19 +1058,17 @@
                 currentIconColor = 'blue';
                 publish.startDisabled = true;
             }
-            var stringDate = data.message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
+            var stringDate = message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
             var date = null;
             if (stringDate && stringDate.length) {
               publish.date = stringDate[0];
-              data.message = data.message.replace(stringDate[0], moment(stringDate[0]).format('MM-DD-YYYY hh:mm:ss a'));
+              message = message.replace(stringDate[0], moment(stringDate[0]).format('MM-DD-YYYY hh:mm:ss a'));
             } else {
               publish.date = '';
             }
             publish.iconColor = currentIconColor;
-            publish.message = data.message;
-            publish.statusText = publishingMessages[data.status.toLowerCase()]
-              ? formatMessage(publishingMessages[data.status.toLowerCase()])
-              : data.status;
+            publish.message = message;
+            publish.statusText = publishingMessages[status] ? formatMessage(publishingMessages[status]) : status;
             publish.lockOwner = data.lockOwner;
           })
           .error(function (err) {});
