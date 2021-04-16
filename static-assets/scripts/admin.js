@@ -2165,7 +2165,8 @@
           pendingCommit: formatMessage(repoMessages.pendingCommit),
           unstagedFiles: formatMessage(repoMessages.unstagedFiles),
           unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
-          reason: formatMessage(words.reason)
+          reason: formatMessage(words.reason),
+          repositoriesNote: formatMessage(repoMessages.repositoriesNote)
         }
       };
 
