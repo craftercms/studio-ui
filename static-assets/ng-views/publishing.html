@@ -199,7 +199,8 @@
         <h3 class="modal-title">{{ 'admin.publishing.WARNINGBP' | translate }}</h3>
     </div>
     <div class="modal-body">
-        {{ 'admin.publishing.WRNINGGPBODY' | translate }}
+        <p>{{ 'admin.publishing.WRNINGGPBODY' | translate }}</p>
+        <p ng-bind-html="publish.bulkPublishNote"></p>
     </div>
     <div class="modal-footer" id="bulk-publish">
         <button class="btn btn-primary mr10" ng-click="publish.continue(); publish.hideAdminModal()">{{ 'common.YES' | translate }}</button>
