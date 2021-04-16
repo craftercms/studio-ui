@@ -39,20 +39,9 @@ $note-highlight: #ff9300;
   }
 
   .note {
-    display: inline-block;
-    border: 3px solid $note-highlight;
-    padding: 10px;
-
-    .note-title {
-      font-weight: bold;
-      color: $note-highlight;
-    }
-
-    .note-description {
-      color: #919191;
-      font-weight: bold;
-      margin-bottom: 0;
-    }
+    color: #919191;
+    font-weight: bold;
+    margin-bottom: 0;
   }
 }
 

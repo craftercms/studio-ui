@@ -2166,8 +2166,7 @@
           unstagedFiles: formatMessage(repoMessages.unstagedFiles),
           unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
           reason: formatMessage(words.reason),
-          repositoriesNote: formatMessage(repoMessages.repositoriesNote, { br: '<br />' }),
-          repositoriesNoteLabel: formatMessage(words.note)
+          repositoriesNote: formatMessage(repoMessages.repositoriesNote)
         }
       };
 

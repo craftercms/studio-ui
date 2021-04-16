@@ -230,7 +230,7 @@ const reposAdminMessages = defineMessages({
   repositoriesNote: {
     id: 'reposAdmin.repositoriesNote',
     defaultMessage:
-      'Do not use Studio as a git merge and conflict resolution platform. {br}' +
+      'Do not use Studio as a git merge and conflict resolution platform. ' +
       'All merge conflicts should be resolved upstream before getting pulled into Studio.'
   }
 });
@@ -446,10 +446,6 @@ const words = defineMessages({
     id: 'words.reason',
     defaultMessage: 'Reason'
   },
-  note: {
-    id: 'words.note',
-    defaultMessage: 'Note'
-  }
 });
 
 const siteComponentDSMessages = defineMessages({
