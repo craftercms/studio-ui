@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchAll } from '../../services/users';
 import User from '../../models/User';
 import { useLogicResource } from '../../utils/hooks';
@@ -23,6 +23,8 @@ import UsersGridUI, { UsersGridSkeletonTable } from './UsersGridUI';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import UserInfoDialog from '../UserInfoDialog';
 import { PagedArray } from '../../models/PagedArray';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { FormattedMessage } from 'react-intl';
 
 interface UsersGridProps {
   limit?: number;
@@ -35,7 +37,7 @@ export default function UsersGrid(props: UsersGridProps) {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(defaultLimit ?? 10);
+  const [limit, setLimit] = useState(defaultLimit ?? 1);
   const [fetching, setFetching] = useState(false);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -45,12 +47,12 @@ export default function UsersGrid(props: UsersGridProps) {
     setFetching(true);
     fetchAll({ limit, offset }).subscribe(
       (users) => {
-        setFetching(false);
         setUsers(users);
+        setFetching(false);
       },
       ({ response }) => {
-        setFetching(false);
         setError(response);
+        setFetching(false);
       }
     );
   }, [limit, offset]);
@@ -65,9 +67,9 @@ export default function UsersGrid(props: UsersGridProps) {
   >(
     useMemo(() => ({ users, error, fetching }), [users, error, fetching]),
     {
-      shouldResolve: (source) => Boolean(source.users) && Boolean(source.users.length) && !fetching,
+      shouldResolve: (source) => Boolean(source.users) && !fetching,
       shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => resource.complete && !fetching,
+      shouldRenew: (source, resource) => fetching && resource.complete,
       resultSelector: (source) => source.users,
       errorSelector: () => error
     }
@@ -87,7 +89,6 @@ export default function UsersGrid(props: UsersGridProps) {
 
   const onChangePage = (page: number) => {
     setOffset(page * limit);
-    fetchUsers();
   };
 
   const onChangeRowsPerPage = (e) => {
@@ -97,14 +98,24 @@ export default function UsersGrid(props: UsersGridProps) {
   return (
     <>
       <ErrorBoundary>
-        <Suspense fallback={<UsersGridSkeletonTable numOfItems={limit} />}>
+        <SuspenseWithEmptyState
+          resource={resource}
+          suspenseProps={{
+            fallback: <UsersGridSkeletonTable numOfItems={limit} />
+          }}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
+            }
+          }}
+        >
           <UsersGridUI
             resource={resource}
             onRowClicked={onRowClicked}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
           />
-        </Suspense>
+        </SuspenseWithEmptyState>
       </ErrorBoundary>
       <UserInfoDialog
         open={Boolean(viewUser)}

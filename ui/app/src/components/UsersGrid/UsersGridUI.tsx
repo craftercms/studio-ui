@@ -72,7 +72,8 @@ const styles = makeStyles((theme) =>
       }
     },
     paginationRoot: {
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      marginRight: '20px'
     }
   })
 );

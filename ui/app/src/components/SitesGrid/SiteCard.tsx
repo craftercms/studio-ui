@@ -30,6 +30,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import cardTitleStyles from '../../styles/card';
 import { Typography } from '@material-ui/core';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 interface SiteCardProps {
   site: Site;
@@ -111,7 +112,7 @@ export default function SiteCard(props: SiteCardProps) {
         />
         <CardMedia
           className={classes.media}
-          image={`/static-assets/images/screenshots/site.png?crafterSite=editorial`}
+          image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
           title={site.name}
         />
       </CardActionArea>
@@ -134,6 +135,24 @@ export default function SiteCard(props: SiteCardProps) {
             onDeleteSiteClick(site);
           }}
         />
+      </CardActions>
+    </Card>
+  );
+}
+
+export function SiteCardSkeleton() {
+  const classes = styles();
+  return (
+    <Card className={classes.card}>
+      <CardHeader
+        title={<Skeleton animation="wave" height={20} width="40%" />}
+        className={classes.cardHeader}
+        subheader={<Skeleton animation="wave" height={20} width="80%" />}
+      />
+      <Skeleton animation="wave" variant="rect" className={classes.media} />
+      <CardActions disableSpacing>
+        <Skeleton variant="circle" width={40} height={40} style={{ marginRight: '10px' }} />
+        <Skeleton variant="circle" width={40} height={40} />
       </CardActions>
     </Card>
   );

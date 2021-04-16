@@ -14,18 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ApiResponse } from '../../models/ApiResponse';
 import { PagedArray } from '../../models/PagedArray';
 import { Site } from '../../models/Site';
 import { fetchAll, trash } from '../../services/sites';
-import { useLogicResource, useMount } from '../../utils/hooks';
+import { useLogicResource } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
-import SitesGridUI from './SitesGridUI';
+import SitesGridUI, { SkeletonSitesGrid } from './SitesGridUI';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 
 interface SitesGridProps {
   limit?: number;
@@ -42,21 +43,29 @@ export default function SitesGrid(props: SitesGridProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(props.limit ?? 10);
+  const [limit, setLimit] = useState(props.limit ?? 1);
   const [error, setError] = useState<ApiResponse>();
   const [fetching, setFetching] = useState(false);
 
   const [sites, setSites] = useState<PagedArray<Site>>();
 
-  const fetchSites = () => {
-    fetchAll({ limit, offset }).subscribe((sites) => {
-      setSites(sites);
-    });
-  };
+  const fetchSites = useCallback(() => {
+    setFetching(true);
+    fetchAll({ limit, offset }).subscribe(
+      (sites) => {
+        setSites(sites);
+        setFetching(false);
+      },
+      ({ response }) => {
+        setFetching(false);
+        setError(response);
+      }
+    );
+  }, [limit, offset]);
 
-  useMount(() => {
+  useEffect(() => {
     fetchSites();
-  });
+  }, [fetchSites]);
 
   const resource = useLogicResource<
     PagedArray<Site>,
@@ -64,9 +73,9 @@ export default function SitesGrid(props: SitesGridProps) {
   >(
     useMemo(() => ({ sites, error, fetching }), [sites, error, fetching]),
     {
-      shouldResolve: (source) => Boolean(source.sites) && Boolean(source.sites.length) && !fetching,
+      shouldResolve: (source) => Boolean(source.sites) && !fetching,
       shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => resource.complete && !fetching,
+      shouldRenew: (source, resource) => fetching && resource.complete,
       resultSelector: (source) => source.sites,
       errorSelector: () => error
     }
@@ -95,16 +104,36 @@ export default function SitesGrid(props: SitesGridProps) {
     console.log(site);
   };
 
+  const onChangePage = (page: number) => {
+    setOffset(page * limit);
+  };
+
+  const onChangeRowsPerPage = (e) => {
+    setLimit(e.target.value);
+  };
+
   return (
     <ErrorBoundary>
-      <Suspense fallback={<></>}>
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: <SkeletonSitesGrid numOfItems={limit} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Sites Found" />
+          }
+        }}
+      >
         <SitesGridUI
           resource={resource}
           onSiteClick={onSiteClick}
           onDeleteSiteClick={onDeleteSiteClick}
           onEditSiteClick={onEditSiteClick}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
         />
-      </Suspense>
+      </SuspenseWithEmptyState>
     </ErrorBoundary>
   );
 }
