@@ -49,10 +49,6 @@
             </tab-heading>
             <div class="m10 mt25 bulkContainer">
                 <h3 class='mt5 mb15'>{{ 'admin.publishing.BULKPUBLISH' | translate }}</h3>
-                <p class="section-note">
-                    {{ publish.bulkPublishNote }}
-                </p>
-
                     <form name="bulkOperationForm" id="bulk-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
                         <div class="panel">
                             <div class="panel-body">
@@ -99,6 +95,10 @@
                             </div>
                         </div>
                         <div class='publish-buttons'>
+                            <p class="section-note">
+                                <span ng-bind-html="publish.bulkPublishNote"></span>
+                                <i class="fa fa-exclamation-circle text-warning" aria-hidden="true"></i>
+                            </p>
                             <input type='button' id='bulk-submit' class='btn btn-primary' value="{{ 'admin.publishing.PUBLISH' | translate }}" ng-click="publish.bulkPublish()" ng-disabled="bulkOperationForm.$invalid || publish.disable" />
                         </div>
                     </form>
@@ -111,9 +111,6 @@
             </tab-heading>
             <div class="m10 mt25 commitsContainer">
                 <h3 class='mt5 mb15'>{{ 'admin.publishing.PUBLISHBYCOMMITS' | translate }}</h3>
-                <p class="section-note">
-                    {{ publish.publishByNote }}
-                </p>
 
                 <form name="commitsForm" id="commits-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
                     <div class="panel">
@@ -173,6 +170,10 @@
                         </div>
                     </div>
                     <div class='publish-buttons'>
+                        <p class="section-note">
+                            {{ publish.publishByNote }}
+                            <i class="fa fa-exclamation-circle text-warning" aria-hidden="true"></i>
+                        </p>
                         <input type='button' id='commits-submit' class='btn btn-primary'
                                value="{{ 'admin.publishing.PUBLISH' | translate }}" ng-click="publish.commitsPublish()"
                                ng-disabled="commitsForm.$invalid || publish.commitIdsDisable"/>
