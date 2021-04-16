@@ -69,6 +69,7 @@ import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../u
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { getSystemLink } from '../LauncherSection';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 interface Menu {
   path?: string;
@@ -89,7 +90,9 @@ export interface PathNavigatorProps {
   locale?: string;
   limit?: number;
   showChildrenRail?: boolean;
-  icon?: Partial<StateStylingProps>;
+  icon?: SystemIconDescriptor;
+  expandedIcon?: SystemIconDescriptor;
+  collapsedIcon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
@@ -129,6 +132,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const {
     label = '(No name)',
     icon,
+    expandedIcon,
+    collapsedIcon,
     container,
     rootPath: path,
     id = label.replace(/\s/g, ''),
@@ -450,7 +455,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
         classes={props.classes}
         itemsByPath={itemsByPath}
         showChildrenRail={showChildrenRail}
-        icon={icon}
+        icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
         title={label}
         onChangeCollapsed={onChangeCollapsed}

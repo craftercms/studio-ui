@@ -36,6 +36,7 @@ import List from '@material-ui/core/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -56,7 +57,7 @@ export interface PathNavigatorUIProps {
   /**
    * Styling props (classes and/or styles) applied to the widget's header icon element
    **/
-  icon?: Partial<StateStylingProps & { id: string }>;
+  icon?: SystemIconDescriptor;
   /**
    * Styling props (classes and/or styles) applied to the widget's container element
    **/
@@ -218,14 +219,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       }}
     >
       <Header
-        iconClassName={clsx(
-          icon?.baseClass,
-          icon ? (state.collapsed ? icon.collapsedClass : icon.expandedClass) : null
-        )}
-        iconStyle={{
-          ...icon?.baseStyle,
-          ...(icon ? (state.collapsed ? icon.collapsedStyle : icon.expandedStyle) : null)
-        }}
+        icon={icon}
         title={title}
         locale={state.localeCode}
         onContextMenu={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}

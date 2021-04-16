@@ -60,6 +60,25 @@ import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import PreviewSettingsPanel from '../../components/PreviewSettingsPanel';
 import PluginManagement from '../../components/PluginManagement';
 import PathNavigatorTree from '../../components/PathNavigatorTree';
+import TuneRoundedIcon from '@material-ui/icons/TuneRounded';
+import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined';
+import DescriptionRounded from '@material-ui/icons/DescriptionRounded';
+import ExtensionRoundedIcon from '@material-ui/icons/ExtensionRounded';
+import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
+import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
+import ImageRoundedIcon from '@material-ui/icons/ImageRounded';
+import CodeRoundedIcon from '@material-ui/icons/CodeRounded';
+import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import WidgetsOutlinedIcon from '@material-ui/icons/WidgetsOutlined';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import SettingsApplicationsOutlinedIcon from '@material-ui/icons/SettingsApplicationsOutlined';
+import FormatAlignJustifyRoundedIcon from '@material-ui/icons/FormatAlignJustifyRounded';
+import FormatAlignLeftRoundedIcon from '@material-ui/icons/FormatAlignLeftRounded';
+import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
+import PollOutlinedIcon from '@material-ui/icons/PollOutlined';
+import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
+import Component from '../../components/Icons/Component';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -160,8 +179,27 @@ Object.entries({
   '@material-ui/icons/DevicesRounded': Simulator,
   '@material-ui/icons/BrushOutlined': BrushOutlinedIcon,
   '@material-ui/icons/SettingsOutlined': SettingsOutlinedIcon,
+  '@material-ui/icons/DashboardRounded': DashboardRoundedIcon,
+  '@material-ui/icons/TuneRounded': TuneRoundedIcon,
+  '@material-ui/icons/DescriptionOutlined': DescriptionOutlined,
+  '@material-ui/icons/DescriptionRounded': DescriptionRounded,
+  '@material-ui/icons/ExtensionRounded': ExtensionRoundedIcon,
+  '@material-ui/icons/LocalOfferOutlined': LocalOfferOutlinedIcon,
+  '@material-ui/icons/LocalOfferRounded': LocalOfferRoundedIcon,
+  '@material-ui/icons/ImageRounded': ImageRoundedIcon,
+  '@material-ui/icons/CodeRounded': CodeRoundedIcon,
+  '@material-ui/icons/InsertDriveFileRounded': InsertDriveFileRoundedIcon,
+  '@material-ui/icons/InsertDriveFileOutlined': InsertDriveFileOutlinedIcon,
+  '@material-ui/icons/WidgetsOutlined': WidgetsOutlinedIcon,
+  '@material-ui/icons/LockOutlined': LockOutlinedIcon,
+  '@material-ui/icons/SettingsApplicationsOutlined': SettingsApplicationsOutlinedIcon,
+  '@material-ui/icons/FormatAlignJustifyRounded': FormatAlignJustifyRoundedIcon,
+  '@material-ui/icons/FormatAlignLeftRounded': FormatAlignLeftRoundedIcon,
+  '@material-ui/icons/CloudUploadOutlined': CloudUploadOutlinedIcon,
+  '@material-ui/icons/PollOutlined': PollOutlinedIcon,
   'craftercms.icons.PageExplorer': PageExplorer,
   'craftercms.icons.SiteExplorer': SiteExplorer,
+  'craftercms.icons.Component': Component,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,

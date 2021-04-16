@@ -30,6 +30,7 @@ import cardTitleStyles from '../styles/card';
 import { defineMessages, useIntl } from 'react-intl';
 import palette from '../styles/palette';
 import moment from 'moment-timezone';
+import SystemIcon from './SystemIcon';
 
 const translations = defineMessages({
   options: {
@@ -154,28 +155,28 @@ function MediaCard(props: MediaCardProps) {
   const { formatMessage } = useIntl();
 
   const renderIcon = (type: string) => {
-    let iconClass = 'fa media-icon';
-    let iconName = `${iconClass} fa-file`;
+    let iconClass = 'media-icon';
+    let icon = { id: '@material-ui/icons/InsertDriveFileOutlined' };
     switch (type) {
       case 'Page':
-        iconName = `${iconClass} fa-file`;
+        icon.id = '@material-ui/icons/InsertDriveFileOutlined';
         break;
       case 'Video':
-        iconName = `${iconClass} fa-file-video-o`;
+        icon.id = '@material-ui/icons/VideocamOutlined';
         break;
       case 'Template':
-        iconName = `${iconClass} fa-file-code-o`;
+        icon.id = '@material-ui/icons/CodeRounded';
         break;
       case 'Taxonomy':
-        iconName = `${iconClass} fa-tag`;
+        icon.id = '@material-ui/icons/LocalOfferOutlined';
         break;
       case 'Component':
-        iconName = `${iconClass} fa-puzzle-piece`;
+        icon.id = '@material-ui/icons/ExtensionOutlined';
         break;
       case 'Groovy':
       case 'JavaScript':
       case 'CSS':
-        iconName = `${iconClass} fa-file-code-o`;
+        icon.id = '@material-ui/icons/CodeRounded';
         break;
       default:
         break;
@@ -186,10 +187,10 @@ function MediaCard(props: MediaCardProps) {
           {type === 'Video' ? (
             <video className={classes.videoThumbnail}>
               <source src={path} type="video/mp4" />
-              <i className={iconName} />
+              <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
             </video>
           ) : (
-            <i className={iconName} />
+            <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
           )}
         </div>
       </CardActionArea>
@@ -198,10 +199,10 @@ function MediaCard(props: MediaCardProps) {
         {type === 'Video' ? (
           <video className={classes.videoThumbnail}>
             <source src={path} type="video/mp4" />
-            <i className={iconName} />
+            <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
           </video>
         ) : (
-          <i className={iconName} />
+          <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
         )}
       </div>
     );
