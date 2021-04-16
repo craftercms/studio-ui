@@ -476,7 +476,7 @@ export default function Search(props: SearchProps) {
   }
 
   function handleFilterChange(filter: Filter, isFilter: boolean) {
-    let qs = createQueryString(filter, isFilter);
+    let qs = createQueryString(filter, isFilter, { offset: 0 });
     if (qs || location.search) {
       history.push({
         pathname: '/',
@@ -514,7 +514,7 @@ export default function Search(props: SearchProps) {
 
   // createQueryString:
   // isFilter: It means that the filter is nested on object filter
-  function createQueryString(filter: Filter, isFilter = false) {
+  function createQueryString(filter: Filter, isFilter = false, overrideQueryParams = {}) {
     let newFilters;
     let filters: any = queryParams['filters'];
     filters = filters ? JSON.parse(filters) : {};
@@ -524,7 +524,7 @@ export default function Search(props: SearchProps) {
       if (queryParams.filters === '{}') {
         queryParams.filters = undefined;
       }
-      newFilters = { ...queryParams };
+      newFilters = { ...queryParams, ...overrideQueryParams };
     } else {
       queryParams.filters = JSON.stringify(filters);
       if (queryParams.filters === '{}') {
@@ -536,18 +536,22 @@ export default function Search(props: SearchProps) {
         (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined) &&
         filter.value !== '_score'
       ) {
-        newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'asc' };
+        newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'asc', ...overrideQueryParams };
       } else if (filter.name === 'sortBy' && queryParams['sortBy'] !== '_score' && filter.value === '_score') {
-        newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'desc' };
+        newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'desc', ...overrideQueryParams };
       } else {
-        newFilters = { ...queryParams, [filter.name]: filter.value };
+        newFilters = { ...queryParams, [filter.name]: filter.value, ...overrideQueryParams };
       }
     }
     return queryString.stringify(newFilters);
   }
 
   function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: Partial<ElasticParams>) {
-    let formatParameters = { ...queryParams };
+    let formatParameters = {
+      ...queryParams,
+      ...(queryParams.limit && { limit: Number(queryParams.limit) }),
+      ...(queryParams.offset && { offset: Number(queryParams.offset) })
+    };
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
       Object.keys(formatParameters.filters).forEach((key) => {
