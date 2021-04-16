@@ -50,10 +50,6 @@
       </tab-heading>
       <div class="m10 mt25 bulkContainer">
         <h3 class="mt5 mb15">{{ 'admin.publishing.BULKPUBLISH' | translate }}</h3>
-        <p class="section-note">
-          {{ publish.bulkPublishNote }}
-        </p>
-
         <form class="ng-dirty ng-invalid ng-invalid-required" id="bulk-form" name="bulkOperationForm" novalidate>
           <div class="panel">
             <div class="panel-body">
@@ -129,6 +125,10 @@
             </div>
           </div>
           <div class="publish-buttons">
+            <p class="section-note">
+              <span ng-bind-html="publish.bulkPublishNote"></span>
+              <i class="fa fa-exclamation-circle text-warning" aria-hidden="true"></i>
+            </p>
             <input
               class="btn btn-primary"
               id="bulk-submit"
@@ -147,10 +147,6 @@
       </tab-heading>
       <div class="m10 mt25 commitsContainer">
         <h3 class="mt5 mb15">{{ 'admin.publishing.PUBLISHBYCOMMITS' | translate }}</h3>
-        <p class="section-note">
-          {{ publish.publishByNote }}
-        </p>
-
         <form class="ng-dirty ng-invalid ng-invalid-required" id="commits-form" name="commitsForm" novalidate>
           <div class="panel">
             <div class="panel-body">
@@ -233,6 +229,10 @@
             </div>
           </div>
           <div class="publish-buttons">
+            <p class="section-note">
+              {{ publish.publishByNote }}
+              <i class="fa fa-exclamation-circle text-warning" aria-hidden="true"></i>
+            </p>
             <input
               class="btn btn-primary"
               id="commits-submit"
@@ -259,7 +259,8 @@
     <h3 class="modal-title">{{ 'admin.publishing.WARNINGBP' | translate }}</h3>
   </div>
   <div class="modal-body">
-    {{ 'admin.publishing.WRNINGGPBODY' | translate }}
+    <p>{{ 'admin.publishing.WRNINGGPBODY' | translate }}</p>
+    <p ng-bind-html="publish.bulkPublishNote"></p>
   </div>
   <div class="modal-footer" id="bulk-publish">
     <button
