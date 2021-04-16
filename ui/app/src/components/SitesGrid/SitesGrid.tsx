@@ -43,7 +43,7 @@ export default function SitesGrid(props: SitesGridProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(props.limit ?? 1);
+  const [limit, setLimit] = useState(props.limit ?? 10);
   const [error, setError] = useState<ApiResponse>();
   const [fetching, setFetching] = useState(false);
 
