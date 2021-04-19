@@ -25,7 +25,6 @@ import TextField from '@material-ui/core/TextField';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { setPassword } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
@@ -161,8 +160,14 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
         <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" onClick={onSubmit} autoFocus disabled={newPassword === '' || updating || !isValid}>
-          {updating ? <CircularProgress size={20} /> : <FormattedMessage id="words.submit" defaultMessage="Submit" />}
+        <PrimaryButton
+          type="submit"
+          onClick={onSubmit}
+          autoFocus
+          disabled={newPassword === '' || updating || !isValid}
+          loading={updating}
+        >
+          <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
     </form>

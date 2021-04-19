@@ -26,7 +26,6 @@ import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
@@ -216,12 +215,9 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         <PrimaryButton
           onClick={handleSubmit}
           disabled={apiState.submitting || !selectedItems || selectedItems.length === 0}
+          loading={apiState.submitting}
         >
-          {apiState.submitting ? (
-            <CircularProgress className={classes.btnSpinner} size={20} />
-          ) : (
-            <FormattedMessage id="deleteDialog.submit" defaultMessage={'Delete'} />
-          )}
+          <FormattedMessage id="deleteDialog.submit" defaultMessage={'Delete'} />
         </PrimaryButton>
       </DialogFooter>
     </>

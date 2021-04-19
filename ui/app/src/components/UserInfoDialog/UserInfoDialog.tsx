@@ -40,7 +40,6 @@ import { showSystemNotification } from '../../state/actions/system';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import clsx from 'clsx';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { forkJoin } from 'rxjs';
 import LookupTable from '../../models/LookupTable';
 import { Skeleton } from '@material-ui/lab';
@@ -433,12 +432,8 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
                 <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
                   <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                 </SecondaryButton>
-                <PrimaryButton disabled={!dirty || inProgress} onClick={onSave}>
-                  {inProgress ? (
-                    <CircularProgress size={20} />
-                  ) : (
-                    <FormattedMessage id="words.save" defaultMessage="Save" />
-                  )}
+                <PrimaryButton disabled={!dirty || inProgress} onClick={onSave} loading={inProgress}>
+                  <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>
               </div>
             )}

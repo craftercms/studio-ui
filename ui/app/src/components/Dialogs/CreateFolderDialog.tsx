@@ -25,7 +25,6 @@ import { createFolder, renameFolder } from '../../services/content';
 import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import StandardAction from '../../models/StandardAction';
 import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
 import SecondaryButton from '../SecondaryButton';
@@ -248,8 +247,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         <SecondaryButton onClick={onClose} disabled={inProgress}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''}>
-          {inProgress && <CircularProgress size={20} />}
+        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''} loading={inProgress}>
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
           ) : (

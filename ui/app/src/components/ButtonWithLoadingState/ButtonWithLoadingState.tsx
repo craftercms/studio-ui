@@ -15,15 +15,20 @@
  */
 
 import * as React from 'react';
-import { ButtonProps } from '@material-ui/core/Button';
-import ButtonWithLoadingState from '../ButtonWithLoadingState';
+import Button, { ButtonProps } from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-interface PrimaryButtonProps extends ButtonProps {
+interface ButtonWithLoadingStateProps extends ButtonProps {
   loading?: boolean;
 }
 
-const PrimaryButton = React.forwardRef<HTMLButtonElement, PrimaryButtonProps>((props, ref) => {
-  return <ButtonWithLoadingState ref={ref} {...props} variant="contained" color="primary" />;
+const ButtonWithLoadingState = React.forwardRef<HTMLButtonElement, ButtonWithLoadingStateProps>((props, ref) => {
+  const { loading, ...rest } = props;
+  return (
+    <Button ref={ref} {...rest} variant="contained" color="primary">
+      {loading ? <CircularProgress size={20} /> : props.children}
+    </Button>
+  );
 });
 
-export default PrimaryButton;
+export default ButtonWithLoadingState;

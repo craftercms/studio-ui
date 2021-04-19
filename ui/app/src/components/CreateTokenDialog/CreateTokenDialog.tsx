@@ -22,7 +22,6 @@ import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import TextField from '@material-ui/core/TextField';
 import { useUnmount } from '../../utils/hooks';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { createToken } from '../../services/tokens';
 import { Token } from '../../models/Token';
 import DateTimePicker from '../Controls/DateTimePicker';
@@ -148,8 +147,14 @@ export function CreateTokenUI(props: CreateTokenUIProps) {
         <SecondaryButton onClick={onDismiss}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" onClick={onSubmit} autoFocus disabled={disabled || label === ''}>
-          {disabled ? <CircularProgress size={20} /> : <FormattedMessage id="words.submit" defaultMessage="Submit" />}
+        <PrimaryButton
+          type="submit"
+          onClick={onSubmit}
+          autoFocus
+          disabled={disabled || label === ''}
+          loading={disabled}
+        >
+          <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
     </form>

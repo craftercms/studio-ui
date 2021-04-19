@@ -14,16 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react';
-import { ButtonProps } from '@material-ui/core/Button';
-import ButtonWithLoadingState from '../ButtonWithLoadingState';
+export { default } from './ButtonWithLoadingState';
 
-interface PrimaryButtonProps extends ButtonProps {
-  loading?: boolean;
-}
-
-const PrimaryButton = React.forwardRef<HTMLButtonElement, PrimaryButtonProps>((props, ref) => {
-  return <ButtonWithLoadingState ref={ref} {...props} variant="contained" color="primary" />;
-});
-
-export default PrimaryButton;
+export * from './ButtonWithLoadingState';
