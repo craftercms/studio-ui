@@ -621,15 +621,20 @@
 
         // TODO: we need store in order to get activeSite, when updating to a global config, this can be a forkJoin
         const activeSite = store.getState().sites.active;
-        sitesService.fetchSiteLocale(activeSite).then((locale) => {
-          if (Object.keys(locale).length === 0) {
-            $scope.locale = $rootScope.locale;
-          } else {
-            $scope.locale = locale;
-          }
+        sitesService.fetchSiteLocale(activeSite).then(
+          (locale) => {
+            if (Object.keys(locale).length === 0) {
+              $scope.locale = $rootScope.locale;
+            } else {
+              $scope.locale = locale;
+            }
 
-          audit.getAuditInfo();
-        });
+            audit.getAuditInfo();
+          },
+          () => {
+            $scope.locale = $rootScope.locale;
+          }
+        );
       });
     }
   ]);
