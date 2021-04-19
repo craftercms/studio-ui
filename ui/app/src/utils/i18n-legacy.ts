@@ -262,6 +262,12 @@ export const reposAdminMessages = defineMessages({
   unreachableRemote: {
     id: 'reposAdmin.unreachableRemote',
     defaultMessage: 'Remote "{name}" is currently unreachable.'
+  },
+  repositoriesNote: {
+    id: 'reposAdmin.repositoriesNote',
+    defaultMessage:
+      'Do not use Studio as a git merge and conflict resolution platform. ' +
+      'All merge conflicts should be resolved upstream before getting pulled into Studio.'
   }
 });
 
