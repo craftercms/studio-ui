@@ -256,7 +256,7 @@
         "PATH":"Path",
         "CHANNEL":"Channel",
         "WARNINGBP":"Warning: Bulk Publish",
-        "WRNINGGPBODY":" Bulk publish will force publish all items that match the pattern requested including their dependencies. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
+        "WRNINGGPBODY":" This will force publish all items that match the pattern requested including their dependencies, and it may take a long time depending on the number of items. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
         "PUBLISHQUEUE":"Publishing Queue",
         "PUBLISHSTARTED":"Bulk Publish process has been started.",
         "PUBLISHBYCOMMITS": "Publish by Commit ID(s)",
