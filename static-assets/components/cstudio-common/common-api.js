@@ -6820,19 +6820,22 @@ var nodeOpen = false,
           var utcDate = moment.tz(dateTime, 'Etc/UTC'),
             newDate;
 
-          if (format === 'full') {
-            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
-            newDate = newDate + ' (' + newTimeZone + ')';
-          } else {
-            if (format === 'large') {
+          switch (format) {
+            case 'full':
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
+              newDate = newDate + ' (' + newTimeZone + ')';
+              break;
+            case 'large':
               newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss');
-            } else {
-              if (format === 'medium') {
-                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
-              } else {
-                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
-              }
-            }
+              break;
+            case 'medium':
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+              break;
+            case 'date':
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY');
+              break;
+            default:
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
           }
           return newDate != 'Invalid date' ? newDate : '';
         } catch (err) {
