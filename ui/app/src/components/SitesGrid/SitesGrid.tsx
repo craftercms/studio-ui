@@ -17,7 +17,7 @@
 import React, { useMemo } from 'react';
 import { Site } from '../../models/Site';
 import { trash } from '../../services/sites';
-import { useLogicResource, useSitesBranch } from '../../utils/hooks';
+import { useEnv, useLogicResource, usePreviewState, useSitesBranch } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import SitesGridUI, { SkeletonSitesGrid } from './SitesGridUI';
 import { useDispatch } from 'react-redux';
@@ -29,6 +29,8 @@ import { showEditSiteDialog } from '../../state/actions/dialogs';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
 import { fetchSites } from '../../state/reducers/sites';
+import { setSiteCookie } from '../../utils/auth';
+import { getSystemLink } from '../LauncherSection';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -41,6 +43,8 @@ export default function SitesGrid() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const sitesBranch = useSitesBranch();
+  const { authoringBase } = useEnv();
+  const { previewChoice } = usePreviewState();
   const sitesById = sitesBranch.byId;
   const isFetching = sitesBranch.isFetching;
 
@@ -56,7 +60,15 @@ export default function SitesGrid() {
   );
 
   const onSiteClick = (site: Site) => {
-    console.log(site);
+    setSiteCookie(site.id);
+    setTimeout(() => {
+      window.location.href = getSystemLink({
+        systemLinkId: 'preview',
+        previewChoice,
+        authoringBase,
+        site: site.id
+      });
+    });
   };
 
   const onDeleteSiteClick = (site: Site) => {

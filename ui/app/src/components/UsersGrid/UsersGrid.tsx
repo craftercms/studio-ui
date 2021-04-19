@@ -37,7 +37,7 @@ export default function UsersGrid(props: UsersGridProps) {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(defaultLimit ?? 1);
+  const [limit, setLimit] = useState(defaultLimit ?? 10);
   const [fetching, setFetching] = useState(false);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
