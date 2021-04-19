@@ -37,6 +37,7 @@ interface SiteCardProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
+  fallbackImageSrc?: string;
 }
 
 const translations = defineMessages({
@@ -57,8 +58,7 @@ const translations = defineMessages({
 const styles = makeStyles((theme) =>
   createStyles({
     media: {
-      height: 0,
-      paddingTop: '56.25%'
+      height: '226px'
     },
     card: {
       width: '402px'
@@ -79,14 +79,15 @@ const styles = makeStyles((theme) =>
 );
 
 export default function SiteCard(props: SiteCardProps) {
-  const { site, onSiteClick, onDeleteSiteClick, onEditSiteClick } = props;
+  const {
+    site,
+    onSiteClick,
+    onDeleteSiteClick,
+    onEditSiteClick,
+    fallbackImageSrc = '/studio/static-assets/images/no_image_available.jpg'
+  } = props;
   const classes = styles();
   const { formatMessage } = useIntl();
-
-  const onDescriptionIconClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
 
   return (
     <Card className={classes.card}>
@@ -111,9 +112,11 @@ export default function SiteCard(props: SiteCardProps) {
           }}
         />
         <CardMedia
+          component={'img'}
           className={classes.media}
           image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
           title={site.name}
+          onError={(event) => (event.target.src = fallbackImageSrc)}
         />
       </CardActionArea>
       <CardActions disableSpacing>
