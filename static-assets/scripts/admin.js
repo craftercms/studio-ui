@@ -833,6 +833,9 @@
       var publish = $scope.publish;
       publish.error = '';
 
+      publish.bulkPublishNote = formatMessage(publishingMessages.bulkPublishNote);
+      publish.publishByNote = formatMessage(publishingMessages.publishByNote);
+
       publish.initQueque = function() {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
           siteId: $location.search().site

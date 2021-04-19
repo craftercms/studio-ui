@@ -687,6 +687,16 @@ export const publishingMessages = defineMessages({
   queued: {
     id: 'publishing.queued',
     defaultMessage: 'Queued'
+  },
+  bulkPublishNote: {
+    id: 'publishing.bulkPublishNote',
+    defaultMessage:
+      'Bulk publish should be used to publish changes made in Studio via the UI. For changes made via direct git actions, use the "Publish by..." feature.'
+  },
+  publishByNote: {
+    id: 'publishing.publishByNote',
+    defaultMessage:
+      '"Publish by..." feature must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
   }
 });
 

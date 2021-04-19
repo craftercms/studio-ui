@@ -256,7 +256,7 @@
         "PATH":"Pfad",
         "CHANNEL":"Kanal",
         "WARNINGBP":"Achtung: Massen-Publizierung",
-        "WRNINGGPBODY":"Die Massen-Publizierung beinhaltet alle Elemente, die dem angegebenen Pfad entsprechen, inklusive ihrer Abhängigkeiten. Bitte versichern Sie sich, dass alle betroffenem Inhalte publiziert werden dürfen.",
+        "WRNINGGPBODY":"Dadurch wird die Veröffentlichung aller Elemente erzwungen, die dem angeforderten Muster entsprechen, einschließlich ihrer Abhängigkeiten. Abhängig von der Anzahl der Elemente kann dies lange dauern. Bitte stellen Sie sicher, dass alle geänderten Elemente (einschließlich der möglicherweise laufenden Arbeiten einer anderen Person) zur Veröffentlichung bereit sind, bevor Sie fortfahren.",
         "PUBLISHQUEUE":"Veröffentlichung warteschlange",
         "PUBLISHSTARTED":"Massen-Publizierung wurde gestartet.",
         "PUBLISHBYCOMMITS": "Publizierung anhand eines oder mehrerer Commit-Hashs",
