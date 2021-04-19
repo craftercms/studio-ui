@@ -1137,6 +1137,22 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       );
       calendarComponent.selectEvent.subscribe(this.updateDate, calendarComponent, this);
     }
+
+    const _self = this;
+    let store;
+    CrafterCMSNext.system.getStore().subscribe((_store_) => {
+      store = _store_;
+      store.subscribe(() => {
+        const locale = store.getState().uiConfig.locale;
+        if (_self.locale !== locale) {
+          _self.locale = locale;
+          _self.hour12 = locale.dateTimeFormatOptions?.hour12 ?? true;
+
+          const value = _self.getFieldValue();
+          this._setValue(value, _self.timezone);
+        }
+      });
+    });
   },
 
   addTimezoneOptions: function(selectEl) {
