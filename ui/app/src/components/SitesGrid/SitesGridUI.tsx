@@ -17,19 +17,15 @@
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { Resource } from '../../models/Resource';
-import { PagedArray } from '../../models/PagedArray';
 import { Site } from '../../models/Site';
 import SiteCard, { SiteCardSkeleton } from './SiteCard';
-import Pagination from '../Pagination';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface SitesGridUIProps {
-  resource: Resource<PagedArray<Site>>;
+  resource: Resource<Site[]>;
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 const styles = makeStyles((theme) =>
@@ -48,7 +44,7 @@ const styles = makeStyles((theme) =>
 );
 
 export default function SitesGridUI(props: SitesGridUIProps) {
-  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick, onChangePage, onChangeRowsPerPage } = props;
+  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick } = props;
   const sites = resource.read();
   const classes = styles();
 
@@ -66,17 +62,6 @@ export default function SitesGridUI(props: SitesGridUIProps) {
           </Grid>
         ))}
       </Grid>
-      {Boolean(sites.total) && (
-        <Pagination
-          rowsPerPageOptions={[5, 10, 15]}
-          classes={{ root: classes.paginationRoot }}
-          count={sites.total}
-          rowsPerPage={sites.limit}
-          page={sites && Math.ceil(sites.offset / sites.limit)}
-          onChangePage={(page: number) => onChangePage(page)}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-        />
-      )}
     </section>
   );
 }

@@ -19,9 +19,10 @@ import { FormattedMessage } from 'react-intl';
 import Divider from '@material-ui/core/Divider';
 import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
-import React from 'react';
+import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import SitesGrid from '../SitesGrid';
+import CreateSiteDialog from '../../modules/System/Sites/Create/CreateSiteDialog';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -42,24 +43,26 @@ const styles = makeStyles((theme) =>
   })
 );
 
-interface SitesManagementProps {
-  limit?: number;
-}
-
-export default function SitesManagement(props: SitesManagementProps) {
+export default function SitesManagement() {
   const classes = styles();
-  const onCreateSite = () => {};
+  const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
+
   return (
     <section>
       <Typography variant="h4" component="h1" className={classes.title}>
         <FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />
       </Typography>
       <Divider />
-      <SecondaryButton startIcon={<AddIcon />} className={classes.createSite} onClick={onCreateSite}>
+      <SecondaryButton
+        startIcon={<AddIcon />}
+        className={classes.createSite}
+        onClick={() => setOpenCreateSiteDialog(true)}
+      >
         <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
       </SecondaryButton>
       <Divider className={classes.mb20} />
-      <SitesGrid limit={props.limit} />
+      <SitesGrid />
+      <CreateSiteDialog open={openCreateSiteDialog} onClose={() => setOpenCreateSiteDialog(false)} />
     </section>
   );
 }

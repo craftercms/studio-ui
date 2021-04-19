@@ -16,11 +16,22 @@
 
 import TablePagination from '@material-ui/core/TablePagination';
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme: Theme) =>
+export interface PaginationProps {
+  count: number;
+  rowsPerPage: number;
+  page: number;
+  onChangePage(page: number): void;
+  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  labelRowsPerPage?: React.ReactNode;
+  rowsPerPageOptions?: Array<number | { value: number; label: string }>;
+  classes?: Partial<Record<'root', string>>;
+}
+
+const useStyles = makeStyles(() =>
   createStyles({
     pagination: {
       '& p': {
@@ -67,17 +78,6 @@ const translations = defineMessages({
     defaultMessage: 'Next page'
   }
 });
-
-interface PaginationProps {
-  count: number;
-  rowsPerPage: number;
-  page: number;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
-  labelRowsPerPage?: React.ReactNode;
-  rowsPerPageOptions?: Array<number | { value: number; label: string }>;
-  classes?: Partial<Record<'root', string>>;
-}
 
 export default function Pagination(props: PaginationProps) {
   const {

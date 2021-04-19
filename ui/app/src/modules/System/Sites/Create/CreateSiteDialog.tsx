@@ -54,6 +54,7 @@ import Typography from '@material-ui/core/Typography';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
 import PrimaryButton from '../../../../components/PrimaryButton';
 import Button from '@material-ui/core/Button';
+import { nnou } from '../../../../utils/object';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -293,7 +294,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface CreateSiteDialogProps {
-  // open: boolean;
+  open?: boolean;
   onClose?(): any;
 }
 
@@ -303,7 +304,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [tab, setTab] = useState(0);
   const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
   const [dialog, setDialog] = useSpreadState({
-    open: true,
+    open: nnou(props.open) ? props.open : true,
     inProgress: false
   });
   const [apiState, setApiState] = useSpreadState({
@@ -323,6 +324,10 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
+
+  useEffect(() => {
+    setDialog({ open: props.open });
+  }, [props.open, setDialog]);
 
   const views: Views = {
     0: {

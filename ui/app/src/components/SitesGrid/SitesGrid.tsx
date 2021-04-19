@@ -14,12 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ApiResponse } from '../../models/ApiResponse';
-import { PagedArray } from '../../models/PagedArray';
+import React, { useMemo } from 'react';
 import { Site } from '../../models/Site';
-import { fetchAll, trash } from '../../services/sites';
-import { useLogicResource } from '../../utils/hooks';
+import { trash } from '../../services/sites';
+import { useLogicResource, useSitesBranch } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import SitesGridUI, { SkeletonSitesGrid } from './SitesGridUI';
 import { useDispatch } from 'react-redux';
@@ -27,10 +25,10 @@ import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-
-interface SitesGridProps {
-  limit?: number;
-}
+import { showEditSiteDialog } from '../../state/actions/dialogs';
+import LookupTable from '../../models/LookupTable';
+import { batchActions } from '../../state/actions/misc';
+import { fetchSites } from '../../state/reducers/sites';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -39,45 +37,21 @@ const translations = defineMessages({
   }
 });
 
-export default function SitesGrid(props: SitesGridProps) {
+export default function SitesGrid() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(props.limit ?? 10);
-  const [error, setError] = useState<ApiResponse>();
-  const [fetching, setFetching] = useState(false);
+  const sitesBranch = useSitesBranch();
+  const sitesById = sitesBranch.byId;
+  const isFetching = sitesBranch.isFetching;
 
-  const [sites, setSites] = useState<PagedArray<Site>>();
-
-  const fetchSites = useCallback(() => {
-    setFetching(true);
-    fetchAll({ limit, offset }).subscribe(
-      (sites) => {
-        setSites(sites);
-        setFetching(false);
-      },
-      ({ response }) => {
-        setFetching(false);
-        setError(response);
-      }
-    );
-  }, [limit, offset]);
-
-  useEffect(() => {
-    fetchSites();
-  }, [fetchSites]);
-
-  const resource = useLogicResource<
-    PagedArray<Site>,
-    { sites: PagedArray<Site>; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ sites, error, fetching }), [sites, error, fetching]),
+  const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
+    useMemo(() => ({ sitesById, isFetching }), [sitesById, isFetching]),
     {
-      shouldResolve: (source) => Boolean(source.sites) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.sites,
-      errorSelector: () => error
+      shouldResolve: (source) => Boolean(source.sitesById) && !isFetching,
+      shouldReject: () => false,
+      shouldRenew: (source, resource) => isFetching && resource.complete,
+      resultSelector: (source) => Object.values(sitesById),
+      errorSelector: () => null
     }
   );
 
@@ -89,9 +63,12 @@ export default function SitesGrid(props: SitesGridProps) {
     trash(site.id).subscribe(
       () => {
         dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.siteDeleted)
-          })
+          batchActions([
+            showSystemNotification({
+              message: formatMessage(translations.siteDeleted)
+            }),
+            fetchSites()
+          ])
         );
       },
       ({ response: { response } }) => {
@@ -101,15 +78,11 @@ export default function SitesGrid(props: SitesGridProps) {
   };
 
   const onEditSiteClick = (site: Site) => {
-    console.log(site);
-  };
-
-  const onChangePage = (page: number) => {
-    setOffset(page * limit);
-  };
-
-  const onChangeRowsPerPage = (e) => {
-    setLimit(e.target.value);
+    dispatch(
+      showEditSiteDialog({
+        site
+      })
+    );
   };
 
   return (
@@ -117,7 +90,7 @@ export default function SitesGrid(props: SitesGridProps) {
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <SkeletonSitesGrid numOfItems={limit} />
+          fallback: <SkeletonSitesGrid numOfItems={3} />
         }}
         withEmptyStateProps={{
           emptyStateProps: {
@@ -130,8 +103,6 @@ export default function SitesGrid(props: SitesGridProps) {
           onSiteClick={onSiteClick}
           onDeleteSiteClick={onDeleteSiteClick}
           onEditSiteClick={onEditSiteClick}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
         />
       </SuspenseWithEmptyState>
     </ErrorBoundary>
