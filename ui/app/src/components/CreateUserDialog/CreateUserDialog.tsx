@@ -114,6 +114,12 @@ const styles = makeStyles((theme) =>
         paddingBottom: 0
       }
     },
+    form: {
+      display: 'contents'
+    },
+    dialogBody: {
+      overflow: 'auto'
+    },
     // Password requirements
     listOfConditions: {
       listStyle: 'none',
@@ -186,9 +192,9 @@ function CreateUserDialogUI(props: CreateUserDialogProps) {
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form className={classes.form}>
       <DialogHeader title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />} />
-      <DialogBody>
+      <DialogBody className={classes.dialogBody}>
         <TextField
           className={classes.textField}
           label={<FormattedMessage id="createUserDialog.firstName" defaultMessage="First Name" />}
