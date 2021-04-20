@@ -253,6 +253,7 @@
   ]);
 
   app.controller('AuditCtrl', [
+    '$rootScope',
     '$scope',
     '$state',
     '$window',
@@ -267,6 +268,7 @@
     '$cookies',
     'Constants',
     function(
+      $rootScope,
       $scope,
       $state,
       $window,
@@ -556,7 +558,22 @@
         }, audit.defaultDelay);
       };
 
-      audit.generalUpdate = function(action) {
+      audit.updateDate = function(dateField) {
+        const locale = $scope.locale;
+        const options = locale.dateTimeFormatOptions;
+        const localeCode = locale.localeCode;
+
+        // dateFrom and dateTo are the values (not formatted) used for service calls
+        audit[dateField] = audit[`${dateField}Input`];
+        // dateFromInput and dateToInput are the values used to be displayed in the input fields
+        audit[`${dateField}Input`] = new Intl.DateTimeFormat(localeCode, options).format(
+          new Date(audit[`${dateField}Input`])
+        );
+
+        audit.generalUpdate();
+      };
+
+      audit.generalUpdate = function() {
         $timeout.cancel(delayTimer);
         delayTimer = $timeout(function() {
           getAudit(audit.site);
@@ -601,7 +618,23 @@
 
       CrafterCMSNext.system.getStore().subscribe((store) => {
         $scope.sites = store.getState().sites.byId;
-        audit.getAuditInfo();
+
+        // TODO: we need store in order to get activeSite, when updating to a global config, this can be a forkJoin
+        const activeSite = store.getState().sites.active;
+        sitesService.fetchSiteLocale(activeSite).then(
+          (locale) => {
+            if (Object.keys(locale).length === 0) {
+              $scope.locale = $rootScope.locale;
+            } else {
+              $scope.locale = locale;
+            }
+
+            audit.getAuditInfo();
+          },
+          () => {
+            $scope.locale = $rootScope.locale;
+          }
+        );
       });
     }
   ]);

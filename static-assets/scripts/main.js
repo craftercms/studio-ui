@@ -160,6 +160,18 @@
         }
       };
 
+      $rootScope.locale = {
+        localeCode: 'en-US',
+        dateTimeFormatOptions: {
+          timeZone: 'EST5EDT',
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric'
+        }
+      };
+
       CrafterCMSNext.renderBackgroundUI();
     }
   ]);
@@ -650,6 +662,10 @@
         return configurationApi.fetchGlobalMenuItems().toPromise();
       };
 
+      this.fetchSiteLocale = function(site) {
+        return configurationApi.fetchSiteLocale(site).toPromise();
+      };
+
       return this;
     }
   ]);
@@ -986,7 +1002,10 @@
         $scope.data.email = $scope.user.email;
       });
 
-      CrafterCMSNext.system.getStore().subscribe(() => {
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        // Retrieve current site to call fetchSiteLocale, this will be replaced with a global config (no site needed)
+        const activeSite = store.getState().sites.active;
+
         if ($scope.user && $scope.user.username) {
           sitesService.getPermissions('', '/', $scope.user.username || $scope.user).then(function(permissions) {
             if (permissions.includes('create-site')) {
@@ -995,22 +1014,34 @@
           });
         }
         if (authService.getUser()) {
-          authService.getStudioInfo().then(function(data) {
-            const packageVersion = data.packageVersion;
-            const simpleVersion = packageVersion.substr(0, 3);
-            $scope.aboutStudio = data;
-            $scope.versionNumber = `${packageVersion}-${data.packageBuild.substring(0, 6)}`;
-            $scope.simpleVersion = simpleVersion;
-            $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
-            $scope.attributionHTML = CrafterCMSNext.i18n.intl
-              .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
-                a: (msg) =>
-                  `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
-              })
-              .join('');
+          CrafterCMSNext.rxjs
+            .forkJoin({
+              studioInfo: authService.getStudioInfo(),
+              locale: sitesService.fetchSiteLocale(activeSite)
+            })
+            .subscribe(({ studioInfo, locale }) => {
+              // setting locale before setting build date/time info (under 'studioInfo')
+              if (Object.keys(locale).length === 0) {
+                $scope.locale = $rootScope.locale;
+              } else {
+                $scope.locale = locale;
+              }
 
-            $scope.$apply();
-          });
+              const packageVersion = studioInfo.packageVersion;
+              const simpleVersion = packageVersion.substr(0, 3);
+              $scope.aboutStudio = studioInfo;
+              $scope.versionNumber = `${packageVersion}-${studioInfo.packageBuild.substring(0, 6)}`;
+              $scope.simpleVersion = simpleVersion;
+              $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
+              $scope.attributionHTML = CrafterCMSNext.i18n.intl
+                .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
+                  a: (msg) =>
+                    `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
+                })
+                .join('');
+
+              $scope.$apply();
+            });
         }
       });
 
@@ -1752,6 +1783,23 @@
   app.filter('nospace', function() {
     return function(value) {
       return !value ? '' : value.replace(/ /g, '');
+    };
+  });
+
+  app.filter('formatDate', function() {
+    return function(date, locale, timeZone) {
+      if (date && locale) {
+        const options = locale.dateTimeFormatOptions;
+        const localeCode = locale.localeCode;
+
+        if (timeZone) {
+          options.timeZone = timeZone;
+        }
+
+        return new Intl.DateTimeFormat(localeCode, options).format(new Date(date));
+      } else {
+        return date;
+      }
     };
   });
 

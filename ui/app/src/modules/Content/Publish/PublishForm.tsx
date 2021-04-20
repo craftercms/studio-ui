@@ -33,6 +33,8 @@ import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
 import palette from '../../../styles/palette';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
+import { useSelection } from '../../../utils/hooks';
+import GlobalState from '../../../models/GlobalState';
 
 const messages = defineMessages({
   emailLabel: {
@@ -193,6 +195,7 @@ function PublishForm(props: PublishFormProps) {
     setSubmitDisabled,
     disabled = true
   } = props;
+  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   useEffect(
     () => {
@@ -296,6 +299,8 @@ function PublishForm(props: PublishFormProps) {
             onChange={dateTimePickerChange}
             onError={() => setSubmitDisabled(true)}
             date={inputs.scheduledDateTime}
+            localeCode={locale.localeCode}
+            hour12={locale.dateTimeFormatOptions?.hour12 ?? true}
             timeZonePickerProps={{
               timezone: inputs.scheduledTimeZone
             }}

@@ -60,6 +60,7 @@ import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
+import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -226,6 +227,12 @@ export interface GlobalState {
       isFetching: boolean;
       localeCodes: string[];
       defaultLocaleCode: string;
+    };
+    locale: {
+      error: ApiResponse;
+      isFetching: boolean;
+      localeCode: string;
+      dateTimeFormatOptions?: DateTimeFormatOptions;
     };
     publishing: {
       submissionCommentMaxLength: number;

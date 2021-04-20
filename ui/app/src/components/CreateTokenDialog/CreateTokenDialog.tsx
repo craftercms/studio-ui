@@ -21,7 +21,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import TextField from '@material-ui/core/TextField';
-import { useUnmount } from '../../utils/hooks';
+import { useSelection, useUnmount } from '../../utils/hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { createToken } from '../../services/tokens';
 import { Token } from '../../models/Token';
@@ -37,6 +37,7 @@ import PrimaryButton from '../PrimaryButton';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { Typography } from '@material-ui/core';
+import GlobalState from '../../models/GlobalState';
 
 interface CreateTokenProps {
   open: boolean;
@@ -87,6 +88,9 @@ export function CreateTokenUI(props: CreateTokenUIProps) {
     }
     onOk({ label, expiresAt: expires ? expiresAt : null });
   };
+  const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
+    (state) => state.uiConfig.locale.localeCode
+  );
 
   useUnmount(onClosed);
 
@@ -141,6 +145,7 @@ export function CreateTokenUI(props: CreateTokenUIProps) {
             datePickerProps={{
               disablePast: true
             }}
+            localeCode={localeCode}
           />
         </Collapse>
       </DialogBody>

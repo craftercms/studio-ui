@@ -18,7 +18,13 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
-import { fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
+import {
+  fetchGlobalMenuComplete,
+  fetchGlobalMenuFailed,
+  fetchSiteLocale,
+  fetchSiteLocaleComplete,
+  fetchSiteLocaleFailed
+} from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 
 const initialState: GlobalState['uiConfig'] = {
@@ -44,6 +50,19 @@ const initialState: GlobalState['uiConfig'] = {
     isFetching: false,
     localeCodes: null,
     defaultLocaleCode: null
+  },
+  locale: {
+    error: null,
+    isFetching: false,
+    localeCode: 'en-US',
+    dateTimeFormatOptions: {
+      timeZone: 'EST5EDT',
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    }
   },
   publishing: {
     submissionCommentMaxLength: 250
@@ -115,7 +134,31 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       error: payload
     }
   }),
-  [changeSite.type]: () => initialState
+  [changeSite.type]: () => initialState,
+  [fetchSiteLocale.type]: (state) => ({
+    ...state,
+    locale: {
+      ...state.locale,
+      isFetching: true
+    }
+  }),
+  [fetchSiteLocaleComplete.type]: (state, { payload }) => ({
+    ...state,
+    locale: {
+      ...state.locale,
+      isFetching: false,
+      localeCode: payload.localeCode ?? state.locale.localeCode,
+      dateTimeFormatOptions: payload.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
+    }
+  }),
+  [fetchSiteLocaleFailed.type]: (state, { payload }) => ({
+    ...state,
+    locale: {
+      ...state.locale,
+      isFetching: false,
+      error: payload
+    }
+  })
 });
 
 export default reducer;
