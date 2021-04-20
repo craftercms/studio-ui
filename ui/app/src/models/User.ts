@@ -34,4 +34,13 @@ export interface EnhancedUser extends User {
   preferences: LookupTable;
 }
 
+export interface NewUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  enabled: boolean;
+  password: string;
+}
+
 export default User;

@@ -294,7 +294,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface CreateSiteDialogProps {
-  open?: boolean;
+  open: boolean;
   onClose?(): any;
 }
 
