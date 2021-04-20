@@ -30,6 +30,9 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
 import Popper from '@material-ui/core/Popper';
 import Paper from '@material-ui/core/Paper';
+import { create } from '../../services/users';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -152,7 +155,7 @@ export default function CreateUserDialog(props: CreateUserDialogProps) {
 }
 
 function CreateUserDialogUI(props: CreateUserDialogProps) {
-  const { onClose, passwordRequirementsRegex } = props;
+  const { onClose, passwordRequirementsRegex, onCreateSuccess } = props;
   const [newUser, setNewUser] = useSpreadState({
     firstName: '',
     lastName: '',
@@ -167,11 +170,20 @@ function CreateUserDialogUI(props: CreateUserDialogProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = styles();
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
   const arrowRef = useRef();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setSubmitted(true);
+    create(newUser).subscribe(
+      () => {
+        onCreateSuccess?.();
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
   };
 
   const validateEmail = (email: string) => {
