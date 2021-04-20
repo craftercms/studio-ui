@@ -24,59 +24,20 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import React from 'react';
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import User from '../../models/User';
 import clsx from 'clsx';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import { rand } from '../PathNavigator/utils';
+import { styles } from './styles';
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    avatar: {
-      margin: '0 auto'
-    },
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    tableHeadRow: {
-      '&:hover': {
-        background: 'none'
-      }
-    },
-    tableCell: {
-      padding: '4px',
-      borderBottom: 0,
-      height: '50px',
-      '&.avatar': {
-        padding: 0,
-        width: '50px'
-      },
-      '&.bordered': {
-        borderBottom: `1px solid ${theme.palette.divider}`
-      },
-      '&.paddedLeft': {
-        paddingLeft: '20px'
-      },
-      '&.width30': {
-        width: '30%'
-      },
-      '&.width60': {
-        width: '60%'
-      }
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    }
-  })
-);
+export interface UsersGridUIProps {
+  resource: Resource<PagedArray<User>>;
+  onRowClicked(user: User): void;
+  onChangePage(page: number): void;
+  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+}
 
 const StyledTableRow = withStyles((theme: Theme) =>
   createStyles({
@@ -92,13 +53,6 @@ const StyledTableRow = withStyles((theme: Theme) =>
     }
   })
 )(TableRow);
-
-interface UsersGridUIProps {
-  resource: Resource<PagedArray<User>>;
-  onRowClicked(user: User): void;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
-}
 
 export default function UsersGridUI(props: UsersGridUIProps) {
   const { resource, onRowClicked, onChangePage, onChangeRowsPerPage } = props;
@@ -163,61 +117,5 @@ export default function UsersGridUI(props: UsersGridUIProps) {
         onChangeRowsPerPage={onChangeRowsPerPage}
       />
     </section>
-  );
-}
-
-interface UsersGridSkeletonTableProps {
-  numOfItems?: number;
-}
-
-export function UsersGridSkeletonTable(props: UsersGridSkeletonTableProps) {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  const classes = styles();
-  return (
-    <TableContainer>
-      <Table className={classes.tableRoot}>
-        <TableHead>
-          <TableRow>
-            <TableCell align="center" className={clsx(classes.tableCell, 'bordered', 'avatar')}>
-              <span />
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'paddedLeft', 'width30')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'width30')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.username" defaultMessage="Username" />
-              </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'width60')}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.email" defaultMessage="E-mail" />
-              </Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items?.map((width, index) => (
-            <TableRow key={index}>
-              <TableCell align="center" className={clsx(classes.tableCell, 'avatar')}>
-                <Skeleton className={classes.avatar} variant="circle" width={40} height={40} />
-              </TableCell>
-              <TableCell component="th" scope="row" className={clsx(classes.tableCell, 'paddedLeft', 'width30')}>
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'width30')}>
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'width60')}>
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
   );
 }

@@ -25,7 +25,7 @@ interface ButtonWithLoadingStateProps extends ButtonProps {
 const ButtonWithLoadingState = React.forwardRef<HTMLButtonElement, ButtonWithLoadingStateProps>((props, ref) => {
   const { loading, ...rest } = props;
   return (
-    <Button ref={ref} {...rest} variant="contained" color="primary">
+    <Button ref={ref} {...rest} variant="contained" disabled={loading || rest.disabled} color="primary">
       {loading ? <CircularProgress size={20} /> : props.children}
     </Button>
   );

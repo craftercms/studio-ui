@@ -21,7 +21,6 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import { Typography } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -32,6 +31,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
+import PasswordTextField from '../Controls/PasswordTextField';
 
 interface ResetPasswordDialogProps {
   open: boolean;
@@ -137,7 +137,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
             values={{ user: props.user.username }}
           />
         </Typography>
-        <TextField
+        <PasswordTextField
           value={newPassword}
           autoFocus
           required

@@ -20,6 +20,4 @@ export * from './UsersGrid';
 
 export * from './UsersGridUI';
 
-export * from '../UserInfoDialog/UserInfoDialog';
-
-export * from '../ResetPasswordDialog/ResetPasswordDialog';
+export * from './UsersGridSkeletonTable';

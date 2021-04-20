@@ -45,7 +45,7 @@ import LookupTable from '../../models/LookupTable';
 import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import ResetPasswordDialog from '../ResetPasswordDialog/ResetPasswordDialog';
+import ResetPasswordDialog from '../ResetPasswordDialog';
 
 const styles = makeStyles((theme) =>
   createStyles({

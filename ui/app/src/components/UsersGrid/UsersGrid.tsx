@@ -19,12 +19,13 @@ import { fetchAll } from '../../services/users';
 import User from '../../models/User';
 import { useLogicResource } from '../../utils/hooks';
 import { ApiResponse } from '../../models/ApiResponse';
-import UsersGridUI, { UsersGridSkeletonTable } from './UsersGridUI';
+import UsersGridUI from './UsersGridUI';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import UserInfoDialog from '../UserInfoDialog';
 import { PagedArray } from '../../models/PagedArray';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
+import { UsersGridSkeletonTable } from './UsersGridSkeletonTable';
 
 interface UsersGridProps {
   limit?: number;
