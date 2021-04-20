@@ -16,7 +16,7 @@
 
 import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
 import { forkJoin, Observable } from 'rxjs';
-import { catchError, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { fetchDependencies } from './dependencies';
 import { toQueryString } from '../utils/object';
@@ -93,7 +93,11 @@ export function reject(
 }
 
 export function fetchStatus(siteId: string): Observable<PublishingStatus> {
-  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(pluck('response', 'publishingStatus'));
+  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(
+    pluck('response', 'publishingStatus'),
+    // Address backend sending status as null with the mapping below.
+    map((status) => ({ ...status, status: status.status ?? '' }))
+  );
 }
 
 export function start(siteId: string): Observable<true> {

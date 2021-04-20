@@ -23,10 +23,9 @@ import PathNavigatorTreeSkeletonItem from './PathNavigatorTreeSkeletonItem';
 
 interface PathNavigatorSkeletonProps {
   numOfItems?: number;
-  showChildrenRail?: boolean;
 }
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     skeletonRoot: {
       margin: '10px 0'
