@@ -50,6 +50,11 @@ export default function UsersManagement(props: UsersManagementProps) {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
   const [openCreateUserDialog, setOpenCreateUserDialog] = useState(false);
+
+  const onUserCreated = () => {
+    setOpenCreateUserDialog(false);
+  };
+
   return (
     <section>
       <Typography variant="h4" component="h1" className={classes.title}>
@@ -64,12 +69,11 @@ export default function UsersManagement(props: UsersManagementProps) {
         <FormattedMessage id="sites.createUser" defaultMessage="Create User" />
       </SecondaryButton>
       <Divider />
-      <UsersGrid />
+      <UsersGrid passwordRequirementsRegex={passwordRequirementsRegex} />
       <CreateUserDialog
         open={openCreateUserDialog}
-        onClose={() => {
-          setOpenCreateUserDialog(false);
-        }}
+        onCreateSuccess={onUserCreated}
+        onClose={() => setOpenCreateUserDialog(false)}
         passwordRequirementsRegex={passwordRequirementsRegex}
       />
     </section>
