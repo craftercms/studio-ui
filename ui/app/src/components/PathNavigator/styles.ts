@@ -47,6 +47,9 @@ export const useStyles = makeStyles(
         marginLeft: '6px',
         flexGrow: 1
       },
+      headerIcon: {
+        fontSize: '1.2em'
+      },
       accordion: {
         boxShadow: 'none',
         backgroundColor: 'inherit',
@@ -77,10 +80,6 @@ export const useStyles = makeStyles(
       accordionDetails: {
         padding: 0,
         flexDirection: 'column'
-      },
-      childrenRail: {
-        marginLeft: 10,
-        borderLeft: `3px solid ${theme.palette.divider}`
       },
       pagesIcon: {
         fontSize: '1.1rem'
@@ -123,7 +122,6 @@ export const useStyles = makeStyles(
       breadcrumbsList: {
         display: 'flex',
         alignItems: 'center',
-        padding: '9px 0',
         '& li': {
           lineHeight: 1
         }
@@ -176,23 +174,12 @@ export const useStyles = makeStyles(
       menuList: {
         padding: 0
       },
-      menuItemRoot: {
-        whiteSpace: 'initial'
-      },
-      helperText: {
-        padding: '10px 16px 10px 16px',
-        color: '#8E8E93'
-      },
       // region Nav Styles
       stateGraphics: {
         width: 100
       },
       // endregion
       // region Nav Item Styles
-      levelDescriptorIcon: {
-        marginRight: 5,
-        fontSize: '1.2rem'
-      },
       icon: {
         fontSize: '1.2rem'
       },
@@ -202,13 +189,20 @@ export const useStyles = makeStyles(
       },
       navItem: {
         minHeight: '23.5px',
-        padding: '0 0 0 10px',
+        padding: '0 0 0 5px',
+        marginLeft: 15,
+        width: 'calc(100% - 15px)',
         '&.noLeftPadding': {
           paddingLeft: 0
         },
         '&:hover': {
           backgroundColor: 'rgba(0, 0, 0, 0.08)'
         }
+      },
+      currentPathItem: {
+        paddingLeft: 0,
+        marginLeft: 10,
+        width: 'auto'
       },
       navItemLevelDescriptor: {},
       navItemText: {

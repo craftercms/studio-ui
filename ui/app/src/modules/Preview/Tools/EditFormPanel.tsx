@@ -137,7 +137,6 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const defaultSrc = `${authoringBase}/legacy/form?`;
 
   const item = selected[0];
   const fieldId = item.fieldId[0];
@@ -220,15 +219,15 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     <>
       <DialogHeader title={title} onDismiss={onDismiss} className={classes.header} />
       <DialogBody className={classes.formWrapper}>
-        <Button variant="outlined" color="primary" onClick={(e) => openDialog('form')}>
+        <Button variant="outlined" color="primary" onClick={() => openDialog('form')}>
           {formatMessage(translations.openComponentForm)}
         </Button>
-        <Button variant="outlined" color="primary" onClick={(e) => openDialog('template')}>
+        <Button variant="outlined" color="primary" onClick={() => openDialog('template')}>
           {formatMessage(translations.editTemplate)}
         </Button>
         {/* TODO: should use type instead of content type id string inspection */}
         {selectedContentType.includes('/page') && (
-          <Button variant="outlined" color="primary" onClick={(e) => openDialog('controller')}>
+          <Button variant="outlined" color="primary" onClick={() => openDialog('controller')}>
             {formatMessage(translations.editController)}
           </Button>
         )}

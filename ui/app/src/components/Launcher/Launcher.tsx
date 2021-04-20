@@ -78,6 +78,12 @@ import LockRounded from '@material-ui/icons/LockRounded';
 import PublicRounded from '@material-ui/icons/PublicRounded';
 import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
 
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import CodeRoundedIcon from '@material-ui/icons/CodeRounded';
+import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
+import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
+
 export interface LauncherProps {
   open: boolean;
   anchor: Element;
@@ -479,7 +485,12 @@ Object.entries({
   '@material-ui/icons/FormatAlignCenterRounded': FormatAlignCenterRounded,
   '@material-ui/icons/LockRounded': LockRounded,
   '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
-  '@material-ui/icons/PublicRounded': PublicRounded
+  '@material-ui/icons/PublicRounded': PublicRounded,
+  '@material-ui/icons/InsertDriveFileOutlined': InsertDriveFileOutlinedIcon,
+  '@material-ui/icons/VideocamOutlined': VideocamOutlinedIcon,
+  '@material-ui/icons/CodeRounded': CodeRoundedIcon,
+  '@material-ui/icons/ExtensionOutlined': ExtensionOutlinedIcon,
+  '@material-ui/icons/LocalOfferOutlined': LocalOfferOutlinedIcon
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

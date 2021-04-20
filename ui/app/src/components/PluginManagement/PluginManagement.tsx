@@ -30,7 +30,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import { ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import { useActiveSiteId, useMount } from '../../utils/hooks';
+import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
@@ -48,6 +48,7 @@ import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import { createLookupTable } from '../../utils/object';
+import GlobalState from '../../models/GlobalState';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -113,6 +114,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
   const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<PluginRecord>>();
+  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   useMount(() => {
     getUserPermissions(siteId, '/').subscribe((permissions) => {
@@ -255,7 +257,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
                       </IconButton>
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      <AsDayMonthDateTime date={plugin.installationDate} />
+                      <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
                     <TableCell align="right" className={classes.actions}></TableCell>
                   </TableRow>

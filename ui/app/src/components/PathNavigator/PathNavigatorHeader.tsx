@@ -21,12 +21,12 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 interface HeaderProps {
   locale: string;
   title: string;
-  iconClassName: string;
-  iconStyle: object;
+  icon?: SystemIconDescriptor;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
 }
@@ -34,12 +34,12 @@ interface HeaderProps {
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
-  const { title, iconClassName, iconStyle, locale, onLanguageMenu, onContextMenu } = props;
+  const { title, icon, locale, onLanguageMenu, onContextMenu } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
       <div className={classes.accordionSummaryTitle}>
-        {iconClassName && <span className={iconClassName} style={iconStyle} />}
+        {icon && <SystemIcon icon={icon} className={classes.headerIcon} />}
         <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
       </div>
       <div className={classes.accordionSummaryActions}>

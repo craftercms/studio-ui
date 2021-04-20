@@ -61,6 +61,8 @@ import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
 import { hasCreateAction, hasEditAction } from '../../utils/content';
+import ItemDisplay from '../../components/ItemDisplay';
+import Typography from '@material-ui/core/Typography';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -144,6 +146,22 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
     itemActionSkeleton: {
       width: 40,
       margin: '0 5px'
+    },
+    itemDisplayWrapper: {
+      width: '100%',
+      overflow: 'hidden',
+      cursor: 'pointer',
+      display: 'flex'
+    },
+    itemPreviewUrl: {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      marginLeft: '4px'
+    },
+    itemDisplaySkeleton: {
+      marginLeft: '5px',
+      width: '100%'
     }
   })
 );
@@ -226,17 +244,27 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           ))}
         </Select>
-        <PagesSearchAhead
-          value={internalUrl}
-          placeholder={noSiteSet ? '' : '/'}
-          disabled={disabled}
-          onEnter={(value) => onUrlChange(value)}
-          classes={{
-            input: classes.input
-          }}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-        />
+        {!focus && item && (
+          <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
+            <ItemDisplay item={item} styles={{ root: { maxWidth: '100%' } }} />
+            <Typography className={classes.itemPreviewUrl} color="textSecondary">
+              • {item.previewUrl}
+            </Typography>
+          </div>
+        )}
+        {(focus || !item) && (
+          <PagesSearchAhead
+            value={internalUrl}
+            placeholder={noSiteSet ? '' : '/'}
+            disabled={disabled}
+            onEnter={(value) => onUrlChange(value)}
+            classes={{
+              input: classes.input
+            }}
+            onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
+          />
+        )}
         <SingleItemSelector
           disabled={disabled}
           rootPath="/site/website/index.xml"

@@ -262,6 +262,12 @@ export const reposAdminMessages = defineMessages({
   unreachableRemote: {
     id: 'reposAdmin.unreachableRemote',
     defaultMessage: 'Remote "{name}" is currently unreachable.'
+  },
+  repositoriesNote: {
+    id: 'reposAdmin.repositoriesNote',
+    defaultMessage:
+      'Do not use Studio as a git merge and conflict resolution platform. ' +
+      'All merge conflicts should be resolved upstream before getting pulled into Studio.'
   }
 });
 
@@ -681,6 +687,16 @@ export const publishingMessages = defineMessages({
   queued: {
     id: 'publishing.queued',
     defaultMessage: 'Queued'
+  },
+  bulkPublishNote: {
+    id: 'publishing.bulkPublishNote',
+    defaultMessage:
+      'Bulk publish should be used to publish changes made in Studio via the UI. For changes made via direct git actions, use the "Publish by..." feature.'
+  },
+  publishByNote: {
+    id: 'publishing.publishByNote',
+    defaultMessage:
+      '"Publish by..." feature must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
   }
 });
 

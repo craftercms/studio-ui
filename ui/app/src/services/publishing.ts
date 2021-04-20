@@ -16,7 +16,7 @@
 
 import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
 import { forkJoin, Observable } from 'rxjs';
-import { catchError, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { fetchDependencies } from './dependencies';
 import { toQueryString } from '../utils/object';
@@ -93,7 +93,23 @@ export function reject(
 }
 
 export function fetchStatus(siteId: string): Observable<PublishingStatus> {
-  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(pluck('response', 'publishingStatus'));
+  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(
+    pluck('response', 'publishingStatus'),
+    map((status) => ({
+      ...status,
+      // Address backend sending status as null.
+      status: status.status ?? '',
+      // Parse and express the formatted date if present.
+      message:
+        status.message?.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, (match) =>
+          new Intl.DateTimeFormat(window?.navigator?.language ?? 'en-US', {
+            // @ts-ignore - dateStyle & timeStyle props not typed yet.
+            dateStyle: 'full',
+            timeStyle: 'long'
+          }).format(new Date(match))
+        ) ?? ''
+    }))
+  );
 }
 
 export function start(siteId: string): Observable<true> {

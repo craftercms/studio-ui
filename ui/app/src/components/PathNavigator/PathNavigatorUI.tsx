@@ -36,6 +36,7 @@ import List from '@material-ui/core/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -56,7 +57,7 @@ export interface PathNavigatorUIProps {
   /**
    * Styling props (classes and/or styles) applied to the widget's header icon element
    **/
-  icon?: Partial<StateStylingProps & { id: string }>;
+  icon?: SystemIconDescriptor;
   /**
    * Styling props (classes and/or styles) applied to the widget's container element
    **/
@@ -69,10 +70,6 @@ export interface PathNavigatorUIProps {
    * Widget's search keyword
    **/
   keyword: string;
-  /**
-   * Indents all items of the widget wrapping them with a border on the left of the widget
-   **/
-  showChildrenRail?: boolean;
   /**
    *
    **/
@@ -154,7 +151,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     icon,
     container,
     title,
-    showChildrenRail,
     onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
@@ -218,14 +214,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       }}
     >
       <Header
-        iconClassName={clsx(
-          icon?.baseClass,
-          icon ? (state.collapsed ? icon.collapsedClass : icon.expandedClass) : null
-        )}
-        iconStyle={{
-          ...icon?.baseStyle,
-          ...(icon ? (state.collapsed ? icon.collapsedStyle : icon.expandedStyle) : null)
-        }}
+        icon={icon}
         title={title}
         locale={state.localeCode}
         onContextMenu={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
@@ -235,13 +224,10 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             : null
         }
       />
-      <AccordionDetails
-        className={clsx(classes.accordionDetails, showChildrenRail && classes.childrenRail, props.classes?.body)}
-      >
+      <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <Breadcrumbs
           keyword={keyword}
           breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
-          onMenu={onCurrentParentMenu}
           onSearch={onSearch}
           onCrumbSelected={onBreadcrumbSelected}
           classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
@@ -261,6 +247,14 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
           }}
         >
+          <NavItem
+            item={itemsByPath[state.currentPath]}
+            locale={state.localeCode}
+            isLevelDescriptor={false}
+            onOpenItemMenu={onCurrentParentMenu}
+            onItemClicked={onItemClicked}
+            isCurrentPath
+          />
           {levelDescriptor && (
             <NavItem
               item={levelDescriptor}

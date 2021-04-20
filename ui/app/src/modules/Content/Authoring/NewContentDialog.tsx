@@ -133,7 +133,6 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   const dispatch = useDispatch();
   const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const defaultFormSrc = `${authoringBase}/legacy/form`;
 
   const [isCompact, setIsCompact] = useState(compact);
   const [openSelector, setOpenSelector] = useState(false);

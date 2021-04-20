@@ -109,6 +109,11 @@
           </tbody>
         </table>
       </div>
+      <div class="col-md-12" ng-show="repositories.status.conflicting.length < 1">
+        <p class="note mb0 tac">
+          {{ repositories.repoMessages.repositoriesNote }}
+        </p>
+      </div>
     </div>
     <div
       class="col-md-12 mb25"
@@ -125,7 +130,6 @@
         (repositories.status.conflicting.length > 0 ||
         repositories.status.uncommittedChanges.length > 0)"
       >
-        <h3 class="header header--inline">{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}</h3>
         <div class="actions clearfix pull-right">
           <div class="btn-group studio-dropdown mr10" dropdown>
             <button type="button" class="btn btn-outline-danger dropdown-toggle" dropdown-toggle>
@@ -150,6 +154,15 @@
           >
             {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
           </a>
+        </div>
+        <div class="mb30">
+          <h3
+            class="header header--inline mb10"
+          >{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}
+          </h3>
+          <p class="note mb0">
+            {{ repositories.repoMessages.repositoriesNote }}
+          </p>
         </div>
 
         <div class="conflicted-files">
@@ -228,7 +241,7 @@
   <div class="modal-header">
     <h3 class="modal-title">{{dialogTitle}}</h3>
   </div>
-  <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+  <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required" ng-submit="okModalFunction(repo)">
     <div class="modal-body clearfix">
       <div class="col-md-12">
         <div class="form-group">
@@ -392,13 +405,14 @@
 
     <div class="modal-footer">
       <button
+        type="button"
         class="btn btn-default" ng-click="hideModal()"
       >{{ 'common.CANCEL_LABEL' | translate }}
       </button>
       <button
         class="btn btn-primary text-capitalize"
-        ng-click="okModalFunction(repo)"
-        ng-disabled="createNameForm.$invalid"
+        type="submit"
+        ng-class="{'disabled': createNameForm.$invalid}"
       >
         {{ 'common.' + dialogMode | translate }}
       </button>

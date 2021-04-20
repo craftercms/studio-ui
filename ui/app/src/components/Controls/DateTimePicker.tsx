@@ -69,6 +69,8 @@ interface DateTimePickerProps {
     timezone?: string;
     onTimezoneChange?: Function;
   };
+  localeCode?: string;
+  hour12?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -158,7 +160,9 @@ function DateTimePicker(props: DateTimePickerProps) {
     controls = ['date', 'time', 'timezone'],
     datePickerProps = {},
     timePickerProps = {},
-    timeZonePickerProps = {}
+    timeZonePickerProps = {},
+    localeCode,
+    hour12
   } = props;
   const classes = useStyles({});
   const [pickerState, setPickerState] = useState({
@@ -244,12 +248,14 @@ function DateTimePicker(props: DateTimePickerProps) {
     formControlProps['id'] = id;
   }
 
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
   return (
     <FormControl {...formControlProps} fullWidth>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         {controls.includes('date') && (
           <KeyboardDatePicker
-            format="MM/dd/yyyy"
+            open={datePickerOpen}
             margin="normal"
             value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
             onChange={handleDateChange('scheduledDate')}
@@ -258,13 +264,27 @@ function DateTimePicker(props: DateTimePickerProps) {
               className: classes.pickerButton
             }}
             inputProps={{
-              className: classes.pickerInput
+              className: classes.pickerInput,
+              disabled: true
             }}
             placeholder={formatMessage(translations.datePlaceholder)}
             disabled={disabled}
             disablePast={datePickerProps.disablePast}
             error={!pickerState.dateValid}
             helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
+            labelFunc={(date, invalidLabel) => {
+              return invalidLabel || new Intl.DateTimeFormat(localeCode ?? 'en-US').format(date);
+            }}
+            onClick={() => {
+              setDatePickerOpen(true);
+            }}
+            onAccept={() => {
+              setDatePickerOpen(false);
+            }}
+            // Both clicking cancel and outside the calendar trigger onClose
+            onClose={() => {
+              setDatePickerOpen(false);
+            }}
           />
         )}
 
@@ -285,6 +305,7 @@ function DateTimePicker(props: DateTimePickerProps) {
             disabled={disabled}
             error={!pickerState.timeValid}
             helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
+            ampm={hour12}
           />
         )}
       </MuiPickersUtilsProvider>

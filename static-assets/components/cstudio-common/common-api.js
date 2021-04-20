@@ -2824,7 +2824,7 @@ var nodeOpen = false,
             return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
           } else {
             // Handle indexed exp `{parentPath[i]}`
-            return parentPathPieces[index + 2];
+            return parentPathPieces[parseInt(index) + 2];
           }
         });
 
@@ -4908,29 +4908,16 @@ var nodeOpen = false,
       /**
        * format a date from UTC to config Date
        */
-      formatDateFromUTC: function(dateTime, newTimeZone, format) {
-        try {
-          var utcDate = moment.tz(dateTime, 'Etc/UTC'),
-            newDate;
+      formatDateFromUTC: function(date, timeZone) {
+        const locale = CrafterCMSNext.system.store.getState().uiConfig.locale;
+        const options = locale.dateTimeFormatOptions;
+        const localeCode = locale.localeCode;
 
-          if (format === 'full') {
-            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
-            newDate = newDate + ' (' + newTimeZone + ')';
-          } else {
-            if (format === 'large') {
-              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss');
-            } else {
-              if (format === 'medium') {
-                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
-              } else {
-                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
-              }
-            }
-          }
-          return newDate != 'Invalid date' ? newDate : '';
-        } catch (err) {
-          console.log(err);
+        if (timeZone) {
+          options.timeZone = timeZone;
         }
+
+        return new Intl.DateTimeFormat(localeCode, options).format(new Date(date));
       },
 
       /**

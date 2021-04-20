@@ -47,7 +47,7 @@ export function createErrorStatePropsFromApiResponse(
   apiResponse: ApiResponse,
   formatMessage
 ): Partial<ErrorStateProps> {
-  const { code, message, remedialAction, documentationUrl } = apiResponse;
+  const { code, message = '', remedialAction, documentationUrl } = apiResponse;
   return {
     title: nnou(code) ? `${formatMessage(messages.error)}${code ? ` ${code}` : ''}` : '',
     message:

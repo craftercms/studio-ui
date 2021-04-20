@@ -253,6 +253,7 @@
   ]);
 
   app.controller('AuditCtrl', [
+    '$rootScope',
     '$scope',
     '$state',
     '$window',
@@ -267,6 +268,7 @@
     '$cookies',
     'Constants',
     function(
+      $rootScope,
       $scope,
       $state,
       $window,
@@ -556,7 +558,22 @@
         }, audit.defaultDelay);
       };
 
-      audit.generalUpdate = function(action) {
+      audit.updateDate = function(dateField) {
+        const locale = $scope.locale;
+        const options = locale.dateTimeFormatOptions;
+        const localeCode = locale.localeCode;
+
+        // dateFrom and dateTo are the values (not formatted) used for service calls
+        audit[dateField] = audit[`${dateField}Input`];
+        // dateFromInput and dateToInput are the values used to be displayed in the input fields
+        audit[`${dateField}Input`] = new Intl.DateTimeFormat(localeCode, options).format(
+          new Date(audit[`${dateField}Input`])
+        );
+
+        audit.generalUpdate();
+      };
+
+      audit.generalUpdate = function() {
         $timeout.cancel(delayTimer);
         delayTimer = $timeout(function() {
           getAudit(audit.site);
@@ -601,7 +618,23 @@
 
       CrafterCMSNext.system.getStore().subscribe((store) => {
         $scope.sites = store.getState().sites.byId;
-        audit.getAuditInfo();
+
+        // TODO: we need store in order to get activeSite, when updating to a global config, this can be a forkJoin
+        const activeSite = store.getState().sites.active;
+        sitesService.fetchSiteLocale(activeSite).then(
+          (locale) => {
+            if (Object.keys(locale).length === 0) {
+              $scope.locale = $rootScope.locale;
+            } else {
+              $scope.locale = locale;
+            }
+
+            audit.getAuditInfo();
+          },
+          () => {
+            $scope.locale = $rootScope.locale;
+          }
+        );
       });
     }
   ]);
@@ -832,6 +865,9 @@
       var currentStatus = {};
       var publish = $scope.publish;
       publish.error = '';
+
+      publish.bulkPublishNote = formatMessage(publishingMessages.bulkPublishNote);
+      publish.publishByNote = formatMessage(publishingMessages.publishByNote);
 
       publish.initQueque = function() {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
@@ -1867,7 +1903,8 @@
           pendingCommit: formatMessage(repoMessages.pendingCommit),
           unstagedFiles: formatMessage(repoMessages.unstagedFiles),
           unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
-          reason: formatMessage(words.reason)
+          reason: formatMessage(words.reason),
+          repositoriesNote: formatMessage(repoMessages.repositoriesNote)
         }
       };
 
@@ -1939,7 +1976,7 @@
         CrafterCMSNext.system.getStore().subscribe(() => {
           repositories.getRepositoryStatus();
           adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
-            $scope.showError(error.response);
+            $scope.showError(error.response.response);
           });
         });
       };
@@ -1957,23 +1994,25 @@
       };
 
       $scope.createRepo = function(repo) {
-        repositories.spinnerOverlay = $scope.spinnerOverlay();
-        repo.siteId = repositories.site;
-        repo.authenticationType = repo.authenticationType ? repo.authenticationType : 'none';
+        if (createNameForm.checkValidity()) {
+          repositories.spinnerOverlay = $scope.spinnerOverlay();
+          repo.siteId = repositories.site;
+          repo.authenticationType = repo.authenticationType ? repo.authenticationType : 'none';
 
-        adminService.createRepository(repo).then(
-          function(data) {
-            $scope.hideModal();
-            adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
-              $scope.showError(error.response);
+          adminService.createRepository(repo).then(
+            function() {
+              $scope.hideModal();
+              adminService.getRepositories(repositories).then(repositoriesReceived, function(error) {
+                $scope.showError(error.response);
+                repositories.spinnerOverlay.close();
+              });
+            },
+            function(error) {
+              $scope.showError(error.response.response);
               repositories.spinnerOverlay.close();
-            });
-          },
-          function(error) {
-            $scope.showError(error.response);
-            repositories.spinnerOverlay.close();
-          }
-        );
+            }
+          );
+        }
       };
 
       $scope.removeRepo = function(repo) {
@@ -1988,7 +2027,7 @@
               $rootScope.showNotification(`'${repo.name}' ${$translate.instant('admin.repositories.REPO_DELETED')}.`);
             },
             function(error) {
-              $scope.showError(error.response);
+              $scope.showError(error.response.response);
             }
           );
         };
@@ -2018,7 +2057,7 @@
             function(error) {
               repositories.getRepositoryStatus();
               repositories.spinnerOverlay.close();
-              $scope.showError(error.response);
+              $scope.showError(error.response.response);
             }
           );
         };

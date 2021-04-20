@@ -156,10 +156,10 @@
              <div class="mb10 btn-group col-xs-6  col-sm-6 col-md-4">
                  <label for="dateFrom">{{ 'admin.audit.DATE_FROM' | translate }}: </label>
                  <div class="date-container">
-                <span>
-                    <i class="date-icon fa fa-calendar"></i>
-                </span>
-                     <input ng-change="audit.generalUpdate()" id="dateFrom" class="form-control date dateFrom" name="dateFrom" type="text" ng-model="audit.dateFrom">
+                      <span>
+                          <i class="date-icon fa fa-calendar"></i>
+                      </span>
+                     <input ng-change="audit.updateDate('dateFrom')" id="dateFrom" class="form-control date dateFrom" name="dateFrom" type="text" ng-model="audit.dateFromInput">
                  </div>
              </div>
 
@@ -168,7 +168,7 @@
                  <div class="date-container">
                 <span>
                     <i class="date-icon fa fa-calendar"></i>
-                </span><input ng-change="audit.generalUpdate()" class="form-control date" id="dateTo" name="dateTo" type="text" ng-model="audit.dateTo" ng-init="audit.initCalendar()">
+                </span><input ng-change="audit.updateDate('dateTo')" class="form-control date" id="dateTo" name="dateTo" type="text" ng-model="audit.dateToInput" ng-init="audit.initCalendar(locale)">
                  </div>
              </div>
 
@@ -215,7 +215,7 @@
 
             <tr dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
                 current-page="audit.pagination.current" total-items="audit.totalLogs">
-                <td class="min-cel-width">{{log.operationTimestamp | amTimezone:audit.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ssa'}}</td>
+                <td class="min-cel-width">{{log.operationTimestamp | formatDate:locale:audit.timeZone}}</td>
                 <td>{{log.siteName}}</td>
                 <td>{{log.operation}}</td>
                 <td class="min-cel-width wrap-content">{{log.primaryTargetValue}}</td>

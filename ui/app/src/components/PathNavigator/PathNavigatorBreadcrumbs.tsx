@@ -24,7 +24,6 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import { isNavigable } from './utils';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
@@ -36,7 +35,6 @@ export interface BreadcrumbsProps {
   breadcrumb: DetailedItem[];
   keyword?: string;
   classes?: Partial<Record<BreadcrumbsClassKey, string>>;
-  onMenu?(element: Element): void;
   onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
 }
@@ -49,7 +47,7 @@ const messages = defineMessages({
 function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
+  const { breadcrumb, onCrumbSelected, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
 
   const onChange = (keyword: string) => onSearch(keyword);
@@ -95,7 +93,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             }}
           >
             {breadcrumb.map((item: DetailedItem, i: number) =>
-              maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
+              maxIndex !== i ? (
                 <Link
                   key={item.id}
                   color="inherit"
@@ -119,15 +117,6 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             )}
           </MuiBreadcrumbs>
           <div className={clsx(classes.breadcrumbActionsWrapper)}>
-            {onMenu && (
-              <IconButton
-                aria-label="options"
-                className={clsx(classes.iconButton)}
-                onClick={(event) => onMenu(event.currentTarget)}
-              >
-                <MoreVertIcon />
-              </IconButton>
-            )}
             {onSearch && (
               <IconButton aria-label="search" className={clsx(classes.iconButton)} onClick={() => setShowSearch(true)}>
                 <SearchRoundedIcon />

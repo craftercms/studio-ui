@@ -34,6 +34,9 @@ import {
   fetchGlobalMenu,
   fetchGlobalMenuComplete,
   fetchGlobalMenuFailed,
+  fetchSiteLocale,
+  fetchSiteLocaleComplete,
+  fetchSiteLocaleFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
@@ -64,18 +67,22 @@ import { changeSite } from '../reducers/sites';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
-import { fetchGlobalMenuItems } from '../../services/configuration';
+import { fetchGlobalMenuItems, fetchSiteLocale as fetchSiteLocaleService } from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu()])
+      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu(), fetchSiteLocale()])
     ),
   // endregion
   // region changeSite
-  (action$) => action$.pipe(ofType(changeSite.type), mapTo(startPublishingStatusFetcher())),
+  (action$) =>
+    action$.pipe(
+      ofType(changeSite.type),
+      switchMap(() => [startPublishingStatusFetcher(), fetchSiteLocale()])
+    ),
   // endregion
   // region emitSystemEvent
   (action$) =>
@@ -347,6 +354,20 @@ const systemEpics: CrafterCMSEpic[] = [
               ofType(stopPublishingStatusFetcher.type, sessionTimeout.type, sharedWorkerUnauthenticated.type)
             )
           )
+        )
+      )
+    ),
+  // endregion
+  // region fetchSiteLocale
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchSiteLocale.type),
+      withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
+      switchMap(([, state]) =>
+        fetchSiteLocaleService(state.sites.active).pipe(
+          map(fetchSiteLocaleComplete),
+          catchAjaxError(fetchSiteLocaleFailed)
         )
       )
     ),

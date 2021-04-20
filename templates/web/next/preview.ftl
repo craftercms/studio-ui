@@ -24,8 +24,6 @@
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
   <link href="/studio/static-assets/styles/typography.css"
         rel="stylesheet">
-  <link href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css"
-        rel="stylesheet">
   <style>
     html, body, #root {
       margin: 0;

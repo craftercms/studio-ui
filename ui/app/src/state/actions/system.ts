@@ -104,3 +104,7 @@ export const fetchGlobalMenuComplete = /*#__PURE__*/ createAction<GlobalState['u
 );
 
 export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');
+
+export const fetchSiteLocale = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE');
+export const fetchSiteLocaleComplete = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_COMPLETE');
+export const fetchSiteLocaleFailed = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_FAILED');

@@ -458,7 +458,6 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const defaultFormSrc = `${authoringBase}/legacy/form`;
   const [contextMenu, setContextMenu] = useSpreadState({
     el: null,
     dependency: null

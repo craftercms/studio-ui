@@ -338,6 +338,15 @@ CStudioAuthoring.Module.requireModule(
 
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
+          const external = {};
+          if (rteConfig.external_plugins) {
+            Object.entries(rteConfig.external_plugins).forEach((entry) => {
+              external[entry[0]] = CStudioAuthoring.StringUtils.keyFormat(entry[1], {
+                site: CStudioAuthoringContext.site
+              });
+            });
+          }
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -403,6 +412,8 @@ CStudioAuthoring.Module.requireModule(
             content_css: rteStylesheets,
             content_style: rteStyleOverride,
             code_editor_wrap: codeEditorWrap,
+
+            external_plugins: external,
 
             setup: function(editor) {
               editor.on('init', function(e) {

@@ -24,6 +24,7 @@ import AceEditor from '../AceEditor';
 import { makeStyles } from '@material-ui/core/styles';
 import { useUnmount } from '../../utils/hooks';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { nou } from '../../utils/object';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -100,7 +101,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
         );
       case 'editor': {
         return (
-          <ConditionalLoadingState isLoading={!props.content}>
+          <ConditionalLoadingState isLoading={nou(props.content)}>
             <AceEditor value={props.content} className={classes.editor} mode={`ace/mode/${props.mode}`} readOnly />
           </ConditionalLoadingState>
         );

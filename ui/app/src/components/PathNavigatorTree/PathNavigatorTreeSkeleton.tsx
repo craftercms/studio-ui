@@ -17,16 +17,15 @@
 import * as React from 'react';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { rand } from '../PathNavigator/utils';
+import PathNavigatorTreeSkeletonItem from './PathNavigatorTreeSkeletonItem';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
 interface PathNavigatorSkeletonProps {
   numOfItems?: number;
-  showChildrenRail?: boolean;
 }
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     skeletonRoot: {
       margin: '10px 0'
@@ -54,10 +53,7 @@ function PathNavigatorSkeletonTree({ numOfItems = 5 }: PathNavigatorSkeletonProp
       </header>
       <section className={classes.skeletonBody}>
         {new Array(numOfItems).fill(null).map((_, index) => (
-          <div className={classes.skeletonBodyItem} key={index}>
-            <Skeleton variant="circle" width="20px" style={{ marginRight: '10px' }} />
-            <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(60, 95)}%` }} />
-          </div>
+          <PathNavigatorTreeSkeletonItem classes={{ root: classes.skeletonBodyItem }} key={index} />
         ))}
       </section>
     </section>
