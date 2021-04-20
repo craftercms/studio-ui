@@ -71,10 +71,6 @@ export interface PathNavigatorUIProps {
    **/
   keyword: string;
   /**
-   * Indents all items of the widget wrapping them with a border on the left of the widget
-   **/
-  showChildrenRail?: boolean;
-  /**
    *
    **/
   classes?: Partial<Record<PathNavigatorUIClassKey, string>>;
@@ -155,7 +151,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     icon,
     container,
     title,
-    showChildrenRail,
     onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
@@ -229,9 +224,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             : null
         }
       />
-      <AccordionDetails
-        className={clsx(classes.accordionDetails, showChildrenRail && classes.childrenRail, props.classes?.body)}
-      >
+      <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <Breadcrumbs
           keyword={keyword}
           breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}

@@ -93,7 +93,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             }}
           >
             {breadcrumb.map((item: DetailedItem, i: number) =>
-              maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
+              maxIndex !== i ? (
                 <Link
                   key={item.id}
                   color="inherit"

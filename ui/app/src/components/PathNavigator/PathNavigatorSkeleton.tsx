@@ -24,7 +24,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface PathNavigatorSkeletonProps {
   numOfItems?: number;
-  showChildrenRail?: boolean;
 }
 
 const useStyles = makeStyles((theme) =>
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function PathNavigatorSkeleton({ showChildrenRail = true, numOfItems = 5 }: PathNavigatorSkeletonProps) {
+function PathNavigatorSkeleton({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
   const classes = useStyles();
   return (
     <section className={classes.skeletonRoot}>
@@ -56,7 +55,7 @@ function PathNavigatorSkeleton({ showChildrenRail = true, numOfItems = 5 }: Path
         <Skeleton variant="rect" width="20px" />
         <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
       </header>
-      <section className={clsx(classes.skeletonBody, showChildrenRail && classes.childrenRail)}>
+      <section className={clsx(classes.skeletonBody)}>
         <div className={classes.skeletonBodyItem}>
           <Skeleton variant="text" style={{ width: `${rand(80, 150)}px` }} />
         </div>

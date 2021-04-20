@@ -89,7 +89,6 @@ export interface PathNavigatorProps {
   excludes?: string[];
   locale?: string;
   limit?: number;
-  showChildrenRail?: boolean;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -140,7 +139,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
     limit = 10,
     locale,
     excludes,
-    showChildrenRail = true,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
     computeActiveItems: computeActiveItemsProp
@@ -289,7 +287,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
 
   if (!state) {
-    return <PathNavigatorSkeleton showChildrenRail={showChildrenRail} />;
+    return <PathNavigatorSkeleton />;
   }
 
   const onPathSelected = (item: DetailedItem) => {
@@ -454,7 +452,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
         state={state}
         classes={props.classes}
         itemsByPath={itemsByPath}
-        showChildrenRail={showChildrenRail}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
         title={label}
