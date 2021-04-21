@@ -31,6 +31,7 @@ export function SiteCardSkeleton(props: SiteCardSkeletonProps) {
   return (
     <Card className={clsx(classes.card, props.compact && 'compact')}>
       <CardHeader
+        avatar={<Skeleton variant="circle" width={40} height={40} />}
         title={<Skeleton animation="wave" height={20} width="40%" />}
         className={classes.cardHeader}
         subheader={<Skeleton animation="wave" height={20} width="80%" />}

@@ -28,12 +28,21 @@ interface SitesGridUIProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
+  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
   currentView: 'grid' | 'list';
   publishingStatusLookup: LookupTable<PublishingStatus>;
 }
 
 export default function SitesGridUI(props: SitesGridUIProps) {
-  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick, currentView, publishingStatusLookup } = props;
+  const {
+    resource,
+    onSiteClick,
+    onDeleteSiteClick,
+    onEditSiteClick,
+    currentView,
+    publishingStatusLookup,
+    onPublishButtonClick
+  } = props;
   const sites = resource.read();
   const classes = sitesGridStyles();
 
@@ -48,6 +57,7 @@ export default function SitesGridUI(props: SitesGridUIProps) {
               onSiteClick={onSiteClick}
               onDeleteSiteClick={onDeleteSiteClick}
               onEditSiteClick={onEditSiteClick}
+              onPublishButtonClick={onPublishButtonClick}
               compact={currentView === 'list'}
             />
           </Grid>

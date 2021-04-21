@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SitesGrid';
-
-export * from './SitesGrid';
+export { default } from './SitesGridUI';
 
 export * from './SitesGridUI';
 

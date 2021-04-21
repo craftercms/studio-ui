@@ -38,6 +38,7 @@ interface SiteCardProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
+  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
   fallbackImageSrc?: string;
   compact?: boolean;
   publishingStatus: PublishingStatus;
@@ -66,7 +67,8 @@ export default function SiteCard(props: SiteCardProps) {
     onEditSiteClick,
     fallbackImageSrc = '/studio/static-assets/images/no_image_available.jpg',
     compact = false,
-    publishingStatus
+    publishingStatus,
+    onPublishButtonClick
   } = props;
   const classes = cardStyles();
   const { formatMessage } = useIntl();
@@ -83,6 +85,7 @@ export default function SiteCard(props: SiteCardProps) {
               enabled={publishingStatus?.enabled}
               status={publishingStatus?.status}
               variant="icon"
+              onClick={(e) => onPublishButtonClick(e, site)}
             />
           }
           subheader={
