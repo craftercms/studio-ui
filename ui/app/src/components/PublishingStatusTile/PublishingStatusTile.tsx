@@ -18,13 +18,14 @@ import { defineMessages, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
+import Avatar from '@material-ui/core/Avatar';
+import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { ElementType } from 'react';
 import Skeleton from '@material-ui/lab/Skeleton';
 import palette from '../../styles/palette';
 import { PublishingStatus } from '../../models/Publishing';
-import { PublishingStatusAvatar } from './PublishingStatusAvatar';
 
 type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
@@ -167,7 +168,6 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
   const statusText = publishingStatusTileMessages[status]
     ? formatMessage(publishingStatusTileMessages[status])
     : status;
-
   return (
     <Component
       ref={ref}
@@ -175,7 +175,9 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
       onClick={onClick}
       className={clsx(classes.root, propClasses?.root, !isFetching && status)}
     >
-      <PublishingStatusAvatar classes={{ avatar: propClasses?.avatar }} isFetching={isFetching} status={status} />
+      <Avatar variant="circular" className={clsx(classes.avatar, propClasses?.avatar, !isFetching && status)}>
+        <CloudUploadOutlined />
+      </Avatar>
       <Typography className={clsx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
         {isFetching ? <Skeleton /> : statusText}
       </Typography>
