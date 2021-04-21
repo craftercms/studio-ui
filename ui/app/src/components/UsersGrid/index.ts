@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './UsersGrid';
-
-export * from './UsersGrid';
+export { default } from './UsersGridUI';
 
 export * from './UsersGridUI';
 

@@ -32,7 +32,7 @@ export interface UsersGridSkeletonTableProps {
   numOfItems?: number;
 }
 
-export function UsersGridSkeletonTable(props: UsersGridSkeletonTableProps) {
+export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
   const classes = styles();
@@ -82,4 +82,4 @@ export function UsersGridSkeletonTable(props: UsersGridSkeletonTableProps) {
       </Table>
     </TableContainer>
   );
-}
+});

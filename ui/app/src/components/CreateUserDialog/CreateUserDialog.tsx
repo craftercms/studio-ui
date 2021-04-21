@@ -162,7 +162,7 @@ function CreateUserDialogUI(props: CreateUserDialogProps) {
     email: '',
     username: '',
     password: '',
-    enabled: null
+    enabled: true
   });
   const [submitted, setSubmitted] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState('');
@@ -176,14 +176,16 @@ function CreateUserDialogUI(props: CreateUserDialogProps) {
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setSubmitted(true);
-    create(newUser).subscribe(
-      () => {
-        onCreateSuccess?.();
-      },
-      ({ response: { response } }) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
+    if (Object.values(newUser).every(Boolean)) {
+      create(newUser).subscribe(
+        () => {
+          onCreateSuccess?.();
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+    }
   };
 
   const validateEmail = (email: string) => {

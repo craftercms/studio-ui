@@ -19,10 +19,19 @@ import { FormattedMessage } from 'react-intl';
 import Divider from '@material-ui/core/Divider';
 import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import UsersGrid from '../UsersGrid';
+import { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
+import UserInfoDialog from '../UserInfoDialog';
+import { fetchAll } from '../../services/users';
+import { PagedArray } from '../../models/PagedArray';
+import User from '../../models/User';
+import { ApiResponse } from '../../models/ApiResponse';
+import { useLogicResource } from '../../utils/hooks';
+import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import UsersGridUI from '../UsersGrid/UsersGridUI';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
@@ -49,10 +58,69 @@ export default function UsersManagement(props: UsersManagementProps) {
   const {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [fetching, setFetching] = useState(false);
+  const [users, setUsers] = useState<PagedArray<User>>(null);
+  const [error, setError] = useState<ApiResponse>();
   const [openCreateUserDialog, setOpenCreateUserDialog] = useState(false);
+  const [viewUser, setViewUser] = useState(null);
+
+  const fetchUsers = useCallback(() => {
+    setFetching(true);
+    fetchAll({ limit, offset }).subscribe(
+      (users) => {
+        setUsers(users);
+        setFetching(false);
+      },
+      ({ response }) => {
+        setError(response);
+        setFetching(false);
+      }
+    );
+  }, [limit, offset]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const resource = useLogicResource<
+    PagedArray<User>,
+    { users: PagedArray<User>; error: ApiResponse; fetching: boolean }
+  >(
+    useMemo(() => ({ users, error, fetching }), [users, error, fetching]),
+    {
+      shouldResolve: (source) => Boolean(source.users) && !fetching,
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: (source, resource) => fetching && resource.complete,
+      resultSelector: (source) => source.users,
+      errorSelector: () => error
+    }
+  );
 
   const onUserCreated = () => {
     setOpenCreateUserDialog(false);
+    fetchUsers();
+  };
+
+  const onUserInfoClose = () => {
+    setViewUser(null);
+  };
+
+  const onUserEdited = () => {
+    fetchUsers();
+  };
+
+  const onRowClicked = (user: User) => {
+    setViewUser(user);
+  };
+
+  const onChangePage = (page: number) => {
+    setOffset(page * limit);
+  };
+
+  const onChangeRowsPerPage = (e) => {
+    setLimit(e.target.value);
   };
 
   return (
@@ -69,11 +137,37 @@ export default function UsersManagement(props: UsersManagementProps) {
         <FormattedMessage id="sites.createUser" defaultMessage="Create User" />
       </SecondaryButton>
       <Divider />
-      <UsersGrid passwordRequirementsRegex={passwordRequirementsRegex} />
+      <ErrorBoundary>
+        <SuspenseWithEmptyState
+          resource={resource}
+          suspenseProps={{
+            fallback: <UsersGridSkeletonTable numOfItems={limit} />
+          }}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
+            }
+          }}
+        >
+          <UsersGridUI
+            resource={resource}
+            onRowClicked={onRowClicked}
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+          />
+        </SuspenseWithEmptyState>
+      </ErrorBoundary>
       <CreateUserDialog
         open={openCreateUserDialog}
         onCreateSuccess={onUserCreated}
         onClose={() => setOpenCreateUserDialog(false)}
+        passwordRequirementsRegex={passwordRequirementsRegex}
+      />
+      <UserInfoDialog
+        open={Boolean(viewUser)}
+        onClose={onUserInfoClose}
+        onUserEdited={onUserEdited}
+        user={viewUser}
         passwordRequirementsRegex={passwordRequirementsRegex}
       />
     </section>
