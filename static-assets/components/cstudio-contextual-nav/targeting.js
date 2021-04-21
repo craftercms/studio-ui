@@ -15,7 +15,7 @@
  */
 
 if (!$.prototype.timezones) {
-  CStudioAuthoring.Utils.addJavascript('/static-assets/jquery/timezones/timezones.full.js');
+  CStudioAuthoring.Utils.addJavascript('/static-assets/jquery/timezones/timezones-0.1.0.min.js');
 }
 
 /**
