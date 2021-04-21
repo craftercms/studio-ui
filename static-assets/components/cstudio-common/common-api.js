@@ -8249,14 +8249,10 @@ var nodeOpen = false,
           lockOwner = item.lockOwner;
         }
 
-        if (item.lastEditDateAsString != '' && item.lastEditDateAsString != undefined) {
-          formattedEditDate = this.formatDateFromString(item.lastEditDateAsString, 'tooltipformat');
-        } else if (item.eventDate != '' && item.eventDate != undefined) {
-          formattedEditDate = this.formatDateFromString(item.eventDate, 'tooltipformat');
-        }
+        formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDate, studioTimeZone);
 
         if (item.scheduled == true) {
-          formattedSchedDate = this.formatDateFromString(item.scheduledDate, 'tooltipformat');
+          formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone);
 
           retTitle = this.buildToolTip(
             itemNameLabel,
