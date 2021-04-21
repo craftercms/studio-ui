@@ -14,38 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@material-ui/core/Grid';
-import React from 'react';
-import { Resource } from '../../models/Resource';
-import { Site } from '../../models/Site';
-import SiteCard from './SiteCard';
 import { sitesGridStyles } from './styles';
+import Grid from '@material-ui/core/Grid';
+import { SiteCardSkeleton } from './SiteCardSkeleton';
+import React from 'react';
 
-interface SitesGridUIProps {
-  resource: Resource<Site[]>;
-  onSiteClick(site: Site): void;
-  onDeleteSiteClick(site: Site): void;
-  onEditSiteClick(site: Site): void;
+interface SkeletonSitesGridProps {
+  numOfItems?: number;
   currentView: 'grid' | 'list';
 }
 
-export default function SitesGridUI(props: SitesGridUIProps) {
-  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick, currentView } = props;
-  const sites = resource.read();
+export function SkeletonSitesGrid(props: SkeletonSitesGridProps) {
   const classes = sitesGridStyles();
-
+  const { numOfItems = 5, currentView } = props;
+  const items = new Array(numOfItems).fill(null);
   return (
     <section className={classes.root}>
       <Grid container spacing={3}>
-        {sites.map((site) => (
-          <Grid item key={site.id}>
-            <SiteCard
-              site={site}
-              onSiteClick={onSiteClick}
-              onDeleteSiteClick={onDeleteSiteClick}
-              onEditSiteClick={onEditSiteClick}
-              compact={currentView === 'list'}
-            />
+        {items.map((num, i) => (
+          <Grid item key={i}>
+            <SiteCardSkeleton compact={currentView === 'list'} />
           </Grid>
         ))}
       </Grid>

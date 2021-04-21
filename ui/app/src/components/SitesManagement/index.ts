@@ -17,5 +17,3 @@
 export { default } from './SitesManagement';
 
 export * from './SitesManagement';
-
-export * from '../SitesGrid/SiteCard';

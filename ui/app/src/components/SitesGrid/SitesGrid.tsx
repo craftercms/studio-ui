@@ -19,7 +19,7 @@ import { Site } from '../../models/Site';
 import { trash } from '../../services/sites';
 import { useEnv, useLogicResource, usePreviewState, useSitesBranch } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
-import SitesGridUI, { SkeletonSitesGrid } from './SitesGridUI';
+import SitesGridUI from './SitesGridUI';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -31,6 +31,11 @@ import { batchActions } from '../../state/actions/misc';
 import { fetchSites } from '../../state/reducers/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { getSystemLink } from '../LauncherSection';
+import { SkeletonSitesGrid } from './SkeletonSitesGrid';
+
+interface SitesGridProps {
+  currentView: 'grid' | 'list';
+}
 
 const translations = defineMessages({
   siteDeleted: {
@@ -39,7 +44,7 @@ const translations = defineMessages({
   }
 });
 
-export default function SitesGrid() {
+export default function SitesGrid(props: SitesGridProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const sitesBranch = useSitesBranch();
@@ -102,7 +107,7 @@ export default function SitesGrid() {
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <SkeletonSitesGrid numOfItems={3} />
+          fallback: <SkeletonSitesGrid numOfItems={3} currentView={props.currentView} />
         }}
         withEmptyStateProps={{
           emptyStateProps: {
@@ -115,6 +120,7 @@ export default function SitesGrid() {
           onSiteClick={onSiteClick}
           onDeleteSiteClick={onDeleteSiteClick}
           onEditSiteClick={onEditSiteClick}
+          currentView={props.currentView}
         />
       </SuspenseWithEmptyState>
     </ErrorBoundary>

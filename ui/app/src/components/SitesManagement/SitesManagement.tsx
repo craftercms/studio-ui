@@ -23,6 +23,10 @@ import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import SitesGrid from '../SitesGrid';
 import CreateSiteDialog from '../../modules/System/Sites/Create/CreateSiteDialog';
+import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
+import GridViewIcon from '@material-ui/icons/GridOnRounded';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -39,6 +43,11 @@ const styles = makeStyles((theme) =>
     },
     mb20: {
       marginBottom: '20px'
+    },
+    actionsBar: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between'
     }
   })
 );
@@ -46,6 +55,15 @@ const styles = makeStyles((theme) =>
 export default function SitesManagement() {
   const classes = styles();
   const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
+  const [currentView, setCurrentView] = useState<'grid' | 'list'>('list');
+
+  const handleChangeView = () => {
+    if (currentView === 'grid') {
+      setCurrentView('list');
+    } else {
+      setCurrentView('grid');
+    }
+  };
 
   return (
     <section>
@@ -53,15 +71,22 @@ export default function SitesManagement() {
         <FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />
       </Typography>
       <Divider />
-      <SecondaryButton
-        startIcon={<AddIcon />}
-        className={classes.createSite}
-        onClick={() => setOpenCreateSiteDialog(true)}
-      >
-        <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
-      </SecondaryButton>
+      <section className={classes.actionsBar}>
+        <SecondaryButton
+          startIcon={<AddIcon />}
+          className={classes.createSite}
+          onClick={() => setOpenCreateSiteDialog(true)}
+        >
+          <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
+        </SecondaryButton>
+        <Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
+          <IconButton onClick={handleChangeView}>
+            {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
+          </IconButton>
+        </Tooltip>
+      </section>
       <Divider className={classes.mb20} />
-      <SitesGrid />
+      <SitesGrid currentView={currentView} />
       <CreateSiteDialog open={openCreateSiteDialog} onClose={() => setOpenCreateSiteDialog(false)} />
     </section>
   );

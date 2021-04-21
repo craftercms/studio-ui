@@ -21,16 +21,15 @@ import IconButton from '@material-ui/core/IconButton';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import { Site } from '../../models/Site';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
 import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import cardTitleStyles from '../../styles/card';
 import { Typography } from '@material-ui/core';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import Skeleton from '@material-ui/lab/Skeleton';
+import clsx from 'clsx';
+import { cardStyles } from './styles';
 
 interface SiteCardProps {
   site: Site;
@@ -38,6 +37,7 @@ interface SiteCardProps {
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
   fallbackImageSrc?: string;
+  compact?: boolean;
 }
 
 const translations = defineMessages({
@@ -55,42 +55,20 @@ const translations = defineMessages({
   }
 });
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    media: {
-      height: '226px'
-    },
-    card: {
-      width: '402px'
-    },
-    cardHeader: {
-      height: '77px',
-      '& .cardTitle': {
-        ...cardTitleStyles
-      },
-      '& .cardSubtitle': {
-        overflow: 'hidden',
-        display: '-webkit-box',
-        '-webkit-line-clamp': 1,
-        '-webkit-box-orient': 'vertical'
-      }
-    }
-  })
-);
-
 export default function SiteCard(props: SiteCardProps) {
   const {
     site,
     onSiteClick,
     onDeleteSiteClick,
     onEditSiteClick,
-    fallbackImageSrc = '/studio/static-assets/images/no_image_available.jpg'
+    fallbackImageSrc = '/studio/static-assets/images/no_image_available.jpg',
+    compact = false
   } = props;
-  const classes = styles();
+  const classes = cardStyles();
   const { formatMessage } = useIntl();
 
   return (
-    <Card className={classes.card}>
+    <Card className={clsx(classes.card, compact && 'compact')}>
       <CardActionArea onClick={() => onSiteClick(site)}>
         <CardHeader
           title={site.name}
@@ -111,13 +89,15 @@ export default function SiteCard(props: SiteCardProps) {
             className: 'cardTitle'
           }}
         />
-        <CardMedia
-          component={'img'}
-          className={classes.media}
-          image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
-          title={site.name}
-          onError={(event) => (event.target.src = fallbackImageSrc)}
-        />
+        {!compact && (
+          <CardMedia
+            component={'img'}
+            className={classes.media}
+            image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
+            title={site.name}
+            onError={(event) => (event.target.src = fallbackImageSrc)}
+          />
+        )}
       </CardActionArea>
       <CardActions disableSpacing>
         <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
@@ -138,24 +118,6 @@ export default function SiteCard(props: SiteCardProps) {
             onDeleteSiteClick(site);
           }}
         />
-      </CardActions>
-    </Card>
-  );
-}
-
-export function SiteCardSkeleton() {
-  const classes = styles();
-  return (
-    <Card className={classes.card}>
-      <CardHeader
-        title={<Skeleton animation="wave" height={20} width="40%" />}
-        className={classes.cardHeader}
-        subheader={<Skeleton animation="wave" height={20} width="80%" />}
-      />
-      <Skeleton animation="wave" variant="rect" className={classes.media} />
-      <CardActions disableSpacing>
-        <Skeleton variant="circle" width={40} height={40} style={{ marginRight: '10px' }} />
-        <Skeleton variant="circle" width={40} height={40} />
       </CardActions>
     </Card>
   );
