@@ -30,6 +30,8 @@ import { Typography } from '@material-ui/core';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import clsx from 'clsx';
 import { cardStyles } from './styles';
+import { PublishingStatus } from '../../models/Publishing';
+import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 
 interface SiteCardProps {
   site: Site;
@@ -38,6 +40,7 @@ interface SiteCardProps {
   onEditSiteClick(site: Site): void;
   fallbackImageSrc?: string;
   compact?: boolean;
+  publishingStatus: PublishingStatus;
 }
 
 const translations = defineMessages({
@@ -62,17 +65,26 @@ export default function SiteCard(props: SiteCardProps) {
     onDeleteSiteClick,
     onEditSiteClick,
     fallbackImageSrc = '/studio/static-assets/images/no_image_available.jpg',
-    compact = false
+    compact = false,
+    publishingStatus
   } = props;
   const classes = cardStyles();
   const { formatMessage } = useIntl();
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')}>
-      <CardActionArea onClick={() => onSiteClick(site)}>
+      <CardActionArea onClick={() => onSiteClick(site)} component="div">
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
+          avatar={
+            <PublishingStatusButtonUI
+              isFetching={!publishingStatus}
+              enabled={publishingStatus?.enabled}
+              status={publishingStatus?.status}
+              variant="icon"
+            />
+          }
           subheader={
             site.description && (
               <Tooltip title={site.description}>

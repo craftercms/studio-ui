@@ -20,6 +20,8 @@ import { Resource } from '../../models/Resource';
 import { Site } from '../../models/Site';
 import SiteCard from './SiteCard';
 import { sitesGridStyles } from './styles';
+import LookupTable from '../../models/LookupTable';
+import { PublishingStatus } from '../../models/Publishing';
 
 interface SitesGridUIProps {
   resource: Resource<Site[]>;
@@ -27,10 +29,11 @@ interface SitesGridUIProps {
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
   currentView: 'grid' | 'list';
+  publishingStatusLookup: LookupTable<PublishingStatus>;
 }
 
 export default function SitesGridUI(props: SitesGridUIProps) {
-  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick, currentView } = props;
+  const { resource, onSiteClick, onDeleteSiteClick, onEditSiteClick, currentView, publishingStatusLookup } = props;
   const sites = resource.read();
   const classes = sitesGridStyles();
 
@@ -41,6 +44,7 @@ export default function SitesGridUI(props: SitesGridUIProps) {
           <Grid item key={site.id}>
             <SiteCard
               site={site}
+              publishingStatus={publishingStatusLookup[site.id]}
               onSiteClick={onSiteClick}
               onDeleteSiteClick={onDeleteSiteClick}
               onEditSiteClick={onEditSiteClick}

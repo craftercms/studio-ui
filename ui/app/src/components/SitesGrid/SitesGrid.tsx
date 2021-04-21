@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Site } from '../../models/Site';
 import { trash } from '../../services/sites';
-import { useEnv, useLogicResource, usePreviewState, useSitesBranch } from '../../utils/hooks';
+import { useEnv, useLogicResource, usePreviewState, useSitesBranch, useSpreadState } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import SitesGridUI from './SitesGridUI';
 import { useDispatch } from 'react-redux';
@@ -32,6 +32,10 @@ import { fetchSites } from '../../state/reducers/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { getSystemLink } from '../LauncherSection';
 import { SkeletonSitesGrid } from './SkeletonSitesGrid';
+import { fetchStatus } from '../../services/publishing';
+import { merge } from 'rxjs';
+import { PublishingStatus } from '../../models/Publishing';
+import { map } from 'rxjs/operators';
 
 interface SitesGridProps {
   currentView: 'grid' | 'list';
@@ -47,11 +51,27 @@ const translations = defineMessages({
 export default function SitesGrid(props: SitesGridProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const sitesBranch = useSitesBranch();
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
+  const sitesBranch = useSitesBranch();
   const sitesById = sitesBranch.byId;
   const isFetching = sitesBranch.isFetching;
+  const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
+
+  useEffect(() => {
+    merge(
+      ...Object.keys(sitesById).map((siteId) =>
+        fetchStatus(siteId).pipe(
+          map((status) => ({
+            status,
+            siteId
+          }))
+        )
+      )
+    ).subscribe(({ siteId, status }) => {
+      setPublishingStatusLookup({ [siteId]: status });
+    });
+  }, [setPublishingStatusLookup, sitesById]);
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
     useMemo(() => ({ sitesById, isFetching }), [sitesById, isFetching]),
@@ -117,6 +137,7 @@ export default function SitesGrid(props: SitesGridProps) {
       >
         <SitesGridUI
           resource={resource}
+          publishingStatusLookup={publishingStatusLookup}
           onSiteClick={onSiteClick}
           onDeleteSiteClick={onDeleteSiteClick}
           onEditSiteClick={onEditSiteClick}

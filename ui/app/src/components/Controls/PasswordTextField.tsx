@@ -34,7 +34,7 @@ const translations = defineMessages({
   }
 });
 
-const PasswordTextField = React.forwardRef<JSX.Element, PasswordTextFieldProps>((props, ref) => {
+const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProps>((props, ref) => {
   const { visibilitySwitch = true, initialVisible = false } = props;
   const { formatMessage } = useIntl();
   const [showPassword, setShowPassword] = useState(initialVisible);
@@ -43,6 +43,7 @@ const PasswordTextField = React.forwardRef<JSX.Element, PasswordTextFieldProps>(
   return (
     <TextField
       {...props}
+      ref={ref}
       type={showPassword ? 'text' : 'password'}
       InputProps={
         visibilitySwitch

@@ -33,14 +33,13 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import PasswordRoundedIcon from '@material-ui/icons/VpnKeyRounded';
 import Input from '@material-ui/core/Input';
 import { useSitesBranch, useSpreadState } from '../../utils/hooks';
-import { disable, enable, fetchMyRolesInSite, trash, update } from '../../services/users';
+import { disable, enable, fetchRolesBySite, trash, update } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import clsx from 'clsx';
-import { forkJoin } from 'rxjs';
 import LookupTable from '../../models/LookupTable';
 import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
@@ -203,7 +202,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   });
   const sites = useSitesBranch();
   const sitesById = sites.byId;
-  const mySites = useMemo(() => Object.keys(sitesById), [sitesById]);
+  const mySites = useMemo(() => Object.values(sitesById), [sitesById]);
   const [lastSavedUser, setLastSavedUser] = useState(null);
   const [inProgress, setInProgress] = useState(false);
   const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
@@ -219,17 +218,12 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
   }, [props.user, open, setUser]);
 
   useEffect(() => {
-    if (mySites.length) {
-      const requests = mySites.map((siteId) => fetchMyRolesInSite(siteId));
-      forkJoin(requests).subscribe((responses) => {
-        const lookup = {};
-        responses.forEach((roles, i) => {
-          lookup[mySites[i]] = roles;
-        });
-        setRolesBySite(lookup);
+    if (mySites.length && props.user?.username) {
+      fetchRolesBySite(props.user.username, mySites).subscribe((response) => {
+        setRolesBySite(response);
       });
     }
-  }, [mySites]);
+  }, [mySites, props.user.username]);
 
   const onInputChange = (value) => {
     setDirty(true);
