@@ -295,6 +295,6 @@
   Loader.addModule({
     type: 'js',
     name: 'jquery-momentjs',
-    path: 'jquery/timezones/timezones-0.1.0.min.js?version=' + CStudioAuthoring.UIBuildId
+    path: 'jquery/timezones/timezones-0.1.0.min.js'
   });
 })();
