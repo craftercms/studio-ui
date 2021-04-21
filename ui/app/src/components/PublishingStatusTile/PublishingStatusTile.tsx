@@ -15,17 +15,15 @@
  */
 
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
-import Avatar from '@material-ui/core/Avatar';
-import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { ElementType } from 'react';
 import Skeleton from '@material-ui/lab/Skeleton';
-import palette from '../../styles/palette';
 import { PublishingStatus } from '../../models/Publishing';
+import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
 
 type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
@@ -37,26 +35,6 @@ export interface PublishingStatusTileProps extends React.HTMLAttributes<HTMLDivE
   styles?: PublishingStatusTileStyles;
   classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
 }
-
-export const getBackgroundColourByStatusCode = (code: PublishingStatusTileProps['status'], theme: Theme) => {
-  switch (code) {
-    case 'ready': {
-      return theme.palette.success.main;
-    }
-    case 'publishing': {
-      return theme.palette.info.main;
-    }
-    case 'queued': {
-      return palette.indigo.main;
-    }
-    case 'stopped': {
-      return theme.palette.warning.main;
-    }
-    case 'error': {
-      return theme.palette.error.main;
-    }
-  }
-};
 
 const usePublishingStatusTileStyles = makeStyles((theme) =>
   createStyles<PublishingStatusTileClassKey, PublishingStatusTileStyles>({
@@ -85,22 +63,6 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
     }),
     avatar: (styles) => ({
       marginBottom: theme.spacing(1),
-      // Please revisit PublishingStatusDialog styles too if these are changed.
-      '&.ready': {
-        background: getBackgroundColourByStatusCode('ready', theme)
-      },
-      '&.publishing': {
-        background: getBackgroundColourByStatusCode('publishing', theme)
-      },
-      '&.queued': {
-        background: getBackgroundColourByStatusCode('queued', theme)
-      },
-      '&.stopped': {
-        background: getBackgroundColourByStatusCode('stopped', theme)
-      },
-      '&.error': {
-        background: getBackgroundColourByStatusCode('error', theme)
-      },
       ...styles.avatar
     }),
     text: (styles) => ({
@@ -175,9 +137,10 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
       onClick={onClick}
       className={clsx(classes.root, propClasses?.root, !isFetching && status)}
     >
-      <Avatar variant="circular" className={clsx(classes.avatar, propClasses?.avatar, !isFetching && status)}>
-        <CloudUploadOutlined />
-      </Avatar>
+      <PublishingStatusAvatar
+        status={isFetching ? null : status}
+        className={clsx(classes.avatar, propClasses?.avatar)}
+      />
       <Typography className={clsx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
         {isFetching ? <Skeleton /> : statusText}
       </Typography>
