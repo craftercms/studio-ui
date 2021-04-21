@@ -223,7 +223,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
         setRolesBySite(response);
       });
     }
-  }, [mySites, props.user.username]);
+  }, [mySites, props.user?.username]);
 
   const onInputChange = (value) => {
     setDirty(true);
@@ -455,9 +455,15 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               </Typography>
               {Object.values(sitesById).map((site, i) =>
                 rolesBySite[site.id] ? (
-                  <Typography key={site.id} variant="body2" className={classes.siteItem}>
-                    {rolesBySite[site.id].join(', ')}
-                  </Typography>
+                  rolesBySite[site.id].length ? (
+                    <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                      {rolesBySite[site.id].join(', ')}
+                    </Typography>
+                  ) : (
+                    <Typography key={site.id} variant="body2" color="textSecondary" className={classes.siteItem}>
+                      (<FormattedMessage id="userInfoDialog.noRoles" defaultMessage="No roles" />)
+                    </Typography>
+                  )
                 ) : (
                   <Skeleton key={i} variant="text" className={classes.siteItem} style={{ width: `${rand(50, 90)}%` }} />
                 )
