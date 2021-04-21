@@ -25,7 +25,6 @@ import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
-import { isNavigable } from './utils';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import { defineMessages, useIntl } from 'react-intl';
 
