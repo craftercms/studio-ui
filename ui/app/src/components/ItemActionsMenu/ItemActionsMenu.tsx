@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ContextMenu, { ContextMenuProps } from './ContextMenu';
+import ContextMenu, { ContextMenuProps } from '../ContextMenu';
 import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
 import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
@@ -24,7 +24,6 @@ import StandardAction from '../../models/StandardAction';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { PopoverProps } from '@material-ui/core/Popover';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
-import GlobalState from '../../models/GlobalState';
 
 export interface ItemMenuBaseProps {
   path: string;
@@ -76,7 +75,6 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
     clipboard.paths.length &&
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
     isValidCutPastePath(item.path, clipboard.sourcePath);
-  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   return (
     <ContextMenu
@@ -84,8 +82,6 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
       onClose={onClose}
       classes={classes}
       options={options}
-      item={item}
-      locale={locale}
       onMenuItemClicked={onMenuItemClicked}
       isLoading={!item}
       numOfLoaderItems={numOfLoaderItems}
