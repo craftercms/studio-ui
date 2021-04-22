@@ -14,28 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
-import Divider from '@material-ui/core/Divider';
-import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
 import React from 'react';
-import { useStyles } from './styles';
+import GlobalAppToolbar from '../GlobalAppToolbar';
+import Button from '@material-ui/core/Button';
 
 export default function GroupsManagement() {
-  const classes = useStyles();
   return (
     <section>
-      <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />
-      </Typography>
-      <Divider />
-      <section className={classes.actionsBar}>
-        <SecondaryButton startIcon={<AddIcon />} className={classes.createGroup}>
-          <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
-        </SecondaryButton>
-      </section>
-      <Divider className={classes.mb20} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />}
+        leftContent={
+          <Button startIcon={<AddIcon />} variant="outlined" color="primary">
+            <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
+          </Button>
+        }
+      />
     </section>
   );
 }
