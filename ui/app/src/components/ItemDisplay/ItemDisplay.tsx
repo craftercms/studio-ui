@@ -16,20 +16,12 @@
 
 import * as React from 'react';
 import { forwardRef } from 'react';
-import { DetailedItem, ItemStateMap, SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
-import NewStateIcon from '@material-ui/icons/NewReleasesOutlined';
-import EditedStateIcon from '@material-ui/icons/EditOutlined';
-import DeletedStateIcon from '@material-ui/icons/DeleteOutlineRounded';
-import LockedStateIcon from '../Icons/LockOutline';
-import SystemProcessingStateIcon from '@material-ui/icons/HourglassEmptyRounded';
-import SubmittedStateIcon from '../Icons/PlanePaperOutline';
-import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
 import UnknownStateIcon from '@material-ui/icons/HelpOutlineRounded';
 import ImageIcon from '@material-ui/icons/ImageOutlined';
 import ComponentIcon from '../Icons/Component';
@@ -37,7 +29,6 @@ import FolderIcon from '@material-ui/icons/FolderOpenRounded';
 import PageIcon from '../Icons/Page';
 import LevelDescriptorIcon from '../Icons/LevelDescriptor';
 import Tooltip from '@material-ui/core/Tooltip';
-import { FormattedMessage } from 'react-intl';
 import { capitalize } from '../../utils/string';
 import { isPreviewable } from '../PathNavigator/utils';
 import Js from '../Icons/Js';
@@ -50,6 +41,8 @@ import Css from '../Icons/Css';
 import TaxonomyIcon from '@material-ui/icons/LocalOfferOutlined';
 import JsonIcon from '../Icons/Json';
 import FontIcon from '@material-ui/icons/FontDownloadOutlined';
+import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
+import ItemStateIcon from '../ItemStateIcon';
 
 export type ItemDisplayClassKey =
   | 'root'
@@ -158,70 +151,8 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export function getItemStateText(stateMap: ItemStateMap) {
-  switch (true) {
-    case stateMap.new:
-      return <FormattedMessage id="itemState.new" defaultMessage="New" />;
-    case stateMap.modified:
-      return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
-    case stateMap.deleted:
-      return <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />;
-    case stateMap.locked:
-      return <FormattedMessage id="itemState.locked" defaultMessage="Locked" />;
-    case stateMap.systemProcessing:
-      return <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />;
-    case stateMap.submitted:
-      return <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />;
-    case stateMap.scheduled:
-      return <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />;
-    default:
-      return <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
-  }
-}
-
 export function getItemTypeText(item: DetailedItem | SandboxItem) {
   return `${capitalize(item.systemType ?? 'Unknown')} - ${item.mimeType}`;
-}
-
-export function ItemStateIcon(props: ItemIconProps) {
-  const { item, classes } = props;
-  let TheIcon = UnknownStateIcon;
-  let stateSpecificClass;
-  switch (true) {
-    case item.stateMap.modified:
-      TheIcon = EditedStateIcon;
-      stateSpecificClass = classes.stateModifiedIcon;
-      break;
-    case item.stateMap.deleted:
-      TheIcon = DeletedStateIcon;
-      stateSpecificClass = classes.stateDeletedIcon;
-      break;
-    case item.stateMap.locked:
-      TheIcon = LockedStateIcon;
-      stateSpecificClass = classes.stateLockedIcon;
-      break;
-    case item.stateMap.systemProcessing:
-      TheIcon = SystemProcessingStateIcon;
-      stateSpecificClass = classes.stateSystemProcessingIcon;
-      break;
-    case item.stateMap.submitted:
-      TheIcon = SubmittedStateIcon;
-      stateSpecificClass = classes.stateSubmittedIcon;
-      break;
-    case item.stateMap.scheduled:
-      TheIcon = ScheduledStateIcon;
-      stateSpecificClass = classes.stateScheduledIcon;
-      break;
-    case item.stateMap.new:
-      TheIcon = NewStateIcon;
-      stateSpecificClass = classes.stateNewIcon;
-      break;
-  }
-  return (
-    <Tooltip title={getItemStateText(item.stateMap)}>
-      <TheIcon className={clsx(classes.icon, classes.publishingIcon, stateSpecificClass)} />
-    </Tooltip>
-  );
 }
 
 export function ItemTypeIcon(props: ItemIconProps) {
@@ -300,22 +231,6 @@ export function ItemTypeIcon(props: ItemIconProps) {
   return (
     <Tooltip title={getItemTypeText(item)}>
       <TheIcon className={clsx(classes.icon, classes.typeIcon)} />
-    </Tooltip>
-  );
-}
-
-export function ItemPublishingTargetIcon(props: ItemIconProps) {
-  const { item, classes } = props;
-  return (
-    <Tooltip title={item.stateMap.live ? 'Live' : item.stateMap.staged ? 'Staged' : 'Unpublished'}>
-      <PublishingTargetIcon
-        className={clsx(
-          classes.icon,
-          classes.publishingIcon,
-          item.stateMap.live && classes.publishingTargetLive,
-          item.stateMap.staged && classes.publishingTargetStaged
-        )}
-      />
     </Tooltip>
   );
 }
