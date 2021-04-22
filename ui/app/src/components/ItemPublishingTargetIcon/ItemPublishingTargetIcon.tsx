@@ -18,17 +18,56 @@ import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
 import clsx from 'clsx';
 import * as React from 'react';
-import { ItemIconProps } from '../ItemDisplay';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import palette from '../../styles/palette';
+import { CSSProperties } from '@material-ui/styles';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 
-export default function ItemPublishingTargetIcon(props: ItemIconProps) {
-  const { item, classes } = props;
+export type ItemPublishingTargetIconClassKey =
+  | 'root'
+  | 'publishingTargetLive'
+  | 'publishingTargetStaged'
+  | 'publishingIcon';
+export type ItemPublishingTargetIconStyles = Partial<Record<ItemPublishingTargetIconClassKey, CSSProperties>>;
+
+export interface ItemPublishingTargetIconProps {
+  item: DetailedItem | SandboxItem;
+  classes: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
+  styles?: ItemPublishingTargetIconStyles;
+}
+
+const useStyles = makeStyles(() =>
+  createStyles<ItemPublishingTargetIconClassKey, ItemPublishingTargetIconStyles>({
+    root: (styles) => ({
+      color: palette.gray.medium2,
+      ...styles.root
+    }),
+    publishingTargetLive: (styles) => ({
+      color: palette.green.main,
+      ...styles.publishingTargetLive
+    }),
+    publishingTargetStaged: (styles) => ({
+      color: palette.blue.main,
+      ...styles.publishingTargetStaged
+    }),
+    publishingIcon: (styles) => ({
+      ...styles.publishingIcon
+    })
+  })
+);
+
+export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
+  const { item, classes: propClasses, styles } = props;
+  const classes = useStyles(styles);
+
   return (
     <Tooltip title={getItemPublishingTargetText(item.stateMap)}>
       <PublishingTargetIcon
         className={clsx(
-          classes.icon,
+          classes.root,
           classes.publishingIcon,
+          propClasses.root,
           item.stateMap.live && classes.publishingTargetLive,
           item.stateMap.staged && classes.publishingTargetStaged
         )}

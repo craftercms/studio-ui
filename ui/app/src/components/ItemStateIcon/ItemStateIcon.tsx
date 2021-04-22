@@ -25,11 +25,72 @@ import UnknownStateIcon from '@material-ui/icons/HelpOutlineRounded';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
-import { ItemIconProps } from '../ItemDisplay';
 import { getItemStateText } from '../ItemDisplay/utils';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import palette from '../../styles/palette';
+import { CSSProperties } from '@material-ui/styles';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 
-export default function ItemStateIcon(props: ItemIconProps) {
-  const { item, classes } = props;
+export type ItemStateIconClassKey =
+  | 'root'
+  | 'stateNewIcon'
+  | 'stateModifiedIcon'
+  | 'stateDeletedIcon'
+  | 'stateLockedIcon'
+  | 'stateSystemProcessingIcon'
+  | 'stateSubmittedIcon'
+  | 'stateScheduledIcon'
+  | 'publishingIcon';
+export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
+
+export interface ItemStateIconProps {
+  item: DetailedItem | SandboxItem;
+  classes: Partial<Record<ItemStateIconClassKey, string>>;
+  styles?: ItemStateIconStyles;
+}
+
+const useStyles = makeStyles(() =>
+  createStyles<ItemStateIconClassKey, ItemStateIconStyles>({
+    root: (styles) => ({
+      ...styles.root
+    }),
+    stateNewIcon: (styles) => ({
+      color: palette.teal.main,
+      ...styles.stateNewIcon
+    }),
+    stateModifiedIcon: (styles) => ({
+      color: palette.yellow.main,
+      ...styles.stateModifiedIcon
+    }),
+    stateDeletedIcon: (styles) => ({
+      color: palette.red.main,
+      ...styles.stateDeletedIcon
+    }),
+    stateLockedIcon: (styles) => ({
+      color: palette.orange.main,
+      ...styles.stateLockedIcon
+    }),
+    stateSystemProcessingIcon: (styles) => ({
+      color: palette.pink.main,
+      ...styles.stateSystemProcessingIcon
+    }),
+    stateSubmittedIcon: (styles) => ({
+      color: palette.purple.main,
+      ...styles.stateSubmittedIcon
+    }),
+    stateScheduledIcon: (styles) => ({
+      color: palette.green.main,
+      ...styles.stateScheduledIcon
+    }),
+    publishingIcon: (styles) => ({
+      ...styles.publishingIcon
+    })
+  })
+);
+
+export default function ItemStateIcon(props: ItemStateIconProps) {
+  const { item, classes: propClasses, styles } = props;
+  const classes = useStyles(styles);
   let TheIcon = UnknownStateIcon;
   let stateSpecificClass;
   switch (true) {
@@ -64,7 +125,7 @@ export default function ItemStateIcon(props: ItemIconProps) {
   }
   return (
     <Tooltip title={getItemStateText(item.stateMap)}>
-      <TheIcon className={clsx(classes.icon, classes.publishingIcon, stateSpecificClass)} />
+      <TheIcon className={clsx(classes.root, propClasses.root, classes.publishingIcon, stateSpecificClass)} />
     </Tooltip>
   );
 }
