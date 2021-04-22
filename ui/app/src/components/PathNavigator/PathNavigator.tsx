@@ -45,7 +45,6 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
-import ItemActionsMenu from '../ItemActionsMenu';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showEditDialog, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { fetchContentXML } from '../../services/content';
@@ -70,6 +69,7 @@ import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { getSystemLink } from '../LauncherSection';
 import { SystemIconDescriptor } from '../SystemIcon';
+import ItemMegaMenu from '../ItemMegaMenu';
 
 interface Menu {
   path?: string;
@@ -470,10 +470,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
         onPageChanged={onPageChanged}
         computeActiveItems={computeActiveItems}
       />
-      <ItemActionsMenu
+      <ItemMegaMenu
         open={Boolean(itemMenu.anchorEl)}
         path={itemMenu.path}
-        numOfLoaderItems={itemMenu.loaderItems}
         anchorEl={itemMenu.anchorEl}
         onClose={onCloseItemMenu}
       />
