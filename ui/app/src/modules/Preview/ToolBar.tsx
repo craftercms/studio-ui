@@ -63,6 +63,7 @@ import { getSystemLink } from '../../components/LauncherSection';
 import { hasCreateAction, hasEditAction } from '../../utils/content';
 import ItemDisplay from '../../components/ItemDisplay';
 import Typography from '@material-ui/core/Typography';
+import { PublishingStatusButton } from '../../components/PublishingStatusButton';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -361,6 +362,7 @@ export default function ToolBar() {
         />
       </section>
       <section>
+        <PublishingStatusButton variant="icon" />
         <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
       </section>
     </ViewToolbar>

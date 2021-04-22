@@ -17,20 +17,18 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../Dialogs/DialogHeader';
-import { getBackgroundColourByStatusCode, publishingStatusTileMessages } from '../PublishingStatusTile';
+import { publishingStatusTileMessages } from '../PublishingStatusTile';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import { ListItem } from '@material-ui/core';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import clsx from 'clsx';
-import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
 import ListItemText from '@material-ui/core/ListItemText';
 import Skeleton from '@material-ui/lab/Skeleton';
 import * as React from 'react';
 import { Alert } from '@material-ui/lab';
 import { PublishingStatus } from '../../models/Publishing';
+import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
 
 export type PublishingStatusDialogBodyProps = PublishingStatus & {
   isFetching: boolean;
@@ -39,26 +37,8 @@ export type PublishingStatusDialogBodyProps = PublishingStatus & {
   onUnlock?(): void;
 };
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    avatar: {
-      // Please revisit PublishingStatusTile styles too if these are changed.
-      '&.ready': {
-        background: getBackgroundColourByStatusCode('ready', theme)
-      },
-      '&.publishing': {
-        background: getBackgroundColourByStatusCode('publishing', theme)
-      },
-      '&.queued': {
-        background: getBackgroundColourByStatusCode('queued', theme)
-      },
-      '&.stopped': {
-        background: getBackgroundColourByStatusCode('stopped', theme)
-      },
-      '&.error': {
-        background: getBackgroundColourByStatusCode('error', theme)
-      }
-    },
     body: {
       minHeight: 145,
       placeContent: 'center'
@@ -96,9 +76,7 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
         )}
         <ListItem component="div">
           <ListItemAvatar>
-            <Avatar className={clsx(classes.avatar, !isFetching && status)}>
-              <CloudUploadOutlined />
-            </Avatar>
+            <PublishingStatusAvatar status={isFetching ? null : status} />
           </ListItemAvatar>
           <ListItemText
             primary={
