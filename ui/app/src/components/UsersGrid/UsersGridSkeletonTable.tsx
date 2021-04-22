@@ -17,9 +17,6 @@
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import clsx from 'clsx';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
@@ -27,6 +24,8 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
 import { styles } from './styles';
+import GlobalAppGridRow from '../GlobalAppGridRow';
+import GlobalAppGridCell from '../GlobalAppGridCell';
 
 export interface UsersGridSkeletonTableProps {
   numOfItems?: number;
@@ -40,43 +39,43 @@ export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableP
     <TableContainer>
       <Table className={classes.tableRoot}>
         <TableHead>
-          <TableRow>
-            <TableCell align="center" className={clsx(classes.tableCell, 'bordered', 'avatar')}>
+          <GlobalAppGridRow>
+            <GlobalAppGridCell align="center" className="bordered avatar">
               <span />
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'paddedLeft', 'width30')}>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell align="left" className="bordered paddedLeft width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.name" defaultMessage="Name" />
               </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'width30')}>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell align="left" className="bordered width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.username" defaultMessage="Username" />
               </Typography>
-            </TableCell>
-            <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'width60')}>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell align="left" className="bordered width60">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.email" defaultMessage="E-mail" />
               </Typography>
-            </TableCell>
-          </TableRow>
+            </GlobalAppGridCell>
+          </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {items?.map((width, index) => (
-            <TableRow key={index}>
-              <TableCell align="center" className={clsx(classes.tableCell, 'avatar')}>
+            <GlobalAppGridRow key={index}>
+              <GlobalAppGridCell align="center" className="avatar">
                 <Skeleton className={classes.avatar} variant="circle" width={40} height={40} />
-              </TableCell>
-              <TableCell component="th" scope="row" className={clsx(classes.tableCell, 'paddedLeft', 'width30')}>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell component="th" scope="row" className="width20">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'width30')}>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="width20">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'width60')}>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="width60">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </TableCell>
-            </TableRow>
+              </GlobalAppGridCell>
+            </GlobalAppGridRow>
           ))}
         </TableBody>
       </Table>

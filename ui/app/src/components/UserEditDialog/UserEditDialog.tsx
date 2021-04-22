@@ -26,7 +26,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import User from '../../models/User';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
@@ -45,85 +44,8 @@ import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import ResetPasswordDialog from '../ResetPasswordDialog';
-
-const styles = makeStyles((theme) =>
-  createStyles({
-    header: {
-      padding: '30px 40px',
-      display: 'flex',
-      alignItems: 'center'
-    },
-    chip: {
-      background: theme.palette.info.main,
-      color: theme.palette.text.primary,
-      marginLeft: 'auto'
-    },
-    avatar: {
-      marginRight: '30px',
-      width: '90px',
-      height: '90px'
-    },
-    actions: {
-      marginLeft: 'auto'
-    },
-    userInfo: {},
-    body: {
-      padding: 0
-    },
-    section: {
-      padding: '30px 40px',
-      '&.noPaddingBottom': {
-        paddingBottom: 0
-      }
-    },
-    row: {
-      display: 'flex',
-      padding: '15px 0',
-      alignItems: 'center'
-    },
-    userNameWrapper: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center'
-    },
-    switchWrapper: {
-      width: '100%',
-      marginLeft: '-12px'
-    },
-    formActions: {
-      display: 'flex',
-      paddingBottom: '20px',
-      '& button:first-child': {
-        marginLeft: 'auto',
-        marginRight: '10px'
-      }
-    },
-    label: {
-      flexBasis: '180px'
-    },
-    sectionTitle: {
-      textTransform: 'uppercase',
-      marginBottom: '10px'
-    },
-    inputRoot: {
-      pointerEvents: 'none'
-    },
-    readOnlyInput: {
-      background: 'none',
-      borderColor: 'transparent',
-      paddingLeft: 0,
-      '&:focus': {
-        boxShadow: 'none'
-      }
-    },
-    membershipsWrapper: {
-      marginTop: '13px'
-    },
-    siteItem: {
-      margin: '10px 0'
-    }
-  })
-);
+import { styles } from './styles';
+import { Site } from '../../models/Site';
 
 const translations = defineMessages({
   externallyManaged: {
@@ -176,17 +98,17 @@ interface UserInfoDialogProps {
   passwordRequirementsRegex: string;
 }
 
-export default function UserInfoDialog(props: UserInfoDialogProps) {
+export default function UserEditDialog(props: UserInfoDialogProps) {
   const { open, onClose } = props;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <UserInfoDialogUI {...props} />
+      <UserInfoDialogContainer {...props} />
     </Dialog>
   );
 }
 
-export function UserInfoDialogUI(props: UserInfoDialogProps) {
+export function UserInfoDialogContainer(props: UserInfoDialogProps) {
   const { open, onClose, onUserEdited, passwordRequirementsRegex } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -225,7 +147,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
     }
   }, [mySites, props.user?.username]);
 
-  const onInputChange = (value) => {
+  const onInputChange = (value: object) => {
     setDirty(true);
     setUser(value);
   };
@@ -310,6 +232,77 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
     );
   };
 
+  const onCloseResetPasswordDialog = () => {
+    setOpenResetPassword(false);
+  };
+
+  const onResetPassword = (value: boolean) => {
+    setOpenResetPassword(value);
+  };
+
+  return (
+    <UserInfoDialogUI
+      user={user}
+      editMode={editMode}
+      openResetPassword={openResetPassword}
+      inProgress={inProgress}
+      dirty={dirty}
+      sites={mySites}
+      rolesBySite={rolesBySite}
+      passwordRequirementsRegex={passwordRequirementsRegex}
+      onSave={onSave}
+      onClose={onClose}
+      onDelete={onDelete}
+      onCloseResetPasswordDialog={onCloseResetPasswordDialog}
+      onInputChange={onInputChange}
+      onEnableChange={onEnableChange}
+      onCancelForm={onCancelForm}
+      onResetPassword={onResetPassword}
+    />
+  );
+}
+
+interface UserInfoDialogUIProps {
+  user: User;
+  editMode: boolean;
+  inProgress: boolean;
+  dirty: boolean;
+  openResetPassword: boolean;
+  sites: Site[];
+  passwordRequirementsRegex: string;
+  rolesBySite: LookupTable<string[]>;
+  onInputChange(value: object): void;
+  onEnableChange(value: object): void;
+  onCancelForm(): void;
+  onSave(): void;
+  onClose(): void;
+  onCloseResetPasswordDialog(): void;
+  onDelete(username: string): void;
+  onResetPassword(value: boolean): void;
+}
+
+export function UserInfoDialogUI(props: UserInfoDialogUIProps) {
+  const classes = styles();
+  const { formatMessage } = useIntl();
+  const {
+    user,
+    editMode,
+    inProgress,
+    dirty,
+    openResetPassword,
+    sites,
+    rolesBySite,
+    passwordRequirementsRegex,
+    onSave,
+    onClose,
+    onDelete,
+    onCloseResetPasswordDialog,
+    onInputChange,
+    onEnableChange,
+    onCancelForm,
+    onResetPassword
+  } = props;
+
   return (
     <>
       <header className={classes.header}>
@@ -326,7 +319,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
         <section className={classes.actions}>
           {
             <Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
-              <IconButton onClick={() => setOpenResetPassword(true)}>
+              <IconButton onClick={() => onResetPassword(true)}>
                 <PasswordRoundedIcon />
               </IconButton>
             </Tooltip>
@@ -443,7 +436,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               <Typography variant="subtitle2" color="textSecondary">
                 {formatMessage(translations.siteName)}
               </Typography>
-              {Object.values(sitesById).map((site) => (
+              {sites.map((site) => (
                 <Typography key={site.id} variant="body2" className={classes.siteItem}>
                   {site.name}
                 </Typography>
@@ -453,7 +446,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
               <Typography variant="subtitle2" color="textSecondary">
                 {formatMessage(translations.roles)}
               </Typography>
-              {Object.values(sitesById).map((site, i) =>
+              {sites.map((site, i) =>
                 rolesBySite[site.id] ? (
                   rolesBySite[site.id].length ? (
                     <Typography key={site.id} variant="body2" className={classes.siteItem}>
@@ -476,9 +469,7 @@ export function UserInfoDialogUI(props: UserInfoDialogProps) {
         open={openResetPassword}
         passwordRequirementsRegex={passwordRequirementsRegex}
         user={user}
-        onClose={() => {
-          setOpenResetPassword(false);
-        }}
+        onClose={onCloseResetPasswordDialog}
       />
     </>
   );

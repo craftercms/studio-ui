@@ -14,23 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './GlobalAppGridRow';
 
-export const styles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    avatar: {
-      margin: '0 auto'
-    },
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    }
-  })
-);
+export * from './GlobalAppGridRow';

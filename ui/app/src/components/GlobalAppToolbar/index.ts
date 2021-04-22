@@ -14,28 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './GlobalAppToolbar';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    title: {
-      marginBottom: '25px',
-      color: theme.palette.text.primary
-    },
-    createGroup: {
-      margin: '10px 0',
-      borderRadius: '50px',
-      border: 0,
-      padding: '5px 25px',
-      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)'
-    },
-    mb20: {
-      marginBottom: '20px'
-    },
-    actionsBar: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }
-  })
-);
+export * from './GlobalAppToolbar';

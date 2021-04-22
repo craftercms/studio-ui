@@ -19,7 +19,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
@@ -27,10 +26,11 @@ import React from 'react';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import User from '../../models/User';
-import clsx from 'clsx';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
 import { styles } from './styles';
+import GlobalAppGridRow from '../GlobalAppGridRow';
+import GlobalAppGridCell from '../GlobalAppGridCell';
 
 export interface UsersGridUIProps {
   resource: Resource<PagedArray<User>>;
@@ -63,46 +63,46 @@ export default function UsersGridUI(props: UsersGridUIProps) {
       <TableContainer>
         <Table className={classes.tableRoot}>
           <TableHead>
-            <StyledTableRow className={'hoverDisabled'}>
-              <TableCell align="center" className={clsx(classes.tableCell, 'bordered', 'avatar')}>
+            <GlobalAppGridRow className="hoverDisabled">
+              <GlobalAppGridCell align="center" className="bordered avatar">
                 <span />
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'paddedLeft', 'width30')}>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="bordered paddedLeft width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.name" defaultMessage="Name" />
                 </Typography>
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'width30')}>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="bordered width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.username" defaultMessage="Username" />
                 </Typography>
-              </TableCell>
-              <TableCell align="left" className={clsx(classes.tableCell, 'bordered', 'width60')}>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="bordered width60">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.email" defaultMessage="E-mail" />
                 </Typography>
-              </TableCell>
-            </StyledTableRow>
+              </GlobalAppGridCell>
+            </GlobalAppGridRow>
           </TableHead>
           <TableBody>
             {users?.map((user, i) => (
-              <StyledTableRow key={user.id} onClick={() => onRowClicked(user)}>
-                <TableCell align="center" className={clsx(classes.tableCell, 'avatar')}>
+              <GlobalAppGridRow key={user.id} onClick={() => onRowClicked(user)}>
+                <GlobalAppGridCell align="center" className="avatar">
                   <Avatar className={classes.avatar}>
                     {user.firstName.charAt(0)}
                     {user.lastName?.charAt(0) ?? ''}
                   </Avatar>
-                </TableCell>
-                <TableCell align="left" className={clsx(classes.tableCell, 'paddedLeft', 'width30')}>
+                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left" className="paddedLeft width20">
                   {user.firstName} {user.lastName}
-                </TableCell>
-                <TableCell align="left" className={clsx(classes.tableCell, 'width30')}>
+                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left" className="width20">
                   {user.username}
-                </TableCell>
-                <TableCell align="left" className={clsx(classes.tableCell, 'width60')}>
+                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left" className="width60">
                   {user.email}
-                </TableCell>
-              </StyledTableRow>
+                </GlobalAppGridCell>
+              </GlobalAppGridRow>
             ))}
           </TableBody>
         </Table>

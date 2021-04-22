@@ -21,7 +21,8 @@ export const sitesGridStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      marginTop: '20px'
     },
     paginationRoot: {
       '&:last-child': {

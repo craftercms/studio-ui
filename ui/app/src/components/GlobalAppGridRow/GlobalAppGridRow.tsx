@@ -14,23 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
+import TableRow from '@material-ui/core/TableRow';
 
-export const styles = makeStyles((theme) =>
+const GlobalAppGridRow = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    avatar: {
-      margin: '0 auto'
-    },
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
+      cursor: 'pointer',
+      '&:hover': {
+        backgroundColor: theme.palette.action.hover
+      },
+      '&.hoverDisabled': {
+        cursor: 'inherit',
+        background: 'none'
+      }
     }
   })
-);
+)(TableRow);
+
+export default GlobalAppGridRow;

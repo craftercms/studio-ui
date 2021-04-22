@@ -14,16 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
-import Divider from '@material-ui/core/Divider';
-import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { UsersGridSkeletonTable } from '../UsersGrid';
+import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
-import UserInfoDialog from '../UserInfoDialog';
+import UserEditDialog from '../UserEditDialog';
 import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
@@ -31,30 +27,14 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { useLogicResource } from '../../utils/hooks';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import UsersGridUI from '../UsersGrid/UsersGridUI';
+import GlobalAppToolbar from '../GlobalAppToolbar';
+import Button from '@material-ui/core/Button';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
 }
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    title: {
-      marginBottom: '25px',
-      color: theme.palette.text.primary
-    },
-    createUser: {
-      margin: '10px 0',
-      borderRadius: '50px',
-      border: 0,
-      padding: '5px 25px',
-      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)'
-    }
-  })
-);
-
 export default function UsersManagement(props: UsersManagementProps) {
-  const classes = styles();
   const {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
@@ -125,18 +105,19 @@ export default function UsersManagement(props: UsersManagementProps) {
 
   return (
     <section>
-      <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="GlobalMenu.Users" defaultMessage="Users" />
-      </Typography>
-      <Divider />
-      <SecondaryButton
-        startIcon={<AddIcon />}
-        className={classes.createUser}
-        onClick={() => setOpenCreateUserDialog(true)}
-      >
-        <FormattedMessage id="sites.createUser" defaultMessage="Create User" />
-      </SecondaryButton>
-      <Divider />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.Users" defaultMessage="Users" />}
+        leftContent={
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => setOpenCreateUserDialog(true)}
+          >
+            <FormattedMessage id="sites.createUser" defaultMessage="Create User" />
+          </Button>
+        }
+      />
       <ErrorBoundary>
         <SuspenseWithEmptyState
           resource={resource}
@@ -163,7 +144,7 @@ export default function UsersManagement(props: UsersManagementProps) {
         onClose={() => setOpenCreateUserDialog(false)}
         passwordRequirementsRegex={passwordRequirementsRegex}
       />
-      <UserInfoDialog
+      <UserEditDialog
         open={Boolean(viewUser)}
         onClose={onUserInfoClose}
         onUserEdited={onUserEdited}

@@ -14,13 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Divider from '@material-ui/core/Divider';
-import SecondaryButton from '../SecondaryButton';
-import AddIcon from '@material-ui/icons/Add';
 import React, { useEffect, useMemo, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import AddIcon from '@material-ui/icons/Add';
 import { SkeletonSitesGrid } from '../SitesGrid';
 import CreateSiteDialog from '../../modules/System/Sites/Create/CreateSiteDialog';
 import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
@@ -47,30 +43,8 @@ import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import SitesGridUI from '../SitesGrid/SitesGridUI';
 import PublishingStatusDialog from '../PublishingStatusDialog';
-
-const styles = makeStyles((theme) =>
-  createStyles({
-    title: {
-      marginBottom: '25px',
-      color: theme.palette.text.primary
-    },
-    createSite: {
-      margin: '10px 0',
-      borderRadius: '50px',
-      border: 0,
-      padding: '5px 25px',
-      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)'
-    },
-    mb20: {
-      marginBottom: '20px'
-    },
-    actionsBar: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }
-  })
-);
+import GlobalAppToolbar from '../GlobalAppToolbar';
+import Button from '@material-ui/core/Button';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -85,13 +59,12 @@ export default function SitesManagement() {
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
-  const [currentView, setCurrentView] = useState<'grid' | 'list'>('list');
+  const [currentView, setCurrentView] = useState<'grid' | 'list'>('grid');
   const sitesBranch = useSitesBranch();
   const sitesById = sitesBranch.byId;
   const isFetching = sitesBranch.isFetching;
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-  const classes = styles();
 
   useEffect(() => {
     merge(
@@ -173,25 +146,26 @@ export default function SitesManagement() {
 
   return (
     <section>
-      <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />
-      </Typography>
-      <Divider />
-      <section className={classes.actionsBar}>
-        <SecondaryButton
-          startIcon={<AddIcon />}
-          className={classes.createSite}
-          onClick={() => setOpenCreateSiteDialog(true)}
-        >
-          <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
-        </SecondaryButton>
-        <Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
-          <IconButton onClick={handleChangeView}>
-            {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
-          </IconButton>
-        </Tooltip>
-      </section>
-      <Divider className={classes.mb20} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />}
+        leftContent={
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => setOpenCreateSiteDialog(true)}
+          >
+            <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
+          </Button>
+        }
+        rightContent={
+          <Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
+            <IconButton onClick={handleChangeView}>
+              {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
+            </IconButton>
+          </Tooltip>
+        }
+      />
       <ErrorBoundary>
         <SuspenseWithEmptyState
           resource={resource}
