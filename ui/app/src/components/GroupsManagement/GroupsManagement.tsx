@@ -14,28 +14,115 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Divider from '@material-ui/core/Divider';
-import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
-import React from 'react';
-import { useStyles } from './styles';
+import { PagedArray } from '../../models/PagedArray';
+import { ApiResponse } from '../../models/ApiResponse';
+import Group from '../../models/Group';
+import { fetchAll } from '../../services/groups';
+import { useLogicResource } from '../../utils/hooks';
+import ErrorBoundary from '../SystemStatus/ErrorBoundary';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
+import GroupEditDialog from '../GroupEditDialog';
+import Button from '@material-ui/core/Button';
+import GlobalAppToolbar from '../GlobalAppToolbar';
 
 export default function GroupsManagement() {
-  const classes = useStyles();
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [fetching, setFetching] = useState(false);
+  const [groups, setGroups] = useState<PagedArray<Group>>(null);
+  const [error, setError] = useState<ApiResponse>();
+  const [selectedGroup, setSelectedGroup] = useState<Group>(null);
+
+  const fetchGroups = useCallback(() => {
+    setFetching(true);
+    fetchAll({ limit, offset }).subscribe(
+      (users) => {
+        setGroups(users);
+        setFetching(false);
+      },
+      ({ response }) => {
+        setError(response);
+        setFetching(false);
+      }
+    );
+  }, [limit, offset]);
+
+  useEffect(() => {
+    fetchGroups();
+  }, [fetchGroups]);
+
+  const resource = useLogicResource<
+    PagedArray<Group>,
+    { groups: PagedArray<Group>; error: ApiResponse; fetching: boolean }
+  >(
+    useMemo(() => ({ groups, error, fetching }), [groups, error, fetching]),
+    {
+      shouldResolve: (source) => Boolean(source.groups) && !fetching,
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: (source, resource) => fetching && resource.complete,
+      resultSelector: (source) => source.groups,
+      errorSelector: () => error
+    }
+  );
+
+  const onRowClicked = (group: Group) => {
+    setSelectedGroup(group);
+  };
+
+  const onChangePage = (page: number) => {
+    setOffset(page * limit);
+  };
+
+  const onChangeRowsPerPage = (e) => {
+    setLimit(e.target.value);
+  };
+
+  const onCloseEditGroupDialog = () => {
+    setSelectedGroup(null);
+  };
+
+  const onGroupEdited = (group: Group) => {};
+
   return (
     <section>
-      <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />
-      </Typography>
-      <Divider />
-      <section className={classes.actionsBar}>
-        <SecondaryButton startIcon={<AddIcon />} className={classes.createGroup}>
-          <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
-        </SecondaryButton>
-      </section>
-      <Divider className={classes.mb20} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />}
+        leftContent={
+          <Button startIcon={<AddIcon />} variant="outlined" color="primary">
+            <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
+          </Button>
+        }
+      />
+      <ErrorBoundary>
+        <SuspenseWithEmptyState
+          resource={resource}
+          suspenseProps={{
+            fallback: <GroupsGridSkeletonTable numOfItems={limit} />
+          }}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
+            }
+          }}
+        >
+          <GroupsGridUI
+            resource={resource}
+            onRowClicked={onRowClicked}
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+          />
+        </SuspenseWithEmptyState>
+      </ErrorBoundary>
+      <GroupEditDialog
+        open={Boolean(selectedGroup)}
+        group={selectedGroup}
+        onClose={onCloseEditGroupDialog}
+        onGroupEdited={onGroupEdited}
+      />
     </section>
   );
 }

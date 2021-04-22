@@ -29,14 +29,14 @@ const paginationDefault = {
 };
 
 export function fetchAll(options?: PaginationOptions): Observable<PagedArray<Group>> {
-  const qs = toQueryString({
+  const mergedOptions = {
     ...paginationDefault,
     ...options
-  });
-  return get(`/studio/api/2/groups${qs}`).pipe(
+  };
+  return get(`/studio/api/2/groups${toQueryString(mergedOptions)}`).pipe(
     map(({ response }) =>
       Object.assign(response.groups, {
-        limit: response.limit,
+        limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
         offset: response.offset,
         total: response.total
       })
