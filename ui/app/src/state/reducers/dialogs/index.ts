@@ -38,6 +38,7 @@ import editSite from './editSite';
 import pathSelection from './pathSelection';
 import changeContentType from './changeContentType';
 import itemMenu from './itemMenu';
+import itemMegaMenu from './itemMegaMenu';
 import launcher from './launcher';
 import publishingStatus from './publishingStatus';
 import unlockPublisher from './unlockPublisher';
@@ -66,6 +67,7 @@ export default combineReducers({
   pathSelection,
   changeContentType,
   itemMenu,
+  itemMegaMenu,
   launcher,
   publishingStatus,
   unlockPublisher

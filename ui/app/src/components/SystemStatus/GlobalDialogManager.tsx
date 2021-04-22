@@ -53,6 +53,7 @@ const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
+const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
 const PublishingStatusDialog = lazy(() => import('../PublishingStatusDialog'));
 
@@ -426,6 +427,16 @@ function GlobalDialogManager() {
         onClose={createCallback(state.itemMenu.onClose, dispatch)}
         anchorReference={state.itemMenu.anchorReference}
         anchorPosition={state.itemMenu.anchorPosition}
+      />
+      {/* endregion */}
+
+      {/* region Item Mega Menu */}
+      <ItemMegaMenu
+        open={state.itemMegaMenu.open}
+        path={state.itemMegaMenu.path}
+        onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
+        anchorReference={state.itemMegaMenu.anchorReference}
+        anchorPosition={state.itemMegaMenu.anchorPosition}
       />
       {/* endregion */}
 
