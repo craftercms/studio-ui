@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { CSSProperties } from '@material-ui/styles';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import emptyImage from '../../assets/desert.svg';
 import clsx from 'clsx';
+import { MessageDescriptor, useIntl } from 'react-intl';
+import { nou } from '../../utils/object';
 
 type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
 
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) =>
       ...styles.subtitle
     }),
     image: (styles) => ({
-      width: 150,
+      width: 100,
       maxWidth: '80%',
       ...styles.image
     })
@@ -53,15 +55,21 @@ const useStyles = makeStyles((theme) =>
 
 export type EmptyStateProps = React.PropsWithChildren<{
   image?: string;
-  title: string | JSX.Element;
-  subtitle?: string | JSX.Element;
+  title: ReactNode | MessageDescriptor;
+  subtitle?: ReactNode | MessageDescriptor;
   classes?: Partial<Record<EmptyStateClassKey, string>>;
   styles?: EmptyStateStyles;
 }>;
 
 export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles(props.styles);
-  const { image = emptyImage, title, subtitle, classes: propClasses, children } = props;
+  const { formatMessage } = useIntl();
+  const { image = emptyImage, classes: propClasses, children } = props;
+  const title = React.isValidElement(props.title) ? props.title : formatMessage(props.title as MessageDescriptor);
+  const subtitle =
+    React.isValidElement(props.subtitle) || nou(props.subtitle)
+      ? props.subtitle
+      : formatMessage(props.subtitle as MessageDescriptor);
   return (
     <div className={clsx(classes.root, propClasses?.root)}>
       {image && <img className={clsx(classes.image, propClasses?.image)} src={image} alt="" />}

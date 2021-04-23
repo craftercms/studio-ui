@@ -79,6 +79,7 @@ import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
 import PollOutlinedIcon from '@material-ui/icons/PollOutlined';
 import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
 import Component from '../../components/Icons/Component';
+import EmptyState from '../../components/SystemStatus/EmptyState';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -217,7 +218,8 @@ Object.entries({
   'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
   'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
   'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,
-  'craftercms.components.PluginManagement': PluginManagement
+  'craftercms.components.PluginManagement': PluginManagement,
+  'craftercms.component.EmptyState': EmptyState
 }).forEach(([id, component]) => {
   components.set(id, component);
 });
