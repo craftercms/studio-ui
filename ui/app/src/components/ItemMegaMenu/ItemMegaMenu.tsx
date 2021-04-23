@@ -173,7 +173,7 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   const editorialOptions = options[0];
-  const publishingOptions = options.slice(1);
+  const nonEditorialOptions = options.slice(1);
   const contentTypes = useSelection((state) => state.contentTypes);
   const editedDate = item?.sandbox.dateModified;
   const editedBy = item?.sandbox.modifier;
@@ -230,13 +230,13 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
               ))}
             </MenuList>
             <div className={classes.actionsColumn}>
-              {publishingOptions.map((section: any, i: number) => (
+              {nonEditorialOptions.map((section: any, i: number) => (
                 <MenuList key={i} className={classes.itemsList}>
                   {section.map((option: MenuOption, y: number) => (
                     <MenuItem
                       dense
                       key={option.id}
-                      divider={i !== publishingOptions.length - 1 && y === section.length - 1}
+                      divider={i !== nonEditorialOptions.length - 1 && y === section.length - 1}
                       onClick={(e) => onMenuItemClicked(option.id, e)}
                       className={clsx(classes.optionItem, propClasses?.menuItem)}
                       children={option.label}
