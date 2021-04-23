@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -38,8 +38,6 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import PasswordTextField from '../Controls/PasswordTextField';
 import { passwordRequirementMessages } from '../../utils/i18n-legacy';
-import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
-import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
 import { useDebouncedInput, useMount } from '../../utils/hooks';
@@ -48,6 +46,7 @@ import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setSt
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import LanguageRounded from '@material-ui/icons/LanguageRounded';
 import Menu from '@material-ui/core/Menu';
+import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 
 interface SystemLang {
   id: string;
@@ -84,14 +83,6 @@ type SubViewProps = React.PropsWithChildren<{
   xsrfParamName: string;
   xsrfToken: string;
 }>;
-
-interface PasswordRequirementsDisplayProps {
-  value: string;
-  formatMessage: Function;
-  onValidStateChanged: (isValid: boolean) => void;
-  passwordRequirementsRegex: string;
-  classes: { [props: string]: string };
-}
 
 const translations = defineMessages({
   loginDialogTitle: {
@@ -523,139 +514,6 @@ function LanguageDropDown(props: LanguageDropDownProps) {
         ))}
       </Menu>
     </>
-  );
-}
-
-function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
-  const { passwordRequirementsRegex, formatMessage } = props;
-  let regEx = null;
-  let captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
-  let namedCaptureGroupSupport = true;
-  let fallback;
-  if (!captureGroups) {
-    // RegExp may be valid and have no capture groups
-    fallback = {
-      regEx,
-      description: formatMessage(passwordRequirementMessages.validationPassing)
-    };
-  }
-  try {
-    regEx = new RegExp(passwordRequirementsRegex);
-    captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
-  } catch (error) {
-    console.warn(error);
-    try {
-      // reg ex without the capture groups and just need to remove the capture
-      // If the reg ex is parsable without the capture groups, we can use the
-      // group from the individual pieces later on the mapping.
-      namedCaptureGroupSupport = false;
-      regEx = new RegExp(passwordRequirementsRegex.replace(/\?<(.*?)>/g, ''));
-    } catch (error) {
-      // Allow everything and default to backend as regex wasn't
-      // parsable/valid for current navigator
-      regEx = /(.|\s)*\S(.|\s)*/;
-      fallback = {
-        regEx,
-        description: formatMessage(passwordRequirementMessages.notBlank)
-      };
-      console.warn('Defaulting password validation to server due to issues in RegExp compilation.');
-    }
-  }
-  return {
-    regEx,
-    conditions: captureGroups
-      ? captureGroups.map((captureGroup) => {
-          let description;
-          let captureGroupKey = captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
-          if (!namedCaptureGroupSupport) {
-            captureGroup = captureGroup.replace(/\?<(.*?)>/g, '');
-          }
-          switch (captureGroupKey) {
-            case 'hasSpecialChars':
-              const allowedChars = (passwordRequirementsRegex.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) || [
-                '',
-                '',
-                ''
-              ])[2];
-              description = formatMessage(passwordRequirementMessages.hasSpecialChars, {
-                chars: allowedChars ? `(${allowedChars})` : ''
-              });
-              break;
-            case 'minLength':
-              const min = ((passwordRequirementsRegex.match(/\(\?<minLength>(.*){(.*?)}\)/) || [''])[0].match(
-                /{(.*?)}/
-              ) || ['', ''])[1].split(',')[0];
-              description = formatMessage(passwordRequirementMessages.minLength, { min });
-              break;
-            case 'maxLength':
-              const max = ((passwordRequirementsRegex.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(
-                /{(.*?)}/
-              ) || ['', ''])[1].split(',')[1];
-              description = formatMessage(passwordRequirementMessages.maxLength, { max });
-              break;
-            case 'minMaxLength':
-              const minLength = ((passwordRequirementsRegex.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
-                /{(.*?)}/
-              ) || ['', ''])[1].split(',')[0];
-              const maxLength = ((passwordRequirementsRegex.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
-                /{(.*?)}/
-              ) || ['', ''])[1].split(',')[1];
-              description = formatMessage(passwordRequirementMessages.minMaxLength, {
-                minLength,
-                maxLength
-              });
-              break;
-            default:
-              description = formatMessage(
-                passwordRequirementMessages[captureGroupKey] ?? passwordRequirementMessages.unnamedGroup
-              );
-              break;
-          }
-          return {
-            regEx: new RegExp(captureGroup),
-            description
-          };
-        })
-      : [fallback]
-  };
-}
-
-function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
-  const { passwordRequirementsRegex, formatMessage, value, classes, onValidStateChanged } = props;
-  const { regEx, conditions } = useMemo(() => getPrimeMatter({ passwordRequirementsRegex, formatMessage }), [
-    passwordRequirementsRegex,
-    formatMessage
-  ]);
-  useEffect(() => {
-    onValidStateChanged(isBlank(value) ? null : regEx.test(value));
-  }, [onValidStateChanged, regEx, value]);
-  return (
-    <ul className={classes.listOfConditions}>
-      {conditions.map(({ description, regEx: condition }, key) => {
-        const blank = isBlank(value);
-        const valid = condition.test(value);
-        return (
-          <Typography
-            key={key}
-            component="li"
-            className={clsx(
-              classes.conditionItem,
-              !blank && {
-                [classes.conditionItemNotMet]: !valid,
-                [classes.conditionItemMet]: valid
-              }
-            )}
-          >
-            {valid && !blank ? (
-              <CheckCircleOutlineRoundedIcon className={classes.conditionItemIcon} />
-            ) : (
-              <ErrorOutlineRoundedIcon className={classes.conditionItemIcon} />
-            )}
-            {description}
-          </Typography>
-        );
-      })}
-    </ul>
   );
 }
 

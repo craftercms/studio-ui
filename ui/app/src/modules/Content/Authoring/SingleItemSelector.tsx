@@ -40,11 +40,9 @@ import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
 import { isFolder } from '../../../components/PathNavigator/utils';
-import TablePagination from '@material-ui/core/TablePagination';
-import { translations } from '../../../components/PathNavigator/translations';
-import { useIntl } from 'react-intl';
 import { parseSandBoxItemToDetailedItem } from '../../../utils/content';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
+import Pagination from '../../../components/Pagination';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -87,34 +85,7 @@ const useStyles = makeStyles((theme) => ({
     fill: palette.teal.main,
     marginRight: 10
   },
-  selectIcon: {},
-  // region Pagination
-  pagination: {
-    '& p': {
-      padding: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  paginationToolbar: {
-    padding: '0 0 0 12px',
-    minHeight: '30px !important',
-    justifyContent: 'space-between',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
-    },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
-    },
-    '& .MuiButtonBase-root': {
-      padding: 0
-    }
-  }
-  // endregion
+  selectIcon: {}
 }));
 
 interface SingleItemSelectorProps {
@@ -307,7 +278,6 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const classes = useStyles();
   const anchorEl = useRef();
   const [state, _dispatch] = useReducer(reducer, props, init);
-  const { formatMessage } = useIntl();
   const site = useActiveSiteId();
 
   const exec = useCallback(
@@ -469,20 +439,11 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
             onPathSelected={onPathSelected}
             onItemClicked={handleItemClicked}
           />
-          <TablePagination
-            classes={{
-              root: classes.pagination,
-              selectRoot: 'hidden',
-              toolbar: classes.paginationToolbar
-            }}
-            component="div"
-            labelRowsPerPage=""
+          <Pagination
             count={state.total}
             rowsPerPage={state.limit}
             page={state && Math.ceil(state.offset / state.limit)}
-            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-            onChangePage={(e, page: number) => onPageChanged(page)}
+            onChangePage={(page: number) => onPageChanged(page)}
           />
         </SuspenseWithEmptyState>
       </Popover>

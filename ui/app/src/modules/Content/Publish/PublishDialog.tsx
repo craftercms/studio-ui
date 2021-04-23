@@ -40,7 +40,6 @@ import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import LookupTable from '../../../models/LookupTable';
@@ -341,12 +340,12 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled || apiState.submitting}>
-          {apiState.submitting ? (
-            <CircularProgress className={classes.btnSpinner} size={20} />
-          ) : (
-            <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
-          )}
+        <PrimaryButton
+          onClick={handleSubmit}
+          disabled={submitDisabled || apiState.submitting}
+          loading={apiState.submitting}
+        >
+          <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
     </>

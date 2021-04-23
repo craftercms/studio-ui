@@ -50,15 +50,15 @@ export function trash(username: string): Observable<true> {
 }
 
 export function fetchAll(options?: PaginationOptions): Observable<PagedArray<User>> {
-  const qs = toQueryString({
+  const mergedOptions = {
     limit: 100,
     offset: 0,
     ...options
-  });
-  return get(`/studio/api/2/users${qs}`).pipe(
+  };
+  return get(`/studio/api/2/users${toQueryString(mergedOptions)}`).pipe(
     map(({ response }) =>
       Object.assign(response.users, {
-        limit: response.limit,
+        limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
         offset: response.offset,
         total: response.total
       })
@@ -127,7 +127,6 @@ export function fetchRolesInSite(username: string, siteId: string): Observable<s
   return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
 
-// renamed from fetchRolesInSiteForCurrent
 export function fetchMyRolesInSite(siteId: string): Observable<string[]> {
   return get(`/studio/api/2/users/me/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
