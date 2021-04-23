@@ -16,14 +16,7 @@
 
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
-import {
-  createStyles,
-  makeStyles,
-  MenuProps,
-  PopoverOrigin,
-  PopoverPosition,
-  PopoverReference
-} from '@material-ui/core';
+import { createStyles, makeStyles, PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
@@ -43,6 +36,26 @@ import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/ut
 import ItemStateIcon from '../ItemStateIcon';
 import { SystemIconDescriptor } from '../SystemIcon';
 import EmptyState from '../SystemStatus/EmptyState';
+import { CSSProperties } from '@material-ui/styles';
+
+export type ItemMegaMenuClassKey =
+  | 'root'
+  | 'menuMainList'
+  | 'mainItem'
+  | 'actionsContainer'
+  | 'actionsColumn'
+  | 'emptyRoot'
+  | 'itemsList'
+  | 'itemInfo'
+  | 'itemInfoContentType'
+  | 'itemEdited'
+  | 'itemEditedText'
+  | 'itemState'
+  | 'infoItem'
+  | 'menuItem'
+  | 'icon';
+
+export type ItemMegaMenuStyles = Partial<Record<ItemMegaMenuClassKey, CSSProperties>>;
 
 export interface MenuOption {
   id: string;
@@ -53,7 +66,8 @@ export interface MenuOption {
 export interface ItemMegaMenuBaseProps {
   path: string;
   open: boolean;
-  classes?: MenuProps['classes'] & Partial<Record<'menuItem' | 'emptyRoot', string>>;
+  styles?: ItemMegaMenuStyles;
+  classes?: Partial<Record<ItemMegaMenuClassKey, string>>;
   anchorOrigin?: PopoverOrigin;
   anchorReference?: PopoverReference;
   anchorPosition?: PopoverPosition;
@@ -71,73 +85,88 @@ export interface ItemMegaMenuStateProps extends ItemMegaMenuBaseProps {
 }
 
 export const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      borderRadius: '12px'
-    },
-    menuMainList: {
-      padding: 0
-    },
-    mainItem: {
-      padding: '10px 20px'
-    },
-    actionsContainer: {
+  createStyles<ItemMegaMenuClassKey, ItemMegaMenuStyles>({
+    root: (styles) => ({
+      borderRadius: '12px',
+      ...styles.root
+    }),
+    menuMainList: (styles) => ({
+      padding: 0,
+      ...styles.menuMainList
+    }),
+    mainItem: (styles) => ({
+      padding: '10px 20px',
+      ...styles.mainItem
+    }),
+    actionsContainer: (styles) => ({
       display: 'flex',
       flexDirection: 'row',
-      width: '100%'
-    },
-    actionsColumn: {
+      width: '100%',
+      ...styles.actionsContainer
+    }),
+    actionsColumn: (styles) => ({
       display: 'flex',
       flexDirection: 'column',
       flexBasis: '100%',
       flex: '1',
       '&:first-child': {
         marginRight: '60px'
-      }
-    },
-    emptyRoot: {
+      },
+      ...styles.actionsColumn
+    }),
+    emptyRoot: (styles) => ({
       display: 'block',
       padding: '10px',
-      textAlign: 'center'
-    },
-    itemsList: {
-      padding: 0
-    },
-    itemInfo: {
+      textAlign: 'center',
+      ...styles.emptyRoot
+    }),
+    itemsList: (styles) => ({
+      padding: 0,
+      ...styles.itemsList
+    }),
+    itemInfo: (styles) => ({
       display: 'block',
-      borderBottom: `1px solid ${palette.gray.light4}`
-    },
-    itemInfoContentType: {
+      borderBottom: `1px solid ${palette.gray.light4}`,
+      ...styles.itemInfo
+    }),
+    itemInfoContentType: (styles) => ({
       color: theme.palette.text.secondary,
-      marginBottom: '4px'
-    },
-    itemEdited: {
+      marginBottom: '4px',
+      ...styles.itemInfoContentType
+    }),
+    itemEdited: (styles) => ({
       paddingTop: '12px',
-      borderTop: `1px solid ${palette.gray.light4}`
-    },
-    itemEditedText: {
+      borderTop: `1px solid ${palette.gray.light4}`,
+      ...styles.itemEdited
+    }),
+    itemEditedText: (styles) => ({
       color: theme.palette.text.secondary,
-      fontWeight: 600
-    },
-    itemState: {
+      fontWeight: 600,
+      ...styles.itemEditedText
+    }),
+    itemState: (styles) => ({
       '&> *': {
         marginRight: '5px'
-      }
-    },
-    infoItem: {
+      },
+      ...styles.itemState
+    }),
+    infoItem: (styles) => ({
       cursor: 'default',
       '&:hover': {
         backgroundColor: 'inherit'
-      }
-    },
-    optionItem: {
+      },
+      ...styles.infoItem
+    }),
+    menuItem: (styles) => ({
       paddingLeft: 0,
-      paddingRight: 0
-    },
-    icon: {
+      paddingRight: 0,
+      ...styles.menuItem
+    }),
+    icon: (styles) => ({
       fontSize: '0.8rem',
-      verticalAlign: 'middle'
-    }
+      verticalAlign: 'middle',
+      ...styles.icon
+    })
   })
 );
 
@@ -146,13 +175,14 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
     open,
     path,
     onClose,
+    styles,
     classes: propClasses,
     anchorEl,
     anchorOrigin,
     anchorReference = 'anchorEl',
     anchorPosition
   } = props;
-  const classes = useStyles();
+  const classes = useStyles(styles);
   const site = useActiveSiteId();
   const items = useItemsByPath();
   const clipboard = useSelection((state) => state.content.clipboard);
@@ -223,7 +253,7 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
                   dense
                   key={option.id}
                   onClick={(e) => onMenuItemClicked(option.id, e)}
-                  className={clsx(classes.optionItem, propClasses?.menuItem)}
+                  className={clsx(classes.menuItem, propClasses?.menuItem)}
                   children={option.label}
                 />
               ))}
@@ -237,7 +267,7 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
                       key={option.id}
                       divider={i !== nonEditorialOptions.length - 1 && y === section.length - 1}
                       onClick={(e) => onMenuItemClicked(option.id, e)}
-                      className={clsx(classes.optionItem, propClasses?.menuItem)}
+                      className={clsx(classes.menuItem, propClasses?.menuItem)}
                       children={option.label}
                     />
                   ))}
