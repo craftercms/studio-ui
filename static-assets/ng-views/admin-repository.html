@@ -109,7 +109,10 @@
           </tbody>
         </table>
       </div>
-      <div class="col-md-12" ng-show="repositories.status.conflicting.length < 1">
+      <div
+        class="col-md-12"
+        ng-show="repositories.status.conflicting.length < 1 && repositories.status.uncommittedChanges.length < 1"
+      >
         <p class="note mb0 tac">
           {{ repositories.repoMessages.repositoriesNote }}
         </p>
@@ -156,10 +159,7 @@
           </a>
         </div>
         <div class="mb30">
-          <h3
-            class="header header--inline mb10"
-          >{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}
-          </h3>
+          <h3 class="header header--inline mb10">{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}</h3>
           <p class="note mb0">
             {{ repositories.repoMessages.repositoriesNote }}
           </p>
