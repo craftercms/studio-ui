@@ -30,6 +30,7 @@ export default createReducer<GlobalState['dialogs']['editSite']>(initialState, {
     onClose: closeEditSiteDialog(),
     onClosed: editSiteDialogClosed(),
     onDismiss: closeEditSiteDialog(),
+    onSaveSuccess: closeEditSiteDialog(),
     ...payload,
     open: true
   }),

@@ -15,10 +15,15 @@
  */
 
 import * as React from 'react';
-import Button, { ButtonProps } from '@material-ui/core/Button';
+import { ButtonProps } from '@material-ui/core/Button';
+import ButtonWithLoadingState from '../ButtonWithLoadingState';
 
-const PrimaryButton = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <Button ref={ref} {...props} variant="contained" color="primary" />;
+interface PrimaryButtonProps extends ButtonProps {
+  loading?: boolean;
+}
+
+const PrimaryButton = React.forwardRef<HTMLButtonElement, PrimaryButtonProps>((props, ref) => {
+  return <ButtonWithLoadingState ref={ref} {...props} variant="contained" color="primary" />;
 });
 
 export default PrimaryButton;

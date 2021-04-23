@@ -93,9 +93,9 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
                 <Skeleton />
               ) : (
                 <>
-                  {message && <div>{message}</div>}
-                  {lockOwner && <div>{formatMessage(publishingStatusTileMessages.lockOwner, { lockOwner })}</div>}
-                  {lockTTL && <div>{formatMessage(publishingStatusTileMessages.lockTTL, { lockTTL })}</div>}
+                  {message}
+                  {lockOwner && formatMessage(publishingStatusTileMessages.lockOwner, { lockOwner })}
+                  {lockTTL && formatMessage(publishingStatusTileMessages.lockTTL, { lockTTL })}
                 </>
               )
             }
