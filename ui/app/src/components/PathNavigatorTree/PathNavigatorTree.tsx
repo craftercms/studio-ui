@@ -33,7 +33,7 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
-import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
+import { lookupItemByPath } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
@@ -49,7 +49,7 @@ import {
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
@@ -440,9 +440,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
     dispatch(
-      showItemMenu({
+      showItemMegaMenu({
         path,
-        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path]),
         anchorReference: 'anchorPosition',
         anchorPosition: { top, left }
       })
