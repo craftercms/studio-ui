@@ -23,7 +23,7 @@ import TableBody from '@material-ui/core/TableBody';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
-import { styles } from './styles';
+import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 
@@ -34,7 +34,7 @@ export interface UsersGridSkeletonTableProps {
 export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
-  const classes = styles();
+  const classes = useStyles();
   return (
     <TableContainer>
       <Table className={classes.tableRoot}>

@@ -16,14 +16,13 @@
 
 import React, { ReactNode } from 'react';
 import clsx from 'clsx';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Paper from '@material-ui/core/Paper';
 import { LinearProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { RedColor } from '../styles/theme';
 import { capitalize } from '../utils/string';
 
-export const styles = (theme: Theme) => ({
+const useStyles = (theme) => ({
   /* Styles applied to the root element. */
   root: {
     display: 'flex',
@@ -146,4 +145,4 @@ interface MobileStepperProps {
 }
 
 // @ts-ignore
-export default withStyles(styles, { name: 'MuiMobileStepper' })(MobileStepper);
+export default withStyles(useStyles, { name: 'MuiMobileStepper' })(MobileStepper);

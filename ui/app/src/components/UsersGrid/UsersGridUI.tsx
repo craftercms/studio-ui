@@ -18,17 +18,15 @@ import { Resource } from '../../models/Resource';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import React from 'react';
-import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import User from '../../models/User';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import { styles } from './styles';
+import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 
@@ -39,24 +37,9 @@ export interface UsersGridUIProps {
   onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
-const StyledTableRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      cursor: 'pointer',
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover
-      },
-      '&.hoverDisabled': {
-        cursor: 'inherit',
-        background: 'none'
-      }
-    }
-  })
-)(TableRow);
-
 export default function UsersGridUI(props: UsersGridUIProps) {
   const { resource, onRowClicked, onChangePage, onChangeRowsPerPage } = props;
-  const classes = styles();
+  const classes = useStyles();
   const users = resource.read();
   return (
     <section className={classes.root}>

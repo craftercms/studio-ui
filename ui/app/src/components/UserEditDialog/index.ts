@@ -17,4 +17,5 @@
 export { default } from './UserEditDialog';
 
 export * from './UserEditDialog';
-export { styles } from './styles';
+export * from './styles';
+export * from './UserInfoDialogUI';
