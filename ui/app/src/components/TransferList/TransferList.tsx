@@ -20,29 +20,56 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import React, { ReactNode, useState } from 'react';
-import { Checkbox } from '@material-ui/core';
+import React, { ReactNode, useEffect, useState } from 'react';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
 import LookupTable from '../../models/LookupTable';
-import Button from '@material-ui/core/Button';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import { useStyles } from './styles';
-import { FormattedMessage } from 'react-intl';
+import useStyles from './styles';
 import Typography from '@material-ui/core/Typography';
 import SearchBar from '../Controls/SearchBar';
+import { createLookupTable } from '../../utils/object';
 
 interface TransferListProps {
-  objectA: TransferListObject;
-  objectB: TransferListObject;
+  source: TransferListObject;
+  target: TransferListObject;
+  onTargetListChanged(target: TransferListObject): void;
 }
 
 export interface TransferListObject {
   title?: ReactNode;
-  list: TransferListItem[];
+  items: TransferListItem[];
+}
+
+export interface TransferListItem {
+  id: string;
+  title: string;
+  subTitle?: string;
+}
+
+function not(a: any, b: any) {
+  return a.filter((value) => !b.find((next) => value.id === next.id));
+}
+
+function intersection(a: any, b: any) {
+  return a.filter((value) => b.find((next) => value.id === next.id));
 }
 
 export default function TransferList(props: TransferListProps) {
-  const { objectA, objectB } = props;
+  const { source, target, onTargetListChanged } = props;
+  const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
+  const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
+
+  useEffect(() => {
+    onTargetListChanged({ ...target, items: targetItems });
+  }, [onTargetListChanged, target, targetItems]);
+
+  const itemsLookup = {
+    ...createLookupTable(sourceItems),
+    ...createLookupTable(targetItems)
+  };
+
   const [checkedList, setCheckedList] = useState({});
   const classes = useStyles();
 
@@ -54,55 +81,114 @@ export default function TransferList(props: TransferListProps) {
     }
   };
 
+  const onCheckAllClicked = (items: TransferListItem[], checked: boolean) => {
+    const nextCheckedList = {};
+    items.forEach((item) => {
+      nextCheckedList[item.id] = checked;
+    });
+    setCheckedList({ ...checkedList, ...nextCheckedList });
+  };
+
+  const getChecked = (items: TransferListItem[]) => {
+    return intersection(
+      Object.keys(checkedList)
+        .filter((key) => checkedList[key])
+        .map((id) => itemsLookup[id]),
+      items
+    );
+  };
+
+  const moveLeftToRight = () => {
+    const nextCheckedList = {};
+    const leftCheckedItems = getChecked(sourceItems);
+
+    leftCheckedItems.forEach((item) => {
+      nextCheckedList[item.id] = false;
+    });
+
+    setCheckedList({ ...checkedList, ...nextCheckedList });
+    setSourceItems(not(sourceItems, leftCheckedItems));
+    setTargetItems([...targetItems, ...leftCheckedItems]);
+  };
+
+  const moveRightToLeft = () => {
+    const nextCheckedList = {};
+    const rightCheckedItems = getChecked(targetItems);
+
+    rightCheckedItems.forEach((item) => {
+      nextCheckedList[item.id] = false;
+    });
+
+    setCheckedList({ ...checkedList, ...nextCheckedList });
+    setTargetItems(not(targetItems, rightCheckedItems));
+    setSourceItems([...sourceItems, ...rightCheckedItems]);
+  };
+
+  const isAllChecked = (items: TransferListItem[]) => {
+    return items.length
+      ? !items.some(
+          (item) =>
+            !Object.keys(checkedList).find(function(checked) {
+              return checked === item.id && checkedList[checked];
+            })
+        )
+      : false;
+  };
+
   return (
     <Box display="flex">
-      <SubList object={objectA} checkedList={checkedList} onClick={onItemClicked} />
+      <TransferListColumn
+        title={props.source.title}
+        items={sourceItems}
+        checkedList={checkedList}
+        onCheckAllClicked={onCheckAllClicked}
+        onItemClick={onItemClicked}
+        isAllChecked={isAllChecked}
+      />
       <section className={classes.buttonsWrapper}>
-        <Button variant="outlined" endIcon={<NavigateNextIcon />}>
-          <FormattedMessage id="transferList.addAll" defaultMessage="Add all" />
-        </Button>
-        <Button variant="outlined" endIcon={<NavigateNextIcon />}>
-          <FormattedMessage id="words.add" defaultMessage="Add" />
-        </Button>
-        <Button variant="outlined" startIcon={<NavigateBeforeIcon />}>
-          <FormattedMessage id="words.remove" defaultMessage="Remove" />
-        </Button>
-        <Button variant="outlined" endIcon={<NavigateNextIcon />}>
-          <FormattedMessage id="transferList.removeAll" defaultMessage="Remove all" />
-        </Button>
+        <IconButton onClick={moveLeftToRight}>
+          <NavigateNextIcon />
+        </IconButton>
+        <IconButton onClick={moveRightToLeft}>
+          <NavigateBeforeIcon />
+        </IconButton>
       </section>
-      <SubList object={objectB} checkedList={checkedList} onClick={onItemClicked} />
+      <TransferListColumn
+        title={props.target.title}
+        items={targetItems}
+        checkedList={checkedList}
+        onCheckAllClicked={onCheckAllClicked}
+        onItemClick={onItemClicked}
+        isAllChecked={isAllChecked}
+      />
     </Box>
   );
 }
 
-interface TransferListItem {
-  id: string;
-  title: string;
-  subTitle?: string;
-}
-
-interface SubListProps {
-  object: TransferListObject;
-  onClick(item: TransferListItem): void;
+interface TransferListColumnProps {
+  title: ReactNode;
+  items: TransferListItem[];
+  onItemClick(item: TransferListItem): void;
   checkedList: LookupTable<boolean>;
+  isAllChecked(items: TransferListItem[]): boolean;
+  onCheckAllClicked(items: TransferListItem[], checked: boolean): void;
 }
 
-function SubList(props: SubListProps) {
-  const { object, onClick, checkedList } = props;
+function TransferListColumn(props: TransferListColumnProps) {
+  const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked } = props;
   const classes = useStyles();
   return (
     <Paper className={classes.listPaper}>
       <header className={classes.listHeader}>
-        <Checkbox />
-        {object.title && <Typography color="textSecondary">{object.title}</Typography>}
+        <Checkbox checked={isAllChecked(items)} onChange={(event) => onCheckAllClicked(items, event.target.checked)} />
+        {title && <Typography color="textSecondary">{title}</Typography>}
         <SearchBar keyword="" onChange={() => {}} classes={{ root: classes.searchBar }} />
       </header>
       <List dense component="div" role="list" className={classes.list}>
-        {object.list.map((item, i) => (
-          <ListItem key={i} role="listitem" button onClick={() => onClick(item)}>
+        {items.map((item, i) => (
+          <ListItem key={i} role="listitem" button onClick={() => onItemClick(item)}>
             <ListItemIcon>
-              <Checkbox checked={checkedList[item.id]} tabIndex={-1} disableRipple />
+              <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
             </ListItemIcon>
             <ListItemText primary={item.title} secondary={item.subTitle} />
           </ListItem>

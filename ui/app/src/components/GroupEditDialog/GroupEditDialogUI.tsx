@@ -31,7 +31,6 @@ import Input from '@material-ui/core/Input';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import Box from '@material-ui/core/Box';
-import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import TransferList from '../TransferList';
 
@@ -39,9 +38,11 @@ interface GroupEditDialogUIProps {
   group: Group;
   onClose(): void;
   onDeleteGroup(group: Group): void;
-  onGroupEdited(group: Group): void;
-  users: PagedArray<User>;
-  members: PagedArray<User>;
+  onSave(): void;
+  onChangeValue(value: { key: string; value: string }): void;
+  onMembersListChanged(members: string[]): void;
+  users: User[];
+  members: User[];
 }
 
 const translations = defineMessages({
@@ -62,7 +63,8 @@ const translations = defineMessages({
 export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { group, onDeleteGroup, onGroupEdited, onClose, users, members } = props;
+  const { group, onDeleteGroup, onSave, onChangeValue, onMembersListChanged, onClose, users, members } = props;
+
   return (
     <>
       <header className={classes.header}>
@@ -114,13 +116,17 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
               <Typography variant="subtitle2" className={classes.label}>
                 <FormattedMessage id="words.description" defaultMessage="Description" />
               </Typography>
-              <Input onChange={(e) => console.log(e.currentTarget.value)} value={group.desc} fullWidth />
+              <Input
+                onChange={(e) => onChangeValue({ key: 'desc', value: e.currentTarget.value })}
+                value={group.desc}
+                fullWidth
+              />
             </Box>
             <div className={classes.formActions}>
               <SecondaryButton disabled={false} onClick={() => {}}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
-              <PrimaryButton disabled={false} onClick={() => {}} loading={false}>
+              <PrimaryButton disabled={false} onClick={onSave} loading={false}>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </div>
@@ -133,13 +139,14 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
           </Typography>
           {users && members && (
             <TransferList
-              objectA={{
+              onTargetListChanged={(target) => onMembersListChanged(target.items.map((item) => item.id))}
+              source={{
                 title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                list: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+                items: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
               }}
-              objectB={{
+              target={{
                 title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                list: members.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+                items: members.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
               }}
             />
           )}

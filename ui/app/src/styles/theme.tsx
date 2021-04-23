@@ -132,6 +132,11 @@ export const defaultThemeOptions: ThemeOptions = (function() {
           display: 'block'
         }
       }
+    },
+    props: {
+      MuiCheckbox: {
+        color: 'primary'
+      }
     }
   };
   return theme;

@@ -18,27 +18,64 @@ import React, { useEffect, useState } from 'react';
 import { GroupEditDialogProps } from './GroupEditDialog';
 import GroupEditDialogUI from './GroupEditDialogUI';
 import Group from '../../models/Group';
-import { fetchAll as FetchAllUsers } from '../../services/users';
-import { PagedArray } from '../../models/PagedArray';
+import { fetchAll } from '../../services/users';
 import User from '../../models/User';
-import { fetchUsersFromGroup } from '../../services/groups';
+import { fetchUsersFromGroup, trash } from '../../services/groups';
+import { forkJoin } from 'rxjs';
+import { defineMessages, useIntl } from 'react-intl';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../state/actions/system';
+
+const translations = defineMessages({
+  groupDeleted: {
+    id: 'groupEditDialog.groupDeleted',
+    defaultMessage: 'Group deleted successfully'
+  }
+});
 
 export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
   const { onClose, group, onGroupEdited } = props;
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
-  const [users, setUsers] = useState<PagedArray<User>>();
-  const [members, setMembers] = useState<PagedArray<User>>();
+  const [users, setUsers] = useState<User[]>();
+  const [members, setMembers] = useState<User[]>();
 
   useEffect(() => {
-    FetchAllUsers().subscribe((users) => {
-      setUsers(users);
-    });
-    fetchUsersFromGroup(group.id).subscribe((members) => {
-      setMembers(members);
+    forkJoin([fetchAll(), fetchUsersFromGroup(group.id)]).subscribe(([users, members]) => {
+      setMembers([...members]);
+      const _users = users.filter(function(user) {
+        return !members.find(function(member) {
+          return member.id === user.id;
+        });
+      });
+      setUsers(_users);
     });
   }, [group.id]);
 
-  const onDeleteGroup = (group: Group) => {};
+  const onDeleteGroup = (group: Group) => {
+    trash(group.id).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.groupDeleted)
+          })
+        );
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onMembersListChanged = (members: string[]) => {
+    console.log(members);
+  };
+
+  const onChangeValue = (value: { key: string; value: string }) => {};
+
+  const onSave = () => {};
 
   return (
     <GroupEditDialogUI
@@ -47,7 +84,9 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
       users={users}
       members={members}
       onDeleteGroup={onDeleteGroup}
-      onGroupEdited={onGroupEdited}
+      onChangeValue={onChangeValue}
+      onSave={onSave}
+      onMembersListChanged={onMembersListChanged}
     />
   );
 }

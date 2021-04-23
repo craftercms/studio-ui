@@ -21,9 +21,11 @@ export const useStyles = makeStyles((theme) =>
     buttonsWrapper: {
       display: 'flex',
       flexDirection: 'column',
+      justifyContent: 'center',
       margin: '40px 20px',
-      minWidth: '125px',
-      placeContent: 'center space-evenly'
+      '& button:first-child': {
+        marginBottom: '20px'
+      }
     },
     searchBar: {
       marginLeft: '20px'
@@ -38,8 +40,10 @@ export const useStyles = makeStyles((theme) =>
       flexGrow: 1
     },
     list: {
-      maxHeight: '350px',
+      height: '310px',
       overflow: 'auto'
     }
   })
 );
+
+export default useStyles;

@@ -68,7 +68,7 @@ export function update(group: Partial<Group>): Observable<Group> {
   return patchJSON(`/studio/api/2/groups`, group).pipe(pluck('response', 'group'));
 }
 
-export function trash(groupId: string): Observable<true> {
+export function trash(groupId: number): Observable<true> {
   return del(`/studio/api/2/groups?id=${groupId}`).pipe(mapTo(true));
 }
 
