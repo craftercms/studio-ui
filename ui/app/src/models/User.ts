@@ -24,7 +24,7 @@ export interface User {
   username: string;
   enabled: boolean;
   externallyManaged: boolean;
-  authenticationType: 'db' | 'ldap' | 'headers' | 'saml';
+  authenticationType?: 'db' | 'ldap' | 'headers' | 'saml';
 }
 
 export interface EnhancedUser extends User {
@@ -32,6 +32,15 @@ export interface EnhancedUser extends User {
   permissionsBySite: LookupTable<string[]>;
   sites: string[];
   preferences: LookupTable;
+}
+
+export interface NewUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  enabled: boolean;
+  password: string;
 }
 
 export default User;

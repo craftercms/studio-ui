@@ -17,7 +17,6 @@
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
 import React, { ChangeEvent, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
@@ -33,6 +32,7 @@ import clsx from 'clsx';
 import { READY_FOR_LIVE } from '../constants';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import palette from '../../../../styles/palette';
+import PrimaryButton from '../../../../components/PrimaryButton';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -366,10 +366,9 @@ export default function PublishingPackage(props: PublishingPackageProps) {
           </List>
         )}
         {(filesPerPackage === null || !filesPerPackage[id]) && (
-          <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
-            {loading && <CircularProgress size={14} className={classes.spinner} color={'inherit'} />}
+          <PrimaryButton variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading} loading={loading}>
             {formatMessage(translations.fetchPackagesFiles)}
-          </Button>
+          </PrimaryButton>
         )}
       </div>
     </div>

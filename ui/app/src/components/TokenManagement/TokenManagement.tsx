@@ -33,9 +33,7 @@ import EmptyState from '../SystemStatus/EmptyState';
 import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';
 import moment from 'moment-timezone';
 import { forkJoin } from 'rxjs';
-import SecondaryButton from '../SecondaryButton';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
@@ -46,23 +44,11 @@ import TableBody from '@material-ui/core/TableBody';
 import Chip from '@material-ui/core/Chip';
 import Switch from '@material-ui/core/Switch';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import GlobalAppToolbar from '../GlobalAppToolbar';
+import Button from '@material-ui/core/Button';
 
 const styles = makeStyles((theme) =>
   createStyles({
-    title: {
-      marginBottom: '25px',
-      color: theme.palette.text.primary
-    },
-    createToken: {
-      margin: '10px 0',
-      borderRadius: '50px',
-      border: 0,
-      padding: '5px 25px',
-      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)'
-    },
-    tableWrapper: {
-      marginTop: '25px'
-    },
     table: {
       minWidth: 650
     },
@@ -129,7 +115,7 @@ const translations = defineMessages({
     defaultMessage: 'Never'
   },
   confirmHelperText: {
-    id: 'words.helperText',
+    id: 'tokenManagement.helperText',
     defaultMessage: 'Delete "{label}" token?'
   },
   confirmOk: {
@@ -328,17 +314,17 @@ export default function TokenManagement() {
 
   return (
     <section>
-      <Typography variant="h4" component="h1" className={classes.title}>
-        <FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />
-      </Typography>
-      <Divider />
-      <SecondaryButton startIcon={<AddIcon />} className={classes.createToken} onClick={onCreateToken}>
-        <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
-      </SecondaryButton>
-      <Divider />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />}
+        leftContent={
+          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={onCreateToken}>
+            <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
+          </Button>
+        }
+      />
       <ConditionalLoadingState isLoading={tokens === null}>
         {tokens?.length ? (
-          <TableContainer className={classes.tableWrapper}>
+          <TableContainer>
             {checkedCount > 0 && (
               <ActionsBar
                 onOptionClicked={onOptionClicked}
