@@ -3613,7 +3613,7 @@ var nodeOpen = false,
 
       // DEPLOYMENT SERVICES
       // READ OPS
-      getDeploymentHistoryServiceUrl: '/api/1/services/api/1/deployment/get-deployment-history.json',
+      getDeploymentHistoryServiceUrl: '/api/2/publish/history.json',
       getScheduledItemsServiceUrl: '/api/1/services/api/1/deployment/get-scheduled-items.json',
       getDependenciesServiceUrl: '/api/1/services/api/1/dependency/get-dependencies.json',
 
@@ -4972,7 +4972,7 @@ var nodeOpen = false,
       getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getDeploymentHistoryServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += '?siteId=' + site;
         if (days != undefined && days != null) {
           serviceUrl += '&days=' + days;
         }
