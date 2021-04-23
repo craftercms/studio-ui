@@ -35,7 +35,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import clsx from 'clsx';
-import ErrorOutlineOutlinedIcon from '@material-ui/core/SvgIcon/SvgIcon';
 import Typography from '@material-ui/core/Typography';
 import palette from '../../styles/palette';
 import ItemDisplay from '../ItemDisplay';
@@ -43,6 +42,7 @@ import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
 import { SystemIconDescriptor } from '../SystemIcon';
+import EmptyState from '../SystemStatus/EmptyState';
 
 export interface MenuOption {
   id: string;
@@ -193,12 +193,11 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
       }}
     >
       {options.flatMap((i) => i).length === 0 ? (
-        <div className={clsx(classes.emptyRoot, propClasses?.emptyRoot)}>
-          <ErrorOutlineOutlinedIcon fontSize="small" />
-          <Typography variant="caption" display="block">
+        <EmptyState
+          title={
             <FormattedMessage id="contextMenu.emptyOptionsMessage" defaultMessage="No options available to display." />
-          </Typography>
-        </div>
+          }
+        />
       ) : (
         [
           <MenuItem key={0} className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
@@ -249,7 +248,7 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
           <MenuItem key={2} className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
             <Typography variant="body2" component="h2">
               <FormattedMessage
-                id="workflowCancellation.title"
+                id="itemMegaMenu.editedBy"
                 defaultMessage="{edited} {date} {byLabel} {by}"
                 values={{
                   date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
