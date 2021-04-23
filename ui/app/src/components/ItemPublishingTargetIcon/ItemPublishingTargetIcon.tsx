@@ -33,7 +33,8 @@ export type ItemPublishingTargetIconStyles = Partial<Record<ItemPublishingTarget
 
 export interface ItemPublishingTargetIconProps {
   item: DetailedItem | SandboxItem;
-  classes: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
+  classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
+  className?: string;
   styles?: ItemPublishingTargetIconStyles;
 }
 
@@ -58,7 +59,7 @@ const useStyles = makeStyles(() =>
 );
 
 export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, classes: propClasses, styles } = props;
+  const { item, classes: propClasses, styles, className } = props;
   const classes = useStyles(styles);
 
   return (
@@ -67,7 +68,8 @@ export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIcon
         className={clsx(
           classes.root,
           classes.publishingIcon,
-          propClasses.root,
+          propClasses?.root,
+          className,
           item.stateMap.live && classes.publishingTargetLive,
           item.stateMap.staged && classes.publishingTargetStaged
         )}

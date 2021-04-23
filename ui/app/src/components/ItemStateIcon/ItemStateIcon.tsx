@@ -45,7 +45,8 @@ export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSPrope
 
 export interface ItemStateIconProps {
   item: DetailedItem | SandboxItem;
-  classes: Partial<Record<ItemStateIconClassKey, string>>;
+  classes?: Partial<Record<ItemStateIconClassKey, string>>;
+  className?: string;
   styles?: ItemStateIconStyles;
 }
 
@@ -89,7 +90,7 @@ const useStyles = makeStyles(() =>
 );
 
 export default function ItemStateIcon(props: ItemStateIconProps) {
-  const { item, classes: propClasses, styles } = props;
+  const { item, classes: propClasses, styles, className } = props;
   const classes = useStyles(styles);
   let TheIcon = UnknownStateIcon;
   let stateSpecificClass;
@@ -125,7 +126,9 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
   }
   return (
     <Tooltip title={getItemStateText(item.stateMap)}>
-      <TheIcon className={clsx(classes.root, propClasses.root, classes.publishingIcon, stateSpecificClass)} />
+      <TheIcon
+        className={clsx(classes.root, propClasses?.root, className, classes.publishingIcon, stateSpecificClass)}
+      />
     </Tooltip>
   );
 }

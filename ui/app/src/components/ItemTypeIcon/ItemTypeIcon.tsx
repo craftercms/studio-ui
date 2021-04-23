@@ -35,10 +35,12 @@ import FolderIcon from '@material-ui/icons/FolderOpenRounded';
 import TaxonomyIcon from '@material-ui/icons/LocalOfferOutlined';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { capitalize } from '../../utils/string';
+import clsx from 'clsx';
 
 export interface ItemTypeIconProps {
   item: DetailedItem | SandboxItem;
-  classes: ItemDisplayProps['classes'];
+  classes?: ItemDisplayProps['classes'];
+  className?: string;
 }
 
 export function getItemTypeText(item: DetailedItem | SandboxItem) {
@@ -46,7 +48,7 @@ export function getItemTypeText(item: DetailedItem | SandboxItem) {
 }
 
 export default function ItemTypeIcon(props: ItemTypeIconProps) {
-  const { item, classes } = props;
+  const { item, classes, className } = props;
   let TheIcon = UnknownStateIcon;
   switch (item.systemType) {
     case 'asset':
@@ -120,7 +122,7 @@ export default function ItemTypeIcon(props: ItemTypeIconProps) {
   }
   return (
     <Tooltip title={getItemTypeText(item)}>
-      <TheIcon className={classes.root} />
+      <TheIcon className={clsx(classes?.root, className)} />
     </Tooltip>
   );
 }

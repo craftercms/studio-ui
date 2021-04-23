@@ -85,9 +85,9 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
   const classes = useStyles(props.styles);
   return (
     <span ref={ref} {...rest} className={clsx(classes.root, propClasses?.root, rest?.className)}>
-      {showPublishingTarget && <ItemPublishingTargetIcon item={item} classes={{ root: classes.icon }} />}
-      {showWorkflowState && <ItemStateIcon item={item} classes={{ root: classes.icon }} />}
-      {showItemType && <ItemTypeIcon item={item} classes={{ root: clsx(classes.icon, classes.typeIcon) }} />}
+      {showPublishingTarget && <ItemPublishingTargetIcon item={item} className={classes.icon} />}
+      {showWorkflowState && <ItemStateIcon item={item} className={classes.icon} />}
+      {showItemType && <ItemTypeIcon item={item} className={classes.icon} />}
       <Typography
         noWrap
         component="span"

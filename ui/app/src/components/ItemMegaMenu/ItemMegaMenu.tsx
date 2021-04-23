@@ -39,9 +39,9 @@ import ErrorOutlineOutlinedIcon from '@material-ui/core/SvgIcon/SvgIcon';
 import Typography from '@material-ui/core/Typography';
 import palette from '../../styles/palette';
 import ItemDisplay from '../ItemDisplay';
-import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon/ItemPublishingTargetIcon';
+import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
-import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
+import ItemStateIcon from '../ItemStateIcon';
 import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface MenuOption {
@@ -207,11 +207,11 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
             </Typography>
             <ItemDisplay item={item} showPublishingTarget={false} showWorkflowState={false} />
             <div className={classes.itemState}>
-              <ItemPublishingTargetIcon item={item} classes={{ root: classes.icon }} />
+              <ItemPublishingTargetIcon item={item} className={classes.icon} />
               <Typography variant="body2" component="span">
                 {getItemPublishingTargetText(item?.stateMap)}
               </Typography>
-              <ItemStateIcon item={item} classes={{ root: classes.icon }} />
+              <ItemStateIcon item={item} className={classes.icon} />
               <Typography variant="body2" component="span">
                 {getItemStateText(item?.stateMap)}
               </Typography>
