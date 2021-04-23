@@ -111,7 +111,10 @@
         </table>
       </div>
     </div>
-    <div class="col-md-12" ng-show="repositories.status.conflicting.length < 1">
+    <div
+      class="col-md-12"
+      ng-show="repositories.status.conflicting.length < 1 && repositories.status.uncommittedChanges.length < 1"
+    >
       <p class="note mb0 tac">
         {{ repositories.repoMessages.repositoriesNote }}
       </p>
