@@ -112,7 +112,17 @@ function PathNavigatorItem(props: NavItemProps) {
         />
       )}
       <ItemDisplay
-        styles={{ root: { maxWidth: isSelectMode ? 'calc(100% - 32px)' : over ? 'calc(100% - 50px)' : '100%' } }}
+        styles={{
+          root: {
+            maxWidth: isSelectMode
+              ? 'calc(100% - 32px)'
+              : over
+              ? // Level descriptor doesn't ever have children, so will
+                // always have only one action button.
+                `calc(100% - ${isLevelDescriptor ? 25 : 50}px)`
+              : '100%'
+          }
+        }}
         item={item}
         showPublishingTarget={!isSelectMode}
         showWorkflowState={!isSelectMode}
@@ -134,7 +144,7 @@ function PathNavigatorItem(props: NavItemProps) {
               </IconButton>
             </Tooltip>
           )}
-          {showItemNavigateToButton && (
+          {showItemNavigateToButton && !isLevelDescriptor && (
             <Tooltip
               title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
               classes={{ tooltip: clsx(isLeaf && classes.leafTooltip) }}

@@ -19,12 +19,12 @@ import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
-import { applyDeserializedXMLTransforms, deepCopy, reversePluckProps, toQueryString } from '../utils/object';
+import { applyDeserializedXMLTransforms, reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
-import uiConfigDefaults from '../assets/uiConfigDefaults';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
+import { defineMessages } from 'react-intl';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -122,11 +122,57 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
+const messages = defineMessages({
+  emptyUiConfigMessageTitle: {
+    id: 'emptyUiConfigMessageTitle.title',
+    defaultMessage: 'Configuration is empty'
+  },
+  emptyUiConfigMessageSubtitle: {
+    id: 'emptyUiConfigMessageTitle.subtitle',
+    defaultMessage: 'Nothing is set to be shown here.'
+  }
+});
+
 export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['uiConfig'], 'preview' | 'launcher'>> {
   return fetchConfigurationDOM(site, '/ui.xml', 'studio').pipe(
     map((xml) => {
-      const config = deepCopy(uiConfigDefaults);
       if (xml) {
+        const config = {
+          preview: {
+            toolsPanel: {
+              widgets: [
+                {
+                  id: 'craftercms.component.EmptyState',
+                  uiKey: -1,
+                  configuration: {
+                    title: messages.emptyUiConfigMessageTitle,
+                    subtitle: messages.emptyUiConfigMessageSubtitle
+                  }
+                }
+              ]
+            },
+            pageBuilderPanel: {
+              widgets: [
+                {
+                  id: 'craftercms.component.EmptyState',
+                  uiKey: -1,
+                  configuration: {
+                    title: messages.emptyUiConfigMessageTitle,
+                    subtitle: messages.emptyUiConfigMessageSubtitle
+                  }
+                }
+              ]
+            }
+          },
+          launcher: null
+        };
+        // Make sure any plugin reference has a valid site id to import the plugin from
+        xml.querySelectorAll('plugin').forEach((tag) => {
+          const siteAttr = tag.getAttribute('site');
+          if (siteAttr === '{site}' || siteAttr === null) {
+            tag.setAttribute('site', site);
+          }
+        });
         const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
         const renameTable = { permittedRoles: 'roles' };
         const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
@@ -165,8 +211,10 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable
           });
         }
+        return config;
+      } else {
+        return null;
       }
-      return config;
     })
   );
 }
