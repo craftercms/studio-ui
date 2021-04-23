@@ -14,16 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GroupEditDialogProps } from './GroupEditDialog';
-import { defineMessages } from 'react-intl';
 import GroupEditDialogUI from './GroupEditDialogUI';
 import Group from '../../models/Group';
-
-const translations = defineMessages({});
+import { fetchAll as FetchAllUsers } from '../../services/users';
+import { PagedArray } from '../../models/PagedArray';
+import User from '../../models/User';
+import { fetchUsersFromGroup } from '../../services/groups';
 
 export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
-  const { onClose, group } = props;
+  const { onClose, group, onGroupEdited } = props;
+
+  const [users, setUsers] = useState<PagedArray<User>>();
+  const [members, setMembers] = useState<PagedArray<User>>();
+
+  useEffect(() => {
+    FetchAllUsers().subscribe((users) => {
+      setUsers(users);
+    });
+    fetchUsersFromGroup(group.id).subscribe((members) => {
+      setMembers(members);
+    });
+  }, [group.id]);
 
   const onDeleteGroup = (group: Group) => {};
 
@@ -31,7 +44,10 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
     <GroupEditDialogUI
       onClose={onClose}
       group={group ?? { id: null, name: '', desc: '' }}
+      users={users}
+      members={members}
       onDeleteGroup={onDeleteGroup}
+      onGroupEdited={onGroupEdited}
     />
   );
 }

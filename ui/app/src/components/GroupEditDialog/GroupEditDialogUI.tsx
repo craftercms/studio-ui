@@ -16,51 +16,133 @@
 
 import React from 'react';
 import { useStyles } from './styles';
-import DialogHeader from '../Dialogs/DialogHeader';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import Group from '../../models/Group';
 import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Divider from '@material-ui/core/Divider';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import Input from '@material-ui/core/Input';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import Box from '@material-ui/core/Box';
+import { PagedArray } from '../../models/PagedArray';
+import User from '../../models/User';
+import TransferList from '../TransferList';
 
 interface GroupEditDialogUIProps {
   group: Group;
   onClose(): void;
-  onDeleteGroup(group: Group);
+  onDeleteGroup(group: Group): void;
+  onGroupEdited(group: Group): void;
+  users: PagedArray<User>;
+  members: PagedArray<User>;
 }
+
+const translations = defineMessages({
+  confirmHelperText: {
+    id: 'groupEditDialog.helperText',
+    defaultMessage: 'Delete "{name}" group?'
+  },
+  confirmOk: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmCancel: {
+    id: 'words.no',
+    defaultMessage: 'No'
+  }
+});
 
 export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
   const classes = useStyles();
-  const { group } = props;
+  const { formatMessage } = useIntl();
+  const { group, onDeleteGroup, onGroupEdited, onClose, users, members } = props;
   return (
     <>
-      <DialogHeader
-        title={props.group.name}
-        rightActions={[
-          {
-            icon: DeleteRoundedIcon,
-            onClick: () => props.onDeleteGroup(group)
-          },
-          {
-            icon: 'CloseIcon',
-            onClick: props.onClose
-          }
-        ]}
-      />
+      <header className={classes.header}>
+        <section>
+          <Typography variant="h6" component="h2">
+            {group.name}
+          </Typography>
+          <Typography variant="subtitle1">{group.desc}</Typography>
+        </section>
+        <section className={classes.actions}>
+          <ConfirmDropdown
+            cancelText={formatMessage(translations.confirmCancel)}
+            confirmText={formatMessage(translations.confirmOk)}
+            confirmHelperText={formatMessage(translations.confirmHelperText, {
+              name: group.name
+            })}
+            iconTooltip={<FormattedMessage id="groupEditDialog.deleteGroup" defaultMessage="Delete group" />}
+            icon={DeleteRoundedIcon}
+            iconColor="action"
+            onConfirm={() => {
+              onDeleteGroup(group);
+            }}
+          />
+          <Tooltip title={<FormattedMessage id="groupEditDialog.close" defaultMessage="Close" />}>
+            <IconButton edge="end" onClick={onClose}>
+              <CloseRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        </section>
+      </header>
+      <Divider />
       <DialogBody className={classes.body}>
         <section className={clsx(classes.section, 'noPaddingBottom')}>
           <Typography variant="subtitle1" className={classes.sectionTitle}>
             <FormattedMessage id="groupEditDialog.groupDetails" defaultMessage="Group Details" />
           </Typography>
-          <form></form>
+          <form>
+            <Box display="flex" alignItems="center" p="15px  0">
+              <Typography variant="subtitle2" className={classes.label}>
+                <FormattedMessage id="words.name" defaultMessage="Name" />
+              </Typography>
+              <Box width="100%">
+                <Typography variant="body2" style={{ width: '100%' }}>
+                  {group.name}
+                </Typography>
+              </Box>
+            </Box>
+            <Box display="flex" alignItems="center" p="15px  0">
+              <Typography variant="subtitle2" className={classes.label}>
+                <FormattedMessage id="words.description" defaultMessage="Description" />
+              </Typography>
+              <Input onChange={(e) => console.log(e.currentTarget.value)} value={group.desc} fullWidth />
+            </Box>
+            <div className={classes.formActions}>
+              <SecondaryButton disabled={false} onClick={() => {}}>
+                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+              </SecondaryButton>
+              <PrimaryButton disabled={false} onClick={() => {}} loading={false}>
+                <FormattedMessage id="words.save" defaultMessage="Save" />
+              </PrimaryButton>
+            </div>
+          </form>
         </section>
         <Divider />
         <section className={classes.section}>
-          <Typography variant="subtitle1" className={classes.sectionTitle}>
-            <FormattedMessage id="groupEditDialog.groupMembers" defaultMessage="Group Members" />
+          <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
+            <FormattedMessage id="groupEditDialog.editGroupMembers" defaultMessage="Edit Group Members" />
           </Typography>
+          {users && members && (
+            <TransferList
+              objectA={{
+                title: <FormattedMessage id="words.users" defaultMessage="Users" />,
+                list: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+              }}
+              objectB={{
+                title: <FormattedMessage id="words.members" defaultMessage="Members" />,
+                list: members.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+              }}
+            />
+          )}
         </section>
       </DialogBody>
     </>

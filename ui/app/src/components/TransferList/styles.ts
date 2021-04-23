@@ -18,41 +18,28 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    header: {
-      padding: '30px 40px',
+    buttonsWrapper: {
       display: 'flex',
-      alignItems: 'center'
+      flexDirection: 'column',
+      margin: '40px 20px',
+      minWidth: '125px',
+      placeContent: 'center space-evenly'
     },
-    actions: {
-      marginLeft: 'auto'
+    searchBar: {
+      marginLeft: '20px'
     },
-    body: {
-      padding: 0
-    },
-    section: {
-      padding: '30px 40px',
-      '&.noPaddingBottom': {
-        paddingBottom: 0
-      }
-    },
-    sectionTitle: {
-      textTransform: 'uppercase',
-      marginBottom: '10px'
-    },
-    sectionTitleEdit: {
-      textTransform: 'uppercase',
-      marginBottom: '30px'
-    },
-    label: {
-      flexBasis: '180px'
-    },
-    formActions: {
+    listHeader: {
       display: 'flex',
-      paddingBottom: '20px',
-      '& button:first-child': {
-        marginLeft: 'auto',
-        marginRight: '10px'
-      }
+      padding: '15px 16px',
+      alignItems: 'center',
+      borderBottom: `1px solid ${theme.palette.divider}`
+    },
+    listPaper: {
+      flexGrow: 1
+    },
+    list: {
+      maxHeight: '350px',
+      overflow: 'auto'
     }
   })
 );
