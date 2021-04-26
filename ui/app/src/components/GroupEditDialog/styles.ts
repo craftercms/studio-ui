@@ -44,7 +44,11 @@ export const useStyles = makeStyles((theme) =>
       marginBottom: '30px'
     },
     label: {
-      flexBasis: '180px'
+      flexBasis: '180px',
+      color: theme.palette.text.primary,
+      '& + .MuiInputBase-root': {
+        marginTop: '0 !important'
+      }
     },
     formActions: {
       display: 'flex',
@@ -52,6 +56,20 @@ export const useStyles = makeStyles((theme) =>
       '& button:first-child': {
         marginLeft: 'auto',
         marginRight: '10px'
+      }
+    },
+    inputRoot: {
+      margin: 0
+    },
+    inputRootDisabled: {
+      pointerEvents: 'none'
+    },
+    readOnlyInput: {
+      background: 'none',
+      borderColor: 'transparent',
+      paddingLeft: 0,
+      '&:focus': {
+        boxShadow: 'none'
       }
     }
   })

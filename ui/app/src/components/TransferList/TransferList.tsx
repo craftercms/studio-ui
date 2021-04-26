@@ -20,7 +20,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import LookupTable from '../../models/LookupTable';
@@ -34,7 +34,9 @@ import { createLookupTable } from '../../utils/object';
 interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
-  onTargetListChanged(target: TransferListObject): void;
+  inProgressIds: string[];
+  onTargetListItemsAdded(items: TransferListItem[]): void;
+  onTargetListItemsRemoved(items: TransferListItem[]): void;
 }
 
 export interface TransferListObject {
@@ -57,13 +59,9 @@ function intersection(a: any, b: any) {
 }
 
 export default function TransferList(props: TransferListProps) {
-  const { source, target, onTargetListChanged } = props;
+  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
-
-  useEffect(() => {
-    onTargetListChanged({ ...target, items: targetItems });
-  }, [onTargetListChanged, target, targetItems]);
 
   const itemsLookup = {
     ...createLookupTable(sourceItems),
@@ -109,6 +107,7 @@ export default function TransferList(props: TransferListProps) {
     setCheckedList({ ...checkedList, ...nextCheckedList });
     setSourceItems(not(sourceItems, leftCheckedItems));
     setTargetItems([...targetItems, ...leftCheckedItems]);
+    onTargetListItemsAdded(leftCheckedItems);
   };
 
   const moveRightToLeft = () => {
@@ -122,6 +121,7 @@ export default function TransferList(props: TransferListProps) {
     setCheckedList({ ...checkedList, ...nextCheckedList });
     setTargetItems(not(targetItems, rightCheckedItems));
     setSourceItems([...sourceItems, ...rightCheckedItems]);
+    onTargetListItemsRemoved(rightCheckedItems);
   };
 
   const isAllChecked = (items: TransferListItem[]) => {
@@ -144,6 +144,7 @@ export default function TransferList(props: TransferListProps) {
         onCheckAllClicked={onCheckAllClicked}
         onItemClick={onItemClicked}
         isAllChecked={isAllChecked}
+        inProgressIds={inProgressIds}
       />
       <section className={classes.buttonsWrapper}>
         <IconButton onClick={moveLeftToRight}>
@@ -160,6 +161,7 @@ export default function TransferList(props: TransferListProps) {
         onCheckAllClicked={onCheckAllClicked}
         onItemClick={onItemClicked}
         isAllChecked={isAllChecked}
+        inProgressIds={inProgressIds}
       />
     </Box>
   );
@@ -170,12 +172,13 @@ interface TransferListColumnProps {
   items: TransferListItem[];
   onItemClick(item: TransferListItem): void;
   checkedList: LookupTable<boolean>;
+  inProgressIds: string[];
   isAllChecked(items: TransferListItem[]): boolean;
   onCheckAllClicked(items: TransferListItem[], checked: boolean): void;
 }
 
 function TransferListColumn(props: TransferListColumnProps) {
-  const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked } = props;
+  const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked, inProgressIds } = props;
   const classes = useStyles();
   return (
     <Paper className={classes.listPaper}>
@@ -186,7 +189,13 @@ function TransferListColumn(props: TransferListColumnProps) {
       </header>
       <List dense component="div" role="list" className={classes.list}>
         {items.map((item, i) => (
-          <ListItem key={i} role="listitem" button onClick={() => onItemClick(item)}>
+          <ListItem
+            disabled={inProgressIds.includes(item.id)}
+            key={i}
+            role="listitem"
+            button
+            onClick={() => onItemClick(item)}
+          >
             <ListItemIcon>
               <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
             </ListItemIcon>

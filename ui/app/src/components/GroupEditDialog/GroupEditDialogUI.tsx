@@ -33,6 +33,7 @@ import PrimaryButton from '../PrimaryButton';
 import Box from '@material-ui/core/Box';
 import User from '../../models/User';
 import TransferList from '../TransferList';
+import InputLabel from '@material-ui/core/InputLabel';
 
 interface GroupEditDialogUIProps {
   group: Group;
@@ -40,9 +41,11 @@ interface GroupEditDialogUIProps {
   onDeleteGroup(group: Group): void;
   onSave(): void;
   onChangeValue(value: { key: string; value: string }): void;
-  onMembersListChanged(members: string[]): void;
+  onAddMembers(members: string[]): void;
+  onRemoveMembers(members: string[]): void;
   users: User[];
   members: User[];
+  inProgressIds: string[];
 }
 
 const translations = defineMessages({
@@ -63,7 +66,18 @@ const translations = defineMessages({
 export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { group, onDeleteGroup, onSave, onChangeValue, onMembersListChanged, onClose, users, members } = props;
+  const {
+    group,
+    onDeleteGroup,
+    onSave,
+    onChangeValue,
+    onAddMembers,
+    onRemoveMembers,
+    onClose,
+    users,
+    members,
+    inProgressIds
+  } = props;
 
   return (
     <>
@@ -103,20 +117,28 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
           </Typography>
           <form>
             <Box display="flex" alignItems="center" p="15px  0">
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-              <Box width="100%">
-                <Typography variant="body2" style={{ width: '100%' }}>
-                  {group.name}
+              <InputLabel htmlFor="groupName" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.name" defaultMessage="Name" />
                 </Typography>
-              </Box>
+              </InputLabel>
+              <Input
+                id="groupName"
+                disabled
+                classes={{ root: classes.inputRootDisabled, input: classes.readOnlyInput }}
+                onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
+                value={group.name}
+                fullWidth
+              />
             </Box>
             <Box display="flex" alignItems="center" p="15px  0">
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="words.description" defaultMessage="Description" />
-              </Typography>
+              <InputLabel htmlFor="groupDescription" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.description" defaultMessage="Description" />
+                </Typography>
+              </InputLabel>
               <Input
+                id="groupDescription"
                 onChange={(e) => onChangeValue({ key: 'desc', value: e.currentTarget.value })}
                 value={group.desc}
                 fullWidth
@@ -139,7 +161,9 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
           </Typography>
           {users && members && (
             <TransferList
-              onTargetListChanged={(target) => onMembersListChanged(target.items.map((item) => item.id))}
+              onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
+              onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
+              inProgressIds={inProgressIds}
               source={{
                 title: <FormattedMessage id="words.users" defaultMessage="Users" />,
                 items: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))

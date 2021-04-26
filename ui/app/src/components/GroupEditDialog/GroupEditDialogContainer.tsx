@@ -20,7 +20,7 @@ import GroupEditDialogUI from './GroupEditDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
 import User from '../../models/User';
-import { fetchUsersFromGroup, trash } from '../../services/groups';
+import { addUsersToGroup, deleteUsersFromGroup, fetchUsersFromGroup, trash } from '../../services/groups';
 import { forkJoin } from 'rxjs';
 import { defineMessages, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -31,6 +31,14 @@ const translations = defineMessages({
   groupDeleted: {
     id: 'groupEditDialog.groupDeleted',
     defaultMessage: 'Group deleted successfully'
+  },
+  membersAdded: {
+    id: 'groupEditDialog.membersAdded',
+    defaultMessage: '{count, plural, one {User added successfully} other {Users added successfully}}'
+  },
+  membersRemoved: {
+    id: 'groupEditDialog.membersRemoved',
+    defaultMessage: '{count, plural, one {User removed successfully} other {Users removed successfully}}'
   }
 });
 
@@ -41,6 +49,7 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
 
   const [users, setUsers] = useState<User[]>();
   const [members, setMembers] = useState<User[]>();
+  const [inProgressIds, setInProgressIds] = useState<string[]>([]);
 
   useEffect(() => {
     forkJoin([fetchAll(), fetchUsersFromGroup(group.id)]).subscribe(([users, members]) => {
@@ -69,13 +78,45 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
     );
   };
 
-  const onMembersListChanged = (members: string[]) => {
-    console.log(members);
+  const onAddMembers = (usernames: string[]) => {
+    setInProgressIds(usernames);
+    addUsersToGroup(group.id, { usernames }).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.membersAdded, { count: usernames.length })
+          })
+        );
+        setInProgressIds([]);
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onRemoveMembers = (usernames: string[]) => {
+    setInProgressIds(usernames);
+    deleteUsersFromGroup(group.id, { usernames }).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.membersRemoved, { count: usernames.length })
+          })
+        );
+        setInProgressIds([]);
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
   };
 
   const onChangeValue = (value: { key: string; value: string }) => {};
 
-  const onSave = () => {};
+  const onSave = () => {
+    onGroupEdited(group);
+  };
 
   return (
     <GroupEditDialogUI
@@ -86,7 +127,9 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
       onDeleteGroup={onDeleteGroup}
       onChangeValue={onChangeValue}
       onSave={onSave}
-      onMembersListChanged={onMembersListChanged}
+      onAddMembers={onAddMembers}
+      onRemoveMembers={onRemoveMembers}
+      inProgressIds={inProgressIds}
     />
   );
 }

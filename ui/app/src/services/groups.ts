@@ -72,14 +72,33 @@ export function trash(groupId: number): Observable<true> {
   return del(`/studio/api/2/groups?id=${groupId}`).pipe(mapTo(true));
 }
 
-export function addUsersToGroup(id: number, users: { ids: string[]; usernames: string[] }): Observable<User[]> {
-  return postJSON(`/studio/api/2/groups/${id}/members`, users).pipe(pluck('response', 'users'));
+export function addUserToGroup(groupId: number, username: string): Observable<User[]> {
+  return postJSON(`/studio/api/2/groups/${groupId}/members`, [username]).pipe(pluck('response', 'users'));
 }
 
-export function deleteUserFromGroup(id: number, userId: number, username: string): Observable<true> {
+export function addUsersToGroup(groupId: number, users: { ids: number[] }): Observable<User[]>;
+export function addUsersToGroup(groupId: number, users: { usernames: string[] }): Observable<User[]>;
+export function addUsersToGroup(groupId: number, users: { ids?: number[]; usernames?: string[] }): Observable<User[]> {
+  return postJSON(`/studio/api/2/groups/${groupId}/members`, users).pipe(pluck('response', 'users'));
+}
+
+export function deleteUserFromGroup(groupId: number, userId: number, username: string): Observable<true> {
   const qs = toQueryString({
     userId,
     username
   });
-  return del(`/studio/api/2/groups/${id}/members${qs}`).pipe(mapTo(true));
+  return del(`/studio/api/2/groups/${groupId}/members${qs}`).pipe(mapTo(true));
+}
+
+export function deleteUsersFromGroup(groupId: number, user: { ids?: number[] }): Observable<true>;
+export function deleteUsersFromGroup(groupId: number, user: { usernames: string[] }): Observable<true>;
+export function deleteUsersFromGroup(
+  groupId: number,
+  user: { ids?: number[]; usernames?: string[] }
+): Observable<true> {
+  const qs = toQueryString({
+    userId: user.ids,
+    username: user.usernames
+  });
+  return del(`/studio/api/2/groups/${groupId}/members${qs}`).pipe(mapTo(true));
 }
