@@ -65,7 +65,7 @@ export default function SiteCard(props: SiteCardProps) {
     onSiteClick,
     onDeleteSiteClick,
     onEditSiteClick,
-    fallbackImageSrc = '/studio/static-assets/images/no_image_available.jpg',
+    fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
     compact = false,
     publishingStatus,
     onPublishButtonClick
@@ -106,7 +106,7 @@ export default function SiteCard(props: SiteCardProps) {
         />
         {!compact && (
           <CardMedia
-            component={'img'}
+            component="img"
             className={classes.media}
             image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
             title={site.name}
@@ -126,7 +126,7 @@ export default function SiteCard(props: SiteCardProps) {
           confirmHelperText={formatMessage(translations.confirmHelperText, {
             site: site.name
           })}
-          iconTooltip={<FormattedMessage id="siteCard.delete" defaultMessage="Delete site" />}
+          iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
           icon={DeleteRoundedIcon}
           iconColor="action"
           onConfirm={() => {

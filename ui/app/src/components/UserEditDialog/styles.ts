@@ -16,7 +16,7 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const styles = makeStyles((theme) =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
     header: {
       padding: '30px 40px',
@@ -94,3 +94,5 @@ export const styles = makeStyles((theme) =>
     }
   })
 );
+
+export default useStyles;
