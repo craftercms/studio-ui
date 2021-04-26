@@ -37,9 +37,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 interface GroupEditDialogUIProps {
   group: Group;
+  isDirty: boolean;
   onClose(): void;
   onDeleteGroup(group: Group): void;
   onSave(): void;
+  onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
   onAddMembers(members: string[]): void;
   onRemoveMembers(members: string[]): void;
@@ -70,13 +72,15 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
     group,
     onDeleteGroup,
     onSave,
+    onCancel,
     onChangeValue,
     onAddMembers,
     onRemoveMembers,
     onClose,
     users,
     members,
-    inProgressIds
+    inProgressIds,
+    isDirty
   } = props;
 
   return (
@@ -145,10 +149,10 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
               />
             </Box>
             <div className={classes.formActions}>
-              <SecondaryButton disabled={false} onClick={() => {}}>
+              <SecondaryButton disabled={!isDirty} onClick={onCancel}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
-              <PrimaryButton disabled={false} onClick={onSave} loading={false}>
+              <PrimaryButton disabled={!isDirty} onClick={onSave} loading={false}>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </div>

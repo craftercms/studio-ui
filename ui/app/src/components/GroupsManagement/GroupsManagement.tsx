@@ -85,7 +85,9 @@ export default function GroupsManagement() {
     setSelectedGroup(null);
   };
 
-  const onGroupEdited = (group: Group) => {};
+  const onGroupEdited = (group: Group) => {
+    fetchGroups();
+  };
 
   return (
     <section>
