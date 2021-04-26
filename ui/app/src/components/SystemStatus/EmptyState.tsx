@@ -65,7 +65,10 @@ export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles(props.styles);
   const { formatMessage } = useIntl();
   const { image = emptyImage, classes: propClasses, children } = props;
-  const title = React.isValidElement(props.title) ? props.title : formatMessage(props.title as MessageDescriptor);
+  const title =
+    React.isValidElement(props.title) || typeof props.title === 'string'
+      ? props.title
+      : formatMessage(props.title as MessageDescriptor);
   const subtitle =
     React.isValidElement(props.subtitle) || nou(props.subtitle)
       ? props.subtitle

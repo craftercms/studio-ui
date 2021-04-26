@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
@@ -37,6 +37,7 @@ import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
+import { lookupItemByPath } from '../../utils/content';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -239,7 +240,9 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           }}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: 'No items at this location',
+              title: (
+                <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
+              ),
               classes: { image: classes.stateGraphics }
             }
           }}
@@ -248,7 +251,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           }}
         >
           <NavItem
-            item={itemsByPath[state.currentPath]}
+            item={lookupItemByPath(state.currentPath, itemsByPath)}
             locale={state.localeCode}
             isLevelDescriptor={false}
             onOpenItemMenu={onCurrentParentMenu}
