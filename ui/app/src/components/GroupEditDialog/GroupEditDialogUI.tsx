@@ -37,17 +37,19 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 interface GroupEditDialogUIProps {
   group: Group;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
   isDirty: boolean;
   onClose(): void;
-  onDeleteGroup(group: Group): void;
+  onDeleteGroup?(group: Group): void;
   onSave(): void;
   onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
-  onAddMembers(members: string[]): void;
-  onRemoveMembers(members: string[]): void;
-  users: User[];
-  members: User[];
-  inProgressIds: string[];
+  onAddMembers?(members: string[]): void;
+  onRemoveMembers?(members: string[]): void;
+  users?: User[];
+  members?: User[];
+  inProgressIds?: string[];
 }
 
 const translations = defineMessages({
@@ -69,6 +71,8 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const {
+    title,
+    subtitle,
     group,
     onDeleteGroup,
     onSave,
@@ -87,25 +91,25 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
     <>
       <header className={classes.header}>
         <section>
-          <Typography variant="h6" component="h2">
-            {group.name}
-          </Typography>
-          <Typography variant="subtitle1">{group.desc}</Typography>
+          {title}
+          {subtitle}
         </section>
         <section className={classes.actions}>
-          <ConfirmDropdown
-            cancelText={formatMessage(translations.confirmCancel)}
-            confirmText={formatMessage(translations.confirmOk)}
-            confirmHelperText={formatMessage(translations.confirmHelperText, {
-              name: group.name
-            })}
-            iconTooltip={<FormattedMessage id="groupEditDialog.deleteGroup" defaultMessage="Delete group" />}
-            icon={DeleteRoundedIcon}
-            iconColor="action"
-            onConfirm={() => {
-              onDeleteGroup(group);
-            }}
-          />
+          {onDeleteGroup && (
+            <ConfirmDropdown
+              cancelText={formatMessage(translations.confirmCancel)}
+              confirmText={formatMessage(translations.confirmOk)}
+              confirmHelperText={formatMessage(translations.confirmHelperText, {
+                name: group.name
+              })}
+              iconTooltip={<FormattedMessage id="groupEditDialog.deleteGroup" defaultMessage="Delete group" />}
+              icon={DeleteRoundedIcon}
+              iconColor="action"
+              onConfirm={() => {
+                onDeleteGroup(group);
+              }}
+            />
+          )}
           <Tooltip title={<FormattedMessage id="groupEditDialog.close" defaultMessage="Close" />}>
             <IconButton edge="end" onClick={onClose}>
               <CloseRoundedIcon />
@@ -128,8 +132,8 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
               </InputLabel>
               <Input
                 id="groupName"
-                disabled
-                classes={{ root: classes.inputRootDisabled, input: classes.readOnlyInput }}
+                disabled={group.id !== null}
+                classes={group.id !== null ? { root: classes.inputRootDisabled, input: classes.readOnlyInput } : {}}
                 onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                 value={group.name}
                 fullWidth
@@ -160,23 +164,34 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
         </section>
         <Divider />
         <section className={classes.section}>
-          <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
-            <FormattedMessage id="groupEditDialog.editGroupMembers" defaultMessage="Edit Group Members" />
-          </Typography>
-          {users && members && (
-            <TransferList
-              onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
-              onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
-              inProgressIds={inProgressIds}
-              source={{
-                title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                items: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
-              }}
-              target={{
-                title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                items: members.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
-              }}
-            />
+          {users && members ? (
+            <>
+              <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
+                <FormattedMessage id="groupEditDialog.editGroupMembers" defaultMessage="Edit Group Members" />
+              </Typography>
+              <TransferList
+                onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
+                onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
+                inProgressIds={inProgressIds}
+                source={{
+                  title: <FormattedMessage id="words.users" defaultMessage="Users" />,
+                  items: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+                }}
+                target={{
+                  title: <FormattedMessage id="words.members" defaultMessage="Members" />,
+                  items: members.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+                }}
+              />
+            </>
+          ) : (
+            <Box display="flex" justifyContent="center">
+              <Typography variant="subtitle2" color="textSecondary">
+                <FormattedMessage
+                  id="groupEditDialog.groupMemberHelperText"
+                  defaultMessage="To edit group members the group needs to be created"
+                />
+              </Typography>
+            </Box>
           )}
         </section>
       </DialogBody>

@@ -27,11 +27,12 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useSpreadState } from '../../utils/hooks';
+import Typography from '@material-ui/core/Typography';
 
 const translations = defineMessages({
-  groupCreated: {
-    id: 'groupEditDialog.groupCreated',
-    defaultMessage: 'Group created successfully'
+  groupEdited: {
+    id: 'groupEditDialog.groupEdited',
+    defaultMessage: 'Group edited successfully'
   },
   groupDeleted: {
     id: 'groupEditDialog.groupDeleted',
@@ -134,7 +135,7 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
       () => {
         dispatch(
           showSystemNotification({
-            message: formatMessage(translations.groupCreated)
+            message: formatMessage(translations.groupEdited)
           })
         );
         onGroupEdited(group);
@@ -152,8 +153,14 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
 
   return (
     <GroupEditDialogUI
+      title={
+        <Typography variant="h6" component="h2">
+          {group.name}
+        </Typography>
+      }
+      subtitle={<Typography variant="subtitle1">{group.desc}</Typography>}
       onClose={onClose}
-      group={group ?? { id: null, name: '', desc: '' }}
+      group={group}
       users={users}
       members={members}
       onDeleteGroup={onDeleteGroup}

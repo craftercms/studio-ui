@@ -28,6 +28,7 @@ import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import GroupEditDialog from '../GroupEditDialog';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
+import CreateGroupDialog from '../CreateGroupDialog';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);
@@ -36,6 +37,7 @@ export default function GroupsManagement() {
   const [groups, setGroups] = useState<PagedArray<Group>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
+  const [openCreateGroupDialog, setOpenCreateGroupDialog] = useState<boolean>(false);
 
   const fetchGroups = useCallback(() => {
     setFetching(true);
@@ -89,12 +91,26 @@ export default function GroupsManagement() {
     fetchGroups();
   };
 
+  const onGroupCreated = (group: Group) => {
+    onCloseCreateGroup();
+    setSelectedGroup(group);
+    fetchGroups();
+  };
+
+  const onCreateGroup = () => {
+    setOpenCreateGroupDialog(true);
+  };
+
+  const onCloseCreateGroup = () => {
+    setOpenCreateGroupDialog(false);
+  };
+
   return (
     <section>
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />}
         leftContent={
-          <Button startIcon={<AddIcon />} variant="outlined" color="primary">
+          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={onCreateGroup}>
             <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
           </Button>
         }
@@ -124,6 +140,11 @@ export default function GroupsManagement() {
         group={selectedGroup}
         onClose={onCloseEditGroupDialog}
         onGroupEdited={onGroupEdited}
+      />
+      <CreateGroupDialog
+        open={Boolean(openCreateGroupDialog)}
+        onClose={onCloseCreateGroup}
+        onGroupCreated={onGroupCreated}
       />
     </section>
   );
