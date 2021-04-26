@@ -103,7 +103,6 @@ export const useStyles = makeStyles((theme) =>
     actionsContainer: (styles) => ({
       display: 'flex',
       flexDirection: 'row',
-      width: '100%',
       ...styles.actionsContainer
     }),
     actionsColumn: (styles) => ({
@@ -154,6 +153,7 @@ export const useStyles = makeStyles((theme) =>
     }),
     infoItem: (styles) => ({
       cursor: 'default',
+      backgroundColor: 'inherit',
       '&:hover': {
         backgroundColor: 'inherit'
       },
