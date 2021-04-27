@@ -41,10 +41,18 @@ export type LogInFormProps = PropsWithChildren<{
 const useStyles = makeStyles((theme) =>
   createStyles({
     spacing: {
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1.5)
     },
     doubleSpacing: {
       marginBottom: theme.spacing(2)
+    },
+    inputLabel: {
+      '&.MuiInputLabel-shrink, &[class*="MuiInputLabel-shrink"]': {
+        padding: '0 8px',
+        borderRadius: 10,
+        background: theme.palette.background.paper,
+        transform: 'translate(9px, -6px) scale(.75)'
+      }
     }
   })
 );
@@ -81,6 +89,7 @@ export default function LogInForm(props: LogInFormProps) {
         onChange={(e: any) => onSetUsername?.(e.target.value)}
         className={clsx(cls.spacing, classes?.username)}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
+        InputLabelProps={{ className: cls.inputLabel }}
       />
       <PasswordTextField
         id="loginFormPasswordField"
@@ -91,6 +100,7 @@ export default function LogInForm(props: LogInFormProps) {
         onChange={(e: any) => onSetPassword?.(e.target.value)}
         className={clsx(cls.spacing, classes?.password, 'last-before-button')}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
+        InputLabelProps={{ className: cls.inputLabel }}
       />
       {xsrfParamName && <input type="hidden" name={xsrfParamName} value={xsrfToken} />}
       <Button
