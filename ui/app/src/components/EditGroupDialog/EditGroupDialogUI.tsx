@@ -183,11 +183,11 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 inProgressIds={inProgressIds}
                 source={{
                   title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                  items: users.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+                  items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email }))
                 }}
                 target={{
                   title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                  items: members.map((user) => ({ id: user.username, title: user.username, subTitle: user.email }))
+                  items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email }))
                 }}
               />
             </>

@@ -15,13 +15,14 @@
  */
 
 import Box from '@material-ui/core/Box';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import useStyles from './styles';
 import { createLookupTable } from '../../utils/object';
 import TransferListColumn from '../TransferListColumn';
+import { FormattedMessage } from 'react-intl/dist/react-intl';
 
 interface TransferListProps {
   source: TransferListObject;
@@ -39,7 +40,7 @@ export interface TransferListObject {
 export interface TransferListItem {
   id: string | number;
   title: string;
-  subTitle?: string;
+  subtitle?: string;
 }
 
 function not(a: any, b: any) {
@@ -116,16 +117,27 @@ export default function TransferList(props: TransferListProps) {
     onTargetListItemsRemoved(rightCheckedItems);
   };
 
-  const isAllChecked = (items: TransferListItem[]) => {
-    return items.length
-      ? !items.some(
-          (item) =>
-            !Object.keys(checkedList).find(function(checked) {
-              return checked === item.id && checkedList[checked];
-            })
-        )
-      : false;
-  };
+  const isAllChecked = useCallback(
+    (items: TransferListItem[]) => {
+      return items.length
+        ? !items.some(
+            (item) =>
+              !Object.keys(checkedList).find(function(checked) {
+                return checked === item.id && checkedList[checked];
+              })
+          )
+        : false;
+    },
+    [checkedList]
+  );
+
+  const sourceItemsAllChecked = useMemo(() => {
+    return isAllChecked(sourceItems);
+  }, [isAllChecked, sourceItems]);
+
+  const targetItemsAllChecked = useMemo(() => {
+    return isAllChecked(targetItems);
+  }, [isAllChecked, targetItems]);
 
   return (
     <Box display="flex">
@@ -135,8 +147,14 @@ export default function TransferList(props: TransferListProps) {
         checkedList={checkedList}
         onCheckAllClicked={onCheckAllClicked}
         onItemClick={onItemClicked}
-        isAllChecked={isAllChecked}
+        isAllChecked={sourceItemsAllChecked}
         inProgressIds={inProgressIds}
+        emptyStateMessage={
+          <FormattedMessage
+            id="transferList.sourceEmptyStateMessage"
+            defaultMessage="All users are members of this group"
+          />
+        }
       />
       <section className={classes.buttonsWrapper}>
         <IconButton onClick={moveLeftToRight}>
@@ -152,8 +170,11 @@ export default function TransferList(props: TransferListProps) {
         checkedList={checkedList}
         onCheckAllClicked={onCheckAllClicked}
         onItemClick={onItemClicked}
-        isAllChecked={isAllChecked}
+        isAllChecked={targetItemsAllChecked}
         inProgressIds={inProgressIds}
+        emptyStateMessage={
+          <FormattedMessage id="transferList.targetEmptyStateMessage" defaultMessage="No members of this group" />
+        }
       />
     </Box>
   );
