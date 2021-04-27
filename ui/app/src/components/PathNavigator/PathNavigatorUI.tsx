@@ -37,6 +37,7 @@ import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
+import { lookupItemByPath } from '../../utils/content';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -248,7 +249,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           }}
         >
           <NavItem
-            item={itemsByPath[state.currentPath]}
+            item={lookupItemByPath(state.currentPath, itemsByPath)}
             locale={state.localeCode}
             isLevelDescriptor={false}
             onOpenItemMenu={onCurrentParentMenu}

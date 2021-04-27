@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createGenerateClassName, createMuiTheme, fade, ThemeOptions } from '@material-ui/core/styles';
+import { createGenerateClassName, createMuiTheme, ThemeOptions } from '@material-ui/core/styles';
 import palette from './palette';
 import { GenerateId } from 'jss';
 
@@ -50,51 +50,8 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         }
       },
       MuiFormLabel: {
-        root: {
-          transform: 'translate(0, 1.5px) scale(1) !important',
-          transformOrigin: 'top left !important'
-        },
         asterisk: {
           color: RedColor
-        }
-      },
-      MuiInputBase: {
-        root: {
-          'label + &': {
-            marginTop: `${defaultTheme.spacing(3)}px !important`
-          },
-          '&.MuiInput-underline::before': {
-            display: 'none'
-          },
-          '&.MuiInput-underline::after': {
-            display: 'none'
-          },
-          '&$error .MuiInputBase-input': {
-            color: RedColor,
-            borderColor: RedColor,
-            '&:focus': {
-              boxShadow: 'rgba(244, 67, 54, 0.25) 0 0 0 0.2rem'
-            }
-          },
-          '&$multiline textarea': {
-            padding: '10px 12px'
-          }
-        },
-        input: {
-          borderRadius: 4,
-          position: 'relative',
-          border: '1px solid #ced4da',
-          fontSize: 16,
-          width: '100%',
-          padding: '10px 12px',
-          transition: defaultTheme.transitions.create(['border-color', 'box-shadow']),
-          '&:focus:invalid': {
-            boxShadow: `${fade(palette.blue.main, 0.25)} 0 0 0 0.2rem`
-          },
-          '&:focus': {
-            boxShadow: `${fade(palette.blue.main, 0.25)} 0 0 0 0.2rem`,
-            borderColor: palette.blue.main
-          }
         }
       },
       MuiTabs: {
@@ -131,6 +88,14 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         root: {
           display: 'block'
         }
+      }
+    },
+    props: {
+      MuiTextField: {
+        variant: 'outlined'
+      },
+      MuiSelect: {
+        variant: 'outlined'
       }
     }
   };

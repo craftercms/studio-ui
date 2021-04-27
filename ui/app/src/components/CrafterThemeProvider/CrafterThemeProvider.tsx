@@ -60,7 +60,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         (props.themeOptions ?? defaultThemeOptions).overrides ?? {},
         {
           MuiInputBase: {
-            input: {
+            root: {
               backgroundColor: auxTheme.palette.background.paper
             }
           }

@@ -94,7 +94,7 @@ export default function Pagination(props: PaginationProps) {
   return (
     <TablePagination
       classes={{
-        root: clsx(classes.pagination, props.classes.root),
+        root: clsx(classes.pagination, props.classes?.root),
         caption: rowsPerPageOptions ? classes.caption : '',
         selectRoot: rowsPerPageOptions ? classes.selectRoot : 'hidden',
         toolbar: classes.paginationToolbar

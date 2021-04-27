@@ -53,7 +53,7 @@ import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import PagesSearchAhead from '../../components/PagesSearchAhead/PagesSearchAhead';
 import clsx from 'clsx';
-import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { AllItemActions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import ActionsGroup from '../../components/ActionsGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -109,7 +109,8 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.default
     },
     addressBarInputFocused: {
-      border: `1px solid ${theme.palette.primary.main}`
+      border: `1px solid ${theme.palette.primary.main}`,
+      backgroundColor: theme.palette.background.paper
     },
     inputContainer: {
       marginLeft: theme.spacing(1)
@@ -123,7 +124,17 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       }
     },
     siteSwitcherSelectMenu: {
-      maxWidth: 110
+      maxWidth: 110,
+      padding: '10px 10px'
+    },
+    siteSwitcherSelectMenuRoot: {
+      '&.MuiInput-underline::before': {
+        display: 'none'
+      },
+      '&.MuiInput-underline::after': {
+        display: 'none'
+      },
+      background: 'transparent'
     },
     siteSwitcherMenuItem: {
       maxWidth: 390,
@@ -132,7 +143,6 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       textOverflow: 'ellipsis',
       display: 'block'
     },
-    iconButton: {},
     divider: {
       height: 28,
       margin: 4
@@ -205,7 +215,7 @@ export function AddressBar(props: AddressBarProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const clipboard = useSelection((state) => state.content.clipboard);
-  const onMenuItemClicked = (option: string, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
+  const onMenuItemClicked = (option: AllItemActions, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
     itemActionDispatcher({
       site,
       item,
@@ -220,7 +230,7 @@ export function AddressBar(props: AddressBarProps) {
 
   return (
     <>
-      <IconButton className={classes.iconButton} title={formatMessage(translations.reload)} onClick={onRefresh}>
+      <IconButton title={formatMessage(translations.reload)} onClick={onRefresh}>
         <RefreshRounded />
       </IconButton>
       <Paper
@@ -230,9 +240,14 @@ export function AddressBar(props: AddressBarProps) {
       >
         <Select
           value={site}
-          classes={{ select: classes.input, selectMenu: classes.siteSwitcherSelectMenu }}
+          className={classes.siteSwitcherSelectMenuRoot}
+          classes={{
+            select: classes.input,
+            selectMenu: classes.siteSwitcherSelectMenu
+          }}
           onChange={({ target: { value } }) => onSiteChangeInternal(value)}
           displayEmpty
+          variant="standard"
         >
           {noSiteSet && (
             <MenuItem value="">

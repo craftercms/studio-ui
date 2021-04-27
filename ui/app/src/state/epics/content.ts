@@ -153,6 +153,8 @@ const content: CrafterCMSEpic[] = [
         );
       })
     ),
+  // endregion
+  // region unlockItem
   (action$, state$) =>
     action$.pipe(
       ofType(unlockItem.type),
