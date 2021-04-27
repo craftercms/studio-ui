@@ -19,6 +19,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) =>
   createStyles({
     searchBar: {
+      width: '100%',
       marginLeft: '20px'
     },
     listHeader: {
@@ -28,7 +29,7 @@ export const useStyles = makeStyles((theme) =>
       borderBottom: `1px solid ${theme.palette.divider}`
     },
     listPaper: {
-      flexGrow: 1
+      flexBasis: '50%'
     },
     list: {
       height: '310px',

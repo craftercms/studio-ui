@@ -51,7 +51,7 @@ export default function TransferListColumn(props: TransferListColumnProps) {
         {items.map((item, i) => (
           <ListItem
             disabled={inProgressIds.includes(item.id)}
-            key={i}
+            key={item.id}
             role="listitem"
             button
             onClick={() => onItemClick(item)}
