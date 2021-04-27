@@ -91,9 +91,9 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'center'
     },
     formSection: {
+      width: '100%',
       marginBottom: '20px'
     },
-    sectionLabel: {},
     formInputs: {
       fontSize: '14px'
     },
@@ -242,7 +242,6 @@ function PublishForm(props: PublishFormProps) {
         <div className={classes.formSection}>
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
-            className={classes.sectionLabel}
             control={
               <Checkbox
                 className={classes.checkboxInput}
@@ -258,7 +257,7 @@ function PublishForm(props: PublishFormProps) {
       )}
 
       <FormControl className={classes.formSection}>
-        <FormLabel component="legend" htmlFor="environmentSelect" className={classes.sectionLabel}>
+        <FormLabel component="legend" htmlFor="environmentSelect">
           {formatMessage(messages.scheduling)}
         </FormLabel>
         <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
@@ -359,11 +358,7 @@ function PublishForm(props: PublishFormProps) {
       <TextFieldWithMax
         id="publishDialogFormSubmissionComment"
         name="submissionComment"
-        label={
-          <span className={classes.sectionLabel}>
-            <FormattedMessage id="publishForm.submissionComment" defaultMessage="Submission Comment" />
-          </span>
-        }
+        label={<FormattedMessage id="publishForm.submissionComment" defaultMessage="Submission Comment" />}
         fullWidth
         onChange={handleInputChange('submissionComment')}
         value={inputs.submissionComment}
