@@ -18,14 +18,21 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    buttonsWrapper: {
+    searchBar: {
+      marginLeft: '20px'
+    },
+    listHeader: {
       display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      margin: '40px 20px',
-      '& button:first-child': {
-        marginBottom: '20px'
-      }
+      padding: '15px 16px',
+      alignItems: 'center',
+      borderBottom: `1px solid ${theme.palette.divider}`
+    },
+    listPaper: {
+      flexGrow: 1
+    },
+    list: {
+      height: '310px',
+      overflow: 'auto'
     }
   })
 );

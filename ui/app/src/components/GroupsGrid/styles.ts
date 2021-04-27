@@ -31,3 +31,5 @@ export const styles = makeStyles((theme) =>
     }
   })
 );
+
+export default styles;

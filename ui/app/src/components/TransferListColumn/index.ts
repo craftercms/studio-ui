@@ -14,20 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './TransferListColumn';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    buttonsWrapper: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      margin: '40px 20px',
-      '& button:first-child': {
-        marginBottom: '20px'
-      }
-    }
-  })
-);
-
-export default useStyles;
+export * from './TransferListColumn';

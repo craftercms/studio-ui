@@ -21,7 +21,7 @@ import EditGroupDialogContainer from './EditGroupDialogContainer';
 
 export interface EditGroupDialogProps {
   open: boolean;
-  group: Group;
+  group?: Group;
   onClose(): void;
   onClosed(): void;
   onGroupSaved(group: Group): void;

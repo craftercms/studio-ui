@@ -119,7 +119,7 @@ export default function GroupsManagement() {
           }}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
+              title: <FormattedMessage id="groupsGrid.emptyStateMessage" defaultMessage="No Groups Found" />
             }
           }}
         >

@@ -15,21 +15,13 @@
  */
 
 import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import React, { ReactNode, useState } from 'react';
-import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
-import LookupTable from '../../models/LookupTable';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import useStyles from './styles';
-import Typography from '@material-ui/core/Typography';
-import SearchBar from '../Controls/SearchBar';
 import { createLookupTable } from '../../utils/object';
+import TransferListColumn from '../TransferListColumn';
 
 interface TransferListProps {
   source: TransferListObject;
@@ -164,45 +156,5 @@ export default function TransferList(props: TransferListProps) {
         inProgressIds={inProgressIds}
       />
     </Box>
-  );
-}
-
-interface TransferListColumnProps {
-  title: ReactNode;
-  items: TransferListItem[];
-  onItemClick(item: TransferListItem): void;
-  checkedList: LookupTable<boolean>;
-  inProgressIds: string[];
-  isAllChecked(items: TransferListItem[]): boolean;
-  onCheckAllClicked(items: TransferListItem[], checked: boolean): void;
-}
-
-function TransferListColumn(props: TransferListColumnProps) {
-  const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked, inProgressIds } = props;
-  const classes = useStyles();
-  return (
-    <Paper className={classes.listPaper}>
-      <header className={classes.listHeader}>
-        <Checkbox checked={isAllChecked(items)} onChange={(event) => onCheckAllClicked(items, event.target.checked)} />
-        {title && <Typography color="textSecondary">{title}</Typography>}
-        <SearchBar keyword="" onChange={() => {}} classes={{ root: classes.searchBar }} />
-      </header>
-      <List dense component="div" role="list" className={classes.list}>
-        {items.map((item, i) => (
-          <ListItem
-            disabled={inProgressIds.includes(item.id)}
-            key={i}
-            role="listitem"
-            button
-            onClick={() => onItemClick(item)}
-          >
-            <ListItemIcon>
-              <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
-            </ListItemIcon>
-            <ListItemText primary={item.title} secondary={item.subTitle} />
-          </ListItem>
-        ))}
-      </List>
-    </Paper>
   );
 }
