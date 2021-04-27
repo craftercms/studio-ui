@@ -36,9 +36,10 @@ import TransferList from '../TransferList';
 import InputLabel from '@material-ui/core/InputLabel';
 
 interface GroupEditDialogUIProps {
-  group: Group;
+  group?: Group;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
+  isEdit: boolean;
   isDirty: boolean;
   onClose(): void;
   onDeleteGroup?(group: Group): void;
@@ -84,7 +85,8 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
     users,
     members,
     inProgressIds,
-    isDirty
+    isDirty,
+    isEdit
   } = props;
 
   return (
@@ -95,7 +97,7 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
           {subtitle}
         </section>
         <section className={classes.actions}>
-          {onDeleteGroup && (
+          {onDeleteGroup && isEdit && (
             <ConfirmDropdown
               cancelText={formatMessage(translations.confirmCancel)}
               confirmText={formatMessage(translations.confirmOk)}
@@ -132,8 +134,8 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
               </InputLabel>
               <Input
                 id="groupName"
-                disabled={group.id !== null}
-                classes={group.id !== null ? { root: classes.inputRootDisabled, input: classes.readOnlyInput } : {}}
+                disabled={isEdit}
+                classes={isEdit ? { root: classes.inputRootDisabled, input: classes.readOnlyInput } : {}}
                 onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                 value={group.name}
                 fullWidth
@@ -153,9 +155,11 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
               />
             </Box>
             <div className={classes.formActions}>
-              <SecondaryButton disabled={!isDirty} onClick={onCancel}>
-                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-              </SecondaryButton>
+              {isEdit && (
+                <SecondaryButton disabled={!isDirty} onClick={onCancel}>
+                  <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+                </SecondaryButton>
+              )}
               <PrimaryButton disabled={!isDirty} onClick={onSave} loading={false}>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>

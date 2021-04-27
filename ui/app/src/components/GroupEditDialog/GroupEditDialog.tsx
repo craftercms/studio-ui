@@ -23,7 +23,9 @@ export interface GroupEditDialogProps {
   open: boolean;
   group: Group;
   onClose(): void;
-  onGroupEdited(group: Group): void;
+  onClosed(): void;
+  onGroupSaved(group: Group): void;
+  onGroupDeleted(group: Group): void;
 }
 
 export default function GroupEditDialog(props: GroupEditDialogProps) {

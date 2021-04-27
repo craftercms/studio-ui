@@ -28,7 +28,6 @@ import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import GroupEditDialog from '../GroupEditDialog';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import CreateGroupDialog from '../CreateGroupDialog';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);
@@ -37,7 +36,7 @@ export default function GroupsManagement() {
   const [groups, setGroups] = useState<PagedArray<Group>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
-  const [openCreateGroupDialog, setOpenCreateGroupDialog] = useState<boolean>(false);
+  const [openGroupDialog, setOpenGroupDialog] = useState<boolean>(false);
 
   const fetchGroups = useCallback(() => {
     setFetching(true);
@@ -72,6 +71,7 @@ export default function GroupsManagement() {
   );
 
   const onRowClicked = (group: Group) => {
+    setOpenGroupDialog(true);
     setSelectedGroup(group);
   };
 
@@ -83,26 +83,22 @@ export default function GroupsManagement() {
     setLimit(e.target.value);
   };
 
-  const onCloseEditGroupDialog = () => {
-    setSelectedGroup(null);
-  };
-
-  const onGroupEdited = (group: Group) => {
-    fetchGroups();
-  };
-
-  const onGroupCreated = (group: Group) => {
-    onCloseCreateGroup();
+  const onGroupSaved = (group: Group) => {
     setSelectedGroup(group);
     fetchGroups();
   };
 
-  const onCreateGroup = () => {
-    setOpenCreateGroupDialog(true);
+  const onGroupDeleted = (group: Group) => {
+    setOpenGroupDialog(false);
+    fetchGroups();
   };
 
-  const onCloseCreateGroup = () => {
-    setOpenCreateGroupDialog(false);
+  const onGroupDialogClosed = () => {
+    setSelectedGroup(null);
+  };
+
+  const onCloseGroupDialog = () => {
+    setOpenGroupDialog(false);
   };
 
   return (
@@ -110,7 +106,7 @@ export default function GroupsManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />}
         leftContent={
-          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={onCreateGroup}>
+          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={() => setOpenGroupDialog(true)}>
             <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
           </Button>
         }
@@ -136,15 +132,12 @@ export default function GroupsManagement() {
         </SuspenseWithEmptyState>
       </ErrorBoundary>
       <GroupEditDialog
-        open={Boolean(selectedGroup)}
+        open={openGroupDialog}
         group={selectedGroup}
-        onClose={onCloseEditGroupDialog}
-        onGroupEdited={onGroupEdited}
-      />
-      <CreateGroupDialog
-        open={Boolean(openCreateGroupDialog)}
-        onClose={onCloseCreateGroup}
-        onGroupCreated={onGroupCreated}
+        onClosed={onGroupDialogClosed}
+        onClose={onCloseGroupDialog}
+        onGroupSaved={onGroupSaved}
+        onGroupDeleted={onGroupDeleted}
       />
     </section>
   );

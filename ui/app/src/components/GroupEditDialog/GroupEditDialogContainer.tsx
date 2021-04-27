@@ -20,16 +20,27 @@ import GroupEditDialogUI from './GroupEditDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
 import User from '../../models/User';
-import { addUsersToGroup, deleteUsersFromGroup, fetchUsersFromGroup, trash, update } from '../../services/groups';
+import {
+  addUsersToGroup,
+  create,
+  deleteUsersFromGroup,
+  fetchUsersFromGroup,
+  trash,
+  update
+} from '../../services/groups';
 import { forkJoin } from 'rxjs';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import { useSpreadState } from '../../utils/hooks';
+import { useSpreadState, useUnmount } from '../../utils/hooks';
 import Typography from '@material-ui/core/Typography';
 
 const translations = defineMessages({
+  groupCreated: {
+    id: 'groupEditDialog.groupCreated',
+    defaultMessage: 'Group created successfully'
+  },
   groupEdited: {
     id: 'groupEditDialog.groupEdited',
     defaultMessage: 'Group edited successfully'
@@ -49,13 +60,13 @@ const translations = defineMessages({
 });
 
 export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
-  const { onClose, onGroupEdited } = props;
+  const { onClose, onGroupSaved, onGroupDeleted, onClosed } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const [group, setGroup] = useSpreadState(props.group);
-  const [lastSavedGroup, setLastSavedGroup] = useSpreadState(props.group);
+  const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '' });
   const [isDirty, setIsDirty] = useState(false);
+  const isEdit = Boolean(props.group);
 
   const [users, setUsers] = useState<User[]>();
   const [members, setMembers] = useState<User[]>();
@@ -75,6 +86,14 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
     }
   }, [props.group]);
 
+  useEffect(() => {
+    if (props.group?.id !== group?.id) {
+      setGroup(props.group);
+    }
+  }, [group?.id, props.group, setGroup]);
+
+  useUnmount(onClosed);
+
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe(
       () => {
@@ -83,6 +102,7 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
             message: formatMessage(translations.groupDeleted)
           })
         );
+        onGroupDeleted(group);
       },
       ({ response: { response } }) => {
         dispatch(showErrorDialog({ error: response }));
@@ -130,37 +150,59 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
   };
 
   const onSave = () => {
-    setLastSavedGroup(group);
-    update(group).subscribe(
-      () => {
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.groupEdited)
-          })
-        );
-        onGroupEdited(group);
-      },
-      ({ response: { response } }) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
+    setIsDirty(false);
+    if (props.group) {
+      update(group).subscribe(
+        (group) => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.groupEdited)
+            })
+          );
+          onGroupSaved(group);
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+    } else {
+      create({ name: group.name, desc: group.desc }).subscribe(
+        (group) => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.groupCreated)
+            })
+          );
+          onGroupSaved(group);
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+    }
   };
 
   const onCancel = () => {
-    setGroup(lastSavedGroup);
+    setGroup(props.group);
     setIsDirty(false);
   };
 
   return (
     <GroupEditDialogUI
       title={
-        <Typography variant="h6" component="h2">
-          {group.name}
-        </Typography>
+        isEdit ? (
+          <Typography variant="h6" component="h2">
+            <FormattedMessage id="groupEditDialog.editGroup" defaultMessage="Edit Group" />
+          </Typography>
+        ) : (
+          <Typography variant="h6" component="h2">
+            <FormattedMessage id="groupEditDialog.createGroup" defaultMessage="Create Group" />
+          </Typography>
+        )
       }
-      subtitle={<Typography variant="subtitle1">{group.desc}</Typography>}
       onClose={onClose}
       group={group}
+      isEdit={isEdit}
       users={users}
       members={members}
       onDeleteGroup={onDeleteGroup}
