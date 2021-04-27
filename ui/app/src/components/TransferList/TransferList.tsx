@@ -26,7 +26,7 @@ import TransferListColumn from '../TransferListColumn';
 interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
-  inProgressIds: string[];
+  inProgressIds: (string | number)[];
   onTargetListItemsAdded(items: TransferListItem[]): void;
   onTargetListItemsRemoved(items: TransferListItem[]): void;
 }

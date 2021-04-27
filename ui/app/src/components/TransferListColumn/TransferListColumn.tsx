@@ -32,7 +32,7 @@ interface TransferListColumnProps {
   items: TransferListItem[];
   onItemClick(item: TransferListItem): void;
   checkedList: LookupTable<boolean>;
-  inProgressIds: string[];
+  inProgressIds: (string | number)[];
   isAllChecked(items: TransferListItem[]): boolean;
   onCheckAllClicked(items: TransferListItem[], checked: boolean): void;
 }

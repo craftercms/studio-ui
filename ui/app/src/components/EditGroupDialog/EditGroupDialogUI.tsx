@@ -50,7 +50,7 @@ interface GroupEditDialogUIProps {
   onRemoveMembers?(members: (string | number)[]): void;
   users?: User[];
   members?: User[];
-  inProgressIds?: string[];
+  inProgressIds?: (string | number)[];
 }
 
 const translations = defineMessages({
