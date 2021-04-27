@@ -53,7 +53,7 @@ import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import PagesSearchAhead from '../../components/PagesSearchAhead/PagesSearchAhead';
 import clsx from 'clsx';
-import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { AllItemActions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import ActionsGroup from '../../components/ActionsGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -205,7 +205,7 @@ export function AddressBar(props: AddressBarProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const clipboard = useSelection((state) => state.content.clipboard);
-  const onMenuItemClicked = (option: string, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
+  const onMenuItemClicked = (option: AllItemActions, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
     itemActionDispatcher({
       site,
       item,
