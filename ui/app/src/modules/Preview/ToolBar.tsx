@@ -109,7 +109,8 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.default
     },
     addressBarInputFocused: {
-      border: `1px solid ${theme.palette.primary.main}`
+      border: `1px solid ${theme.palette.primary.main}`,
+      backgroundColor: theme.palette.background.paper
     },
     inputContainer: {
       marginLeft: theme.spacing(1)
@@ -123,7 +124,17 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       }
     },
     siteSwitcherSelectMenu: {
-      maxWidth: 110
+      maxWidth: 110,
+      padding: '10px 10px'
+    },
+    siteSwitcherSelectMenuRoot: {
+      '&.MuiInput-underline::before': {
+        display: 'none'
+      },
+      '&.MuiInput-underline::after': {
+        display: 'none'
+      },
+      background: 'transparent'
     },
     siteSwitcherMenuItem: {
       maxWidth: 390,
@@ -132,7 +143,6 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
       textOverflow: 'ellipsis',
       display: 'block'
     },
-    iconButton: {},
     divider: {
       height: 28,
       margin: 4
@@ -220,7 +230,7 @@ export function AddressBar(props: AddressBarProps) {
 
   return (
     <>
-      <IconButton className={classes.iconButton} title={formatMessage(translations.reload)} onClick={onRefresh}>
+      <IconButton title={formatMessage(translations.reload)} onClick={onRefresh}>
         <RefreshRounded />
       </IconButton>
       <Paper
@@ -230,9 +240,14 @@ export function AddressBar(props: AddressBarProps) {
       >
         <Select
           value={site}
-          classes={{ select: classes.input, selectMenu: classes.siteSwitcherSelectMenu }}
+          className={classes.siteSwitcherSelectMenuRoot}
+          classes={{
+            select: classes.input,
+            selectMenu: classes.siteSwitcherSelectMenu
+          }}
           onChange={({ target: { value } }) => onSiteChangeInternal(value)}
           displayEmpty
+          variant="standard"
         >
           {noSiteSet && (
             <MenuItem value="">
