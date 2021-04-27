@@ -52,7 +52,12 @@ import { getHostToHostBus } from '../Preview/previewContext';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import {
+  AllItemActions,
+  generateMultipleItemOptions,
+  generateSingleItemOptions,
+  itemActionDispatcher
+} from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 interface SearchProps {
@@ -714,7 +719,7 @@ export default function Search(props: SearchProps) {
     setDrawerOpen(!drawerOpen);
   };
 
-  const onActionClicked = (option: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const onActionClicked = (option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (selected.length > 1) {
       const detailedItems = [];
       selected.forEach((path) => {

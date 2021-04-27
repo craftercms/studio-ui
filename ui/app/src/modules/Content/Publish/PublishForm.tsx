@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -35,6 +35,7 @@ import palette from '../../../styles/palette';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 import { useSelection } from '../../../utils/hooks';
 import GlobalState from '../../../models/GlobalState';
+import FormLabel from '@material-ui/core/FormLabel';
 
 const messages = defineMessages({
   emailLabel: {
@@ -90,12 +91,8 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'center'
     },
     formSection: {
-      marginBottom: '20px'
-    },
-    sectionLabel: {
-      color: theme.palette.text.primary,
       width: '100%',
-      fontSize: '16px'
+      marginBottom: '20px'
     },
     formInputs: {
       fontSize: '14px'
@@ -149,12 +146,6 @@ const useStyles = makeStyles((theme) =>
     },
     selectIcon: {
       right: '12px'
-    },
-    submissionTextField: {
-      paddingBottom: 0
-    },
-    textField: {
-      padding: 0
     }
   })
 );
@@ -251,7 +242,6 @@ function PublishForm(props: PublishFormProps) {
         <div className={classes.formSection}>
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
-            className={classes.sectionLabel}
             control={
               <Checkbox
                 className={classes.checkboxInput}
@@ -266,10 +256,10 @@ function PublishForm(props: PublishFormProps) {
         </div>
       )}
 
-      <div className={classes.formSection}>
-        <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>
+      <FormControl className={classes.formSection}>
+        <FormLabel component="legend" htmlFor="environmentSelect">
           {formatMessage(messages.scheduling)}
-        </InputLabel>
+        </FormLabel>
         <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
           <FormControlLabel
             value="now"
@@ -310,11 +300,11 @@ function PublishForm(props: PublishFormProps) {
             disabled={disabled}
           />
         </Collapse>
-      </div>
+      </FormControl>
 
       <div className={classes.formSection}>
         <FormControl fullWidth>
-          <InputLabel className={classes.sectionLabel}>{formatMessage(messages.environment)}</InputLabel>
+          <InputLabel>{formatMessage(messages.environment)}</InputLabel>
           {!publishingChannels && (
             <>
               <div className={classes.environmentLoaderContainer}>
@@ -366,18 +356,13 @@ function PublishForm(props: PublishFormProps) {
       </div>
 
       <TextFieldWithMax
-        className={classes.submissionTextField}
-        id="sandboxBranch"
-        name="sandboxBranch"
-        label={<span className={classes.sectionLabel}>Submission Comment</span>}
+        id="publishDialogFormSubmissionComment"
+        name="submissionComment"
+        label={<FormattedMessage id="publishForm.submissionComment" defaultMessage="Submission Comment" />}
         fullWidth
         onChange={handleInputChange('submissionComment')}
-        InputLabelProps={{ shrink: true }}
         value={inputs.submissionComment}
         multiline
-        InputProps={{
-          className: classes.textField
-        }}
         disabled={disabled}
       />
     </form>

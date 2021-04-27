@@ -16,7 +16,6 @@
 
 import { translations } from '../components/ItemActionsMenu/translations';
 import { DetailedItem, LegacyItem } from '../models/Item';
-import LookupTable from '../models/LookupTable';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
@@ -109,26 +108,53 @@ import { previewItem } from '../state/actions/preview';
 
 export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
 
-const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
+export type ItemActions =
+  | 'view'
+  | 'copy'
+  | 'history'
+  | 'dependencies'
+  | 'requestPublish'
+  | 'createContent'
+  | 'paste'
+  | 'edit'
+  | 'rename'
+  | 'cut'
+  | 'upload'
+  | 'duplicate'
+  | 'changeContentType'
+  | 'revert'
+  | 'editController'
+  | 'editTemplate'
+  | 'createFolder'
+  | 'delete'
+  | 'deleteController'
+  | 'deleteTemplate'
+  | 'publish'
+  | 'approvePublish'
+  | 'schedulePublish'
+  | 'rejectPublish';
+
+export type VirtualItemActions = 'preview' | 'unlock';
+
+export type AssessRemovalItemActions =
+  | 'editCode'
+  | 'viewCode'
+  | 'viewImage'
+  | 'duplicateAsset'
+  | 'createTemplate'
+  | 'createController';
+
+export type AllItemActions = ItemActions | VirtualItemActions | AssessRemovalItemActions;
+
+const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor> = {
+  // region ItemActions
   edit: {
     id: 'edit',
-    label: translations.edit
-  },
-  codeEditor: {
-    id: 'codeEditor',
     label: translations.edit
   },
   view: {
     id: 'view',
     label: translations.viewForm
-  },
-  viewCodeEditor: {
-    id: 'viewCodeEditor',
-    label: translations.view
-  },
-  viewImage: {
-    id: 'viewImage',
-    label: translations.view
   },
   createContent: {
     id: 'createContent',
@@ -178,33 +204,25 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'duplicate',
     label: translations.duplicate
   },
-  duplicateAsset: {
-    id: 'duplicateAsset',
-    label: translations.duplicate
-  },
-  schedule: {
-    id: 'schedule',
+  schedulePublish: {
+    id: 'schedulePublish',
     label: translations.schedule
   },
   publish: {
     id: 'publish',
     label: translations.publish
   },
-  publishRequest: {
-    id: 'publishRequest',
+  requestPublish: {
+    id: 'requestPublish',
     label: translations.publishRequest
   },
-  approve: {
-    id: 'approve',
+  approvePublish: {
+    id: 'approvePublish',
     label: translations.approve
   },
-  reject: {
-    id: 'reject',
+  rejectPublish: {
+    id: 'rejectPublish',
     label: translations.reject
-  },
-  cancel: {
-    id: 'cancel',
-    label: translations.cancel
   },
   history: {
     id: 'history',
@@ -214,10 +232,6 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'dependencies',
     label: translations.dependencies
   },
-  translation: {
-    id: 'translation',
-    label: translations.translation
-  },
   editController: {
     id: 'editController',
     label: translations.editController
@@ -225,6 +239,20 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
   editTemplate: {
     id: 'editTemplate',
     label: translations.editTemplate
+  },
+  revert: {
+    id: 'revert',
+    label: translations.revert
+  },
+  // endregion
+  // region AssessRemovalItemActions
+  viewImage: {
+    id: 'viewImage',
+    label: translations.view
+  },
+  duplicateAsset: {
+    id: 'duplicateAsset',
+    label: translations.duplicate
   },
   createController: {
     id: 'createController',
@@ -234,26 +262,35 @@ const unparsedMenuOptions: LookupTable<ContextMenuOptionDescriptor> = {
     id: 'createTemplate',
     label: translations.createTemplate
   },
+  // endregion
+  // region VirtualItemActions
   unlock: {
     id: 'unlock',
     label: translations.unlock
+  },
+  editCode: {
+    id: 'codeEditor',
+    label: translations.edit
+  },
+  viewCode: {
+    id: 'viewCodeEditor',
+    label: translations.view
   },
   preview: {
     id: 'preview',
     label: translations.preview
   }
+  // endregion
 };
 
-export function toContextMenuOptionsLookup(
-  menuOptionDescriptors: LookupTable<ContextMenuOptionDescriptor>,
+export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>(
+  menuOptionDescriptors: Record<Keys, ContextMenuOptionDescriptor>,
   formatMessage: IntlFormatters['formatMessage']
-): { [prop: string]: ContextMenuOption } {
-  const menuOptions: { [prop: string]: ContextMenuOption } = {};
-  Object.entries(menuOptionDescriptors).forEach(([key, value]) => {
-    menuOptions[key] = {
-      id: value.id,
-      label: formatMessage(value.label)
-    };
+): Record<Keys, ContextMenuOption> {
+  const menuOptions: any = {};
+  // @ts-ignore - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
+  Object.entries(menuOptionDescriptors).forEach(([key, { id, label }]) => {
+    menuOptions[key] = { id, label: formatMessage(label) };
   });
   return menuOptions;
 }
@@ -279,7 +316,7 @@ export function generateSingleItemOptions(
   const isImage = item.mimeType?.startsWith('image/');
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
-  const menuOptions: { [prop in keyof typeof unparsedMenuOptions]: ContextMenuOption } = toContextMenuOptionsLookup(
+  const menuOptions: Record<AllItemActions, ContextMenuOption> = toContextMenuOptionsLookup(
     unparsedMenuOptions,
     formatMessage
   );
@@ -289,7 +326,7 @@ export function generateSingleItemOptions(
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.edit);
     } else {
-      sectionA.push(menuOptions.codeEditor);
+      sectionA.push(menuOptions.editCode);
     }
   }
   if (hasCreateAction(item.availableActions)) {
@@ -322,7 +359,7 @@ export function generateSingleItemOptions(
     } else if (isImage) {
       sectionA.push(menuOptions.viewImage);
     } else {
-      sectionA.push(menuOptions.viewCodeEditor);
+      sectionA.push(menuOptions.viewCode);
     }
   }
   // endregion
@@ -354,16 +391,16 @@ export function generateSingleItemOptions(
     sectionC.push(menuOptions.publish);
   }
   if (hasPublishRequestAction(item.availableActions)) {
-    sectionC.push(menuOptions.publishRequest);
+    sectionC.push(menuOptions.requestPublish);
   }
   if (hasApprovePublishAction(item.availableActions)) {
-    sectionC.push(menuOptions.approve);
+    sectionC.push(menuOptions.approvePublish);
   }
   if (hasSchedulePublishAction(item.availableActions)) {
-    sectionC.push(menuOptions.schedule);
+    sectionC.push(menuOptions.schedulePublish);
   }
   if (hasPublishRejectAction(item.availableActions)) {
-    sectionC.push(menuOptions.reject);
+    sectionC.push(menuOptions.rejectPublish);
   }
   // endregion
 
@@ -430,19 +467,19 @@ export function generateMultipleItemOptions(
     options.push(menuOptions.publish);
   }
   if (schedulePublish) {
-    options.push(menuOptions.schedule);
+    options.push(menuOptions.schedulePublish);
   }
   if (requestPublish) {
-    options.push(menuOptions.publishRequest);
+    options.push(menuOptions.requestPublish);
   }
   if (approvePublish) {
-    options.push(menuOptions.approve);
+    options.push(menuOptions.approvePublish);
   }
   if (deleteItem) {
     options.push(menuOptions.delete);
   }
   if (reject) {
-    options.push(menuOptions.reject);
+    options.push(menuOptions.rejectPublish);
   }
 
   return options;
@@ -461,7 +498,7 @@ export const itemActionDispatcher = ({
 }: {
   site: string;
   item: DetailedItem | DetailedItem[];
-  option: string;
+  option: AllItemActions;
   authoringBase: string;
   dispatch;
   formatMessage;
@@ -695,9 +732,6 @@ export const itemActionDispatcher = ({
         dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
         break;
       }
-      case 'translation': {
-        break;
-      }
       case 'editTemplate': {
         dispatch(editContentTypeTemplate({ contentTypeId: item.contentTypeId }));
         break;
@@ -727,11 +761,11 @@ export const itemActionDispatcher = ({
         );
         break;
       }
-      case 'codeEditor': {
+      case 'editCode': {
         dispatch(showCodeEditorDialog({ site, authoringBase, path: item.path, type: 'asset' }));
         break;
       }
-      case 'viewCodeEditor': {
+      case 'viewCode': {
         dispatch(
           showCodeEditorDialog({
             site,
@@ -775,7 +809,6 @@ export const itemActionDispatcher = ({
         dispatch(previewItem({ item: item, newTab: event.ctrlKey || event.metaKey }));
         break;
       }
-      case 'cancel':
       default:
         break;
     }
@@ -798,15 +831,15 @@ export const itemActionDispatcher = ({
       );
       break;
     }
-    case 'approve':
+    case 'approvePublish':
     case 'publish':
-    case 'schedule':
-    case 'publishRequest': {
+    case 'schedulePublish':
+    case 'requestPublish': {
       const items = Array.isArray(item) ? item : [item];
       dispatch(
         showPublishDialog({
           items,
-          scheduling: option === 'schedule' ? 'custom' : 'now',
+          scheduling: option === 'schedulePublish' ? 'custom' : 'now',
           onSuccess: batchActions([
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),
@@ -817,7 +850,7 @@ export const itemActionDispatcher = ({
       );
       break;
     }
-    case 'reject': {
+    case 'rejectPublish': {
       let items = Array.isArray(item) ? item : [item];
       dispatch(
         showRejectDialog({

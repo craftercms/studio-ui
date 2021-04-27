@@ -64,7 +64,6 @@ import {
 } from '../../state/actions/system';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import PathNavigatorUI from './PathNavigatorUI';
-import LookupTable from '../../models/LookupTable';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
@@ -120,7 +119,7 @@ export interface PathNavigatorStateProps {
   isFetching: boolean;
 }
 
-const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
+const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
   refresh: {
     id: 'refresh',
     label: translations.refresh

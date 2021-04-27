@@ -53,7 +53,7 @@ function PathNavigatorList(props: NavProps) {
   const items = resource.read();
   const active = useMemo(() => computeActiveItems?.(items) ?? [], [items, computeActiveItems]);
   return (
-    <List component="nav" disablePadding={true} classes={{ root: props.classes?.root }}>
+    <List component="nav" disablePadding classes={{ root: props.classes?.root }}>
       {items.map((item: DetailedItem) => (
         <NavItem
           item={item}
