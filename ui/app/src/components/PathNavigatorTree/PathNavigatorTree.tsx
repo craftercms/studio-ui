@@ -33,7 +33,7 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
-import { lookupItemByPath } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
@@ -443,7 +443,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       showItemMegaMenu({
         path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top, left }
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
       })
     );
   };

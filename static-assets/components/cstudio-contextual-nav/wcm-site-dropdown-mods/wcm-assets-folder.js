@@ -584,6 +584,10 @@ var storage = CStudioAuthoring.Storage;
 
         const path = treeNodeTO.uri;
 
+        const loaderItems = CrafterCMSNext.util.content.getNumOfMenuOptionsForItem(
+          CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(treeNodeTO)
+        );
+
         const openItemMenu = () => {
           CrafterCMSNext.system.store.dispatch({
             type: 'BATCH_ACTIONS',
@@ -604,6 +608,7 @@ var storage = CStudioAuthoring.Storage;
                 type: 'SHOW_ITEM_MEGA_MENU',
                 payload: {
                   path,
+                  loaderItems,
                   anchorReference: 'anchorPosition',
                   anchorPosition: { top: event.clientY - 10, left: event.clientX - 10 }
                 }

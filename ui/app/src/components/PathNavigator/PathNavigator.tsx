@@ -69,6 +69,7 @@ import { getSystemLink } from '../LauncherSection';
 import { SystemIconDescriptor } from '../SystemIcon';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getNumOfMenuOptionsForItem } from '../../utils/content';
 
 interface Menu {
   path?: string;
@@ -360,7 +361,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       showItemMegaMenu({
         path: path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top, left }
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
       })
     );
   };
@@ -375,7 +377,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       showItemMegaMenu({
         path: item.path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top, left }
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(item)
       })
     );
   };

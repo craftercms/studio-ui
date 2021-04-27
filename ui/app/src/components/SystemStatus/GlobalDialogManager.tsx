@@ -434,6 +434,7 @@ function GlobalDialogManager() {
       <ItemMegaMenu
         open={state.itemMegaMenu.open}
         path={state.itemMegaMenu.path}
+        numOfLoaderItems={state.itemMegaMenu.numOfLoaderItems}
         onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
         anchorReference={state.itemMegaMenu.anchorReference}
         anchorPosition={state.itemMegaMenu.anchorPosition}

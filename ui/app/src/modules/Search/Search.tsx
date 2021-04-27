@@ -53,6 +53,7 @@ import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 
 interface SearchProps {
   history: History;
@@ -640,7 +641,11 @@ export default function Search(props: SearchProps) {
       showItemMegaMenu({
         path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX }
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
       })
     );
   };

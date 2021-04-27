@@ -40,6 +40,7 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import { DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
 import GlobalState from '../../models/GlobalState';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 export type ItemMegaMenuUIClassKey =
   | 'root'
@@ -72,6 +73,8 @@ export interface ItemMegaMenuUIProps {
   open: boolean;
   styles?: ItemMegaMenuUIStyles;
   classes?: Partial<Record<ItemMegaMenuUIClassKey, string>>;
+  isLoading?: boolean;
+  numOfLoaderItems?: number;
   item: DetailedItem;
   options: ContextMenuOption[][];
   editorialOptions: ContextMenuOption[];
@@ -153,7 +156,7 @@ export const useStyles = makeStyles((theme) =>
     }),
     infoItem: (styles) => ({
       cursor: 'default',
-      backgroundColor: 'inherit',
+      backgroundColor: 'inherit !important',
       '&:hover': {
         backgroundColor: 'inherit'
       },
@@ -187,6 +190,8 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     open,
     styles,
     item,
+    isLoading = false,
+    numOfLoaderItems = 5,
     options,
     editorialOptions,
     nonEditorialOptions,
@@ -216,95 +221,119 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         ...propClasses
       }}
     >
-      {options.flatMap((i) => i).length === 0 ? (
+      <MenuItem className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
+        <Typography variant="body2" component="h2" className={classes.itemInfoContentType}>
+          {isLoading ? <Skeleton animation="wave" /> : contentType}
+        </Typography>
+
+        {isLoading ? (
+          <Skeleton animation="wave" />
+        ) : (
+          <ItemDisplay
+            item={item}
+            showPublishingTarget={false}
+            showWorkflowState={false}
+            classes={{ icon: classes.itemTypeIcon }}
+            labelTypographyProps={{
+              className: classes.itemTypography
+            }}
+          />
+        )}
+
+        {isLoading ? (
+          <Skeleton animation="wave" />
+        ) : (
+          <div className={classes.itemState}>
+            <ItemPublishingTargetIcon item={item} className={classes.icon} />
+            <Typography variant="body2" component="span">
+              {getItemPublishingTargetText(item?.stateMap)}
+            </Typography>
+            <ItemStateIcon item={item} className={classes.icon} />
+            <Typography variant="body2" component="span">
+              {getItemStateText(item?.stateMap)}
+            </Typography>
+          </div>
+        )}
+      </MenuItem>
+      {isLoading ? (
+        <div className={clsx(classes.mainItem, classes.actionsContainer)}>
+          {new Array(2).fill(null).map((value, i) => (
+            <MenuList key={i} className={clsx(classes.actionsColumn, classes.itemsList)}>
+              {new Array(Math.ceil(numOfLoaderItems / 2)).fill(null).map((value, j) => (
+                <MenuItem key={j} className={clsx(classes.menuItem, propClasses?.menuItem)}>
+                  <Skeleton animation="wave" width="100%" />
+                </MenuItem>
+              ))}
+            </MenuList>
+          ))}
+        </div>
+      ) : options.flatMap((i) => i).length === 0 ? (
         <EmptyState
           title={
             <FormattedMessage id="contextMenu.emptyOptionsMessage" defaultMessage="No options available to display." />
           }
         />
       ) : (
-        [
-          <MenuItem key={0} className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
-            <Typography variant="body2" component="h2" className={classes.itemInfoContentType}>
-              {contentType}
-            </Typography>
-            <ItemDisplay
-              item={item}
-              showPublishingTarget={false}
-              showWorkflowState={false}
-              classes={{ icon: classes.itemTypeIcon }}
-              labelTypographyProps={{
-                className: classes.itemTypography
+        <div className={clsx(classes.mainItem, classes.actionsContainer)}>
+          <MenuList className={clsx(classes.actionsColumn, classes.itemsList)}>
+            {editorialOptions.map((option: MenuOption, y: number) => (
+              <MenuItem
+                dense
+                key={option.id}
+                onClick={(e) => onMenuItemClicked(option.id, e)}
+                className={clsx(classes.menuItem, propClasses?.menuItem)}
+                children={option.label}
+              />
+            ))}
+          </MenuList>
+          <div className={classes.actionsColumn}>
+            {nonEditorialOptions.map((section: any, i: number) => (
+              <MenuList key={i} className={classes.itemsList}>
+                {section.map((option: MenuOption, y: number) => (
+                  <MenuItem
+                    dense
+                    key={option.id}
+                    divider={i !== nonEditorialOptions.length - 1 && y === section.length - 1}
+                    onClick={(e) => onMenuItemClicked(option.id, e)}
+                    className={clsx(classes.menuItem, propClasses?.menuItem)}
+                    children={option.label}
+                  />
+                ))}
+              </MenuList>
+            ))}
+          </div>
+        </div>
+      )}
+      <MenuItem className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
+        {isLoading ? (
+          <Skeleton animation="wave" width="100%" />
+        ) : (
+          <Typography variant="body2">
+            <FormattedMessage
+              id="itemMegaMenu.editedBy"
+              defaultMessage="{edited} {date} {byLabel} {by}"
+              values={{
+                date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
+                  new Date(item?.sandbox.dateModified)
+                ),
+                by: item?.sandbox.modifier,
+                edited: (
+                  <span className={classes.itemEditedText}>
+                    <FormattedMessage id="words.edited" defaultMessage="Edited" />
+                  </span>
+                ),
+                byLabel: item?.sandbox.modifier ? (
+                  <span className={classes.itemEditedText}>
+                    <FormattedMessage id="words.by" defaultMessage={'by'} />
+                  </span>
+                ) : (
+                  ''
+                )
               }}
             />
-            <div className={classes.itemState}>
-              <ItemPublishingTargetIcon item={item} className={classes.icon} />
-              <Typography variant="body2" component="span">
-                {getItemPublishingTargetText(item?.stateMap)}
-              </Typography>
-              <ItemStateIcon item={item} className={classes.icon} />
-              <Typography variant="body2" component="span">
-                {getItemStateText(item?.stateMap)}
-              </Typography>
-            </div>
-          </MenuItem>,
-          <div key={1} className={clsx(classes.mainItem, classes.actionsContainer)}>
-            <MenuList className={clsx(classes.actionsColumn, classes.itemsList)}>
-              {editorialOptions.map((option: MenuOption, y: number) => (
-                <MenuItem
-                  dense
-                  key={option.id}
-                  onClick={(e) => onMenuItemClicked(option.id, e)}
-                  className={clsx(classes.menuItem, propClasses?.menuItem)}
-                  children={option.label}
-                />
-              ))}
-            </MenuList>
-            <div className={classes.actionsColumn}>
-              {nonEditorialOptions.map((section: any, i: number) => (
-                <MenuList key={i} className={classes.itemsList}>
-                  {section.map((option: MenuOption, y: number) => (
-                    <MenuItem
-                      dense
-                      key={option.id}
-                      divider={i !== nonEditorialOptions.length - 1 && y === section.length - 1}
-                      onClick={(e) => onMenuItemClicked(option.id, e)}
-                      className={clsx(classes.menuItem, propClasses?.menuItem)}
-                      children={option.label}
-                    />
-                  ))}
-                </MenuList>
-              ))}
-            </div>
-          </div>,
-          <MenuItem key={2} className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
-            <Typography variant="body2">
-              <FormattedMessage
-                id="itemMegaMenu.editedBy"
-                defaultMessage="{edited} {date} {byLabel} {by}"
-                values={{
-                  date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                    new Date(item?.sandbox.dateModified)
-                  ),
-                  by: item?.sandbox.modifier,
-                  edited: (
-                    <span className={classes.itemEditedText}>
-                      <FormattedMessage id="words.edited" defaultMessage="Edited" />
-                    </span>
-                  ),
-                  byLabel: item?.sandbox.modifier ? (
-                    <span className={classes.itemEditedText}>
-                      <FormattedMessage id="words.by" defaultMessage={'by'} />
-                    </span>
-                  ) : (
-                    ''
-                  )
-                }}
-              />
-            </Typography>
-          </MenuItem>
-        ]
-      )}
+          </Typography>
+        )}
+      </MenuItem>
     </Menu>
   );
 }

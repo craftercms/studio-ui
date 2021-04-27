@@ -32,6 +32,7 @@ export interface ItemMegaMenuBaseProps {
   anchorOrigin?: PopoverOrigin;
   anchorReference?: PopoverReference;
   anchorPosition?: PopoverPosition;
+  numOfLoaderItems?: number;
 }
 
 export type ItemMegaMenuProps = PropsWithChildren<
@@ -46,7 +47,16 @@ export interface ItemMegaMenuStateProps extends ItemMegaMenuBaseProps {
 }
 
 export default function ItemMegaMenu(props: ItemMegaMenuProps) {
-  const { open, path, onClose, anchorEl, anchorOrigin, anchorReference = 'anchorEl', anchorPosition } = props;
+  const {
+    open,
+    path,
+    onClose,
+    anchorEl,
+    anchorOrigin,
+    anchorReference = 'anchorEl',
+    anchorPosition,
+    numOfLoaderItems = 8
+  } = props;
   const site = useActiveSiteId();
   const items = useItemsByPath();
   const clipboard = useSelection((state) => state.content.clipboard);
@@ -75,6 +85,8 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
     <ItemMegaMenuUI
       open={open}
       item={item}
+      numOfLoaderItems={numOfLoaderItems}
+      isLoading={!item}
       contentType={itemContentType}
       options={options}
       editorialOptions={editorialOptions}
