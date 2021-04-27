@@ -28,7 +28,7 @@ const paginationDefault = {
   offset: 0
 };
 
-export function fetchAll(options?: PaginationOptions): Observable<PagedArray<Group>> {
+export function fetchAll(options?: Partial<PaginationOptions>): Observable<PagedArray<Group>> {
   const mergedOptions = {
     ...paginationDefault,
     ...options

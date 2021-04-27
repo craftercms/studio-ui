@@ -46,8 +46,8 @@ interface GroupEditDialogUIProps {
   onSave(): void;
   onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
-  onAddMembers?(members: string[]): void;
-  onRemoveMembers?(members: string[]): void;
+  onAddMembers?(members: (string | number)[]): void;
+  onRemoveMembers?(members: (string | number)[]): void;
   users?: User[];
   members?: User[];
   inProgressIds?: string[];

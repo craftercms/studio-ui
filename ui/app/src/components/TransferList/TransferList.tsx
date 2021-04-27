@@ -37,7 +37,7 @@ export interface TransferListObject {
 }
 
 export interface TransferListItem {
-  id: string;
+  id: string | number;
   title: string;
   subTitle?: string;
 }
