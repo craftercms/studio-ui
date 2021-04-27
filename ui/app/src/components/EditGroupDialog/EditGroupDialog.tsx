@@ -14,10 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './GroupEditDialog';
+import React from 'react';
+import Group from '../../models/Group';
+import { Dialog } from '@material-ui/core';
+import EditGroupDialogContainer from './EditGroupDialogContainer';
 
-export * from './GroupEditDialog';
+export interface EditGroupDialogProps {
+  open: boolean;
+  group: Group;
+  onClose(): void;
+  onClosed(): void;
+  onGroupSaved(group: Group): void;
+  onGroupDeleted(group: Group): void;
+}
 
-export * from './GroupEditDialogContainer';
+export default function EditGroupDialog(props: EditGroupDialogProps) {
+  const { open, onClose } = props;
 
-export * from './GroupEditDialogUI';
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <EditGroupDialogContainer {...props} />
+    </Dialog>
+  );
+}

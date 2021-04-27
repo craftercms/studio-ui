@@ -15,8 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { GroupEditDialogProps } from './GroupEditDialog';
-import GroupEditDialogUI from './GroupEditDialogUI';
+import { EditGroupDialogProps } from './EditGroupDialog';
+import EditGroupDialogUI from './EditGroupDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
 import User from '../../models/User';
@@ -59,7 +59,7 @@ const translations = defineMessages({
   }
 });
 
-export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
+export default function EditGroupDialogContainer(props: EditGroupDialogProps) {
   const { onClose, onGroupSaved, onGroupDeleted, onClosed } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -188,7 +188,7 @@ export default function GroupEditDialogContainer(props: GroupEditDialogProps) {
   };
 
   return (
-    <GroupEditDialogUI
+    <EditGroupDialogUI
       title={
         isEdit ? (
           <Typography variant="h6" component="h2">

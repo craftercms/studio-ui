@@ -58,19 +58,8 @@ export const useStyles = makeStyles((theme) =>
         marginRight: '10px'
       }
     },
-    inputRoot: {
-      margin: 0
-    },
-    inputRootDisabled: {
-      pointerEvents: 'none'
-    },
-    readOnlyInput: {
-      background: 'none',
-      borderColor: 'transparent',
-      paddingLeft: 0,
-      '&:focus': {
-        boxShadow: 'none'
-      }
+    fullWidth: {
+      width: '100%'
     }
   })
 );

@@ -27,13 +27,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
-import Input from '@material-ui/core/Input';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import Box from '@material-ui/core/Box';
 import User from '../../models/User';
 import TransferList from '../TransferList';
 import InputLabel from '@material-ui/core/InputLabel';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 
 interface GroupEditDialogUIProps {
   group?: Group;
@@ -68,7 +68,7 @@ const translations = defineMessages({
   }
 });
 
-export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
+export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const {
@@ -132,14 +132,18 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
                   <FormattedMessage id="words.name" defaultMessage="Name" />
                 </Typography>
               </InputLabel>
-              <Input
-                id="groupName"
-                disabled={isEdit}
-                classes={isEdit ? { root: classes.inputRootDisabled, input: classes.readOnlyInput } : {}}
-                onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
-                value={group.name}
-                fullWidth
-              />
+              {isEdit ? (
+                <Typography className={classes.fullWidth} color="textSecondary">
+                  {group.name}
+                </Typography>
+              ) : (
+                <OutlinedInput
+                  id="groupName"
+                  onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
+                  value={group.name}
+                  fullWidth
+                />
+              )}
             </Box>
             <Box display="flex" alignItems="center" p="15px  0">
               <InputLabel htmlFor="groupDescription" className={classes.label}>
@@ -147,7 +151,7 @@ export default function GroupEditDialogUI(props: GroupEditDialogUIProps) {
                   <FormattedMessage id="words.description" defaultMessage="Description" />
                 </Typography>
               </InputLabel>
-              <Input
+              <OutlinedInput
                 id="groupDescription"
                 onChange={(e) => onChangeValue({ key: 'desc', value: e.currentTarget.value })}
                 value={group.desc}

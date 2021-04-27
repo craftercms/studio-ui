@@ -25,7 +25,7 @@ import { useLogicResource } from '../../utils/hooks';
 import ErrorBoundary from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
-import GroupEditDialog from '../GroupEditDialog';
+import EditGroupDialog from '../EditGroupDialog';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 
@@ -131,7 +131,7 @@ export default function GroupsManagement() {
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
-      <GroupEditDialog
+      <EditGroupDialog
         open={openGroupDialog}
         group={selectedGroup}
         onClosed={onGroupDialogClosed}
