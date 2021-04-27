@@ -20,7 +20,7 @@ import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/c
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { AllItemActions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { PopoverProps } from '@material-ui/core/Popover';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import GlobalState from '../../models/GlobalState';
@@ -66,7 +66,7 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const onMenuItemClicked = (option: string, event: React.MouseEvent<Element, MouseEvent>) => {
+  const onMenuItemClicked = (option: AllItemActions, event: React.MouseEvent<Element, MouseEvent>) => {
     itemActionDispatcher({ site, item, option, authoringBase, dispatch, formatMessage, clipboard, event });
     onClose();
   };
