@@ -14,16 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ClusterMember {
-  id: number;
-  localAddress: string;
-  state: 'ACTIVE' | 'INACTIVE';
-  heartbeat: string;
-  gitUrl: string;
-  gitRemoteName: string;
-  gitAuthType: string;
-  gitUsername?: string;
-  gitPassword?: string;
-  gitToken?: string;
-  gitPrivateKey?: string;
-}
+export { default } from './ClusterGrid';
+
+export * from './ClusterGrid';
