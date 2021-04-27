@@ -279,7 +279,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             fullWidth
             onKeyPress={onKeyPress}
             onChange={(event) => handleInputChange(event)}
-            InputLabelProps={{ shrink: true }}
             placeholder={'master'}
             value={inputs.sandboxBranch}
           />

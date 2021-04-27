@@ -80,6 +80,7 @@ import PollOutlinedIcon from '@material-ui/icons/PollOutlined';
 import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
 import Component from '../../components/Icons/Component';
 import EmptyState from '../../components/SystemStatus/EmptyState';
+import GraphQL from '../../components/Icons/GraphQL';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -201,6 +202,7 @@ Object.entries({
   'craftercms.icons.PageExplorer': PageExplorer,
   'craftercms.icons.SiteExplorer': SiteExplorer,
   'craftercms.icons.Component': Component,
+  'craftercms.icons.GraphQL': GraphQL,
   'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
   'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
   'craftercms.components.PathNavigator': PathNavigator,

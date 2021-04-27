@@ -1550,8 +1550,9 @@
           .cancelFailedPull({
             siteId: repositories.site
           })
-          .then(function(data) {
-            repositories.status = data.repositoryStatus;
+          .then(function(repositoryStatus) {
+            repositories.status = repositoryStatus;
+            $scope.$apply();
           });
       };
     }

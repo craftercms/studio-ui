@@ -17,6 +17,10 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
+  revert: {
+    id: 'words.revert',
+    defaultMessage: 'Revert'
+  },
   edit: {
     id: 'words.edit',
     defaultMessage: 'Edit'
@@ -26,15 +30,15 @@ export const translations = defineMessages({
     defaultMessage: 'View'
   },
   viewForm: {
-    id: 'words.view',
+    id: 'itemActions.viewForm',
     defaultMessage: 'View Form'
   },
   createContent: {
-    id: 'itemMenu.newContent',
+    id: 'itemActions.newContent',
     defaultMessage: 'New Content'
   },
   createFolder: {
-    id: 'itemMenu.createFolder',
+    id: 'itemActions.createFolder',
     defaultMessage: 'New Folder'
   },
   rename: {
@@ -42,7 +46,7 @@ export const translations = defineMessages({
     defaultMessage: 'Rename'
   },
   changeContentType: {
-    id: 'itemMenu.changeContentType',
+    id: 'itemActions.changeContentType',
     defaultMessage: 'Change Type'
   },
   schedule: {
@@ -54,7 +58,7 @@ export const translations = defineMessages({
     defaultMessage: 'Publish'
   },
   publishRequest: {
-    id: 'itemMenu.requestPublish',
+    id: 'itemActions.requestPublish',
     defaultMessage: 'Request Publish'
   },
   approve: {
@@ -102,48 +106,48 @@ export const translations = defineMessages({
     defaultMessage: 'Delete'
   },
   editController: {
-    id: 'itemMenu.editController',
+    id: 'itemActions.editController',
     defaultMessage: 'Edit Controller'
   },
   deleteController: {
-    id: 'itemMenu.deleteController',
+    id: 'itemActions.deleteController',
     defaultMessage: 'Delete Controller'
   },
   editTemplate: {
-    id: 'itemMenu.editTemplate',
+    id: 'itemActions.editTemplate',
     defaultMessage: 'Edit Template'
   },
   deleteTemplate: {
-    id: 'itemMenu.deleteTemplate',
+    id: 'itemActions.deleteTemplate',
     defaultMessage: 'Delete Template'
   },
   createTemplate: {
-    id: 'itemMenu.createTemplate',
+    id: 'itemActions.createTemplate',
     defaultMessage: 'New Template'
   },
   createController: {
-    id: 'itemMenu.createController',
+    id: 'itemActions.createController',
     defaultMessage: 'New Controller'
   },
   changeContentTypeTitle: {
-    id: 'itemMenu.contentTypeDialogTitle',
+    id: 'itemActions.contentTypeDialogTitle',
     defaultMessage: 'Warning: Change Content Type'
   },
   changeContentTypeBody: {
-    id: 'itemMenu.contentTypeDialogBody',
+    id: 'itemActions.contentTypeDialogBody',
     defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
   },
   copyDialogTitle: {
-    id: 'itemMenu.copyDialogTitle',
+    id: 'itemActions.copyDialogTitle',
     defaultMessage: 'Copy'
   },
   copyDialogSubtitle: {
-    id: 'itemMenu.copyDialogSubtitle',
+    id: 'itemActions.copyDialogSubtitle',
     defaultMessage:
       'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
   },
   duplicateDialogBody: {
-    id: 'itemMenu.duplicateDialogBody',
+    id: 'itemActions.duplicateDialogBody',
     defaultMessage:
       "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?"
   },

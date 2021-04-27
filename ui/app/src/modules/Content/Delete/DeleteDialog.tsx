@@ -114,9 +114,6 @@ const deleteDialogStyles = makeStyles((theme) =>
       marginRight: 11,
       color: '#fff'
     },
-    textField: {
-      padding: 0
-    },
     errorPaperRoot: {
       maxHeight: '586px',
       height: '100vh',
@@ -162,9 +159,6 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSubmissionComment(e.target.value);
               }}
-              InputProps={{
-                className: classes.textField
-              }}
             />
           </form>
         </Grid>
@@ -186,7 +180,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     onDismiss,
     onEditDependency
   } = props;
-  const classes = deleteDialogStyles({});
+  const classes = deleteDialogStyles();
   const { formatMessage } = useIntl();
 
   return (

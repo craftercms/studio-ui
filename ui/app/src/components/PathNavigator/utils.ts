@@ -17,9 +17,12 @@
 import { DetailedItem, SandboxItem } from '../../models/Item';
 
 export function isNavigable(item: DetailedItem | SandboxItem): boolean {
-  // Assets have a valid previewUrl but we don't want assets to show in the
-  // Guest iFrame but rather as a preview dialog.
-  return item.previewUrl !== null && item.systemType !== 'asset';
+  if (item) {
+    // Assets have a valid previewUrl but we don't want assets to show in the
+    // Guest iFrame but rather as a preview dialog.
+    return item.previewUrl !== null && item.systemType !== 'asset';
+  }
+  return false;
 }
 
 export function isEditableViaFormEditor(item: DetailedItem | SandboxItem): boolean {
@@ -27,15 +30,15 @@ export function isEditableViaFormEditor(item: DetailedItem | SandboxItem): boole
 }
 
 export function isImage(item: DetailedItem | SandboxItem): boolean {
-  return item.mimeType.startsWith('image/');
+  return item?.mimeType.startsWith('image/');
 }
 
 export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
-  return ['page', 'component', 'asset', 'renderingTemplate', 'script', 'taxonomy'].includes(item.systemType);
+  return ['page', 'component', 'asset', 'renderingTemplate', 'script', 'taxonomy'].includes(item?.systemType);
 }
 
 export function isFolder(item: DetailedItem | SandboxItem): boolean {
-  return item.systemType === 'folder';
+  return item?.systemType === 'folder';
 }
 
 export function getEditorMode(item: DetailedItem | SandboxItem): 'ftl' | 'groovy' | 'javascript' | 'css' | 'txt' {
