@@ -30,7 +30,7 @@ import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import FiberManualRecordRoundedIcon from '@material-ui/icons/FiberManualRecordRounded';
 
-interface ClusterGridProps {
+export interface ClusterGridProps {
   resource: Resource<ClusterMember[]>;
   onDeleteCluster(cluster: ClusterMember): void;
 }
@@ -74,7 +74,7 @@ export default function ClusterGridUI(props: ClusterGridProps) {
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {clusters?.map((cluster, i) => (
+          {clusters.map((cluster, i) => (
             <GlobalAppGridRow key={cluster.id} className="hoverDisabled">
               <GlobalAppGridCell align="left" className="width10">
                 {cluster.localAddress}

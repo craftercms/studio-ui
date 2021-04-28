@@ -18,9 +18,8 @@ import React, { useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
-import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { useLogicResource, useMount } from '../../utils/hooks';
 import { ApiResponse } from '../../models/ApiResponse';
@@ -105,21 +104,19 @@ export default function ClustersManagement() {
           </Tooltip>
         }
       />
-      <ErrorBoundary>
-        <SuspenseWithEmptyState
-          resource={resource}
-          suspenseProps={{
-            fallback: <>loading</>
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: <FormattedMessage id="clusterGrid.emptyStateMessage" defaultMessage="No Clusters Found" />
-            }
-          }}
-        >
-          <ClusterGridUI resource={resource} onDeleteCluster={onDeleteCluster} />
-        </SuspenseWithEmptyState>
-      </ErrorBoundary>
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: <>loading</>
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: <FormattedMessage id="clusterGrid.emptyStateMessage" defaultMessage="No Clusters Found" />
+          }
+        }}
+      >
+        <ClusterGridUI resource={resource} onDeleteCluster={onDeleteCluster} />
+      </SuspenseWithEmptyState>
     </section>
   );
 }
