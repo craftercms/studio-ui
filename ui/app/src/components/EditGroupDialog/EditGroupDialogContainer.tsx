@@ -112,7 +112,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogProps) {
 
   const onAddMembers = (usernames: string[]) => {
     setInProgressIds(usernames);
-    addUsersToGroup(group.id, { usernames }).subscribe(
+    addUsersToGroup(group.id, usernames).subscribe(
       () => {
         dispatch(
           showSystemNotification({
@@ -129,7 +129,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogProps) {
 
   const onRemoveMembers = (usernames: string[]) => {
     setInProgressIds(usernames);
-    deleteUsersFromGroup(group.id, { usernames }).subscribe(
+    deleteUsersFromGroup(group.id, usernames).subscribe(
       () => {
         dispatch(
           showSystemNotification({

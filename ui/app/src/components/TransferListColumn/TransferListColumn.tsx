@@ -102,7 +102,7 @@ export default function TransferListColumn(props: TransferListColumnProps) {
               >
                 <ListItemIcon>
                   {inProgressIds.includes(item.id) ? (
-                    <CircularProgress />
+                    <CircularProgress size={42} />
                   ) : (
                     <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
                   )}

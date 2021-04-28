@@ -45,7 +45,6 @@ export const useStyles = makeStyles((theme) =>
     },
     label: {
       flexBasis: '180px',
-      color: theme.palette.text.primary,
       '& + .MuiInputBase-root': {
         marginTop: '0 !important'
       }
