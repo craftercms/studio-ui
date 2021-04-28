@@ -38,6 +38,7 @@ import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSele
 import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
+import { ItemMegaMenuStateProps } from '../../components/ItemMegaMenu';
 import { LauncherStateProps } from '../../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
@@ -212,6 +213,14 @@ export const pathSelectionDialogClosed = /*#__PURE__*/ createAction('PATH_SELECT
 export const showItemMenu = /*#__PURE__*/ createAction<Partial<ItemMenuStateProps>>('SHOW_ITEM_MENU');
 export const closeItemMenu = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ITEM_MENU');
 export const itemMenuClosed = /*#__PURE__*/ createAction('ITEM_MENU_CLOSED');
+
+// endregion
+
+// region Item Mega Menu
+
+export const showItemMegaMenu = /*#__PURE__*/ createAction<Partial<ItemMegaMenuStateProps>>('SHOW_ITEM_MEGA_MENU');
+export const closeItemMegaMenu = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ITEM_MEGA_MENU');
+export const itemMegaMenuClosed = /*#__PURE__*/ createAction('ITEM_MEGA_MENU_CLOSED');
 
 // endregion
 
