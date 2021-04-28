@@ -324,7 +324,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                 ),
                 byLabel: item?.sandbox.modifier ? (
                   <span className={classes.itemEditedText}>
-                    <FormattedMessage id="words.by" defaultMessage={'by'} />
+                    <FormattedMessage id="words.by" defaultMessage="By" />
                   </span>
                 ) : (
                   ''
