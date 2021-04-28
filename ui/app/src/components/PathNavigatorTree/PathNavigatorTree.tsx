@@ -49,7 +49,7 @@ import {
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
@@ -440,11 +440,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
     dispatch(
-      showItemMenu({
+      showItemMegaMenu({
         path,
-        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path]),
         anchorReference: 'anchorPosition',
-        anchorPosition: { top, left }
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
       })
     );
   };

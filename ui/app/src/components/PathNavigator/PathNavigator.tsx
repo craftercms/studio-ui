@@ -25,7 +25,6 @@ import {
   usePreviewState,
   useSelection,
   useSiteLocales,
-  useSpreadState,
   useSubject
 } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
@@ -45,9 +44,8 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
-import ItemActionsMenu from '../ItemActionsMenu';
 import { completeDetailedItem } from '../../state/actions/content';
-import { showEditDialog, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { fetchContentXML } from '../../services/content';
 import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -62,13 +60,15 @@ import {
   itemsPasted,
   itemUpdated
 } from '../../state/actions/system';
-import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { getSystemLink } from '../LauncherSection';
 import { SystemIconDescriptor } from '../SystemIcon';
+// @ts-ignore
+import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getNumOfMenuOptionsForItem } from '../../utils/content';
 
 interface Menu {
   path?: string;
@@ -153,11 +153,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
     anchorEl: null,
     sections: [],
     emptyState: null
-  });
-  const [itemMenu, setItemMenu] = useSpreadState<Menu>({
-    path,
-    anchorEl: null,
-    loaderItems: null
   });
   const [keyword, setKeyword] = useState('');
   const onSearch$ = useSubject<string>();
@@ -352,25 +347,39 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   const onCurrentParentMenu = (element: Element) => {
+    const anchorRect = element.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
     let path = state.currentPath;
+
     if (path === '/site/website') {
       path = withIndex(state.currentPath);
     }
     dispatch(completeDetailedItem({ path }));
-    setItemMenu({
-      path,
-      anchorEl: element,
-      loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
-    });
+    dispatch(
+      showItemMegaMenu({
+        path: path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
+      })
+    );
   };
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
+    const anchorRect = element.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+
     dispatch(completeDetailedItem({ path: item.path }));
-    setItemMenu({
-      path: item.path,
-      anchorEl: element,
-      loaderItems: getNumOfMenuOptionsForItem(item)
-    });
+    dispatch(
+      showItemMegaMenu({
+        path: item.path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(item)
+      })
+    );
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
@@ -393,8 +402,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   };
 
   const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
-
-  const onCloseItemMenu = () => setItemMenu({ ...itemMenu, path: null, anchorEl: null });
 
   const onItemClicked = onItemClickedProp
     ? onItemClickedProp
@@ -468,13 +475,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
         onItemClicked={onItemClicked}
         onPageChanged={onPageChanged}
         computeActiveItems={computeActiveItems}
-      />
-      <ItemActionsMenu
-        open={Boolean(itemMenu.anchorEl)}
-        path={itemMenu.path}
-        numOfLoaderItems={itemMenu.loaderItems}
-        anchorEl={itemMenu.anchorEl}
-        onClose={onCloseItemMenu}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}

@@ -62,6 +62,9 @@ import ItemActionsMenu from '../ItemActionsMenu';
 import { completeDetailedItem } from '../../state/actions/content';
 import SearchBar from '../Controls/SearchBar';
 import Divider from '@material-ui/core/Divider';
+// @ts-ignore
+import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 const rootPrefix = '{root}_';
 
@@ -689,15 +692,20 @@ export default function PreviewPageExplorerPanel() {
     event.stopPropagation();
 
     const path = node.path;
+    const element = event.currentTarget;
+    const anchorRect = element.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 
     if (path) {
-      setOptionsMenu({
-        ...optionsMenu,
-        modelId: node.modelId,
-        path,
-        anchorEl: event.currentTarget
-      });
       dispatch(completeDetailedItem({ path }));
+      dispatch(
+        showItemMegaMenu({
+          path: path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top, left }
+        })
+      );
     }
   };
 

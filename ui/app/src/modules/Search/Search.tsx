@@ -33,7 +33,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import clsx from 'clsx';
 import { History, Location } from 'history';
 import { fetchContentXML } from '../../services/content';
-import { showEditDialog, showItemMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
 import { completeDetailedItem } from '../../state/actions/content';
@@ -49,7 +49,6 @@ import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
 import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import {
@@ -59,6 +58,7 @@ import {
   itemActionDispatcher
 } from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 
 interface SearchProps {
   history: History;
@@ -643,7 +643,7 @@ export default function Search(props: SearchProps) {
     const path = item.path;
     dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMenu({
+      showItemMegaMenu({
         path,
         anchorReference: 'anchorPosition',
         anchorPosition: { top: event.clientY, left: event.clientX },
