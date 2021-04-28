@@ -22,7 +22,7 @@ import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import useStyles from './styles';
 import { createLookupTable } from '../../utils/object';
 import TransferListColumn from '../TransferListColumn';
-import { FormattedMessage } from 'react-intl/dist/react-intl';
+import { FormattedMessage } from 'react-intl';
 
 export interface TransferListProps {
   source: TransferListObject;
