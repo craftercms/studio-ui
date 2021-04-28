@@ -44,10 +44,6 @@ export default function ClustersManagement() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  useMount(() => {
-    refresh();
-  });
-
   const refresh = () => {
     setFetching(true);
     fetchMembers().subscribe(
@@ -61,6 +57,10 @@ export default function ClustersManagement() {
       }
     );
   };
+
+  useMount(() => {
+    refresh();
+  });
 
   const resource = useLogicResource<
     ClusterMember[],
