@@ -16,7 +16,7 @@
 
 import React, { useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton } from '@material-ui/core';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
@@ -24,14 +24,26 @@ import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { useLogicResource, useMount } from '../../utils/hooks';
 import { ApiResponse } from '../../models/ApiResponse';
-import { fetchMembers } from '../../services/clusters';
+import { deleteMember, fetchMembers } from '../../services/clusters';
 import { ClusterMember } from '../../models/Clusters';
 import ClusterGridUI from '../ClusterGrid';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../state/actions/system';
+
+const translations = defineMessages({
+  clusterDeleted: {
+    id: 'clusterManagement.clusterDeleted',
+    defaultMessage: 'Cluster deleted successfully'
+  }
+});
 
 export default function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<ApiResponse>();
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
   useMount(() => {
     refresh();
@@ -41,28 +53,28 @@ export default function ClusterManagement() {
     setFetching(true);
     fetchMembers().subscribe(
       (clusters) => {
-        setClusters(clusters);
+        // setClusters(clusters);
         setFetching(false);
-        // setClusters([
-        //   {
-        //     id: 1,
-        //     localAddress: '172.31.70.118',
-        //     state: 'ACTIVE',
-        //     heartbeat: '2021-04-27T16:43:30Z',
-        //     gitUrl: 'ssh://172.31.70.118/opt/crafter/cluster/crafter/data/repos/sites/{siteId}',
-        //     gitRemoteName: 'cluster_node_172.31.70.118',
-        //     gitAuthType: 'none'
-        //   },
-        //   {
-        //     id: 2,
-        //     localAddress: '172.31.70.118',
-        //     state: 'INACTIVE',
-        //     heartbeat: '2021-04-27T16:43:30Z',
-        //     gitUrl: 'ssh://172.31.70.118/opt/crafter/cluster/crafter/data/repos/sites/{siteId}',
-        //     gitRemoteName: 'cluster_node_172.31.70.118',
-        //     gitAuthType: 'none'
-        //   }
-        // ]);
+        setClusters([
+          {
+            id: 1,
+            localAddress: '172.31.70.118',
+            state: 'ACTIVE',
+            heartbeat: '2021-04-27T16:43:30Z',
+            gitUrl: 'ssh://172.31.70.118/opt/crafter/cluster/crafter/data/repos/sites/{siteId}',
+            gitRemoteName: 'cluster_node_172.31.70.118',
+            gitAuthType: 'none'
+          },
+          {
+            id: 2,
+            localAddress: '172.31.70.118',
+            state: 'INACTIVE',
+            heartbeat: '2021-04-27T16:43:30Z',
+            gitUrl: 'ssh://172.31.70.118/opt/crafter/cluster/crafter/data/repos/sites/{siteId}',
+            gitRemoteName: 'cluster_node_172.31.70.118',
+            gitAuthType: 'none'
+          }
+        ]);
       },
       ({ response }) => {
         setError(response);
@@ -83,6 +95,21 @@ export default function ClusterManagement() {
       errorSelector: () => error
     }
   );
+
+  const onDeleteCluster = (cluster: ClusterMember) => {
+    deleteMember(cluster.id).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.clusterDeleted)
+          })
+        );
+      },
+      ({ response: { response } }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
 
   return (
     <section>
@@ -108,7 +135,7 @@ export default function ClusterManagement() {
             }
           }}
         >
-          <ClusterGridUI resource={resource} />
+          <ClusterGridUI resource={resource} onDeleteCluster={onDeleteCluster} />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
     </section>
