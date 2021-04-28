@@ -191,7 +191,8 @@ export function createCodebaseBridge() {
       DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
       UsersGrid: lazy(() => import('../components/UsersGrid')),
       SitesManagement: lazy(() => import('../components/SitesManagement')),
-      UsersManagement: lazy(() => import('../components/UsersManagement'))
+      UsersManagement: lazy(() => import('../components/UsersManagement')),
+      LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement'))
     },
 
     system: {

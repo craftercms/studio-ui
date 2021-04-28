@@ -1,29 +1,17 @@
-<div class="logging-levels-view mainContainer">
-    <header class="screen-title mb10">
-        <h1>{{ 'admin.logging.HEADER_LABEL' | translate }}</h1>
-    </header>
+<!--
+  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License version 3 as published by
+  ~ the Free Software Foundation.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
 
-    <div class="logs">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>{{ 'admin.logging.LOGGER' | translate }}</th>
-                    <th>{{ 'admin.logging.CURRENT_LEVEL' | translate }}</th>
-                    <th>{{ 'admin.logging.CHANGE_TO' | translate }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="log in logging.levels">
-                    <td>{{log.name}}</td>
-                    <td class="wrap-content">{{log.level}}</td>
-                    <td>
-                        <a ng-click="logging.setLevel(log.name, 'debug')">{{ 'admin.logging.LEVEL_DEBUG' | translate }}</a> |
-                        <a ng-click="logging.setLevel(log.name, 'warn')">{{ 'admin.logging.LEVEL_WARN' | translate }}</a> |
-                        <a ng-click="logging.setLevel(log.name, 'info')">{{ 'admin.logging.LEVEL_INFO' | translate }}</a> |
-                        <a ng-click="logging.setLevel(log.name, 'error')">{{ 'admin.logging.LEVEL_ERROR' | translate }}</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<div id="logging-levels-management-view"></div>

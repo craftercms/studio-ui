@@ -33,6 +33,9 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
       '&.paddedLeft': {
         paddingLeft: '20px'
       },
+      '&.width10': {
+        width: '10%'
+      },
       '&.width20': {
         width: '20%'
       },

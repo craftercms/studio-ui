@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React from 'react';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import Typography from '@material-ui/core/Typography';
+import { FormattedMessage } from 'react-intl';
+import TableBody from '@material-ui/core/TableBody';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { useStyles } from './styles';
+import GlobalAppGridRow from '../GlobalAppGridRow';
+import GlobalAppGridCell from '../GlobalAppGridCell';
+import { rand } from '../PathNavigator/utils';
+
+export interface LoggingLevelsGridSkeletonTableProps {
+  numOfItems?: number;
+}
+
+export const LoggingLevelsGridSkeletonTable = React.memo((props: LoggingLevelsGridSkeletonTableProps) => {
+  const { numOfItems = 10 } = props;
+  const items = new Array(numOfItems).fill(null);
+  const classes = useStyles();
+
+  return (
+    <TableContainer>
+      <Table className={classes.tableRoot}>
+        <TableHead>
+          <GlobalAppGridRow className="hoverDisabled">
+            <GlobalAppGridCell className="bordered">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="words.logger" defaultMessage="Logger" />
+              </Typography>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width10">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="loggingLevels.currentLevel" defaultMessage="Current Level" />
+              </Typography>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width30">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="loggingLevels.changeLevelTo" defaultMessage="Change Level To" />
+              </Typography>
+            </GlobalAppGridCell>
+          </GlobalAppGridRow>
+        </TableHead>
+        <TableBody>
+          {items?.map((item, index) => (
+            <GlobalAppGridRow key={index}>
+              <GlobalAppGridCell align="left" className="">
+                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="">
+                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="">
+                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
+              </GlobalAppGridCell>
+            </GlobalAppGridRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+});
