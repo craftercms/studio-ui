@@ -40,6 +40,7 @@ import { Skeleton } from '@material-ui/lab';
 import { rand } from '../PathNavigator/utils';
 import ResetPasswordDialog from '../ResetPasswordDialog';
 import * as React from 'react';
+import InputLabel from '@material-ui/core/InputLabel';
 
 export interface UserInfoDialogUIProps {
   user: User;
@@ -185,10 +186,13 @@ export function UserInfoDialogUI(props: UserInfoDialogUIProps) {
               </section>
             </div>
             <div className={classes.row}>
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="userInfoDialog.firstName" defaultMessage="First name" />
-              </Typography>
+              <InputLabel htmlFor="firstName" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.firstName" defaultMessage="First name" />
+                </Typography>
+              </InputLabel>
               <Input
+                id="firstName"
                 onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
                 value={user.firstName}
                 fullWidth
@@ -197,10 +201,13 @@ export function UserInfoDialogUI(props: UserInfoDialogUIProps) {
               />
             </div>
             <div className={classes.row}>
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="userInfoDialog.lastName" defaultMessage="Last name" />
-              </Typography>
+              <InputLabel htmlFor="lastName" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.lastName" defaultMessage="Last name" />
+                </Typography>
+              </InputLabel>
               <Input
+                id="lastName"
                 onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
                 value={user.lastName}
                 fullWidth
@@ -209,10 +216,13 @@ export function UserInfoDialogUI(props: UserInfoDialogUIProps) {
               />
             </div>
             <div className={classes.row}>
-              <Typography variant="subtitle2" className={classes.label}>
-                <FormattedMessage id="words.email" defaultMessage="Email" />
-              </Typography>
+              <InputLabel htmlFor="email" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.lastName" defaultMessage="Email" />
+                </Typography>
+              </InputLabel>
               <Input
+                id="email"
                 onChange={(e) => onInputChange({ email: e.currentTarget.value })}
                 value={user.email}
                 fullWidth

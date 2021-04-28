@@ -52,6 +52,7 @@ import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelecti
 import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
+import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
 import { LauncherStateProps } from '../components/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 import TranslationOrText from './TranslationOrText';
@@ -187,6 +188,7 @@ export interface GlobalState {
     pathSelection: PathSelectionDialogStateProps;
     changeContentType: ChangeContentTypeDialogStateProps;
     itemMenu: ItemMenuStateProps;
+    itemMegaMenu: ItemMegaMenuStateProps;
     launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
     unlockPublisher: UnlockPublisherDialogStateProps;

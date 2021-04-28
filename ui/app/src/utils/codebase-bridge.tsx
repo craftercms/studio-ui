@@ -192,6 +192,7 @@ export function createCodebaseBridge() {
       UsersGrid: lazy(() => import('../components/UsersGrid')),
       SitesManagement: lazy(() => import('../components/SitesManagement')),
       UsersManagement: lazy(() => import('../components/UsersManagement')),
+      GroupsManagement: lazy(() => import('../components/GroupsManagement'),
       LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement'))
     },
 

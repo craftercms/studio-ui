@@ -91,6 +91,9 @@ export const defaultThemeOptions: ThemeOptions = (function() {
       }
     },
     props: {
+      MuiCheckbox: {
+        color: 'primary'
+      },
       MuiTextField: {
         variant: 'outlined'
       },
