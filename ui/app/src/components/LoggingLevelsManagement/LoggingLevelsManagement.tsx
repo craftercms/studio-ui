@@ -50,6 +50,7 @@ export default function LoggingLevelsManagement() {
   }, [fetchLoggers]);
 
   const changeLevel = (logger: Logger, level: LoggerLevel) => {
+    logger.level = level;
     setLogger(logger.name, level).subscribe(
       () => {
         fetchLoggers();

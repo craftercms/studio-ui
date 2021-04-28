@@ -20,6 +20,10 @@ export const useStyles = makeStyles(() =>
   createStyles({
     tableRoot: {
       tableLayout: 'fixed'
+    },
+    select: {
+      paddingTop: '10px',
+      paddingBottom: '10px'
     }
   })
 );

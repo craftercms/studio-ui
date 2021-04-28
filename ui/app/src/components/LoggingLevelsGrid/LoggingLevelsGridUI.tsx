@@ -27,7 +27,8 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import { LoggerLevel } from '../LoggingLevelsManagement';
-import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 export interface LoggingLevelsGridUIProps {
   resource: Resource<Array<Logger>>;
@@ -52,40 +53,36 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
                   <FormattedMessage id="words.logger" defaultMessage="Logger" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width10">
+              <GlobalAppGridCell className="bordered width20">
                 <Typography variant="subtitle2">
-                  <FormattedMessage id="loggingLevels.currentLevel" defaultMessage="Current Level" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width30">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="loggingLevels.changeLevelTo" defaultMessage="Change Level To" />
+                  <FormattedMessage id="loggingLevels.changeLevelTo" defaultMessage="Current Level" />
                 </Typography>
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           </TableHead>
           <TableBody>
             {loggers?.map((logger) => (
-              <GlobalAppGridRow key={logger.name}>
+              <GlobalAppGridRow key={logger.name} className="hoverDisabled">
                 <GlobalAppGridCell align="left" className="">
                   {logger.name}
                 </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="">
-                  {logger.level}
-                </GlobalAppGridCell>
-                <GlobalAppGridCell>
-                  {levels.map((level, i) => (
-                    <Typography component="span" key={i}>
-                      <Button
-                        onClick={() => onChangeLevel(logger, level)}
-                        color="primary"
-                        disabled={logger.level === level}
-                      >
+                <GlobalAppGridCell align="left">
+                  <Select
+                    value={logger.level}
+                    onChange={(event) => {
+                      onChangeLevel(logger, event.target.value as LoggerLevel);
+                    }}
+                    variant="outlined"
+                    classes={{
+                      root: classes.select
+                    }}
+                  >
+                    {levels.map((level) => (
+                      <MenuItem key={level} value={level}>
                         {level}
-                      </Button>
-                      {i < levels.length - 1 && '|'}
-                    </Typography>
-                  ))}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
             ))}
