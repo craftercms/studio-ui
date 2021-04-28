@@ -23,8 +23,9 @@ import { nnou } from '../../utils/object';
 import { addUserToGroup, deleteUserFromGroup, fetchAll, fetchUsersFromGroup } from '../../services/groups';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
-import TransferListColumn, { TransferListItem } from '../TransferListColumn/TransferListColumn';
+import TransferListColumn from '../TransferListColumn/TransferListColumn';
 import { showSystemNotification } from '../../state/actions/system';
+import { TransferListItem } from '../TransferListColumn';
 
 export interface UserGroupMembershipEditorProps {
   username?: string;

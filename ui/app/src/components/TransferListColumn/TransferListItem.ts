@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './TransferListColumn';
+export interface TransferListItem {
+  id: string | number;
+  title: string;
+  subtitle?: string;
+}
 
-export * from './TransferListColumn';
-
-export * from './TransferListItem';
+export default TransferListItem;
