@@ -53,31 +53,12 @@ export default function ClustersManagement() {
     setFetching(true);
     fetchMembers().subscribe(
       (clusters) => {
-        // setClusters(clusters);
+        setClusters(clusters);
         setFetching(false);
-        setClusters([
-          {
-            id: 1,
-            localAddress: '172.31.70.118',
-            state: 'ACTIVE',
-            heartbeat: '2021-04-27T16:43:30Z',
-            gitUrl: 'ssh://172.31.70.118/opt/crafter/cluster/crafter/data/repos/sites/{siteId}',
-            gitRemoteName: 'cluster_node_172.31.70.118',
-            gitAuthType: 'none'
-          },
-          {
-            id: 2,
-            localAddress: '172.31.70.118',
-            state: 'INACTIVE',
-            heartbeat: '2021-04-27T16:43:30Z',
-            gitUrl: 'ssh://172.31.70.118/opt/crafter/cluster/crafter/data/repos/sites/{siteId}',
-            gitRemoteName: 'cluster_node_172.31.70.118',
-            gitAuthType: 'none'
-          }
-        ]);
       },
       ({ response }) => {
         setError(response);
+        setFetching(false);
       }
     );
   };
