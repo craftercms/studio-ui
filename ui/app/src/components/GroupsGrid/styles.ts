@@ -18,10 +18,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const styles = makeStyles((theme) =>
   createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
     tableRoot: {
       tableLayout: 'fixed'
     },

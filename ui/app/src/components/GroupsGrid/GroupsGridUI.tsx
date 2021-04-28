@@ -28,6 +28,7 @@ import { styles } from './styles';
 import Group from '../../models/Group';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
+import Box from '@material-ui/core/Box';
 
 export interface GroupsGridUIProps {
   resource: Resource<PagedArray<Group>>;
@@ -42,7 +43,7 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
   const groups = resource.read();
 
   return (
-    <section className={classes.root}>
+    <Box display="flex" flexDirection="column">
       <TableContainer>
         <Table className={classes.tableRoot}>
           <TableHead>
@@ -80,6 +81,6 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
         onChangePage={(page: number) => onChangePage(page)}
         onChangeRowsPerPage={onChangeRowsPerPage}
       />
-    </section>
+    </Box>
   );
 }
