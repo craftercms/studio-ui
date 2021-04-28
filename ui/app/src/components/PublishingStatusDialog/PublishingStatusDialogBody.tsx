@@ -21,16 +21,11 @@ import { publishingStatusTileMessages } from '../PublishingStatusTile';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
-import { ListItem } from '@material-ui/core';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Skeleton from '@material-ui/lab/Skeleton';
 import * as React from 'react';
-import { Alert } from '@material-ui/lab';
-import { PublishingStatus } from '../../models/Publishing';
-import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
+import { PublishingStatus as PublishingStatusModel } from '../../models/Publishing';
+import PublishingStatus from '../PublishingStatus';
 
-export type PublishingStatusDialogBodyProps = PublishingStatus & {
+export type PublishingStatusDialogBodyProps = PublishingStatusModel & {
   isFetching: boolean;
   onClose(): void;
   onRefresh?(): void;
@@ -69,48 +64,14 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
         ].filter(Boolean)}
       />
       <DialogBody className={classes.body}>
-        {!enabled && (
-          <Alert severity="warning" style={{ marginBottom: '1em' }}>
-            {formatMessage(publishingStatusTileMessages.disabled)}
-          </Alert>
-        )}
-        <ListItem component="div">
-          <ListItemAvatar>
-            <PublishingStatusAvatar status={isFetching ? null : status} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              isFetching ? (
-                <Skeleton />
-              ) : publishingStatusTileMessages[status] ? (
-                formatMessage(publishingStatusTileMessages[status])
-              ) : (
-                status
-              )
-            }
-            secondary={
-              isFetching ? (
-                <Skeleton />
-              ) : (
-                <>
-                  {message && (
-                    <>
-                      {message}
-                      <br />
-                    </>
-                  )}
-                  {lockOwner && (
-                    <>
-                      {formatMessage(publishingStatusTileMessages.lockOwner, { lockOwner })}
-                      <br />
-                    </>
-                  )}
-                  {lockTTL && formatMessage(publishingStatusTileMessages.lockTTL, { lockTTL })}
-                </>
-              )
-            }
-          />
-        </ListItem>
+        <PublishingStatus
+          enabled={enabled}
+          isFetching={isFetching}
+          status={status}
+          message={message}
+          lockOwner={lockOwner}
+          lockTTL={lockTTL}
+        />
       </DialogBody>
     </>
   );
