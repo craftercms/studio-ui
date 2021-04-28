@@ -38,7 +38,7 @@ const translations = defineMessages({
   }
 });
 
-export default function ClusterManagement() {
+export default function ClustersManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<ApiResponse>();
@@ -99,6 +99,7 @@ export default function ClusterManagement() {
   const onDeleteCluster = (cluster: ClusterMember) => {
     deleteMember(cluster.id).subscribe(
       () => {
+        refresh();
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.clusterDeleted)

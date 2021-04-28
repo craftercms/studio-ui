@@ -45,7 +45,7 @@ export default function ClusterGridUI(props: ClusterGridProps) {
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="bordered width10">
+            <GlobalAppGridCell align="left" className="bordered width10 minWidth100">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Local Address" />
               </Typography>
@@ -55,22 +55,22 @@ export default function ClusterGridUI(props: ClusterGridProps) {
                 <FormattedMessage id="words.state" defaultMessage="State" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width50">
+            <GlobalAppGridCell align="left" className="bordered width50 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.url" defaultMessage="Url" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width20">
+            <GlobalAppGridCell align="left" className="bordered width20 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.remoteName" defaultMessage="Remote Name" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width10">
+            <GlobalAppGridCell align="left" className="bordered width10 minWidth100 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.authType" defaultMessage="Auth Type" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width10"></GlobalAppGridCell>
+            <GlobalAppGridCell align="left" className="bordered width10 padded10"></GlobalAppGridCell>
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
@@ -84,16 +84,16 @@ export default function ClusterGridUI(props: ClusterGridProps) {
                   className={cluster.state === 'ACTIVE' ? classes.active : classes.inactive}
                 />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width50">
+              <GlobalAppGridCell align="left" className="width50 padded10">
                 {cluster.gitUrl}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width20">
+              <GlobalAppGridCell align="left" className="width20 padded10">
                 {cluster.gitRemoteName}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width10">
+              <GlobalAppGridCell align="left" className="width10 padded10">
                 {cluster.gitAuthType}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width10">
+              <GlobalAppGridCell align="left" className="width10 padded10">
                 <ConfirmDropdown
                   cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
                   confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
