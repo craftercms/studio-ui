@@ -24,7 +24,7 @@ import { createLookupTable } from '../../utils/object';
 import TransferListColumn from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl/dist/react-intl';
 
-interface TransferListProps {
+export interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
   inProgressIds: (string | number)[];

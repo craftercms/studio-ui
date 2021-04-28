@@ -22,7 +22,6 @@ import { ApiResponse } from '../../models/ApiResponse';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/groups';
 import { useLogicResource } from '../../utils/hooks';
-import ErrorBoundary from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import EditGroupDialog from '../EditGroupDialog';
@@ -111,26 +110,24 @@ export default function GroupsManagement() {
           </Button>
         }
       />
-      <ErrorBoundary>
-        <SuspenseWithEmptyState
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: <GroupsGridSkeletonTable numOfItems={limit} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: <FormattedMessage id="groupsGrid.emptyStateMessage" defaultMessage="No Groups Found" />
+          }
+        }}
+      >
+        <GroupsGridUI
           resource={resource}
-          suspenseProps={{
-            fallback: <GroupsGridSkeletonTable numOfItems={limit} />
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: <FormattedMessage id="groupsGrid.emptyStateMessage" defaultMessage="No Groups Found" />
-            }
-          }}
-        >
-          <GroupsGridUI
-            resource={resource}
-            onRowClicked={onRowClicked}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-          />
-        </SuspenseWithEmptyState>
-      </ErrorBoundary>
+          onRowClicked={onRowClicked}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+        />
+      </SuspenseWithEmptyState>
       <EditGroupDialog
         open={openGroupDialog}
         group={selectedGroup}

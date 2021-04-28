@@ -30,7 +30,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
 
-interface TransferListColumnProps {
+export interface TransferListColumnProps {
   title: ReactNode;
   emptyStateMessage?: ReactNode;
   items: TransferListItem[];

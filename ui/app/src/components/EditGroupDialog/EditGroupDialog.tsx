@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Group from '../../models/Group';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 import EditGroupDialogContainer from './EditGroupDialogContainer';
 
 export interface EditGroupDialogProps {

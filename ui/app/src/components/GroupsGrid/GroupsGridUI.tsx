@@ -61,7 +61,7 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
             </GlobalAppGridRow>
           </TableHead>
           <TableBody>
-            {groups?.map((group, i) => (
+            {groups.map((group, i) => (
               <GlobalAppGridRow key={group.id} onClick={() => onRowClicked(group)}>
                 <GlobalAppGridCell align="left" className="width25">
                   {group.name}
