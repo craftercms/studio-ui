@@ -21,7 +21,7 @@ interface ClusterGridProps {
   resource: Resource<ClusterMember[]>;
 }
 
-export default function ClusterGrid(props: ClusterGridProps) {
+export default function ClusterGridUI(props: ClusterGridProps) {
   props.resource.read();
   return <section>cluster</section>;
 }

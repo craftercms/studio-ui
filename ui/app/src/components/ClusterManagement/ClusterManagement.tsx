@@ -26,7 +26,7 @@ import { useLogicResource, useMount } from '../../utils/hooks';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchMembers } from '../../services/clusters';
 import { ClusterMember } from '../../models/Clusters';
-import ClusterGrid from '../ClusterGrid';
+import ClusterGridUI from '../ClusterGrid';
 
 export default function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
@@ -108,7 +108,7 @@ export default function ClusterManagement() {
             }
           }}
         >
-          <ClusterGrid resource={resource} />
+          <ClusterGridUI resource={resource} />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
     </section>
