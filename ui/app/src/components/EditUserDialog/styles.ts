@@ -41,14 +41,11 @@ export const useStyles = makeStyles((theme) =>
       padding: 0
     },
     section: {
-      padding: '30px 40px',
-      '&.noPaddingBottom': {
-        paddingBottom: 0
-      }
+      padding: '30px 40px'
     },
     row: {
       display: 'flex',
-      padding: '15px 0',
+      padding: '10px 0',
       alignItems: 'center'
     },
     userNameWrapper: {
@@ -69,25 +66,14 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     label: {
-      flexBasis: '180px'
+      flexBasis: '180px',
+      '& + .MuiInputBase-root': {
+        marginTop: '0 !important'
+      }
     },
     sectionTitle: {
       textTransform: 'uppercase',
       marginBottom: '10px'
-    },
-    inputRoot: {
-      pointerEvents: 'none'
-    },
-    readOnlyInput: {
-      background: 'none',
-      borderColor: 'transparent',
-      paddingLeft: 0,
-      '&:focus': {
-        boxShadow: 'none'
-      }
-    },
-    membershipsWrapper: {
-      marginTop: '13px'
     },
     siteItem: {
       margin: '10px 0'

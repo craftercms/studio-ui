@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CreateUserDialog';
+export { default } from './UserGroupMembershipEditor';
 
-export * from './CreateUserDialog';
-
-export * from './CreateUserDialogContainer';
+export * from './UserGroupMembershipEditor';

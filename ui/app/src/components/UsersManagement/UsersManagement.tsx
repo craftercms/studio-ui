@@ -19,7 +19,7 @@ import AddIcon from '@material-ui/icons/Add';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
-import UserEditDialog from '../UserEditDialog';
+import EditUserDialog from '../EditUserDialog';
 import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
@@ -144,7 +144,7 @@ export default function UsersManagement(props: UsersManagementProps) {
         onClose={() => setOpenCreateUserDialog(false)}
         passwordRequirementsRegex={passwordRequirementsRegex}
       />
-      <UserEditDialog
+      <EditUserDialog
         open={Boolean(viewUser)}
         onClose={onUserInfoClose}
         onUserEdited={onUserEdited}
