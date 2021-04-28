@@ -25,6 +25,7 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
+import useStyles from './styles';
 
 export interface ClustersGridSkeletonTableProps {
   numOfItems?: number;
@@ -32,6 +33,7 @@ export interface ClustersGridSkeletonTableProps {
 
 export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
+  const classes = useStyles();
   const items = new Array(numOfItems).fill(null);
   return (
     <TableContainer>
@@ -67,13 +69,13 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.map((cluster, i) => (
-            <GlobalAppGridRow key={cluster.id} className="hoverDisabled">
+          {items.map((item, i) => (
+            <GlobalAppGridRow key={i} className="hoverDisabled">
               <GlobalAppGridCell align="left" className="width10">
-                <Skeleton variant="text" width={`${rand(40, 50)}%`} />
+                <Skeleton variant="text" width={`${rand(60, 80)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="center" className="">
-                <Skeleton variant="circle" width={20} height={20} />
+                <Skeleton className={classes.marginCenter} variant="circle" width={20} height={20} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width50 padded10">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
@@ -82,7 +84,7 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
                 <Skeleton variant="text" width={`${rand(50, 70)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width10 padded10">
-                <Skeleton variant="text" width={`${rand(40, 50)}%`} />
+                <Skeleton variant="text" width={`${rand(60, 70)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width10 padded10">
                 <Skeleton variant="circle" width={40} height={40} />

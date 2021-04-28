@@ -23,6 +23,9 @@ export const useStyles = makeStyles((theme) =>
     },
     inactive: {
       color: theme.palette.error.main
+    },
+    marginCenter: {
+      margin: '0 auto'
     }
   })
 );

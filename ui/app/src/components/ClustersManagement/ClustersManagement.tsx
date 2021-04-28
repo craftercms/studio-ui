@@ -29,6 +29,7 @@ import ClusterGridUI from '../ClusterGrid';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
+import { ClustersGridSkeletonTable } from '../ClusterGrid/ClustersGridSkeletonTable';
 
 const translations = defineMessages({
   clusterDeleted: {
@@ -107,7 +108,7 @@ export default function ClustersManagement() {
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <>loading</>
+          fallback: <ClustersGridSkeletonTable />
         }}
         withEmptyStateProps={{
           emptyStateProps: {
