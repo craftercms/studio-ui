@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { useStyles } from './styles';
+import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import { rand } from '../PathNavigator/utils';
@@ -54,12 +54,12 @@ export const LoggingLevelsGridSkeletonTable = React.memo((props: LoggingLevelsGr
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items?.map((item, index) => (
+          {items.map((item, index) => (
             <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="left" className="">
+              <GlobalAppGridCell align="left">
                 <Skeleton variant="text" width={`${rand(40, 60)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="">
+              <GlobalAppGridCell align="left">
                 <Skeleton variant="text" width="30%" />
               </GlobalAppGridCell>
             </GlobalAppGridRow>

@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { Resource } from '../../models/Resource';
-import { Logger } from '../../models/Logger';
-import { useStyles } from './styles';
+import { Logger, LoggerLevel } from '../../models/Logger';
+import useStyles from './styles';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -26,7 +26,6 @@ import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
-import { LoggerLevel } from '../LoggingLevelsManagement';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -61,11 +60,9 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
             </GlobalAppGridRow>
           </TableHead>
           <TableBody>
-            {loggers?.map((logger) => (
+            {loggers.map((logger) => (
               <GlobalAppGridRow key={logger.name} className="hoverDisabled">
-                <GlobalAppGridCell align="left" className="">
-                  {logger.name}
-                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left">{logger.name}</GlobalAppGridCell>
                 <GlobalAppGridCell align="left">
                   <Select
                     value={logger.level}

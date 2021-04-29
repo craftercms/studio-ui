@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Logger } from '../../models/Logger';
+import { Logger, LoggerLevel } from '../../models/Logger';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchLoggers as fetchLoggersService, setLogger } from '../../services/logs';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -23,8 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LoggingLevelsGridUI, { LoggingLevelsGridSkeletonTable } from '../LoggingLevelsGrid';
-
-export type LoggerLevel = 'debug' | 'warn' | 'info' | 'error';
 
 export default function LoggingLevelsManagement() {
   const [fetching, setFetching] = useState(false);
