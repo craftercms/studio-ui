@@ -27,7 +27,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PublishingManager() {
+export default function PublishingDialog() {
   const state = useSelection((state) => state.dialogs.publishingStatus);
   const classes = useStyles();
 

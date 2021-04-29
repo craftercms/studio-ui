@@ -22,10 +22,10 @@ import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import * as React from 'react';
-import { PublishingStatus as PublishingStatusModel } from '../../models/Publishing';
-import PublishingStatus from '../PublishingStatus';
+import { PublishingStatus } from '../../models/Publishing';
+import PublishingStatusDisplay from '../PublishingStatusDisplay';
 
-export type PublishingStatusDialogBodyProps = PublishingStatusModel & {
+export type PublishingStatusDialogBodyProps = PublishingStatus & {
   isFetching: boolean;
   onClose(): void;
   onRefresh?(): void;
@@ -64,7 +64,7 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
         ].filter(Boolean)}
       />
       <DialogBody className={classes.body}>
-        <PublishingStatus
+        <PublishingStatusDisplay
           enabled={enabled}
           isFetching={isFetching}
           status={status}

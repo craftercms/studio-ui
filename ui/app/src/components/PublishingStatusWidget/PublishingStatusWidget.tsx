@@ -15,8 +15,8 @@
  */
 
 import * as React from 'react';
-import { PublishingStatus as PublishingStatusModel } from '../../models/Publishing';
-import PublishingStatus from '../PublishingStatus/PublishingStatus';
+import { PublishingStatus } from '../../models/Publishing';
+import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { FormattedMessage } from 'react-intl';
@@ -28,7 +28,7 @@ import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
 
 type PublishingStatusWidgetProps = {
-  state: PublishingStatusModel;
+  state: PublishingStatus;
 };
 
 const useStyles = makeStyles((theme) =>
@@ -80,7 +80,7 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
         />
       </CardContent>
       <CardContent className={classes.statusContent}>
-        <PublishingStatus
+        <PublishingStatusDisplay
           enabled={enabled}
           status={status}
           message={message}

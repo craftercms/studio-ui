@@ -23,13 +23,13 @@ import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import Skeleton from '@material-ui/lab/Skeleton';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
-import { PublishingStatus as PublishingStatusModel } from '../../models/Publishing';
+import { PublishingStatus } from '../../models/Publishing';
 
-export type PublishingStatusProps = PublishingStatusModel & {
+export type PublishingStatusDisplayProps = PublishingStatus & {
   isFetching: boolean;
 };
 
-export default function PublishingStatus(props: PublishingStatusProps) {
+export default function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
   const { enabled, isFetching, status, message, lockOwner, lockTTL } = props;
   const { formatMessage } = useIntl();
 
