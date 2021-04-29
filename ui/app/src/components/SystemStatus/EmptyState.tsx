@@ -61,21 +61,16 @@ export type EmptyStateProps = React.PropsWithChildren<{
   styles?: EmptyStateStyles;
 }>;
 
+function isValidElement(target: any): boolean {
+  return React.isValidElement(target) || nou(target) || ['string', 'number'].includes(typeof target);
+}
+
 export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles(props.styles);
   const { formatMessage } = useIntl();
   const { image = emptyImage, classes: propClasses, children } = props;
-  const title =
-    React.isValidElement(props.title) || typeof props.title === 'string' || typeof props.title === 'number'
-      ? props.title
-      : formatMessage(props.title as MessageDescriptor);
-  const subtitle =
-    React.isValidElement(props.subtitle) ||
-    nou(props.subtitle) ||
-    typeof props.subtitle === 'string' ||
-    typeof props.subtitle === 'number'
-      ? props.subtitle
-      : formatMessage(props.subtitle as MessageDescriptor);
+  const title = isValidElement(props.title) ? props.title : formatMessage(props.title as MessageDescriptor);
+  const subtitle = isValidElement(props.subtitle) ? props.subtitle : formatMessage(props.subtitle as MessageDescriptor);
   return (
     <div className={clsx(classes.root, propClasses?.root)}>
       {image && <img className={clsx(classes.image, propClasses?.image)} src={image} alt="" />}

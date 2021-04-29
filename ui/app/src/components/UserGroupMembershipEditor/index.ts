@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './TransferListColumn';
+export { default } from './UserGroupMembershipEditor';
 
-export * from './TransferListColumn';
-
-export * from './TransferListItem';
+export * from './UserGroupMembershipEditor';
