@@ -49,3 +49,15 @@ export interface PublishingStatus {
   lockOwner: string;
   lockTTL: string;
 }
+
+export interface BulkPublishFormData {
+  path: string;
+  comment: string;
+  environment: string;
+}
+
+export interface PublishByFormData {
+  commitIds: string;
+  comment: string;
+  environment: string;
+}

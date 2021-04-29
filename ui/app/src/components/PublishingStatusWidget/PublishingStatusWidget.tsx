@@ -16,59 +16,34 @@
 
 import * as React from 'react';
 import { PublishingStatus } from '../../models/Publishing';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
+import Paper from '@material-ui/core/Paper';
 import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
 
 type PublishingStatusWidgetProps = {
   state: PublishingStatus;
   onRefresh?(): void;
   onStartStop?(): void;
+  onUnlock?(): void;
 };
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    statusBar: {
-      borderBottom: 'none'
-    },
-    statusBarToolbar: {
-      minHeight: 'unset'
-    },
-    statusBarTitle: {
-      fontSize: '16px'
-    },
-    statusContent: {
-      backgroundColor: palette.gray.light0
-    },
-    actionButton: {
-      minWidth: '40px',
-      color: theme.palette.action.active
-    }
-  })
-);
-
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
-  const { state, onRefresh, onStartStop } = props;
+  const { state, onRefresh, onStartStop, onUnlock } = props;
   const { enabled, status, message, lockOwner, lockTTL } = state;
-  const classes = useStyles();
 
   return (
-    <Card>
-      <CardContent>
-        <PublishingStatusDialogBody
-          enabled={enabled}
-          status={status}
-          message={message}
-          lockOwner={lockOwner}
-          lockTTL={lockTTL}
-          isFetching={!state}
-          onClose={null}
-          onRefresh={onRefresh}
-          onStartStop={onStartStop}
-        />
-      </CardContent>
-    </Card>
+    <Paper elevation={2}>
+      <PublishingStatusDialogBody
+        enabled={enabled}
+        status={status}
+        message={message}
+        lockOwner={lockOwner}
+        lockTTL={lockTTL}
+        isFetching={!state}
+        onClose={null}
+        onRefresh={onRefresh}
+        onStartStop={onStartStop}
+        onUnlock={lockOwner ? onUnlock : null}
+      />
+    </Paper>
   );
 }
