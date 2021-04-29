@@ -53,7 +53,11 @@ const useStyles = makeStyles((theme: Theme) =>
       cursor: 'pointer'
     },
     inputRoot: {
-      flexGrow: 1
+      flexGrow: 1,
+      background: 'transparent',
+      '&:focus': {
+        backgroundColor: theme.palette.background.paper
+      }
     },
     inputInput: {
       background: 'none',

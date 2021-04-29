@@ -16,7 +16,7 @@
 
 import ArrowDown from '@material-ui/icons/ArrowDropDownRounded';
 import Button, { ButtonTypeMap } from '@material-ui/core/Button';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -48,9 +48,9 @@ const useStyles = makeStyles(() =>
 
 interface ConfirmDropdownProps {
   text?: string;
-  cancelText: string;
-  confirmText: string;
-  confirmHelperText?: string;
+  cancelText: ReactNode;
+  confirmText: ReactNode;
+  confirmHelperText?: ReactNode;
   disabled?: boolean;
   buttonVariant?: ButtonTypeMap['props']['variant'];
   classes?: {

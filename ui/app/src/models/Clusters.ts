@@ -17,13 +17,13 @@
 export interface ClusterMember {
   id: number;
   localAddress: string;
-  state: string;
+  state: 'ACTIVE' | 'INACTIVE';
   heartbeat: string;
   gitUrl: string;
   gitRemoteName: string;
   gitAuthType: string;
-  gitUsername: string;
-  gitPassword: string;
-  gitToken: string;
-  gitPrivateKey: string;
+  gitUsername?: string;
+  gitPassword?: string;
+  gitToken?: string;
+  gitPrivateKey?: string;
 }

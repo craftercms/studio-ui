@@ -14,17 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import React, { useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import User from '../../models/User';
-import { useSitesBranch, useSpreadState } from '../../utils/hooks';
-import { disable, enable, fetchRolesBySite, trash, update } from '../../services/users';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { showSystemNotification } from '../../state/actions/system';
+import { useIntl } from 'react-intl';
+import { useSitesBranch, useSpreadState } from '../../utils/hooks';
+import User from '../../models/User';
+import React, { useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
-import { UserInfoDialogUI } from './UserInfoDialogUI';
+import { disable, enable, fetchRolesBySite, trash, update } from '../../services/users';
+import { showSystemNotification } from '../../state/actions/system';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { EditUserDialogUI } from './EditUserDialogUI';
+import { defineMessages } from 'react-intl';
+
+export interface EditUserDialogContainerProps {
+  open: boolean;
+  user: User;
+  onClose(): void;
+  onUserEdited(): void;
+  passwordRequirementsRegex: string;
+}
 
 const translations = defineMessages({
   userDeleted: {
@@ -45,25 +53,7 @@ const translations = defineMessages({
   }
 });
 
-interface UserInfoDialogProps {
-  open: boolean;
-  onClose(): void;
-  onUserEdited(): void;
-  user: User;
-  passwordRequirementsRegex: string;
-}
-
-export default function UserEditDialog(props: UserInfoDialogProps) {
-  const { open, onClose } = props;
-
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <UserInfoDialogContainer {...props} />
-    </Dialog>
-  );
-}
-
-export function UserInfoDialogContainer(props: UserInfoDialogProps) {
+export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const { open, onClose, onUserEdited, passwordRequirementsRegex } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -195,9 +185,8 @@ export function UserInfoDialogContainer(props: UserInfoDialogProps) {
   };
 
   return (
-    <UserInfoDialogUI
+    <EditUserDialogUI
       user={user}
-      editMode={editMode}
       openResetPassword={openResetPassword}
       inProgress={inProgress}
       dirty={dirty}
@@ -215,3 +204,5 @@ export function UserInfoDialogContainer(props: UserInfoDialogProps) {
     />
   );
 }
+
+export default EditUserDialogContainer;

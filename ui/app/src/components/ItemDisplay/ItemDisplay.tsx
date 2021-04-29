@@ -49,9 +49,11 @@ export const useStyles = makeStyles((theme) =>
       display: 'inline-flex',
       alignItems: 'center',
       placeContent: 'left center',
+      maxWidth: '100%',
       ...styles.root
     }),
     label: (styles) => ({
+      marginLeft: 2,
       ...styles.label
     }),
     labelPreviewable: (styles) => ({

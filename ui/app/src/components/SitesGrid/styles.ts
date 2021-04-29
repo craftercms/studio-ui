@@ -17,7 +17,7 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import cardTitleStyles from '../../styles/card';
 
-export const sitesGridStyles = makeStyles((theme) =>
+export const useSitesGridStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
@@ -33,13 +33,13 @@ export const sitesGridStyles = makeStyles((theme) =>
   })
 );
 
-export const cardStyles = makeStyles((theme) =>
+export const useSiteCardStyles = makeStyles(() =>
   createStyles({
     media: {
       height: '226px'
     },
     card: {
-      width: '402px',
+      width: '400px',
       '&.compact': {
         display: 'flex'
       }
