@@ -332,6 +332,9 @@ export function generateSingleItemOptions(
   if (hasCreateAction(item.availableActions)) {
     sectionA.push(menuOptions.createContent);
   }
+  if (hasUploadAction(item.availableActions)) {
+    sectionB.push(menuOptions.upload);
+  }
   if (hasCreateFolderAction(item.availableActions)) {
     sectionA.push(menuOptions.createFolder);
   }
@@ -380,9 +383,6 @@ export function generateSingleItemOptions(
     } else {
       sectionB.push(menuOptions.duplicateAsset);
     }
-  }
-  if (hasUploadAction(item.availableActions)) {
-    sectionB.push(menuOptions.upload);
   }
   // endregion
 
