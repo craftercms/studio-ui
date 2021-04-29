@@ -76,8 +76,8 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
       className={clsx(classes.appBar, props.classes?.appBar)}
     >
       <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>
-        <section>
-          <Typography variant="h4" component="h1" className={clsx(classes.title, props.classes?.title)}>
+        <section className={clsx(classes.title, props.classes?.title)}>
+          <Typography variant="h4" component="h1">
             {title}
           </Typography>
         </section>
