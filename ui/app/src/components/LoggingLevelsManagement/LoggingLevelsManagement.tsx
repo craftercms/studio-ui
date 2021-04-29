@@ -23,11 +23,14 @@ import { FormattedMessage } from 'react-intl';
 import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LoggingLevelsGridUI, { LoggingLevelsGridSkeletonTable } from '../LoggingLevelsGrid';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 export default function LoggingLevelsManagement() {
   const [fetching, setFetching] = useState(false);
   const [loggers, setLoggers] = useState<Array<Logger>>(null);
   const [error, setError] = useState<ApiResponse>();
+  const dispatch = useDispatch();
 
   const fetchLoggers = useCallback(() => {
     setFetching(true);
@@ -49,11 +52,13 @@ export default function LoggingLevelsManagement() {
 
   const changeLevel = (logger: Logger, level: LoggerLevel) => {
     logger.level = level;
-    setLogger(logger.name, level).subscribe(
+    setLogger(null, level).subscribe(
       () => {
         fetchLoggers();
       },
-      () => {}
+      (response) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
     );
   };
 
