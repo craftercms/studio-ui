@@ -24,12 +24,15 @@ import DialogBody from '../Dialogs/DialogBody';
 import * as React from 'react';
 import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusDisplay from '../PublishingStatusDisplay';
+import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
+import PlayCircleOutlineOutlinedIcon from '@material-ui/icons/PlayCircleOutlineOutlined';
 
 export type PublishingStatusDialogBodyProps = PublishingStatus & {
   isFetching: boolean;
   onClose(): void;
   onRefresh?(): void;
   onUnlock?(): void;
+  onStartStop?(): void;
 };
 
 const useStyles = makeStyles(() =>
@@ -42,7 +45,7 @@ const useStyles = makeStyles(() =>
 );
 
 function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
-  const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, isFetching } = props;
+  const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, onStartStop, isFetching } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
@@ -55,6 +58,13 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
             icon: LockOpenRoundedIcon,
             onClick: onUnlock,
             tooltip: formatMessage(publishingStatusTileMessages.unlock)
+          },
+          onStartStop && {
+            icon: status === 'ready' ? PauseCircleOutlineOutlinedIcon : PlayCircleOutlineOutlinedIcon,
+            onClick: onStartStop,
+            tooltip: formatMessage(
+              status === 'ready' ? publishingStatusTileMessages.stop : publishingStatusTileMessages.start
+            )
           },
           onRefresh && {
             icon: RefreshRoundedIcon,

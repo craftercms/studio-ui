@@ -16,19 +16,16 @@
 
 import * as React from 'react';
 import { PublishingStatus } from '../../models/Publishing';
-import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { FormattedMessage } from 'react-intl';
-import GlobalAppToolbar from '../GlobalAppToolbar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
-import Button from '@material-ui/core/Button';
-import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
-import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
+import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
 
 type PublishingStatusWidgetProps = {
   state: PublishingStatus;
+  onRefresh?(): void;
+  onStartStop?(): void;
 };
 
 const useStyles = makeStyles((theme) =>
@@ -53,40 +50,23 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
-  const { state } = props;
+  const { state, onRefresh, onStartStop } = props;
   const { enabled, status, message, lockOwner, lockTTL } = state;
   const classes = useStyles();
 
   return (
     <Card>
       <CardContent>
-        <GlobalAppToolbar
-          title={<FormattedMessage id="PublishingStatus.title" defaultMessage="Publishing Status" />}
-          classes={{
-            appBar: classes.statusBar,
-            toolbar: classes.statusBarToolbar,
-            title: classes.statusBarTitle
-          }}
-          rightContent={
-            <>
-              <Button size="small" classes={{ root: classes.actionButton }}>
-                <PauseCircleOutlineOutlinedIcon />
-              </Button>
-              <Button size="small" classes={{ root: classes.actionButton }}>
-                <RefreshRoundedIcon />
-              </Button>
-            </>
-          }
-        />
-      </CardContent>
-      <CardContent className={classes.statusContent}>
-        <PublishingStatusDisplay
+        <PublishingStatusDialogBody
           enabled={enabled}
           status={status}
           message={message}
           lockOwner={lockOwner}
           lockTTL={lockTTL}
           isFetching={!state}
+          onClose={null}
+          onRefresh={onRefresh}
+          onStartStop={onStartStop}
         />
       </CardContent>
     </Card>

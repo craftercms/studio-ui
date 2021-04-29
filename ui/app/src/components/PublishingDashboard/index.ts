@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PublishingDialog';
+export { default } from './PublishingDashboard';
 
-export * from './PublishingDialog';
+export * from './PublishingDashboard';

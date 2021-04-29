@@ -15,9 +15,13 @@
  */
 
 import * as React from 'react';
-import { useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useSelection } from '../../utils/hooks';
 import PublishingStatusWidget from '../PublishingStatusWidget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { start, stop } from '../../services/publishing';
+import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
+import { useDispatch } from 'react-redux';
+import BulkPublishWidget from '../BulkPublishWidget';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -27,13 +31,29 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PublishingDialog() {
+export default function PublishingDashboard() {
   const state = useSelection((state) => state.dialogs.publishingStatus);
   const classes = useStyles();
+  const site = useActiveSiteId();
+  const dispatch = useDispatch();
+
+  const onStartStop = () => {
+    const action = state.status === 'ready' ? stop : start;
+
+    action(site).subscribe(() => {
+      dispatch(fetchPublishingStatus());
+    });
+  };
+
+  const onRefresh = () => {
+    dispatch(fetchPublishingStatus());
+  };
 
   return (
     <section className={classes.root}>
-      <PublishingStatusWidget state={state} />
+      <PublishingStatusWidget state={state} onStartStop={onStartStop} onRefresh={onRefresh} />
+
+      <BulkPublishWidget />
     </section>
   );
 }
