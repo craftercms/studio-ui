@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cardStyles } from './styles';
+import { useSiteCardStyles } from './styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -27,7 +27,7 @@ interface SiteCardSkeletonProps {
 }
 
 export function SiteCardSkeleton(props: SiteCardSkeletonProps) {
-  const classes = cardStyles();
+  const classes = useSiteCardStyles();
   return (
     <Card className={clsx(classes.card, props.compact && 'compact')}>
       <CardHeader

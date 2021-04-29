@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sitesGridStyles } from './styles';
+import { useSitesGridStyles } from './styles';
 import Grid from '@material-ui/core/Grid';
 import { SiteCardSkeleton } from './SiteCardSkeleton';
 import React from 'react';
@@ -25,7 +25,7 @@ interface SkeletonSitesGridProps {
 }
 
 export function SkeletonSitesGrid(props: SkeletonSitesGridProps) {
-  const classes = sitesGridStyles();
+  const classes = useSitesGridStyles();
   const { numOfItems = 5, currentView } = props;
   const items = new Array(numOfItems).fill(null);
   return (

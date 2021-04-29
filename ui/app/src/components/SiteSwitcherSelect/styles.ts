@@ -15,46 +15,35 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import cardTitleStyles from '../../styles/card';
 
-export const useSitesGridStyles = makeStyles(() =>
+export const useSiteSwitcherMinimalistStyles = makeStyles(() =>
   createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      marginTop: '20px'
+    menu: {
+      maxWidth: 110,
+      padding: '10px 10px'
     },
-    paginationRoot: {
-      '&:last-child': {
-        alignSelf: 'flex-end',
-        marginTop: '20px'
-      }
-    }
-  })
-);
-
-export const useSiteCardStyles = makeStyles(() =>
-  createStyles({
-    media: {
-      height: '226px'
-    },
-    card: {
-      width: '400px',
-      '&.compact': {
-        display: 'flex'
-      }
-    },
-    cardHeader: {
-      height: '77px',
-      width: '100%',
-      '& .cardTitle': {
-        ...cardTitleStyles
+    menuRoot: {
+      '&.MuiInput-underline::before': {
+        display: 'none'
       },
-      '& .cardSubtitle': {
-        overflow: 'hidden',
-        display: '-webkit-box',
-        '-webkit-line-clamp': 1,
-        '-webkit-box-orient': 'vertical'
+      '&.MuiInput-underline::after': {
+        display: 'none'
+      },
+      background: 'transparent'
+    },
+    menuItem: {
+      maxWidth: 390,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      display: 'block'
+    },
+    input: {
+      border: 'none',
+      background: 'transparent',
+      '&:focus:invalid, &:focus': {
+        border: 'none',
+        boxShadow: 'none'
       }
     }
   })
