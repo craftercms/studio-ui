@@ -1140,105 +1140,13 @@
   app.controller('clusterCtrl', [
     '$rootScope',
     '$scope',
-    '$state',
-    '$window',
-    '$sce',
-    'adminService',
-    '$uibModal',
-    '$timeout',
-    '$stateParams',
-    '$translate',
-    '$location',
-    function(
-      $rootScope,
-      $scope,
-      $state,
-      $window,
-      $sce,
-      adminService,
-      $uibModal,
-      $timeout,
-      $stateParams,
-      $translate,
-      $location
-    ) {
-      $scope.clusters = {};
-      var clusters = $scope.clusters;
-
-      this.init = function() {
-        $scope.debounceDelay = 500;
-
-        $scope.showModal = function(template, size, verticalCentered, styleClass) {
-          $scope.clustersError = null;
-
-          var modalInstance = $uibModal.open({
-            templateUrl: template,
-            windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
-            backdrop: 'static',
-            keyboard: true,
-            controller: 'clusterCtrl',
-            scope: $scope,
-            size: size ? size : ''
-          });
-
-          return modalInstance;
-        };
-        $scope.hideModal = function() {
-          $scope.adminModal.close();
-          $('input').each(function(index, input) {
-            input.tabIndex = index + 1;
-          });
-        };
-      };
-      this.init();
-
-      // table setup
-      $scope.membersCollection = [];
-
-      clusters.getClusters = function() {
-        adminService.getClusterMembers().then(function(data) {
-          $scope.membersCollection = data;
-          $scope.$apply();
+    function($rootScope, $scope) {
+      CrafterCMSNext.render(document.querySelector('#clusters-management-view'), 'ClustersManagement').then((done) => {
+        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+          unsubscribe();
+          done.unmount();
         });
-      };
-
-      CrafterCMSNext.system.getStore().subscribe(() => {
-        clusters.getClusters();
       });
-
-      clusters.viewClusterMember = function(clusterMember) {
-        $scope.clusterMember = clusterMember;
-        $scope.dialogMode = false;
-        $scope.dialogEdit = false;
-
-        $scope.adminModal = $scope.showModal('modalView.html');
-      };
-      clusters.removeClusterMember = function(clusterMember) {
-        var deleteClusterMember = function() {
-          adminService.deleteClusterMember(clusterMember).then(
-            function(data) {
-              var index = $scope.membersCollection.indexOf(clusterMember);
-              if (index !== -1) {
-                $scope.membersCollection.splice(index, 1);
-              }
-              $rootScope.showNotification(
-                formatMessage(adminDashboardMessages.clusterDeleted, {
-                  cluster: clusterMember.gitUrl
-                })
-              );
-            },
-            function(data) {
-              $scope.error = data.response.message;
-              $scope.adminModal = $scope.showModal('deleteClusterError.html', 'md', true);
-            }
-          );
-        };
-
-        $scope.confirmationAction = deleteClusterMember;
-        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${clusterMember.gitUrl}?`;
-
-        $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, 'studioMedium');
-      };
     }
   ]);
 
