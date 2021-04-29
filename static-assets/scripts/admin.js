@@ -640,35 +640,16 @@
   ]);
 
   app.controller('LoggingLevelsCtrl', [
-    '$scope',
-    '$state',
-    '$window',
-    'adminService',
-    '$translate',
-    function($scope, $state, $window, adminService, $translate) {
-      $scope.logging = {};
-      var logging = $scope.logging;
-
-      CrafterCMSNext.system.getStore().subscribe(() => {
-        adminService.getLoggers().then(function(data) {
-          logging.levels = data;
-          $scope.$apply();
-        });
-      });
-
-      logging.setLevel = function(log, level) {
-        adminService
-          .setLogger({
-            logger: log,
-            level: level
-          })
-          .then(function() {
-            adminService.getLoggers().then(function(data) {
-              logging.levels = data;
-              $scope.$apply();
-            });
+    '$rootScope',
+    function($rootScope) {
+      CrafterCMSNext.render(document.querySelector('#logging-levels-management-view'), 'LoggingLevelsManagement').then(
+        (done) => {
+          const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+            unsubscribe();
+            done.unmount();
           });
-      };
+        }
+      );
     }
   ]);
 

@@ -14,9 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Logger {
-  level: string;
-  name: string;
-}
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export type LoggerLevel = 'debug' | 'warn' | 'info' | 'error';
+export const useStyles = makeStyles(() =>
+  createStyles({
+    tableRoot: {
+      tableLayout: 'fixed'
+    },
+    select: {
+      paddingTop: '10px',
+      paddingBottom: '10px'
+    }
+  })
+);
+
+export default useStyles;

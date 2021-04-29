@@ -14,9 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Logger {
-  level: string;
-  name: string;
-}
+export { default } from './LoggingLevelsGridUI';
 
-export type LoggerLevel = 'debug' | 'warn' | 'info' | 'error';
+export * from './LoggingLevelsGridUI';
+
+export * from './LoggingLevelsGridSkeletonTable';
