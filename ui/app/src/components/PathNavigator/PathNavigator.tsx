@@ -69,6 +69,7 @@ import { SystemIconDescriptor } from '../SystemIcon';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import { batchActions } from '../../state/actions/misc';
 
 interface Menu {
   path?: string;
@@ -351,18 +352,19 @@ export default function PathNavigator(props: PathNavigatorProps) {
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
     let path = state.currentPath;
-
     if (path === '/site/website') {
       path = withIndex(state.currentPath);
     }
-    dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMegaMenu({
-        path: path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top, left },
-        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path: path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top, left },
+          loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
+        })
+      ])
     );
   };
 
