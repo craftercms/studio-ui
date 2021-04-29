@@ -23,20 +23,9 @@ export const useStyles = makeStyles((theme) =>
       display: 'flex',
       alignItems: 'center'
     },
-    chip: {
-      background: theme.palette.info.main,
-      color: theme.palette.text.primary,
-      marginLeft: 'auto'
-    },
-    avatar: {
-      marginRight: '30px',
-      width: '90px',
-      height: '90px'
-    },
     actions: {
       marginLeft: 'auto'
     },
-    userInfo: {},
     body: {
       padding: 0
     },
@@ -46,19 +35,19 @@ export const useStyles = makeStyles((theme) =>
         paddingBottom: 0
       }
     },
-    row: {
-      display: 'flex',
-      padding: '15px 0',
-      alignItems: 'center'
+    sectionTitle: {
+      textTransform: 'uppercase',
+      marginBottom: '10px'
     },
-    userNameWrapper: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center'
+    sectionTitleEdit: {
+      textTransform: 'uppercase',
+      marginBottom: '30px'
     },
-    switchWrapper: {
-      width: '100%',
-      marginLeft: '-12px'
+    label: {
+      flexBasis: '180px',
+      '& + .MuiInputBase-root': {
+        marginTop: '0 !important'
+      }
     },
     formActions: {
       display: 'flex',
@@ -68,33 +57,8 @@ export const useStyles = makeStyles((theme) =>
         marginRight: '10px'
       }
     },
-    label: {
-      flexBasis: '180px',
-      color: theme.palette.text.primary,
-      '& + .MuiInputBase-root': {
-        marginTop: '0 !important'
-      }
-    },
-    sectionTitle: {
-      textTransform: 'uppercase',
-      marginBottom: '10px'
-    },
-    inputRoot: {
-      pointerEvents: 'none'
-    },
-    readOnlyInput: {
-      background: 'none',
-      borderColor: 'transparent',
-      paddingLeft: 0,
-      '&:focus': {
-        boxShadow: 'none'
-      }
-    },
-    membershipsWrapper: {
-      marginTop: '13px'
-    },
-    siteItem: {
-      margin: '10px 0'
+    fullWidth: {
+      width: '100%'
     }
   })
 );

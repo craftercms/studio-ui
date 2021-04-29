@@ -1023,7 +1023,7 @@
                   }
                 },
                 {
-                  type: 'SHOW_ITEM_MENU',
+                  type: 'SHOW_ITEM_MEGA_MENU',
                   payload: {
                     path,
                     loaderItems,
