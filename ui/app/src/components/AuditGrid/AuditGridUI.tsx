@@ -18,7 +18,7 @@ import { Resource } from '../../models/Resource';
 import { AuditLog } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 
-interface AuditGridUIProps {
+export interface AuditGridUIProps {
   resource: Resource<PagedArray<AuditLog>>;
 }
 
