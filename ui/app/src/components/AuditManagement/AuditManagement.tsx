@@ -16,13 +16,59 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 import Tooltip from '@material-ui/core/Tooltip';
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { PagedArray } from '../../models/PagedArray';
+import { ApiResponse } from '../../models/ApiResponse';
+import { AuditLog } from '../../models/Audit';
+import { fetchAudit } from '../../services/audit';
+import { useLogicResource } from '../../utils/hooks';
+import AuditGridUI from '../AuditGrid';
 
 export default function AuditManagement() {
-  const onFiltersClick = () => {};
+  const [showFilters, setShowFilters] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [fetching, setFetching] = useState(false);
+  const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLog>>(null);
+  const [error, setError] = useState<ApiResponse>();
+
+  const refresh = useCallback(() => {
+    setFetching(true);
+    fetchAudit({ limit, offset }).subscribe(
+      (logs) => {
+        setAuditLogs(logs);
+        setFetching(false);
+      },
+      ({ response }) => {
+        setError(response);
+        setFetching(false);
+      }
+    );
+  }, [limit, offset]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const resource = useLogicResource<
+    PagedArray<AuditLog>,
+    { auditLogs: PagedArray<AuditLog>; error: ApiResponse; fetching: boolean }
+  >(
+    useMemo(() => ({ auditLogs, error, fetching }), [auditLogs, error, fetching]),
+    {
+      shouldResolve: (source) => Boolean(source.auditLogs) && !fetching,
+      shouldReject: ({ error }) => Boolean(error),
+      shouldRenew: (source, resource) => fetching && resource.complete,
+      resultSelector: (source) => source.auditLogs,
+      errorSelector: () => error
+    }
+  );
 
   return (
     <section>
@@ -30,12 +76,28 @@ export default function AuditManagement() {
         title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
         rightContent={
           <Tooltip title={<FormattedMessage id="auditManagement.openFilters" defaultMessage="Open filters" />}>
-            <IconButton onClick={onFiltersClick}>
+            <IconButton onClick={() => setShowFilters(!showFilters)}>
               <FilterListRoundedIcon />
             </IconButton>
           </Tooltip>
         }
       />
+      <Fade in={showFilters}>
+        <Paper elevation={1}>TODO: Filters</Paper>
+      </Fade>
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: <>TODO: AuditGridUISkeletonTable</>
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: <FormattedMessage id="auditGrid.emptyStateMessage" defaultMessage="No Logs Found" />
+          }
+        }}
+      >
+        <AuditGridUI resource={resource} />
+      </SuspenseWithEmptyState>
     </section>
   );
 }

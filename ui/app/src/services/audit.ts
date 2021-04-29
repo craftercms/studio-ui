@@ -22,13 +22,15 @@ import { PagedArray } from '../models/PagedArray';
 import { AuditLog } from '../models/Audit';
 
 export function fetchAudit(options): Observable<PagedArray<AuditLog>> {
-  const qs = toQueryString({
+  const mergedOptions = {
+    limit: 100,
+    offset: 0,
     ...options
-  });
-  return get(`/studio/api/2/audit${qs}`).pipe(
+  };
+  return get(`/studio/api/2/audit${toQueryString(mergedOptions)}`).pipe(
     map(({ response }) =>
       Object.assign(response.auditLog, {
-        limit: response.limit,
+        limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
         offset: response.offset,
         total: response.total
       })

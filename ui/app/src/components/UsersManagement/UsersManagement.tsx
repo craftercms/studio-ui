@@ -25,7 +25,6 @@ import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useLogicResource } from '../../utils/hooks';
-import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
@@ -118,26 +117,25 @@ export default function UsersManagement(props: UsersManagementProps) {
           </Button>
         }
       />
-      <ErrorBoundary>
-        <SuspenseWithEmptyState
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: <UsersGridSkeletonTable numOfItems={limit} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
+          }
+        }}
+      >
+        <UsersGridUI
           resource={resource}
-          suspenseProps={{
-            fallback: <UsersGridSkeletonTable numOfItems={limit} />
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
-            }
-          }}
-        >
-          <UsersGridUI
-            resource={resource}
-            onRowClicked={onRowClicked}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-          />
-        </SuspenseWithEmptyState>
-      </ErrorBoundary>
+          onRowClicked={onRowClicked}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+        />
+      </SuspenseWithEmptyState>
+
       <CreateUserDialog
         open={openCreateUserDialog}
         onCreateSuccess={onUserCreated}
