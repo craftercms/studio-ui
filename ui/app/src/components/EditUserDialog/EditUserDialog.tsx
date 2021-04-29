@@ -14,8 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './TransferListColumn';
+import Dialog from '@material-ui/core/Dialog';
+import React from 'react';
+import EditUserDialogContainer, { EditUserDialogContainerProps } from './EditUserDialogContainer';
 
-export * from './TransferListColumn';
+export interface EditUserDialogProps extends EditUserDialogContainerProps {}
 
-export * from './TransferListItem';
+export function EditUserDialog(props: EditUserDialogProps) {
+  const { open, onClose } = props;
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <EditUserDialogContainer {...props} />
+    </Dialog>
+  );
+}
+
+export default EditUserDialog;

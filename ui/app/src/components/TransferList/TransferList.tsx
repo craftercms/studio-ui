@@ -21,7 +21,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import useStyles from './styles';
 import { createLookupTable } from '../../utils/object';
-import TransferListColumn from '../TransferListColumn';
+import TransferListColumn, { TransferListItem } from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl';
 
 export interface TransferListProps {
@@ -35,12 +35,6 @@ export interface TransferListProps {
 export interface TransferListObject {
   title?: ReactNode;
   items: TransferListItem[];
-}
-
-export interface TransferListItem {
-  id: string | number;
-  title: string;
-  subtitle?: string;
 }
 
 function not(a: any, b: any) {
