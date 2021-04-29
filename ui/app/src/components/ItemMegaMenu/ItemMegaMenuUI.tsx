@@ -92,6 +92,7 @@ export interface ItemMegaMenuUIProps {
 export const useStyles = makeStyles((theme) =>
   createStyles<ItemMegaMenuUIClassKey, ItemMegaMenuUIStyles>({
     root: (styles) => ({
+      maxWidth: 400,
       borderRadius: '12px',
       ...styles.root
     }),
@@ -106,6 +107,7 @@ export const useStyles = makeStyles((theme) =>
     actionsContainer: (styles) => ({
       display: 'flex',
       flexDirection: 'row',
+      padding: '10px',
       ...styles.actionsContainer
     }),
     actionsColumn: (styles) => ({
@@ -163,8 +165,6 @@ export const useStyles = makeStyles((theme) =>
       ...styles.infoItem
     }),
     menuItem: (styles) => ({
-      paddingLeft: 0,
-      paddingRight: 0,
       minWidth: '100px',
       ...styles.menuItem
     }),
@@ -221,11 +221,10 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         ...propClasses
       }}
     >
-      <MenuItem className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
+      <MenuItem className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)} button={false}>
         <Typography variant="body2" component="h2" className={classes.itemInfoContentType}>
           {isLoading ? <Skeleton animation="wave" /> : contentType}
         </Typography>
-
         {isLoading ? (
           <Skeleton animation="wave" />
         ) : (
@@ -239,7 +238,6 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
             }}
           />
         )}
-
         {isLoading ? (
           <Skeleton animation="wave" />
         ) : (
@@ -256,7 +254,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         )}
       </MenuItem>
       {isLoading ? (
-        <div className={clsx(classes.mainItem, classes.actionsContainer)}>
+        <div className={clsx(classes.actionsContainer)}>
           {new Array(2).fill(null).map((value, i) => (
             <MenuList key={i} className={clsx(classes.actionsColumn, classes.itemsList)}>
               {new Array(Math.ceil(numOfLoaderItems / 2)).fill(null).map((value, j) => (
@@ -274,7 +272,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           }
         />
       ) : (
-        <div className={clsx(classes.mainItem, classes.actionsContainer)}>
+        <div className={clsx(classes.actionsContainer)}>
           <MenuList className={clsx(classes.actionsColumn, classes.itemsList)}>
             {editorialOptions.map((option: MenuOption, y: number) => (
               <MenuItem
@@ -304,7 +302,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           </div>
         </div>
       )}
-      <MenuItem className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
+      <MenuItem className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)} button={false}>
         {isLoading ? (
           <Skeleton animation="wave" width="100%" />
         ) : (

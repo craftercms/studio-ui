@@ -27,11 +27,20 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
         padding: 0,
         width: '50px'
       },
+      '&.minWidth100': {
+        minWidth: '100px'
+      },
       '&.bordered': {
         borderBottom: `1px solid ${theme.palette.divider}`
       },
+      '&.padded10': {
+        padding: '10px'
+      },
       '&.paddedLeft': {
         paddingLeft: '20px'
+      },
+      '&.width10': {
+        width: '10%'
       },
       '&.width20': {
         width: '20%'
@@ -41,6 +50,12 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
       },
       '&.width30': {
         width: '30%'
+      },
+      '&.width40': {
+        width: '40%'
+      },
+      '&.width50': {
+        width: '50%'
       },
       '&.width60': {
         width: '60%'

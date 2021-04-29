@@ -30,8 +30,6 @@ export function getItemPublishingTargetText(stateMap: ItemStateMap) {
 
 export function getItemStateText(stateMap: ItemStateMap) {
   switch (true) {
-    case stateMap.new:
-      return <FormattedMessage id="itemState.new" defaultMessage="New" />;
     case stateMap.modified:
       return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
     case stateMap.deleted:
@@ -44,6 +42,8 @@ export function getItemStateText(stateMap: ItemStateMap) {
       return <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />;
     case stateMap.scheduled:
       return <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />;
+    case stateMap.new:
+      return <FormattedMessage id="itemState.new" defaultMessage="New" />;
     default:
       return <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
   }

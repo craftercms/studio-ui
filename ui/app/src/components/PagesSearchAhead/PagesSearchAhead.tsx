@@ -48,7 +48,8 @@ const useStyles = makeStyles((theme: Theme) =>
       right: 0
     },
     inputRoot: {
-      width: '100%'
+      width: '100%',
+      background: 'none'
     },
     input: {},
     paper: {
@@ -85,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function PagesSearchAhead(props) {
   const { value, placeholder, disabled, onEnter, onFocus, onBlur } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
   const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));

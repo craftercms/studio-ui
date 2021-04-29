@@ -14,21 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './LoggingLevelsManagement';
 
-export const useStyles = makeStyles(() =>
-  createStyles({
-    avatar: {
-      margin: '0 auto'
-    },
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    }
-  })
-);
-
-export default useStyles;
+export * from './LoggingLevelsManagement';

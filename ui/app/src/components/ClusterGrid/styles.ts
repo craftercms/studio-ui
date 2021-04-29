@@ -16,17 +16,16 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
-    avatar: {
+    active: {
+      color: theme.palette.success.main
+    },
+    inactive: {
+      color: theme.palette.error.main
+    },
+    marginCenter: {
       margin: '0 auto'
-    },
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
     }
   })
 );

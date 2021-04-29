@@ -19,7 +19,7 @@ import React from 'react';
 import { Resource } from '../../models/Resource';
 import { Site } from '../../models/Site';
 import SiteCard from './SiteCard';
-import { sitesGridStyles } from './styles';
+import { useSitesGridStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
 
@@ -44,8 +44,7 @@ export default function SitesGridUI(props: SitesGridUIProps) {
     onPublishButtonClick
   } = props;
   const sites = resource.read();
-  const classes = sitesGridStyles();
-
+  const classes = useSitesGridStyles();
   return (
     <section className={classes.root}>
       <Grid container spacing={3}>

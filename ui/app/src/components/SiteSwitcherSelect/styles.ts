@@ -16,19 +16,35 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useSiteSwitcherMinimalistStyles = makeStyles(() =>
   createStyles({
-    avatar: {
-      margin: '0 auto'
+    menu: {
+      maxWidth: 110,
+      padding: '10px 10px'
     },
-    tableRoot: {
-      tableLayout: 'fixed'
+    menuRoot: {
+      '&.MuiInput-underline::before': {
+        display: 'none'
+      },
+      '&.MuiInput-underline::after': {
+        display: 'none'
+      },
+      background: 'transparent'
     },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
+    menuItem: {
+      maxWidth: 390,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      display: 'block'
+    },
+    input: {
+      border: 'none',
+      background: 'transparent',
+      '&:focus:invalid, &:focus': {
+        border: 'none',
+        boxShadow: 'none'
+      }
     }
   })
 );
-
-export default useStyles;

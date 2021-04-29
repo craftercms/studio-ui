@@ -18,15 +18,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() =>
   createStyles({
-    avatar: {
-      margin: '0 auto'
-    },
     tableRoot: {
       tableLayout: 'fixed'
     },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
+    select: {
+      paddingTop: '10px',
+      paddingBottom: '10px'
     }
   })
 );
