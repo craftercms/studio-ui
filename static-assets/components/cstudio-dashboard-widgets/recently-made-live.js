@@ -173,6 +173,12 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         editLinkId;
 
       if (isFirst) {
+        // Date is returned in ISO_OFFSET_DATE format, first is converted to UTC (add time) to format properly
+        // https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE
+        const match = name.match(/(\d{4}-\d{2}-\d{2})(-\d{2}:\d{2})/);
+        const dateUTC = `${match[1]}T00:00:00${match[2]}`;
+        const formattedDate = CStudioAuthoring.Utils.formatDateFromUTC(dateUTC, studioTimeZone, 'date');
+
         html.push('<td colspan="6">');
 
         if (item.numOfChildren > 0) {
@@ -193,7 +199,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           '<span class="wcm-widget-margin-align" title="',
           name,
           '">',
-          displayName,
+          formattedDate,
           ' (',
           item.numOfChildren,
           ')',

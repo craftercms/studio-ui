@@ -24,7 +24,7 @@ body.#{$class-prefix}-dnd-enabled {
   }
 
   [data-studio-components-target] {
-    z-index: 2 !important;
+    z-index: 101 !important;
     padding: 10px !important;
     position: relative !important;
     border-color: $crimson !important;

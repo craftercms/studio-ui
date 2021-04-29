@@ -2052,6 +2052,7 @@
         retTransferObj.previewable = treeItem.previewable;
         retTransferObj.mimeType = treeItem.mimeType;
         retTransferObj.contentType = treeItem.contentType;
+        retTransferObj.lastEditDate = treeItem.lastEditDate;
         var itemNameLabel = 'Page';
 
         retTransferObj.statusObj = {
@@ -2121,10 +2122,9 @@
         }
 
         var ttFormattedEditDate = '';
-        if (treeItem.eventDate != '' && treeItem.eventDate != undefined) {
-          var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
+        if (treeItem.lastEditDate != '' && treeItem.lastEditDate != undefined) {
+          var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(retTransferObj.lastEditDate, studioTimeZone);
           retTransferObj.editedDate = formattedEditDate;
-          ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
         }
 
         var icon = treeItem.folder
@@ -2143,7 +2143,7 @@
             retTransferObj.contentType,
             retTransferObj.style,
             statusStr,
-            ttFormattedEditDate,
+            formattedEditDate,
             retTransferObj.modifier,
             retTransferObj.lockOwner,
             itemNameLabel,
@@ -2156,7 +2156,7 @@
             retTransferObj.contentType,
             retTransferObj.style,
             statusStr,
-            ttFormattedEditDate,
+            formattedEditDate,
             retTransferObj.modifier,
             retTransferObj.lockOwner,
             itemNameLabel,

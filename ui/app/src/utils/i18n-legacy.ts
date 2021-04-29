@@ -226,6 +226,12 @@ const reposAdminMessages = defineMessages({
   unreachableRemote: {
     id: 'reposAdmin.unreachableRemote',
     defaultMessage: 'Remote "{name}" is currently unreachable.'
+  },
+  repositoriesNote: {
+    id: 'reposAdmin.repositoriesNote',
+    defaultMessage:
+      'Do not use Studio as a git merge and conflict resolution platform. ' +
+      'All merge conflicts should be resolved upstream before getting pulled into Studio.'
   }
 });
 
@@ -556,29 +562,43 @@ const globalConfigMessages = defineMessages({
 });
 
 const publishingMessages = defineMessages({
-  idle: {
-    id: 'publishing.idle',
-    defaultMessage: 'Idle'
-  },
-  busy: {
-    id: 'publishing.busy',
-    defaultMessage: 'Busy'
-  },
   ready: {
-    id: 'publishing.ready',
+    id: 'words.ready',
     defaultMessage: 'Ready'
   },
-  stopped: {
-    id: 'publishing.stopped',
-    defaultMessage: 'Stopped'
-  },
-  started: {
-    id: 'publishing.started',
-    defaultMessage: 'Started'
+  publishing: {
+    id: 'words.publishing',
+    defaultMessage: 'Publishing'
   },
   queued: {
-    id: 'publishing.queued',
+    id: 'words.queued',
     defaultMessage: 'Queued'
+  },
+  stopped: {
+    id: 'words.stopped',
+    defaultMessage: 'Stopped'
+  },
+  error: {
+    id: 'words.error',
+    defaultMessage: 'Error'
+  },
+  unlockComplete: {
+    id: 'unlockPublisherDialog.unlockCompleteMessage',
+    defaultMessage: 'Publisher lock released successfully.'
+  },
+  unlockFailed: {
+    id: 'unlockPublisherDialog.unlockFailedMessage',
+    defaultMessage: 'Error releasing publisher lock.'
+  },
+  bulkPublishNote: {
+    id: 'publishing.bulkPublishNote',
+    defaultMessage:
+      'Bulk publish should be used to publish changes made in Studio via the UI. For changes made via direct git actions, use the "Publish by Commit ID(s)" feature.'
+  },
+  publishByNote: {
+    id: 'publishing.publishByNote',
+    defaultMessage:
+      'Publish by commit ID(s) must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
   }
 });
 
