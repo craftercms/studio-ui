@@ -250,7 +250,7 @@
 
       //PUBLISHING
       this.getPublishStatus = function (site) {
-        return $http.get(publish('status', 'site_id=' + site));
+        return $http.get(`${Constants.SERVICE2}publish/status.json?siteId=${site}`);
       };
 
       this.startPublishStatus = function (site) {
@@ -955,6 +955,9 @@
       var publish = $scope.publish;
       publish.error = '';
 
+      publish.bulkPublishNote = formatMessage(publishingMessages.bulkPublishNote);
+      publish.publishByNote = formatMessage(publishingMessages.publishByNote);
+
       publish.initQueque = function () {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
           siteId: $location.search().site
@@ -1039,13 +1042,18 @@
         adminService
           .getPublishStatus(publish.site)
           .success(function (data) {
+            data = data.publishingStatus;
             publish.stopDisabled = false;
             publish.startDisabled = false;
-            switch (data.status.toLowerCase()) {
-              case 'busy':
+
+            const status = data.status?.toLowerCase() ?? '';
+            let message = data.message ?? '';
+
+            switch (status) {
+              case 'stopped':
                 currentIconColor = 'orange';
                 break;
-              case 'stopped':
+              case 'error':
                 currentIconColor = 'red';
                 publish.stopDisabled = true;
                 break;
@@ -1053,17 +1061,18 @@
                 currentIconColor = 'blue';
                 publish.startDisabled = true;
             }
-            var stringDate = data.message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
+            var stringDate = message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
             var date = null;
             if (stringDate && stringDate.length) {
               publish.date = stringDate[0];
-              data.message = data.message.replace(stringDate[0], '');
+              message = message.replace(stringDate[0], moment(stringDate[0]).format('MM-DD-YYYY hh:mm:ss a'));
             } else {
               publish.date = '';
             }
             publish.iconColor = currentIconColor;
-            publish.message = data.message;
-            publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
+            publish.message = message;
+            publish.statusText = publishingMessages[status] ? formatMessage(publishingMessages[status]) : status;
+            publish.lockOwner = data.lockOwner;
           })
           .error(function (err) {});
       };
@@ -1078,6 +1087,7 @@
           false
         );
       };
+
       renderStatusView();
 
       publish.startPublish = function () {
@@ -1114,6 +1124,46 @@
             }
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
           });
+      };
+
+      publish.showUnlockDialog = function () {
+        let unmount;
+        CrafterCMSNext.render('#unlockDialogTarget', 'UnlockPublisherDialog', {
+          open: true,
+          site: publish.site,
+          onClosed() {
+            unmount();
+          },
+          onCancel() {
+            unmount();
+          },
+          onComplete() {
+            unmount();
+            publish.getPublish(publish.site);
+            $.notify(formatMessage(publishingMessages.unlockComplete), {
+              globalPosition: 'top right',
+              className: 'success',
+              autoHideDelay: 4000
+            });
+          },
+          onError(e) {
+            let message = formatMessage(publishingMessages.unlockFailed);
+            if (e) {
+              if (e.response && e.response.response && e.response.response.message) {
+                message = e.response.response.message;
+              } else if (e.response && e.response.message) {
+                message = e.response.message;
+              } else if (e.message) {
+                message = e.message;
+              }
+            }
+            $.notify(message, {
+              globalPosition: 'top right',
+              className: 'error',
+              autoHideDelay: 4000
+            });
+          }
+        }).then((result) => (unmount = result.unmount));
       };
 
       //BULK PUBLISH
@@ -2120,7 +2170,8 @@
           pendingCommit: formatMessage(repoMessages.pendingCommit),
           unstagedFiles: formatMessage(repoMessages.unstagedFiles),
           unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
-          reason: formatMessage(words.reason)
+          reason: formatMessage(words.reason),
+          repositoriesNote: formatMessage(repoMessages.repositoriesNote)
         }
       };
 

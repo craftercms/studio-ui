@@ -111,7 +111,8 @@ export function createCodebaseBridge() {
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
-      ConfirmDialog: lazy(() => import('../components/ConfirmDialog'))
+      ConfirmDialog: lazy(() => import('../components/ConfirmDialog')),
+      UnlockPublisherDialog: lazy(() => import('../components/UnlockPublisherDialog/UnlockPublisherDialog'))
     },
 
     mui: {

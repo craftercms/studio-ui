@@ -516,7 +516,8 @@ table {
       font-size: 19px;
       font-weight: bold;
 
-      #refreshPublish{
+      .publishing-status-header-button,
+      #refreshPublish {
         font-size: 12px;
       }
 
@@ -542,6 +543,13 @@ table {
       font-size: 18px;
     }
 
+  }
+
+  .section-note {
+    color: #8a6d3b;
+    display: inline-block;
+    margin: 0 10px 0;
+    padding: 6px 0;
   }
 
   .publish-buttons{

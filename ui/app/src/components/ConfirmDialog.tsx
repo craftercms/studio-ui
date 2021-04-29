@@ -20,7 +20,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 const messages = defineMessages({
@@ -34,23 +34,36 @@ const messages = defineMessages({
   }
 });
 
-interface ConfirmDialogProps {
+type ConfirmDialogProps = PropsWithChildren<{
   open: boolean;
-  description?: string;
-  title: string;
+  title: ReactNode;
+  description?: ReactNode;
   disableEnforceFocus?: boolean;
-
+  disableOkButton?: boolean;
+  disableCancelButton?: boolean;
+  disableBackdropClick?: boolean;
+  disableEscapeKeyDown?: boolean;
   onOk?(): any;
-
   onCancel?(): any;
-
   onClose(): any;
-}
+}>;
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const { open, onOk, onClose, onCancel, description, title, disableEnforceFocus = false } = props;
+  const {
+    open,
+    onOk,
+    onClose,
+    onCancel,
+    description,
+    title,
+    disableEnforceFocus = false,
+    children,
+    disableOkButton = false,
+    disableCancelButton = false,
+    disableBackdropClick = false,
+    disableEscapeKeyDown = false
+  } = props;
   const { formatMessage } = useIntl();
-
   return (
     <Dialog
       open={open}
@@ -58,20 +71,22 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       aria-labelledby="confirmDialogTitle"
       aria-describedby="confirmDialogBody"
       disableEnforceFocus={disableEnforceFocus}
+      disableBackdropClick={disableBackdropClick}
+      disableEscapeKeyDown={disableEscapeKeyDown}
     >
       {title && <DialogTitle id="confirmDialogTitle">{title}</DialogTitle>}
-
       <DialogContent id="confirmDialogBody" dividers>
         {description && <DialogContentText>{description}</DialogContentText>}
       </DialogContent>
+      {children}
       <DialogActions>
         {onCancel && (
-          <Button onClick={onCancel} variant="outlined">
+          <Button onClick={onCancel} variant="outlined" disabled={disableCancelButton}>
             {formatMessage(messages.cancel)}
           </Button>
         )}
         {onOk && (
-          <Button onClick={onOk} variant="contained" color="primary" autoFocus>
+          <Button onClick={onOk} variant="contained" color="primary" autoFocus disabled={disableOkButton}>
             {formatMessage(messages.ok)}
           </Button>
         )}

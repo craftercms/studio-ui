@@ -3286,15 +3286,17 @@ var nodeOpen = false,
           path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        if (path.indexOf('{parentPath}') != -1) {
-          path = path.replace(
-            '{parentPath}',
-            CStudioAuthoring.Utils.getQueryParameterByName('path').replace(
-              /\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/,
-              '$1'
-            )
-          );
-        }
+        const fullParentPath = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        const parentPathPieces = fullParentPath.substr(1).split('/');
+        path = path.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {
+          if (indexExp === void 0) {
+            // Handle simple exp `{parentPath}`
+            return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
+          } else {
+            // Handle indexed exp `{parentPath[i]}`
+            return parentPathPieces[parseInt(index) + 2];
+          }
+        });
 
         if (path.indexOf('{yyyy}') != -1) {
           path = path.replace('{yyyy}', currentDate.getFullYear());
@@ -3570,7 +3572,7 @@ var nodeOpen = false,
       getPagesServiceUrl: '/api/1/services/api/1/content/get-pages.json',
       lookupFoldersServiceUri: '/api/1/services/api/1/content/get-pages.json', // NEED A SERVICE
 
-      getPublishStatusServiceUrl: '/api/1/services/api/1/publish/status.json',
+      getPublishStatusServiceUrl: '/api/2/publish/status',
       startPublishStatusServiceUrl: '/api/1/services/api/1/publish/start.json',
       stopPublishStatusServiceUrl: '/api/1/services/api/1/publish/stop.json',
 
@@ -3611,7 +3613,7 @@ var nodeOpen = false,
 
       // DEPLOYMENT SERVICES
       // READ OPS
-      getDeploymentHistoryServiceUrl: '/api/1/services/api/1/deployment/get-deployment-history.json',
+      getDeploymentHistoryServiceUrl: '/api/2/publish/history.json',
       getScheduledItemsServiceUrl: '/api/1/services/api/1/deployment/get-scheduled-items.json',
       getDependenciesServiceUrl: '/api/1/services/api/1/dependency/get-dependencies.json',
 
@@ -4970,7 +4972,7 @@ var nodeOpen = false,
       getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getDeploymentHistoryServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += '?siteId=' + site;
         if (days != undefined && days != null) {
           serviceUrl += '&days=' + days;
         }
@@ -5471,20 +5473,16 @@ var nodeOpen = false,
        * lookup publish status
        */
       getPublishStatus: function (site, callback) {
-        var serviceUri = this.getPublishStatusServiceUrl + '?site_id=' + site;
-
-        var serviceCallback = {
+        var serviceUri = `${this.getPublishStatusServiceUrl}?siteId=${site}`;
+        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), {
           success: function (response) {
-            var result = eval('(' + response.responseText + ')');
+            var result = eval('(' + response.responseText + ')').publishingStatus;
             callback.success(result);
           },
-
           failure: function (response) {
             callback.failure(response);
           }
-        };
-
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        });
       },
 
       /**
@@ -6822,19 +6820,22 @@ var nodeOpen = false,
           var utcDate = moment.tz(dateTime, 'Etc/UTC'),
             newDate;
 
-          if (format === 'full') {
-            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
-            newDate = newDate + ' (' + newTimeZone + ')';
-          } else {
-            if (format === 'large') {
+          switch (format) {
+            case 'full':
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
+              newDate = newDate + ' (' + newTimeZone + ')';
+              break;
+            case 'large':
               newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss');
-            } else {
-              if (format === 'medium') {
-                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
-              } else {
-                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
-              }
-            }
+              break;
+            case 'medium':
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+              break;
+            case 'date':
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY');
+              break;
+            default:
+              newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
           }
           return newDate != 'Invalid date' ? newDate : '';
         } catch (err) {
@@ -8248,14 +8249,10 @@ var nodeOpen = false,
           lockOwner = item.lockOwner;
         }
 
-        if (item.lastEditDateAsString != '' && item.lastEditDateAsString != undefined) {
-          formattedEditDate = this.formatDateFromString(item.lastEditDateAsString, 'tooltipformat');
-        } else if (item.eventDate != '' && item.eventDate != undefined) {
-          formattedEditDate = this.formatDateFromString(item.eventDate, 'tooltipformat');
-        }
+        formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDate, studioTimeZone);
 
         if (item.scheduled == true) {
-          formattedSchedDate = this.formatDateFromString(item.scheduledDate, 'tooltipformat');
+          formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone);
 
           retTitle = this.buildToolTip(
             itemNameLabel,
