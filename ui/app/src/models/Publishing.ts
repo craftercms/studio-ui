@@ -50,14 +50,11 @@ export interface PublishingStatus {
   lockTTL: string;
 }
 
-export interface BulkPublishFormData {
-  path: string;
+export interface PublishFormData {
+  path?: string;
+  commitIds?: string;
   comment: string;
   environment: string;
 }
 
-export interface PublishByFormData {
-  commitIds: string;
-  comment: string;
-  environment: string;
-}
+export type PublishOnDemandMode = 'studio' | 'git';

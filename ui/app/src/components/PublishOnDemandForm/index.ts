@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PublishByForm';
+export { default } from './PublishOnDemandForm';
 
-export * from './PublishByForm';
+export * from './PublishOnDemandForm';

@@ -21,12 +21,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { bulkGoLive, clearLock, publishByCommits, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
-import PublishWidget from '../PublishWidget';
 import Grid from '@material-ui/core/Grid';
 import { defineMessages, useIntl } from 'react-intl';
 import { BulkPublishFormData, PublishByFormData } from '../../models/Publishing';
 import PublishingQueueWidget from '../PublishingQueueWidget';
 import { useEffect, useState } from 'react';
+import PublishOnDemandWidget from '../PublishOnDemandWidget';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -57,13 +57,13 @@ const messages = defineMessages({
   }
 });
 
-const initialBulkPublishFormData = {
+const initialPublishStudioFormData = {
   path: '',
   environment: '',
   comment: ''
 };
 
-const initialPublishByFormData = {
+const initialPublishGitFormData = {
   commitIds: '',
   environment: '',
   comment: ''
@@ -74,23 +74,25 @@ export default function PublishingDashboard() {
   const classes = useStyles();
   const site = useActiveSiteId();
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const [bulkPublishFormData, setBulkPublishFormData] = useSpreadState<BulkPublishFormData>(initialBulkPublishFormData);
-  const [publishByFormData, setPublishByFormData] = useSpreadState<PublishByFormData>(initialPublishByFormData);
-  const [bulkPublishFormValid, setBulkPublishFormValid] = useState(false);
-  const [publishByFormValid, setPublishByFormValid] = useState(false);
+  const [publishGitFormValid, setPublishGitFormValid] = useState(false);
+  const [publishOnDemandMode, setPublishOnDemandMode] = useState<PublishOnDemandMode>(null);
+  const [publishStudioFormData, setPublishStudioFormData] = useSpreadState<PublishFormData>(
+    initialPublishStudioFormData
+  );
+  const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
+  const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
 
   useEffect(() => {
-    setBulkPublishFormValid(
-      bulkPublishFormData.path.replace(/\s/g, '') !== '' && bulkPublishFormData.environment !== ''
-    );
-  }, [bulkPublishFormData]);
-
-  useEffect(() => {
-    setPublishByFormValid(
-      publishByFormData.commitIds.replace(/\s/g, '') !== '' && publishByFormData.environment !== ''
-    );
-  }, [publishByFormData]);
+    if (publishOnDemandMode === 'studio') {
+      setPublishStudioFormValid(
+        publishStudioFormData.path.replace(/\s/g, '') !== '' && publishStudioFormData.environment !== ''
+      );
+    } else {
+      setPublishGitFormValid(
+        publishGitFormData.commitIds.replace(/\s/g, '') !== '' && publishGitFormData.environment !== ''
+      );
+    }
+  }, [publishStudioFormData, publishGitFormData, publishOnDemandMode]);
 
   const onStartStop = () => {
     const action = state.status === 'ready' ? stop : start;
@@ -112,20 +114,26 @@ export default function PublishingDashboard() {
 
   // TODO: legacy shows a confirmation dialog, should it be shown in here?
   const bulkPublish = () => {
-    const { path, environment, comment } = bulkPublishFormData;
+    const { path, environment, comment } = publishStudioFormData;
     bulkGoLive(site, path, environment, comment).subscribe(() => {
-      setBulkPublishFormData(initialBulkPublishFormData);
+      setPublishStudioFormData(initialPublishStudioFormData);
     });
   };
 
   const publishBy = () => {
-    const { commitIds, environment, comment } = publishByFormData;
+    const { commitIds, environment, comment } = publishGitFormData;
     const ids = commitIds.replace(/\s/g, '').split(',');
 
     publishByCommits(site, ids, environment, comment).subscribe(() => {
       // TODO: show snackbar
-      setPublishByFormData(initialPublishByFormData);
+      setPublishGitFormData(initialPublishGitFormData);
     });
+  };
+
+  const onCancelPublishOnDemand = () => {
+    setPublishOnDemandMode(null);
+    setPublishStudioFormData(initialPublishStudioFormData);
+    setPublishGitFormData(initialPublishGitFormData);
   };
 
   return (
@@ -134,26 +142,15 @@ export default function PublishingDashboard() {
         <Grid item xs={12}>
           <PublishingStatusWidget state={state} onStartStop={onStartStop} onRefresh={onRefresh} onUnlock={onUnlock} />
         </Grid>
-        <Grid item md={6}>
-          <PublishWidget
-            title={formatMessage(messages.bulkPublishTitle)}
-            note={formatMessage(messages.bulkPublishNote)}
-            type="bulkPublish"
-            bulkPublishFormData={bulkPublishFormData}
-            setBulkPublishFormData={setBulkPublishFormData}
-            formValid={bulkPublishFormValid}
-            onPublish={bulkPublish}
-          />
-        </Grid>
-        <Grid item md={6}>
-          <PublishWidget
-            title={formatMessage(messages.publishByTitle)}
-            note={formatMessage(messages.publishByNote)}
-            type="publishBy"
-            publishByFormData={publishByFormData}
-            setPublishByFormData={setPublishByFormData}
-            formValid={publishByFormValid}
-            onPublish={publishBy}
+        <Grid item xs={12}>
+          <PublishOnDemandWidget
+            mode={publishOnDemandMode}
+            setMode={setPublishOnDemandMode}
+            formData={publishOnDemandMode === 'studio' ? publishStudioFormData : publishGitFormData}
+            setFormData={publishOnDemandMode === 'studio' ? setPublishStudioFormData : setPublishGitFormData}
+            formValid={publishOnDemandMode === 'studio' ? publishStudioFormValid : publishGitFormValid}
+            onPublish={publishOnDemandMode === 'studio' ? bulkPublish : publishBy}
+            onCancel={onCancelPublishOnDemand}
           />
         </Grid>
         <Grid item xs={12}>
