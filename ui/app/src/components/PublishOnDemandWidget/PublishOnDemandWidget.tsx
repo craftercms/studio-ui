@@ -30,6 +30,8 @@ import PublishOnDemandForm from '../PublishOnDemandForm';
 import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import { nnou } from '../../utils/object';
 import ApiResponse from '../../models/ApiResponse';
+import { ReactNode } from 'react';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -53,6 +55,15 @@ const useStyles = makeStyles((theme) =>
     },
     cancelBtn: {
       marginRight: '20px'
+    },
+    noteContainer: {
+      textAlign: 'center',
+      marginTop: '20px'
+    },
+    note: {
+      color: theme.palette.action.active,
+      display: 'inline-block',
+      maxWidth: '700px'
     }
   })
 );
@@ -65,6 +76,7 @@ interface PublishOnDemandWidgetProps {
   formValid: boolean;
   publishingTargets: PublishingTarget[];
   publishingTargetsError: ApiResponse;
+  note?: ReactNode;
   onPublish?(): void;
   onCancel?(): void;
 }
@@ -79,7 +91,8 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
     onPublish,
     onCancel,
     publishingTargets,
-    publishingTargetsError
+    publishingTargetsError,
+    note
   } = props;
   const classes = useStyles();
 
@@ -138,6 +151,12 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
             publishingTargets={publishingTargets}
             publishingTargetsError={publishingTargetsError}
           />
+
+          <div className={classes.noteContainer}>
+            <Typography variant="caption" className={classes.note}>
+              {note}
+            </Typography>
+          </div>
         </Collapse>
       </div>
 

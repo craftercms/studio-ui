@@ -33,33 +33,49 @@ import { PublishOnDemandMode, PublishFormData } from '../../models/Publishing';
 import PublishingQueueWidget from '../PublishingQueueWidget';
 import { useEffect, useState } from 'react';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
+import { defineMessages, useIntl } from 'react-intl';
+import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
+import { showSystemNotification } from '../../state/actions/system';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 
 const useStyles = makeStyles(() =>
   createStyles({
     root: {
       padding: '50px'
+    },
+    warningText: {
+      display: 'block'
     }
   })
 );
 
 const messages = defineMessages({
-  bulkPublishTitle: {
-    id: 'bulkPublish.title',
-    defaultMessage: 'Bulk Publish'
-  },
-  publishByTitle: {
-    id: 'publishBy.title',
-    defaultMessage: 'Publish By...'
-  },
-  bulkPublishNote: {
-    id: 'bulkPublish.note',
+  publishStudioWarning: {
+    id: 'publishingDashboard.warning',
     defaultMessage:
-      'Bulk publish should be used to publish changes made in Studio via the UI. For changes made via direct git actions, use the "Publish by..." feature.'
+      "This will force publish all items that match the pattern requested including their dependencies, and it may take a long time depending on the number of items. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing."
   },
-  publishByNote: {
-    id: 'publishBy.note',
+  warningLabel: {
+    id: 'words.warning',
+    defaultMessage: 'Warning'
+  },
+  publishStudioNote: {
+    id: 'publishingDashboard.studioNote',
     defaultMessage:
-      '"Publish by..." feature must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
+      'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please publish by commit or tag.'
+  },
+  publishGitNote: {
+    id: 'publishingDashboard.gitNote',
+    defaultMessage:
+      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please publish by path.'
+  },
+  publishSuccess: {
+    id: 'publishingDashboard.publishSuccess',
+    defaultMessage: 'Published successfully.'
+  },
+  bulkPublishStarted: {
+    id: 'publishingDashboard.bulkPublishStarted',
+    defaultMessage: 'Bulk Publish process has been started.'
   }
 });
 
@@ -89,6 +105,9 @@ export default function PublishingDashboard() {
   );
   const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
   const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
+  const { formatMessage } = useIntl();
+  const idSuccess = 'bulkPublishSuccess';
+  const idCancel = 'bulkPublishCancel';
 
   useEffect(() => {
     if (publishOnDemandMode === 'studio') {
@@ -131,22 +150,71 @@ export default function PublishingDashboard() {
     });
   };
 
-  // TODO: show confirmation dialog as in legacy
   const bulkPublish = () => {
     const { path, environment, comment } = publishStudioFormData;
-    bulkGoLive(site, path, environment, comment).subscribe(() => {
-      setPublishStudioFormData(initialPublishStudioFormData);
-    });
+    bulkGoLive(site, path, environment, comment).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.bulkPublishStarted)
+          })
+        );
+        setPublishStudioFormData(initialPublishStudioFormData);
+      },
+      ({ response }) => {
+        showSystemNotification({
+          message: response.message,
+          options: { variant: 'error' }
+        });
+      }
+    );
+  };
+
+  const bulkPublishConfirmation = () => {
+    dispatch(
+      showConfirmDialog({
+        body: `${formatMessage(messages.publishStudioWarning)} ${formatMessage(messages.publishStudioNote)}`,
+        onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idCancel })]),
+        onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idSuccess })])
+      })
+    );
+
+    const successCallback = () => {
+      bulkPublish();
+      document.removeEventListener(idSuccess, successCallback, false);
+      document.removeEventListener(idCancel, cancelCallback, false);
+    };
+    const cancelCallback = () => {
+      document.removeEventListener(idCancel, cancelCallback, false);
+      document.removeEventListener(idSuccess, successCallback, false);
+    };
+
+    document.addEventListener(idSuccess, successCallback, false);
+    document.addEventListener(idCancel, cancelCallback, false);
   };
 
   const publishBy = () => {
     const { commitIds, environment, comment } = publishGitFormData;
     const ids = commitIds.replace(/\s/g, '').split(',');
 
-    publishByCommits(site, ids, environment, comment).subscribe(() => {
-      // TODO: show snackbar
-      setPublishGitFormData(initialPublishGitFormData);
-    });
+    publishByCommits(site, ids, environment, comment).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.publishSuccess)
+          })
+        );
+        setPublishGitFormData(initialPublishGitFormData);
+      },
+      ({ response }) => {
+        dispatch(
+          showSystemNotification({
+            message: response.message,
+            options: { variant: 'error' }
+          })
+        );
+      }
+    );
   };
 
   const onCancelPublishOnDemand = () => {
@@ -170,7 +238,10 @@ export default function PublishingDashboard() {
             formValid={publishOnDemandMode === 'studio' ? publishStudioFormValid : publishGitFormValid}
             publishingTargets={publishingTargets}
             publishingTargetsError={publishingTargetsError}
-            onPublish={publishOnDemandMode === 'studio' ? bulkPublish : publishBy}
+            onPublish={publishOnDemandMode === 'studio' ? bulkPublishConfirmation : publishBy}
+            note={formatMessage(
+              publishOnDemandMode === 'studio' ? messages.publishStudioNote : messages.publishGitNote
+            )}
             onCancel={onCancelPublishOnDemand}
           />
         </Grid>
