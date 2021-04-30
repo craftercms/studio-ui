@@ -33,6 +33,14 @@ import { DetailedItem } from '../../models/Item';
 import ActionsGroup from '../ActionsGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
 
+export interface AddressBarProps {
+  site: string;
+  url: string;
+  item?: DetailedItem;
+  onUrlChange: (value: string) => any;
+  onRefresh: (e) => any;
+}
+
 const useAddressBarStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbar: {
@@ -101,14 +109,6 @@ const translations = defineMessages({
   }
 });
 
-export interface AddressBarProps {
-  site: string;
-  url: string;
-  item?: DetailedItem;
-  onUrlChange: (value: string) => any;
-  onRefresh: (e) => any;
-}
-
 export function AddressBar(props: AddressBarProps) {
   const classes = useAddressBarStyles();
   const { formatMessage } = useIntl();
@@ -146,7 +146,19 @@ export function AddressBar(props: AddressBarProps) {
       clipboard,
       event
     });
-  const actions = generateSingleItemOptions(item, formatMessage)?.flatMap((options) => options);
+  const actions = generateSingleItemOptions(item, formatMessage, {
+    includeOnly: [
+      'edit',
+      'delete',
+      'dependencies',
+      'history',
+      'publish',
+      'approvePublish',
+      'schedulePublish',
+      'rejectPublish',
+      'duplicate'
+    ]
+  })?.flatMap((options) => options);
 
   return (
     <>
