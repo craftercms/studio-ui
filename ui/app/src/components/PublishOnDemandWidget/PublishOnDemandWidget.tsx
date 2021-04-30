@@ -36,7 +36,7 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
-      backgroundColor: palette.gray.light0,
+      backgroundColor: theme.palette.background.default,
       padding: '16px'
     },
     actions: {

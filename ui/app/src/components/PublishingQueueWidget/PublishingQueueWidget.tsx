@@ -18,14 +18,13 @@ import * as React from 'react';
 import PublishingQueue, { PublishingQueueProps } from '../../modules/System/Publishing/Queue/PublishingQueue';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, makeStyles } from '@material-ui/core';
-import palette from '../../styles/palette';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     paperContent: {
-      backgroundColor: palette.gray.light0,
+      backgroundColor: theme.palette.background.default,
       padding: '16px'
     }
   })
