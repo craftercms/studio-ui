@@ -23,12 +23,25 @@ import Select from '@material-ui/core/Select/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import Grid from '@material-ui/core/Grid';
-import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
+import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
+import ApiResponse from '../../models/ApiResponse';
+import Typography from '@material-ui/core/Typography';
+import palette from '../../styles/palette';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles(() =>
   createStyles({
     formHelperText: {
       marginLeft: '5px'
+    },
+    environmentLoaderContainer: {
+      display: 'inline-flex'
+    },
+    environmentLoader: {
+      border: `1px solid ${palette.gray.light7}`,
+      padding: '15px',
+      borderRadius: '4px',
+      width: '100%'
     }
   })
 );
@@ -37,10 +50,12 @@ interface PublishOnDemandFormProps {
   mode: PublishOnDemandMode;
   formData: PublishFormData;
   setFormData(data): void;
+  publishingTargets: PublishingTarget[];
+  publishingTargetsError: ApiResponse;
 }
 
 export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
-  const { formData, setFormData, mode } = props;
+  const { formData, setFormData, mode, publishingTargets, publishingTargetsError } = props;
   const classes = useStyles();
 
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -50,7 +65,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   return (
     <form>
       <Grid container spacing={3}>
-        <Grid item md={8}>
+        <Grid item xs={12} md={8}>
           <FormControl fullWidth>
             <TextField
               value={mode === 'studio' ? formData.path : formData.commitIds}
@@ -84,13 +99,45 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
             />
           </FormControl>
         </Grid>
-        <Grid item md={4}>
-          <FormControl fullWidth>
-            {/* TODO: pending to retrieve */}
-            <Select value={formData.environment} required onChange={handleFormChange('environment')}>
-              <MenuItem value={'live'}>Live</MenuItem>
-            </Select>
-          </FormControl>
+        <Grid item xs={12} md={4}>
+          {!publishingTargets ? (
+            <FormControl fullWidth>
+              <div className={classes.environmentLoaderContainer}>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  className={classes.environmentLoader}
+                  color={publishingTargetsError ? 'error' : 'initial'}
+                >
+                  {publishingTargetsError ? (
+                    <FormattedMessage id="words.error" defaultMessage="Error" />
+                  ) : (
+                    <>
+                      <FormattedMessage id="words.loading" defaultMessage="Loading" />
+                      ...
+                    </>
+                  )}
+                </Typography>
+              </div>
+            </FormControl>
+          ) : (
+            <FormControl fullWidth variant="outlined" required>
+              <InputLabel id="publishingTargetLabel">Publishing Target</InputLabel>
+              <Select
+                labelId="publishingTargetLabel"
+                label="Publishing Target"
+                value={formData.environment}
+                required
+                onChange={handleFormChange('environment')}
+              >
+                {publishingTargets.map((target) => (
+                  <MenuItem key={target.name} value={target.name}>
+                    {target.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth>

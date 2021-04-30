@@ -18,12 +18,18 @@ import * as React from 'react';
 import { useActiveSiteId, useSelection, useSpreadState } from '../../utils/hooks';
 import PublishingStatusWidget from '../PublishingStatusWidget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { bulkGoLive, clearLock, publishByCommits, start, stop } from '../../services/publishing';
+import {
+  bulkGoLive,
+  clearLock,
+  fetchPublishingTargets,
+  publishByCommits,
+  start,
+  stop
+} from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
-import { defineMessages, useIntl } from 'react-intl';
-import { BulkPublishFormData, PublishByFormData } from '../../models/Publishing';
+import { PublishOnDemandMode, PublishFormData } from '../../models/Publishing';
 import PublishingQueueWidget from '../PublishingQueueWidget';
 import { useEffect, useState } from 'react';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
@@ -74,6 +80,8 @@ export default function PublishingDashboard() {
   const classes = useStyles();
   const site = useActiveSiteId();
   const dispatch = useDispatch();
+  const [publishingTargets, setPublishingTargets] = useState(null);
+  const [publishingTargetsError, setPublishingTargetsError] = useState(null);
   const [publishGitFormValid, setPublishGitFormValid] = useState(false);
   const [publishOnDemandMode, setPublishOnDemandMode] = useState<PublishOnDemandMode>(null);
   const [publishStudioFormData, setPublishStudioFormData] = useSpreadState<PublishFormData>(
@@ -94,6 +102,17 @@ export default function PublishingDashboard() {
     }
   }, [publishStudioFormData, publishGitFormData, publishOnDemandMode]);
 
+  useEffect(() => {
+    fetchPublishingTargets(site).subscribe(
+      (targets) => {
+        setPublishingTargets(targets);
+      },
+      (error) => {
+        setPublishingTargetsError(error);
+      }
+    );
+  }, [site]);
+
   const onStartStop = () => {
     const action = state.status === 'ready' ? stop : start;
 
@@ -112,7 +131,7 @@ export default function PublishingDashboard() {
     });
   };
 
-  // TODO: legacy shows a confirmation dialog, should it be shown in here?
+  // TODO: show confirmation dialog as in legacy
   const bulkPublish = () => {
     const { path, environment, comment } = publishStudioFormData;
     bulkGoLive(site, path, environment, comment).subscribe(() => {
@@ -149,6 +168,8 @@ export default function PublishingDashboard() {
             formData={publishOnDemandMode === 'studio' ? publishStudioFormData : publishGitFormData}
             setFormData={publishOnDemandMode === 'studio' ? setPublishStudioFormData : setPublishGitFormData}
             formValid={publishOnDemandMode === 'studio' ? publishStudioFormValid : publishGitFormValid}
+            publishingTargets={publishingTargets}
+            publishingTargetsError={publishingTargetsError}
             onPublish={publishOnDemandMode === 'studio' ? bulkPublish : publishBy}
             onCancel={onCancelPublishOnDemand}
           />

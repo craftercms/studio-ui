@@ -27,8 +27,9 @@ import Collapse from '@material-ui/core/Collapse/Collapse';
 import Button from '@material-ui/core/Button';
 import ListItemText from '@material-ui/core/ListItemText';
 import PublishOnDemandForm from '../PublishOnDemandForm';
-import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
+import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import { nnou } from '../../utils/object';
+import ApiResponse from '../../models/ApiResponse';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -44,7 +45,8 @@ const useStyles = makeStyles((theme) =>
     modeSelector: {
       padding: '10px 25px',
       border: `1px solid ${palette.gray.light7}`,
-      marginBottom: '20px'
+      marginBottom: '20px',
+      borderRadius: '10px'
     },
     byPathModeSelector: {
       marginBottom: '10px'
@@ -61,12 +63,24 @@ interface PublishOnDemandWidgetProps {
   formData: PublishFormData;
   setFormData(data): void;
   formValid: boolean;
+  publishingTargets: PublishingTarget[];
+  publishingTargetsError: ApiResponse;
   onPublish?(): void;
   onCancel?(): void;
 }
 
 export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { mode, setMode, formData, setFormData, formValid = false, onPublish, onCancel } = props;
+  const {
+    mode,
+    setMode,
+    formData,
+    setFormData,
+    formValid = false,
+    onPublish,
+    onCancel,
+    publishingTargets,
+    publishingTargetsError
+  } = props;
   const classes = useStyles();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +131,13 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
         </Paper>
 
         <Collapse in={nnou(mode)} timeout={300} unmountOnExit>
-          <PublishOnDemandForm formData={formData} setFormData={setFormData} mode={mode} />
+          <PublishOnDemandForm
+            formData={formData}
+            setFormData={setFormData}
+            mode={mode}
+            publishingTargets={publishingTargets}
+            publishingTargetsError={publishingTargetsError}
+          />
         </Collapse>
       </div>
 
