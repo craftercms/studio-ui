@@ -196,7 +196,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               <Typography variant="subtitle2" color="textSecondary">
                 <FormattedMessage
                   id="groupEditDialog.groupMemberHelperText"
-                  defaultMessage="To edit group members the group needs to be created"
+                  defaultMessage="Group members are editable after creation"
                 />
               </Typography>
             </Box>
