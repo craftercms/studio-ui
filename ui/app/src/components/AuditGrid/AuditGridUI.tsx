@@ -25,7 +25,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Popover from '@material-ui/core/Popover';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import { AuditOptions } from '../../services/audit';
+import { AuditOptions, fetchSpecificAudit } from '../../services/audit';
 import { Site } from '../../models/Site';
 import User from '../../models/User';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -134,49 +134,11 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     return null;
   };
 
-  const columns: GridColDef[] = useMemo(
-    () => [
-      {
-        field: 'operationTimestamp',
-        headerName: formatMessage(translations.timestamp),
-        width: 200,
-        sortable: false
-      },
-      {
-        field: 'siteName',
-        headerName: formatMessage(translations.siteName),
-        width: 150
-      },
-      { field: 'actorId', headerName: formatMessage(translations.username), width: 150 },
-      { field: 'operation', headerName: formatMessage(translations.operation), width: 150 },
-      { field: 'primaryTargetValue', headerName: formatMessage(translations.targetValue), width: 300 },
-      {
-        field: 'primaryTargetType',
-        headerName: formatMessage(translations.targetType),
-        width: 150,
-        disableColumnMenu: true
-      },
-      { field: 'actorDetails', headerName: formatMessage(translations.name), width: 100, disableColumnMenu: true },
-      { field: 'origin', headerName: formatMessage(translations.origin), width: 100 },
-      {
-        field: 'parameters',
-        headerName: formatMessage(translations.parameters),
-        width: 150,
-        disableColumnMenu: true,
-        renderCell: (params: GridCellParams) => {
-          return (
-            <Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
-              <IconButton>
-                <VisibilityRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          );
-        }
-      },
-      { field: 'clusterNode', headerName: formatMessage(translations.clusterNode), width: 200 }
-    ],
-    [formatMessage]
-  );
+  const onGetParameters = (params: GridCellParams) => {
+    fetchSpecificAudit(params.id as number).subscribe((response) => {
+      console.log(response);
+    });
+  };
 
   const onPageChange = (param: GridPageChangeParams) => {
     onChangePage(param.page);
@@ -227,6 +189,94 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     onSearch$.next(e.target.value);
     setClusterNode(e.target.value);
   };
+
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: 'operationTimestamp',
+        headerName: formatMessage(translations.timestamp),
+        width: 200,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'siteName',
+        headerName: formatMessage(translations.siteName),
+        width: 150,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'actorId',
+        headerName: formatMessage(translations.username),
+        width: 150,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'operation',
+        headerName: formatMessage(translations.operation),
+        width: 150,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'primaryTargetValue',
+        headerName: formatMessage(translations.targetValue),
+        width: 300,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'primaryTargetType',
+        headerName: formatMessage(translations.targetType),
+        width: 150,
+        disableColumnMenu: true,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'actorDetails',
+        headerName: formatMessage(translations.name),
+        width: 100,
+        disableColumnMenu: true,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'origin',
+        headerName: formatMessage(translations.origin),
+        width: 100,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'parameters',
+        headerName: formatMessage(translations.parameters),
+        width: 105,
+        disableColumnMenu: true,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
+              <IconButton onClick={() => onGetParameters(params)}>
+                <VisibilityRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          );
+        },
+        sortable: false,
+        cellClassName: classes.cellRoot
+      },
+      {
+        field: 'clusterNode',
+        headerName: formatMessage(translations.clusterNode),
+        width: 200,
+        sortable: false,
+        cellClassName: classes.cellRoot
+      }
+    ],
+    [classes.cellRoot, formatMessage]
+  );
 
   return (
     <Box height="500px">

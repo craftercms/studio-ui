@@ -56,6 +56,6 @@ export function fetchAudit(options: AuditOptions): Observable<PagedArray<AuditLo
   );
 }
 
-export function fetchSpecificAudit(id: number): Observable<AuditLog[]> {
+export function fetchSpecificAudit(id: number): Observable<AuditLog> {
   return get(`/studio/api/2/audit/${id}`).pipe(pluck('response', 'auditLog'));
 }
