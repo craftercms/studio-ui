@@ -20,8 +20,26 @@ import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { AuditLog } from '../models/Audit';
+import PaginationOptions from '../models/PaginationOptions';
 
-export function fetchAudit(options): Observable<PagedArray<AuditLog>> {
+export type AuditOptions = Partial<
+  PaginationOptions & {
+    siteId: string;
+    siteName: string;
+    user: string;
+    operations: string;
+    includeParameters: boolean;
+    dateFrom: string;
+    dateTo: string;
+    target: string;
+    origin: 'API' | 'GIT';
+    clusterNodeId: string;
+    sort: 'date';
+    order: 'ASC' | 'DESC';
+  }
+>;
+
+export function fetchAudit(options: AuditOptions): Observable<PagedArray<AuditLog>> {
   const mergedOptions = {
     limit: 100,
     offset: 0,

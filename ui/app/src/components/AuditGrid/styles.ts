@@ -14,27 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface LogParameters {
-  targetId: string;
-  targetType: string;
-  targetSubtype: string;
-  targetValue: string;
-}
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export interface AuditLog {
-  id: number;
-  organizationId: number;
-  siteId: number;
-  siteName: string;
-  operation: string;
-  operationTimestamp: string;
-  origin: string;
-  primaryTargetId: string;
-  primaryTargetType: string;
-  primaryTargetSubtype: string;
-  primaryTargetValue: string;
-  actorId: string;
-  actorDetails: string;
-  clusterNodeId: string;
-  parameters: LogParameters[];
-}
+export const styles = makeStyles((theme) =>
+  createStyles({
+    popover: {
+      padding: '20px',
+      minWidth: '250px'
+    },
+    gridRoot: {
+      border: '0 !important',
+      '& .MuiDataGrid-menuIcon': {
+        visibility: 'visible !important'
+      }
+    },
+    paginationRoot: {
+      marginLeft: 'auto',
+      marginRight: '20px'
+    }
+  })
+);
+
+export default styles;

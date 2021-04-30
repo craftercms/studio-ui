@@ -15,32 +15,34 @@
  */
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fade from '@material-ui/core/Fade';
-import Paper from '@material-ui/core/Paper';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import { AuditLog } from '../../models/Audit';
-import { fetchAudit } from '../../services/audit';
-import { useLogicResource } from '../../utils/hooks';
+import { AuditOptions, fetchAudit } from '../../services/audit';
+import { useLogicResource, useMount, useSiteList, useSpreadState } from '../../utils/hooks';
 import AuditGridUI from '../AuditGrid';
+import User from '../../models/User';
+import { fetchAll } from '../../services/users';
+import { Operations, OperationsMessages } from './operations';
 
 export default function AuditManagement() {
-  const [showFilters, setShowFilters] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
   const [fetching, setFetching] = useState(false);
   const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLog>>(null);
   const [error, setError] = useState<ApiResponse>();
+  const sites = useSiteList();
+  const [users, setUsers] = useState<PagedArray<User>>();
+  const [options, setOptions] = useSpreadState<AuditOptions>({
+    offset: 0,
+    limit: 10
+  });
+  const { formatMessage } = useIntl();
 
   const refresh = useCallback(() => {
     setFetching(true);
-    fetchAudit({ limit, offset }).subscribe(
+    fetchAudit(options).subscribe(
       (logs) => {
         setAuditLogs(logs);
         setFetching(false);
@@ -50,7 +52,13 @@ export default function AuditManagement() {
         setFetching(false);
       }
     );
-  }, [limit, offset]);
+  }, [options]);
+
+  useMount(() => {
+    fetchAll().subscribe((users) => {
+      setUsers(users);
+    });
+  });
 
   useEffect(() => {
     refresh();
@@ -70,21 +78,21 @@ export default function AuditManagement() {
     }
   );
 
+  const onChangePage = (page: number) => {
+    setOptions({ offset: page * options.limit });
+  };
+
+  const onChangeRowsPerPage = (size: number) => {
+    setOptions({ limit: size });
+  };
+
+  const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {
+    setOptions({ [id]: value });
+  };
+
   return (
     <section>
-      <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
-        rightContent={
-          <Tooltip title={<FormattedMessage id="auditManagement.openFilters" defaultMessage="Open filters" />}>
-            <IconButton onClick={() => setShowFilters(!showFilters)}>
-              <FilterListRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        }
-      />
-      <Fade in={showFilters}>
-        <Paper elevation={1}>TODO: Filters</Paper>
-      </Fade>
+      <GlobalAppToolbar title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />} />
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
@@ -96,7 +104,20 @@ export default function AuditManagement() {
           }
         }}
       >
-        <AuditGridUI resource={resource} />
+        <AuditGridUI
+          resource={resource}
+          sites={sites}
+          users={users}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+          onFilterChange={onFilterChange}
+          filters={options}
+          operations={Operations.map((id) => ({ id, value: id, name: formatMessage(OperationsMessages[id]) }))}
+          origins={[
+            { id: 'GIT', name: 'GIT', value: 'GIT' },
+            { id: 'API', name: 'API', value: 'API' }
+          ]}
+        />
       </SuspenseWithEmptyState>
     </section>
   );
