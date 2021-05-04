@@ -250,10 +250,12 @@ export default function AuditGridUI(props: AuditGridUIProps) {
   };
 
   const onFromDateSelected = (date: MaterialUiPickersDate | null, value?: string | null) => {
+    onFilterChange({ id: 'dateFrom', value: date ? moment(date).format() : undefined });
     setFromDate(date);
   };
 
   const onToDateSelected = (date: MaterialUiPickersDate | null, value?: string | null) => {
+    onFilterChange({ id: 'dateTo', value: date ? moment(date).format() : undefined });
     setToDate(date);
   };
 
