@@ -17,7 +17,7 @@
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import Suspencified from '../SystemStatus/Suspencified';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import { AuditLogEntry, LogParameters } from '../../models/Audit';
@@ -39,7 +39,8 @@ export default function AuditManagement() {
   const [users, setUsers] = useState<PagedArray<User>>();
   const [options, setOptions] = useSpreadState<AuditOptions>({
     offset: 0,
-    limit: 10
+    limit: 10,
+    sort: 'date'
   });
   const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<LogParameters[]>>({});
   const [parametersDialogParams, setParametersDialogParams] = useSpreadState<{
@@ -101,6 +102,10 @@ export default function AuditManagement() {
     setOptions({ [id]: value });
   };
 
+  const onResetFilters = (reset: AuditOptions) => {
+    setOptions(reset);
+  };
+
   const onFetchParameters = (id: number) => {
     if (parametersLookup[id]?.length) {
       setParametersDialogParams({
@@ -135,15 +140,9 @@ export default function AuditManagement() {
   return (
     <section>
       <GlobalAppToolbar title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />} />
-      <SuspenseWithEmptyState
-        resource={resource}
+      <Suspencified
         suspenseProps={{
           fallback: <>TODO: AuditGridUISkeletonTable</>
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: <FormattedMessage id="auditGrid.emptyStateMessage" defaultMessage="No Logs Found" />
-          }
         }}
       >
         <AuditGridUI
@@ -153,6 +152,7 @@ export default function AuditManagement() {
           parametersLookup={parametersLookup}
           onFetchParameters={onFetchParameters}
           onChangePage={onChangePage}
+          onResetFilters={onResetFilters}
           onChangeRowsPerPage={onChangeRowsPerPage}
           onFilterChange={onFilterChange}
           filters={options}
@@ -163,7 +163,7 @@ export default function AuditManagement() {
             { id: 'API', name: 'API', value: 'API' }
           ]}
         />
-      </SuspenseWithEmptyState>
+      </Suspencified>
       <ParametersDialog
         open={parametersDialogParams.open}
         onClose={onShowParametersDialogClose}

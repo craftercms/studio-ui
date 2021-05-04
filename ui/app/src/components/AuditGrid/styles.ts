@@ -33,9 +33,13 @@ export const styles = makeStyles((theme) =>
     },
     gridRoot: {
       border: '0 !important',
+      minHeight: '300px',
       '& .MuiDataGrid-menuIcon': {
         visibility: 'visible !important'
       }
+    },
+    gridOverlay: {
+      zIndex: 1
     },
     paginationRoot: {
       marginLeft: 'auto',
