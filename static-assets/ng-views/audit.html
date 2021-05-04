@@ -15,237 +15,419 @@
   -->
 
 <div class="audit-view mainContainer" ng-class="{'operations-open': actionsDropdown.isopen}">
-    <header class="screen-title mb10">
-        <h1>{{ 'admin.audit.AUDIT' | translate }}</h1>
-    </header>
+  <header class="screen-title mb10">
+    <h1>{{ 'admin.audit.AUDIT' | translate }}</h1>
+  </header>
 
-    <div class="audit-nav">
-        <div class="nav-containers">
-            <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
-            <span class="pr20 inline-block" ng-show="audit.currentSiteName" style="padding-top: 6px;">{{ audit.currentSiteName }}</span>
-            <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 5px;" ng-show="!audit.currentSiteName">
-                <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle title="{{audit.site || 'admin.audit.ALL_SITES' | translate}}" >
-                    {{audit.siteLabel || audit.site || 'admin.audit.ALL_SITES' | translate }}  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li>
-                        <a ng-click="audit.updateSite()">{{ 'admin.audit.ALL_SITES' | translate }}</a>
-                    </li>
-                    <li>
-                        <a ng-click="audit.updateSite('admin.audit.SYSTEM', 'true')">{{ 'admin.audit.SYSTEM' | translate }}</a>
-                    </li>
-                    <li ng-repeat="site in sites">
-                        <a class="text-capitalize" ng-click="audit.updateSite(site.id)">{{site.name}}</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="nav-containers">
-            <label>{{ 'admin.audit.USER' | translate }}: </label>
-            <div class="btn-group" uib-dropdown is-open="usersDropdown.isopen" style="margin-right: 5px;">
-                <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle  title="{{audit.userSelected || 'admin.audit.ALL_USERS' | translate}}">
-                    {{audit.userSelected || 'admin.audit.ALL_USERS' | translate }}  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li>
-                        <a ng-click="audit.updateUser()">{{ 'admin.audit.ALL_USERS' | translate }}</a>
-                    </li>
-                    <li ng-repeat="user in audit.users">
-                        <a class="text-capitalize" ng-click="audit.updateUser(user)">{{user.username}}</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="nav-containers">
-            <label>{{ 'admin.audit.OPERATIONS' | translate }}: </label>
-            <div class="btn-group audit-actions" uib-dropdown is-open="actionsDropdown.isopen" style="margin-right: 10px;">
-                <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle title="{{audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate}}">
-                    {{ audit.actionsInputVal || 'admin.audit.operations.ALL_OPERATIONS' | translate }} <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
-
-                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Login') > -1 )}" ng-click="audit.updateActions('Login')">
-                        {{ 'admin.audit.operations.LOGIN' | translate }}
-                    </a></li>
-                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Login_failed') > -1 )}" ng-click="audit.updateActions('Login_failed')">
-                        {{ 'admin.audit.operations.LOGIN_FAILED' | translate }}
-                    </a></li>
-                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Logout') > -1 )}" ng-click="audit.updateActions('Logout')">
-                        {{ 'admin.audit.operations.LOGOUT' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Create') > -1 )}" ng-click="audit.updateActions('Create')">
-                        {{ 'admin.audit.operations.CREATE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Update') > -1 )}" ng-click="audit.updateActions('Update')">
-                        {{ 'admin.audit.operations.UPDATE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Delete') > -1 )}" ng-click="audit.updateActions('Delete')">
-                        {{ 'admin.audit.operations.DELETE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Move') > -1 )}" ng-click="audit.updateActions('Move')">
-                        {{ 'admin.audit.operations.MOVE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Revert') > -1 )}" ng-click="audit.updateActions('Revert')">
-                        {{ 'admin.audit.operations.REVERT' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Enable') > -1 )}" ng-click="audit.updateActions('Enable')">
-                        {{ 'admin.audit.operations.ENABLE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Disable') > -1 )}" ng-click="audit.updateActions('Disable')">
-                        {{ 'admin.audit.operations.DISABLE' | translate }}
-                    </a></li>
-                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Add_members') > -1 )}" ng-click="audit.updateActions('Add_members')">
-                        {{ 'admin.audit.operations.ADD_MEMBERS' | translate }}
-                    </a></li>
-                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Remove_members') > -1 )}" ng-click="audit.updateActions('Remove_members')">
-                        {{ 'admin.audit.operations.REMOVE_MEMBERS' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Add_remote') > -1 )}" ng-click="audit.updateActions('Add_remote')">
-                        {{ 'admin.audit.operations.ADD_REMOTE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Remove_remote') > -1 )}" ng-click="audit.updateActions('Remove_remote')">
-                        {{ 'admin.audit.operations.REMOVE_REMOTE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Push_to_remote') > -1 )}" ng-click="audit.updateActions('Push_to_remote')">
-                        {{ 'admin.audit.operations.PUSH_TO_REMOTE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Pull_from_remote') > -1 )}" ng-click="audit.updateActions('Pull_from_remote')">
-                        {{ 'admin.audit.operations.PULL_FROM_REMOTE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Request_publish') > -1 )}" ng-click="audit.updateActions('Request_publish')">
-                        {{ 'admin.audit.operations.REQUEST_PUBLISH' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Approve') > -1 )}" ng-click="audit.updateActions('Approve')">
-                        {{ 'admin.audit.operations.APPROVE' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Approve_scheduled') > -1 )}" ng-click="audit.updateActions('Approve_scheduled')">
-                        {{ 'admin.audit.operations.APPROVE_SCHEDULED' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Reject') > -1 )}" ng-click="audit.updateActions('Reject')">
-                        {{ 'admin.audit.operations.REJECT' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Published') > -1 )}" ng-click="audit.updateActions('Published')">
-                        {{ 'admin.audit.operations.PUBLISHED' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Stop_publisher') > -1 )}" ng-click="audit.updateActions('Stop_publisher')">
-                        {{ 'admin.audit.operations.STOP_PUBLISHER' | translate }}
-                    </a></li>
-                    <li><a ng-class="{'active':( audit.actions.indexOf('Start_publisher') > -1 )}" ng-click="audit.updateActions('Start_publisher')">
-                        {{ 'admin.audit.operations.START_PUBLISHER' | translate }}
-                    </a></li>
-                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Remove_cluster_node') > -1 )}" ng-click="audit.updateActions('Remove_cluster_node')">
-                        {{ 'admin.audit.operations.REMOVE_CLUSTER_NODE' | translate }}
-                    </a></li>
-                  <li><a ng-class="{'active':( audit.actions.indexOf('Cancel_publishing_package') > -1 )}" ng-click="audit.updateActions('Cancel_publishing_package')">
-                    {{ 'admin.audit.operations.CANCEL_PUBLISHING_PACKAGE' | translate }}
-                  </a></li>
-                </ul>
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-default" ng-click="isCollapsed = !isCollapsed" style="margin-right: 10px;">{{ 'admin.audit.OPTIONS' | translate }} <i class="pull-right fa" ng-class="{'fa-chevron-right': isCollapsed, 'fa-chevron-down': !isCollapsed}"></i></button>
-
+  <div class="audit-nav">
+    <div class="nav-containers">
+      <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
+      <span class="pr20 inline-block" ng-show="audit.currentSiteName" style="padding-top: 6px;"
+        >{{ audit.currentSiteName }}</span
+      >
+      <div
+        class="btn-group"
+        uib-dropdown
+        is-open="sitesDropdown.isopen"
+        style="margin-right: 5px;"
+        ng-show="!audit.currentSiteName"
+      >
+        <button
+          type="button"
+          class="btn btn-default dropdown-toggle text-capitalize"
+          uib-dropdown-toggle
+          title="{{audit.site || 'admin.audit.ALL_SITES' | translate}}"
+        >
+          {{audit.siteLabel || audit.site || 'admin.audit.ALL_SITES' | translate }} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li>
+            <a ng-click="audit.updateSite()">{{ 'admin.audit.ALL_SITES' | translate }}</a>
+          </li>
+          <li>
+            <a ng-click="audit.updateSite('admin.audit.SYSTEM', 'true')">{{ 'admin.audit.SYSTEM' | translate }}</a>
+          </li>
+          <li ng-repeat="site in sites">
+            <a class="text-capitalize" ng-click="audit.updateSite(site.id)">{{site.name}}</a>
+          </li>
+        </ul>
+      </div>
     </div>
 
-  <hr class="divider mt10 mb15"/>
-
-    <div uib-collapse="isCollapsed">
-         <div class="well well-lg col-xs-12 col-sm-12 col-md-12 mt10">
-             <div class="mb10 btn-group col-xs-6  col-sm-6 col-md-4">
-                 <label for="dateFrom">{{ 'admin.audit.DATE_FROM' | translate }}: </label>
-                 <div class="date-container">
-                      <span>
-                          <i class="date-icon fa fa-calendar"></i>
-                      </span>
-                     <input ng-change="audit.updateDate('dateFrom')" id="dateFrom" class="form-control date dateFrom" name="dateFrom" type="text" ng-model="audit.dateFromInput">
-                 </div>
-             </div>
-
-             <div class="mb10 btn-group col-xs-6  col-sm-6 col-md-4">
-                 <label for="dateTo">{{ 'admin.audit.DATE_TO' | translate }}: </label>
-                 <div class="date-container">
-                <span>
-                    <i class="date-icon fa fa-calendar"></i>
-                </span><input ng-change="audit.updateDate('dateTo')" class="form-control date" id="dateTo" name="dateTo" type="text" ng-model="audit.dateToInput" ng-init="audit.initCalendar(locale)">
-                 </div>
-             </div>
-
-             <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
-                 <label for="target">{{ 'admin.audit.PATH' | translate }}: </label>
-                 <input ng-change="audit.generalUpdate()" class="form-control" id="target" name="target" type="text" ng-model="audit.target">
-             </div>
-
-             <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
-                 <label for="clusterNodeId">{{ 'admin.audit.CLUSTER_NODE' | translate }}: </label>
-                 <input ng-change="audit.generalUpdate()" class="form-control" id="clusterNodeId" name="clusterNodeId" type="text" ng-model="audit.clusterNodeId">
-             </div>
-
-             <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
-                 <label for="target">{{ 'admin.audit.ORIGIN' | translate }}: </label>
-                 <select ng-init="audit.origin = originValues[0]" ng-change="audit.generalUpdate()" class="form-control" id="origin" ng-options="value for value in originValues" ng-model="audit.origin"></select>
-             </div>
-
-             <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
-                 <label>{{ 'admin.audit.TIMEZONE' | translate }}: </label>
-                 <select class="form-control" id="auditTimezone" ng-init="audit.timeZone" ng-options="value for value in audit.allTimeZones" ng-model="audit.timeZone" ng-change="audit.newTimezone();" ></select>
-             </div>
-
-         </div>
-     </div>
-
-    <div class="audit-table-container">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th><a ng-click="audit.generalUpdate(); isSortAsc = !isSortAsc" >{{ 'admin.audit.TIMESTAMP' | translate }} <i class="fa" ng-class="{'fa-caret-up': isSortAsc, 'fa-caret-down': !isSortAsc}"></i></a></th>
-                <th>{{ 'admin.audit.SITE' | translate }}</th>
-                <th>{{ 'admin.audit.OPERATION' | translate }}</th>
-                <th>{{ 'admin.audit.TARGET' | translate }}</th>
-                <th>{{ 'admin.audit.TARGET_TYPE' | translate }}</th>
-                <th>{{ 'admin.audit.USERNAME' | translate }}</th>
-                <th>{{ 'admin.audit.NAME' | translate }}</th>
-                <th>{{ 'admin.audit.ORIGIN' | translate }}</th>
-                <th>{{ 'admin.audit.PARAMETERS' | translate }}</th>
-                <th>{{ 'admin.audit.CLUSTER_NODE' | translate }}</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <tr dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
-                current-page="audit.pagination.current" total-items="audit.totalLogs">
-                <td class="min-cel-width">{{log.operationTimestamp | formatDate:locale:audit.timeZone}}</td>
-                <td>{{log.siteName}}</td>
-                <td>{{log.operation}}</td>
-                <td class="min-cel-width wrap-content">{{log.primaryTargetValue}}</td>
-                <td class="min-cel-width">{{log.primaryTargetType}}</td>
-                <td><span class="username trim inline-block">{{log.actorId}}</span></td>
-                <td>{{log.actorDetails}}</td>
-                <td>{{log.origin}}</td>
-                <td class="min-cel-width">
-                    <a class="elementCollapse" id="collapse{{log.id}}" data-toggle="collapse" data-target="#collapseContainer{{log.id}}" ng-click="audit.collapseParam(log.id);" >
-                        <span class="plus"><i class="fa fa-plus-square"></i> {{ 'admin.audit.EXPAND' | translate }}</span>
-                        <span class="minus" style="display: none;"><i class="fa fa-minus-square"></i> {{ 'admin.audit.COLLAPSE' | translate }}</span></a>
-                    <div id="collapseContainer{{log.id}}" class="collapse collapseParamContainer">
-                    </div>
-                </td>
-                <td>{{log.clusterNodeId}}</td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="nav-containers">
+      <label>{{ 'admin.audit.USER' | translate }}: </label>
+      <div class="btn-group" uib-dropdown is-open="usersDropdown.isopen" style="margin-right: 5px;">
+        <button
+          type="button"
+          class="btn btn-default dropdown-toggle text-capitalize"
+          uib-dropdown-toggle
+          title="{{audit.userSelected || 'admin.audit.ALL_USERS' | translate}}"
+        >
+          {{audit.userSelected || 'admin.audit.ALL_USERS' | translate }} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li>
+            <a ng-click="audit.updateUser()">{{ 'admin.audit.ALL_USERS' | translate }}</a>
+          </li>
+          <li ng-repeat="user in audit.users">
+            <a class="text-capitalize" ng-click="audit.updateUser(user)">{{user.username}}</a>
+          </li>
+        </ul>
+      </div>
     </div>
+
+    <div class="nav-containers">
+      <label>{{ 'admin.audit.OPERATIONS' | translate }}: </label>
+      <div class="btn-group audit-actions" uib-dropdown is-open="actionsDropdown.isopen" style="margin-right: 10px;">
+        <button
+          type="button"
+          class="btn btn-default dropdown-toggle"
+          uib-dropdown-toggle
+          title="{{audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate}}"
+        >
+          {{ audit.actionsInputVal || 'admin.audit.operations.ALL_OPERATIONS' | translate }} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
+          <li ng-show="!audit.currentSiteName">
+            <a ng-class="{'active':( audit.actions.indexOf('Login') > -1 )}" ng-click="audit.updateActions('Login')">
+              {{ 'admin.audit.operations.LOGIN' | translate }}
+            </a>
+          </li>
+          <li ng-show="!audit.currentSiteName">
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Login_failed') > -1 )}"
+              ng-click="audit.updateActions('Login_failed')"
+            >
+              {{ 'admin.audit.operations.LOGIN_FAILED' | translate }}
+            </a>
+          </li>
+          <li ng-show="!audit.currentSiteName">
+            <a ng-class="{'active':( audit.actions.indexOf('Logout') > -1 )}" ng-click="audit.updateActions('Logout')">
+              {{ 'admin.audit.operations.LOGOUT' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Create') > -1 )}" ng-click="audit.updateActions('Create')">
+              {{ 'admin.audit.operations.CREATE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Update') > -1 )}" ng-click="audit.updateActions('Update')">
+              {{ 'admin.audit.operations.UPDATE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Delete') > -1 )}" ng-click="audit.updateActions('Delete')">
+              {{ 'admin.audit.operations.DELETE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Move') > -1 )}" ng-click="audit.updateActions('Move')">
+              {{ 'admin.audit.operations.MOVE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Revert') > -1 )}" ng-click="audit.updateActions('Revert')">
+              {{ 'admin.audit.operations.REVERT' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Enable') > -1 )}" ng-click="audit.updateActions('Enable')">
+              {{ 'admin.audit.operations.ENABLE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Disable') > -1 )}"
+              ng-click="audit.updateActions('Disable')"
+            >
+              {{ 'admin.audit.operations.DISABLE' | translate }}
+            </a>
+          </li>
+          <li ng-show="!audit.currentSiteName">
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Add_members') > -1 )}"
+              ng-click="audit.updateActions('Add_members')"
+            >
+              {{ 'admin.audit.operations.ADD_MEMBERS' | translate }}
+            </a>
+          </li>
+          <li ng-show="!audit.currentSiteName">
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Remove_members') > -1 )}"
+              ng-click="audit.updateActions('Remove_members')"
+            >
+              {{ 'admin.audit.operations.REMOVE_MEMBERS' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Add_remote') > -1 )}"
+              ng-click="audit.updateActions('Add_remote')"
+            >
+              {{ 'admin.audit.operations.ADD_REMOTE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Remove_remote') > -1 )}"
+              ng-click="audit.updateActions('Remove_remote')"
+            >
+              {{ 'admin.audit.operations.REMOVE_REMOTE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Push_to_remote') > -1 )}"
+              ng-click="audit.updateActions('Push_to_remote')"
+            >
+              {{ 'admin.audit.operations.PUSH_TO_REMOTE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Pull_from_remote') > -1 )}"
+              ng-click="audit.updateActions('Pull_from_remote')"
+            >
+              {{ 'admin.audit.operations.PULL_FROM_REMOTE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Request_publish') > -1 )}"
+              ng-click="audit.updateActions('Request_publish')"
+            >
+              {{ 'admin.audit.operations.REQUEST_PUBLISH' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Approve') > -1 )}"
+              ng-click="audit.updateActions('Approve')"
+            >
+              {{ 'admin.audit.operations.APPROVE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Approve_scheduled') > -1 )}"
+              ng-click="audit.updateActions('Approve_scheduled')"
+            >
+              {{ 'admin.audit.operations.APPROVE_SCHEDULED' | translate }}
+            </a>
+          </li>
+          <li>
+            <a ng-class="{'active':( audit.actions.indexOf('Reject') > -1 )}" ng-click="audit.updateActions('Reject')">
+              {{ 'admin.audit.operations.REJECT' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Published') > -1 )}"
+              ng-click="audit.updateActions('Published')"
+            >
+              {{ 'admin.audit.operations.PUBLISHED' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Stop_publisher') > -1 )}"
+              ng-click="audit.updateActions('Stop_publisher')"
+            >
+              {{ 'admin.audit.operations.STOP_PUBLISHER' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Start_publisher') > -1 )}"
+              ng-click="audit.updateActions('Start_publisher')"
+            >
+              {{ 'admin.audit.operations.START_PUBLISHER' | translate }}
+            </a>
+          </li>
+          <li ng-show="!audit.currentSiteName">
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Remove_cluster_node') > -1 )}"
+              ng-click="audit.updateActions('Remove_cluster_node')"
+            >
+              {{ 'admin.audit.operations.REMOVE_CLUSTER_NODE' | translate }}
+            </a>
+          </li>
+          <li>
+            <a
+              ng-class="{'active':( audit.actions.indexOf('Cancel_publishing_package') > -1 )}"
+              ng-click="audit.updateActions('Cancel_publishing_package')"
+            >
+              {{ 'admin.audit.operations.CANCEL_PUBLISHING_PACKAGE' | translate }}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-default" ng-click="isCollapsed = !isCollapsed" style="margin-right: 10px;">
+      {{ 'admin.audit.OPTIONS' | translate }}
+      <i class="pull-right fa" ng-class="{'fa-chevron-right': isCollapsed, 'fa-chevron-down': !isCollapsed}"></i>
+    </button>
+  </div>
+
+  <hr class="divider mt10 mb15" />
+
+  <div uib-collapse="isCollapsed">
+    <div class="well well-lg col-xs-12 col-sm-12 col-md-12 mt10">
+      <div class="mb10 btn-group col-xs-6  col-sm-6 col-md-4">
+        <label for="dateFrom">{{ 'admin.audit.DATE_FROM' | translate }}: </label>
+        <div class="date-container">
+          <span>
+            <i class="date-icon fa fa-calendar"></i>
+          </span>
+          <input
+            ng-change="audit.updateDate('dateFrom')"
+            id="dateFrom"
+            class="form-control date dateFrom"
+            name="dateFrom"
+            type="text"
+            ng-model="audit.dateFromInput"
+          />
+        </div>
+      </div>
+
+      <div class="mb10 btn-group col-xs-6  col-sm-6 col-md-4">
+        <label for="dateTo">{{ 'admin.audit.DATE_TO' | translate }}: </label>
+        <div class="date-container">
+          <span> <i class="date-icon fa fa-calendar"></i> </span
+          ><input
+            ng-change="audit.updateDate('dateTo')"
+            class="form-control date"
+            id="dateTo"
+            name="dateTo"
+            type="text"
+            ng-model="audit.dateToInput"
+            ng-init="audit.initCalendar(locale)"
+          />
+        </div>
+      </div>
+
+      <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
+        <label for="target">{{ 'admin.audit.PATH' | translate }}: </label>
+        <input
+          ng-change="audit.generalUpdate()"
+          class="form-control"
+          id="target"
+          name="target"
+          type="text"
+          ng-model="audit.target"
+        />
+      </div>
+
+      <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
+        <label for="clusterNodeId">{{ 'admin.audit.CLUSTER_NODE' | translate }}: </label>
+        <input
+          ng-change="audit.generalUpdate()"
+          class="form-control"
+          id="clusterNodeId"
+          name="clusterNodeId"
+          type="text"
+          ng-model="audit.clusterNodeId"
+        />
+      </div>
+
+      <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
+        <label for="target">{{ 'admin.audit.ORIGIN' | translate }}: </label>
+        <select
+          ng-init="audit.origin = originValues[0]"
+          ng-change="audit.generalUpdate()"
+          class="form-control"
+          id="origin"
+          ng-options="value for value in originValues"
+          ng-model="audit.origin"
+        ></select>
+      </div>
+
+      <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
+        <label>{{ 'admin.audit.TIMEZONE' | translate }}: </label>
+        <select
+          class="form-control"
+          id="auditTimezone"
+          ng-init="audit.timeZone"
+          ng-options="value for value in audit.allTimeZones"
+          ng-model="audit.timeZone"
+          ng-change="audit.newTimezone();"
+        ></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="audit-table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>
+            <a ng-click="audit.generalUpdate(); isSortAsc = !isSortAsc"
+              >{{ 'admin.audit.TIMESTAMP' | translate }}
+              <i class="fa" ng-class="{'fa-caret-up': isSortAsc, 'fa-caret-down': !isSortAsc}"></i
+            ></a>
+          </th>
+          <th>{{ 'admin.audit.SITE' | translate }}</th>
+          <th>{{ 'admin.audit.OPERATION' | translate }}</th>
+          <th>{{ 'admin.audit.TARGET' | translate }}</th>
+          <th>{{ 'admin.audit.TARGET_TYPE' | translate }}</th>
+          <th>{{ 'admin.audit.USERNAME' | translate }}</th>
+          <th>{{ 'admin.audit.NAME' | translate }}</th>
+          <th>{{ 'admin.audit.ORIGIN' | translate }}</th>
+          <th>{{ 'admin.audit.PARAMETERS' | translate }}</th>
+          <th>{{ 'admin.audit.CLUSTER_NODE' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
+          current-page="audit.pagination.current"
+          total-items="audit.totalLogs"
+        >
+          <td class="min-cel-width">{{log.operationTimestamp | formatDate:audit.locale:audit.timeZone}}</td>
+          <td>{{log.siteName}}</td>
+          <td>{{log.operation}}</td>
+          <td class="min-cel-width wrap-content">{{log.primaryTargetValue}}</td>
+          <td class="min-cel-width">{{log.primaryTargetType}}</td>
+          <td><span class="username trim inline-block">{{log.actorId}}</span></td>
+          <td>{{log.actorDetails}}</td>
+          <td>{{log.origin}}</td>
+          <td class="min-cel-width">
+            <a
+              class="elementCollapse"
+              id="collapse{{log.id}}"
+              data-toggle="collapse"
+              data-target="#collapseContainer{{log.id}}"
+              ng-click="audit.collapseParam(log.id);"
+            >
+              <span class="plus"><i class="fa fa-plus-square"></i> {{ 'admin.audit.EXPAND' | translate }}</span>
+              <span class="minus" style="display: none;"
+                ><i class="fa fa-minus-square"></i> {{ 'admin.audit.COLLAPSE' | translate }}</span
+              ></a
+            >
+            <div id="collapseContainer{{log.id}}" class="collapse collapseParamContainer"></div>
+          </td>
+          <td>{{log.clusterNodeId}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="global-menu-pagination-wrapper">
     <div class="mr10">
       <label class="mr5">{{ 'admin.audit.LOGS_PER_PAGE' | translate }}: </label>
-      <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
-             min="0" max="500" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
+      <input
+        class="audit-number-logs"
+        type="number"
+        name="input"
+        ng-model="audit.logsPerPage"
+        min="0"
+        max="500"
+        ng-model-options="{debounce: audit.defaultDelay}"
+        only-digits
+      />
     </div>
     <dir-pagination-controls on-page-change="audit.pageChanged(newPageNumber)"></dir-pagination-controls>
   </div>
-
-
-
 </div>
-

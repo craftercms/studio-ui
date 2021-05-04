@@ -21,7 +21,7 @@ export interface LogParameters {
   targetValue: string;
 }
 
-export interface AuditLog {
+export interface AuditLogEntry {
   id: number;
   organizationId: number;
   siteId: number;

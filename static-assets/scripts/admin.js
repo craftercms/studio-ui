@@ -170,11 +170,11 @@
       let auditApi = CrafterCMSNext.services.audit;
 
       this.getAudit = function(data) {
-        return auditApi.fetchAudit(data).toPromise();
+        return auditApi.fetchAuditLog(data).toPromise();
       };
 
       this.getSpecificAudit = function(auditId) {
-        return auditApi.fetchSpecificAudit(auditId).toPromise();
+        return auditApi.fetchAuditLogEntry(auditId).toPromise();
       };
 
       // LOGGING
@@ -291,6 +291,7 @@
       audit.defaultDelay = 500;
       audit.site = $location.search().site ? $location.search().site : '';
       audit.timeZone;
+      audit.locale = $rootScope.locale;
       audit.allTimeZones = moment.tz.names();
       audit.sort = 'date';
       $scope.originValues = [$translate.instant('admin.audit.ALL_ORIGINS'), 'API', 'GIT'];

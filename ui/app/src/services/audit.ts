@@ -19,7 +19,7 @@ import { toQueryString } from '../utils/object';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
-import { AuditLog } from '../models/Audit';
+import { AuditLogEntry } from '../models/Audit';
 import PaginationOptions from '../models/PaginationOptions';
 
 export type AuditOptions = Partial<
@@ -39,7 +39,7 @@ export type AuditOptions = Partial<
   }
 >;
 
-export function fetchAudit(options: AuditOptions): Observable<PagedArray<AuditLog>> {
+export function fetchAuditLog(options: AuditOptions): Observable<PagedArray<AuditLogEntry>> {
   const mergedOptions = {
     limit: 100,
     offset: 0,
@@ -56,6 +56,6 @@ export function fetchAudit(options: AuditOptions): Observable<PagedArray<AuditLo
   );
 }
 
-export function fetchSpecificAudit(id: number): Observable<AuditLog> {
+export function fetchAuditLogEntry(id: number): Observable<AuditLogEntry> {
   return get(`/studio/api/2/audit/${id}`).pipe(pluck('response', 'auditLog'));
 }

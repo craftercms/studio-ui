@@ -15,7 +15,7 @@
  */
 
 import { Resource } from '../../models/Resource';
-import { AuditLog } from '../../models/Audit';
+import { AuditLogEntry, LogParameters } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@material-ui/core/Box';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -25,7 +25,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Popover from '@material-ui/core/Popover';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import { AuditOptions, fetchSpecificAudit } from '../../services/audit';
+import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
 import User from '../../models/User';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -33,18 +33,29 @@ import IconButton from '@material-ui/core/IconButton';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { useDebouncedInput } from '../../utils/hooks';
+import { useDebouncedInput, useLocale } from '../../utils/hooks';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { KeyboardDatePicker } from '@material-ui/pickers/DatePicker';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import moment from 'moment-timezone';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers/MuiPickersUtilsProvider';
+import DateFnsUtils from '@date-io/date-fns';
+import LookupTable from '../../models/LookupTable';
+import { Typography } from '@material-ui/core';
 
 export interface AuditGridUIProps {
-  resource: Resource<PagedArray<AuditLog>>;
+  resource: Resource<PagedArray<AuditLogEntry>>;
   sites: Site[];
   users: PagedArray<User>;
+  parametersLookup: LookupTable<LogParameters[]>;
   operations: { id: string; value: string; name: string }[];
   origins: { id: string; value: string; name: string }[];
   onChangePage(page: number): void;
+  onFetchParameters(id: number): void;
   onChangeRowsPerPage(size: number): void;
   onFilterChange(filter: { id: string; value: string | string[] }): void;
   filters: AuditOptions;
+  timezones: string[];
 }
 
 export interface GridColumnMenuProps extends React.HTMLAttributes<HTMLUListElement> {
@@ -95,6 +106,10 @@ const translations = defineMessages({
   clusterNode: {
     id: 'auditGrid.clusterNode',
     defaultMessage: 'Cluster Node'
+  },
+  searchPlaceholder: {
+    id: 'auditGrid.searchPlaceholder',
+    defaultMessage: 'Search...'
   }
 });
 
@@ -107,16 +122,23 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     filters,
     sites,
     users,
+    parametersLookup,
     operations,
-    origins
+    origins,
+    timezones,
+    onFetchParameters
   } = props;
   const auditLogs = resource.read();
   const classes = styles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
   const [activeFilter, setActiveFilter] = useState<string>();
+  const [fromDate, setFromDate] = useState(moment());
+  const [toDate, setToDate] = useState(moment());
   const [targetValue, setTargetValue] = useState('');
   const [clusterNode, setClusterNode] = useState('');
+  const [timeZone, setTimeZone] = useState(moment.tz.guess());
+  const localeBranch = useLocale();
 
   const onFilterSelected = (props: GridColumnMenuProps) => {
     if (props.open && anchorPosition === null) {
@@ -134,11 +156,12 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     return null;
   };
 
-  const onGetParameters = (params: GridCellParams) => {
-    fetchSpecificAudit(params.id as number).subscribe((response) => {
-      console.log(response);
-    });
-  };
+  const onGetParameters = useCallback(
+    (params: GridCellParams) => {
+      onFetchParameters(params.id as number);
+    },
+    [onFetchParameters]
+  );
 
   const onPageChange = (param: GridPageChangeParams) => {
     onChangePage(param.page);
@@ -190,6 +213,18 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     setClusterNode(e.target.value);
   };
 
+  const onTimezoneSelected = (timezone: string) => {
+    setTimeZone(timezone);
+  };
+
+  const onFromDateSelected = (date: MaterialUiPickersDate | null, value?: string | null) => {
+    setFromDate(date);
+  };
+
+  const onToDateSelected = (date: MaterialUiPickersDate | null, value?: string | null) => {
+    setToDate(date);
+  };
+
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -197,7 +232,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.timestamp),
         width: 200,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        renderCell: (params: GridCellParams) => {
+          const date = new Intl.DateTimeFormat(localeBranch.localeCode, {
+            ...localeBranch.dateTimeFormatOptions,
+            timeZone
+          }).format(new Date(params.value as Date));
+          return <>{date}</>;
+        }
       },
       {
         field: 'siteName',
@@ -256,12 +298,16 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 105,
         disableColumnMenu: true,
         renderCell: (params: GridCellParams) => {
-          return (
+          return parametersLookup[params.id] === undefined || parametersLookup[params.id]?.length ? (
             <Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
               <IconButton onClick={() => onGetParameters(params)}>
                 <VisibilityRoundedIcon />
               </IconButton>
             </Tooltip>
+          ) : (
+            <Typography color="textSecondary" variant="caption">
+              (<FormattedMessage id="auditGrid.noParameters" defaultMessage="No parameters" />)
+            </Typography>
           );
         },
         sortable: false,
@@ -275,12 +321,20 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         cellClassName: classes.cellRoot
       }
     ],
-    [classes.cellRoot, formatMessage]
+    [
+      classes.cellRoot,
+      formatMessage,
+      localeBranch.dateTimeFormatOptions,
+      localeBranch.localeCode,
+      onGetParameters,
+      timeZone
+    ]
   );
 
   return (
-    <Box height="500px">
+    <Box display="flex">
       <DataGrid
+        autoHeight
         disableColumnFilter
         onCellClick={() => {}}
         className={classes.gridRoot}
@@ -307,11 +361,51 @@ export default function AuditGridUI(props: AuditGridUIProps) {
           horizontal: 'center'
         }}
       >
+        {activeFilter === 'operationTimestamp' && (
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <form className={classes.popoverForm} noValidate autoComplete="off">
+              <Box display="flex">
+                <KeyboardDatePicker
+                  className={classes.fromDatePicker}
+                  margin="normal"
+                  label="From"
+                  format="MM/dd/yyyy"
+                  value={fromDate}
+                  onChange={onFromDateSelected}
+                />
+                <KeyboardDatePicker
+                  margin="normal"
+                  label="To"
+                  format="MM/dd/yyyy"
+                  value={toDate}
+                  onChange={onToDateSelected}
+                />
+              </Box>
+              <Autocomplete
+                disableClearable
+                options={timezones}
+                getOptionLabel={(option) => option}
+                value={timeZone}
+                onChange={(e: React.ChangeEvent<{}>, value) => {
+                  onTimezoneSelected(value);
+                }}
+                fullWidth
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={<FormattedMessage id="auditGrid.timezone" defaultMessage="Timezone" />}
+                    variant="outlined"
+                  />
+                )}
+              />
+            </form>
+          </MuiPickersUtilsProvider>
+        )}
         {activeFilter === 'siteName' && (
           <TextField
             fullWidth
             select
-            label="Filter by Site"
+            label={<FormattedMessage id="auditGrid.filterBySite" defaultMessage="Filter by Site" />}
             value={Boolean(filters?.['siteId']) ? filters['siteId'] : 'all'}
             onChange={onSiteSelected}
           >
@@ -332,7 +426,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
           <TextField
             fullWidth
             select
-            label="Filter by User"
+            label={<FormattedMessage id="auditGrid.filterByUser" defaultMessage="Filter by User" />}
             value={Boolean(filters?.['actorId']) ? filters['actorId'] : 'all'}
             onChange={onUsernameSelected}
           >
@@ -350,7 +444,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
           <TextField
             fullWidth
             select
-            label="Filter by Origin"
+            label={<FormattedMessage id="auditGrid.filterByOrigin" defaultMessage="Filter by Origin" />}
             value={Boolean(filters?.['origin']) ? filters['origin'] : 'all'}
             onChange={onOriginSelected}
           >
@@ -368,7 +462,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
           <TextField
             fullWidth
             select
-            label="Filter by Operation"
+            label={<FormattedMessage id="auditGrid.filterByOperation" defaultMessage="Filter by Operation" />}
             value={filters?.['operations']?.split(',') ?? []}
             SelectProps={{ multiple: true }}
             onChange={onOperationSelected}
@@ -386,8 +480,8 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         {activeFilter === 'primaryTargetValue' && (
           <TextField
             value={targetValue}
-            label="Filter by Target Value"
-            placeholder="Search..."
+            label={<FormattedMessage id="auditGrid.filterByTarget" defaultMessage="Filter by Target Value" />}
+            placeholder={formatMessage(translations.searchPlaceholder)}
             fullWidth
             onChange={onTargetValueChanged}
           />
@@ -395,8 +489,8 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         {activeFilter === 'clusterNode' && (
           <TextField
             value={clusterNode}
-            label="Filter by Cluster Node"
-            placeholder="Search..."
+            label={<FormattedMessage id="auditGrid.filterByCluster" defaultMessage="Filter by Cluster Node" />}
+            placeholder={formatMessage(translations.searchPlaceholder)}
             fullWidth
             onChange={onClusterNodeChanged}
           />

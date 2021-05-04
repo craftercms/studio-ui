@@ -14,34 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './ParametersDialog';
 
-export const styles = makeStyles((theme) =>
-  createStyles({
-    cellRoot: {
-      '&:focus-within': {
-        outline: 'none !important'
-      }
-    },
-    popover: {
-      padding: '20px',
-      minWidth: '250px'
-    },
-    popoverForm: {},
-    fromDatePicker: {
-      marginRight: '20px'
-    },
-    gridRoot: {
-      border: '0 !important',
-      '& .MuiDataGrid-menuIcon': {
-        visibility: 'visible !important'
-      }
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    }
-  })
-);
-
-export default styles;
+export * from './ParametersDialog';

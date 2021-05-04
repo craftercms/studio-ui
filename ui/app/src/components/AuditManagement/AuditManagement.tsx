@@ -20,17 +20,20 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
-import { AuditLog } from '../../models/Audit';
-import { AuditOptions, fetchAudit } from '../../services/audit';
+import { AuditLogEntry, LogParameters } from '../../models/Audit';
+import { AuditOptions, fetchAuditLog, fetchAuditLogEntry } from '../../services/audit';
 import { useLogicResource, useMount, useSiteList, useSpreadState } from '../../utils/hooks';
 import AuditGridUI from '../AuditGrid';
 import User from '../../models/User';
 import { fetchAll } from '../../services/users';
 import { Operations, OperationsMessages } from './operations';
+import moment from 'moment-timezone';
+import LookupTable from '../../models/LookupTable';
+import ParametersDialog from '../ParametersDialog';
 
 export default function AuditManagement() {
   const [fetching, setFetching] = useState(false);
-  const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLog>>(null);
+  const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
   const [error, setError] = useState<ApiResponse>();
   const sites = useSiteList();
   const [users, setUsers] = useState<PagedArray<User>>();
@@ -38,11 +41,19 @@ export default function AuditManagement() {
     offset: 0,
     limit: 10
   });
+  const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<LogParameters[]>>({});
+  const [parametersDialogParams, setParametersDialogParams] = useSpreadState<{
+    open: boolean;
+    parameters: LogParameters[];
+  }>({
+    open: false,
+    parameters: []
+  });
   const { formatMessage } = useIntl();
 
   const refresh = useCallback(() => {
     setFetching(true);
-    fetchAudit(options).subscribe(
+    fetchAuditLog(options).subscribe(
       (logs) => {
         setAuditLogs(logs);
         setFetching(false);
@@ -65,8 +76,8 @@ export default function AuditManagement() {
   }, [refresh]);
 
   const resource = useLogicResource<
-    PagedArray<AuditLog>,
-    { auditLogs: PagedArray<AuditLog>; error: ApiResponse; fetching: boolean }
+    PagedArray<AuditLogEntry>,
+    { auditLogs: PagedArray<AuditLogEntry>; error: ApiResponse; fetching: boolean }
   >(
     useMemo(() => ({ auditLogs, error, fetching }), [auditLogs, error, fetching]),
     {
@@ -90,6 +101,37 @@ export default function AuditManagement() {
     setOptions({ [id]: value });
   };
 
+  const onFetchParameters = (id: number) => {
+    if (parametersLookup[id]?.length) {
+      setParametersDialogParams({
+        open: true,
+        parameters: parametersLookup[id]
+      });
+    } else {
+      fetchAuditLogEntry(id).subscribe((response) => {
+        setParametersLookup({ [id]: response.parameters });
+        if (response.parameters.length) {
+          setParametersDialogParams({
+            open: true,
+            parameters: response.parameters
+          });
+        }
+      });
+    }
+  };
+
+  const onShowParametersDialogClose = () => {
+    setParametersDialogParams({
+      open: false
+    });
+  };
+
+  const onShowParametersDialogClosed = () => {
+    setParametersDialogParams({
+      parameters: []
+    });
+  };
+
   return (
     <section>
       <GlobalAppToolbar title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />} />
@@ -108,10 +150,13 @@ export default function AuditManagement() {
           resource={resource}
           sites={sites}
           users={users}
+          parametersLookup={parametersLookup}
+          onFetchParameters={onFetchParameters}
           onChangePage={onChangePage}
           onChangeRowsPerPage={onChangeRowsPerPage}
           onFilterChange={onFilterChange}
           filters={options}
+          timezones={moment.tz.names()}
           operations={Operations.map((id) => ({ id, value: id, name: formatMessage(OperationsMessages[id]) }))}
           origins={[
             { id: 'GIT', name: 'GIT', value: 'GIT' },
@@ -119,6 +164,12 @@ export default function AuditManagement() {
           ]}
         />
       </SuspenseWithEmptyState>
+      <ParametersDialog
+        open={parametersDialogParams.open}
+        onClose={onShowParametersDialogClose}
+        onClosed={onShowParametersDialogClosed}
+        parameters={parametersDialogParams.parameters}
+      />
     </section>
   );
 }
