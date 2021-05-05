@@ -29,7 +29,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import { Typography } from '@material-ui/core';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import clsx from 'clsx';
-import { cardStyles } from './styles';
+import { useSiteCardStyles } from './styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 
@@ -70,7 +70,7 @@ export default function SiteCard(props: SiteCardProps) {
     publishingStatus,
     onPublishButtonClick
   } = props;
-  const classes = cardStyles();
+  const classes = useSiteCardStyles();
   const { formatMessage } = useIntl();
 
   return (

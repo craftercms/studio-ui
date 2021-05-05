@@ -189,7 +189,7 @@ function renderCount(selected: Selected) {
 }
 
 function PublishingQueue(props: PublishingQueueProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const [packages, setPackages] = useState(null);
   const [filesPerPackage, setFilesPerPackage] = useState(null);
   const [selected, setSelected] = useState(selectedInitialState);

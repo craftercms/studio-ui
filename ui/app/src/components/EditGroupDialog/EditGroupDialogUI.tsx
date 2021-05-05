@@ -55,7 +55,7 @@ interface GroupEditDialogUIProps {
 
 const translations = defineMessages({
   confirmHelperText: {
-    id: 'groupEditDialog.helperText',
+    id: 'editGroupDialog.helperText',
     defaultMessage: 'Delete "{name}" group?'
   },
   confirmOk: {
@@ -104,7 +104,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               confirmHelperText={formatMessage(translations.confirmHelperText, {
                 name: group.name
               })}
-              iconTooltip={<FormattedMessage id="groupEditDialog.deleteGroup" defaultMessage="Delete group" />}
+              iconTooltip={<FormattedMessage id="editGroupDialog.deleteGroup" defaultMessage="Delete group" />}
               icon={DeleteRoundedIcon}
               iconColor="action"
               onConfirm={() => {
@@ -112,7 +112,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               }}
             />
           )}
-          <Tooltip title={<FormattedMessage id="groupEditDialog.close" defaultMessage="Close" />}>
+          <Tooltip title={<FormattedMessage id="editGroupDialog.close" defaultMessage="Close" />}>
             <IconButton edge="end" onClick={onClose}>
               <CloseRoundedIcon />
             </IconButton>
@@ -123,9 +123,14 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
       <DialogBody className={classes.body}>
         <section className={clsx(classes.section, 'noPaddingBottom')}>
           <Typography variant="subtitle1" className={classes.sectionTitle}>
-            <FormattedMessage id="groupEditDialog.groupDetails" defaultMessage="Group Details" />
+            <FormattedMessage id="editGroupDialog.groupDetails" defaultMessage="Group Details" />
           </Typography>
-          <form>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSave?.();
+            }}
+          >
             <Box display="flex" alignItems="center" p="15px  0">
               <InputLabel htmlFor="groupName" className={classes.label}>
                 <Typography variant="subtitle2">
@@ -142,6 +147,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                   value={group.name}
                   fullWidth
+                  autoFocus
                 />
               )}
             </Box>
@@ -156,6 +162,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 onChange={(e) => onChangeValue({ key: 'desc', value: e.currentTarget.value })}
                 value={group.desc}
                 fullWidth
+                autoFocus={isEdit}
               />
             </Box>
             <div className={classes.formActions}>
@@ -164,7 +171,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                 </SecondaryButton>
               )}
-              <PrimaryButton disabled={!isDirty} onClick={onSave} loading={false}>
+              <PrimaryButton disabled={!isDirty} type="submit">
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </div>
@@ -172,10 +179,10 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
         </section>
         <Divider />
         <section className={classes.section}>
-          {users && members ? (
+          {isEdit && users && members ? (
             <>
               <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
-                <FormattedMessage id="groupEditDialog.editGroupMembers" defaultMessage="Edit Group Members" />
+                <FormattedMessage id="editGroupDialog.editGroupMembers" defaultMessage="Edit Group Members" />
               </Typography>
               <TransferList
                 onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
@@ -183,11 +190,23 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 inProgressIds={inProgressIds}
                 source={{
                   title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                  items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email }))
+                  items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                  emptyMessage: (
+                    <FormattedMessage
+                      id="transferList.emptyListMessage"
+                      defaultMessage="All users are members of this group"
+                    />
+                  )
                 }}
                 target={{
                   title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                  items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email }))
+                  items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                  emptyMessage: (
+                    <FormattedMessage
+                      id="transferList.targetEmptyStateMessage"
+                      defaultMessage="No members on this group"
+                    />
+                  )
                 }}
               />
             </>
@@ -195,8 +214,8 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             <Box display="flex" justifyContent="center">
               <Typography variant="subtitle2" color="textSecondary">
                 <FormattedMessage
-                  id="groupEditDialog.groupMemberHelperText"
-                  defaultMessage="To edit group members the group needs to be created"
+                  id="editGroupDialog.groupMemberHelperText"
+                  defaultMessage="Group members are editable after creation"
                 />
               </Typography>
             </Box>

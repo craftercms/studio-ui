@@ -105,6 +105,7 @@ import {
 import { isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
+import { createPresenceTable } from './array';
 
 export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
 
@@ -283,6 +284,10 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor> =
   // endregion
 };
 
+// `unparsedMenuOptions` is just used as a convenient way of dynamically getting all the actions,
+// not using it for any other reason other than getting the full list of item actions.
+export const allItemActions = Object.keys(unparsedMenuOptions);
+
 export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>(
   menuOptionDescriptors: Record<Keys, ContextMenuOptionDescriptor>,
   formatMessage: IntlFormatters['formatMessage']
@@ -298,10 +303,16 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 export function generateSingleItemOptions(
   item: DetailedItem,
   formatMessage: IntlFormatters['formatMessage'],
-  options?: {
+  options?: Partial<{
     hasClipboard: boolean;
-  }
+    includeOnly: AllItemActions[];
+  }>
 ): ContextMenuOption[][] {
+  const actionsToInclude = createPresenceTable(options?.includeOnly ?? allItemActions) as Record<
+    AllItemActions,
+    boolean
+  >;
+
   let sections: ContextMenuOption[][] = [];
   let sectionA: ContextMenuOption[] = [];
   let sectionB: ContextMenuOption[] = [];
@@ -322,41 +333,41 @@ export function generateSingleItemOptions(
   );
 
   // region Section A
-  if (hasEditAction(item.availableActions)) {
+  if (hasEditAction(item.availableActions) && actionsToInclude.edit) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.edit);
     } else {
       sectionA.push(menuOptions.editCode);
     }
   }
-  if (hasCreateAction(item.availableActions)) {
+  if (hasCreateAction(item.availableActions) && actionsToInclude.createContent) {
     sectionA.push(menuOptions.createContent);
   }
-  if (hasUploadAction(item.availableActions)) {
+  if (hasUploadAction(item.availableActions) && actionsToInclude.upload) {
     sectionB.push(menuOptions.upload);
   }
-  if (hasCreateFolderAction(item.availableActions)) {
+  if (hasCreateFolderAction(item.availableActions) && actionsToInclude.createFolder) {
     sectionA.push(menuOptions.createFolder);
   }
-  if (hasContentDeleteAction(item.availableActions)) {
+  if (hasContentDeleteAction(item.availableActions) && actionsToInclude.delete) {
     sectionA.push(menuOptions.delete);
   }
-  if (hasGetDependenciesAction(item.availableActions)) {
+  if (hasGetDependenciesAction(item.availableActions) && actionsToInclude.dependencies) {
     sectionA.push(menuOptions.dependencies);
   }
-  if (hasRenameAction(item.availableActions)) {
+  if (hasRenameAction(item.availableActions) && actionsToInclude.rename) {
     sectionA.push(menuOptions.rename);
   }
-  if (hasReadHistoryAction(item.availableActions)) {
+  if (hasReadHistoryAction(item.availableActions) && actionsToInclude.history) {
     sectionA.push(menuOptions.history);
   }
-  if (hasChangeTypeAction(item.availableActions)) {
+  if (hasChangeTypeAction(item.availableActions) && actionsToInclude.changeContentType) {
     sectionA.push(menuOptions.changeContentType);
   }
-  if (isNavigable(item)) {
+  if (isNavigable(item) && actionsToInclude.preview) {
     sectionA.push(menuOptions.preview);
   }
-  if (hasReadAction(item.availableActions)) {
+  if (hasReadAction(item.availableActions) && actionsToInclude.view) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
     } else if (isImage) {
@@ -368,16 +379,16 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section B
-  if (hasCutAction(item.availableActions)) {
+  if (hasCutAction(item.availableActions) && actionsToInclude.cut) {
     sectionB.push(menuOptions.cut);
   }
-  if (hasCopyAction(item.availableActions)) {
+  if (hasCopyAction(item.availableActions) && actionsToInclude.copy) {
     sectionB.push(menuOptions.copy);
   }
-  if (hasPasteAction(item.availableActions) && options?.hasClipboard) {
+  if (hasPasteAction(item.availableActions) && options?.hasClipboard && actionsToInclude.paste) {
     sectionB.push(menuOptions.paste);
   }
-  if (hasDuplicateAction(item.availableActions)) {
+  if (hasDuplicateAction(item.availableActions) && actionsToInclude.duplicate) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionB.push(menuOptions.duplicate);
     } else {
@@ -387,40 +398,40 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
-  if (hasPublishAction(item.availableActions)) {
+  if (hasPublishAction(item.availableActions) && actionsToInclude.publish) {
     sectionC.push(menuOptions.publish);
   }
-  if (hasPublishRequestAction(item.availableActions)) {
+  if (hasPublishRequestAction(item.availableActions) && actionsToInclude.requestPublish) {
     sectionC.push(menuOptions.requestPublish);
   }
-  if (hasApprovePublishAction(item.availableActions)) {
+  if (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) {
     sectionC.push(menuOptions.approvePublish);
   }
-  if (hasSchedulePublishAction(item.availableActions)) {
+  if (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish) {
     sectionC.push(menuOptions.schedulePublish);
   }
-  if (hasPublishRejectAction(item.availableActions)) {
+  if (hasPublishRejectAction(item.availableActions) && actionsToInclude.rejectPublish) {
     sectionC.push(menuOptions.rejectPublish);
   }
   // endregion
 
   // region Section D
-  if (hasEditControllerAction(item.availableActions)) {
+  if (hasEditControllerAction(item.availableActions) && actionsToInclude.editController) {
     sectionD.push(menuOptions.editController);
   }
-  if (hasDeleteControllerAction(item.availableActions)) {
+  if (hasDeleteControllerAction(item.availableActions) && actionsToInclude.deleteController) {
     sectionD.push(menuOptions.deleteController);
   }
-  if (hasEditTemplateAction(item.availableActions)) {
+  if (hasEditTemplateAction(item.availableActions) && actionsToInclude.editTemplate) {
     sectionD.push(menuOptions.editTemplate);
   }
-  if (hasDeleteTemplateAction(item.availableActions)) {
+  if (hasDeleteTemplateAction(item.availableActions) && actionsToInclude.deleteTemplate) {
     sectionD.push(menuOptions.deleteTemplate);
   }
-  if (hasCreateAction(item.availableActions) && isTemplate) {
+  if (isTemplate && hasCreateAction(item.availableActions) && actionsToInclude.createTemplate) {
     sectionD.push(menuOptions.createTemplate);
   }
-  if (hasCreateAction(item.availableActions) && isController) {
+  if (isController && hasCreateAction(item.availableActions) && actionsToInclude.createController) {
     sectionD.push(menuOptions.createController);
   }
   // endregion

@@ -21,8 +21,9 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import useStyles from './styles';
 import { createLookupTable } from '../../utils/object';
-import TransferListColumn from '../TransferListColumn';
+import TransferListColumn, { TransferListItem } from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export interface TransferListProps {
   source: TransferListObject;
@@ -34,13 +35,8 @@ export interface TransferListProps {
 
 export interface TransferListObject {
   title?: ReactNode;
+  emptyMessage?: ReactNode;
   items: TransferListItem[];
-}
-
-export interface TransferListItem {
-  id: string | number;
-  title: string;
-  subtitle?: string;
 }
 
 function not(a: any, b: any) {
@@ -89,33 +85,32 @@ export default function TransferList(props: TransferListProps) {
     );
   };
 
-  const moveLeftToRight = () => {
+  const addToTarget = () => {
     const nextCheckedList = {};
     const leftCheckedItems = getChecked(sourceItems);
-
-    leftCheckedItems.forEach((item) => {
-      nextCheckedList[item.id] = false;
-    });
-
-    setCheckedList({ ...checkedList, ...nextCheckedList });
-    setSourceItems(not(sourceItems, leftCheckedItems));
-    setTargetItems([...targetItems, ...leftCheckedItems]);
-    onTargetListItemsAdded(leftCheckedItems);
+    if (leftCheckedItems.length) {
+      leftCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
+      setCheckedList({ ...checkedList, ...nextCheckedList });
+      setSourceItems(not(sourceItems, leftCheckedItems));
+      setTargetItems([...targetItems, ...leftCheckedItems]);
+      onTargetListItemsAdded(leftCheckedItems);
+    }
   };
 
-  const moveRightToLeft = () => {
+  const removeFromTarget = () => {
     const nextCheckedList = {};
     const rightCheckedItems = getChecked(targetItems);
-
-    rightCheckedItems.forEach((item) => {
-      nextCheckedList[item.id] = false;
-    });
-
-    setCheckedList({ ...checkedList, ...nextCheckedList });
-    setTargetItems(not(targetItems, rightCheckedItems));
-    setSourceItems([...sourceItems, ...rightCheckedItems]);
-    onTargetListItemsRemoved(rightCheckedItems);
+    if (rightCheckedItems.length) {
+      rightCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
+      setCheckedList({ ...checkedList, ...nextCheckedList });
+      setTargetItems(not(targetItems, rightCheckedItems));
+      setSourceItems([...sourceItems, ...rightCheckedItems]);
+      onTargetListItemsRemoved(rightCheckedItems);
+    }
   };
+
+  const disableAdd = getChecked(sourceItems).length === 0;
+  const disableRemove = getChecked(targetItems).length === 0;
 
   const isAllChecked = useCallback(
     (items: TransferListItem[]) => {
@@ -149,20 +144,45 @@ export default function TransferList(props: TransferListProps) {
         onItemClick={onItemClicked}
         isAllChecked={sourceItemsAllChecked}
         inProgressIds={inProgressIds}
-        emptyStateMessage={
-          <FormattedMessage
-            id="transferList.sourceEmptyStateMessage"
-            defaultMessage="All users are members of this group"
-          />
-        }
+        emptyStateMessage={source.emptyMessage}
       />
       <section className={classes.buttonsWrapper}>
-        <IconButton onClick={moveLeftToRight}>
-          <NavigateNextIcon />
-        </IconButton>
-        <IconButton onClick={moveRightToLeft}>
-          <NavigateBeforeIcon />
-        </IconButton>
+        <Tooltip
+          title={
+            disableAdd ? (
+              <FormattedMessage
+                id="transferList.addDisabledTooltip"
+                defaultMessage="Select items to add from the left"
+              />
+            ) : (
+              <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
+            )
+          }
+        >
+          <span>
+            <IconButton onClick={addToTarget} disabled={disableAdd}>
+              <NavigateNextIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip
+          title={
+            disableRemove ? (
+              <FormattedMessage
+                id="transferList.removeDisabledTooltip"
+                defaultMessage="Select items to remove from the right"
+              />
+            ) : (
+              <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
+            )
+          }
+        >
+          <span>
+            <IconButton onClick={removeFromTarget} disabled={disableRemove}>
+              <NavigateBeforeIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
       </section>
       <TransferListColumn
         title={props.target.title}
@@ -172,9 +192,7 @@ export default function TransferList(props: TransferListProps) {
         onItemClick={onItemClicked}
         isAllChecked={targetItemsAllChecked}
         inProgressIds={inProgressIds}
-        emptyStateMessage={
-          <FormattedMessage id="transferList.targetEmptyStateMessage" defaultMessage="No members of this group" />
-        }
+        emptyStateMessage={target.emptyMessage}
       />
     </Box>
   );

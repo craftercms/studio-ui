@@ -18,10 +18,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
-import { EditSwitch } from '../../modules/Preview/ToolBar';
 import { usePreviewState } from '../../utils/hooks';
 import { setHighlightMode, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
+import EditModeSwitch from '../EditModeSwitch';
 
 const translations = defineMessages({
   editMode: {
@@ -81,7 +81,7 @@ export default function PreviewSettingsPanel() {
         <FormControlLabel
           classes={{ root: classes.labelRoot }}
           control={
-            <EditSwitch
+            <EditModeSwitch
               color="default"
               checked={editMode}
               onChange={(e) => {

@@ -23,7 +23,7 @@ export interface EditGroupDialogProps {
   open: boolean;
   group?: Group;
   onClose(): void;
-  onClosed(): void;
+  onClosed?(): void;
   onGroupSaved(group: Group): void;
   onGroupDeleted(group: Group): void;
 }

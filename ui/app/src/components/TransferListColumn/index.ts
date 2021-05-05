@@ -17,3 +17,5 @@
 export { default } from './TransferListColumn';
 
 export * from './TransferListColumn';
+
+export * from './TransferListItem';

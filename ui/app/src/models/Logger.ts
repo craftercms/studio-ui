@@ -18,3 +18,5 @@ export interface Logger {
   level: string;
   name: string;
 }
+
+export type LoggerLevel = 'debug' | 'warn' | 'info' | 'error';

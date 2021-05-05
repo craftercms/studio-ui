@@ -29,6 +29,7 @@ import Pagination from '../Pagination';
 import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
+import Box from '@material-ui/core/Box';
 
 export interface UsersGridUIProps {
   resource: Resource<PagedArray<User>>;
@@ -42,7 +43,7 @@ export default function UsersGridUI(props: UsersGridUIProps) {
   const classes = useStyles();
   const users = resource.read();
   return (
-    <section className={classes.root}>
+    <Box display="flex" flexDirection="column">
       <TableContainer>
         <Table className={classes.tableRoot}>
           <TableHead>
@@ -99,6 +100,6 @@ export default function UsersGridUI(props: UsersGridUIProps) {
         onChangePage={(page: number) => onChangePage(page)}
         onChangeRowsPerPage={onChangeRowsPerPage}
       />
-    </section>
+    </Box>
   );
 }

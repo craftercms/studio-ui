@@ -14,8 +14,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './UserEditDialog';
-
-export * from './UserEditDialog';
-export * from './styles';
-export * from './UserInfoDialogUI';
+export { default } from './EditModeSwitch';
