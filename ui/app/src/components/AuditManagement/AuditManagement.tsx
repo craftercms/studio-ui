@@ -107,6 +107,18 @@ export default function AuditManagement() {
     setOptions({ [id]: value });
   };
 
+  const onResetFilter = (id: string | string[]) => {
+    let filters = {};
+    if (Array.isArray(id)) {
+      id.forEach((key) => {
+        filters[key] = undefined;
+      });
+    } else {
+      filters[id] = undefined;
+    }
+    setOptions(filters);
+  };
+
   const onResetFilters = () => {
     const { limit, offset, sort, ...rest } = options;
     Object.keys(rest).forEach((key) => {
@@ -171,6 +183,7 @@ export default function AuditManagement() {
           onFetchParameters={onFetchParameters}
           onChangePage={onChangePage}
           onResetFilters={onResetFilters}
+          onResetFilter={onResetFilter}
           onChangeRowsPerPage={onChangeRowsPerPage}
           onFilterChange={onFilterChange}
           filters={options}

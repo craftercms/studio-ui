@@ -20,11 +20,15 @@ export const styles = makeStyles((theme) =>
   createStyles({
     popover: {
       padding: '20px',
-      minWidth: '250px'
+      minWidth: '300px'
     },
     popoverForm: {},
     fromDatePicker: {
       marginRight: '20px'
+    },
+    toDatePicker: {},
+    clearButton: {
+      marginLeft: '20px'
     },
     gridRoot: {
       border: '0 !important',

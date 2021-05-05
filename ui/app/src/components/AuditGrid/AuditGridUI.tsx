@@ -57,6 +57,7 @@ export interface AuditGridUIProps {
   timezones: string[];
   onChangePage(page: number): void;
   onResetFilters(): void;
+  onResetFilter(id: string | string[]): void;
   onFetchParameters(id: number): void;
   onChangeRowsPerPage(size: number): void;
   onFilterChange(filter: { id: string; value: string | string[] }): void;
@@ -129,6 +130,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     onChangePage,
     onChangeRowsPerPage,
     onFilterChange,
+    onResetFilter,
     onResetFilters,
     filters,
     sites,
@@ -356,6 +358,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         anchorPosition={anchorPosition}
         onClose={() => setAnchorPosition(null)}
         filterId={fieldIdMapping[openedFilter]}
+        onResetFilter={onResetFilter}
         onFilterChange={onPopoverFilterChanges}
         value={filters[fieldIdMapping[openedFilter]]}
         dateFrom={filters['dateFrom']}

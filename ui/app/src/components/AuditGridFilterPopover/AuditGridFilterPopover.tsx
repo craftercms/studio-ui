@@ -30,6 +30,9 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
 
 interface AuditGridFilterPopoverProps {
   open: boolean;
@@ -51,6 +54,7 @@ interface AuditGridFilterPopoverProps {
   };
   onClose(): void;
   onTimezoneSelected(timezone: string): void;
+  onResetFilter(id: string | string[]): void;
   onFilterChange(fieldId: string, value: any): void;
 }
 
@@ -106,7 +110,7 @@ export default function AuditGridFilterPopover(props: AuditGridFilterPopoverProp
 }
 
 export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverProps) {
-  const { filterId, value, onFilterChange, timezone, onTimezoneSelected } = props;
+  const { filterId, value, onFilterChange, timezone, onTimezoneSelected, onResetFilter } = props;
   const classes = styles();
   const { sites, users, operations, origins, timezones } = props.options;
   const { formatMessage } = useIntl();
@@ -192,29 +196,50 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
     setToDate(date);
   };
 
+  const onClearDates = () => {
+    setToDate(null);
+    setFromDate(null);
+    onResetFilter(['dateFrom', 'dateTo']);
+  };
+
+  const onClearTextField = () => {
+    onResetFilter(filterId);
+    setKeyword('');
+  };
+
   return (
     <>
       {filterId === 'operationTimestamp' && (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <form className={classes.popoverForm} noValidate autoComplete="off">
-            <Box display="flex">
+            <Box display="flex" alignItems="center" marginBottom="20px">
               <KeyboardDatePicker
                 className={classes.fromDatePicker}
                 clearable
-                margin="normal"
+                margin="none"
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 format="MM/dd/yyyy"
                 value={fromDate}
                 onChange={onFromDateSelected}
               />
               <KeyboardDatePicker
+                className={classes.toDatePicker}
                 clearable
-                margin="normal"
+                margin="none"
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 format="MM/dd/yyyy"
                 value={toDate}
                 onChange={onToDateSelected}
               />
+              <IconButton
+                disabled={!toDate && !fromDate}
+                className={classes.clearButton}
+                onClick={() => onClearDates()}
+              >
+                <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
+                  <ClearRoundedIcon />
+                </Tooltip>
+              </IconButton>
             </Box>
             <Autocomplete
               disableClearable
@@ -237,40 +262,63 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
         </MuiPickersUtilsProvider>
       )}
       {['siteId', 'user', 'origin'].includes(filterId) && (
-        <TextField
-          fullWidth
-          select
-          label={formatMessage(translations[filterId])}
-          value={value ? value : 'all'}
-          onChange={(e) => onFilterChange(filterId, e.target.value)}
-        >
-          {options.map((option) => (
-            <MenuItem key={option.id} value={option.value}>
-              {option.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        <Box display="flex" alignItems="center">
+          <TextField
+            fullWidth
+            select
+            label={formatMessage(translations[filterId])}
+            value={value ? value : 'all'}
+            onChange={(e) => onFilterChange(filterId, e.target.value)}
+          >
+            {options.map((option) => (
+              <MenuItem key={option.id} value={option.value}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <IconButton disabled={!value} className={classes.clearButton} onClick={() => onResetFilter(filterId)}>
+            <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
+              <ClearRoundedIcon />
+            </Tooltip>
+          </IconButton>
+        </Box>
       )}
       {filterId === 'operations' && (
-        <TextField
-          fullWidth
-          select
-          label={formatMessage(translations[filterId])}
-          value={value?.split(',') ?? ['all']}
-          SelectProps={{ multiple: true }}
-          onChange={onMultipleSelectChanges}
-        >
-          {options.map((option) => (
-            <MenuItem key={option.id} value={option.value}>
-              {option.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        <Box display="flex" alignItems="center">
+          <TextField
+            fullWidth
+            select
+            label={formatMessage(translations[filterId])}
+            value={value?.split(',') ?? ['all']}
+            SelectProps={{ multiple: true }}
+            onChange={onMultipleSelectChanges}
+          >
+            {options.map((option) => (
+              <MenuItem key={option.id} value={option.value}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
+            <IconButton disabled={!value} className={classes.clearButton} onClick={() => onResetFilter(filterId)}>
+              <ClearRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       )}
       {['target', 'clusterNodeId'].includes(filterId) && (
         <TextField
           value={keyword}
           label={formatMessage(translations[filterId])}
+          InputProps={{
+            endAdornment: keyword && (
+              <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
+                <IconButton className={classes.clearButton} onClick={() => onClearTextField()}>
+                  <ClearRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            )
+          }}
           fullWidth
           onChange={onTextFieldChanges}
         />
