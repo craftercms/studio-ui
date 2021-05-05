@@ -352,8 +352,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       });
   }
 
-  function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
+  function checkFileExist(newFile: File & { relativePath?: string }) {
+    return !uppy.getFiles().some((file) => file.meta.relativePath === newFile.relativePath && file.type === newFile.type);
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
