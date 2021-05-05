@@ -18,7 +18,7 @@ import { Resource } from '../../models/Resource';
 import { AuditLogEntry, LogParameters } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@material-ui/core/Box';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { styles } from './styles';
 import {
   DataGrid,
@@ -30,9 +30,6 @@ import {
   GridSortModelParams
 } from '@material-ui/data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Popover from '@material-ui/core/Popover';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
 import User from '../../models/User';
@@ -41,17 +38,12 @@ import IconButton from '@material-ui/core/IconButton';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { useDebouncedInput, useLocale } from '../../utils/hooks';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { KeyboardDatePicker } from '@material-ui/pickers/DatePicker';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { useLocale } from '../../utils/hooks';
 import moment from 'moment-timezone';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers/MuiPickersUtilsProvider';
-import DateFnsUtils from '@date-io/date-fns';
 import LookupTable from '../../models/LookupTable';
 import { Button, Typography } from '@material-ui/core';
 import EmptyState from '../SystemStatus/EmptyState';
-import { nnou } from '../../utils/object';
+import AuditGridFilterPopover from '../AuditGridFilterPopover';
 
 export interface AuditGridUIProps {
   resource: Resource<PagedArray<AuditLogEntry>>;
@@ -60,13 +52,14 @@ export interface AuditGridUIProps {
   parametersLookup: LookupTable<LogParameters[]>;
   operations: { id: string; value: string; name: string }[];
   origins: { id: string; value: string; name: string }[];
+  filters: AuditOptions;
+  hasActiveFilters: boolean;
+  timezones: string[];
   onChangePage(page: number): void;
-  onResetFilters(reset: AuditOptions): void;
+  onResetFilters(): void;
   onFetchParameters(id: number): void;
   onChangeRowsPerPage(size: number): void;
   onFilterChange(filter: { id: string; value: string | string[] }): void;
-  filters: AuditOptions;
-  timezones: string[];
 }
 
 export interface GridColumnMenuProps extends React.HTMLAttributes<HTMLUListElement> {
@@ -117,12 +110,18 @@ const translations = defineMessages({
   clusterNode: {
     id: 'auditGrid.clusterNode',
     defaultMessage: 'Cluster Node'
-  },
-  searchPlaceholder: {
-    id: 'auditGrid.searchPlaceholder',
-    defaultMessage: 'Search...'
   }
 });
+
+const fieldIdMapping = {
+  operationTimestamp: 'operationTimestamp',
+  siteName: 'siteId',
+  actorId: 'user',
+  origin: 'origin',
+  operation: 'operations',
+  primaryTargetValue: 'target',
+  clusterNode: 'clusterNodeId'
+};
 
 export default function AuditGridUI(props: AuditGridUIProps) {
   const {
@@ -138,30 +137,23 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     operations,
     origins,
     timezones,
-    onFetchParameters
+    onFetchParameters,
+    hasActiveFilters
   } = props;
   const auditLogs = resource.read();
   const classes = styles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
-  const [activeFilter, setActiveFilter] = useState<string>();
-  const [fromDate, setFromDate] = useState(moment());
-  const [toDate, setToDate] = useState(moment());
-  const [targetValue, setTargetValue] = useState('');
-  const [clusterNode, setClusterNode] = useState('');
-  const [timeZone, setTimeZone] = useState(moment.tz.guess());
+  const [openedFilter, setOpenedFilter] = useState<string>();
+  const [timezone, setTimezone] = useState(moment.tz.guess());
   const [sortModel, setSortModel] = React.useState<GridSortModel>([{ field: 'operationTimestamp', sort: 'desc' }]);
   const localeBranch = useLocale();
-
-  const hasFilters = Object.keys(filters).some((key) => {
-    return !['limit', 'offset', 'sort'].includes(key) && nnou(filters[key]);
-  });
 
   const onFilterSelected = (props: GridColumnMenuProps) => {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
         props.hideMenu();
-        setActiveFilter(props.currentColumn.field);
+        setOpenedFilter(props.currentColumn.field);
         const element = document.querySelector(`#${props.labelledby}`);
         const anchorRect = element.getBoundingClientRect();
         const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
@@ -200,73 +192,12 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     }
   };
 
-  const onSiteSelected = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setAnchorPosition(null);
-    onFilterChange({ id: 'siteId', value: e.target.value === 'all' ? undefined : e.target.value });
-  };
-
-  const onUsernameSelected = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setAnchorPosition(null);
-    onFilterChange({ id: 'user', value: e.target.value === 'all' ? undefined : e.target.value });
-  };
-
-  const onOriginSelected = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setAnchorPosition(null);
-    onFilterChange({ id: 'origin', value: e.target.value === 'all' ? undefined : e.target.value });
-  };
-
-  const onOperationSelected = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    if (e.target.value.includes('clear')) {
-      onFilterChange({ id: 'operations', value: undefined });
-    } else {
-      // @ts-ignore
-      onFilterChange({ id: 'operations', value: e.target.value.join() });
-    }
-  };
-
-  const onSearch = useCallback(
-    (keywords: string) =>
-      onFilterChange({
-        id: activeFilter === 'primaryTargetValue' ? 'target' : 'clusterNodeId',
-        value: keywords === '' ? undefined : keywords
-      }),
-    [onFilterChange, activeFilter]
-  );
-
-  const onSearch$ = useDebouncedInput(onSearch, 400);
-
-  const onTargetValueChanged = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    onSearch$.next(e.target.value);
-    setTargetValue(e.target.value);
-  };
-
-  const onClusterNodeChanged = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    onSearch$.next(e.target.value);
-    setClusterNode(e.target.value);
-  };
-
   const onTimezoneSelected = (timezone: string) => {
-    setTimeZone(timezone);
+    setTimezone(timezone);
   };
 
-  const onFromDateSelected = (date: MaterialUiPickersDate | null, value?: string | null) => {
-    onFilterChange({ id: 'dateFrom', value: date ? moment(date).format() : undefined });
-    setFromDate(date);
-  };
-
-  const onToDateSelected = (date: MaterialUiPickersDate | null, value?: string | null) => {
-    onFilterChange({ id: 'dateTo', value: date ? moment(date).format() : undefined });
-    setToDate(date);
-  };
-
-  const onResetFiltersClick = () => {
-    const { limit, offset, sort, ...rest } = filters;
-
-    Object.keys(rest).forEach((key) => {
-      rest[key] = undefined;
-    });
-
-    onResetFilters({ limit, offset, sort, ...rest });
+  const onPopoverFilterChanges = (id, value) => {
+    onFilterChange({ id, value: value === 'all' ? undefined : value });
   };
 
   const columns: GridColDef[] = useMemo(
@@ -279,38 +210,43 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           const date = new Intl.DateTimeFormat(localeBranch.localeCode, {
             ...localeBranch.dateTimeFormatOptions,
-            timeZone
+            timeZone: timezone
           }).format(new Date(params.value as Date));
           return <>{date}</>;
-        }
+        },
+        headerClassName: (filters['dateFrom'] || filters['dateTo']) && classes.activeFilter
       },
       {
         field: 'siteName',
         headerName: formatMessage(translations.siteName),
         width: 150,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter
       },
       {
         field: 'actorId',
         headerName: formatMessage(translations.username),
         width: 150,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        headerClassName: filters[fieldIdMapping['actorId']] && classes.activeFilter
       },
       {
         field: 'operation',
         headerName: formatMessage(translations.operation),
         width: 150,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        headerClassName: filters[fieldIdMapping['operation']] && classes.activeFilter
       },
       {
         field: 'primaryTargetValue',
         headerName: formatMessage(translations.targetValue),
         width: 300,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        headerClassName: filters[fieldIdMapping['primaryTargetValue']] && classes.activeFilter
       },
       {
         field: 'primaryTargetType',
@@ -333,7 +269,8 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.origin),
         width: 100,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        headerClassName: filters[fieldIdMapping['origin']] && classes.activeFilter
       },
       {
         field: 'parameters',
@@ -361,17 +298,20 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.clusterNode),
         width: 200,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        headerClassName: filters[fieldIdMapping['clusterNode']] && classes.activeFilter
       }
     ],
     [
+      classes.activeFilter,
       classes.cellRoot,
+      filters,
       formatMessage,
       localeBranch.dateTimeFormatOptions,
       localeBranch.localeCode,
       onGetParameters,
       parametersLookup,
-      timeZone
+      timezone
     ]
   );
 
@@ -390,9 +330,9 @@ export default function AuditGridUI(props: AuditGridUIProps) {
           NoRowsOverlay: () => (
             <GridOverlay className={classes.gridOverlay}>
               <EmptyState title={<FormattedMessage id="auditGrid.emptyStateMessage" defaultMessage="No Logs Found" />}>
-                {hasFilters && (
-                  <Button variant="text" color="primary" onClick={onResetFiltersClick}>
-                    <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Reset filters" />
+                {hasActiveFilters && (
+                  <Button variant="text" color="primary" onClick={() => onResetFilters()}>
+                    <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
                   </Button>
                 )}
               </EmptyState>
@@ -411,152 +351,25 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         onPageChange={onPageChange}
         rowCount={auditLogs.total}
       />
-      <Popover
+      <AuditGridFilterPopover
         open={Boolean(anchorPosition)}
-        anchorReference="anchorPosition"
         anchorPosition={anchorPosition}
         onClose={() => setAnchorPosition(null)}
-        classes={{ paper: classes.popover }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center'
+        filterId={fieldIdMapping[openedFilter]}
+        onFilterChange={onPopoverFilterChanges}
+        value={filters[fieldIdMapping[openedFilter]]}
+        dateFrom={filters['dateFrom']}
+        dateTo={filters['dateTo']}
+        timezone={timezone}
+        onTimezoneSelected={onTimezoneSelected}
+        options={{
+          users,
+          sites,
+          operations,
+          origins,
+          timezones
         }}
-      >
-        {activeFilter === 'operationTimestamp' && (
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <form className={classes.popoverForm} noValidate autoComplete="off">
-              <Box display="flex">
-                <KeyboardDatePicker
-                  className={classes.fromDatePicker}
-                  margin="normal"
-                  label="From"
-                  format="MM/dd/yyyy"
-                  value={fromDate}
-                  onChange={onFromDateSelected}
-                />
-                <KeyboardDatePicker
-                  margin="normal"
-                  label="To"
-                  format="MM/dd/yyyy"
-                  value={toDate}
-                  onChange={onToDateSelected}
-                />
-              </Box>
-              <Autocomplete
-                disableClearable
-                options={timezones}
-                getOptionLabel={(option) => option}
-                value={timeZone}
-                onChange={(e: React.ChangeEvent<{}>, value) => {
-                  onTimezoneSelected(value);
-                }}
-                fullWidth
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={<FormattedMessage id="auditGrid.timezone" defaultMessage="Timezone" />}
-                    variant="outlined"
-                  />
-                )}
-              />
-            </form>
-          </MuiPickersUtilsProvider>
-        )}
-        {activeFilter === 'siteName' && (
-          <TextField
-            fullWidth
-            select
-            label={<FormattedMessage id="auditGrid.filterBySite" defaultMessage="Filter by Site" />}
-            value={Boolean(filters?.['siteId']) ? filters['siteId'] : 'all'}
-            onChange={onSiteSelected}
-          >
-            <MenuItem key={'all'} value="all">
-              <FormattedMessage id="auditGrid.allSites" defaultMessage="All Sites" />
-            </MenuItem>
-            <MenuItem key={'studio_root'} value={'studio_root'}>
-              {'System'}
-            </MenuItem>
-            {sites.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-        {activeFilter === 'actorId' && (
-          <TextField
-            fullWidth
-            select
-            label={<FormattedMessage id="auditGrid.filterByUser" defaultMessage="Filter by User" />}
-            value={Boolean(filters?.['user']) ? filters['user'] : 'all'}
-            onChange={onUsernameSelected}
-          >
-            <MenuItem key={'all'} value="all">
-              <FormattedMessage id="auditGrid.allUsers" defaultMessage="All Users" />
-            </MenuItem>
-            {users.map((option) => (
-              <MenuItem key={option.id} value={option.username}>
-                {option.username}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-        {activeFilter === 'origin' && (
-          <TextField
-            fullWidth
-            select
-            label={<FormattedMessage id="auditGrid.filterByOrigin" defaultMessage="Filter by Origin" />}
-            value={Boolean(filters?.['origin']) ? filters['origin'] : 'all'}
-            onChange={onOriginSelected}
-          >
-            <MenuItem key={'all'} value="all">
-              <FormattedMessage id="auditGrid.allOrigins" defaultMessage="All Origins" />
-            </MenuItem>
-            {origins.map((option) => (
-              <MenuItem key={option.id} value={option.value}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-        {activeFilter === 'operation' && (
-          <TextField
-            fullWidth
-            select
-            label={<FormattedMessage id="auditGrid.filterByOperation" defaultMessage="Filter by Operation" />}
-            value={filters?.['operations']?.split(',') ?? []}
-            SelectProps={{ multiple: true }}
-            onChange={onOperationSelected}
-          >
-            <MenuItem key={'all'} value="clear">
-              <FormattedMessage id="auditGrid.allOperations" defaultMessage="All Operations" />
-            </MenuItem>
-            {operations.map((option) => (
-              <MenuItem key={option.id} value={option.value}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-        {activeFilter === 'primaryTargetValue' && (
-          <TextField
-            value={targetValue}
-            label={<FormattedMessage id="auditGrid.filterByTarget" defaultMessage="Filter by Target Value" />}
-            placeholder={formatMessage(translations.searchPlaceholder)}
-            fullWidth
-            onChange={onTargetValueChanged}
-          />
-        )}
-        {activeFilter === 'clusterNode' && (
-          <TextField
-            value={clusterNode}
-            label={<FormattedMessage id="auditGrid.filterByCluster" defaultMessage="Filter by Cluster Node" />}
-            placeholder={formatMessage(translations.searchPlaceholder)}
-            fullWidth
-            onChange={onClusterNodeChanged}
-          />
-        )}
-      </Popover>
+      />
     </Box>
   );
 }

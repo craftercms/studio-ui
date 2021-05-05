@@ -18,17 +18,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const styles = makeStyles((theme) =>
   createStyles({
-    activeFilter: {
-      color: theme.palette.primary.main,
-      '& button': {
-        color: theme.palette.primary.main
-      }
-    },
-    cellRoot: {
-      '&:focus-within': {
-        outline: 'none !important'
-      }
-    },
     popover: {
       padding: '20px',
       minWidth: '250px'
@@ -46,10 +35,6 @@ export const styles = makeStyles((theme) =>
     },
     gridOverlay: {
       zIndex: 1
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
     }
   })
 );

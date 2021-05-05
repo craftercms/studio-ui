@@ -30,6 +30,8 @@ import { Operations, OperationsMessages } from './operations';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import ParametersDialog from '../ParametersDialog';
+import { nnou } from '../../utils/object';
+import { Button } from '@material-ui/core';
 
 export default function AuditManagement() {
   const [fetching, setFetching] = useState(false);
@@ -51,6 +53,9 @@ export default function AuditManagement() {
     parameters: []
   });
   const { formatMessage } = useIntl();
+  const hasActiveFilters = Object.keys(options).some((key) => {
+    return !['limit', 'offset', 'sort'].includes(key) && nnou(options[key]);
+  });
 
   const refresh = useCallback(() => {
     setFetching(true);
@@ -102,8 +107,12 @@ export default function AuditManagement() {
     setOptions({ [id]: value });
   };
 
-  const onResetFilters = (reset: AuditOptions) => {
-    setOptions(reset);
+  const onResetFilters = () => {
+    const { limit, offset, sort, ...rest } = options;
+    Object.keys(rest).forEach((key) => {
+      rest[key] = undefined;
+    });
+    setOptions({ limit, offset, sort, ...rest });
   };
 
   const onFetchParameters = (id: number) => {
@@ -139,7 +148,16 @@ export default function AuditManagement() {
 
   return (
     <section>
-      <GlobalAppToolbar title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
+        rightContent={
+          hasActiveFilters && (
+            <Button variant="text" color="primary" onClick={() => onResetFilters()}>
+              <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
+            </Button>
+          )
+        }
+      />
       <Suspencified
         suspenseProps={{
           fallback: <>TODO: AuditGridUISkeletonTable</>
@@ -156,6 +174,7 @@ export default function AuditManagement() {
           onChangeRowsPerPage={onChangeRowsPerPage}
           onFilterChange={onFilterChange}
           filters={options}
+          hasActiveFilters={hasActiveFilters}
           timezones={moment.tz.names()}
           operations={Operations.map((id) => ({ id, value: id, name: formatMessage(OperationsMessages[id]) }))}
           origins={[
