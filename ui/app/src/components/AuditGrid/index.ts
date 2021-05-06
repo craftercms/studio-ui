@@ -17,3 +17,5 @@
 export { default } from './AuditGridUI';
 
 export * from './AuditGridUI';
+
+export * from './AuditGridSkeleton';

@@ -32,6 +32,7 @@ import LookupTable from '../../models/LookupTable';
 import ParametersDialog from '../ParametersDialog';
 import { nnou } from '../../utils/object';
 import { Button } from '@material-ui/core';
+import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
 
 export default function AuditManagement() {
   const [fetching, setFetching] = useState(false);
@@ -172,7 +173,7 @@ export default function AuditManagement() {
       />
       <Suspencified
         suspenseProps={{
-          fallback: <>TODO: AuditGridUISkeletonTable</>
+          fallback: <AuditGridSkeleton numOfItems={auditLogs?.length ?? 10} filters={options} />
         }}
       >
         <AuditGridUI

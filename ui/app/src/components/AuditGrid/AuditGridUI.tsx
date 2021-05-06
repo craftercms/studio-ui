@@ -71,7 +71,7 @@ export interface GridColumnMenuProps extends React.HTMLAttributes<HTMLUListEleme
   labelledby?: string;
 }
 
-const translations = defineMessages({
+export const translations = defineMessages({
   timestamp: {
     id: 'auditGrid.timestamp',
     defaultMessage: 'Timestamp'
@@ -114,7 +114,7 @@ const translations = defineMessages({
   }
 });
 
-const fieldIdMapping = {
+export const fieldIdMapping = {
   operationTimestamp: 'operationTimestamp',
   siteName: 'siteId',
   actorId: 'user',
@@ -214,7 +214,11 @@ export default function AuditGridUI(props: AuditGridUIProps) {
             ...localeBranch.dateTimeFormatOptions,
             timeZone: timezone
           }).format(new Date(params.value as Date));
-          return <>{date}</>;
+          return (
+            <Typography variant="body2" title={date?.toString()}>
+              {date}
+            </Typography>
+          );
         },
         headerClassName: (filters['dateFrom'] || filters['dateTo']) && classes.activeFilter
       },
@@ -224,7 +228,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 150,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter
+        headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'actorId',
@@ -232,7 +243,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 150,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['actorId']] && classes.activeFilter
+        headerClassName: filters[fieldIdMapping['actorId']] && classes.activeFilter,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'operation',
@@ -240,7 +258,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 150,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['operation']] && classes.activeFilter
+        headerClassName: filters[fieldIdMapping['operation']] && classes.activeFilter,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'primaryTargetValue',
@@ -248,7 +273,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 300,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['primaryTargetValue']] && classes.activeFilter
+        headerClassName: filters[fieldIdMapping['primaryTargetValue']] && classes.activeFilter,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'primaryTargetType',
@@ -256,7 +288,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 150,
         disableColumnMenu: true,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'actorDetails',
@@ -264,7 +303,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 100,
         disableColumnMenu: true,
         sortable: false,
-        cellClassName: classes.cellRoot
+        cellClassName: classes.cellRoot,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'origin',
@@ -272,7 +318,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 100,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['origin']] && classes.activeFilter
+        headerClassName: filters[fieldIdMapping['origin']] && classes.activeFilter,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       },
       {
         field: 'parameters',
@@ -301,7 +354,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         width: 200,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['clusterNode']] && classes.activeFilter
+        headerClassName: filters[fieldIdMapping['clusterNode']] && classes.activeFilter,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Typography variant="body2" title={params.value?.toString()}>
+              {params.value}
+            </Typography>
+          );
+        }
       }
     ],
     [
