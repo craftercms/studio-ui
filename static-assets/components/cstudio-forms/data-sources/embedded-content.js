@@ -132,8 +132,15 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
 
   edit: function (key, control) {
     var _self = this;
+    const readonly = control.readonly;
     CStudioForms.communication.sendAndAwait(key, (message) => {
       const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type').innerHTML;
+      const auxParams = [];
+
+      if (readonly) {
+        auxParams.push({ name: 'readonly' });
+      }
+
       CStudioAuthoring.Operations.performSimpleIceEdit(
         { contentType: contentType, uri: key },
         null, // field
@@ -145,7 +152,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
             }
           }
         },
-        [],
+        auxParams,
         true
       );
     });
