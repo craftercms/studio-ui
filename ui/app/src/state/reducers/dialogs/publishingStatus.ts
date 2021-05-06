@@ -47,7 +47,7 @@ const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus'
     ...state,
     ...payload,
     // Only show unlock if there is a lockOwner (i.e. if there's a lock)
-    onUnlock: payload.lockOwner ? showUnlockPublisherDialog({}) : null,
+    onUnlock: payload?.lockOwner ? showUnlockPublisherDialog({}) : null,
     open: true
   }),
   [closePublishingStatusDialog.type]: (state) => ({ ...state, open: false }),

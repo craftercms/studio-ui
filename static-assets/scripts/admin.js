@@ -1087,8 +1087,7 @@
             CrafterCMSNext.render('#publisherDashboard', 'PublishingStatusDialogBody', {
               onClose: null,
               isFetching: false,
-              status: state.status,
-              details: state.message,
+              ...currentStatus,
               onRefresh: publish.getPublish,
               onUnlock: state.lockOwner
                 ? () => {
