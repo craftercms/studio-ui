@@ -14,14 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isBlank } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useEnv, useSelection } from '../../utils/hooks';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { AllItemActions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import IconButton from '@material-ui/core/IconButton';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import Paper from '@material-ui/core/Paper';
@@ -30,8 +27,15 @@ import ItemDisplay from '../ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
-import ActionsGroup from '../ActionsGroup';
-import Skeleton from '@material-ui/lab/Skeleton';
+import MoreRounded from '@material-ui/icons/MoreVertRounded';
+// @ts-ignore
+import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { withIndex } from '../../utils/path';
+import { batchActions } from '../../state/actions/misc';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export interface AddressBarProps {
   site: string;
@@ -106,6 +110,10 @@ const translations = defineMessages({
   reload: {
     id: 'words.reload',
     defaultMessage: 'Reload'
+  },
+  options: {
+    id: 'words.options',
+    defaultMessage: 'Options'
   }
 });
 
@@ -123,48 +131,34 @@ export function AddressBar(props: AddressBarProps) {
     url && setInternalUrl(url);
   }, [url]);
 
-  const theme = useTheme();
-  const [numOfVisibleActions, setNumOfVisibleActions] = useState(5);
-  const isSmallScreen = useMediaQuery(theme.breakpoints.only('sm'));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.only('md'));
-  const isLargeScreen = useMediaQuery(theme.breakpoints.only('lg'));
-  useEffect(() => {
-    setNumOfVisibleActions(isSmallScreen ? 1 : isMediumScreen ? 4 : isLargeScreen ? 8 : 15);
-  }, [isSmallScreen, isMediumScreen, isLargeScreen]);
-
-  const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const clipboard = useSelection((state) => state.content.clipboard);
-  const onMenuItemClicked = (option: AllItemActions, event: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
-    itemActionDispatcher({
-      site,
-      item,
-      option,
-      authoringBase,
-      dispatch,
-      formatMessage,
-      clipboard,
-      event
-    });
-  const actions = generateSingleItemOptions(item, formatMessage, {
-    includeOnly: [
-      'edit',
-      'delete',
-      'dependencies',
-      'history',
-      'publish',
-      'approvePublish',
-      'schedulePublish',
-      'rejectPublish',
-      'duplicate'
-    ]
-  })?.flatMap((options) => options);
-
+  const onOptions = (e) => {
+    const anchorRect = e.currentTarget.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+    let path = item.path;
+    if (path === '/site/website') {
+      path = withIndex(item.path);
+    }
+    dispatch(
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path: path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top, left },
+          loaderItems: getNumOfMenuOptionsForItem(item)
+        })
+      ])
+    );
+  };
   return (
     <>
-      <IconButton title={formatMessage(translations.reload)} onClick={onRefresh}>
-        <RefreshRounded />
-      </IconButton>
+      <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
+        <IconButton title={formatMessage(translations.reload)} onClick={onRefresh}>
+          <RefreshRounded />
+        </IconButton>
+      </Tooltip>
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
         elevation={focus ? 2 : 0}
@@ -206,17 +200,11 @@ export function AddressBar(props: AddressBarProps) {
           }}
         />
       </Paper>
-      {item ? (
-        <ActionsGroup max={numOfVisibleActions} actions={actions} onActionClicked={onMenuItemClicked} />
-      ) : (
-        <>
-          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
-          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
-          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
-          <Skeleton animation="pulse" className={classes.itemActionSkeleton} />
-          <Skeleton animation="pulse" variant="circle" width="25px" height="25px" />
-        </>
-      )}
+      <Tooltip title={Boolean(item) ? <FormattedMessage id="words.options" defaultMessage="Options" /> : ''}>
+        <IconButton title={formatMessage(translations.options)} onClick={onOptions} disabled={!item}>
+          <MoreRounded />
+        </IconButton>
+      </Tooltip>
     </>
   );
 }

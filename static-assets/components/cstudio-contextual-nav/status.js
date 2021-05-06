@@ -70,7 +70,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
           });
 
           $el.on('click', function() {
-            store.dispatch({ type: 'SHOW_PUBLISHING_STATUS_DIALOG' });
+            store.dispatch({ type: 'SHOW_PUBLISHING_STATUS_DIALOG', payload: {} });
           });
         },
         getStatusMessage: function(contextNavLangBundle, status) {

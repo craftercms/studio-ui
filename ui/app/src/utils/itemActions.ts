@@ -107,7 +107,11 @@ import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
 
-export type ContextMenuOptionDescriptor = { id: string; label: MessageDescriptor; values?: any };
+export type ContextMenuOptionDescriptor<ID extends string = string> = {
+  id: ID;
+  label: MessageDescriptor;
+  values?: any;
+};
 
 export type ItemActions =
   | 'view'
@@ -147,7 +151,7 @@ export type AssessRemovalItemActions =
 
 export type AllItemActions = ItemActions | VirtualItemActions | AssessRemovalItemActions;
 
-const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor> = {
+const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<AllItemActions>> = {
   // region ItemActions
   edit: {
     id: 'edit',
@@ -270,11 +274,11 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor> =
     label: translations.unlock
   },
   editCode: {
-    id: 'codeEditor',
+    id: 'editCode',
     label: translations.edit
   },
   viewCode: {
-    id: 'viewCodeEditor',
+    id: 'viewCode',
     label: translations.view
   },
   preview: {
