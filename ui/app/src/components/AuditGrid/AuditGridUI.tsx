@@ -386,6 +386,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         sortingMode="server"
+        autoHeight
         disableColumnFilter
         onCellClick={() => {}}
         className={classes.gridRoot}
