@@ -233,6 +233,16 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           onCrumbSelected={onBreadcrumbSelected}
           classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
         />
+        {lookupItemByPath(state.currentPath, itemsByPath) && (
+          <NavItem
+            item={lookupItemByPath(state.currentPath, itemsByPath)}
+            locale={state.localeCode}
+            isLevelDescriptor={false}
+            onOpenItemMenu={onCurrentParentMenu}
+            onItemClicked={onItemClicked}
+            isCurrentPath
+          />
+        )}
         <SuspenseWithEmptyState
           resource={resource}
           errorBoundaryProps={{
@@ -250,14 +260,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
           }}
         >
-          <NavItem
-            item={lookupItemByPath(state.currentPath, itemsByPath)}
-            locale={state.localeCode}
-            isLevelDescriptor={false}
-            onOpenItemMenu={onCurrentParentMenu}
-            onItemClicked={onItemClicked}
-            isCurrentPath
-          />
           {levelDescriptor && (
             <NavItem
               item={levelDescriptor}
