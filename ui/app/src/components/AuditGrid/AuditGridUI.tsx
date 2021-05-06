@@ -215,7 +215,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
             timeZone: timezone
           }).format(new Date(params.value as Date));
           return (
-            <Typography variant="body2" title={date?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={date?.toString()}>
               {date}
             </Typography>
           );
@@ -231,7 +231,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -246,7 +246,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerClassName: filters[fieldIdMapping['actorId']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -261,7 +261,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerClassName: filters[fieldIdMapping['operation']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -276,7 +276,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerClassName: filters[fieldIdMapping['primaryTargetValue']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -291,7 +291,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -306,7 +306,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -321,7 +321,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerClassName: filters[fieldIdMapping['origin']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -357,7 +357,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         headerClassName: filters[fieldIdMapping['clusterNode']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" title={params.value?.toString()}>
+            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
               {params.value}
             </Typography>
           );
@@ -383,7 +383,6 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         sortingMode="server"
-        autoHeight
         disableColumnFilter
         onCellClick={() => {}}
         className={classes.gridRoot}

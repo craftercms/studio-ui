@@ -29,19 +29,18 @@ export const styles = makeStyles((theme) =>
         outline: 'none !important'
       }
     },
-    popover: {
-      padding: '20px',
-      minWidth: '250px'
-    },
-    popoverForm: {},
-    fromDatePicker: {
-      marginRight: '20px'
+    ellipsis: {
+      textOverflow: 'ellipsis',
+      overflow: 'auto'
     },
     gridRoot: {
       border: '0 !important',
       minHeight: '300px',
       '& .MuiDataGrid-menuIcon': {
         visibility: 'visible !important'
+      },
+      '& .MuiDataGrid-colCell:focus': {
+        outline: 'none !important'
       }
     },
     gridOverlay: {

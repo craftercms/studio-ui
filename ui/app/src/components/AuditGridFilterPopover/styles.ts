@@ -20,25 +20,27 @@ export const styles = makeStyles((theme) =>
   createStyles({
     popover: {
       padding: '20px',
-      minWidth: '300px'
+      minWidth: '300px',
+      overflow: 'initial'
     },
     popoverForm: {},
+    popoverCloseIcon: {
+      background: theme.palette.divider,
+      color: theme.palette.text.secondary,
+      position: 'absolute',
+      top: '-20px',
+      right: '-20px',
+      cursor: 'pointer',
+      '&:hover': {
+        opacity: '0.9'
+      }
+    },
     fromDatePicker: {
       marginRight: '20px'
     },
     toDatePicker: {},
     clearButton: {
       marginLeft: '20px'
-    },
-    gridRoot: {
-      border: '0 !important',
-      minHeight: '300px',
-      '& .MuiDataGrid-menuIcon': {
-        visibility: 'visible !important'
-      }
-    },
-    gridOverlay: {
-      zIndex: 1
     }
   })
 );

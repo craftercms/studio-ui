@@ -33,6 +33,8 @@ import DateFnsUtils from '@date-io/date-fns';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 
 interface AuditGridFilterPopoverProps {
   open: boolean;
@@ -110,7 +112,7 @@ export default function AuditGridFilterPopover(props: AuditGridFilterPopoverProp
 }
 
 export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverProps) {
-  const { filterId, value, onFilterChange, timezone, onTimezoneSelected, onResetFilter } = props;
+  const { filterId, value, onFilterChange, timezone, onTimezoneSelected, onResetFilter, onClose } = props;
   const classes = styles();
   const { sites, users, operations, origins, timezones } = props.options;
   const { formatMessage } = useIntl();
@@ -209,6 +211,9 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
 
   return (
     <>
+      <Avatar className={classes.popoverCloseIcon} onClick={onClose}>
+        <ClearRoundedIcon fontSize="small" />
+      </Avatar>
       {filterId === 'operationTimestamp' && (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <form className={classes.popoverForm} noValidate autoComplete="off">
@@ -231,15 +236,15 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
                 value={toDate}
                 onChange={onToDateSelected}
               />
-              <IconButton
-                disabled={!toDate && !fromDate}
+              <Button
                 className={classes.clearButton}
+                disabled={!toDate && !fromDate}
+                variant="text"
+                color="primary"
                 onClick={() => onClearDates()}
               >
-                <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
-                  <ClearRoundedIcon />
-                </Tooltip>
-              </IconButton>
+                <FormattedMessage id="words.clear" defaultMessage="Clear" />
+              </Button>
             </Box>
             <Autocomplete
               disableClearable
@@ -276,11 +281,15 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
               </MenuItem>
             ))}
           </TextField>
-          <IconButton disabled={!value} className={classes.clearButton} onClick={() => onResetFilter(filterId)}>
-            <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
-              <ClearRoundedIcon />
-            </Tooltip>
-          </IconButton>
+          <Button
+            className={classes.clearButton}
+            disabled={!value}
+            variant="text"
+            color="primary"
+            onClick={() => onResetFilter(filterId)}
+          >
+            <FormattedMessage id="words.clear" defaultMessage="Clear" />
+          </Button>
         </Box>
       )}
       {filterId === 'operations' && (
@@ -299,11 +308,15 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
               </MenuItem>
             ))}
           </TextField>
-          <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
-            <IconButton disabled={!value} className={classes.clearButton} onClick={() => onResetFilter(filterId)}>
-              <ClearRoundedIcon />
-            </IconButton>
-          </Tooltip>
+          <Button
+            className={classes.clearButton}
+            disabled={!value}
+            variant="text"
+            color="primary"
+            onClick={() => onResetFilter(filterId)}
+          >
+            <FormattedMessage id="words.clear" defaultMessage="Clear" />
+          </Button>
         </Box>
       )}
       {['target', 'clusterNodeId'].includes(filterId) && (
@@ -313,7 +326,7 @@ export function AuditGridFilterPopoverContainer(props: AuditGridFilterPopoverPro
           InputProps={{
             endAdornment: keyword && (
               <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
-                <IconButton className={classes.clearButton} onClick={() => onClearTextField()}>
+                <IconButton size="small" className={classes.clearButton} onClick={() => onClearTextField()}>
                   <ClearRoundedIcon />
                 </IconButton>
               </Tooltip>
