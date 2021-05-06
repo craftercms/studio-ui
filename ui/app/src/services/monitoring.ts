@@ -37,3 +37,5 @@ export function fetchMemory(): Observable<Memory> {
 export function fetchLog(since: number): Observable<LogEvent[]> {
   return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(pluck('response', 'events'));
 }
+
+// export function fetchSiteLog(site: string)

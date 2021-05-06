@@ -315,7 +315,7 @@ export default function TokenManagement() {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.TokenManagement" defaultMessage="Token Management" />}
+        title={<FormattedMessage id="globalMenu.tokenManagement" defaultMessage="Token Management" />}
         leftContent={
           <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={onCreateToken}>
             <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />

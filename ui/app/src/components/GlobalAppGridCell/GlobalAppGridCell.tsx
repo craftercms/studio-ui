@@ -33,6 +33,11 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
       '&.bordered': {
         borderBottom: `1px solid ${theme.palette.divider}`
       },
+      '&.ellipsis': {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      },
       '&.padded10': {
         padding: '10px'
       },

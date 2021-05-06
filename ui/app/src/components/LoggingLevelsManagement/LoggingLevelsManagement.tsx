@@ -91,7 +91,7 @@ export default function LoggingLevelsManagement() {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.LoggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
+        title={<FormattedMessage id="globalMenu.loggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
       />
       <SuspenseWithEmptyState
         resource={resource}

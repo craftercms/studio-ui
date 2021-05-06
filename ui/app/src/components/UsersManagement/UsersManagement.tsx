@@ -106,7 +106,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Users" defaultMessage="Users" />}
+        title={<FormattedMessage id="globalMenu.users" defaultMessage="Users" />}
         leftContent={
           <Button
             startIcon={<AddIcon />}
