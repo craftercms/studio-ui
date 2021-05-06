@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Logger, LoggerLevel } from '../../models/Logger';
 import ApiResponse from '../../models/ApiResponse';
