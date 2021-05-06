@@ -255,8 +255,11 @@
   app.controller('AuditCtrl', [
     '$rootScope',
     '$scope',
-    function($rootScope, $scope) {
-      CrafterCMSNext.render(document.querySelector('#audit-management-view'), 'AuditManagement').then((done) => {
+    '$location',
+    function($rootScope, $scope, $location) {
+      CrafterCMSNext.render(document.querySelector('#audit-management-view'), 'AuditManagement', {
+        site: $location.search().site
+      }).then((done) => {
         const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
           unsubscribe();
           done.unmount();

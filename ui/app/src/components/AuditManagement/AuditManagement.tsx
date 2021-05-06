@@ -31,10 +31,16 @@ import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import ParametersDialog from '../ParametersDialog';
 import { nnou } from '../../utils/object';
-import { Button } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
 
-export default function AuditManagement() {
+interface AuditManagementProps {
+  site?: string;
+}
+
+export default function AuditManagement(props: AuditManagementProps) {
+  const site = props.site;
   const [fetching, setFetching] = useState(false);
   const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -43,7 +49,8 @@ export default function AuditManagement() {
   const [options, setOptions] = useSpreadState<AuditOptions>({
     offset: 0,
     limit: 10,
-    sort: 'date'
+    sort: 'date',
+    siteId: site
   });
   const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<LogParameters[]>>({});
   const [parametersDialogParams, setParametersDialogParams] = useSpreadState<{
@@ -55,7 +62,10 @@ export default function AuditManagement() {
   });
   const { formatMessage } = useIntl();
   const hasActiveFilters = Object.keys(options).some((key) => {
-    return !['limit', 'offset', 'sort'].includes(key) && nnou(options[key]);
+    return (
+      !(Boolean(site) ? ['limit', 'offset', 'sort', 'siteId'] : ['limit', 'offset', 'sort']).includes(key) &&
+      nnou(options[key])
+    );
   });
 
   const refresh = useCallback(() => {
@@ -121,11 +131,11 @@ export default function AuditManagement() {
   };
 
   const onResetFilters = () => {
-    const { limit, offset, sort, ...rest } = options;
+    const { limit, offset, sort, siteId, ...rest } = options;
     Object.keys(rest).forEach((key) => {
       rest[key] = undefined;
     });
-    setOptions({ limit, offset, sort, ...rest });
+    setOptions({ limit, offset, sort, siteId: Boolean(site) ? site : undefined, ...rest });
   };
 
   const onFetchParameters = (id: number) => {
@@ -160,7 +170,7 @@ export default function AuditManagement() {
   };
 
   return (
-    <section>
+    <Box p={site ? '20px' : 0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
         rightContent={
@@ -173,13 +183,16 @@ export default function AuditManagement() {
       />
       <Suspencified
         suspenseProps={{
-          fallback: <AuditGridSkeleton numOfItems={auditLogs?.length ?? 10} filters={options} />
+          fallback: (
+            <AuditGridSkeleton siteMode={Boolean(site)} numOfItems={auditLogs?.length ?? 10} filters={options} />
+          )
         }}
       >
         <AuditGridUI
           resource={resource}
           sites={sites}
           users={users}
+          siteMode={Boolean(site)}
           parametersLookup={parametersLookup}
           onFetchParameters={onFetchParameters}
           onChangePage={onChangePage}
@@ -203,6 +216,6 @@ export default function AuditManagement() {
         onClosed={onShowParametersDialogClosed}
         parameters={parametersDialogParams.parameters}
       />
-    </section>
+    </Box>
   );
 }

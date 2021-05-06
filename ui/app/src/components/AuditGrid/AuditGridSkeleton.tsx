@@ -28,10 +28,11 @@ import Skeleton from '@material-ui/lab/Skeleton';
 export interface AuditGridSkeletonProps {
   numOfItems?: number;
   filters: AuditOptions;
+  siteMode?: boolean;
 }
 
 export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
-  const { numOfItems = 5, filters } = props;
+  const { numOfItems = 5, filters, siteMode = false } = props;
   const classes = styles();
   const { formatMessage } = useIntl();
 
@@ -72,6 +73,7 @@ export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         sortable: false,
         filterable: false,
         cellClassName: classes.cellRoot,
+        hide: siteMode,
         headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;

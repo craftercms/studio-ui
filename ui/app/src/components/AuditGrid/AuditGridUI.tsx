@@ -55,6 +55,7 @@ export interface AuditGridUIProps {
   filters: AuditOptions;
   hasActiveFilters: boolean;
   timezones: string[];
+  siteMode?: boolean;
   onChangePage(page: number): void;
   onResetFilters(): void;
   onResetFilter(id: string | string[]): void;
@@ -140,7 +141,8 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     origins,
     timezones,
     onFetchParameters,
-    hasActiveFilters
+    hasActiveFilters,
+    siteMode = false
   } = props;
   const auditLogs = resource.read();
   const classes = styles();
@@ -229,6 +231,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         sortable: false,
         cellClassName: classes.cellRoot,
         headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter,
+        hide: siteMode,
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
