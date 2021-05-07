@@ -357,35 +357,28 @@ export default function Launcher(props: LauncherStateProps) {
   );
 
   const onSiteCardClick = (site: string) => {
-    if (window.location.href.includes('/preview') || window.location.href.includes('#/globalMenu')) {
-      if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {
-        // If site we're switching to is next compatible, there's no need for any sort of page postback.
-        dispatch(batchActions([changeSite(site), closeLauncher()]));
-      } else {
-        setSiteCookie(site);
-        setTimeout(() => {
-          const link = getSystemLink({
-            systemLinkId: 'preview',
-            previewChoice,
-            authoringBase,
-            site
-          });
-          // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
-          // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
-          // fully integrated with the URL. In these cases, we need to programmatically reload.
-          const shouldReload =
-            // Currently in legacy...
-            window.location.pathname === `${authoringBase.replace(window.location.origin, '')}/preview` &&
-            // ...and not going to next
-            !link.includes('next/preview');
-          window.location.href = link;
-          shouldReload && window.location.reload();
-        });
-      }
+    if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {
+      // If site we're switching to is next compatible, there's no need for any sort of page postback.
+      dispatch(batchActions([changeSite(site), closeLauncher()]));
     } else {
       setSiteCookie(site);
       setTimeout(() => {
-        window.location.reload();
+        const link = getSystemLink({
+          systemLinkId: 'preview',
+          previewChoice,
+          authoringBase,
+          site
+        });
+        // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
+        // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
+        // fully integrated with the URL. In these cases, we need to programmatically reload.
+        const shouldReload =
+          // Currently in legacy...
+          window.location.pathname === `${authoringBase.replace(window.location.origin, '')}/preview` &&
+          // ...and not going to next
+          !link.includes('next/preview');
+        window.location.href = link;
+        shouldReload && window.location.reload();
       });
     }
   };

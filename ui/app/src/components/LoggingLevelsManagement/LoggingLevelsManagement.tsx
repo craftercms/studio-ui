@@ -14,22 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Logger, LoggerLevel } from '../../models/Logger';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchLoggers as fetchLoggersService, setLogger } from '../../services/logs';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LoggingLevelsGridUI, { LoggingLevelsGridSkeletonTable } from '../LoggingLevelsGrid';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showSystemNotification } from '../../state/actions/system';
+
+const messages = defineMessages({
+  levelChangedSuccess: {
+    id: 'loggingLevelsManagement.levelChangedSuccessMessage',
+    defaultMessage: 'Logging level changed successfully'
+  }
+});
 
 export default function LoggingLevelsManagement() {
   const [fetching, setFetching] = useState(false);
   const [loggers, setLoggers] = useState<Array<Logger>>(null);
   const [error, setError] = useState<ApiResponse>();
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   const fetchLoggers = useCallback(() => {
@@ -51,10 +61,15 @@ export default function LoggingLevelsManagement() {
   }, [fetchLoggers]);
 
   const changeLevel = (logger: Logger, level: LoggerLevel) => {
-    logger.level = level;
     setLogger(logger.name, level).subscribe(
       () => {
         fetchLoggers();
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.levelChangedSuccess),
+            options: { variant: 'success' }
+          })
+        );
       },
       (response) => {
         dispatch(showErrorDialog({ error: response }));
@@ -75,7 +90,9 @@ export default function LoggingLevelsManagement() {
 
   return (
     <section>
-      <GlobalAppToolbar title={<FormattedMessage id="GlobalMenu.Users" defaultMessage="Logging Levels" />} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="GlobalMenu.LoggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
+      />
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
