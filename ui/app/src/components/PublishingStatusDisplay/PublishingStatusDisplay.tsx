@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { publishingStatusTileMessages } from '../PublishingStatusTile';
-import { ListItem } from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
 import PublishingStatusAvatar from '../PublishingStatusAvatar';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';

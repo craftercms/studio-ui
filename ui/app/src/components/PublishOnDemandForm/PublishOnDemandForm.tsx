@@ -26,10 +26,9 @@ import Grid from '@material-ui/core/Grid';
 import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import ApiResponse from '../../models/ApiResponse';
 import Typography from '@material-ui/core/Typography';
-import palette from '../../styles/palette';
 import InputLabel from '@material-ui/core/InputLabel';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     formHelperText: {
       marginLeft: '5px'
@@ -38,7 +37,7 @@ const useStyles = makeStyles(() =>
       display: 'inline-flex'
     },
     environmentLoader: {
-      border: `1px solid ${palette.gray.light7}`,
+      border: `1px solid ${theme.palette.divider}`,
       padding: '15px',
       borderRadius: '4px',
       width: '100%'
@@ -71,23 +70,22 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
               value={mode === 'studio' ? formData.path : formData.commitIds}
               label={
                 mode === 'studio' ? (
-                  <FormattedMessage id="bulkPublish.formPathLabel" defaultMessage="Path to Publish" />
+                  <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Path to Publish" />
                 ) : (
-                  <FormattedMessage id="bulkPublish.formPathLabel" defaultMessage="Commit or tag IDs" />
+                  <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Commit or tag IDs" />
                 )
               }
-              variant="outlined"
               fullWidth
               required
               helperText={
                 mode === 'studio' ? (
                   <FormattedMessage
-                    id="bulkPublish.formPathExample"
+                    id="publishOnDemand.formPathExample"
                     defaultMessage="e.g. /site/website/about/index.xml"
                   />
                 ) : (
                   <FormattedMessage
-                    id="bulkPublish.formPathExample"
+                    id="publishOnDemand.formPathExample"
                     defaultMessage="You may enter multiple separate by comma"
                   />
                 )
@@ -122,10 +120,12 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
             </FormControl>
           ) : (
             <FormControl fullWidth variant="outlined" required>
-              <InputLabel id="publishingTargetLabel">Publishing Target</InputLabel>
+              <InputLabel id="publishingTargetLabel">
+                <FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />
+              </InputLabel>
               <Select
                 labelId="publishingTargetLabel"
-                label="Publishing Target"
+                label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
                 value={formData.environment}
                 required
                 onChange={handleFormChange('environment')}
@@ -143,7 +143,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
           <FormControl fullWidth>
             <TextFieldWithMax
               value={formData.comment}
-              label={<FormattedMessage id="bulkPublish.submissionComment" defaultMessage="Submission Comment" />}
+              label={<FormattedMessage id="publishOnDemand.submissionComment" defaultMessage="Submission Comment" />}
               fullWidth
               multiline
               onChange={handleFormChange('comment')}

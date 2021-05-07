@@ -110,7 +110,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
             <RadioGroup value={mode} onChange={handleChange}>
               <FormControlLabel
                 value="studio"
-                control={<Radio color="primary" />}
+                control={<Radio />}
                 label={
                   <ListItemText
                     primary={
@@ -126,7 +126,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
               />
               <FormControlLabel
                 value="git"
-                control={<Radio color="primary" />}
+                control={<Radio />}
                 label={
                   <ListItemText
                     primary={
