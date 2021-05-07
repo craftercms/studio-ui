@@ -15,20 +15,40 @@
  */
 
 import * as React from 'react';
-import { PublishingStatus } from '../../models/Publishing';
 import Paper from '@material-ui/core/Paper';
 import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
+import { useSelection } from '../../utils/hooks';
+import { clearLock, start, stop } from '../../services/publishing';
+import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
+import { useDispatch } from 'react-redux';
 
 type PublishingStatusWidgetProps = {
-  state: PublishingStatus;
-  onRefresh?(): void;
-  onStartStop?(): void;
-  onUnlock?(): void;
+  siteId: string;
 };
 
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
-  const { state, onRefresh, onStartStop, onUnlock } = props;
+  const { siteId } = props;
+  const state = useSelection((state) => state.dialogs.publishingStatus);
   const { enabled, status, message, lockOwner, lockTTL } = state;
+  const dispatch = useDispatch();
+
+  const onStartStop = () => {
+    const action = state.status === 'ready' ? stop : start;
+
+    action(siteId).subscribe(() => {
+      dispatch(fetchPublishingStatus());
+    });
+  };
+
+  const onUnlock = () => {
+    clearLock(siteId).subscribe(() => {
+      dispatch(fetchPublishingStatus());
+    });
+  };
+
+  const onRefresh = () => {
+    dispatch(fetchPublishingStatus());
+  };
 
   return (
     <Paper elevation={2}>

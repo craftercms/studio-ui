@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { createStyles, makeStyles } from '@material-ui/core';
 import palette from '../../styles/palette';
@@ -27,11 +27,17 @@ import Collapse from '@material-ui/core/Collapse/Collapse';
 import Button from '@material-ui/core/Button';
 import ListItemText from '@material-ui/core/ListItemText';
 import PublishOnDemandForm from '../PublishOnDemandForm';
-import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
+import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
 import { nnou } from '../../utils/object';
-import ApiResponse from '../../models/ApiResponse';
-import { ReactNode } from 'react';
 import Typography from '@material-ui/core/Typography';
+import { bulkGoLive, fetchPublishingTargets, publishByCommits } from '../../services/publishing';
+import { showSystemNotification } from '../../state/actions/system';
+import { useDispatch } from 'react-redux';
+import { useSpreadState } from '../../utils/hooks';
+import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -68,36 +74,166 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
+const messages = defineMessages({
+  publishStudioWarning: {
+    id: 'publishingDashboard.warning',
+    defaultMessage:
+      "This will force publish all items that match the pattern requested including their dependencies, and it may take a long time depending on the number of items. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing."
+  },
+  warningLabel: {
+    id: 'words.warning',
+    defaultMessage: 'Warning'
+  },
+  publishStudioNote: {
+    id: 'publishingDashboard.studioNote',
+    defaultMessage:
+      'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please publish by commit or tag.'
+  },
+  publishGitNote: {
+    id: 'publishingDashboard.gitNote',
+    defaultMessage:
+      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please publish by path.'
+  },
+  publishSuccess: {
+    id: 'publishingDashboard.publishSuccess',
+    defaultMessage: 'Published successfully.'
+  },
+  bulkPublishStarted: {
+    id: 'publishingDashboard.bulkPublishStarted',
+    defaultMessage: 'Bulk Publish process has been started.'
+  }
+});
+
+const initialPublishStudioFormData = {
+  path: '',
+  environment: '',
+  comment: ''
+};
+const initialPublishGitFormData = {
+  commitIds: '',
+  environment: '',
+  comment: ''
+};
+
 interface PublishOnDemandWidgetProps {
-  mode: PublishOnDemandMode;
-  setMode(mode): void;
-  formData: PublishFormData;
-  setFormData(data): void;
-  formValid: boolean;
-  publishingTargets: PublishingTarget[];
-  publishingTargetsError: ApiResponse;
-  note?: ReactNode;
-  onPublish?(): void;
-  onCancel?(): void;
+  siteId: string;
 }
 
 export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const {
-    mode,
-    setMode,
-    formData,
-    setFormData,
-    formValid = false,
-    onPublish,
-    onCancel,
-    publishingTargets,
-    publishingTargetsError,
-    note
-  } = props;
+  const { siteId } = props;
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const [mode, setMode] = useState<PublishOnDemandMode>(null);
+  const [publishingTargets, setPublishingTargets] = useState(null);
+  const [publishingTargetsError, setPublishingTargetsError] = useState(null);
+  const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
+  const [publishGitFormValid, setPublishGitFormValid] = useState(false);
+  const [publishStudioFormData, setPublishStudioFormData] = useSpreadState<PublishFormData>(
+    initialPublishStudioFormData
+  );
+  const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
+  const idSuccess = 'bulkPublishSuccess';
+  const idCancel = 'bulkPublishCancel';
+
+  useEffect(() => {
+    fetchPublishingTargets(siteId).subscribe(
+      (targets) => {
+        setPublishingTargets(targets);
+      },
+      (error) => {
+        setPublishingTargetsError(error);
+      }
+    );
+  }, [siteId]);
+
+  const publishBy = () => {
+    const { commitIds, environment, comment } = publishGitFormData;
+    const ids = commitIds.replace(/\s/g, '').split(',');
+
+    publishByCommits(siteId, ids, environment, comment).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.publishSuccess)
+          })
+        );
+        setPublishGitFormData(initialPublishGitFormData);
+      },
+      ({ response }) => {
+        dispatch(
+          showSystemNotification({
+            message: response.message,
+            options: { variant: 'error' }
+          })
+        );
+      }
+    );
+  };
+
+  const bulkPublish = () => {
+    const { path, environment, comment } = publishStudioFormData;
+    bulkGoLive(siteId, path, environment, comment).subscribe(
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.bulkPublishStarted)
+          })
+        );
+        setPublishStudioFormData(initialPublishStudioFormData);
+      },
+      ({ response }) => {
+        showSystemNotification({
+          message: response.message,
+          options: { variant: 'error' }
+        });
+      }
+    );
+  };
+
+  const bulkPublishConfirmation = () => {
+    dispatch(
+      showConfirmDialog({
+        body: `${formatMessage(messages.publishStudioWarning)} ${formatMessage(messages.publishStudioNote)}`,
+        onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idCancel })]),
+        onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idSuccess })])
+      })
+    );
+
+    const successCallback = () => {
+      bulkPublish();
+      document.removeEventListener(idSuccess, successCallback, false);
+      document.removeEventListener(idCancel, cancelCallback, false);
+    };
+    const cancelCallback = () => {
+      document.removeEventListener(idCancel, cancelCallback, false);
+      document.removeEventListener(idSuccess, successCallback, false);
+    };
+
+    document.addEventListener(idSuccess, successCallback, false);
+    document.addEventListener(idCancel, cancelCallback, false);
+  };
+
+  const onCancel = () => {
+    setMode(null);
+    setPublishStudioFormData(initialPublishStudioFormData);
+    setPublishGitFormData(initialPublishGitFormData);
+  };
+
+  useEffect(() => {
+    if (mode === 'studio') {
+      setPublishStudioFormValid(
+        publishStudioFormData.path.replace(/\s/g, '') !== '' && publishStudioFormData.environment !== ''
+      );
+    } else {
+      setPublishGitFormValid(
+        publishGitFormData.commitIds.replace(/\s/g, '') !== '' && publishGitFormData.environment !== ''
+      );
+    }
+  }, [publishStudioFormData, publishGitFormData, mode]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMode((event.target as HTMLInputElement).value);
+    setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
   };
 
   return (
@@ -110,7 +246,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
             <RadioGroup value={mode} onChange={handleChange}>
               <FormControlLabel
                 value="studio"
-                control={<Radio />}
+                control={<Radio color="primary" />}
                 label={
                   <ListItemText
                     primary={
@@ -126,7 +262,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
               />
               <FormControlLabel
                 value="git"
-                control={<Radio />}
+                control={<Radio color="primary" />}
                 label={
                   <ListItemText
                     primary={
@@ -145,8 +281,8 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
         <Collapse in={nnou(mode)} timeout={300} unmountOnExit>
           <PublishOnDemandForm
-            formData={formData}
-            setFormData={setFormData}
+            formData={mode === 'studio' ? publishStudioFormData : publishGitFormData}
+            setFormData={mode === 'studio' ? setPublishStudioFormData : setPublishGitFormData}
             mode={mode}
             publishingTargets={publishingTargets}
             publishingTargetsError={publishingTargetsError}
@@ -154,7 +290,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
           <div className={classes.noteContainer}>
             <Typography variant="caption" className={classes.note}>
-              {note}
+              {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote)}
             </Typography>
           </div>
         </Collapse>
@@ -164,7 +300,12 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
         <Button variant="outlined" color="default" onClick={onCancel} className={classes.cancelBtn} disabled={!mode}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </Button>
-        <Button variant="contained" color="primary" disabled={!formValid} onClick={onPublish}>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={!(mode === 'studio' ? publishStudioFormValid : publishGitFormValid)}
+          onClick={mode === 'studio' ? bulkPublishConfirmation : publishBy}
+        >
           <FormattedMessage id="words.publish" defaultMessage="Publish" />
         </Button>
       </div>
