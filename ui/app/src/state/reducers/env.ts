@@ -29,13 +29,19 @@ export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   xsrfArgument: document.querySelector('#xsrfArgument')?.textContent ?? '_csrf',
   siteCookieName: 'crafterSite',
   previewLandingBase: process.env.REACT_APP_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
-  version: null
+  version: null,
+  packageBuild: null,
+  packageVersion: null,
+  packageBuildDate: null
 }))(window.location.origin);
 
 const reducer = createReducer<GlobalState['env']>(envInitialState, {
   [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({
     ...state,
-    version: payload.packageVersion.replace('-SNAPSHOT', '')
+    version: payload.packageVersion.replace('-SNAPSHOT', ''),
+    packageBuild: payload.packageBuild,
+    packageVersion: payload.packageVersion,
+    packageBuildDate: payload.packageBuildDate
   })
 });
 

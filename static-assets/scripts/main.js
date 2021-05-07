@@ -304,7 +304,7 @@
           views: {
             contentTab: {
               templateUrl: '/studio/static-assets/ng-views/about.html',
-              controller: 'AppCtrl'
+              controller: 'AboutCtrl'
             }
           }
         })
@@ -435,7 +435,7 @@
           views: {
             content: {
               templateUrl: '/studio/static-assets/ng-views/about.html',
-              controller: 'AppCtrl'
+              controller: 'AboutCtrl'
             }
           }
         });
@@ -1095,6 +1095,19 @@
           $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
           $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
         }
+      });
+    }
+  ]);
+
+  app.controller('AboutCtrl', [
+    '$rootScope',
+    '$scope',
+    function($rootScope, $scope) {
+      CrafterCMSNext.render(document.querySelector('#about-view'), 'About').then((done) => {
+        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+          unsubscribe();
+          done.unmount();
+        });
       });
     }
   ]);
