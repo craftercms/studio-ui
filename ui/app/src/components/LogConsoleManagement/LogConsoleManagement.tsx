@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useDispatch } from 'react-redux';
 import { LogEvent } from '../../models/monitoring/LogEvent';
@@ -29,16 +29,17 @@ import { Button } from '@material-ui/core';
 import { useMount } from '../../utils/hooks';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
 
 const translations = defineMessages({});
 
 export default function LogConsoleManagement() {
   const [logEvents, setLogEvents] = useState<LogEvent[]>();
-  const [fetching, setFetching] = useState(false);
+  const [showLogEventDialog, setShowLogEventDialog] = useState(false);
+  const [selectedLogEvent, setSelectedLogEvent] = useState(null);
   const [error, setError] = useState<ApiResponse>();
   const [paused, setPaused] = useState(false);
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
 
   const refresh = useCallback(
     (since?: number) => {
@@ -53,6 +54,7 @@ export default function LogConsoleManagement() {
           setLogEvents(logEvents);
         },
         ({ response: { response } }) => {
+          setError(response);
           dispatch(showErrorDialog({ error: response }));
         }
       );
@@ -80,6 +82,19 @@ export default function LogConsoleManagement() {
     setPaused(!paused);
   };
 
+  const onLogEventDetails = (logEvent: LogEvent) => {
+    setShowLogEventDialog(true);
+    setSelectedLogEvent(logEvent);
+  };
+
+  const onCloseLogEventDetailsDialog = () => {
+    setShowLogEventDialog(false);
+  };
+
+  const onLogEventDetailsDialogClosed = () => {
+    setSelectedLogEvent(null);
+  };
+
   return (
     <section>
       <GlobalAppToolbar
@@ -105,8 +120,14 @@ export default function LogConsoleManagement() {
         }
       />
       <ConditionalLoadingState isLoading={!logEvents}>
-        <LogConsoleGridUI logEvents={logEvents} />
+        <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />
       </ConditionalLoadingState>
+      <LogConsoleDetailsDialog
+        open={showLogEventDialog}
+        logEvent={selectedLogEvent}
+        onClose={onCloseLogEventDetailsDialog}
+        onClosed={onLogEventDetailsDialogClosed}
+      />
     </section>
   );
 }

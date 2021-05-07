@@ -31,16 +31,13 @@ import { useSelection } from '../../utils/hooks';
 
 interface LogConsoleGridUIProps {
   logEvents: LogEvent[];
+  onLogEventDetails(logEvent: LogEvent): void;
 }
 
 export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
-  const { logEvents } = props;
+  const { logEvents, onLogEventDetails } = props;
   const classes = useStyles();
   const localeBranch = useSelection((state) => state.uiConfig.locale);
-
-  // const date = new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
-  //   new Date(params.value as Date)
-  // );
 
   return (
     <TableContainer>
@@ -98,7 +95,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 {logEvent.message}
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="padded10 ellipsis">
-                <IconButton>
+                <IconButton onClick={() => onLogEventDetails(logEvent)}>
                   <VisibilityRoundedIcon />
                 </IconButton>
               </GlobalAppGridCell>
