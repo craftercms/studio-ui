@@ -38,6 +38,7 @@ import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialo
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -70,6 +71,11 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.action.active,
       display: 'inline-block',
       maxWidth: '700px'
+    },
+    noteLink: {
+      color: 'inherit',
+      marginLeft: '4px',
+      textDecoration: 'underline'
     }
   })
 );
@@ -87,12 +93,20 @@ const messages = defineMessages({
   publishStudioNote: {
     id: 'publishingDashboard.studioNote',
     defaultMessage:
-      'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please publish by commit or tag.'
+      'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please'
   },
   publishGitNote: {
     id: 'publishingDashboard.gitNote',
     defaultMessage:
-      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please publish by path.'
+      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please'
+  },
+  publishStudioLink: {
+    id: 'publishingDashboard.publishStudioRedirect',
+    defaultMessage: 'publish by commit or tag'
+  },
+  publishGitLink: {
+    id: 'publishingDashboard.publishGitRedirect',
+    defaultMessage: 'publish by path'
   },
   publishSuccess: {
     id: 'publishingDashboard.publishSuccess',
@@ -194,7 +208,9 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const bulkPublishConfirmation = () => {
     dispatch(
       showConfirmDialog({
-        body: `${formatMessage(messages.publishStudioWarning)} ${formatMessage(messages.publishStudioNote)}`,
+        body: `${formatMessage(messages.publishStudioWarning)} ${formatMessage(
+          messages.publishStudioNote
+        )} ${formatMessage(messages.publishGitLink)}`,
         onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idCancel })]),
         onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idSuccess })])
       })
@@ -234,6 +250,11 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
+  };
+
+  const toggleMode = (e) => {
+    e.preventDefault();
+    setMode(mode === 'studio' ? 'git' : 'studio');
   };
 
   return (
@@ -290,7 +311,10 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
           <div className={classes.noteContainer}>
             <Typography variant="caption" className={classes.note}>
-              {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote)}
+              {mode === 'studio' ? formatMessage(messages.publishStudioNote) : formatMessage(messages.publishGitNote)}
+              <Link href="#" onClick={toggleMode} className={classes.noteLink}>
+                {mode === 'studio' ? formatMessage(messages.publishStudioLink) : formatMessage(messages.publishGitLink)}
+              </Link>
             </Typography>
           </div>
         </Collapse>
