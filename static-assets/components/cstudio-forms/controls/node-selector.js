@@ -350,7 +350,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       const editBtnLabel = this.readonly ? 'View' : 'Edit';
       const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
       const editBtn = $(
-        `<span class="fa ${editBtnIconClass} node-selector-item-icon ml-auto" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button"></span>`
+        `<span class="fa ${editBtnIconClass} node-selector-item-icon ml-auto" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></span>`
       );
       const deleteBtn = $(
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
@@ -363,8 +363,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       if (this.allowEdit) {
         $(itemEl).append(editBtn);
         editBtn.on('click', function() {
+          const elIndex = $(this).data('index');
           let selectedDatasource =
-            _self.datasources.find((item) => item.id === item.datasource) || _self.datasources[0];
+            _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
           selectedDatasource.edit(item.key, _self);
         });
 
