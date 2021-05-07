@@ -26,7 +26,6 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 import { IconButton } from '@material-ui/core';
-import useStyles from './styles';
 import { useSelection } from '../../utils/hooks';
 
 interface LogConsoleGridUIProps {
@@ -36,12 +35,11 @@ interface LogConsoleGridUIProps {
 
 export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
   const { logEvents, onLogEventDetails } = props;
-  const classes = useStyles();
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (
     <TableContainer>
-      <Table className={classes.tableRoot}>
+      <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell align="left" className="bordered padded10 width10">
@@ -91,10 +89,10 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
               <GlobalAppGridCell align="left" className="padded10 ellipsis">
                 {logEvent.site}
               </GlobalAppGridCell>
-              <GlobalAppGridCell title={logEvent.message} align="left" className="padded10 ellipsis">
+              <GlobalAppGridCell title={logEvent.message} align="left" className="padded10 ellipsis maxWidth300">
                 {logEvent.message}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="padded10 ellipsis">
+              <GlobalAppGridCell align="left" className="padded10">
                 <IconButton onClick={() => onLogEventDetails(logEvent)}>
                   <VisibilityRoundedIcon />
                 </IconButton>

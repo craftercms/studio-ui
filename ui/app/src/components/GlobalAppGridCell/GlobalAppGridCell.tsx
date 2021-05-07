@@ -27,6 +27,9 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
         padding: 0,
         width: '50px'
       },
+      '&.maxWidth300': {
+        maxWidth: '300px'
+      },
       '&.minWidth100': {
         minWidth: '100px'
       },

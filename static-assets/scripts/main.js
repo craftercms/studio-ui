@@ -259,7 +259,7 @@
           views: {
             contentTab: {
               templateUrl: '/studio/static-assets/ng-views/log-console.html',
-              controller: 'LogConsoleStudioCtrl'
+              controller: 'LogConsoleCtrl'
             }
           }
         })
@@ -367,7 +367,7 @@
           views: {
             content: {
               templateUrl: '/studio/static-assets/ng-views/log-console.html',
-              controller: window === window.top ? 'LogConsoleStudioCtrl' : 'LogConsolePreviewCtrl'
+              controller: 'LogConsoleCtrl'
             }
           }
         })

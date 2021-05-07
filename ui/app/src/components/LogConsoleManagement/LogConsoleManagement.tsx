@@ -16,30 +16,43 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useDispatch } from 'react-redux';
 import { LogEvent } from '../../models/monitoring/LogEvent';
-import { fetchLog } from '../../services/monitoring';
+import { fetchLog, fetchPreviewLog } from '../../services/monitoring';
 import PauseRoundedIcon from '@material-ui/icons/PauseRounded';
 import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
 import moment from 'moment-timezone';
 import LogConsoleGridUI from '../LogConsoleGrid';
-import { Button } from '@material-ui/core';
-import { useMount } from '../../utils/hooks';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import { useActiveSiteId, useMount } from '../../utils/hooks';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
+import EmptyState from '../SystemStatus/EmptyState';
 
-const translations = defineMessages({});
+interface LogConsoleManagementProps {
+  logType?: 'studio' | 'preview';
+}
 
-export default function LogConsoleManagement() {
+export default function LogConsoleManagement(props: LogConsoleManagementProps) {
+  const { logType = 'studio' } = props;
   const [logEvents, setLogEvents] = useState<LogEvent[]>();
   const [showLogEventDialog, setShowLogEventDialog] = useState(false);
+  const site = useActiveSiteId();
   const [selectedLogEvent, setSelectedLogEvent] = useState(null);
   const [error, setError] = useState<ApiResponse>();
   const [paused, setPaused] = useState(false);
   const dispatch = useDispatch();
+
+  useMount(() => {
+    let since = moment()
+      .subtract(1, 'hour')
+      .valueOf();
+    fetchPreviewLog('editorial', since).subscribe();
+  });
 
   const refresh = useCallback(
     (since?: number) => {
@@ -49,9 +62,13 @@ export default function LogConsoleManagement() {
           .subtract(1, 'hour')
           .valueOf();
 
-      fetchLog(since).subscribe(
-        (logEvents) => {
-          setLogEvents(logEvents);
+      (logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe(
+        (newLogEvents) => {
+          if (logEvents) {
+            setLogEvents([...logEvents, ...newLogEvents]);
+          } else {
+            setLogEvents(newLogEvents);
+          }
         },
         ({ response: { response } }) => {
           setError(response);
@@ -59,14 +76,14 @@ export default function LogConsoleManagement() {
         }
       );
     },
-    [dispatch]
+    [dispatch, logEvents, logType, site]
   );
 
   useEffect(() => {
     if (!paused && !error) {
       const timer = setTimeout(() => {
         const since = moment()
-          .subtract(1, 'hour')
+          .subtract(5, 'seconds')
           .valueOf();
         refresh(since);
       }, 5000);
@@ -80,6 +97,10 @@ export default function LogConsoleManagement() {
 
   const togglePause = () => {
     setPaused(!paused);
+  };
+
+  const onClear = () => {
+    setLogEvents([]);
   };
 
   const onLogEventDetails = (logEvent: LogEvent) => {
@@ -96,7 +117,7 @@ export default function LogConsoleManagement() {
   };
 
   return (
-    <section>
+    <Box p={logType === 'studio' ? 0 : '20px'}>
       <GlobalAppToolbar
         title={<FormattedMessage id="globalMenu.logConsole" defaultMessage="Log Console" />}
         rightContent={
@@ -113,7 +134,7 @@ export default function LogConsoleManagement() {
                 <FormattedMessage id="words.pause" defaultMessage="Pause" />
               )}
             </Button>
-            <Button variant="text" color="primary">
+            <Button variant="text" color="primary" onClick={onClear}>
               <FormattedMessage id="words.clear" defaultMessage="Clear" />
             </Button>
           </>
@@ -122,12 +143,15 @@ export default function LogConsoleManagement() {
       <ConditionalLoadingState isLoading={!logEvents}>
         <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />
       </ConditionalLoadingState>
+      {logEvents?.length === 0 && (
+        <EmptyState title={<FormattedMessage id="logConsoleManagement.noLogs" defaultMessage="No logs found" />} />
+      )}
       <LogConsoleDetailsDialog
         open={showLogEventDialog}
         logEvent={selectedLogEvent}
         onClose={onCloseLogEventDetailsDialog}
         onClosed={onLogEventDetailsDialogClosed}
       />
-    </section>
+    </Box>
   );
 }
