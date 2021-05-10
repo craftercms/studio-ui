@@ -83,7 +83,7 @@ export default function AccountManagement(props: AccountManagementProps) {
   return (
     <section>
       <GlobalAppToolbar title={<FormattedMessage id="words.account" defaultMessage="Account" />} />
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Paper className={classes.paper}>
           <Box display="flex" alignItems="center">
             <Avatar className={classes.avatar}>
