@@ -30,9 +30,9 @@ export default function About() {
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <Box display="flex" flexDirection="column" height="calc(100vh - 108px)">
       <GlobalAppToolbar title={<FormattedMessage id="global.about" defaultMessage="About" />} />
-      <Box display="flex" alignItems="center" justifyContent="center" marginTop="22%">
+      <Box display="flex" alignItems="center" justifyContent="center" flex-grow="1">
         <Paper className={classes.paperRoot}>
           <CrafterCMSLogo width={250} className={classes.logo} />
           <div className={classes.row}>
