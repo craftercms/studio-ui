@@ -205,7 +205,7 @@ export function createCodebaseBridge() {
       // PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
       // RemotesManagement: lazy(() => import('../components/RemotesManagement')),
       // GraphQLPlayground: lazy(() => import('../components/GraphQLPlayground')),
-      About: lazy(() => import('../components/About'))
+      About: lazy(() => import('../components/AboutCrafterCMSView'))
     },
 
     system: {

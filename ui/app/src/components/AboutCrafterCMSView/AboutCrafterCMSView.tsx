@@ -19,12 +19,13 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { useEnv, useSelection } from '../../utils/hooks';
 import Paper from '@material-ui/core/Paper';
-import useStyles from './style';
+import useStyles from './styles';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import Box from '@material-ui/core/Box';
-import { Link, Typography } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 
-export default function About() {
+export default function AboutCrafterCMSView() {
   const env = useEnv();
   const classes = useStyles();
   const localeBranch = useSelection((state) => state.uiConfig.locale);
