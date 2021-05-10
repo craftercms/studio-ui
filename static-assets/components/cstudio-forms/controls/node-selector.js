@@ -406,6 +406,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
       itemEl._onMouseDown = function () {
         this.context.selectedItemIndex = this._index;
+        const currentItem = this.context.items[this._index];
         var selectedEl = YAHOO.util.Dom.getElementsByClassName(
           'cstudio-form-control-node-selector-item-selected',
           null,
@@ -421,9 +422,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           this.context.deleteButtonEl.disabled = false;
         }
 
-        if (this.context.allowEdit == true) {
+        const isComponent = currentItem.key.includes('/site') || currentItem.inline;
+
+        if (this.context.allowEdit && (isComponent || !this.context.readonly)) {
           YAHOO.util.Dom.removeClass(this.context.editButtonEl, 'cstudio-button-disabled');
           this.context.editButtonEl.disabled = false;
+        } else {
+          YAHOO.util.Dom.addClass(this.context.editButtonEl, 'cstudio-button-disabled');
+          this.context.editButtonEl.disabled = true;
         }
       };
       itemsContainerEl.appendChild(itemEl);
