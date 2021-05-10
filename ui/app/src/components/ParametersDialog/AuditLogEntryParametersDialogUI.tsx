@@ -14,36 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
+import { useMount } from '../../utils/hooks';
+import DialogHeader from '../Dialogs/DialogHeader';
+import { FormattedMessage } from 'react-intl';
+import DialogBody from '../Dialogs/DialogBody';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
-import DialogBody from '../Dialogs/DialogBody';
-import { LogParameters } from '../../models/Audit';
-import { useMount } from '../../utils/hooks';
-import DialogHeader from '../Dialogs/DialogHeader';
+import React from 'react';
+import { AuditLogEntryParametersDialogProps } from './AuditLogEntryParametersDialog';
 
-interface ParametersDialogProps {
-  open: boolean;
-  onClose(): void;
-  onClosed?(): void;
-  parameters: LogParameters[];
-}
-
-export default function ParametersDialog(props: ParametersDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ParametersDialogUI {...props} />
-    </Dialog>
-  );
-}
-
-function ParametersDialogUI(props: ParametersDialogProps) {
+export default function AuditLogEntryParametersDialogUI(props: AuditLogEntryParametersDialogProps) {
   const { parameters = [], onClose, onClosed } = props;
 
   useMount(() => {

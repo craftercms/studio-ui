@@ -17,3 +17,5 @@
 export { default } from './AuditGridFilterPopover';
 
 export * from './AuditGridFilterPopover';
+
+export * from './AuditGridFilterPopoverBody';

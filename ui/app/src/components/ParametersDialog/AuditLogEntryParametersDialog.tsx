@@ -14,35 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import React from 'react';
+import { AuditLogEntryParameter } from '../../models/Audit';
+import AuditLogEntryParametersDialogUI from './AuditLogEntryParametersDialogUI';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    popover: {
-      padding: '20px',
-      minWidth: '300px',
-      overflow: 'initial'
-    },
-    popoverForm: {},
-    popoverCloseIcon: {
-      background: theme.palette.divider,
-      color: theme.palette.text.secondary,
-      position: 'absolute',
-      top: '-20px',
-      right: '-20px',
-      cursor: 'pointer',
-      '&:hover': {
-        opacity: '0.9'
-      }
-    },
-    fromDatePicker: {
-      marginRight: '20px'
-    },
-    toDatePicker: {},
-    clearButton: {
-      marginLeft: '20px'
-    }
-  })
-);
+export interface AuditLogEntryParametersDialogProps {
+  open: boolean;
+  onClose(): void;
+  onClosed?(): void;
+  parameters: AuditLogEntryParameter[];
+}
 
-export default useStyles;
+export default function AuditLogEntryParametersDialog(props: AuditLogEntryParametersDialogProps) {
+  const { open, onClose } = props;
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <AuditLogEntryParametersDialogUI {...props} />
+    </Dialog>
+  );
+}

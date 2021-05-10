@@ -16,7 +16,7 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const styles = makeStyles((theme) =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
     activeFilter: {
       color: theme.palette.primary.main,
@@ -53,4 +53,4 @@ export const styles = makeStyles((theme) =>
   })
 );
 
-export default styles;
+export default useStyles;

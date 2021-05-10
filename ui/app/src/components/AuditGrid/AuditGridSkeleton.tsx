@@ -16,7 +16,7 @@
 
 import Box from '@material-ui/core/Box';
 import React, { useMemo } from 'react';
-import { styles } from './styles';
+import { useStyles } from './styles';
 import { DataGrid, GridCellParams, GridColDef } from '@material-ui/data-grid';
 import { useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
@@ -33,7 +33,7 @@ export interface AuditGridSkeletonProps {
 
 export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
   const { numOfItems = 5, filters, siteMode = false } = props;
-  const classes = styles();
+  const classes = useStyles();
   const { formatMessage } = useIntl();
 
   const rows = useMemo(() => {

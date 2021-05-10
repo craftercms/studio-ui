@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Suspencified from '../SystemStatus/Suspencified';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
-import { AuditLogEntry, LogParameters } from '../../models/Audit';
+import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { AuditOptions, fetchAuditLog, fetchAuditLogEntry } from '../../services/audit';
 import { useLogicResource, useMount, useSiteList, useSpreadState } from '../../utils/hooks';
 import AuditGridUI from '../AuditGrid';
@@ -29,7 +29,7 @@ import { fetchAll } from '../../services/users';
 import { Operations, OperationsMessages } from './operations';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
-import ParametersDialog from '../ParametersDialog';
+import AuditLogEntryParametersDialog from '../ParametersDialog';
 import { nnou } from '../../utils/object';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -52,10 +52,10 @@ export default function AuditManagement(props: AuditManagementProps) {
     sort: 'date',
     siteId: site
   });
-  const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<LogParameters[]>>({});
+  const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<AuditLogEntryParameter[]>>({});
   const [parametersDialogParams, setParametersDialogParams] = useSpreadState<{
     open: boolean;
-    parameters: LogParameters[];
+    parameters: AuditLogEntryParameter[];
   }>({
     open: false,
     parameters: []
@@ -210,7 +210,7 @@ export default function AuditManagement(props: AuditManagementProps) {
           ]}
         />
       </Suspencified>
-      <ParametersDialog
+      <AuditLogEntryParametersDialog
         open={parametersDialogParams.open}
         onClose={onShowParametersDialogClose}
         onClosed={onShowParametersDialogClosed}

@@ -15,11 +15,11 @@
  */
 
 import { Resource } from '../../models/Resource';
-import { AuditLogEntry, LogParameters } from '../../models/Audit';
+import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@material-ui/core/Box';
 import React, { useCallback, useMemo, useState } from 'react';
-import { styles } from './styles';
+import { useStyles } from './styles';
 import {
   DataGrid,
   GridCellParams,
@@ -49,7 +49,7 @@ export interface AuditGridUIProps {
   resource: Resource<PagedArray<AuditLogEntry>>;
   sites: Site[];
   users: PagedArray<User>;
-  parametersLookup: LookupTable<LogParameters[]>;
+  parametersLookup: LookupTable<AuditLogEntryParameter[]>;
   operations: { id: string; value: string; name: string }[];
   origins: { id: string; value: string; name: string }[];
   filters: AuditOptions;
@@ -145,7 +145,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     siteMode = false
   } = props;
   const auditLogs = resource.read();
-  const classes = styles();
+  const classes = useStyles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
   const [openedFilter, setOpenedFilter] = useState<string>();
