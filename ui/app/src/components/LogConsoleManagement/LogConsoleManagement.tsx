@@ -119,7 +119,7 @@ export default function LogConsoleManagement(props: LogConsoleManagementProps) {
   return (
     <Box p={logType === 'studio' ? 0 : '20px'}>
       <GlobalAppToolbar
-        title={<FormattedMessage id="globalMenu.logConsole" defaultMessage="Log Console" />}
+        title={<FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
         rightContent={
           <>
             <Button

@@ -179,7 +179,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
       {!embedded && (
         <>
           <Typography variant="h4" component="h1" className={classes.title}>
-            <FormattedMessage id="pluginManagement.title" defaultMessage="Plugin Management" />
+            <FormattedMessage id="globalMenu.pluginManagementEntryLabel" defaultMessage="Plugin Management" />
           </Typography>
           <Divider />
         </>

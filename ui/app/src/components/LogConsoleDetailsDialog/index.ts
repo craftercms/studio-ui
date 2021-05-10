@@ -17,3 +17,5 @@
 export { default } from './LogConsoleDetailsDialog';
 
 export * from './LogConsoleDetailsDialog';
+
+export * from './LogConsoleDetailsDialogUI';

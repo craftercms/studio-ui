@@ -96,7 +96,7 @@ export default function ClustersManagement() {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="globalMenu.cluster" defaultMessage="Cluster" />}
+        title={<FormattedMessage id="words.cluster" defaultMessage="Cluster" />}
         rightContent={
           <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
             <IconButton onClick={refresh}>

@@ -44,31 +44,31 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell align="left" className="bordered padded10 width10">
               <Typography variant="subtitle2">
-                <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Level" />
+                <FormattedMessage id="words.level" defaultMessage="Level" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="bordered padded10 width25">
               <Typography variant="subtitle2">
-                <FormattedMessage id="words.state" defaultMessage="Timestamp" />
+                <FormattedMessage id="words.timestamp" defaultMessage="Timestamp" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="bordered padded10 width25">
               <Typography variant="subtitle2">
-                <FormattedMessage id="words.url" defaultMessage="Thread" />
+                <FormattedMessage id="words.thread" defaultMessage="Thread" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="bordered padded10 width20">
               <Typography variant="subtitle2">
-                <FormattedMessage id="clusterGrid.remoteName" defaultMessage="Site" />
+                <FormattedMessage id="words.site" defaultMessage="Site" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="bordered width60 padded10">
               <Typography variant="subtitle2">
-                <FormattedMessage id="clusterGrid.authType" defaultMessage="Message" />
+                <FormattedMessage id="words.message" defaultMessage="Message" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="bordered padded10 width10">
-              <FormattedMessage id="clusterGrid.authType" defaultMessage="Details" />
+              <FormattedMessage id="words.details" defaultMessage="Details" />
             </GlobalAppGridCell>
           </GlobalAppGridRow>
         </TableHead>
