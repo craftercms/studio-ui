@@ -31,7 +31,6 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import clsx from 'clsx';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
@@ -121,25 +120,6 @@ const useStyles = makeStyles((theme) =>
     },
     dialogBody: {
       overflow: 'auto'
-    },
-    // Password requirements
-    listOfConditions: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0
-    },
-    conditionItem: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    conditionItemIcon: {
-      marginRight: theme.spacing(1)
-    },
-    conditionItemNotMet: {
-      color: palette.yellow.shade
-    },
-    conditionItemMet: {
-      color: palette.green.shade
     }
   })
 );

@@ -48,7 +48,7 @@ import LanguageRounded from '@material-ui/icons/LanguageRounded';
 import Menu from '@material-ui/core/Menu';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 
-interface SystemLang {
+export interface SystemLang {
   id: string;
   label: string;
 }
