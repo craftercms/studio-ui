@@ -32,7 +32,7 @@ export default function About() {
   return (
     <Box display="flex" flexDirection="column" height="calc(100vh - 108px)">
       <GlobalAppToolbar title={<FormattedMessage id="global.about" defaultMessage="About" />} />
-      <Box display="flex" alignItems="center" justifyContent="center" flex-grow="1">
+      <Box display="flex" alignItems="center" justifyContent="center" flexGrow="1">
         <Paper className={classes.paperRoot}>
           <CrafterCMSLogo width={250} className={classes.logo} />
           <div className={classes.row}>
