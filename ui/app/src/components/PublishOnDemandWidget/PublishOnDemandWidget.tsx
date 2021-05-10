@@ -72,7 +72,6 @@ const useStyles = makeStyles((theme) =>
     },
     noteLink: {
       color: 'inherit',
-      marginLeft: '4px',
       textDecoration: 'underline'
     }
   })
@@ -91,20 +90,12 @@ const messages = defineMessages({
   publishStudioNote: {
     id: 'publishingDashboard.studioNote',
     defaultMessage:
-      'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please'
+      'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>.'
   },
   publishGitNote: {
     id: 'publishingDashboard.gitNote',
     defaultMessage:
-      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please'
-  },
-  publishStudioLink: {
-    id: 'publishingDashboard.publishStudioRedirect',
-    defaultMessage: 'publish by commit or tag'
-  },
-  publishGitLink: {
-    id: 'publishingDashboard.publishGitRedirect',
-    defaultMessage: 'publish by path'
+      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>.'
   },
   publishSuccess: {
     id: 'publishingDashboard.publishSuccess',
@@ -204,11 +195,14 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   };
 
   const bulkPublishConfirmation = () => {
+    const studioNote = formatMessage(messages.publishStudioNote, {
+      a: (msg) => msg
+      // @ts-ignore
+    }).join(' ');
+
     dispatch(
       showConfirmDialog({
-        body: `${formatMessage(messages.publishStudioWarning)} ${formatMessage(
-          messages.publishStudioNote
-        )} ${formatMessage(messages.publishGitLink)}`,
+        body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
         onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idCancel })]),
         onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idSuccess })])
       })
@@ -265,7 +259,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
             <RadioGroup value={mode} onChange={handleChange}>
               <FormControlLabel
                 value="studio"
-                control={<Radio color="primary" />}
+                control={<Radio />}
                 label={
                   <ListItemText
                     primary={
@@ -281,7 +275,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
               />
               <FormControlLabel
                 value="git"
-                control={<Radio color="primary" />}
+                control={<Radio />}
                 label={
                   <ListItemText
                     primary={
@@ -309,10 +303,13 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
           <div className={classes.noteContainer}>
             <Typography variant="caption" className={classes.note}>
-              {mode === 'studio' ? formatMessage(messages.publishStudioNote) : formatMessage(messages.publishGitNote)}
-              <Link href="#" onClick={toggleMode} className={classes.noteLink}>
-                {mode === 'studio' ? formatMessage(messages.publishStudioLink) : formatMessage(messages.publishGitLink)}
-              </Link>
+              {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote, {
+                a: (msg) => (
+                  <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                    {msg}
+                  </Link>
+                )
+              })}
             </Typography>
           </div>
         </Collapse>
