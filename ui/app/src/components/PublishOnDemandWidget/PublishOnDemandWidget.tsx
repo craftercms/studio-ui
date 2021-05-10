@@ -18,6 +18,7 @@ import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../Dialogs/DialogHeader';
+import DialogFooter from '../Dialogs/DialogFooter';
 import { createStyles, makeStyles } from '@material-ui/core';
 import palette from '../../styles/palette';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
@@ -46,19 +47,16 @@ const useStyles = makeStyles((theme) =>
       backgroundColor: theme.palette.background.default,
       padding: '16px'
     },
-    actions: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      padding: '16px'
-    },
     modeSelector: {
       padding: '10px 25px',
       border: `1px solid ${palette.gray.light7}`,
-      marginBottom: '20px',
       borderRadius: '10px'
     },
     byPathModeSelector: {
       marginBottom: '10px'
+    },
+    formContainer: {
+      marginTop: '20px'
     },
     cancelBtn: {
       marginRight: '20px'
@@ -300,7 +298,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
           </form>
         </Paper>
 
-        <Collapse in={nnou(mode)} timeout={300} unmountOnExit>
+        <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
           <PublishOnDemandForm
             formData={mode === 'studio' ? publishStudioFormData : publishGitFormData}
             setFormData={mode === 'studio' ? setPublishStudioFormData : setPublishGitFormData}
@@ -320,19 +318,21 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
         </Collapse>
       </div>
 
-      <div className={classes.actions}>
-        <Button variant="outlined" color="default" onClick={onCancel} className={classes.cancelBtn} disabled={!mode}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={!(mode === 'studio' ? publishStudioFormValid : publishGitFormValid)}
-          onClick={mode === 'studio' ? bulkPublishConfirmation : publishBy}
-        >
-          <FormattedMessage id="words.publish" defaultMessage="Publish" />
-        </Button>
-      </div>
+      {mode && (
+        <DialogFooter>
+          <Button variant="outlined" color="default" onClick={onCancel} className={classes.cancelBtn} disabled={!mode}>
+            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!(mode === 'studio' ? publishStudioFormValid : publishGitFormValid)}
+            onClick={mode === 'studio' ? bulkPublishConfirmation : publishBy}
+          >
+            <FormattedMessage id="words.publish" defaultMessage="Publish" />
+          </Button>
+        </DialogFooter>
+      )}
     </Paper>
   );
 }

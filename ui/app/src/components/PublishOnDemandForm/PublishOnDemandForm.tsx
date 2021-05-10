@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) =>
     environmentLoader: {
       border: `1px solid ${theme.palette.divider}`,
       padding: '15px',
-      borderRadius: '4px',
+      borderRadius: theme.shape.borderRadius,
       width: '100%'
     }
   })
@@ -98,7 +98,26 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
           </FormControl>
         </Grid>
         <Grid item xs={12} md={4}>
-          {!publishingTargets ? (
+          {publishingTargets ? (
+            <FormControl fullWidth variant="outlined" required>
+              <InputLabel id="publishingTargetLabel">
+                <FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />
+              </InputLabel>
+              <Select
+                labelId="publishingTargetLabel"
+                label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
+                value={formData.environment}
+                required
+                onChange={handleFormChange('environment')}
+              >
+                {publishingTargets.map((target) => (
+                  <MenuItem key={target.name} value={target.name}>
+                    {target.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : (
             <FormControl fullWidth>
               <div className={classes.environmentLoaderContainer}>
                 <Typography
@@ -117,25 +136,6 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                   )}
                 </Typography>
               </div>
-            </FormControl>
-          ) : (
-            <FormControl fullWidth variant="outlined" required>
-              <InputLabel id="publishingTargetLabel">
-                <FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />
-              </InputLabel>
-              <Select
-                labelId="publishingTargetLabel"
-                label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
-                value={formData.environment}
-                required
-                onChange={handleFormChange('environment')}
-              >
-                {publishingTargets.map((target) => (
-                  <MenuItem key={target.name} value={target.name}>
-                    {target.name}
-                  </MenuItem>
-                ))}
-              </Select>
             </FormControl>
           )}
         </Grid>
