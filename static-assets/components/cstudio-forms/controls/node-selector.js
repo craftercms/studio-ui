@@ -347,6 +347,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       itemEl.style.overflowWrap = 'break-word';
       itemEl._index = i;
       itemEl.context = this;
+      const isComponent = item.key.includes('/site') || item.inline;
       const editBtnLabel = this.readonly ? 'View' : 'Edit';
       const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
       const editBtn = $(
@@ -361,13 +362,15 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
 
       if (this.allowEdit) {
-        $(itemEl).append(editBtn);
-        editBtn.on('click', function() {
-          const elIndex = $(this).data('index');
-          let selectedDatasource =
-            _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-          selectedDatasource.edit(item.key, _self);
-        });
+        if (isComponent || !this.readonly) {
+          $(itemEl).append(editBtn);
+          editBtn.on('click', function() {
+            const elIndex = $(this).data('index');
+            let selectedDatasource =
+              _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
+            selectedDatasource.edit(item.key, _self);
+          });
+        }
 
         if (this.readonly != true) {
           $(itemEl).append(deleteBtn);
