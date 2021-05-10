@@ -36,13 +36,13 @@ export default function About() {
         <Paper className={classes.paperRoot}>
           <CrafterCMSLogo width={250} className={classes.logo} />
           <div className={classes.row}>
-            <Typography variant="subtitle2" className={'label'}>
+            <Typography variant="subtitle2" className={'aboutLabel'}>
               <FormattedMessage id="about.studioVersionNumber" defaultMessage="Studio Version Number" />:
             </Typography>
-            <Typography variant="body2">{`${env.packageVersion}-${env.packageBuild.substring(0, 6)}`}</Typography>
+            <Typography variant="body2">{`${env.packageVersion}-${env.packageBuild?.substring(0, 6)}`}</Typography>
           </div>
           <div className={classes.row}>
-            <Typography variant="subtitle2" className={'label'}>
+            <Typography variant="subtitle2" className={'aboutLabel'}>
               <FormattedMessage id="about.buildNumber" defaultMessage="Build Number" />:
             </Typography>
             <Typography variant="body2">{env.packageBuild}</Typography>
@@ -65,7 +65,7 @@ export default function About() {
                 values={{
                   a: (msg) => (
                     <Link
-                      href={`https://docs.craftercms.org/en/${env.packageVersion.substr(
+                      href={`https://docs.craftercms.org/en/${env.packageVersion?.substr(
                         0,
                         3
                       )}/acknowledgements/index.html`}
