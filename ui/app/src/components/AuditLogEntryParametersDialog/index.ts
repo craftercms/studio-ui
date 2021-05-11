@@ -14,27 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface AuditLogEntryParameter {
-  targetId: string;
-  targetType: string;
-  targetSubtype: string;
-  targetValue: string;
-}
+export { default } from './AuditLogEntryParametersDialog';
 
-export interface AuditLogEntry {
-  id: number;
-  organizationId: number;
-  siteId: number;
-  siteName: string;
-  operation: string;
-  operationTimestamp: string;
-  origin: string;
-  primaryTargetId: string;
-  primaryTargetType: string;
-  primaryTargetSubtype: string;
-  primaryTargetValue: string;
-  actorId: string;
-  actorDetails: string;
-  clusterNodeId: string;
-  parameters: AuditLogEntryParameter[];
-}
+export * from './AuditLogEntryParametersDialog';
