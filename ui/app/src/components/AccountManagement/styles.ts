@@ -24,7 +24,8 @@ export const useStyles = makeStyles((theme) =>
     },
     paper: {
       padding: '20px',
-      margin: '50px 0'
+      margin: '50px 0',
+      background: theme.palette.background.default
     },
     container: {},
     avatar: {
