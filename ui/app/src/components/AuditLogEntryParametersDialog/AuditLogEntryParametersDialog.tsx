@@ -14,27 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface AuditLogEntryParameter {
-  targetId: string;
-  targetType: string;
-  targetSubtype: string;
-  targetValue: string;
+import Dialog from '@material-ui/core/Dialog';
+import React from 'react';
+import { AuditLogEntryParameter } from '../../models/Audit';
+import AuditLogEntryParametersDialogUI from './AuditLogEntryParametersDialogUI';
+
+export interface AuditLogEntryParametersDialogProps {
+  open: boolean;
+  onClose(): void;
+  onClosed?(): void;
+  parameters: AuditLogEntryParameter[];
 }
 
-export interface AuditLogEntry {
-  id: number;
-  organizationId: number;
-  siteId: number;
-  siteName: string;
-  operation: string;
-  operationTimestamp: string;
-  origin: string;
-  primaryTargetId: string;
-  primaryTargetType: string;
-  primaryTargetSubtype: string;
-  primaryTargetValue: string;
-  actorId: string;
-  actorDetails: string;
-  clusterNodeId: string;
-  parameters: AuditLogEntryParameter[];
+export default function AuditLogEntryParametersDialog(props: AuditLogEntryParametersDialogProps) {
+  const { open, onClose } = props;
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <AuditLogEntryParametersDialogUI {...props} />
+    </Dialog>
+  );
 }

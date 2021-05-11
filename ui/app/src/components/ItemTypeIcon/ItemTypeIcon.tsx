@@ -56,6 +56,7 @@ export default function ItemTypeIcon(props: ItemTypeIconProps) {
         TheIcon = ImageIcon;
       } else {
         switch (item.mimeType) {
+          case 'application/javascript':
           case 'application/x-javascript':
             TheIcon = Js;
             break;
