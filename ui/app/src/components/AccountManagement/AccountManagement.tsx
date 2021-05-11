@@ -16,7 +16,7 @@
 
 import Box from '@material-ui/core/Box';
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
@@ -37,10 +37,22 @@ import PrimaryButton from '../PrimaryButton';
 import { setMyPassword } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showSystemNotification } from '../../state/actions/system';
 
 interface AccountManagementProps {
   passwordRequirementsRegex?: string;
 }
+
+const translations = defineMessages({
+  passwordUpdated: {
+    id: 'accountManagement.passwordUpdated',
+    defaultMessage: 'Password preference changed'
+  },
+  passwordChanged: {
+    id: 'accountManagement.passwordChanged',
+    defaultMessage: 'Password changed successfully'
+  }
+});
 
 export default function AccountManagement(props: AccountManagementProps) {
   const {
@@ -63,17 +75,29 @@ export default function AccountManagement(props: AccountManagementProps) {
     fetchProductLanguages().subscribe(setLanguages);
   }, []);
 
-  // Dispatch custom event when language is changed.
-  useEffect(() => {
-    if (language) {
-      setStoredLanguage(language);
-      dispatchLanguageChange(language);
-    }
-  }, [language]);
+  const onLanguageChanged = (language: string) => {
+    setLanguage(language);
+    setStoredLanguage(language);
+    dispatchLanguageChange(language);
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.passwordUpdated)
+      })
+    );
+  };
 
   const onSave = () => {
     setMyPassword(user.username, currentPassword, newPassword).subscribe(
-      () => {},
+      () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.passwordChanged)
+          })
+        );
+        setCurrentPassword('');
+        setVerifiedPassword('');
+        setNewPassword('');
+      },
       ({ response: { response } }) => {
         dispatch(showErrorDialog({ error: response }));
       }
@@ -109,7 +133,7 @@ export default function AccountManagement(props: AccountManagementProps) {
                 select
                 label={<FormattedMessage id="words.language" defaultMessage="Language" />}
                 value={language}
-                onChange={(event) => setLanguage(event.target.value)}
+                onChange={(event) => onLanguageChanged(event.target.value)}
               >
                 {languages?.map((option) => (
                   <MenuItem key={option.id} value={option.id}>
