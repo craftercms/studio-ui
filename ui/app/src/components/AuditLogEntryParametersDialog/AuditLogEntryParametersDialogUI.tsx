@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useMount } from '../../utils/hooks';
+import { useUnmount } from '../../utils/hooks';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
@@ -29,11 +29,7 @@ import { AuditLogEntryParametersDialogProps } from './AuditLogEntryParametersDia
 export default function AuditLogEntryParametersDialogUI(props: AuditLogEntryParametersDialogProps) {
   const { parameters = [], onClose, onClosed } = props;
 
-  useMount(() => {
-    return () => {
-      onClosed?.();
-    };
-  });
+  useUnmount(onClosed);
 
   return (
     <>
