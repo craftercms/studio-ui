@@ -878,7 +878,7 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Log Console'
   },
   'home.globalMenu.globalConfig': {
-    id: 'GlobalMenu.GlobalConfigEntryLabel',
+    id: 'globalMenu.globalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
   'home.globalMenu.encryptionTool': {

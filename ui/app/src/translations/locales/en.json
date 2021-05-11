@@ -3,7 +3,7 @@
   "GlobalMenu.AuditEntryLabel": "Audit",
   "GlobalMenu.ClusterEntryLabel": "Cluster",
   "GlobalMenu.EncryptionTool": "Encryption Tool",
-  "GlobalMenu.GlobalConfigEntryLabel": "Global Config",
+  "globalMenu.globalConfigEntryLabel": "Global Config",
   "GlobalMenu.GroupsEntryLabel": "Groups",
   "GlobalMenu.LogConsoleEntryLabel": "Log Console",
   "GlobalMenu.LoggingLevelsEntryLabel": "Logging Levels",

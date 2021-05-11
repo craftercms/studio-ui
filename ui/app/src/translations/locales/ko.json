@@ -3,7 +3,7 @@
   "GlobalMenu.AuditEntryLabel": "심사",
   "GlobalMenu.ClusterEntryLabel": "클러스터",
   "GlobalMenu.EncryptionTool": "암호화 도구",
-  "GlobalMenu.GlobalConfigEntryLabel": "글로벌 구성",
+  "globalMenu.globalConfigEntryLabel": "글로벌 구성",
   "GlobalMenu.GroupsEntryLabel": "여러 떼",
   "GlobalMenu.LogConsoleEntryLabel": "로그 콘솔",
   "GlobalMenu.LoggingLevelsEntryLabel": "로깅 수준",

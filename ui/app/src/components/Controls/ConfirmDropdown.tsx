@@ -47,7 +47,7 @@ const useStyles = makeStyles(() =>
 );
 
 interface ConfirmDropdownProps {
-  text?: string;
+  text?: ReactNode;
   cancelText: ReactNode;
   confirmText: ReactNode;
   confirmHelperText?: ReactNode;
