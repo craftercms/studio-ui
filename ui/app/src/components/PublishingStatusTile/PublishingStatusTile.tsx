@@ -101,6 +101,14 @@ export const publishingStatusTileMessages = defineMessages({
     id: 'words.unlock',
     defaultMessage: 'Unlock'
   },
+  start: {
+    id: 'words.start',
+    defaultMessage: 'Start'
+  },
+  stop: {
+    id: 'words.stop',
+    defaultMessage: 'Stop'
+  },
   publishingStatus: {
     id: 'publishingStatusTile.publishingStatus',
     defaultMessage: 'Publishing Status'
