@@ -461,7 +461,9 @@
     '$rootScope',
     '$scope',
     function($rootScope, $scope) {
-      CrafterCMSNext.render(document.querySelector('#users-management-view'), 'UsersManagement').then((done) => {
+      CrafterCMSNext.render(document.querySelector('#users-management-view'), 'UsersManagement', {
+        passwordRequirementsRegex
+      }).then((done) => {
         const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
           unsubscribe();
           done.unmount();
