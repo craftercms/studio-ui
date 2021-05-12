@@ -42,6 +42,8 @@ CStudioForms.Controls.NodeSelector = function(id, form, owner, properties, const
   amplify.subscribe('/datasource/loaded', this, this.onDatasourceLoaded);
   amplify.subscribe('UPDATE_NODE_SELECTOR', this, this.onIceUpdate);
   amplify.subscribe('UPDATE_NODE_SELECTOR_NEW', this, this.insertEmbeddedItem);
+  this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+  this.words = CrafterCMSNext.i18n.messages.words;
 
   return this;
 };
@@ -345,8 +347,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       itemEl.style.overflowWrap = 'break-word';
       itemEl._index = i;
       itemEl.context = this;
+      const isComponent = item.key.includes('/site') || item.inline;
+      const editBtnLabel = this.readonly ? 'View' : 'Edit';
+      const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
       const editBtn = $(
-        '<span class="fa fa-pencil node-selector-item-icon ml-auto" title="Edit" aria-label="Edit" role="button"></span>'
+        `<span class="fa ${editBtnIconClass} node-selector-item-icon ml-auto" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></span>`
       );
       const deleteBtn = $(
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
@@ -356,20 +361,24 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item-selected');
       }
 
-      if (this.readonly != true && this.allowEdit) {
-        $(itemEl).append(editBtn);
-        $(itemEl).append(deleteBtn);
+      if (this.allowEdit) {
+        if (isComponent || !this.readonly) {
+          $(itemEl).append(editBtn);
+          editBtn.on('click', function() {
+            const elIndex = $(this).data('index');
+            let selectedDatasource =
+              _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
+            selectedDatasource.edit(item.key, _self);
+          });
+        }
 
-        editBtn.on('click', function() {
-          let selectedDatasource =
-            _self.datasources.find((item) => item.id === item.datasource) || _self.datasources[0];
-          selectedDatasource.edit(item.key, _self);
-        });
-
-        deleteBtn.on('click', function() {
-          _self.deleteItem(itemIndex);
-          _self._renderItems();
-        });
+        if (this.readonly != true) {
+          $(itemEl).append(deleteBtn);
+          deleteBtn.on('click', function() {
+            _self.deleteItem(itemIndex);
+            _self._renderItems();
+          });
+        }
 
         itemEl._onMouseDown = function() {};
       }

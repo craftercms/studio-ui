@@ -1725,7 +1725,7 @@ var nodeOpen = false,
         if (id) {
           CStudioAuthoring.Service.lookupContentItem(
             CStudioAuthoringContext.site,
-            id,
+            path,
             {
               success: function(contentTO) {
                 CStudioAuthoring.Operations.performSimpleIceEdit(
