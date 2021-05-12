@@ -43,17 +43,17 @@ export const translations = defineMessages({
   }
 });
 
-interface GlobalConfigProps {
+interface GlobalConfigManagementProps {
   onEditorChanges(hasChanges: boolean): void;
 }
 
-export default function GlobalConfig(props: GlobalConfigProps) {
+export default function GlobalConfigManagement(props: GlobalConfigManagementProps) {
   const [content, setContent] = useState('');
   const [sample, setSample] = useState('');
   const [lastSavedContent, setLastSavedContent] = useState('');
   const [enable, setEnable] = useState(true);
   const [viewSample, setViewSample] = useState(false);
-  const [isModified, setIsModified] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const classes = useStyles();
 
   const aceEditorRef = useRef<any>();
@@ -67,10 +67,10 @@ export default function GlobalConfig(props: GlobalConfigProps) {
     ];
 
     forkJoin(requests).subscribe(([sample, content]) => {
-      setEnable(false);
-      setContent(content);
       setLastSavedContent(content);
+      setContent(content);
       setSample(sample);
+      setEnable(false);
     });
   });
 
@@ -116,14 +116,14 @@ export default function GlobalConfig(props: GlobalConfigProps) {
           })
         );
       });
-      setIsModified(false);
+      setHasChanges(false);
     }
   };
 
   const onChange = (e) => {
     const hasChanges = lastSavedContent !== aceEditorRef.current.getValue();
     props.onEditorChanges(hasChanges);
-    setIsModified(hasChanges);
+    setHasChanges(hasChanges);
   };
 
   return (
@@ -148,7 +148,7 @@ export default function GlobalConfig(props: GlobalConfigProps) {
               <FormattedMessage id="globalConfig.viewSample" defaultMessage="View Sample" />
             </SecondaryButton>
             <ConfirmDropdown
-              disabled={!isModified}
+              disabled={!hasChanges}
               classes={{ button: classes.marginLeftAuto }}
               text={<FormattedMessage id="words.reset" defaultMessage="Reset" />}
               cancelText={<FormattedMessage id="words.cancel" defaultMessage="Cancel" />}
@@ -158,7 +158,7 @@ export default function GlobalConfig(props: GlobalConfigProps) {
               }
               onConfirm={onResetClick}
             />
-            <PrimaryButton disabled={!isModified} onClick={onSaveClick}>
+            <PrimaryButton disabled={!hasChanges} onClick={onSaveClick}>
               <FormattedMessage id="words" defaultMessage="Save" />
             </PrimaryButton>
           </Box>

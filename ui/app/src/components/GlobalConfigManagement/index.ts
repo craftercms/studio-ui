@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './GlobalConfig';
+export { default } from './GlobalConfigManagement';
 
-export * from './GlobalConfig';
+export * from './GlobalConfigManagement';
