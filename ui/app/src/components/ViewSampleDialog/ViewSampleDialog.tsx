@@ -22,7 +22,7 @@ export interface ViewSampleDialogProps {
   open: boolean;
   content: string;
   onClose(): void;
-  onUseSampleClick(): void;
+  onUseSampleClick(type: 'replace' | 'append'): void;
 }
 
 export default function ViewSampleDialog(props: ViewSampleDialogProps) {

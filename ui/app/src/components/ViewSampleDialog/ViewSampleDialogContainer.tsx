@@ -21,23 +21,40 @@ import DialogBody from '../Dialogs/DialogBody';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../Dialogs/DialogFooter';
-import PrimaryButton from '../PrimaryButton';
+import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import useStyles from './styles';
 
 export default function ViewSampleDialogContainer(props: ViewSampleDialogProps) {
   const { content, onClose, onUseSampleClick } = props;
+  const classes = useStyles();
   return (
     <>
       <DialogHeader
         title={<FormattedMessage id="viewSampleDialog.title" defaultMessage="Sample File" />}
         onDismiss={onClose}
       />
-      <DialogBody style={{ height: '60vh' }}>
-        <AceEditor value={content} mode="ace/mode/yaml" theme="ace/theme/textmate" autoFocus={true} readOnly={true} />
+      <DialogBody style={{ height: '60vh', padding: 0 }}>
+        <AceEditor
+          className={classes.editor}
+          value={content}
+          mode="ace/mode/yaml"
+          theme="ace/theme/textmate"
+          autoFocus={true}
+          readOnly={true}
+        />
       </DialogBody>
       <DialogFooter>
-        <PrimaryButton onClick={onUseSampleClick}>
-          <FormattedMessage id="viewSampleDialog.useSample" defaultMessage="Use Sample Content" />
-        </PrimaryButton>
+        <ConfirmDropdown
+          text={<FormattedMessage id="viewSampleDialog.useSampleContent" defaultMessage="Use Sample Content" />}
+          cancelText={
+            <FormattedMessage id="viewSampleDialog.replaceContent" defaultMessage="Replace current content" />
+          }
+          confirmText={
+            <FormattedMessage id="viewSampleDialog.appendContent" defaultMessage="Append after current content" />
+          }
+          onConfirm={() => onUseSampleClick('append')}
+          onCancel={() => onUseSampleClick('replace')}
+        />
       </DialogFooter>
     </>
   );

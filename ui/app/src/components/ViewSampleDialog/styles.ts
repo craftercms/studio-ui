@@ -18,20 +18,11 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() =>
   createStyles({
-    root: {
+    editor: {
       margin: '0',
+      border: 0,
       width: '100%',
-      height: '100%',
-      border: 0
-    },
-    paper: {
-      minHeight: '400px',
-      height: 'calc(100vh - 350px)',
-      marginTop: '10px'
-    },
-    marginLeftAuto: {
-      marginLeft: 'auto',
-      marginRight: '15px'
+      height: '100%'
     }
   })
 );

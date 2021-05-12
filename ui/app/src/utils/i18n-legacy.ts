@@ -613,46 +613,6 @@ export const codeEditorMessages = defineMessages({
 });
 
 export const globalConfigMessages = defineMessages({
-  title: {
-    id: 'globalConfig.title',
-    defaultMessage: 'Global Config'
-  },
-  viewSample: {
-    id: 'globalConfig.viewSample',
-    defaultMessage: 'View Sample'
-  },
-  sampleFile: {
-    id: 'globalConfig.sampleFile',
-    defaultMessage: 'Sample File'
-  },
-  useSampleContent: {
-    id: 'globalConfig.useSampleContent',
-    defaultMessage: 'Use Sample Content'
-  },
-  replaceContent: {
-    id: 'globalConfig.replaceContent',
-    defaultMessage: 'Replace current value on background editor?'
-  },
-  appendContent: {
-    id: 'globalConfig.appendContent',
-    defaultMessage: 'Append sample on to background editor?'
-  },
-  confirmSave: {
-    id: 'globalConfig.confirmSave',
-    defaultMessage: 'Confirm Save?'
-  },
-  confirmReset: {
-    id: 'globalConfig.confirmReset',
-    defaultMessage: 'Confirm Reset?'
-  },
-  successfulSave: {
-    id: 'globalConfig.successfulSave',
-    defaultMessage: 'Configuration saved successfully.'
-  },
-  failedSave: {
-    id: 'globalConfig.failedSave',
-    defaultMessage: 'Save failed. Please retry momentarily.'
-  },
   unSavedConfirmation: {
     id: 'globalConfig.unsavedConfirmation',
     defaultMessage: 'You have unsaved changes, do you want to leave?'
@@ -660,10 +620,6 @@ export const globalConfigMessages = defineMessages({
   unSavedConfirmationTitle: {
     id: 'globalConfig.unsavedConfirmationTitle',
     defaultMessage: 'Unsaved changes'
-  },
-  documentError: {
-    id: 'globalConfig.documentError',
-    defaultMessage: 'The document contains errors. Check for error markers on side of the editor.'
   }
 });
 

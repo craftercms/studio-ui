@@ -61,6 +61,7 @@ interface ConfirmDropdownProps {
   iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
   iconTooltip?: React.ReactNode;
   onConfirm(): any;
+  onCancel?(): any;
 }
 
 export default function ConfirmDropdown(props: ConfirmDropdownProps) {
@@ -68,6 +69,7 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
   const classes = useStyles({});
   const {
     onConfirm,
+    onCancel,
     text,
     cancelText,
     confirmText,
@@ -90,6 +92,11 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
   const handleConfirm = () => {
     handleClose();
     onConfirm();
+  };
+
+  const handleCancel = () => {
+    handleClose();
+    onCancel?.();
   };
 
   return (
@@ -126,10 +133,12 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
           horizontal: 'right'
         }}
       >
-        <Typography variant="body1" className={classes.helperText}>
-          {confirmHelperText}
-        </Typography>
-        <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
+        {confirmHelperText && (
+          <Typography variant="body1" className={classes.helperText}>
+            {confirmHelperText}
+          </Typography>
+        )}
+        <MenuItem onClick={handleCancel}>{cancelText}</MenuItem>
         <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
       </Menu>
     </>

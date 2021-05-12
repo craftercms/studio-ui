@@ -43,13 +43,17 @@ export const translations = defineMessages({
   }
 });
 
-export default function GlobalConfig() {
+interface GlobalConfigProps {
+  onEditorChanges(hasChanges: boolean): void;
+}
+
+export default function GlobalConfig(props: GlobalConfigProps) {
   const [content, setContent] = useState('');
   const [sample, setSample] = useState('');
   const [lastSavedContent, setLastSavedContent] = useState('');
   const [enable, setEnable] = useState(true);
   const [viewSample, setViewSample] = useState(false);
-  const [isModified, setIsModified] = useState(true);
+  const [isModified, setIsModified] = useState(false);
   const classes = useStyles();
 
   const aceEditorRef = useRef<any>();
@@ -70,33 +74,57 @@ export default function GlobalConfig() {
     });
   });
 
-  const onUseSampleClick = () => {
+  const onUseSampleClick = (type: 'replace' | 'append') => {
+    if (type === 'replace') {
+      setContent(sample);
+    } else {
+      setContent(content + sample);
+    }
     setViewSample(false);
-    setContent(sample);
+    aceEditorRef.current.focus();
   };
 
   const onResetClick = () => {
     aceEditorRef.current.setValue(lastSavedContent, -1); // sets cursor in position 0, avoiding all editor content selection
     aceEditorRef.current.focus();
-    setIsModified(false);
   };
 
   const onSaveClick = () => {
-    const value = aceEditorRef.current.getValue();
-    writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(() => {
-      setLastSavedContent(value);
+    const errors = aceEditorRef.current
+      .getSession()
+      .getAnnotations()
+      .filter((annotation) => {
+        return annotation.type === 'error';
+      });
+
+    if (errors.length) {
       dispatch(
         showSystemNotification({
-          message: formatMessage(translations.configSaved)
+          message: formatMessage(translations.documentError),
+          options: {
+            variant: 'error'
+          }
         })
       );
-    });
-    setIsModified(false);
+    } else {
+      const value = aceEditorRef.current.getValue();
+      writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(() => {
+        setLastSavedContent(value);
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.configSaved)
+          })
+        );
+      });
+      setIsModified(false);
+    }
   };
 
-  // aceEditorRef.current?.getSession().on('change', function(e) {
-  //   console.log(e);
-  // });
+  const onChange = (e) => {
+    const hasChanges = lastSavedContent !== aceEditorRef.current.getValue();
+    props.onEditorChanges(hasChanges);
+    setIsModified(hasChanges);
+  };
 
   return (
     <section>
@@ -107,6 +135,7 @@ export default function GlobalConfig() {
         <Paper variant="outlined" className={classes.paper}>
           <AceEditor
             ref={aceEditorRef}
+            onChange={onChange}
             className={classes.root}
             value={content}
             mode="ace/mode/yaml"
@@ -121,15 +150,15 @@ export default function GlobalConfig() {
             <ConfirmDropdown
               disabled={!isModified}
               classes={{ button: classes.marginLeftAuto }}
-              text={<FormattedMessage id="words" defaultMessage="Reset" />}
-              cancelText={<FormattedMessage id="words" defaultMessage="Cancel" />}
-              confirmText={<FormattedMessage id="words" defaultMessage="Ok" />}
+              text={<FormattedMessage id="words.reset" defaultMessage="Reset" />}
+              cancelText={<FormattedMessage id="words.cancel" defaultMessage="Cancel" />}
+              confirmText={<FormattedMessage id="words.ok" defaultMessage="Ok" />}
               confirmHelperText={
                 <FormattedMessage id="globalConfig.confirmHelper" defaultMessage="Discard unsaved changes?" />
               }
               onConfirm={onResetClick}
             />
-            <PrimaryButton onClick={onSaveClick}>
+            <PrimaryButton disabled={!isModified} onClick={onSaveClick}>
               <FormattedMessage id="words" defaultMessage="Save" />
             </PrimaryButton>
           </Box>
