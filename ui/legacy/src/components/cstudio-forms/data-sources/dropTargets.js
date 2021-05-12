@@ -223,9 +223,12 @@
     },
 
     _editShared(key, control) {
+      const readonly = control.readonly;
+      const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
+
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
         success: function(contentTO) {
-          CStudioAuthoring.Operations.editContent(
+          action(
             contentTO.item.contentType,
             CStudioAuthoringContext.siteId,
             contentTO.item.mimeType,
@@ -247,9 +250,15 @@
     },
 
     _editEmbedded(key, control) {
+      const readonly = control.readonly;
       CStudioForms.communication.sendAndAwait(key, (message) => {
         const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type')
           .innerHTML;
+        const auxParams = [];
+
+        if (readonly) {
+          auxParams.push({ name: 'readonly' });
+        }
         CStudioAuthoring.Operations.performSimpleIceEdit(
           { contentType: contentType, uri: key },
           null,
@@ -261,7 +270,7 @@
               }
             }
           },
-          [],
+          auxParams,
           true
         );
       });
