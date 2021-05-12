@@ -370,12 +370,14 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     [
       classes.activeFilter,
       classes.cellRoot,
+      classes.ellipsis,
       filters,
       formatMessage,
       localeBranch.dateTimeFormatOptions,
       localeBranch.localeCode,
       onGetParameters,
       parametersLookup,
+      siteMode,
       timezone
     ]
   );
