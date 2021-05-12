@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface LogParameters {
+export interface AuditLogEntryParameter {
   targetId: string;
   targetType: string;
   targetSubtype: string;
   targetValue: string;
 }
 
-export interface AuditLog {
+export interface AuditLogEntry {
   id: number;
   organizationId: number;
   siteId: number;
@@ -36,5 +36,5 @@ export interface AuditLog {
   actorId: string;
   actorDetails: string;
   clusterNodeId: string;
-  parameters: LogParameters[];
+  parameters: AuditLogEntryParameter[];
 }
