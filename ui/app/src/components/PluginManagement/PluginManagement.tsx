@@ -259,7 +259,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <StyledTableCell align="left">
                       <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
-                    <TableCell align="right" className={classes.actions}></TableCell>
+                    <TableCell align="right" className={classes.actions} />
                   </TableRow>
                 ))}
               </TableBody>
@@ -268,7 +268,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
           {plugins?.length === 0 && (
             <EmptyState
               title={
-                <FormattedMessage id="PluginManagement.emptyList" defaultMessage="There are not plugins installed" />
+                <FormattedMessage id="PluginManagement.emptyList" defaultMessage="There are no plugins installed" />
               }
             />
           )}

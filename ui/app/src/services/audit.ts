@@ -19,16 +19,36 @@ import { toQueryString } from '../utils/object';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
-import { AuditLog } from '../models/Audit';
+import { AuditLogEntry } from '../models/Audit';
+import PaginationOptions from '../models/PaginationOptions';
 
-export function fetchAudit(options): Observable<PagedArray<AuditLog>> {
-  const qs = toQueryString({
+export type AuditOptions = Partial<
+  PaginationOptions & {
+    siteId: string;
+    siteName: string;
+    user: string;
+    operations: string;
+    includeParameters: boolean;
+    dateFrom: string;
+    dateTo: string;
+    target: string;
+    origin: 'API' | 'GIT';
+    clusterNodeId: string;
+    sort: 'date';
+    order: 'ASC' | 'DESC';
+  }
+>;
+
+export function fetchAuditLog(options: AuditOptions): Observable<PagedArray<AuditLogEntry>> {
+  const mergedOptions = {
+    limit: 100,
+    offset: 0,
     ...options
-  });
-  return get(`/studio/api/2/audit${qs}`).pipe(
+  };
+  return get(`/studio/api/2/audit${toQueryString(mergedOptions)}`).pipe(
     map(({ response }) =>
       Object.assign(response.auditLog, {
-        limit: response.limit,
+        limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
         offset: response.offset,
         total: response.total
       })
@@ -36,6 +56,6 @@ export function fetchAudit(options): Observable<PagedArray<AuditLog>> {
   );
 }
 
-export function fetchSpecificAudit(id: number): Observable<AuditLog[]> {
+export function fetchAuditLogEntry(id: number): Observable<AuditLogEntry> {
   return get(`/studio/api/2/audit/${id}`).pipe(pluck('response', 'auditLog'));
 }
