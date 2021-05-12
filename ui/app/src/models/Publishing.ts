@@ -49,3 +49,19 @@ export interface PublishingStatus {
   lockOwner: string;
   lockTTL: string;
 }
+
+export interface PublishFormData {
+  path?: string;
+  commitIds?: string;
+  comment: string;
+  environment: string;
+}
+
+export type PublishOnDemandMode = 'studio' | 'git';
+
+export interface PublishingTarget {
+  name: string;
+  order: number;
+  publish: boolean;
+  updateStatus: boolean;
+}

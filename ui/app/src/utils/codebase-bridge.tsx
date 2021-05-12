@@ -194,11 +194,11 @@ export function createCodebaseBridge() {
       UsersManagement: lazy(() => import('../components/UsersManagement')),
       GroupsManagement: lazy(() => import('../components/GroupsManagement')),
       ClustersManagement: lazy(() => import('../components/ClustersManagement')),
-      // AuditManagement: lazy(() => import('../components/AuditManagement')),
+      AuditManagement: lazy(() => import('../components/AuditManagement')),
       LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement')),
       // LogConsole: lazy(() => import('../components/LogConsole')),
       // GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
-      // AccountManagement: lazy(() => import('../components/AccountManagement')),
+      AccountManagement: lazy(() => import('../components/AccountManagement'))
       // ContentTypesManagement: lazy(() => import('../components/')),
       // ConfigurationManagement: lazy(() => import('../components/')),
       // WorkflowStatesManagement: lazy(() => import('../components/')),
@@ -206,6 +206,7 @@ export function createCodebaseBridge() {
       // RemotesManagement: lazy(() => import('../components/RemotesManagement')),
       // GraphQLPlayground: lazy(() => import('../components/GraphQLPlayground')),
       About: lazy(() => import('../components/AboutCrafterCMSView'))
+      PublishingDashboard: lazy(() => import('../components/PublishingDashboard'))
     },
 
     system: {
