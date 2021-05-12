@@ -21,6 +21,9 @@ import React from 'react';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 import Typography from '@material-ui/core/Typography';
+import LauncherOpenerButton from '../LauncherOpenerButton';
+import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
+import { defineMessages, useIntl } from 'react-intl';
 
 type GlobalAppToolbarClassKey = 'appBar' | 'toolbar' | 'title' | 'leftContent' | 'rightContent';
 
@@ -34,6 +37,13 @@ interface GlobalAppToolbarProps {
   styles?: GlobalAppToolbarStyles;
   classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
 }
+
+const translations = defineMessages({
+  openConfigPanel: {
+    id: 'openConfigPanel.label',
+    defaultMessage: 'Open config panel'
+  }
+});
 
 const useStyles = makeStyles((theme) =>
   createStyles<GlobalAppToolbarClassKey, GlobalAppToolbarStyles>({
@@ -52,6 +62,7 @@ const useStyles = makeStyles((theme) =>
       ...styles.toolbar
     }),
     title: (styles) => ({
+      marginLeft: '10px',
       ...styles.title
     }),
     leftContent: (styles) => ({
@@ -68,6 +79,7 @@ const useStyles = makeStyles((theme) =>
 export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
   const classes = useStyles(props.styles);
   const { title, leftContent, rightContent, elevation = 0 } = props;
+  const { formatMessage } = useIntl();
   return (
     <AppBar
       color="inherit"
@@ -76,13 +88,24 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
       className={clsx(classes.appBar, props.classes?.appBar)}
     >
       <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>
+        <LogoAndMenuBundleButton
+          aria-label={formatMessage(translations.openConfigPanel)}
+          onClick={() => {
+            if (window.location.hash.includes('/globalMenu/')) {
+              window.location.hash = window.location.hash.replace('/globalMenu', '');
+            } else {
+              window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
+            }
+          }}
+        />
         <section className={clsx(classes.title, props.classes?.title)}>
-          <Typography variant="h4" component="h1">
+          <Typography variant="h5" component="h1">
             {title}
           </Typography>
         </section>
         <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
         <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
+        <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
       </Toolbar>
     </AppBar>
   );

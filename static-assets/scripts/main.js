@@ -856,25 +856,6 @@
 
       $rootScope.isFooter = !$location.$$search.iframe;
 
-      let container = document.querySelector('#menuBundleButton');
-      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'LogoAndMenuBundleButton', {
-        onClick() {
-          if (window.location.hash.includes('/globalMenu/')) {
-            window.location.hash = window.location.hash.replace('/globalMenu', '');
-          } else {
-            window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
-          }
-        }
-      });
-
-      container = document.querySelector('#appsIconLauncher');
-      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'LauncherOpenerButton', {
-        sitesRailPosition: 'left',
-        icon: 'apps'
-      });
-
       $scope.loadHomeState = function() {
         var currentState = $state.current.name,
           homeState = 'home.globalMenu';

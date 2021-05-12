@@ -50,7 +50,10 @@ import Button from '@material-ui/core/Button';
 const styles = makeStyles((theme) =>
   createStyles({
     table: {
-      minWidth: 650
+      minWidth: 650,
+      '& .padded10': {
+        padding: '10px 16px'
+      }
     },
     actions: {
       width: '150px',
@@ -340,7 +343,7 @@ export default function TokenManagement() {
             <Table className={classes.table}>
               <TableHead>
                 <TableRow>
-                  <TableCell padding="checkbox">
+                  <TableCell padding="checkbox" className="padded10">
                     <Checkbox
                       disabled={checkedCount > 0}
                       checked={false}
@@ -376,7 +379,7 @@ export default function TokenManagement() {
               <TableBody>
                 {tokens.map((token) => (
                   <TableRow key={token.id}>
-                    <TableCell padding="checkbox">
+                    <TableCell padding="checkbox" className="padded10">
                       <Checkbox
                         checked={!!checkedLookup[token.id]}
                         color="primary"

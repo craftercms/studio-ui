@@ -48,7 +48,7 @@ export default function UsersGridUI(props: UsersGridUIProps) {
         <Table className={classes.tableRoot}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="center" className="bordered avatar">
+              <GlobalAppGridCell align="center" className="bordered avatar padded10">
                 <span />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="bordered paddedLeft width20">
@@ -71,7 +71,7 @@ export default function UsersGridUI(props: UsersGridUIProps) {
           <TableBody>
             {users?.map((user, i) => (
               <GlobalAppGridRow key={user.id} onClick={() => onRowClicked(user)}>
-                <GlobalAppGridCell align="center" className="avatar">
+                <GlobalAppGridCell align="center" className="avatar padded10">
                   <Avatar className={classes.avatar}>
                     {user.firstName.charAt(0)}
                     {user.lastName?.charAt(0) ?? ''}

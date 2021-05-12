@@ -22,10 +22,10 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
     root: {
       padding: '4px',
       borderBottom: 0,
-      height: '50px',
+      height: '56px',
       '&.avatar': {
         padding: 0,
-        width: '50px'
+        width: '60px'
       },
       '&.maxWidth300': {
         maxWidth: '300px'
@@ -42,7 +42,7 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
         whiteSpace: 'nowrap'
       },
       '&.padded10': {
-        padding: '10px'
+        padding: '10px 16px'
       },
       '&.paddedLeft': {
         paddingLeft: '20px'

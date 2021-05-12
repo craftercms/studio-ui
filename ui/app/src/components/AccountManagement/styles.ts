@@ -25,7 +25,10 @@ export const useStyles = makeStyles((theme) =>
     paper: {
       padding: '20px',
       margin: '50px 0',
-      background: theme.palette.background.default
+      background: theme.palette.background.default,
+      '& .mt20': {
+        marginTop: '20px'
+      }
     },
     container: {},
     avatar: {
