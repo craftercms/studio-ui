@@ -874,23 +874,23 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Audit'
   },
   'home.globalMenu.logging-levels': {
-    id: 'GlobalMenu.LoggingLevelsEntryLabel',
+    id: 'globalMenu.loggingLevelsEntryLabel',
     defaultMessage: 'Logging Levels'
   },
   'home.globalMenu.log-console': {
-    id: 'GlobalMenu.LogConsoleEntryLabel',
+    id: 'globalMenu.logConsoleEntryLabel',
     defaultMessage: 'Log Console'
   },
   'home.globalMenu.globalConfig': {
-    id: 'GlobalMenu.GlobalConfigEntryLabel',
+    id: 'globalMenu.globalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
   'home.globalMenu.encryptionTool': {
-    id: 'GlobalMenu.EncryptionTool',
+    id: 'globalMenu.encryptionTool',
     defaultMessage: 'Encryption Tool'
   },
   'home.globalMenu.tokenManagement': {
-    id: 'GlobalMenu.TokenManagement',
+    id: 'globalMenu.tokenManagement',
     defaultMessage: 'Token Management'
   },
   'home.about-us': {
@@ -898,7 +898,7 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'About'
   },
   'home.settings': {
-    id: 'GlobalMenu.Settings',
+    id: 'globalMenu.settings',
     defaultMessage: 'Account'
   },
   login: {
@@ -906,7 +906,7 @@ export const globalMenuMessages = defineMessages({
     defaultMessage: 'Login'
   },
   'login.recover': {
-    id: 'GlobalMenu.Recover',
+    id: 'globalMenu.recover',
     defaultMessage: 'Password Recovery'
   }
 });

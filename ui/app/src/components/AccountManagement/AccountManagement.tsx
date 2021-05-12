@@ -44,9 +44,9 @@ interface AccountManagementProps {
 }
 
 const translations = defineMessages({
-  passwordUpdated: {
-    id: 'accountManagement.passwordUpdated',
-    defaultMessage: 'Password preference changed'
+  languageUpdated: {
+    id: 'accountManagement.languageUpdated',
+    defaultMessage: 'Language preference changed'
   },
   passwordChanged: {
     id: 'accountManagement.passwordChanged',
@@ -81,7 +81,7 @@ export default function AccountManagement(props: AccountManagementProps) {
     dispatchLanguageChange(language);
     dispatch(
       showSystemNotification({
-        message: formatMessage(translations.passwordUpdated)
+        message: formatMessage(translations.languageUpdated)
       })
     );
   };

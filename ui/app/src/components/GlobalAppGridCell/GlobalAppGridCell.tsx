@@ -27,11 +27,19 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
         padding: 0,
         width: '50px'
       },
+      '&.maxWidth300': {
+        maxWidth: '300px'
+      },
       '&.minWidth100': {
         minWidth: '100px'
       },
       '&.bordered': {
         borderBottom: `1px solid ${theme.palette.divider}`
+      },
+      '&.ellipsis': {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
       },
       '&.padded10': {
         padding: '10px'

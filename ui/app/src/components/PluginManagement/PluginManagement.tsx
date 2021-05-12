@@ -179,7 +179,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
       {!embedded && (
         <>
           <Typography variant="h4" component="h1" className={classes.title}>
-            <FormattedMessage id="PluginManagement.title" defaultMessage="Plugin Management" />
+            <FormattedMessage id="globalMenu.pluginManagementEntryLabel" defaultMessage="Plugin Management" />
           </Typography>
           <Divider />
         </>
@@ -191,7 +191,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         disabled={permissions === null || listPluginsPermission === false}
       >
         {installPluginsPermission ? (
-          <FormattedMessage id="PluginManagement.searchPlugin" defaultMessage="Search & install" />
+          <FormattedMessage id="pluginManagement.searchPlugin" defaultMessage="Search & install" />
         ) : (
           <FormattedMessage id="words.search" defaultMessage="Search" />
         )}
@@ -201,7 +201,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         <EmptyState
           title={
             <FormattedMessage
-              id="PluginManagement.listPluginPermission"
+              id="pluginManagement.listPluginPermission"
               defaultMessage="You don't have enough permissions to see the list of plugins"
             />
           }
@@ -234,7 +234,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <Typography variant="subtitle2">
-                      <FormattedMessage id="PluginManagement.installationDate" defaultMessage="Installation Date" />
+                      <FormattedMessage id="pluginManagement.installationDate" defaultMessage="Installation Date" />
                     </Typography>
                   </StyledTableCell>
                   <TableCell align="center" className={classes.actions} />
@@ -268,7 +268,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
           {plugins?.length === 0 && (
             <EmptyState
               title={
-                <FormattedMessage id="PluginManagement.emptyList" defaultMessage="There are no plugins installed" />
+                <FormattedMessage id="pluginManagement.emptyList" defaultMessage="There are no plugins installed" />
               }
             />
           )}
