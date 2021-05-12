@@ -94,6 +94,9 @@ export const defaultThemeOptions: ThemeOptions = (function() {
       MuiCheckbox: {
         color: 'primary'
       },
+      MuiRadio: {
+        color: 'primary'
+      },
       MuiTextField: {
         variant: 'outlined'
       },

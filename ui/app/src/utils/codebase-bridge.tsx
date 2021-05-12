@@ -195,16 +195,17 @@ export function createCodebaseBridge() {
       GroupsManagement: lazy(() => import('../components/GroupsManagement')),
       ClustersManagement: lazy(() => import('../components/ClustersManagement')),
       AuditManagement: lazy(() => import('../components/AuditManagement')),
-      LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement'))
+      LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement')),
       // LogConsole: lazy(() => import('../components/LogConsole')),
       // GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
-      // AccountManagement: lazy(() => import('../components/AccountManagement')),
+      AccountManagement: lazy(() => import('../components/AccountManagement'))
       // ContentTypesManagement: lazy(() => import('../components/')),
       // ConfigurationManagement: lazy(() => import('../components/')),
       // WorkflowStatesManagement: lazy(() => import('../components/')),
       // PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
       // RemotesManagement: lazy(() => import('../components/RemotesManagement')),
       // GraphQLPlayground: lazy(() => import('../components/GraphQLPlayground')),
+      PublishingDashboard: lazy(() => import('../components/PublishingDashboard'))
     },
 
     system: {
