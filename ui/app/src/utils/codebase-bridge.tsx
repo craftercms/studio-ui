@@ -198,7 +198,8 @@ export function createCodebaseBridge() {
       LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement')),
       // LogConsole: lazy(() => import('../components/LogConsole')),
       // GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
-      AccountManagement: lazy(() => import('../components/AccountManagement'))
+      AccountManagement: lazy(() => import('../components/AccountManagement')),
+      About: lazy(() => import('../components/AboutCrafterCMSView')),
       // ContentTypesManagement: lazy(() => import('../components/')),
       // ConfigurationManagement: lazy(() => import('../components/')),
       // WorkflowStatesManagement: lazy(() => import('../components/')),

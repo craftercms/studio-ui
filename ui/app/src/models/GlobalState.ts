@@ -135,6 +135,9 @@ export interface GlobalState {
     siteCookieName: string;
     previewLandingBase: string;
     version: string;
+    packageBuild: string;
+    packageVersion: string;
+    packageBuildDate: string;
   };
   preview: {
     editMode: boolean;
