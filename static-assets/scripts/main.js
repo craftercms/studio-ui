@@ -295,7 +295,7 @@
           views: {
             contentTab: {
               templateUrl: '/studio/static-assets/ng-views/settings.html',
-              controller: 'AppCtrl'
+              controller: 'AccountCtrl'
             }
           }
         })
@@ -304,7 +304,7 @@
           views: {
             contentTab: {
               templateUrl: '/studio/static-assets/ng-views/about.html',
-              controller: 'AppCtrl'
+              controller: 'AboutCtrl'
             }
           }
         })
@@ -426,7 +426,7 @@
           views: {
             content: {
               templateUrl: '/studio/static-assets/ng-views/settings.html',
-              controller: 'AppCtrl'
+              controller: 'AccountCtrl'
             }
           }
         })
@@ -435,7 +435,7 @@
           views: {
             content: {
               templateUrl: '/studio/static-assets/ng-views/about.html',
-              controller: 'AppCtrl'
+              controller: 'AboutCtrl'
             }
           }
         });
@@ -838,9 +838,6 @@
     '$translate',
     '$timeout',
     '$location',
-    '$window',
-    'passwordRequirements',
-    '$element',
     function(
       $rootScope,
       $scope,
@@ -852,49 +849,12 @@
       $uibModal,
       $translate,
       $timeout,
-      $location,
-      $window,
-      passwordRequirements,
-      $element
+      $location
     ) {
-      $scope.langSelected = '';
-      $scope.modalInstance = '';
       $scope.authenticated = authService.isAuthenticated();
-      $scope.helpUrl = 'javascript:alert("Please wait while product information loads.")';
-      $scope.attributionHTML = '';
       $scope.isIframeClass = $location.search().iframe ? 'iframe' : '';
-      $rootScope.isFooter = true;
-      $scope.messages = {
-        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
-        password: formatMessage(profileSettingsMessages.password),
-        currentPassword: formatMessage(profileSettingsMessages.currentPassword),
-        isRequired: formatMessage(profileSettingsMessages.isRequired),
-        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry),
-        unSavedConfirmation: formatMessage(profileSettingsMessages.unSavedConfirmation),
-        unSavedConfirmationTitle: formatMessage(profileSettingsMessages.unSavedConfirmationTitle),
-        yes: formatMessage(words.yes),
-        no: formatMessage(words.no)
-      };
 
-      $scope.showModal = function(template, size, verticalCentered, styleClass) {
-        var modalInstance = $uibModal.open({
-          templateUrl: template,
-          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
-          backdrop: 'static',
-          keyboard: true,
-          scope: $scope,
-          size: size ? size : ''
-        });
-
-        return modalInstance;
-      };
-      $scope.hideModal = function() {
-        $scope.confirmationModal.close();
-      };
-
-      if ($location.$$search.iframe) {
-        $rootScope.isFooter = false;
-      }
+      $rootScope.isFooter = !$location.$$search.iframe;
 
       let container = document.querySelector('#menuBundleButton');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
@@ -915,69 +875,6 @@
         icon: 'apps'
       });
 
-      function changePassword() {
-        $scope.data.username = $scope.user.username;
-        $translate.use($scope.langSelected);
-
-        if ($scope.data.new === $scope.data.confirmation) {
-          authService.changePassword($scope.data).then(
-            function() {
-              CrafterCMSNext.system.store.dispatch({
-                type: 'SHOW_SYSTEM_NOTIFICATION',
-                payload: {
-                  message: formatMessage(i18n.messages.usersAdminMessages.passwordChangeSuccess)
-                }
-              });
-            },
-            function(error) {
-              var errorResponse = error.response.response;
-              $('#current').focus();
-              if (errorResponse.code === 6003) {
-                $scope.error =
-                  $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') +
-                  '. ' +
-                  $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
-              } else {
-                $scope.error = errorResponse.message + '. ' + errorResponse.remedialAction;
-              }
-            }
-          );
-        } else {
-          $scope.error = "Passwords don't match.";
-        }
-      }
-
-      $scope.languagesAvailable = [];
-
-      sitesService.getLanguages($scope);
-
-      $scope.selectActionLanguage = function(optSelected) {
-        $scope.isModified = true;
-        $scope.langSelected = optSelected;
-      };
-
-      $scope.setLangCookie = function() {
-        try {
-          CrafterCMSNext.i18n.setStoredLanguage($scope.langSelected, $scope.user.username);
-          CrafterCMSNext.i18n.dispatchLanguageChange($scope.langSelected);
-          $translate.use($scope.langSelected);
-          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
-            position: 'top left',
-            className: 'success'
-          });
-          $scope.isModified = false;
-        } catch (err) {
-          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
-            position: 'top left',
-            className: 'error'
-          });
-        }
-      };
-
-      $scope.cancel = function() {
-        $rootScope.modalInstance.close();
-      };
-
       $scope.loadHomeState = function() {
         var currentState = $state.current.name,
           homeState = 'home.globalMenu';
@@ -993,108 +890,38 @@
       $scope.user = authService.getUser();
 
       $scope.data = { email: ($scope.user || { email: '' }).email };
-      $scope.error = null;
-
-      $scope.changePassword = changePassword;
 
       $scope.$on(Constants.AUTH_SUCCESS, function($event, user) {
         $scope.user = user;
         $scope.data.email = $scope.user.email;
       });
+    }
+  ]);
 
-      CrafterCMSNext.system.getStore().subscribe((store) => {
-        // Retrieve current site to call fetchSiteLocale, this will be replaced with a global config (no site needed)
-        const activeSite = store.getState().sites.active;
-
-        if ($scope.user && $scope.user.username) {
-          sitesService.getPermissions('', '/', $scope.user.username || $scope.user).then(function(permissions) {
-            if (permissions.includes('create-site')) {
-              $scope.createSites = true;
-            }
-          });
-        }
-        if (authService.getUser()) {
-          CrafterCMSNext.rxjs
-            .forkJoin({
-              studioInfo: authService.getStudioInfo(),
-              locale: sitesService.fetchSiteLocale(activeSite)
-            })
-            .subscribe(({ studioInfo, locale }) => {
-              // setting locale before setting build date/time info (under 'studioInfo')
-              if (Object.keys(locale).length === 0) {
-                $scope.locale = $rootScope.locale;
-              } else {
-                $scope.locale = locale;
-              }
-
-              const packageVersion = studioInfo.packageVersion;
-              const simpleVersion = packageVersion.substr(0, 3);
-              $scope.aboutStudio = studioInfo;
-              $scope.versionNumber = `${packageVersion}-${studioInfo.packageBuild.substring(0, 6)}`;
-              $scope.simpleVersion = simpleVersion;
-              $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
-              $scope.attributionHTML = CrafterCMSNext.i18n.intl
-                .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
-                  a: (msg) =>
-                    `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
-                })
-                .join('');
-
-              $scope.$apply();
-            });
-        }
-      });
-
-      var isChromium = window.chrome,
-        vendorName = window.navigator.vendor,
-        isOpera = window.navigator.userAgent.indexOf('OPR') > -1,
-        isIEedge = window.navigator.userAgent.indexOf('Edge') > -1;
-
-      if (
-        isChromium !== null &&
-        isChromium !== undefined &&
-        vendorName === 'Google Inc.' &&
-        isOpera == false &&
-        isIEedge == false
-      ) {
-        isChromium = true;
-      } else {
-        isChromium = false;
-        var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-      }
-
-      if (!(isChromium || isFirefox)) {
-        $('body').addClass('iewarning');
-        $scope.ieWarning = true;
-      }
-
-      $scope.spinnerOverlay = function() {
-        return $uibModal.open({
-          templateUrl: 'spinnerModal.html',
-          backdrop: 'static',
-          keyboard: false,
-          size: 'sm',
-          windowClass: 'spinner-modal centered-dialog'
+  app.controller('AccountCtrl', [
+    '$rootScope',
+    '$scope',
+    function($rootScope, $scope) {
+      CrafterCMSNext.render(document.querySelector('#account-management-view'), 'AccountManagement', {
+        passwordRequirementsRegex
+      }).then((done) => {
+        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+          unsubscribe();
+          done.unmount();
         });
-      };
-      $scope.validPass = false;
-      $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, 'validPass', 'password', 'top');
-      };
+      });
+    }
+  ]);
 
-      $rootScope.$on('$stateChangeStart', function(event, toState) {
-        if ($scope.isModified) {
-          event.preventDefault();
-
-          $scope.confirmationAction = function() {
-            $scope.isModified = false;
-            $state.go(toState.name);
-          };
-
-          $scope.confirmationText = $scope.messages.unSavedConfirmation;
-          $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
-          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
-        }
+  app.controller('AboutCtrl', [
+    '$rootScope',
+    '$scope',
+    function($rootScope, $scope) {
+      CrafterCMSNext.render(document.querySelector('#about-view'), 'About').then((done) => {
+        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+          unsubscribe();
+          done.unmount();
+        });
       });
     }
   ]);

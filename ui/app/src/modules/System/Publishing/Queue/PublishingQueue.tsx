@@ -164,7 +164,7 @@ const currentFiltersInitialState: CurrentFilters = {
 
 const selectedInitialState: Selected = {};
 
-interface PublishingQueueProps {
+export interface PublishingQueueProps {
   siteId: string;
 }
 

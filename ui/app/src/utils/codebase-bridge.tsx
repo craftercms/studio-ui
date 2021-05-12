@@ -194,17 +194,18 @@ export function createCodebaseBridge() {
       UsersManagement: lazy(() => import('../components/UsersManagement')),
       GroupsManagement: lazy(() => import('../components/GroupsManagement')),
       ClustersManagement: lazy(() => import('../components/ClustersManagement')),
-      // AuditManagement: lazy(() => import('../components/AuditManagement')),
+      AuditManagement: lazy(() => import('../components/AuditManagement')),
       LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement')),
-      LogConsoleManagement: lazy(() => import('../components/LogConsoleManagement'))
-      // GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
-      // AccountManagement: lazy(() => import('../components/AccountManagement')),
-      // ContentTypesManagement: lazy(() => import('../components/')),
-      // ConfigurationManagement: lazy(() => import('../components/')),
-      // WorkflowStatesManagement: lazy(() => import('../components/')),
-      // PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
-      // RemotesManagement: lazy(() => import('../components/RemotesManagement')),
-      // GraphQLPlayground: lazy(() => import('../components/GraphQLPlayground')),
+      LogConsoleManagement: lazy(() => import('../components/LogConsoleManagement')),
+      GlobalConfigManagement: lazy(() => import('../components/AccountManagement')),
+      AccountManagement: lazy(() => import('../components/AccountManagement')),
+      About: lazy(() => import('../components/AboutCrafterCMSView')),
+      ContentTypesManagement: lazy(() => import('../components/AccountManagement')),
+      ConfigurationManagement: lazy(() => import('../components/AccountManagement')),
+      WorkflowStatesManagement: lazy(() => import('../components/AccountManagement')),
+      RemotesManagement: lazy(() => import('../components/AccountManagement')),
+      GraphQLPlayground: lazy(() => import('../components/AccountManagement')),
+      PublishingDashboard: lazy(() => import('../components/PublishingDashboard'))
     },
 
     system: {
