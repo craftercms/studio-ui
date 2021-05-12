@@ -156,7 +156,7 @@ export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         sortable: false,
         filterable: false,
         cellClassName: classes.cellRoot,
-        renderCell: (params: GridCellParams) => {
+        renderCell: () => {
           return <Skeleton variant="circle" width={40} height={40} />;
         }
       },
@@ -173,7 +173,7 @@ export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         }
       }
     ],
-    [classes.activeFilter, classes.cellRoot, filters, formatMessage]
+    [classes.activeFilter, classes.cellRoot, filters, formatMessage, siteMode]
   );
 
   return (

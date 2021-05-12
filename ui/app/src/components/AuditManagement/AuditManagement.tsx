@@ -29,7 +29,7 @@ import { fetchAll } from '../../services/users';
 import { Operations, OperationsMessages } from './operations';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
-import AuditLogEntryParametersDialog from '../ParametersDialog';
+import AuditLogEntryParametersDialog from '../AuditLogEntryParametersDialog';
 import { nnou } from '../../utils/object';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';

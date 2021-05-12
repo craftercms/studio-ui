@@ -196,15 +196,14 @@ export function createCodebaseBridge() {
       ClustersManagement: lazy(() => import('../components/ClustersManagement')),
       AuditManagement: lazy(() => import('../components/AuditManagement')),
       LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement')),
-      // LogConsole: lazy(() => import('../components/LogConsole')),
-      // GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
-      AccountManagement: lazy(() => import('../components/AccountManagement'))
-      // ContentTypesManagement: lazy(() => import('../components/')),
-      // ConfigurationManagement: lazy(() => import('../components/')),
-      // WorkflowStatesManagement: lazy(() => import('../components/')),
-      // PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
-      // RemotesManagement: lazy(() => import('../components/RemotesManagement')),
-      // GraphQLPlayground: lazy(() => import('../components/GraphQLPlayground')),
+      LogConsole: lazy(() => import('../components/AccountManagement')),
+      GlobalConfigManagement: lazy(() => import('../components/AccountManagement')),
+      AccountManagement: lazy(() => import('../components/AccountManagement')),
+      ContentTypesManagement: lazy(() => import('../components/AccountManagement')),
+      ConfigurationManagement: lazy(() => import('../components/AccountManagement')),
+      WorkflowStatesManagement: lazy(() => import('../components/AccountManagement')),
+      RemotesManagement: lazy(() => import('../components/AccountManagement')),
+      GraphQLPlayground: lazy(() => import('../components/AccountManagement')),
       PublishingDashboard: lazy(() => import('../components/PublishingDashboard'))
     },
 
