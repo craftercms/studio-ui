@@ -286,7 +286,7 @@
     '$scope',
     '$rootScope',
     function($scope, $rootScope) {
-      CrafterCMSNext.render(document.querySelector('#log-console-management-view'), 'LogConsoleManagement', {
+      CrafterCMSNext.render(document.querySelector('#log-console-view'), 'LogConsole', {
         logType: window === window.top ? 'studio' : 'preview'
       }).then((done) => {
         const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
