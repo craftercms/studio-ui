@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './ViewSampleDialog';
+export { default } from './ConfigurationSamplePreviewDialog';
 
-export * from './ViewSampleDialog';
+export * from './ConfigurationSamplePreviewDialog';
 
-export * from './ViewSampleDialogContainer';
+export * from './ConfigurationSamplePreviewDialogContainer';

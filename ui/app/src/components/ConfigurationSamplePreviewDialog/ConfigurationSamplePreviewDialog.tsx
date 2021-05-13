@@ -16,20 +16,20 @@
 
 import Dialog from '@material-ui/core/Dialog';
 import React from 'react';
-import ViewSampleDialogContainer from './ViewSampleDialogContainer';
+import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
 
-export interface ViewSampleDialogProps {
+export interface ConfigurationSamplePreviewDialogProps {
   open: boolean;
   content: string;
   onClose(): void;
   onUseSampleClick(type: 'replace' | 'append'): void;
 }
 
-export default function ViewSampleDialog(props: ViewSampleDialogProps) {
+export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ViewSampleDialogContainer {...props} />
+      <ConfigurationSamplePreviewDialogContainer {...props} />
     </Dialog>
   );
 }

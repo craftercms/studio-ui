@@ -27,7 +27,7 @@ import PrimaryButton from '../PrimaryButton';
 import Paper from '@material-ui/core/Paper';
 import { forkJoin } from 'rxjs';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import ViewSampleDialog from '../ViewSampleDialog';
+import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialog';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
@@ -164,7 +164,7 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
           </Box>
         </Paper>
       </ConditionalLoadingState>
-      <ViewSampleDialog
+      <ConfigurationSamplePreviewDialog
         onUseSampleClick={onUseSampleClick}
         open={viewSample}
         onClose={() => setViewSample(false)}

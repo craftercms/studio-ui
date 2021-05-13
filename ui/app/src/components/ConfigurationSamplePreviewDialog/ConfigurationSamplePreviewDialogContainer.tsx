@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ViewSampleDialogProps } from './ViewSampleDialog';
+import { ConfigurationSamplePreviewDialogProps } from './ConfigurationSamplePreviewDialog';
 import AceEditor from '../AceEditor';
 import React from 'react';
 import DialogBody from '../Dialogs/DialogBody';
@@ -24,13 +24,13 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import useStyles from './styles';
 
-export default function ViewSampleDialogContainer(props: ViewSampleDialogProps) {
+export default function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
   const { content, onClose, onUseSampleClick } = props;
   const classes = useStyles();
   return (
     <>
       <DialogHeader
-        title={<FormattedMessage id="viewSampleDialog.title" defaultMessage="Sample File" />}
+        title={<FormattedMessage id="configurationSamplePreviewDialog.title" defaultMessage="Sample File" />}
         onDismiss={onClose}
       />
       <DialogBody style={{ height: '60vh', padding: 0 }}>
@@ -45,12 +45,23 @@ export default function ViewSampleDialogContainer(props: ViewSampleDialogProps) 
       </DialogBody>
       <DialogFooter>
         <ConfirmDropdown
-          text={<FormattedMessage id="viewSampleDialog.useSampleContent" defaultMessage="Use Sample Content" />}
+          text={
+            <FormattedMessage
+              id="configurationSamplePreviewDialog.useSampleContent"
+              defaultMessage="Use Sample Content"
+            />
+          }
           cancelText={
-            <FormattedMessage id="viewSampleDialog.replaceContent" defaultMessage="Replace current content" />
+            <FormattedMessage
+              id="configurationSamplePreviewDialog.replaceContent"
+              defaultMessage="Replace current content"
+            />
           }
           confirmText={
-            <FormattedMessage id="viewSampleDialog.appendContent" defaultMessage="Append after current content" />
+            <FormattedMessage
+              id="configurationSamplePreviewDialog.appendContent"
+              defaultMessage="Append after current content"
+            />
           }
           onConfirm={() => onUseSampleClick('append')}
           onCancel={() => onUseSampleClick('replace')}
