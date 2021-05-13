@@ -103,7 +103,7 @@ export default function GroupsManagement() {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Groups" defaultMessage="Groups" />}
+        title={<FormattedMessage id="words.groups" defaultMessage="Groups" />}
         leftContent={
           <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={() => setOpenGroupDialog(true)}>
             <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />

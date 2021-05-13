@@ -105,7 +105,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Users" defaultMessage="Users" />}
+        title={<FormattedMessage id="words.users" defaultMessage="Users" />}
         leftContent={
           <Button
             startIcon={<AddIcon />}
@@ -113,7 +113,7 @@ export default function UsersManagement(props: UsersManagementProps) {
             color="primary"
             onClick={() => setOpenCreateUserDialog(true)}
           >
-            <FormattedMessage id="sites.createUser" defaultMessage="Create User" />
+            <FormattedMessage id="usersGrid.createUser" defaultMessage="Create User" />
           </Button>
         }
       />
