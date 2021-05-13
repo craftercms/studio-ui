@@ -22,6 +22,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { WorkflowState } from '../../models/WorkflowState';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import WorkflowStatesGridUI, { WorkflowStatesGridSkeletonTable } from '../WorkflowStatesGrid';
 
 export default function WorkflowStatesManagement() {
   const [fetching, setFetching] = useState(false);
@@ -41,7 +42,7 @@ export default function WorkflowStatesManagement() {
         setFetching(false);
       }
     );
-  }, []);
+  }, [siteId]);
 
   useEffect(() => {
     fetchStates();
@@ -67,10 +68,10 @@ export default function WorkflowStatesManagement() {
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <></>
+          fallback: <WorkflowStatesGridSkeletonTable />
         }}
       >
-        <></>
+        <WorkflowStatesGridUI resource={resource} />
       </SuspenseWithEmptyState>
     </section>
   );
