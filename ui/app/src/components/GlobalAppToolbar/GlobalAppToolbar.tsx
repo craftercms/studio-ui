@@ -36,13 +36,14 @@ interface GlobalAppToolbarProps {
   rightContent?: React.ReactNode;
   styles?: GlobalAppToolbarStyles;
   classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
-  disableNavigationButtons?: boolean;
+  showHamburgerMenuButton?: boolean;
+  showAppsButton?: boolean;
 }
 
 const translations = defineMessages({
-  openConfigPanel: {
-    id: 'openConfigPanel.label',
-    defaultMessage: 'Open config panel'
+  toggleSidebar: {
+    id: 'globalAppToolbar.toggleSidebar',
+    defaultMessage: 'Toggle Sidebar'
   }
 });
 
@@ -79,7 +80,14 @@ const useStyles = makeStyles((theme) =>
 
 export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
   const classes = useStyles(props.styles);
-  const { title, leftContent, rightContent, elevation = 0, disableNavigationButtons = false } = props;
+  const {
+    title,
+    leftContent,
+    rightContent,
+    elevation = 0,
+    showHamburgerMenuButton = true,
+    showAppsButton = true
+  } = props;
   const { formatMessage } = useIntl();
   return (
     <AppBar
@@ -89,9 +97,9 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
       className={clsx(classes.appBar, props.classes?.appBar)}
     >
       <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>
-        {disableNavigationButtons === false && (
+        {showHamburgerMenuButton && (
           <LogoAndMenuBundleButton
-            aria-label={formatMessage(translations.openConfigPanel)}
+            aria-label={formatMessage(translations.toggleSidebar)}
             onClick={() => {
               if (window.location.hash.includes('/globalMenu/')) {
                 window.location.hash = window.location.hash.replace('/globalMenu', '');
@@ -108,7 +116,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
         </section>
         <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
         <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
-        {disableNavigationButtons === false && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
+        {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
       </Toolbar>
     </AppBar>
   );
