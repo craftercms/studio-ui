@@ -180,6 +180,7 @@ export default function AuditManagement(props: AuditManagementProps) {
             </Button>
           )
         }
+        disableNavigationButtons={Boolean(site)}
       />
       <Suspencified
         suspenseProps={{

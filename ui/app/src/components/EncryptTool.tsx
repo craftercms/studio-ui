@@ -179,7 +179,10 @@ const EncryptTool = (props: EncryptToolProps) => {
 
   return (
     <section>
-      <GlobalAppToolbar title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
+        disableNavigationButtons={Boolean(props.site)}
+      />
       <form onSubmit={encrypt} className={clsx(classes.form, 'site-config-landing-page')}>
         <div className="form-group">
           <TextField

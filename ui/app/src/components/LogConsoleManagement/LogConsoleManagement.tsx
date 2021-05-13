@@ -120,6 +120,7 @@ export default function LogConsoleManagement(props: LogConsoleManagementProps) {
     <Box p={logType === 'studio' ? 0 : '20px'}>
       <GlobalAppToolbar
         title={<FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
+        disableNavigationButtons={logType === 'preview'}
         rightContent={
           <>
             <Button

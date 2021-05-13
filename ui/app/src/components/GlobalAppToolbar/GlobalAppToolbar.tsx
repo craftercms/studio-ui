@@ -36,6 +36,7 @@ interface GlobalAppToolbarProps {
   rightContent?: React.ReactNode;
   styles?: GlobalAppToolbarStyles;
   classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
+  disableNavigationButtons?: boolean;
 }
 
 const translations = defineMessages({
@@ -78,7 +79,7 @@ const useStyles = makeStyles((theme) =>
 
 export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
   const classes = useStyles(props.styles);
-  const { title, leftContent, rightContent, elevation = 0 } = props;
+  const { title, leftContent, rightContent, elevation = 0, disableNavigationButtons = false } = props;
   const { formatMessage } = useIntl();
   return (
     <AppBar
@@ -88,16 +89,18 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
       className={clsx(classes.appBar, props.classes?.appBar)}
     >
       <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>
-        <LogoAndMenuBundleButton
-          aria-label={formatMessage(translations.openConfigPanel)}
-          onClick={() => {
-            if (window.location.hash.includes('/globalMenu/')) {
-              window.location.hash = window.location.hash.replace('/globalMenu', '');
-            } else {
-              window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
-            }
-          }}
-        />
+        {disableNavigationButtons === false && (
+          <LogoAndMenuBundleButton
+            aria-label={formatMessage(translations.openConfigPanel)}
+            onClick={() => {
+              if (window.location.hash.includes('/globalMenu/')) {
+                window.location.hash = window.location.hash.replace('/globalMenu', '');
+              } else {
+                window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
+              }
+            }}
+          />
+        )}
         <section className={clsx(classes.title, props.classes?.title)}>
           <Typography variant="h5" component="h1">
             {title}
@@ -105,7 +108,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
         </section>
         <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
         <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
-        <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+        {disableNavigationButtons === false && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
       </Toolbar>
     </AppBar>
   );
