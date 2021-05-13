@@ -27,7 +27,7 @@ import GlobalState from '../models/GlobalState';
 import { defineMessages } from 'react-intl';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
 
-type CrafterCMSModules = 'studio' | 'engine';
+export type CrafterCMSModules = 'studio' | 'engine';
 
 export function fetchConfigurationXML(
   site: string,

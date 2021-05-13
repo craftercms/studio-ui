@@ -14,9 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { CrafterCMSModules } from '../services/configuration';
+
 export interface SiteConfigurationFile {
   description: string;
-  module: string;
+  module: CrafterCMSModules;
   path: string;
   samplePath: string;
   title: string;

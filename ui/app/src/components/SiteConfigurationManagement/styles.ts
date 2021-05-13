@@ -18,10 +18,16 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
+    drawerPaper: {
+      top: '0 !important'
+    },
+    toggleDrawerButton: {
+      marginRight: '10px'
+    },
     list: {
-      width: '240px',
-      height: '100vh',
-      overflow: 'auto'
+      width: '100%',
+      overflow: 'auto',
+      height: '100%'
     },
     ellipsis: {
       overflow: 'hidden',
