@@ -23,12 +23,16 @@ import { FormattedMessage } from 'react-intl';
 import { WorkflowState } from '../../models/WorkflowState';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import WorkflowStatesGridUI, { WorkflowStatesGridSkeletonTable } from '../WorkflowStatesGrid';
+import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 
 export default function WorkflowStatesManagement() {
   const [fetching, setFetching] = useState(false);
   const [states, setStates] = useState(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
+  const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
 
   const fetchStates = useCallback(() => {
     setFetching(true);
@@ -64,7 +68,20 @@ export default function WorkflowStatesManagement() {
 
   return (
     <section>
-      <GlobalAppToolbar title={<FormattedMessage id="siteTools.workflowStates" defaultMessage="Worflow States" />} />
+      <GlobalAppToolbar
+        title={<FormattedMessage id="siteTools.workflowStates" defaultMessage="Worflow States" />}
+        leftContent={
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => setOpenSetStateDialog(true)}
+            disabled={true} // TODO: this should be enabled only on item selected
+          >
+            <FormattedMessage id="workflowStates.setState" defaultMessage="Set State" />
+          </Button>
+        }
+      />
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
@@ -73,6 +90,8 @@ export default function WorkflowStatesManagement() {
       >
         <WorkflowStatesGridUI resource={resource} />
       </SuspenseWithEmptyState>
+
+      <SetWorkflowStateDialog open={openSetStateDialog} onClose={() => setOpenSetStateDialog(false)} />
     </section>
   );
 }
