@@ -25,6 +25,7 @@ import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { defineMessages } from 'react-intl';
+import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -282,6 +283,21 @@ export function fetchSiteLocale(site: string): Observable<any> {
         }
       }
       return settings;
+    })
+  );
+}
+
+export function fetchSiteConfigurationFiles(site: string): Observable<SiteConfigurationFile[]> {
+  return fetchConfigurationDOM(site, '/administration/config-list.xml', 'studio').pipe(
+    map((xml) => {
+      let files = [];
+      if (xml) {
+        const filesXML = xml.querySelector('files');
+        if (filesXML) {
+          files = deserialize(filesXML).files.file;
+        }
+      }
+      return files;
     })
   );
 }
