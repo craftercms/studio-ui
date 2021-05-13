@@ -3099,7 +3099,7 @@ var CStudioForms =
                 repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${
                   isTokenized ? 'tokenized="true"' : ''
                 }`;
-              output += '\t<' + fieldName + repeatAttr + '>';
+              output += `\t<${fieldName} ${repeatAttr} >`;
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
               } else {
