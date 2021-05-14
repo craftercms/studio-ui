@@ -25,6 +25,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import { rand } from '../PathNavigator/utils';
+import { RepositoriesGridTableHead } from './RemoteRepositoriesGridUI';
 
 export interface RemoteRepositoriesGridSkeletonTableProps {
   numOfItems?: number;
@@ -37,31 +38,7 @@ export default function RemoteRepositoriesGridSkeletonTable(props: RemoteReposit
   return (
     <TableContainer>
       <Table>
-        <TableHead>
-          <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.url" defaultMessage="URL" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.fetch" defaultMessage="Fetch" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered" />
-          </GlobalAppGridRow>
-        </TableHead>
+        <RepositoriesGridTableHead />
         <TableBody>
           {items.map((item, index) => (
             <GlobalAppGridRow key={index}>

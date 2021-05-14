@@ -39,31 +39,7 @@ export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUI
   return (
     <TableContainer>
       <Table>
-        <TableHead>
-          <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.url" defaultMessage="URL" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.fetch" defaultMessage="Fetch" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered" />
-          </GlobalAppGridRow>
-        </TableHead>
+        <RepositoriesGridTableHead />
         <TableBody>
           {repositories.map((repository) => (
             <GlobalAppGridRow key={repository.name} className="hoverDisabled">
@@ -76,5 +52,35 @@ export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUI
         </TableBody>
       </Table>
     </TableContainer>
+  );
+}
+
+export function RepositoriesGridTableHead() {
+  return (
+    <TableHead>
+      <GlobalAppGridRow className="hoverDisabled">
+        <GlobalAppGridCell className="bordered">
+          <Typography variant="subtitle2">
+            <FormattedMessage id="words.name" defaultMessage="Name" />
+          </Typography>
+        </GlobalAppGridCell>
+        <GlobalAppGridCell className="bordered">
+          <Typography variant="subtitle2">
+            <FormattedMessage id="words.url" defaultMessage="URL" />
+          </Typography>
+        </GlobalAppGridCell>
+        <GlobalAppGridCell className="bordered">
+          <Typography variant="subtitle2">
+            <FormattedMessage id="words.fetch" defaultMessage="Fetch" />
+          </Typography>
+        </GlobalAppGridCell>
+        <GlobalAppGridCell className="bordered">
+          <Typography variant="subtitle2">
+            <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
+          </Typography>
+        </GlobalAppGridCell>
+        <GlobalAppGridCell className="bordered" />
+      </GlobalAppGridRow>
+    </TableHead>
   );
 }
