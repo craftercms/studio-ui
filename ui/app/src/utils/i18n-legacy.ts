@@ -977,7 +977,7 @@ export const adminConfigurationMessages = defineMessages({
   encryptHintPt7: {
     id: 'adminConfigurations.encryptHinPt7',
     defaultMessage:
-      'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
+      'Use the `encrypted=""` attribute only on tags which directly hold the value to be encrypted (text).'
   },
   encryptHintPt8: {
     id: 'adminConfigurations.encryptHinPt8',

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles } from '../../services/configuration';
@@ -23,7 +23,7 @@ import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import useStyles from './styles';
+import useStyles, { useResizeableStyles } from './styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -40,6 +40,14 @@ import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import PrimaryButton from '../PrimaryButton';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
+import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
+import { adminConfigurationMessages } from '../../utils/i18n-legacy';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import informationGraphicUrl from '../../assets/information.svg';
+import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
 
 export default function SiteConfigurationManagement() {
   const site = useActiveSiteId();
@@ -50,9 +58,18 @@ export default function SiteConfigurationManagement() {
   const [files, setFiles] = useState<SiteConfigurationFile[]>();
   const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFile>(null);
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
-  const [loadingXml, setLoadingXml] = useState(false);
+  const [selectedSampleConfigFileXml, setSelectedSampleConfigFileXml] = useState(null);
+  const [loadingXml, setLoadingXml] = useState(true);
+  const [loadingSampleXml, setLoadingSampleXml] = useState(false);
+  const [showSampleEditor, setShowSampleEditor] = useState(false);
+  const [showEncryptDialogHelper, setShowEncryptDialogHelper] = useState(false);
   const [width, setWidth] = useState(240);
   const [openDrawer, setOpenDrawer] = useState(true);
+  const [leftEditorWidth, setLeftEditorWidth] = useState<number>(null);
+
+  const editorRef = useRef({
+    container: null
+  });
 
   useMount(() => {
     fetchActiveEnvironment().subscribe((env) => {
@@ -88,6 +105,57 @@ export default function SiteConfigurationManagement() {
     }
   };
 
+  const onEncryptHelpClick = () => {
+    setShowEncryptDialogHelper(true);
+  };
+
+  const onEncryptHelpClose = () => {
+    setShowEncryptDialogHelper(false);
+  };
+
+  const onViewSampleClick = () => {
+    if (showSampleEditor) {
+      setLeftEditorWidth(null);
+    }
+    setLoadingSampleXml(true);
+    setShowSampleEditor(!showSampleEditor);
+    if (showSampleEditor === false) {
+      fetchConfigurationXML(
+        'studio_root',
+        `/configuration/samples/${selectedConfigFile.samplePath}`,
+        selectedConfigFile.module,
+        environment
+      ).subscribe((xml) => {
+        setSelectedSampleConfigFileXml(xml);
+        setLoadingSampleXml(false);
+      });
+    }
+  };
+
+  const onListItemClick = (file: SiteConfigurationFile) => {
+    setSelectedConfigFile(file);
+    setShowSampleEditor(false);
+    setLeftEditorWidth(null);
+  };
+
+  const onEditorResize = (width: number) => {
+    if (width > 240) {
+      setLeftEditorWidth(width);
+    }
+  };
+
+  const bold = {
+    bold: (msg) => (
+      <strong key={msg} className="bold">
+        {msg}
+      </strong>
+    )
+  };
+
+  const tags = { lt: '<', gt: '>' };
+
+  const tagsAndCurls = Object.assign({ lc: '{', rc: '}' }, tags);
+
   return (
     <Box display="flex" height="100vh">
       <ResizeableDrawer
@@ -117,13 +185,7 @@ export default function SiteConfigurationManagement() {
         >
           {files
             ? files.map((file, i) => (
-                <ListItem
-                  onClick={() => setSelectedConfigFile(file)}
-                  button
-                  key={i}
-                  dense
-                  divider={i < files.length - 1}
-                >
+                <ListItem onClick={() => onListItemClick(file)} button key={i} dense divider={i < files.length - 1}>
                   <ListItemText
                     classes={{ primary: classes.ellipsis, secondary: classes.ellipsis }}
                     primaryTypographyProps={{ title: getTranslation(file.title, translations, formatMessage) }}
@@ -152,34 +214,88 @@ export default function SiteConfigurationManagement() {
         </List>
       </ResizeableDrawer>
       {selectedConfigFile ? (
-        <ConditionalLoadingState isLoading={loadingXml}>
-          <Box display="flex" flexGrow={1} flexDirection="column" paddingLeft={openDrawer && `${width}px`}>
+        <Box
+          display="flex"
+          flexGrow={1}
+          flexDirection={loadingXml ? 'row' : 'column'}
+          paddingLeft={openDrawer ? `${width}px` : 0}
+        >
+          <ConditionalLoadingState isLoading={loadingXml}>
             <GlobalAppToolbar
-              title={getTranslation(selectedConfigFile.title, translations, formatMessage)}
-              leftContent={
-                <IconButton onClick={onToggleDrawer} className={classes.toggleDrawerButton}>
+              classes={{
+                appBar: classes.appBar
+              }}
+              showHamburgerMenuButton={false}
+              showAppsButton={false}
+              startContent={
+                <IconButton onClick={onToggleDrawer}>
                   {openDrawer ? <MenuOpenRoundedIcon /> : <MenuRoundedIcon />}
                 </IconButton>
               }
+              title={getTranslation(selectedConfigFile.title, translations, formatMessage)}
               rightContent={
                 <>
+                  <ButtonGroup variant="outlined" className={classes.buttonGroup}>
+                    <Button>{formatMessage(adminConfigurationMessages.encryptMarked)}</Button>
+                    <Button size="small" onClick={onEncryptHelpClick}>
+                      <HelpOutlineRoundedIcon />
+                    </Button>
+                  </ButtonGroup>
                   <SecondaryButton>
-                    <FormattedMessage id="siteConfigurationManagement.encryptMarked" defaultMessage="Encrypt Marked" />
+                    <FormattedMessage id="siteConfigurationManagement.history" defaultMessage="History" />
                   </SecondaryButton>
-                  <PrimaryButton>
-                    <FormattedMessage id="siteConfigurationManagement.viewSmaple" defaultMessage="View Sample" />
-                  </PrimaryButton>
                 </>
               }
             />
-            <AceEditor mode="ace/mode/yaml" theme="ace/theme/textmate" autoFocus={true} value={selectedConfigFileXml} />
+            <Box display="flex" flexGrow={1}>
+              <AceEditor
+                ref={editorRef}
+                styles={{
+                  base: {
+                    width: leftEditorWidth ? `${leftEditorWidth}px` : 'auto',
+                    flexGrow: leftEditorWidth ? 0 : 1,
+                    height: '100%',
+                    margin: 0
+                  }
+                }}
+                mode="ace/mode/xml"
+                theme="ace/theme/textmate"
+                autoFocus={true}
+                value={selectedConfigFileXml}
+              />
+              {showSampleEditor && (
+                <>
+                  <ResizeableBar onWidthChange={onEditorResize} element={editorRef.current.container} />
+                  <ConditionalLoadingState isLoading={loadingSampleXml} classes={{ root: classes.loadingStateRight }}>
+                    <AceEditor
+                      className={classes.editor}
+                      mode="ace/mode/xml"
+                      theme="ace/theme/textmate"
+                      autoFocus={false}
+                      readOnly={true}
+                      value={selectedSampleConfigFileXml}
+                    />
+                  </ConditionalLoadingState>
+                </>
+              )}
+            </Box>
             <DialogFooter>
+              <SecondaryButton onClick={onViewSampleClick} className={classes.viewSampleButton}>
+                {showSampleEditor ? (
+                  <FormattedMessage id="siteConfigurationManagement.hideSample" defaultMessage="Hide Sample" />
+                ) : (
+                  <FormattedMessage id="siteConfigurationManagement.viewSample" defaultMessage="View Sample" />
+                )}
+              </SecondaryButton>
+              <SecondaryButton>
+                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+              </SecondaryButton>
               <PrimaryButton>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </DialogFooter>
-          </Box>
-        </ConditionalLoadingState>
+          </ConditionalLoadingState>
+        </Box>
       ) : (
         <Box
           display="flex"
@@ -199,6 +315,86 @@ export default function SiteConfigurationManagement() {
           />
         </Box>
       )}
+      <ConfirmDialog
+        open={showEncryptDialogHelper}
+        maxWidth="sm"
+        onOk={onEncryptHelpClose}
+        onClose={onEncryptHelpClose}
+        imageUrl={informationGraphicUrl}
+      >
+        <section className={classes.confirmDialogBody}>
+          <Typography className={classes.textMargin} variant="subtitle1">
+            {formatMessage(adminConfigurationMessages.encryptMarked)}
+          </Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(adminConfigurationMessages.encryptHintPt1)}
+          </Typography>
+          <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt2, bold)}</Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(adminConfigurationMessages.encryptHintPt3, tags)}
+          </Typography>
+          <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt4, bold)}</Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(adminConfigurationMessages.encryptHintPt5, tagsAndCurls)}
+          </Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(adminConfigurationMessages.encryptHintPt6)}
+          </Typography>
+          <ul>
+            <li>
+              <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt7)}</Typography>
+            </li>
+            <li>
+              <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt8)}</Typography>
+            </li>
+            <li>
+              <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt9)}</Typography>
+            </li>
+          </ul>
+        </section>
+      </ConfirmDialog>
     </Box>
+  );
+}
+
+interface ResizeableBarProps {
+  onWidthChange(width: number): void;
+  element?: any;
+}
+
+function ResizeableBar(props: ResizeableBarProps) {
+  const classes = useResizeableStyles();
+  const [resizeActive, setResizeActive] = useState(false);
+  const { onWidthChange, element } = props;
+
+  const handleMouseMove = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (element) {
+        const containerOffsetLeft = element.offsetLeft;
+        const newWidth = e.clientX - containerOffsetLeft - 5;
+
+        onWidthChange(newWidth);
+      }
+    },
+    [element, onWidthChange]
+  );
+
+  const handleMouseDown = () => {
+    setResizeActive(true);
+    const handleMouseUp = () => {
+      setResizeActive(false);
+      document.removeEventListener('mouseup', handleMouseUp, true);
+      document.removeEventListener('mousemove', handleMouseMove, true);
+    };
+    document.addEventListener('mouseup', handleMouseUp, true);
+    document.addEventListener('mousemove', handleMouseMove, true);
+  };
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      className={clsx(classes.resizeHandle, resizeActive && classes.resizeHandleActive)}
+    />
   );
 }

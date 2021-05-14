@@ -103,11 +103,22 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
     width,
     onWidthChange,
     className,
-    classes: propsClasses,
+    classes: propsClasses = {},
     PaperProps,
     anchor = 'left',
     ...rest
   } = props;
+
+  const {
+    root,
+    drawerBody,
+    drawerPaper,
+    resizeHandle,
+    resizeHandleActive,
+    resizeHandleLeft,
+    resizeHandleRight,
+    ...drawerClasses
+  } = propsClasses;
 
   const handleMouseMove = useCallback(
     (e) => {
@@ -138,7 +149,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
       anchor={anchor}
       variant="persistent"
       className={clsx(classes.root, className)}
-      classes={{ ...propsClasses, paper: clsx(classes.drawerPaper, propsClasses?.drawerPaper) }}
+      classes={{ ...drawerClasses, paper: clsx(classes.drawerPaper, drawerPaper) }}
       PaperProps={{ ...PaperProps, style: { width } }}
       {...rest}
     >
@@ -150,7 +161,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
           anchor === 'left' ? classes.resizeHandleRight : classes.resizeHandleLeft
         )}
       />
-      <section className={clsx(classes.drawerBody, propsClasses?.drawerBody)}>{children}</section>
+      <section className={clsx(classes.drawerBody, drawerBody)}>{children}</section>
     </Drawer>
   );
 }

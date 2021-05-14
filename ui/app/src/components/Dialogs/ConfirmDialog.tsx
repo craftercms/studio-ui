@@ -20,7 +20,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -92,6 +92,7 @@ interface ConfirmDialogBaseProps {
   disableEnforceFocus?: boolean;
   disableEscapeKeyDown?: boolean;
   disableBackdropClick?: boolean;
+  maxWidth?: DialogProps['maxWidth'];
   styles?: ConfirmDialogStateStyles;
 }
 
@@ -129,7 +130,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableEnforceFocus={props.disableEnforceFocus}
       hideBackdrop={props.hideBackdrop}
       className={classes.dialog}
-      maxWidth="xs"
+      maxWidth={props.maxWidth ?? 'xs'}
       fullWidth
     >
       <ConfirmDialogWrapper {...props} classes={classes} />

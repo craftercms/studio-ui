@@ -15,14 +15,35 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme) =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
+    appBar: {
+      paddingRight: '14.4px'
+    },
+    textMargin: {
+      marginBottom: '1em'
+    },
+    confirmDialogBody: {
+      textAlign: 'left'
+    },
+    buttonGroup: {
+      marginRight: '15px'
+    },
+    editor: {
+      height: '100%',
+      margin: 0,
+      flex: '1 1 auto'
+    },
+    loadingStateRight: {
+      width: '50%'
+    },
+    viewSampleButton: {
+      marginRight: 'auto'
+    },
     drawerPaper: {
       top: '0 !important'
-    },
-    toggleDrawerButton: {
-      marginRight: '10px'
     },
     list: {
       width: '100%',
@@ -44,6 +65,30 @@ const useStyles = makeStyles((theme) =>
     },
     itemSkeletonText: {
       height: '20px'
+    }
+  })
+);
+
+export const useResizeableStyles = makeStyles((theme) =>
+  createStyles({
+    resizeHandle: {
+      width: '2px',
+      minWidth: '2px',
+      margin: '0px 5px',
+      cursor: 'ew-resize',
+      padding: '4px 0 0',
+      backgroundColor: 'rgba(0, 0, 0, 0.12)',
+      transition: 'width 200ms',
+      '&:hover': {
+        width: '4px',
+        visibility: 'visible',
+        backgroundColor: palette.blue.tint
+      }
+    },
+    resizeHandleActive: {
+      width: '4px',
+      visibility: 'visible',
+      backgroundColor: palette.blue.tint
     }
   })
 );
