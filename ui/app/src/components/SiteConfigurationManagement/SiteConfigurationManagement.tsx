@@ -48,6 +48,9 @@ import ConfirmDialog from '../Dialogs/ConfirmDialog';
 import informationGraphicUrl from '../../assets/information.svg';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
+import { useDispatch } from 'react-redux';
+import { showHistoryDialog } from '../../state/actions/dialogs';
+import { fetchItemVersions } from '../../state/reducers/versions';
 
 export default function SiteConfigurationManagement() {
   const site = useActiveSiteId();
@@ -66,6 +69,8 @@ export default function SiteConfigurationManagement() {
   const [width, setWidth] = useState(240);
   const [openDrawer, setOpenDrawer] = useState(true);
   const [leftEditorWidth, setLeftEditorWidth] = useState<number>(null);
+  const [disabledButtons, setDisabledButtons] = useState(true);
+  const dispatch = useDispatch();
 
   const editorRef = useRef({
     container: null
@@ -87,7 +92,6 @@ export default function SiteConfigurationManagement() {
 
   useEffect(() => {
     if (selectedConfigFile && environment) {
-      setLoadingXml(true);
       fetchConfigurationXML(site, selectedConfigFile.path, selectedConfigFile.module, environment).subscribe((xml) => {
         setSelectedConfigFileXml(xml);
         setLoadingXml(false);
@@ -133,15 +137,37 @@ export default function SiteConfigurationManagement() {
   };
 
   const onListItemClick = (file: SiteConfigurationFile) => {
-    setSelectedConfigFile(file);
-    setShowSampleEditor(false);
-    setLeftEditorWidth(null);
+    if (file.path !== selectedConfigFile?.path) {
+      setLoadingXml(true);
+      setSelectedConfigFile(file);
+    }
+    if (showSampleEditor) {
+      setShowSampleEditor(false);
+    }
+    if (leftEditorWidth !== null) {
+      setLeftEditorWidth(null);
+    }
   };
 
   const onEditorResize = (width: number) => {
     if (width > 240) {
       setLeftEditorWidth(width);
     }
+  };
+
+  const onShowHistory = () => {
+    dispatch(
+      fetchItemVersions({
+        isConfig: true,
+        environment: environment,
+        module: selectedConfigFile.module,
+        item: {
+          path: `/config/${selectedConfigFile.module}/${selectedConfigFile.path}`,
+          label: selectedConfigFile.path
+        }
+      })
+    );
+    dispatch(showHistoryDialog({}));
   };
 
   const bold = {
@@ -185,7 +211,14 @@ export default function SiteConfigurationManagement() {
         >
           {files
             ? files.map((file, i) => (
-                <ListItem onClick={() => onListItemClick(file)} button key={i} dense divider={i < files.length - 1}>
+                <ListItem
+                  selected={file.path === selectedConfigFile?.path}
+                  onClick={() => onListItemClick(file)}
+                  button
+                  key={i}
+                  dense
+                  divider={i < files.length - 1}
+                >
                   <ListItemText
                     classes={{ primary: classes.ellipsis, secondary: classes.ellipsis }}
                     primaryTypographyProps={{ title: getTranslation(file.title, translations, formatMessage) }}
@@ -284,13 +317,13 @@ export default function SiteConfigurationManagement() {
               )}
             </Box>
             <DialogFooter>
-              <SecondaryButton className={classes.historyButton}>
+              <SecondaryButton className={classes.historyButton} onClick={onShowHistory}>
                 <FormattedMessage id="siteConfigurationManagement.history" defaultMessage="History" />
               </SecondaryButton>
-              <SecondaryButton>
+              <SecondaryButton disabled={disabledButtons}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
-              <PrimaryButton>
+              <PrimaryButton disabled={disabledButtons}>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </DialogFooter>
