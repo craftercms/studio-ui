@@ -19,6 +19,7 @@ export interface Repository {
   url: string;
   fetch: string;
   push_url: string;
+  pushUrl: string;
   branches: string[];
   reachable: boolean;
   unreachableReason: string;
