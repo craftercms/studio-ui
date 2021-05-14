@@ -31,7 +31,8 @@ export const useStyles = makeStyles((theme) =>
     buttonGroup: {
       marginRight: '15px'
     },
-    editor: {
+    sampleEditor: {
+      background: theme.palette.background.default,
       height: '100%',
       margin: 0,
       flex: '1 1 auto'
@@ -39,7 +40,7 @@ export const useStyles = makeStyles((theme) =>
     loadingStateRight: {
       width: '50%'
     },
-    viewSampleButton: {
+    historyButton: {
       marginRight: 'auto'
     },
     drawerPaper: {

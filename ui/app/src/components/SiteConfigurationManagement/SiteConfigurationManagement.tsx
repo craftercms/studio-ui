@@ -241,8 +241,12 @@ export default function SiteConfigurationManagement() {
                       <HelpOutlineRoundedIcon />
                     </Button>
                   </ButtonGroup>
-                  <SecondaryButton>
-                    <FormattedMessage id="siteConfigurationManagement.history" defaultMessage="History" />
+                  <SecondaryButton onClick={onViewSampleClick}>
+                    {showSampleEditor ? (
+                      <FormattedMessage id="siteConfigurationManagement.hideSample" defaultMessage="Hide Sample" />
+                    ) : (
+                      <FormattedMessage id="siteConfigurationManagement.viewSample" defaultMessage="View Sample" />
+                    )}
                   </SecondaryButton>
                 </>
               }
@@ -268,7 +272,7 @@ export default function SiteConfigurationManagement() {
                   <ResizeableBar onWidthChange={onEditorResize} element={editorRef.current.container} />
                   <ConditionalLoadingState isLoading={loadingSampleXml} classes={{ root: classes.loadingStateRight }}>
                     <AceEditor
-                      className={classes.editor}
+                      className={classes.sampleEditor}
                       mode="ace/mode/xml"
                       theme="ace/theme/textmate"
                       autoFocus={false}
@@ -280,12 +284,8 @@ export default function SiteConfigurationManagement() {
               )}
             </Box>
             <DialogFooter>
-              <SecondaryButton onClick={onViewSampleClick} className={classes.viewSampleButton}>
-                {showSampleEditor ? (
-                  <FormattedMessage id="siteConfigurationManagement.hideSample" defaultMessage="Hide Sample" />
-                ) : (
-                  <FormattedMessage id="siteConfigurationManagement.viewSample" defaultMessage="View Sample" />
-                )}
+              <SecondaryButton className={classes.historyButton}>
+                <FormattedMessage id="siteConfigurationManagement.history" defaultMessage="History" />
               </SecondaryButton>
               <SecondaryButton>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
