@@ -25,16 +25,21 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import React from 'react';
+import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
+import ArrowUpwardRoundedIcon from '@material-ui/icons/ArrowUpwardRounded';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 export interface RemoteRepositoriesGridUIProps {
   resource: Resource<Array<Repository>>;
+  onDeleteRemote(remoteName: string): void;
 }
 
 export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
-  const { resource } = props;
+  const { resource, onDeleteRemote } = props;
   const repositories = resource.read();
-
-  console.log('reps', repositories);
 
   return (
     <TableContainer>
@@ -47,6 +52,35 @@ export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUI
               <GlobalAppGridCell align="left">{repository.url}</GlobalAppGridCell>
               <GlobalAppGridCell align="left">{repository.fetch}</GlobalAppGridCell>
               <GlobalAppGridCell align="left">{repository.pushUrl}</GlobalAppGridCell>
+              <GlobalAppGridCell>
+                <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
+                  <IconButton onClick={null}>
+                    <ArrowDownwardRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell>
+                <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
+                  <IconButton onClick={null}>
+                    <ArrowUpwardRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              </GlobalAppGridCell>
+              <GlobalAppGridCell>
+                <ConfirmDropdown
+                  cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
+                  confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
+                  confirmHelperText={
+                    <FormattedMessage id="repositories.deleteConfirmation" defaultMessage="Delete remote repository?" />
+                  }
+                  iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
+                  icon={DeleteRoundedIcon}
+                  iconColor="action"
+                  onConfirm={() => {
+                    onDeleteRemote(repository.name);
+                  }}
+                />
+              </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}
         </TableBody>
@@ -79,6 +113,8 @@ export function RepositoriesGridTableHead() {
             <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
           </Typography>
         </GlobalAppGridCell>
+        <GlobalAppGridCell className="bordered" />
+        <GlobalAppGridCell className="bordered" />
         <GlobalAppGridCell className="bordered" />
       </GlobalAppGridRow>
     </TableHead>

@@ -16,22 +16,43 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import { Repository } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
-import { fetchRepositories as fetchRepositoriesService } from '../../services/repositories';
+import {
+  fetchRepositories as fetchRepositoriesService,
+  deleteRemote as deleteRemoteService
+} from '../../services/repositories';
 import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesGridSkeletonTable from '../RemoteRepositoriesGrid/RemoteRepositoriesGridSkeletonTable';
 import RemoteRepositoriesGridUI from '../RemoteRepositoriesGrid';
+import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
+import { showSystemNotification } from '../../state/actions/system';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+
+const messages = defineMessages({
+  remoteCreateSuccessMessage: {
+    id: 'repositories.remoteCreateSuccessMessage',
+    defaultMessage: 'Remote repository created successfully.'
+  },
+  remoteDeleteSuccessMessage: {
+    id: 'repositories.remoteDeleteSuccessMessage',
+    defaultMessage: 'Remote repository deleted successfully.'
+  }
+});
 
 export default function RemoteRepositoriesManagement() {
   const [fetching, setFetching] = useState(false);
   const [repositories, setRepositories] = useState<Array<Repository>>(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
+  const [openNewRemoteDialog, setOpenNewRemoteDialog] = useState(false);
+  const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
 
   const fetchRepositories = useCallback(() => {
     setFetching(true);
@@ -46,6 +67,33 @@ export default function RemoteRepositoriesManagement() {
       }
     );
   }, [siteId]);
+
+  const deleteRemote = (remoteName: string) => {
+    deleteRemoteService(siteId, remoteName).subscribe(
+      () => {
+        fetchRepositories();
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.remoteDeleteSuccessMessage),
+            options: { variant: 'success' }
+          })
+        );
+      },
+      ({ response }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
+
+  const onCreateSuccess = () => {
+    fetchRepositories();
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(messages.remoteCreateSuccessMessage),
+        options: { variant: 'success' }
+      })
+    );
+  };
 
   useEffect(() => {
     fetchRepositories();
@@ -70,8 +118,13 @@ export default function RemoteRepositoriesManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="repositories.title" defaultMessage="Remote Repositories" />}
         leftContent={
-          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={() => {}}>
-            <FormattedMessage id="repositories.newRepository" defaultMessage="New Repository" />
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => setOpenNewRemoteDialog(true)}
+          >
+            <FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
           </Button>
         }
       />
@@ -81,8 +134,14 @@ export default function RemoteRepositoriesManagement() {
           fallback: <RemoteRepositoriesGridSkeletonTable />
         }}
       >
-        <RemoteRepositoriesGridUI resource={resource} />
+        <RemoteRepositoriesGridUI resource={resource} onDeleteRemote={deleteRemote} />
       </SuspenseWithEmptyState>
+
+      <NewRemoteRepositoryDialog
+        open={openNewRemoteDialog}
+        onClose={() => setOpenNewRemoteDialog(false)}
+        onCreateSuccess={onCreateSuccess}
+      />
     </section>
   );
 }

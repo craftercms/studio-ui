@@ -17,9 +17,6 @@
 import React from 'react';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import Skeleton from '@material-ui/lab/Skeleton';
 import GlobalAppGridRow from '../GlobalAppGridRow';

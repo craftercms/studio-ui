@@ -43,10 +43,11 @@ export interface Remote {
   remoteName: string;
   remoteUrl: string;
   authenticationType: string;
-  remoteUsername: string;
-  remotePassword: string;
-  remoteToken: string;
-  remotePrivateKey: string;
+  remoteUsername?: string;
+  remotePassword?: string;
+  remoteToken?: string;
+  remotePrivateKey?: string;
   remoteBranch?: string;
   mergeStrategy?: string;
 }
+
