@@ -19,6 +19,14 @@ import { WidgetDescriptor } from '../components/Widget';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 
+export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
+  return window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
+}
+
+export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'list' {
+  return window.localStorage.getItem(`craftercms.${user}.globalMenuSiteViewPreference`) as 'grid' | 'list';
+}
+
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
     ...(item.isDeleted && { deleted: true }),

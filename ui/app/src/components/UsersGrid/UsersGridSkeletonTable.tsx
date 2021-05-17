@@ -40,7 +40,7 @@ export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableP
       <Table className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow>
-            <GlobalAppGridCell align="center" className="bordered avatar">
+            <GlobalAppGridCell align="center" className="bordered avatar padded10">
               <span />
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="bordered paddedLeft width20">
@@ -63,7 +63,7 @@ export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableP
         <TableBody>
           {items?.map((width, index) => (
             <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="center" className="avatar">
+              <GlobalAppGridCell align="center" className="avatar padded10">
                 <Skeleton className={classes.avatar} variant="circle" width={40} height={40} />
               </GlobalAppGridCell>
               <GlobalAppGridCell component="th" scope="row" className="width20">

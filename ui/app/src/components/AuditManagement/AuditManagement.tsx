@@ -180,6 +180,8 @@ export default function AuditManagement(props: AuditManagementProps) {
             </Button>
           )
         }
+        showHamburgerMenuButton={!site}
+        showAppsButton={!site}
       />
       <Suspencified
         suspenseProps={{

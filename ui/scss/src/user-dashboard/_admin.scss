@@ -629,6 +629,22 @@ table {
   .nav-icon {
     min-width: 20px;
   }
+
+  .container-flex {
+    display: flex;
+  }
+
+  .globalNavElementWrapper {
+    padding: 16px;
+    width: 240px;
+    min-width: 240px;
+    height: 100vh;
+    border-right: 1px solid #e7e7e7;
+  }
+
+  .globalNavContentWrapper {
+    flex-grow: 1;
+  }
 }
 
 .global-menu-pagination-wrapper {
