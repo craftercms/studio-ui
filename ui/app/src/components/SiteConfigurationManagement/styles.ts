@@ -19,6 +19,15 @@ import palette from '../../styles/palette';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
+    root: {
+      display: 'flex',
+      height: '100%',
+      position: 'relative'
+    },
+    editorCleanStyles: {
+      border: '0',
+      borderRadius: '0'
+    },
     appBar: {
       paddingRight: '14.4px'
     },
@@ -44,7 +53,8 @@ export const useStyles = makeStyles((theme) =>
       marginRight: 'auto'
     },
     drawerPaper: {
-      top: '0 !important'
+      top: '0 !important',
+      position: 'absolute'
     },
     list: {
       width: '100%',

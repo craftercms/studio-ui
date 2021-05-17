@@ -309,7 +309,7 @@ export default function SiteConfigurationManagement() {
   const tagsAndCurls = Object.assign({ lc: '{', rc: '}' }, tags);
 
   return (
-    <Box display="flex" height="100vh">
+    <section className={classes.root}>
       <ResizeableDrawer
         open={openDrawer}
         width={width}
@@ -462,7 +462,9 @@ export default function SiteConfigurationManagement() {
                     flexGrow: leftEditorWidth ? 0 : 1,
                     height: '100%',
                     margin: 0,
-                    opacity: encrypting ? 0.5 : 1
+                    opacity: encrypting ? 0.5 : 1,
+                    border: '0',
+                    borderRadius: '0'
                   }
                 }}
                 mode="ace/mode/xml"
@@ -477,7 +479,7 @@ export default function SiteConfigurationManagement() {
                   <ResizeableBar onWidthChange={onEditorResize} element={editorRef.current.container} />
                   <ConditionalLoadingState isLoading={loadingSampleXml} classes={{ root: classes.loadingStateRight }}>
                     <AceEditor
-                      className={classes.sampleEditor}
+                      className={clsx(classes.editorCleanStyles, classes.sampleEditor)}
                       mode="ace/mode/xml"
                       theme="ace/theme/textmate"
                       autoFocus={false}
@@ -573,7 +575,7 @@ export default function SiteConfigurationManagement() {
           </ul>
         </section>
       </ConfirmDialog>
-    </Box>
+    </section>
   );
 }
 
