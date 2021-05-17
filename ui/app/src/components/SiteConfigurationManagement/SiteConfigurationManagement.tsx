@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import { fetchActiveEnvironment } from '../../services/environment';
-import { fetchConfigurationXML, fetchSiteConfigurationFiles } from '../../services/configuration';
+import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
 import { SiteConfigurationFile } from '../../models/SiteConfigurationFile';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
@@ -42,11 +42,11 @@ import PrimaryButton from '../PrimaryButton';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
-import { adminConfigurationMessages } from '../../utils/i18n-legacy';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';
 import informationGraphicUrl from '../../assets/information.svg';
+import errorGraphicUrl from '../../assets/desert.svg';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
@@ -54,9 +54,17 @@ import { fetchItemVersions } from '../../state/reducers/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../Controls/SearchBar';
 import Alert from '@material-ui/lab/Alert';
-import { showHistoryDialog } from '../../state/actions/dialogs';
+import { showConfirmDialog, showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize } from '../../utils/string';
+import { itemReverted, showSystemNotification } from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { filter, map } from 'rxjs/operators';
+import { fromString, serialize } from '../../utils/xml';
+import { findPendingEncryption } from '../../utils/encrypt';
+import { forkJoin } from 'rxjs';
+import { encrypt } from '../../services/security';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 export default function SiteConfigurationManagement() {
   const site = useActiveSiteId();
@@ -69,17 +77,19 @@ export default function SiteConfigurationManagement() {
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
   const [selectedSampleConfigFileXml, setSelectedSampleConfigFileXml] = useState(null);
   const [loadingXml, setLoadingXml] = useState(true);
+  const [encrypting, setEncrypting] = useState(false);
   const [loadingSampleXml, setLoadingSampleXml] = useState(false);
   const [showSampleEditor, setShowSampleEditor] = useState(false);
   const [showEncryptDialogHelper, setShowEncryptDialogHelper] = useState(false);
   const [width, setWidth] = useState(240);
   const [openDrawer, setOpenDrawer] = useState(true);
   const [leftEditorWidth, setLeftEditorWidth] = useState<number>(null);
-  const [disabledButtons, setDisabledButtons] = useState(true);
+  const [disabledSaveButton, setDisabledSaveButton] = useState(true);
+  const [unsavedChangesFile, setUnsavedChangesFile] = useState(null);
   const [keyword, setKeyword] = useState('');
   const dispatch = useDispatch();
 
-  const editorRef = useRef({
+  const editorRef = useRef<any>({
     container: null
   });
 
@@ -100,11 +110,26 @@ export default function SiteConfigurationManagement() {
   useEffect(() => {
     if (selectedConfigFile && environment) {
       fetchConfigurationXML(site, selectedConfigFile.path, selectedConfigFile.module, environment).subscribe((xml) => {
-        setSelectedConfigFileXml(xml);
+        setSelectedConfigFileXml(xml ?? '');
         setLoadingXml(false);
       });
     }
   }, [selectedConfigFile, environment, site]);
+
+  // Item Revert Propagation
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$
+      .pipe(filter((e) => itemReverted.type === e.type))
+      .subscribe(({ type, payload }) => {
+        if (payload.target.endsWith(selectedConfigFile.path)) {
+          setSelectedConfigFile({ ...selectedConfigFile });
+        }
+      });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, selectedConfigFile]);
 
   const onToggleDrawer = () => {
     setOpenDrawer(!openDrawer);
@@ -113,6 +138,35 @@ export default function SiteConfigurationManagement() {
   const onDrawerResize = (width) => {
     if (width > 240) {
       setWidth(width);
+    }
+  };
+
+  const onEncryptClick = () => {
+    const doc = fromString(editorRef.current.getValue());
+    const tags = doc.querySelectorAll('[encrypted]');
+    const items = findPendingEncryption(tags);
+    if (items.length) {
+      setEncrypting(true);
+      forkJoin(items.map(({ tag, text }) => encrypt(text, site).pipe(map((text) => ({ tag, text }))))).subscribe(
+        (encrypted) => {
+          encrypted.forEach(({ text, tag }) => {
+            tag.innerHTML = `\${enc:${text}}`;
+            tag.setAttribute('encrypted', 'true');
+          });
+          editorRef.current.setValue(serialize(doc), -1);
+          setEncrypting(false);
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+    } else {
+      dispatch(
+        showConfirmDialog({
+          imageUrl: informationGraphicUrl,
+          title: tags.length ? formatMessage(translations.allEncrypted) : formatMessage(translations.noEncryptItems)
+        })
+      );
     }
   };
 
@@ -143,22 +197,51 @@ export default function SiteConfigurationManagement() {
     }
   };
 
-  const onListItemClick = (file: SiteConfigurationFile) => {
-    if (file.path !== selectedConfigFile?.path) {
-      setLoadingXml(true);
-      setSelectedConfigFile(file);
-    }
+  const onClean = () => {
     if (showSampleEditor) {
       setShowSampleEditor(false);
     }
     if (leftEditorWidth !== null) {
       setLeftEditorWidth(null);
     }
+    if (encrypting !== null) {
+      setEncrypting(false);
+    }
+  };
+
+  const onListItemClick = (file: SiteConfigurationFile) => {
+    if (file.path !== selectedConfigFile?.path) {
+      setLoadingXml(true);
+      setSelectedConfigFile(file);
+    }
+    onClean();
+  };
+
+  const onUnsavedChangesOk = () => {
+    setUnsavedChangesFile(false);
+    onListItemClick(unsavedChangesFile);
+  };
+
+  const onUnsavedChangesCancel = () => {
+    setUnsavedChangesFile(false);
+  };
+
+  const onUnsavedChangesClosed = () => {
+    setUnsavedChangesFile(null);
+    setUnsavedChangesFile(false);
   };
 
   const onEditorResize = (width: number) => {
     if (width > 240) {
       setLeftEditorWidth(width);
+    }
+  };
+
+  const onEditorChanges = () => {
+    if (selectedConfigFileXml !== editorRef.current.getValue()) {
+      setDisabledSaveButton(false);
+    } else {
+      setDisabledSaveButton(true);
     }
   };
 
@@ -176,6 +259,41 @@ export default function SiteConfigurationManagement() {
         ])
       );
     });
+  };
+
+  const onCancel = () => {
+    setSelectedConfigFile(null);
+    onClean();
+  };
+
+  const onSave = () => {
+    const content = editorRef.current.getValue();
+    const doc = fromString(content);
+    const unencryptedItems = findPendingEncryption(doc.querySelectorAll('[encrypted]'));
+    if (unencryptedItems.length === 0) {
+      writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
+        () => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.configSaved)
+            })
+          );
+        },
+        ({ response: { response } }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+      // save
+    } else {
+      dispatch(
+        showConfirmDialog({
+          imageUrl: errorGraphicUrl,
+          title: formatMessage(translations.pendingEncryptions, {
+            count: unencryptedItems.length
+          })
+        })
+      );
+    }
   };
 
   const bold = {
@@ -205,34 +323,37 @@ export default function SiteConfigurationManagement() {
           subheader={
             <ListSubheader className={classes.listSubheader} component="div">
               {environment ? (
-                <Tooltip
-                  title={
-                    <FormattedMessage
-                      id="siteConfigurationManagement.environment"
-                      defaultMessage="Active Environment: {environment}"
-                      values={{ environment: capitalize(environment) }}
-                    />
-                  }
-                >
-                  <Alert severity="info" className={classes.alert}>
-                    <FormattedMessage
-                      id="siteConfigurationManagement.activeEnvironment"
-                      defaultMessage="{environment} Environment"
-                      values={{ environment: capitalize(environment) }}
-                    />
-                  </Alert>
-                </Tooltip>
+                <>
+                  <Tooltip
+                    title={
+                      <FormattedMessage
+                        id="siteConfigurationManagement.environment"
+                        defaultMessage="Active Environment: {environment}"
+                        values={{ environment: capitalize(environment) }}
+                      />
+                    }
+                  >
+                    <Alert severity="info" className={classes.alert}>
+                      <FormattedMessage
+                        id="siteConfigurationManagement.activeEnvironment"
+                        defaultMessage="{environment} Environment"
+                        values={{ environment: capitalize(environment) }}
+                      />
+                    </Alert>
+                  </Tooltip>
+                  <SearchBar
+                    classes={{ root: classes.searchBarRoot }}
+                    keyword={keyword}
+                    onChange={setKeyword}
+                    showActionButton={Boolean(keyword)}
+                  />
+                </>
               ) : (
                 <section className={classes.listSubheaderSkeleton}>
-                  <Skeleton height={15} width="80%" />
+                  <Skeleton height={34} width="100%" />
+                  <Skeleton height={34} width="100%" />
                 </section>
               )}
-              <SearchBar
-                classes={{ root: classes.searchBarRoot }}
-                keyword={keyword}
-                onChange={setKeyword}
-                showActionButton={Boolean(keyword)}
-              />
             </ListSubheader>
           }
         >
@@ -251,7 +372,13 @@ export default function SiteConfigurationManagement() {
                 .map((file, i) => (
                   <ListItem
                     selected={file.path === selectedConfigFile?.path}
-                    onClick={() => onListItemClick(file)}
+                    onClick={() => {
+                      if (!disabledSaveButton && file.path !== selectedConfigFile?.path) {
+                        setUnsavedChangesFile(file);
+                      } else {
+                        onListItemClick(file);
+                      }
+                    }}
                     button
                     key={i}
                     dense
@@ -309,7 +436,9 @@ export default function SiteConfigurationManagement() {
               rightContent={
                 <>
                   <ButtonGroup variant="outlined" className={classes.buttonGroup}>
-                    <Button>{formatMessage(adminConfigurationMessages.encryptMarked)}</Button>
+                    <SecondaryButton disabled={encrypting} onClick={onEncryptClick} loading={encrypting}>
+                      {formatMessage(translations.encryptMarked)}
+                    </SecondaryButton>
                     <Button size="small" onClick={onEncryptHelpClick}>
                       <HelpOutlineRoundedIcon />
                     </Button>
@@ -332,12 +461,15 @@ export default function SiteConfigurationManagement() {
                     width: leftEditorWidth ? `${leftEditorWidth}px` : 'auto',
                     flexGrow: leftEditorWidth ? 0 : 1,
                     height: '100%',
-                    margin: 0
+                    margin: 0,
+                    opacity: encrypting ? 0.5 : 1
                   }
                 }}
                 mode="ace/mode/xml"
                 theme="ace/theme/textmate"
+                readOnly={encrypting}
                 autoFocus={true}
+                onChange={onEditorChanges}
                 value={selectedConfigFileXml}
               />
               {showSampleEditor && (
@@ -357,13 +489,13 @@ export default function SiteConfigurationManagement() {
               )}
             </Box>
             <DialogFooter>
-              <SecondaryButton className={classes.historyButton} onClick={onShowHistory}>
+              <SecondaryButton disabled={encrypting} className={classes.historyButton} onClick={onShowHistory}>
                 <FormattedMessage id="siteConfigurationManagement.history" defaultMessage="History" />
               </SecondaryButton>
-              <SecondaryButton disabled={disabledButtons}>
+              <SecondaryButton disabled={encrypting} onClick={onCancel}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
-              <PrimaryButton disabled={disabledButtons}>
+              <PrimaryButton disabled={disabledSaveButton || encrypting} onClick={onSave}>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </DialogFooter>
@@ -389,6 +521,21 @@ export default function SiteConfigurationManagement() {
         </Box>
       )}
       <ConfirmDialog
+        open={Boolean(unsavedChangesFile)}
+        title={
+          <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
+        }
+        body={
+          <FormattedMessage
+            id="siteConfigurationManagement.unsavedChangesSubtitle"
+            defaultMessage="You have unsaved changes, do you want to leave?"
+          />
+        }
+        onClosed={onUnsavedChangesClosed}
+        onOk={onUnsavedChangesOk}
+        onCancel={onUnsavedChangesCancel}
+      />
+      <ConfirmDialog
         open={showEncryptDialogHelper}
         maxWidth="sm"
         onOk={onEncryptHelpClose}
@@ -397,31 +544,31 @@ export default function SiteConfigurationManagement() {
       >
         <section className={classes.confirmDialogBody}>
           <Typography className={classes.textMargin} variant="subtitle1">
-            {formatMessage(adminConfigurationMessages.encryptMarked)}
+            {formatMessage(translations.encryptMarked)}
           </Typography>
           <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(adminConfigurationMessages.encryptHintPt1)}
+            {formatMessage(translations.encryptHintPt1)}
           </Typography>
-          <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt2, bold)}</Typography>
+          <Typography variant="body2">{formatMessage(translations.encryptHintPt2, bold)}</Typography>
           <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(adminConfigurationMessages.encryptHintPt3, tags)}
+            {formatMessage(translations.encryptHintPt3, tags)}
           </Typography>
-          <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt4, bold)}</Typography>
+          <Typography variant="body2">{formatMessage(translations.encryptHintPt4, bold)}</Typography>
           <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(adminConfigurationMessages.encryptHintPt5, tagsAndCurls)}
+            {formatMessage(translations.encryptHintPt5, tagsAndCurls)}
           </Typography>
           <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(adminConfigurationMessages.encryptHintPt6)}
+            {formatMessage(translations.encryptHintPt6)}
           </Typography>
           <ul>
             <li>
-              <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt7)}</Typography>
+              <Typography variant="body2">{formatMessage(translations.encryptHintPt7)}</Typography>
             </li>
             <li>
-              <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt8)}</Typography>
+              <Typography variant="body2">{formatMessage(translations.encryptHintPt8)}</Typography>
             </li>
             <li>
-              <Typography variant="body2">{formatMessage(adminConfigurationMessages.encryptHintPt9)}</Typography>
+              <Typography variant="body2">{formatMessage(translations.encryptHintPt9)}</Typography>
             </li>
           </ul>
         </section>

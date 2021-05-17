@@ -73,9 +73,10 @@ export const useStyles = makeStyles((theme) =>
       borderBottom: `1px solid ${theme.palette.divider}`
     },
     listSubheaderSkeleton: {
-      height: '48px',
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      flexDirection: 'column',
+      padding: '10px'
     },
     itemSkeletonText: {
       height: '20px'

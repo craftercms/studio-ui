@@ -260,7 +260,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
             ]);
           }
         }
-        if (hasRevertAction(item.availableActions)) {
+        if (hasRevertAction(item.availableActions) || isConfig) {
           sections.push([isCurrent ? contextMenuOptions.revertToPrevious : contextMenuOptions.revertToThisVersion]);
         }
       }
