@@ -34,7 +34,8 @@ import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import AceEditor from '../AceEditor';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import MenuOpenRoundedIcon from '@material-ui/icons/MenuOpenRounded';
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import PrimaryButton from '../PrimaryButton';
@@ -49,8 +50,13 @@ import informationGraphicUrl from '../../assets/information.svg';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
-import { showHistoryDialog } from '../../state/actions/dialogs';
 import { fetchItemVersions } from '../../state/reducers/versions';
+import { fetchItemByPath } from '../../services/content';
+import SearchBar from '../Controls/SearchBar';
+import Alert from '@material-ui/lab/Alert';
+import { showHistoryDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
+import { capitalize } from '../../utils/string';
 
 export default function SiteConfigurationManagement() {
   const site = useActiveSiteId();
@@ -70,6 +76,7 @@ export default function SiteConfigurationManagement() {
   const [openDrawer, setOpenDrawer] = useState(true);
   const [leftEditorWidth, setLeftEditorWidth] = useState<number>(null);
   const [disabledButtons, setDisabledButtons] = useState(true);
+  const [keyword, setKeyword] = useState('');
   const dispatch = useDispatch();
 
   const editorRef = useRef({
@@ -156,18 +163,19 @@ export default function SiteConfigurationManagement() {
   };
 
   const onShowHistory = () => {
-    dispatch(
-      fetchItemVersions({
-        isConfig: true,
-        environment: environment,
-        module: selectedConfigFile.module,
-        item: {
-          path: `/config/${selectedConfigFile.module}/${selectedConfigFile.path}`,
-          label: selectedConfigFile.path
-        }
-      })
-    );
-    dispatch(showHistoryDialog({}));
+    fetchItemByPath(site, `/config/${selectedConfigFile.module}/${selectedConfigFile.path}`).subscribe((item) => {
+      dispatch(
+        batchActions([
+          fetchItemVersions({
+            isConfig: true,
+            environment: environment,
+            module: selectedConfigFile.module,
+            item
+          }),
+          showHistoryDialog({})
+        ])
+      );
+    });
   };
 
   const bold = {
@@ -197,37 +205,69 @@ export default function SiteConfigurationManagement() {
           subheader={
             <ListSubheader className={classes.listSubheader} component="div">
               {environment ? (
-                <>
-                  <FormattedMessage id="siteConfigurationManagement.environment" defaultMessage="Active Environment" />:{' '}
-                  {environment}
-                </>
+                <Tooltip
+                  title={
+                    <FormattedMessage
+                      id="siteConfigurationManagement.environment"
+                      defaultMessage="Active Environment: {environment}"
+                      values={{ environment: capitalize(environment) }}
+                    />
+                  }
+                >
+                  <Alert severity="info" className={classes.alert}>
+                    <FormattedMessage
+                      id="siteConfigurationManagement.activeEnvironment"
+                      defaultMessage="{environment} Environment"
+                      values={{ environment: capitalize(environment) }}
+                    />
+                  </Alert>
+                </Tooltip>
               ) : (
                 <section className={classes.listSubheaderSkeleton}>
                   <Skeleton height={15} width="80%" />
                 </section>
               )}
+              <SearchBar
+                classes={{ root: classes.searchBarRoot }}
+                keyword={keyword}
+                onChange={setKeyword}
+                showActionButton={Boolean(keyword)}
+              />
             </ListSubheader>
           }
         >
           {files
-            ? files.map((file, i) => (
-                <ListItem
-                  selected={file.path === selectedConfigFile?.path}
-                  onClick={() => onListItemClick(file)}
-                  button
-                  key={i}
-                  dense
-                  divider={i < files.length - 1}
-                >
-                  <ListItemText
-                    classes={{ primary: classes.ellipsis, secondary: classes.ellipsis }}
-                    primaryTypographyProps={{ title: getTranslation(file.title, translations, formatMessage) }}
-                    secondaryTypographyProps={{ title: getTranslation(file.description, translations, formatMessage) }}
-                    primary={getTranslation(file.title, translations, formatMessage)}
-                    secondary={getTranslation(file.description, translations, formatMessage)}
-                  />
-                </ListItem>
-              ))
+            ? files
+                .filter(
+                  (file) =>
+                    file.path.toLowerCase().includes(keyword) ||
+                    getTranslation(file.title, translations, formatMessage)
+                      .toLowerCase()
+                      .includes(keyword) ||
+                    getTranslation(file.description, translations, formatMessage)
+                      .toLowerCase()
+                      .includes(keyword)
+                )
+                .map((file, i) => (
+                  <ListItem
+                    selected={file.path === selectedConfigFile?.path}
+                    onClick={() => onListItemClick(file)}
+                    button
+                    key={i}
+                    dense
+                    divider={i < files.length - 1}
+                  >
+                    <ListItemText
+                      classes={{ primary: classes.ellipsis, secondary: classes.ellipsis }}
+                      primaryTypographyProps={{ title: getTranslation(file.title, translations, formatMessage) }}
+                      secondaryTypographyProps={{
+                        title: getTranslation(file.description, translations, formatMessage)
+                      }}
+                      primary={getTranslation(file.title, translations, formatMessage)}
+                      secondary={getTranslation(file.description, translations, formatMessage)}
+                    />
+                  </ListItem>
+                ))
             : Array(15)
                 .fill(null)
                 .map((x, i) => (

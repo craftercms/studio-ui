@@ -56,8 +56,21 @@ export const useStyles = makeStyles((theme) =>
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap'
     },
+    searchBarRoot: {
+      borderRadius: '0 !important',
+      border: 0,
+      '&.focus': {
+        border: '0 !important',
+        boxShadow: 'none'
+      }
+    },
+    alert: {
+      borderRadius: 0
+    },
     listSubheader: {
-      background: theme.palette.background.paper
+      background: theme.palette.background.paper,
+      padding: 0,
+      borderBottom: `1px solid ${theme.palette.divider}`
     },
     listSubheaderSkeleton: {
       height: '48px',

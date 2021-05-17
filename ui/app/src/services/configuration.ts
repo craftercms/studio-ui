@@ -271,7 +271,7 @@ export function fetchHistory(
   environment: string,
   module: string
 ): Observable<VersionsResponse> {
-  const parsedPath = encodeURIComponent(path.replace('/config/studio', ''));
+  const parsedPath = encodeURIComponent(path.replace(/(\/config\/)(studio|engine)/g, ''));
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
