@@ -99,6 +99,7 @@ interface AceEditorProps extends Partial<AceOptions> {
   className?: string;
   autoFocus?: boolean;
   styles?: AceEditorStyles;
+  onChange?(e: any): void;
 }
 
 declare global {
@@ -175,25 +176,35 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
-  const { value = '', autoFocus = false } = props;
+  const { value = '', autoFocus = false, onChange } = props;
   const classes = useStyles(props.styles);
-  const elemRef = useRef(null);
-  const aceRef = useRef(null);
+  const refs = useRef({
+    ace: null,
+    elem: null,
+    onChange: null
+  });
   const [initialized, setInitialized] = useState(false);
   const options = pluckProps(props as AceOptions, true, ...aceOptions);
+
+  refs.current.onChange = onChange;
+
   useMount(() => {
     let unmounted = false;
     let initialized = false;
     let aceEditor;
     const init = () => {
       if (!unmounted) {
-        aceEditor = window.ace.edit(elemRef.current, options);
+        aceEditor = window.ace.edit(refs.current.elem, options);
         aceEditor.setValue(value, -1);
         autoFocus && aceEditor.focus();
-        aceRef.current = aceEditor;
+        refs.current.ace = aceEditor;
         if (ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
         }
+
+        aceEditor.getSession().on('change', function(e) {
+          refs.current.onChange?.(e);
+        });
         setInitialized((initialized = true));
       }
     };
@@ -215,7 +226,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   useEffect(
     () => {
       if (initialized) {
-        aceRef.current.setOptions(options);
+        refs.current.ace.setOptions(options);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -227,8 +238,15 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   );
   useEffect(() => {
     if (initialized) {
-      aceRef.current.setValue(value, -1);
+      refs.current.ace.setValue(value, -1);
     }
   }, [initialized, value]);
-  return <pre ref={elemRef} className={props.className ?? classes.base} />;
+  return (
+    <pre
+      ref={(e) => {
+        refs.current.elem = e;
+      }}
+      className={props.className ?? classes.base}
+    />
+  );
 });

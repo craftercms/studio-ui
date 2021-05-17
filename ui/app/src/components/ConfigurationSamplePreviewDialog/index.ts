@@ -14,30 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './ConfigurationSamplePreviewDialog';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    paperRoot: {
-      display: 'flex',
-      padding: '30px',
-      flexDirection: 'column',
-      backgroundColor: theme.palette.background.default
-    },
-    logo: {
-      margin: '0 auto 20px auto'
-    },
-    row: {
-      display: 'flex',
-      marginTop: '10px',
-      '& .aboutLabel': {
-        marginRight: '10px'
-      }
-    },
-    externalLink: {
-      marginTop: '10px'
-    }
-  })
-);
+export * from './ConfigurationSamplePreviewDialog';
 
-export default useStyles;
+export * from './ConfigurationSamplePreviewDialogContainer';

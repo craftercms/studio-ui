@@ -14,30 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import React from 'react';
+import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    paperRoot: {
-      display: 'flex',
-      padding: '30px',
-      flexDirection: 'column',
-      backgroundColor: theme.palette.background.default
-    },
-    logo: {
-      margin: '0 auto 20px auto'
-    },
-    row: {
-      display: 'flex',
-      marginTop: '10px',
-      '& .aboutLabel': {
-        marginRight: '10px'
-      }
-    },
-    externalLink: {
-      marginTop: '10px'
-    }
-  })
-);
+export interface ConfigurationSamplePreviewDialogProps {
+  open: boolean;
+  content: string;
+  onClose(): void;
+  onUseSampleClick(type: 'replace' | 'append'): void;
+}
 
-export default useStyles;
+export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
+  const { open, onClose } = props;
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <ConfigurationSamplePreviewDialogContainer {...props} />
+    </Dialog>
+  );
+}
