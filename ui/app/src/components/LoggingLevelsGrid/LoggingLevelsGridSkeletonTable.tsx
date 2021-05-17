@@ -41,12 +41,12 @@ export const LoggingLevelsGridSkeletonTable = React.memo((props: LoggingLevelsGr
       <Table className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="bordered">
+            <GlobalAppGridCell className="bordered padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.logger" defaultMessage="Logger" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="bordered width20 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="loggingLevels.currentLevel" defaultMessage="Current Level" />
               </Typography>
@@ -56,10 +56,10 @@ export const LoggingLevelsGridSkeletonTable = React.memo((props: LoggingLevelsGr
         <TableBody>
           {items.map((item, index) => (
             <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="left">
+              <GlobalAppGridCell align="left" className="padded10">
                 <Skeleton variant="text" width={`${rand(40, 60)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
+              <GlobalAppGridCell align="left" className="padded10">
                 <Skeleton variant="text" width="30%" />
               </GlobalAppGridCell>
             </GlobalAppGridRow>

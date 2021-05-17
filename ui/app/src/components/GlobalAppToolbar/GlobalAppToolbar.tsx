@@ -21,6 +21,9 @@ import React from 'react';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 import Typography from '@material-ui/core/Typography';
+import LauncherOpenerButton from '../LauncherOpenerButton';
+import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
+import { defineMessages, useIntl } from 'react-intl';
 
 type GlobalAppToolbarClassKey = 'appBar' | 'toolbar' | 'title' | 'leftContent' | 'rightContent';
 
@@ -33,7 +36,16 @@ interface GlobalAppToolbarProps {
   rightContent?: React.ReactNode;
   styles?: GlobalAppToolbarStyles;
   classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
+  showHamburgerMenuButton?: boolean;
+  showAppsButton?: boolean;
 }
+
+const translations = defineMessages({
+  toggleSidebar: {
+    id: 'globalAppToolbar.toggleSidebar',
+    defaultMessage: 'Toggle Sidebar'
+  }
+});
 
 const useStyles = makeStyles((theme) =>
   createStyles<GlobalAppToolbarClassKey, GlobalAppToolbarStyles>({
@@ -52,6 +64,7 @@ const useStyles = makeStyles((theme) =>
       ...styles.toolbar
     }),
     title: (styles) => ({
+      marginLeft: '10px',
       ...styles.title
     }),
     leftContent: (styles) => ({
@@ -67,7 +80,15 @@ const useStyles = makeStyles((theme) =>
 
 export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
   const classes = useStyles(props.styles);
-  const { title, leftContent, rightContent, elevation = 0 } = props;
+  const {
+    title,
+    leftContent,
+    rightContent,
+    elevation = 0,
+    showHamburgerMenuButton = true,
+    showAppsButton = true
+  } = props;
+  const { formatMessage } = useIntl();
   return (
     <AppBar
       color="inherit"
@@ -76,13 +97,26 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
       className={clsx(classes.appBar, props.classes?.appBar)}
     >
       <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>
+        {showHamburgerMenuButton && (
+          <LogoAndMenuBundleButton
+            aria-label={formatMessage(translations.toggleSidebar)}
+            onClick={() => {
+              if (window.location.hash.includes('/globalMenu/')) {
+                window.location.hash = window.location.hash.replace('/globalMenu', '');
+              } else {
+                window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
+              }
+            }}
+          />
+        )}
         <section className={clsx(classes.title, props.classes?.title)}>
-          <Typography variant="h4" component="h1">
+          <Typography variant="h5" component="h1">
             {title}
           </Typography>
         </section>
         <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
         <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
+        {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
       </Toolbar>
     </AppBar>
   );

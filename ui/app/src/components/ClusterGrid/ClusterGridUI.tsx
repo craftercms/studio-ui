@@ -45,7 +45,7 @@ export default function ClusterGridUI(props: ClusterGridProps) {
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="bordered width10 minWidth100">
+            <GlobalAppGridCell align="left" className="bordered width10 minWidth100 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Local Address" />
               </Typography>
@@ -76,10 +76,10 @@ export default function ClusterGridUI(props: ClusterGridProps) {
         <TableBody>
           {clusters.map((cluster, i) => (
             <GlobalAppGridRow key={cluster.id} className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="width10">
+              <GlobalAppGridCell align="left" className="width10 padded10">
                 {cluster.localAddress}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="center" className="">
+              <GlobalAppGridCell align="center" className="padded10">
                 <FiberManualRecordRoundedIcon
                   className={cluster.state === 'ACTIVE' ? classes.active : classes.inactive}
                 />

@@ -15,7 +15,7 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { encrypt as encryptService } from '../services/security';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
@@ -29,16 +29,14 @@ import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import GlobalAppToolbar from './GlobalAppToolbar';
+import Box from '@material-ui/core/Box';
 
 interface EncryptToolProps {
   site: string;
 }
 
 const messages = defineMessages({
-  pageTitle: {
-    id: 'encryptTool.pageTitle',
-    defaultMessage: 'Encryption Tool'
-  },
   inputLabel: {
     id: 'encryptTool.inputLabel',
     defaultMessage: 'Raw Text'
@@ -62,8 +60,8 @@ const messages = defineMessages({
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
-  header: {
-    marginTop: 0
+  form: {
+    padding: '20px'
   },
   title: {
     color: '#555555'
@@ -131,6 +129,7 @@ function SnackbarContentWrapper(props: any) {
 }
 
 const EncryptTool = (props: EncryptToolProps) => {
+  const { site } = props;
   const classes = useStyles({});
   const inputRef = useRef();
   const [text, setText] = useState('');
@@ -151,7 +150,7 @@ const EncryptTool = (props: EncryptToolProps) => {
       setRequestForgeryToken();
       setFetching(true);
       setResult(null);
-      encryptService(text, props.site).subscribe(
+      encryptService(text, site).subscribe(
         (encryptedText) => {
           setFetching(false);
           setText('');
@@ -180,70 +179,76 @@ const EncryptTool = (props: EncryptToolProps) => {
   };
 
   return (
-    <form onSubmit={encrypt} className="site-config-landing-page">
-      <header className={`${classes.header} screen-title mb10`} style={{ marginTop: 0 }}>
-        <h1 className={classes.title}>{formatMessage(messages.pageTitle)}</h1>
-      </header>
-      <div className="form-group">
-        <TextField
-          label={formatMessage(messages.inputLabel)}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          fullWidth
-          id="encryptionToolRawText"
-          name="encryptionToolRawText"
-          autoFocus
-          disabled={fetching}
-        />
-      </div>
-      {result && (
-        <div className="form-group">
-          <input
-            readOnly
-            type="text"
-            ref={inputRef}
-            className="well"
-            value={`\${enc:${result}}`}
-            onClick={(e: any) => {
-              copyToClipboard(e.target);
-              setNotificationSettings({ open: true, variant: 'success' });
-            }}
-            style={{
-              display: 'block',
-              width: '100%'
-            }}
-          />
-        </div>
-      )}
-      <div className="form-group">
-        <Button type="button" onClick={clear} disabled={fetching} color="default" variant="outlined">
-          {formatMessage(messages.clearResultButtonText)}
-        </Button>{' '}
-        <Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">
-          {formatMessage(messages.buttonText)}
-        </Button>
-      </div>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        open={notificationSettings.open}
-        autoHideDuration={5000}
-        onClose={() => {
-          setNotificationSettings({ open: false });
-        }}
-      >
-        <SnackbarContentWrapper
-          onClose={() => setNotificationSettings({ open: false })}
-          variant={notificationSettings.variant}
-          className={notificationSettings.variant === 'success' ? classes.success : classes.error}
-          message={formatMessage(
-            notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
+    <section>
+      <GlobalAppToolbar
+        title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
+        showHamburgerMenuButton={!site}
+        showAppsButton={!site}
+      />
+      <Box p={site ? '20px' : 0}>
+        <form onSubmit={encrypt}>
+          <div className="form-group">
+            <TextField
+              label={formatMessage(messages.inputLabel)}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              fullWidth
+              id="encryptionToolRawText"
+              name="encryptionToolRawText"
+              autoFocus
+              disabled={fetching}
+            />
+          </div>
+          {result && (
+            <div className="form-group">
+              <input
+                readOnly
+                type="text"
+                ref={inputRef}
+                className="well"
+                value={`\${enc:${result}}`}
+                onClick={(e: any) => {
+                  copyToClipboard(e.target);
+                  setNotificationSettings({ open: true, variant: 'success' });
+                }}
+                style={{
+                  display: 'block',
+                  width: '100%'
+                }}
+              />
+            </div>
           )}
-        />
-      </Snackbar>
-    </form>
+          <div className="form-group">
+            <Button type="button" onClick={clear} disabled={fetching} color="default" variant="outlined">
+              {formatMessage(messages.clearResultButtonText)}
+            </Button>{' '}
+            <Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">
+              {formatMessage(messages.buttonText)}
+            </Button>
+          </div>
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            open={notificationSettings.open}
+            autoHideDuration={5000}
+            onClose={() => {
+              setNotificationSettings({ open: false });
+            }}
+          >
+            <SnackbarContentWrapper
+              onClose={() => setNotificationSettings({ open: false })}
+              variant={notificationSettings.variant}
+              className={notificationSettings.variant === 'success' ? classes.success : classes.error}
+              message={formatMessage(
+                notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
+              )}
+            />
+          </Snackbar>
+        </form>
+      </Box>
+    </section>
   );
 };
 

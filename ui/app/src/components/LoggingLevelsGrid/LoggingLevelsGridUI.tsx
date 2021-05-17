@@ -47,12 +47,12 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
         <Table className={classes.tableRoot}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell className="bordered">
+              <GlobalAppGridCell className="bordered padded10">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.logger" defaultMessage="Logger" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width20">
+              <GlobalAppGridCell className="bordered width20 padded10">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="loggingLevels.changeLevelTo" defaultMessage="Current Level" />
                 </Typography>
@@ -62,8 +62,10 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
           <TableBody>
             {loggers.map((logger) => (
               <GlobalAppGridRow key={logger.name} className="hoverDisabled">
-                <GlobalAppGridCell align="left">{logger.name}</GlobalAppGridCell>
-                <GlobalAppGridCell align="left">
+                <GlobalAppGridCell align="left" className="padded10">
+                  {logger.name}
+                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left" className="padded10">
                   <Select
                     value={logger.level}
                     onChange={(event) => {
