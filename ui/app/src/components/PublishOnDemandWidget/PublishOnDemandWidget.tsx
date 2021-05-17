@@ -58,9 +58,6 @@ const useStyles = makeStyles((theme) =>
     formContainer: {
       marginTop: '20px'
     },
-    cancelBtn: {
-      marginRight: '20px'
-    },
     noteContainer: {
       textAlign: 'center',
       marginTop: '20px'
@@ -317,7 +314,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
       {mode && (
         <DialogFooter>
-          <Button variant="outlined" color="default" onClick={onCancel} className={classes.cancelBtn} disabled={!mode}>
+          <Button variant="outlined" color="default" onClick={onCancel}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </Button>
           <Button
