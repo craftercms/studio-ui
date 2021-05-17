@@ -445,6 +445,10 @@ const words = defineMessages({
   reason: {
     id: 'words.reason',
     defaultMessage: 'Reason'
+  },
+  view: {
+    id: 'words.view',
+    defaultMessage: 'View'
   }
 });
 
