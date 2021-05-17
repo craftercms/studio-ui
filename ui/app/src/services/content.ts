@@ -15,7 +15,7 @@
  */
 
 import { get } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { map, mapTo } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { getRequestForgeryToken } from '../utils/auth';
 
@@ -33,7 +33,12 @@ export function getBulkUploadUrl(site: string, path: string): string {
   return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`;
 }
 
+export function unlock(site: string, path: string): Observable<boolean> {
+  return get(`/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`).pipe(mapTo(true));
+}
+
 export default {
   getContent,
-  getDOM
+  getDOM,
+  unlock
 };
