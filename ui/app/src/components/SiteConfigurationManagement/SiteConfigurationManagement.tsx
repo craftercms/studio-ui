@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
@@ -23,7 +23,7 @@ import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import useStyles, { useResizeableStyles } from './styles';
+import useStyles from './styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -64,6 +64,7 @@ import { findPendingEncryption } from '../../utils/encrypt';
 import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import ResizeBar from '../ResizeBar';
 
 export default function SiteConfigurationManagement() {
   const site = useActiveSiteId();
@@ -420,12 +421,12 @@ export default function SiteConfigurationManagement() {
                     title={
                       <FormattedMessage
                         id="siteConfigurationManagement.environment"
-                        defaultMessage="Active Environment: {environment}"
-                        values={{ environment: capitalize(environment) }}
+                        defaultMessage='The active environment is "{environment}"'
+                        values={{ environment }}
                       />
                     }
                   >
-                    <Alert severity="info" className={classes.alert}>
+                    <Alert severity="info" className={classes.alert} classes={{ message: classes.ellipsis }}>
                       <FormattedMessage
                         id="siteConfigurationManagement.activeEnvironment"
                         defaultMessage="{environment} Environment"
@@ -509,6 +510,7 @@ export default function SiteConfigurationManagement() {
         <Box
           display="flex"
           flexGrow={1}
+          width={openDrawer ? `calc(100% - ${width}px )` : '100%'}
           flexDirection={loadingXml ? 'row' : 'column'}
           paddingLeft={openDrawer ? `${width}px` : 0}
         >
@@ -525,6 +527,7 @@ export default function SiteConfigurationManagement() {
                 </IconButton>
               }
               title={getTranslation(selectedConfigFile.title, translations, formatMessage)}
+              subtitle={getTranslation(selectedConfigFile.description, translations, formatMessage)}
               rightContent={
                 <>
                   <ButtonGroup variant="outlined" className={classes.buttonGroup}>
@@ -568,7 +571,7 @@ export default function SiteConfigurationManagement() {
               />
               {showSampleEditor && (
                 <>
-                  <ResizeableBar onWidthChange={onEditorResize} element={editorRef.current.container} />
+                  <ResizeBar onWidthChange={onEditorResize} element={editorRef.current.container} />
                   <ConditionalLoadingState isLoading={loadingSampleXml} classes={{ root: classes.loadingStateRight }}>
                     <AceEditor
                       className={clsx(classes.editorCleanStyles, classes.sampleEditor)}
@@ -616,47 +619,5 @@ export default function SiteConfigurationManagement() {
       )}
       <ConfirmDialog open={false} {...confirmDialogProps} />
     </section>
-  );
-}
-
-interface ResizeableBarProps {
-  onWidthChange(width: number): void;
-  element?: any;
-}
-
-function ResizeableBar(props: ResizeableBarProps) {
-  const classes = useResizeableStyles();
-  const [resizeActive, setResizeActive] = useState(false);
-  const { onWidthChange, element } = props;
-
-  const handleMouseMove = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (element) {
-        const containerOffsetLeft = element.getBoundingClientRect().left;
-        const newWidth = e.clientX - containerOffsetLeft - 5;
-
-        onWidthChange(newWidth);
-      }
-    },
-    [element, onWidthChange]
-  );
-
-  const handleMouseDown = () => {
-    setResizeActive(true);
-    const handleMouseUp = () => {
-      setResizeActive(false);
-      document.removeEventListener('mouseup', handleMouseUp, true);
-      document.removeEventListener('mousemove', handleMouseMove, true);
-    };
-    document.addEventListener('mouseup', handleMouseUp, true);
-    document.addEventListener('mousemove', handleMouseMove, true);
-  };
-
-  return (
-    <div
-      onMouseDown={handleMouseDown}
-      className={clsx(classes.resizeHandle, resizeActive && classes.resizeHandleActive)}
-    />
   );
 }
