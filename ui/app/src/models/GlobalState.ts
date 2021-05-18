@@ -61,7 +61,22 @@ import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
-import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+
+export interface DateTimeFormatOptions {
+  localeMatcher?: string;
+  weekday?: string;
+  era?: string;
+  year?: string;
+  month?: string;
+  day?: string;
+  hour?: string;
+  minute?: string;
+  second?: string;
+  timeZoneName?: string;
+  formatMatcher?: string;
+  hour12?: boolean;
+  timeZone?: string;
+}
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;

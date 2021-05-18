@@ -66,7 +66,7 @@ export const OperationsMessages = defineMessages({
     defaultMessage: 'Remove Members'
   },
   Add_remote: {
-    id: 'operations.Login_failed',
+    id: 'operations.Add_remote',
     defaultMessage: 'Add Remote'
   },
   Remove_remote: {
