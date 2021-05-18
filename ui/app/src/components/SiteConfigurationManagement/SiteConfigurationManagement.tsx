@@ -44,9 +44,8 @@ import SecondaryButton from '../SecondaryButton';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import ConfirmDialog, { ConfirmDialogProps } from '../Dialogs/ConfirmDialog';
 import informationGraphicUrl from '../../assets/information.svg';
-import errorGraphicUrl from '../../assets/desert.svg';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
@@ -54,7 +53,7 @@ import { fetchItemVersions } from '../../state/reducers/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../Controls/SearchBar';
 import Alert from '@material-ui/lab/Alert';
-import { showConfirmDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
@@ -80,12 +79,11 @@ export default function SiteConfigurationManagement() {
   const [encrypting, setEncrypting] = useState(false);
   const [loadingSampleXml, setLoadingSampleXml] = useState(false);
   const [showSampleEditor, setShowSampleEditor] = useState(false);
-  const [showEncryptDialogHelper, setShowEncryptDialogHelper] = useState(false);
   const [width, setWidth] = useState(240);
   const [openDrawer, setOpenDrawer] = useState(true);
   const [leftEditorWidth, setLeftEditorWidth] = useState<number>(null);
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
-  const [unsavedChangesFile, setUnsavedChangesFile] = useState(null);
+  const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(null);
   const [keyword, setKeyword] = useState('');
   const dispatch = useDispatch();
 
@@ -161,21 +159,58 @@ export default function SiteConfigurationManagement() {
         }
       );
     } else {
-      dispatch(
-        showConfirmDialog({
-          imageUrl: informationGraphicUrl,
-          title: tags.length ? formatMessage(translations.allEncrypted) : formatMessage(translations.noEncryptItems)
-        })
-      );
+      setConfirmDialogProps({
+        open: true,
+        imageUrl: informationGraphicUrl,
+        title: tags.length ? formatMessage(translations.allEncrypted) : formatMessage(translations.noEncryptItems),
+        onOk: onConfirmDialogClose,
+        onClose: onConfirmDialogClose,
+        onClosed: onConfirmDialogClosed
+      });
     }
   };
 
   const onEncryptHelpClick = () => {
-    setShowEncryptDialogHelper(true);
-  };
-
-  const onEncryptHelpClose = () => {
-    setShowEncryptDialogHelper(false);
+    setConfirmDialogProps({
+      open: true,
+      maxWidth: 'sm',
+      onOk: onConfirmDialogClose,
+      onClose: onConfirmDialogClose,
+      onClosed: onConfirmDialogClosed,
+      imageUrl: informationGraphicUrl,
+      children: (
+        <section className={classes.confirmDialogBody}>
+          <Typography className={classes.textMargin} variant="subtitle1">
+            {formatMessage(translations.encryptMarked)}
+          </Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(translations.encryptHintPt1)}
+          </Typography>
+          <Typography variant="body2">{formatMessage(translations.encryptHintPt2, bold)}</Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(translations.encryptHintPt3, tags)}
+          </Typography>
+          <Typography variant="body2">{formatMessage(translations.encryptHintPt4, bold)}</Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(translations.encryptHintPt5, tagsAndCurls)}
+          </Typography>
+          <Typography className={classes.textMargin} variant="body2">
+            {formatMessage(translations.encryptHintPt6)}
+          </Typography>
+          <ul>
+            <li>
+              <Typography variant="body2">{formatMessage(translations.encryptHintPt7)}</Typography>
+            </li>
+            <li>
+              <Typography variant="body2">{formatMessage(translations.encryptHintPt8)}</Typography>
+            </li>
+            <li>
+              <Typography variant="body2">{formatMessage(translations.encryptHintPt9)}</Typography>
+            </li>
+          </ul>
+        </section>
+      )
+    });
   };
 
   const onViewSampleClick = () => {
@@ -207,6 +242,9 @@ export default function SiteConfigurationManagement() {
     if (encrypting !== null) {
       setEncrypting(false);
     }
+    if (!disabledSaveButton) {
+      setDisabledSaveButton(true);
+    }
   };
 
   const onListItemClick = (file: SiteConfigurationFile) => {
@@ -217,18 +255,17 @@ export default function SiteConfigurationManagement() {
     onClean();
   };
 
-  const onUnsavedChangesOk = () => {
-    setUnsavedChangesFile(false);
-    onListItemClick(unsavedChangesFile);
+  const onUnsavedChangesOk = (file: SiteConfigurationFile) => {
+    setConfirmDialogProps({ ...confirmDialogProps, open: false });
+    onListItemClick(file);
   };
 
-  const onUnsavedChangesCancel = () => {
-    setUnsavedChangesFile(false);
+  const onConfirmDialogClose = () => {
+    setConfirmDialogProps({ ...confirmDialogProps, open: false });
   };
 
-  const onUnsavedChangesClosed = () => {
-    setUnsavedChangesFile(null);
-    setUnsavedChangesFile(false);
+  const onConfirmDialogClosed = () => {
+    setConfirmDialogProps(null);
   };
 
   const onEditorResize = (width: number) => {
@@ -262,8 +299,24 @@ export default function SiteConfigurationManagement() {
   };
 
   const onCancel = () => {
-    setSelectedConfigFile(null);
     onClean();
+    setSelectedConfigFile(null);
+  };
+
+  const showUnsavedChangesConfirm = (file: SiteConfigurationFile) => {
+    setConfirmDialogProps({
+      open: true,
+      title: <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />,
+      body: (
+        <FormattedMessage
+          id="siteConfigurationManagement.unsavedChangesSubtitle"
+          defaultMessage="You have unsaved changes, do you want to leave?"
+        />
+      ),
+      onClosed: onConfirmDialogClosed,
+      onOk: () => onUnsavedChangesOk(file),
+      onCancel: onConfirmDialogClose
+    });
   };
 
   const onSave = () => {
@@ -295,20 +348,42 @@ export default function SiteConfigurationManagement() {
                 message: formatMessage(translations.configSaved)
               })
             );
+            setDisabledSaveButton(true);
           },
           ({ response: { response } }) => {
             dispatch(showErrorDialog({ error: response }));
           }
         );
       } else {
-        dispatch(
-          showConfirmDialog({
-            imageUrl: errorGraphicUrl,
-            title: formatMessage(translations.pendingEncryptions, {
-              count: unencryptedItems.length
-            })
-          })
-        );
+        let tags;
+        if (unencryptedItems.length > 1) {
+          tags = unencryptedItems.map((item) => {
+            return formatMessage(translations.encryptionSingleDetail, {
+              name: item.tag.tagName,
+              value: item.text,
+              br: <br key={item.text} />
+            });
+          });
+        } else {
+          tags = formatMessage(translations.encryptionSingleDetail, {
+            name: unencryptedItems[0].tag.tagName,
+            value: unencryptedItems[0].text,
+            br: null
+          });
+        }
+
+        setConfirmDialogProps({
+          open: true,
+          imageUrl: informationGraphicUrl,
+          title: formatMessage(translations.pendingEncryption, {
+            itemCount: unencryptedItems.length,
+            tags,
+            br: unencryptedItems.length ? <br key={unencryptedItems.length} /> : null
+          }),
+          onOk: onConfirmDialogClose,
+          onClose: onConfirmDialogClose,
+          onClosed: onConfirmDialogClosed
+        });
       }
     }
   };
@@ -391,7 +466,7 @@ export default function SiteConfigurationManagement() {
                     selected={file.path === selectedConfigFile?.path}
                     onClick={() => {
                       if (!disabledSaveButton && file.path !== selectedConfigFile?.path) {
-                        setUnsavedChangesFile(file);
+                        showUnsavedChangesConfirm(file);
                       } else {
                         onListItemClick(file);
                       }
@@ -539,59 +614,7 @@ export default function SiteConfigurationManagement() {
           />
         </Box>
       )}
-      <ConfirmDialog
-        open={Boolean(unsavedChangesFile)}
-        title={
-          <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
-        }
-        body={
-          <FormattedMessage
-            id="siteConfigurationManagement.unsavedChangesSubtitle"
-            defaultMessage="You have unsaved changes, do you want to leave?"
-          />
-        }
-        onClosed={onUnsavedChangesClosed}
-        onOk={onUnsavedChangesOk}
-        onCancel={onUnsavedChangesCancel}
-      />
-      <ConfirmDialog
-        open={showEncryptDialogHelper}
-        maxWidth="sm"
-        onOk={onEncryptHelpClose}
-        onClose={onEncryptHelpClose}
-        imageUrl={informationGraphicUrl}
-      >
-        <section className={classes.confirmDialogBody}>
-          <Typography className={classes.textMargin} variant="subtitle1">
-            {formatMessage(translations.encryptMarked)}
-          </Typography>
-          <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(translations.encryptHintPt1)}
-          </Typography>
-          <Typography variant="body2">{formatMessage(translations.encryptHintPt2, bold)}</Typography>
-          <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(translations.encryptHintPt3, tags)}
-          </Typography>
-          <Typography variant="body2">{formatMessage(translations.encryptHintPt4, bold)}</Typography>
-          <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(translations.encryptHintPt5, tagsAndCurls)}
-          </Typography>
-          <Typography className={classes.textMargin} variant="body2">
-            {formatMessage(translations.encryptHintPt6)}
-          </Typography>
-          <ul>
-            <li>
-              <Typography variant="body2">{formatMessage(translations.encryptHintPt7)}</Typography>
-            </li>
-            <li>
-              <Typography variant="body2">{formatMessage(translations.encryptHintPt8)}</Typography>
-            </li>
-            <li>
-              <Typography variant="body2">{formatMessage(translations.encryptHintPt9)}</Typography>
-            </li>
-          </ul>
-        </section>
-      </ConfirmDialog>
+      <ConfirmDialog open={false} {...confirmDialogProps} />
     </section>
   );
 }

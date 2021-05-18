@@ -321,10 +321,15 @@ export const translations = defineMessages({
     defaultMessage:
       'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
   },
-  pendingEncryptions: {
-    id: 'adminConfigurations.pendingEncryptions',
+  encryptionSingleDetail: {
+    id: 'adminConfigurations.encryptionSingleDetail',
+    defaultMessage: '{br}"{name}" with value "{value}"'
+  },
+  pendingEncryption: {
+    id: 'adminConfigurations.pendingEncryption',
     defaultMessage:
-      "{count, plural, one {One tag is marked for encryption but hasn't} other {Tags are marked for encryption but haven't been encrypted, please trigger encryption or remove the tag flagging}}"
+      "{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn't}" +
+      "other {Tag names: {tags} {br} are marked for encryption but haven't}} been encrypted, please trigger encryption or remove the tag flagging."
   },
   encryptMarked: {
     id: 'adminConfigurations.encryptMarked',
