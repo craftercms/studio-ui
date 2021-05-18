@@ -376,5 +376,9 @@ export const translations = defineMessages({
   configSaved: {
     id: 'adminConfigurations.configSaved',
     defaultMessage: 'Configuration saved successfully.'
+  },
+  documentError: {
+    id: 'adminConfigurations.documentError',
+    defaultMessage: 'The document contains errors. Check for error markers on side of the editor.'
   }
 });

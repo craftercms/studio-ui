@@ -270,29 +270,46 @@ export default function SiteConfigurationManagement() {
     const content = editorRef.current.getValue();
     const doc = fromString(content);
     const unencryptedItems = findPendingEncryption(doc.querySelectorAll('[encrypted]'));
-    if (unencryptedItems.length === 0) {
-      writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
-        () => {
-          dispatch(
-            showSystemNotification({
-              message: formatMessage(translations.configSaved)
-            })
-          );
-        },
-        ({ response: { response } }) => {
-          dispatch(showErrorDialog({ error: response }));
-        }
-      );
-      // save
-    } else {
+    const errors = editorRef.current
+      .getSession()
+      .getAnnotations()
+      .filter((annotation) => {
+        return annotation.type === 'error';
+      });
+
+    if (errors.length) {
       dispatch(
-        showConfirmDialog({
-          imageUrl: errorGraphicUrl,
-          title: formatMessage(translations.pendingEncryptions, {
-            count: unencryptedItems.length
-          })
+        showSystemNotification({
+          message: formatMessage(translations.documentError),
+          options: {
+            variant: 'error'
+          }
         })
       );
+    } else {
+      if (unencryptedItems.length === 0) {
+        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
+          () => {
+            dispatch(
+              showSystemNotification({
+                message: formatMessage(translations.configSaved)
+              })
+            );
+          },
+          ({ response: { response } }) => {
+            dispatch(showErrorDialog({ error: response }));
+          }
+        );
+      } else {
+        dispatch(
+          showConfirmDialog({
+            imageUrl: errorGraphicUrl,
+            title: formatMessage(translations.pendingEncryptions, {
+              count: unencryptedItems.length
+            })
+          })
+        );
+      }
     }
   };
 
@@ -593,7 +610,7 @@ function ResizeableBar(props: ResizeableBarProps) {
     (e) => {
       e.preventDefault();
       if (element) {
-        const containerOffsetLeft = element.offsetLeft;
+        const containerOffsetLeft = element.getBoundingClientRect().left;
         const newWidth = e.clientX - containerOffsetLeft - 5;
 
         onWidthChange(newWidth);
