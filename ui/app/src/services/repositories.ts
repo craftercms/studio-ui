@@ -55,8 +55,8 @@ export function diffConflictedFile(siteId: string, path: string): Observable<Fil
   return get(`${repositoryUrl}/diff_conflicted_file?siteId=${siteId}&path${path}`).pipe(pluck('response', 'diff'));
 }
 
-export function commitResolution(siteId: string, commit_message: string): Observable<RepositoryStatus> {
-  return postJSON(`${repositoryUrl}/commit_resolution`, { siteId, commit_message }).pipe(
+export function commitResolution(siteId: string, commitMessage: string): Observable<RepositoryStatus> {
+  return postJSON(`${repositoryUrl}/commit_resolution`, { siteId, commitMessage }).pipe(
     pluck('response', 'repositoryStatus')
   );
 }

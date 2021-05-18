@@ -14,10 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RemoteRepositoriesGridUI';
+export { default } from './CommitResolutionDialog';
 
-export * from './RemoteRepositoriesGridUI';
-
-export * from './RemoteRepositoriesGridSkeletonTable';
-
-export * from './RemoteRepositoriesStatusUI';
+export * from './CommitResolutionDialog';

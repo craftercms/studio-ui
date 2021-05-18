@@ -25,6 +25,23 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import { addRemote } from '../../services/repositories';
 
+const inputsInitialState = {
+  authenticationType: 'none',
+  expanded: {
+    basic: false,
+    token: false,
+    key: false
+  },
+  repoAuthentication: 'none',
+  repoUsername: '',
+  repoToken: '',
+  repoPassword: '',
+  repoKey: '',
+  remoteName: '',
+  remoteUrl: '',
+  submitted: false
+};
+
 export interface NewRemoteRepositoryDialogProps {
   open: boolean;
   onClose(): void;
@@ -34,22 +51,7 @@ export interface NewRemoteRepositoryDialogProps {
 export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
   const { open, onClose, onCreateSuccess } = props;
   const siteId = useActiveSiteId();
-  const [inputs, setInputs] = useSpreadState({
-    authenticationType: 'none',
-    expanded: {
-      basic: false,
-      token: false,
-      key: false
-    },
-    repoAuthentication: 'none',
-    repoUsername: '',
-    repoToken: '',
-    repoPassword: '',
-    repoKey: '',
-    remoteName: '',
-    remoteUrl: '',
-    submitted: false
-  });
+  const [inputs, setInputs] = useSpreadState(inputsInitialState);
 
   const isFormValid = useCallback(() => {
     if (!inputs.remoteName || !inputs.remoteUrl) {
