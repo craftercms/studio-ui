@@ -109,7 +109,10 @@ class Dashboard extends UppyDashboard {
           fileIdLookup[target] = file.id;
           return {
             type: 'CREATE',
-            target
+            target,
+            contentMetadata: {
+              fileSize: file.size
+            }
           };
         })
       )
