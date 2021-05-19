@@ -40,12 +40,12 @@ export const GroupsGridSkeletonTable = React.memo((props: GroupsGridSkeletonTabl
       <Table className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="bordered width25">
+            <GlobalAppGridCell align="left" className="bordered width25 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.name" defaultMessage="Name" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered">
+            <GlobalAppGridCell align="left" className="bordered padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.username" defaultMessage="Description" />
               </Typography>
@@ -55,10 +55,10 @@ export const GroupsGridSkeletonTable = React.memo((props: GroupsGridSkeletonTabl
         <TableBody>
           {items?.map((width, index) => (
             <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="left" className="width25">
+              <GlobalAppGridCell align="left" className="width25 padded10">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
+              <GlobalAppGridCell align="left" className="padded10">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
               </GlobalAppGridCell>
             </GlobalAppGridRow>

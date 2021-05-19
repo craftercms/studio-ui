@@ -22,7 +22,7 @@ export const useSitesGridStyles = makeStyles(() =>
     root: {
       display: 'flex',
       flexDirection: 'column',
-      marginTop: '20px'
+      padding: '20px'
     },
     paginationRoot: {
       '&:last-child': {
@@ -39,7 +39,7 @@ export const useSiteCardStyles = makeStyles(() =>
       height: '226px'
     },
     card: {
-      width: '400px',
+      width: '340px',
       '&.compact': {
         display: 'flex'
       }

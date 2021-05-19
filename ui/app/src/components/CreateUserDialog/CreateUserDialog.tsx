@@ -15,7 +15,7 @@
  */
 
 import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
+import React, { useState } from 'react';
 import { CreateUserDialogUIProps, CreateUserDialogContainer } from './CreateUserDialogContainer';
 
 export interface CreateUserDialogProps extends CreateUserDialogUIProps {
@@ -24,9 +24,17 @@ export interface CreateUserDialogProps extends CreateUserDialogUIProps {
 
 export function CreateUserDialog(props: CreateUserDialogProps) {
   const { open, onClose } = props;
+  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <CreateUserDialogContainer {...props} />
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="md"
+      disableBackdropClick={disableBackdropClick}
+      disableEscapeKeyDown={disableBackdropClick}
+    >
+      <CreateUserDialogContainer setDisableBackdropClick={setDisableBackdropClick} {...props} />
     </Dialog>
   );
 }

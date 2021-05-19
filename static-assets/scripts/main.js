@@ -856,25 +856,6 @@
 
       $rootScope.isFooter = !$location.$$search.iframe;
 
-      let container = document.querySelector('#menuBundleButton');
-      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'LogoAndMenuBundleButton', {
-        onClick() {
-          if (window.location.hash.includes('/globalMenu/')) {
-            window.location.hash = window.location.hash.replace('/globalMenu', '');
-          } else {
-            window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
-          }
-        }
-      });
-
-      container = document.querySelector('#appsIconLauncher');
-      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(container, 'LauncherOpenerButton', {
-        sitesRailPosition: 'left',
-        icon: 'apps'
-      });
-
       $scope.loadHomeState = function() {
         var currentState = $state.current.name,
           homeState = 'home.globalMenu';
@@ -1033,32 +1014,22 @@
     '$uibModal',
     '$state',
     function($rootScope, $scope, $element, $timeout, $uibModal, $state) {
-      $scope.globalConfig = {};
-      let globalConfig = $scope.globalConfig;
+      let isModified = false;
+      let unmount;
       $scope.messages = {
-        title: formatMessage(globalConfigMessages.title),
-        viewSample: formatMessage(globalConfigMessages.viewSample),
-        sampleFile: formatMessage(globalConfigMessages.sampleFile),
-        useSampleContent: formatMessage(globalConfigMessages.useSampleContent),
-        replaceContent: formatMessage(globalConfigMessages.replaceContent),
-        appendContent: formatMessage(globalConfigMessages.appendContent),
-        confirmSave: formatMessage(globalConfigMessages.confirmSave),
-        confirmReset: formatMessage(globalConfigMessages.confirmReset),
         unSavedConfirmation: formatMessage(globalConfigMessages.unSavedConfirmation),
         unSavedConfirmationTitle: formatMessage(globalConfigMessages.unSavedConfirmationTitle),
-        cancel: formatMessage(words.cancel),
-        reset: formatMessage(words.reset),
-        close: formatMessage(words.close),
         yes: formatMessage(words.yes),
-        no: formatMessage(words.no),
-        save: formatMessage(words.save)
+        no: formatMessage(words.no)
       };
 
-      $scope.uiEnabled = false;
-      let defaultValue = '';
-      let sampleValue = '';
-
-      let configurationApi = CrafterCMSNext.services.configuration;
+      CrafterCMSNext.render(document.querySelector('#global-config-view'), 'GlobalConfigManagement', {
+        onEditorChanges: (hasChanges) => {
+          isModified = hasChanges;
+        }
+      }).then((done) => {
+        unmount = done.unmount;
+      });
 
       $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
@@ -1076,158 +1047,56 @@
         $scope.confirmationModal.close();
       };
 
-      const aceEditor = ace.edit('globalConfigAceEditor');
+      $rootScope.$on('$stateChangeStart', function(event, toState) {
+        if (isModified) {
+          event.preventDefault();
+          const onOk = 'confirmDialogOnOk';
+          const onCancel = 'confirmDialogOnCancel';
+          let unsubscribe, cancelUnsubscribe;
 
-      const fileErrors = (editor) => {
-        const editorAnnotations = editor.getSession().getAnnotations();
-        const errors = editorAnnotations.filter((annotation) => {
-          return annotation.type === 'error';
-        });
-
-        return errors;
-      };
-
-      aceEditor.setOptions({
-        readOnly: true,
-        value: defaultValue,
-        mode: 'ace/mode/yaml',
-        theme: 'ace/theme/textmate'
-      });
-
-      aceEditor.getSession().on('change', function() {
-        globalConfig.isModified = true;
-      });
-
-      CrafterCMSNext.system.getStore().subscribe(() => {
-        configurationApi
-          .fetchConfigurationXML('studio_root', '/configuration/studio-config-override.yaml', 'studio')
-          .subscribe((data) => {
-            aceEditor.setValue(data || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
-            aceEditor.focus();
-            defaultValue = data;
-            globalConfig.isModified = false;
-            enableUI(true);
-            $scope.$apply();
-          });
-        // Differ the loading of the sample config file to the "background"
-        // Loading the value from this higher order controller allows caching,
-        // avoiding fetching it multiple times on every sample modal open.
-        setTimeout(() => {
-          configurationApi
-            .fetchConfigurationXML('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio')
-            .subscribe((data) => {
-              sampleValue = data;
-              $scope.$apply();
-            });
-        });
-      });
-
-      $scope.checkDocumentErrors = function(saveOnSuccess) {
-        const errors = fileErrors(aceEditor);
-        if (errors.length) {
-          $scope.documentHasErrors = true;
           CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_SYSTEM_NOTIFICATION',
+            type: 'SHOW_CONFIRM_DIALOG',
             payload: {
-              message: formatMessage(globalConfigMessages.documentError),
-              options: {
-                variant: 'error'
+              open: true,
+              title: formatMessage(globalConfigMessages.unSavedConfirmationTitle),
+              body: formatMessage(globalConfigMessages.unSavedConfirmation),
+              onOk: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: onOk }
+                  },
+                  {
+                    type: 'CLOSE_CONFIRM_DIALOG'
+                  }
+                ]
+              },
+              onCancel: {
+                type: 'CONFIRM_DIALOG_CLOSED'
+              },
+              onClosed: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: onCancel }
+                  },
+                  { type: 'CONFIRM_DIALOG_CLOSED' }
+                ]
               }
             }
           });
-        } else {
-          $scope.documentHasErrors = false;
-          if (saveOnSuccess) {
-            $scope.save();
-          }
-        }
-      };
 
-      $scope.save = function() {
-        enableUI(false);
-        const value = aceEditor.getValue();
-        configurationApi
-          .writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value)
-          .subscribe(
-            () => {
-              enableUI(true);
-              defaultValue = value;
-              aceEditor.focus();
-              globalConfig.isModified = false;
-              CrafterCMSNext.system.store.dispatch({
-                type: 'SHOW_SYSTEM_NOTIFICATION',
-                payload: {
-                  message: formatMessage(globalConfigMessages.successfulSave)
-                }
-              });
-
-              $scope.$apply();
-            },
-            (e) => {
-              enableUI(true);
-              CrafterCMSNext.system.store.dispatch({
-                type: 'SHOW_SYSTEM_NOTIFICATION',
-                payload: {
-                  message:
-                    (e.response && e.response.response && e.response.response.message) ||
-                    formatMessage(globalConfigMessages.failedSave),
-                  options: {
-                    variant: 'error'
-                  }
-                }
-              });
-              $scope.$apply();
-            }
-          );
-      };
-
-      $scope.reset = function() {
-        aceEditor.setValue(defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
-        aceEditor.focus();
-        aceEditor.gotoLine(0, 0, true);
-        globalConfig.isModified = false;
-      };
-
-      $scope.sample = function() {
-        $uibModal
-          .open({
-            ariaLabelledBy: 'modal-title',
-            ariaDescribedBy: 'modal-body',
-            templateUrl: 'sampleModal.html',
-            controller: 'SampleGlobalConfigCtrl',
-            scope: $scope,
-            controllerAs: '$ctrl',
-            size: 'lg',
-            resolve: { sample: () => sampleValue }
-          })
-          .result.then(function({ mode, sample }) {
-            const value = aceEditor.getValue();
-            aceEditor.setValue(
-              mode === 'replace' ? sample : `${value}${value.trim() === '' ? '' : '\n\n'}${sample}`,
-              -1
-            );
-            aceEditor.focus();
-          });
-      };
-
-      function enableUI(enable = true, digest = false) {
-        aceEditor.setReadOnly(!enable);
-        $scope.uiEnabled = enable;
-        digest && $scope.$apply();
-      }
-
-      $rootScope.$on('$stateChangeStart', function(event, toState) {
-        if (globalConfig.isModified) {
-          event.preventDefault();
-
-          $scope.confirmationAction = function() {
-            globalConfig.isModified = false;
+          unsubscribe = CrafterCMSNext.createLegacyCallbackListener(onOk, () => {
+            unmount();
+            isModified = false;
             $state.go(toState.name);
-          };
-
-          $scope.confirmationText = formatMessage(globalConfigMessages.unSavedConfirmation);
-          $scope.confirmationTitle = formatMessage(globalConfigMessages.unSavedConfirmationTitle);
-          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
+            cancelUnsubscribe();
+          });
+          cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(onCancel, () => {
+            unsubscribe();
+          });
         }
       });
     }

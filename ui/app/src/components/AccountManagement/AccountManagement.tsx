@@ -20,7 +20,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import { useStyles } from './styles';
+import useStyles from './styles';
 import Avatar from '@material-ui/core/Avatar';
 import { useActiveUser } from '../../utils/hooks';
 import Container from '@material-ui/core/Container';
@@ -38,6 +38,7 @@ import { setMyPassword } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
+import clsx from 'clsx';
 
 interface AccountManagementProps {
   passwordRequirementsRegex?: string;
@@ -108,7 +109,7 @@ export default function AccountManagement(props: AccountManagementProps) {
     <section>
       <GlobalAppToolbar title={<FormattedMessage id="words.account" defaultMessage="Account" />} />
       <Container maxWidth="md">
-        <Paper className={classes.paper}>
+        <Paper className={clsx(classes.paper, 'mt20')}>
           <Box display="flex" alignItems="center">
             <Avatar className={classes.avatar}>
               {user.firstName.charAt(0)}
@@ -204,7 +205,6 @@ export default function AccountManagement(props: AccountManagementProps) {
               }
             />
             <PasswordRequirementsDisplay
-              classes={classes}
               value={newPassword}
               onValidStateChanged={setValidPassword}
               formatMessage={formatMessage}

@@ -172,25 +172,6 @@ const useStyles = makeStyles((theme) =>
     },
     resetPassword: {
       marginBottom: 10
-    },
-    // Password requirements
-    listOfConditions: {
-      listStyle: 'none',
-      padding: 0,
-      margin: `${theme.spacing(1.5)}px 0`
-    },
-    conditionItem: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    conditionItemIcon: {
-      marginRight: theme.spacing(1)
-    },
-    conditionItemNotMet: {
-      color: palette.yellow.shade
-    },
-    conditionItemMet: {
-      color: palette.green.shade
     }
   })
 );
@@ -417,7 +398,6 @@ function ResetView(props: SubViewProps) {
           }
         />
         <PasswordRequirementsDisplay
-          classes={classes}
           value={newPassword}
           onValidStateChanged={setValid}
           formatMessage={formatMessage}

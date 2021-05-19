@@ -16,26 +16,13 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles((theme) =>
+export const useStyles = makeStyles(() =>
   createStyles({
-    paperRoot: {
-      display: 'flex',
-      padding: '30px',
-      flexDirection: 'column',
-      backgroundColor: theme.palette.background.default
-    },
-    logo: {
-      margin: '0 auto 20px auto'
-    },
-    row: {
-      display: 'flex',
-      marginTop: '10px',
-      '& .aboutLabel': {
-        marginRight: '10px'
-      }
-    },
-    externalLink: {
-      marginTop: '10px'
+    editor: {
+      margin: '0',
+      border: 0,
+      width: '100%',
+      height: '100%'
     }
   })
 );
