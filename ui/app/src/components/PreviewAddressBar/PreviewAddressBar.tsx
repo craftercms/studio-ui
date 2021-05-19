@@ -155,7 +155,7 @@ export function AddressBar(props: AddressBarProps) {
   return (
     <>
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
-        <IconButton title={formatMessage(translations.reload)} onClick={onRefresh}>
+        <IconButton onClick={onRefresh}>
           <RefreshRounded />
         </IconButton>
       </Tooltip>
@@ -201,7 +201,7 @@ export function AddressBar(props: AddressBarProps) {
         />
       </Paper>
       <Tooltip title={Boolean(item) ? <FormattedMessage id="words.options" defaultMessage="Options" /> : ''}>
-        <IconButton title={formatMessage(translations.options)} onClick={onOptions} disabled={!item}>
+        <IconButton onClick={onOptions} disabled={!item}>
           <MoreRounded />
         </IconButton>
       </Tooltip>
