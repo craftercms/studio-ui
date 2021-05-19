@@ -205,7 +205,8 @@ export function createCodebaseBridge() {
       WorkflowStatesManagement: lazy(() => import('../components/AccountManagement')),
       RemotesManagement: lazy(() => import('../components/AccountManagement')),
       GraphQLPlayground: lazy(() => import('../components/AccountManagement')),
-      PublishingDashboard: lazy(() => import('../components/PublishingDashboard'))
+      PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
+      RemoteRepositoriesManagement: lazy(() => import('../components/RemoteRepositoriesManagement'))
     },
 
     system: {
