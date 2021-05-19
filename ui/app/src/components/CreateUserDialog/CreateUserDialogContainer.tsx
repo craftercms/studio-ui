@@ -15,7 +15,7 @@
  */
 
 import { useSpreadState } from '../../utils/hooks';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
@@ -41,6 +41,7 @@ import { addUserToGroup } from '../../services/groups';
 export interface CreateUserDialogUIProps {
   onClose(): void;
   onCreateSuccess?(): void;
+  setDisableBackdropClick?(disabled: boolean): void;
   passwordRequirementsRegex: string;
 }
 
@@ -125,7 +126,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
-  const { onClose, passwordRequirementsRegex, onCreateSuccess } = props;
+  const { onClose, passwordRequirementsRegex, onCreateSuccess, setDisableBackdropClick = () => void 0 } = props;
   const [newUser, setNewUser] = useSpreadState({
     firstName: '',
     lastName: '',
@@ -135,8 +136,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
     enabled: true
   });
   const [submitted, setSubmitted] = useState(false);
-  const [passwordMatch, setPasswordMatch] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [validPassword, setValidPassword] = useState(false);
+  const [submitOk, setSubmitOk] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -146,35 +148,37 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    setSubmitted(true);
-    if (Object.values(newUser).every(Boolean)) {
-      create(newUser)
-        .pipe(
-          switchMap((user) =>
-            selectedGroupsRef.current.length
-              ? forkJoin(selectedGroupsRef.current.map((id) => addUserToGroup(Number(id), user.username))).pipe(
-                  mapTo(user)
-                )
-              : of(user)
+    if (submitOk) {
+      setSubmitted(true);
+      if (Object.values(newUser).every(Boolean)) {
+        create(newUser)
+          .pipe(
+            switchMap((user) =>
+              selectedGroupsRef.current.length
+                ? forkJoin(selectedGroupsRef.current.map((id) => addUserToGroup(Number(id), user.username))).pipe(
+                    mapTo(user)
+                  )
+                : of(user)
+            )
           )
-        )
-        .subscribe(
-          () => {
-            onCreateSuccess?.();
-          },
-          ({ response: { response } }) => {
-            dispatch(showErrorDialog({ error: response }));
-          }
-        );
+          .subscribe(
+            () => {
+              onCreateSuccess?.();
+            },
+            ({ response: { response } }) => {
+              dispatch(showErrorDialog({ error: response }));
+            }
+          );
+      }
     }
   };
 
-  const validateEmail = (email: string) => {
+  const isInvalidEmail = (email: string) => {
     const emailRegex = /^([\w\d._\-#])+@([\w\d._\-#]+[.][\w\d._\-#]+)+$/g;
     return Boolean(email) && !emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
+  const isInvalidPassword = (password) => {
     return !validPassword && password !== '';
   };
 
@@ -188,6 +192,23 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
 
   const onSelectedGroupsChanged = (groupIds) => (selectedGroupsRef.current = groupIds);
 
+  useEffect(() => {
+    setSubmitOk(
+      Boolean(
+        newUser.firstName &&
+          newUser.lastName &&
+          !isInvalidEmail(newUser.email) &&
+          newUser.password &&
+          validPassword &&
+          passwordConfirm &&
+          newUser.password === passwordConfirm
+      )
+    );
+    setDisableBackdropClick(
+      Boolean(newUser.firstName || newUser.lastName || newUser.email || newUser.password || passwordConfirm)
+    );
+  }, [newUser, passwordConfirm, setDisableBackdropClick, validPassword]);
+
   return (
     <form className={classes.form}>
       <DialogHeader
@@ -200,6 +221,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
             <Grid container spacing={2}>
               <Grid item sm={6}>
                 <TextField
+                  autoFocus
                   className={clsx(classes.textField)}
                   label={<FormattedMessage id="createUserDialog.firstName" defaultMessage="First Name" />}
                   required
@@ -245,11 +267,11 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
               required
               fullWidth
               value={newUser.email}
-              error={validateRequiredField(newUser.email) || validateEmail(newUser.email)}
+              error={validateRequiredField(newUser.email) || isInvalidEmail(newUser.email)}
               helperText={
                 validateRequiredField(newUser.email) ? (
                   <FormattedMessage id="createUserDialog.emailRequired" defaultMessage="Email is required." />
-                ) : validateEmail(newUser.email) ? (
+                ) : isInvalidEmail(newUser.email) ? (
                   <FormattedMessage id="createUserDialog.invalidEmail" defaultMessage="Email is invalid." />
                 ) : null
               }
@@ -277,11 +299,11 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
                   required
                   fullWidth
                   value={newUser.password}
-                  error={validateRequiredField(newUser.password) || validatePassword(newUser.password)}
+                  error={validateRequiredField(newUser.password) || isInvalidPassword(newUser.password)}
                   helperText={
                     validateRequiredField(newUser.password) ? (
                       <FormattedMessage id="createUserDialog.passwordRequired" defaultMessage="Password is required." />
-                    ) : validatePassword(newUser.password) ? (
+                    ) : isInvalidPassword(newUser.password) ? (
                       <FormattedMessage id="createUserDialog.passwordInvalid" defaultMessage="Password is invalid." />
                     ) : null
                   }
@@ -301,17 +323,17 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
                   }
                   fullWidth
                   required
-                  value={passwordMatch}
-                  error={validatePasswordMatch(newUser.password, passwordMatch)}
+                  value={passwordConfirm}
+                  error={validatePasswordMatch(newUser.password, passwordConfirm)}
                   helperText={
-                    validatePasswordMatch(newUser.password, passwordMatch) && (
+                    validatePasswordMatch(newUser.password, passwordConfirm) && (
                       <FormattedMessage
                         id="createUserDialog.passwordMatch"
                         defaultMessage="Must match the previous password."
                       />
                     )
                   }
-                  onChange={(e) => setPasswordMatch(e.target.value)}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -334,7 +356,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
         >
           <Paper className={classes.paper}>
             <PasswordRequirementsDisplay
-              classes={classes}
               value={newUser.password}
               onValidStateChanged={setValidPassword}
               formatMessage={formatMessage}
@@ -348,7 +369,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
         <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" onClick={onSubmit} autoFocus>
+        <PrimaryButton type="submit" onClick={onSubmit} disabled={!submitOk}>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>

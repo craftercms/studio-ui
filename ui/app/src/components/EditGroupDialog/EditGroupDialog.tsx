@@ -14,26 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Group from '../../models/Group';
+import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import EditGroupDialogContainer from './EditGroupDialogContainer';
+import EditGroupDialogContainer, { EditGroupDialogContainerProps } from './EditGroupDialogContainer';
 
-export interface EditGroupDialogProps {
-  open: boolean;
-  group?: Group;
-  onClose(): void;
-  onClosed?(): void;
-  onGroupSaved(group: Group): void;
-  onGroupDeleted(group: Group): void;
-}
+export interface EditGroupDialogProps extends Omit<EditGroupDialogContainerProps, 'setDisableBackdropClick'> {}
 
 export default function EditGroupDialog(props: EditGroupDialogProps) {
   const { open, onClose } = props;
-
+  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <EditGroupDialogContainer {...props} />
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="md"
+      disableBackdropClick={disableBackdropClick}
+      disableEscapeKeyDown={disableBackdropClick}
+    >
+      <EditGroupDialogContainer setDisableBackdropClick={setDisableBackdropClick} {...props} />
     </Dialog>
   );
 }

@@ -34,6 +34,7 @@ import User from '../../models/User';
 import TransferList from '../TransferList';
 import InputLabel from '@material-ui/core/InputLabel';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 interface GroupEditDialogUIProps {
   group?: Group;
@@ -131,7 +132,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               onSave?.();
             }}
           >
-            <Box display="flex" alignItems="center" p="15px  0">
+            <Box display="flex" alignItems="center" p="15px 0 0 0">
               <InputLabel htmlFor="groupName" className={classes.label}>
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.name" defaultMessage="Name" />
@@ -146,10 +147,22 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   id="groupName"
                   onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                   value={group.name}
+                  error={isDirty && group.name === ''}
                   fullWidth
                   autoFocus
                 />
               )}
+            </Box>
+            <Box display="flex" p="0 0 15px">
+              <div className={classes.label} />
+              <FormHelperText
+                error
+                children={
+                  isDirty && group.name === '' ? (
+                    <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
+                  ) : null
+                }
+              />
             </Box>
             <Box display="flex" alignItems="center" p="15px  0">
               <InputLabel htmlFor="groupDescription" className={classes.label}>
@@ -171,7 +184,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                 </SecondaryButton>
               )}
-              <PrimaryButton disabled={!isDirty} type="submit">
+              <PrimaryButton disabled={!isDirty || group.name === ''} type="submit">
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </div>

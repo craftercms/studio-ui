@@ -185,7 +185,7 @@ const EncryptTool = (props: EncryptToolProps) => {
         showHamburgerMenuButton={!site}
         showAppsButton={!site}
       />
-      <Box p={site ? '20px' : 0}>
+      <Box p="20px">
         <form onSubmit={encrypt}>
           <div className="form-group">
             <TextField

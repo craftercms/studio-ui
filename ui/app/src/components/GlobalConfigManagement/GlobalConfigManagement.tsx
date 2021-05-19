@@ -24,7 +24,6 @@ import AceEditor from '../AceEditor';
 import useStyles from './styles';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Paper from '@material-ui/core/Paper';
 import { forkJoin } from 'rxjs';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialog';
@@ -108,14 +107,27 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
       );
     } else {
       const value = aceEditorRef.current.getValue();
-      writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(() => {
-        setLastSavedContent(value);
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.configSaved)
-          })
-        );
-      });
+      writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(
+        () => {
+          setLastSavedContent(value);
+          props.onEditorChanges(false);
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.configSaved)
+            })
+          );
+        },
+        ({ response: { response } }) => {
+          dispatch(
+            showSystemNotification({
+              message: response.message,
+              options: {
+                variant: 'error'
+              }
+            })
+          );
+        }
+      );
       setHasChanges(false);
     }
   };
@@ -132,7 +144,7 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
         title={<FormattedMessage id="globalMenu.globalConfigEntryLabel" defaultMessage="Global Config" />}
       />
       <ConditionalLoadingState isLoading={enable}>
-        <Paper variant="outlined" className={classes.paper}>
+        <section className={classes.paper}>
           <AceEditor
             ref={aceEditorRef}
             onChange={onChange}
@@ -143,7 +155,7 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
             autoFocus={true}
             readOnly={enable}
           />
-          <Box p="20px 0" display="flex" justifyContent="space-between">
+          <Box p="10px" display="flex" justifyContent="space-between">
             <SecondaryButton onClick={() => setViewSample(true)}>
               <FormattedMessage id="globalConfig.viewSample" defaultMessage="View Sample" />
             </SecondaryButton>
@@ -162,7 +174,7 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
               <FormattedMessage id="words" defaultMessage="Save" />
             </PrimaryButton>
           </Box>
-        </Paper>
+        </section>
       </ConditionalLoadingState>
       <ConfigurationSamplePreviewDialog
         onUseSampleClick={onUseSampleClick}
