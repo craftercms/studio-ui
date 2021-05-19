@@ -21,7 +21,7 @@ import { pluckProps } from '../utils/object';
 import { CSSProperties } from '@material-ui/styles';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
-interface AceOptions {
+export interface AceOptions {
   // editor options
   selectionStyle: 'line' | 'text';
   highlightActiveLine: boolean;
@@ -94,7 +94,7 @@ export type AceEditorClassKey = 'base';
 
 export type AceEditorStyles = Partial<Record<AceEditorClassKey, CSSProperties>>;
 
-interface AceEditorProps extends Partial<AceOptions> {
+export interface AceEditorProps extends Partial<AceOptions> {
   value?: any;
   className?: string;
   autoFocus?: boolean;

@@ -60,7 +60,6 @@ import { itemReverted, showSystemNotification } from '../../state/actions/system
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter, map } from 'rxjs/operators';
 import { fromString, serialize } from '../../utils/xml';
-import { findPendingEncryption } from '../../utils/encrypt';
 import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -620,4 +619,12 @@ export default function SiteConfigurationManagement() {
       <ConfirmDialog open={false} {...confirmDialogProps} />
     </section>
   );
+}
+
+function findPendingEncryption(tags): { tag: Element; text: string }[] {
+  const items = [];
+  tags.forEach((tag) => {
+    tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
+  });
+  return items;
 }

@@ -18,103 +18,103 @@ import { defineMessages } from 'react-intl';
 
 export const OperationsMessages = defineMessages({
   Login: {
-    id: 'operations.Login',
+    id: 'words.login',
     defaultMessage: 'Login'
   },
   Login_failed: {
-    id: 'operations.Login_failed',
+    id: 'operations.loginFailed',
     defaultMessage: 'Login Failed'
   },
   Logout: {
-    id: 'operations.Logout',
+    id: 'words.logout',
     defaultMessage: 'Logout'
   },
   Create: {
-    id: 'operations.Create',
+    id: 'words.create',
     defaultMessage: 'Create'
   },
   Update: {
-    id: 'operations.Update',
+    id: 'words.update',
     defaultMessage: 'Update'
   },
   Delete: {
-    id: 'operations.Delete',
+    id: 'words.delete',
     defaultMessage: 'Delete'
   },
   Move: {
-    id: 'operations.Move',
+    id: 'words.move',
     defaultMessage: 'Move'
   },
   Revert: {
-    id: 'operations.Revert',
+    id: 'words.revert',
     defaultMessage: 'Revert'
   },
   Enable: {
-    id: 'operations.Enable',
+    id: 'words.enable',
     defaultMessage: 'Enable'
   },
   Disable: {
-    id: 'operations.Disable',
+    id: 'words.disable',
     defaultMessage: 'Disable'
   },
   Add_members: {
-    id: 'operations.Add_members',
+    id: 'operations.addMembers',
     defaultMessage: 'Add Members'
   },
   Remove_members: {
-    id: 'operations.Remove_members',
+    id: 'operations.removeMembers',
     defaultMessage: 'Remove Members'
   },
   Add_remote: {
-    id: 'operations.Add_remote',
+    id: 'operations.addRemote',
     defaultMessage: 'Add Remote'
   },
   Remove_remote: {
-    id: 'operations.Remove_remote',
+    id: 'operations.removeRemote',
     defaultMessage: 'Remove Remote'
   },
   Push_to_remote: {
-    id: 'operations.Push_to_remote',
+    id: 'operations.pushToRemote',
     defaultMessage: 'Push To Remote'
   },
   Pull_from_remote: {
-    id: 'operations.Pull_from_remote',
+    id: 'operations.pullFromRemote',
     defaultMessage: 'Pull From Remote'
   },
   Request_publish: {
-    id: 'operations.Request_publish',
+    id: 'operations.requestPublish',
     defaultMessage: 'Request Publish'
   },
   Approve: {
-    id: 'operations.Approve',
+    id: 'words.approve',
     defaultMessage: 'Approve'
   },
   Approve_scheduled: {
-    id: 'operations.Approve_scheduled',
+    id: 'operations.approveScheduled',
     defaultMessage: 'Approve Scheduled'
   },
   Reject: {
-    id: 'operations.Reject',
+    id: 'words.reject',
     defaultMessage: 'Reject'
   },
   Published: {
-    id: 'operations.Published',
+    id: 'words.published',
     defaultMessage: 'Published'
   },
   Stop_publisher: {
-    id: 'operations.Stop_publisher',
+    id: 'operations.stopPublisher',
     defaultMessage: 'Stop Publisher'
   },
   Start_publisher: {
-    id: 'operations.Start_publisher',
+    id: 'operations.startPublisher',
     defaultMessage: 'Start Publisher'
   },
   Remove_cluster_node: {
-    id: 'operations.Remove_cluster_node',
-    defaultMessage: 'Remove Cluster Dode'
+    id: 'operations.removeClusterNode',
+    defaultMessage: 'Remove Cluster Node'
   },
   Cancel_publishing_package: {
-    id: 'operations.Cancel_publishing_package',
+    id: 'operations.cancelPublishingPackage',
     defaultMessage: 'Cancel Publishing Package'
   }
 });

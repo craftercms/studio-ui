@@ -18,9 +18,9 @@ import { useCallback, useState } from 'react';
 import clsx from 'clsx';
 import useStyles from './styles';
 
-interface ResizeBarProps {
+export interface ResizeBarProps {
   onWidthChange(width: number): void;
-  element?: any;
+  element?: HTMLElement;
 }
 
 export default function ResizeBar(props: ResizeBarProps) {

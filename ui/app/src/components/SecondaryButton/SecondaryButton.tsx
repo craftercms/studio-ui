@@ -18,7 +18,7 @@ import * as React from 'react';
 import { ButtonProps } from '@material-ui/core/Button';
 import ButtonWithLoadingState from '../ButtonWithLoadingState';
 
-interface SecondaryButtonProps extends ButtonProps {
+export interface SecondaryButtonProps extends ButtonProps {
   loading?: boolean;
 }
 
