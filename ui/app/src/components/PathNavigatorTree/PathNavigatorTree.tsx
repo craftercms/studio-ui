@@ -44,7 +44,8 @@ import {
   itemCreated,
   itemDuplicated,
   itemsDeleted,
-  itemsPasted
+  itemsPasted,
+  itemUnlocked
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
@@ -58,6 +59,7 @@ import { getParentPath } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
+import { completeDetailedItem } from '../../state/actions/content';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -263,6 +265,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const events = [
       itemsPasted.type,
+      itemUnlocked.type,
       // itemUpdated is not needed because when the item is updated itemsByPath is also updated and the tree will re-render and updates the items
       folderCreated.type,
       folderRenamed.type,
@@ -322,6 +325,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case folderRenamed.type:
         case itemDuplicated.type:
+        case itemUnlocked.type:
         case itemCreated.type: {
           const parentPath = getParentPath(payload.target);
           const node = lookupItemByPath(parentPath, nodesByPathRef.current);
@@ -439,6 +443,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const anchorRect = element.getBoundingClientRect();
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+    dispatch(completeDetailedItem({ path }));
     dispatch(
       showItemMegaMenu({
         path,
