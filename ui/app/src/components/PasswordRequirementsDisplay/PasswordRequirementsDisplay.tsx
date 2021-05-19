@@ -21,17 +21,59 @@ import clsx from 'clsx';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 import { passwordRequirementMessages } from '../../utils/i18n-legacy';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import palette from '../../styles/palette';
+import { CSSProperties } from '@material-ui/styles';
 
-interface PasswordRequirementsDisplayProps {
+type PasswordRequirementsDisplayClassKey =
+  | 'listOfConditions'
+  | 'conditionItem'
+  | 'conditionItemIcon'
+  | 'conditionItemNotMet'
+  | 'conditionItemMet';
+
+type PasswordRequirementsDisplayStyles = Partial<Record<PasswordRequirementsDisplayClassKey, CSSProperties>>;
+
+export interface PasswordRequirementsDisplayProps {
   value: string;
   formatMessage: Function;
   onValidStateChanged: (isValid: boolean) => void;
   passwordRequirementsRegex: string;
-  classes: { [props: string]: string };
+  classes?: Partial<Record<PasswordRequirementsDisplayClassKey, string>>;
+  styles?: PasswordRequirementsDisplayStyles;
 }
 
+const useStyles = makeStyles((theme) =>
+  createStyles<PasswordRequirementsDisplayClassKey, PasswordRequirementsDisplayStyles>({
+    listOfConditions: (styles) => ({
+      listStyle: 'none',
+      padding: 0,
+      margin: '16px 0 16px 0',
+      ...styles.listOfConditions
+    }),
+    conditionItem: (styles) => ({
+      display: 'flex',
+      alignItems: 'center',
+      ...styles.conditionItem
+    }),
+    conditionItemIcon: (styles) => ({
+      marginRight: theme.spacing(1),
+      ...styles.conditionItemIcon
+    }),
+    conditionItemNotMet: (styles) => ({
+      color: palette.yellow.shade,
+      ...styles.conditionItemNotMet
+    }),
+    conditionItemMet: (styles) => ({
+      color: palette.green.shade,
+      ...styles.conditionItemMet
+    })
+  })
+);
+
 export default function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
-  const { passwordRequirementsRegex, formatMessage, value, classes, onValidStateChanged } = props;
+  const classes = useStyles(props.styles);
+  const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged } = props;
   const { regEx, conditions } = useMemo(() => getPrimeMatter({ passwordRequirementsRegex, formatMessage }), [
     passwordRequirementsRegex,
     formatMessage

@@ -31,9 +31,9 @@ import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import AuditLogEntryParametersDialog from '../AuditLogEntryParametersDialog';
 import { nnou } from '../../utils/object';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
+import { GridPageChangeParams } from '@material-ui/data-grid';
 
 interface AuditManagementProps {
   site?: string;
@@ -67,6 +67,7 @@ export default function AuditManagement(props: AuditManagementProps) {
       nnou(options[key])
     );
   });
+  const [page, setPage] = useState(0);
 
   const refresh = useCallback(() => {
     setFetching(true);
@@ -106,16 +107,18 @@ export default function AuditManagement(props: AuditManagementProps) {
     }
   );
 
-  const onChangePage = (page: number) => {
-    setOptions({ offset: page * options.limit });
+  const onPageChange = (params: GridPageChangeParams) => {
+    setPage(params.page);
+    setOptions({ offset: params.page * options.limit });
   };
 
-  const onChangeRowsPerPage = (size: number) => {
-    setOptions({ limit: size });
+  const onPageSizeChange = (param: GridPageChangeParams) => {
+    setOptions({ limit: param.pageSize });
   };
 
   const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {
-    setOptions({ [id]: value });
+    setPage(0);
+    setOptions({ [id]: value, offset: 0 });
   };
 
   const onResetFilter = (id: string | string[]) => {
@@ -170,7 +173,7 @@ export default function AuditManagement(props: AuditManagementProps) {
   };
 
   return (
-    <Box p={site ? '20px' : 0}>
+    <>
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
         rightContent={
@@ -191,16 +194,17 @@ export default function AuditManagement(props: AuditManagementProps) {
         }}
       >
         <AuditGridUI
+          page={page}
           resource={resource}
           sites={sites}
           users={users}
           siteMode={Boolean(site)}
           parametersLookup={parametersLookup}
           onFetchParameters={onFetchParameters}
-          onChangePage={onChangePage}
+          onPageChange={onPageChange}
           onResetFilters={onResetFilters}
           onResetFilter={onResetFilter}
-          onChangeRowsPerPage={onChangeRowsPerPage}
+          onPageSizeChange={onPageSizeChange}
           onFilterChange={onFilterChange}
           filters={options}
           hasActiveFilters={hasActiveFilters}
@@ -218,6 +222,6 @@ export default function AuditManagement(props: AuditManagementProps) {
         onClosed={onShowParametersDialogClosed}
         parameters={parametersDialogParams.parameters}
       />
-    </Box>
+    </>
   );
 }

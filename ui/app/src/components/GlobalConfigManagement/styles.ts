@@ -16,18 +16,20 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       margin: '0',
       width: '100%',
       height: '100%',
+      borderRadius: 0,
       border: 0
     },
     paper: {
+      borderRadius: 0,
       minHeight: '400px',
       height: 'calc(100vh - 350px)',
-      marginTop: '10px'
+      borderBottom: `1px solid ${theme.palette.divider}`
     },
     marginLeftAuto: {
       marginLeft: 'auto',

@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EditGroupDialogProps } from './EditGroupDialog';
 import EditGroupDialogUI from './EditGroupDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
@@ -35,6 +34,16 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useSpreadState, useUnmount } from '../../utils/hooks';
 import Typography from '@material-ui/core/Typography';
+
+export interface EditGroupDialogContainerProps {
+  open: boolean;
+  group?: Group;
+  onClose(): void;
+  onClosed?(): void;
+  onGroupSaved(group: Group): void;
+  onGroupDeleted(group: Group): void;
+  setDisableBackdropClick?(disabled: boolean): void;
+}
 
 const translations = defineMessages({
   groupCreated: {
@@ -59,8 +68,8 @@ const translations = defineMessages({
   }
 });
 
-export default function EditGroupDialogContainer(props: EditGroupDialogProps) {
-  const { onClose, onGroupSaved, onGroupDeleted, onClosed } = props;
+export default function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
+  const { onClose, onGroupSaved, onGroupDeleted, onClosed, setDisableBackdropClick = () => void 0 } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -144,9 +153,10 @@ export default function EditGroupDialogContainer(props: EditGroupDialogProps) {
     );
   };
 
-  const onChangeValue = (group: { key: string; value: string }) => {
+  const onChangeValue = (property: { key: string; value: string }) => {
     setIsDirty(true);
-    setGroup({ [group.key]: group.value });
+    setGroup({ [property.key]: property.value });
+    setDisableBackdropClick(Boolean(group[property.key === 'name' ? 'desc' : 'name'] || property.value));
   };
 
   const onSave = () => {

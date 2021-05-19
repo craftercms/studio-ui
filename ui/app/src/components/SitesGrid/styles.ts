@@ -39,7 +39,7 @@ export const useSiteCardStyles = makeStyles(() =>
       height: '226px'
     },
     card: {
-      width: '400px',
+      width: '340px',
       '&.compact': {
         display: 'flex'
       }
