@@ -21,26 +21,19 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
-import {
-  fetchRepositories as fetchRepositoriesService,
-  fetchStatus,
-  deleteRemote as deleteRemoteService,
-  cancelFailedPull,
-  commitResolution
-} from '../../services/repositories';
+import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
 import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesGridSkeletonTable from '../RemoteRepositoriesGrid/RemoteRepositoriesGridSkeletonTable';
-import RemoteRepositoriesGridUI from '../RemoteRepositoriesGrid';
+import RemoteRepositoriesGrid from '../RemoteRepositoriesGrid';
+import RemoteRepositoriesStatus from '../RemoteRepositoriesStatus/RemoteRepositoriesStatus';
+import RemoteRepositoriesStatusSkeleton from '../RemoteRepositoriesStatus/RemoteRepositoriesStatusSkeleton';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import Alert from '@material-ui/lab/Alert';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import RemoteRepositoriesStatusUI from '../RemoteRepositoriesGrid/RemoteRepositoriesStatusUI';
 import Typography from '@material-ui/core/Typography';
-import CommitResolutionDialog from '../CommitResolutionDialog';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -60,10 +53,6 @@ const messages = defineMessages({
   remoteCreateSuccessMessage: {
     id: 'repositories.remoteCreateSuccessMessage',
     defaultMessage: 'Remote repository created successfully.'
-  },
-  remoteDeleteSuccessMessage: {
-    id: 'repositories.remoteDeleteSuccessMessage',
-    defaultMessage: 'Remote repository deleted successfully.'
   },
   noConflicts: {
     id: 'repositories.noConflicts',
@@ -91,10 +80,8 @@ export default function RemoteRepositoriesManagement() {
   const [errorStatus, setErrorStatus] = useState<ApiResponse>();
   const [repositoriesStatus, setRepositoriesStatus] = useState<RepositoryStatus>(null);
   const [currentStatusValue, setCurrentStatusValue] = useState(null);
-  const siteId = useActiveSiteId();
   const [openNewRemoteDialog, setOpenNewRemoteDialog] = useState(false);
-  const [openCommitResolutionDialog, setOpenCommitResolutionDialog] = useState(false);
-  const [commitResolutionMessage, setCommitResolutionMessage] = useState('');
+  const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -117,6 +104,7 @@ export default function RemoteRepositoriesManagement() {
     setFetchingRepositories(true);
     fetchRepositoriesService(siteId).subscribe(
       (repositories) => {
+        console.log('repositories', repositories);
         setRepositories(repositories);
         setFetchingRepositories(false);
       },
@@ -142,40 +130,9 @@ export default function RemoteRepositoriesManagement() {
     );
   }, [siteId]);
 
-  const revertPull = () => {
-    setFetchingStatus(true);
-    cancelFailedPull(siteId).subscribe((status) => {
-      setRepositoriesStatus(status);
-      setCurrentStatus(status);
-      setFetchingStatus(false);
-    });
-  };
-
-  const commit = () => {
-    setFetchingStatus(true);
-    commitResolution(siteId, commitResolutionMessage).subscribe((status) => {
-      setRepositoriesStatus(status);
-      setCurrentStatus(status);
-      setFetchingStatus(false);
-      setOpenCommitResolutionDialog(false);
-    });
-  };
-
-  const deleteRemote = (remoteName: string) => {
-    deleteRemoteService(siteId, remoteName).subscribe(
-      () => {
-        fetchRepositories();
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(messages.remoteDeleteSuccessMessage),
-            options: { variant: 'success' }
-          })
-        );
-      },
-      ({ response }) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
+  const updateRepositoriesStatus = (status) => {
+    setRepositoriesStatus(status);
+    setCurrentStatus(status);
   };
 
   const onCreateSuccess = () => {
@@ -260,7 +217,11 @@ export default function RemoteRepositoriesManagement() {
           fallback: <RemoteRepositoriesGridSkeletonTable />
         }}
       >
-        <RemoteRepositoriesGridUI resource={resource} onDeleteRemote={deleteRemote} />
+        <RemoteRepositoriesGrid
+          resource={resource}
+          fetchStatus={fetchRepositoriesStatus}
+          fetchRepositories={fetchRepositories}
+        />
       </SuspenseWithEmptyState>
 
       {repositoriesStatus &&
@@ -277,13 +238,13 @@ export default function RemoteRepositoriesManagement() {
       <SuspenseWithEmptyState
         resource={statusResource}
         suspenseProps={{
-          fallback: <></> // TODO: skeleton pending
+          fallback: <RemoteRepositoriesStatusSkeleton />
         }}
       >
-        <RemoteRepositoriesStatusUI
+        <RemoteRepositoriesStatus
           resource={statusResource}
-          onRevertPull={revertPull}
-          onClickCommit={() => setOpenCommitResolutionDialog(true)}
+          setFetching={setFetchingStatus}
+          onActionSuccess={updateRepositoriesStatus}
         />
       </SuspenseWithEmptyState>
 
@@ -291,13 +252,6 @@ export default function RemoteRepositoriesManagement() {
         open={openNewRemoteDialog}
         onClose={() => setOpenNewRemoteDialog(false)}
         onCreateSuccess={onCreateSuccess}
-      />
-      <CommitResolutionDialog
-        open={openCommitResolutionDialog}
-        onClose={() => setOpenCommitResolutionDialog(false)}
-        message={commitResolutionMessage}
-        setMessage={setCommitResolutionMessage}
-        onCommit={commit}
       />
     </section>
   );

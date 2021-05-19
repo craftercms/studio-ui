@@ -51,3 +51,7 @@ export interface Remote {
   mergeStrategy?: string;
 }
 
+export interface MergeStrategy {
+  key: 'none' | 'ours' | 'theirs';
+  value: string;
+}

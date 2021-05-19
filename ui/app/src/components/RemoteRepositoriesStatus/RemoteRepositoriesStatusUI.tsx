@@ -15,7 +15,6 @@
  */
 
 import { RepositoryStatus } from '../../models/Repository';
-import { Resource } from '../../models/Resource';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -58,6 +57,9 @@ const useStyles = makeStyles((theme) =>
     commitButton: {
       color: theme.palette.success.dark,
       borderColor: theme.palette.success.main
+    },
+    statusNote: {
+      color: theme.palette.text.secondary
     }
   })
 );
@@ -82,14 +84,13 @@ const messages = defineMessages({
 });
 
 export interface RemoteRepositoriesStatusUIProps {
-  resource: Resource<RepositoryStatus>;
+  status: RepositoryStatus;
   onRevertPull(): void;
   onClickCommit(): void;
 }
 
 export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
-  const { resource, onRevertPull, onClickCommit } = props;
-  const status = resource.read();
+  const { status, onRevertPull, onClickCommit } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
@@ -119,7 +120,7 @@ export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStat
               </section>
             </Toolbar>
 
-            <Typography variant="caption">
+            <Typography variant="caption" className={classes.statusNote}>
               <FormattedMessage
                 id="repository.statusNote"
                 defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."

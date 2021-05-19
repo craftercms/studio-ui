@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
@@ -23,21 +23,37 @@ import { FormattedMessage } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import { commitResolution } from '../../services/repositories';
+import { useActiveSiteId } from '../../utils/hooks';
 
 export interface CommitResolutionDialogProps {
   open: boolean;
-  message: string;
-  setMessage(message): void;
   onClose(): void;
-  onCommit(): void;
+  onClickCommit?(): void;
+  onCommitSuccess?(status): void;
+  onCommitError?(status): void;
 }
 
 export default function CommitResolutionDialog(props: CommitResolutionDialogProps) {
-  const { open, message, setMessage, onClose, onCommit } = props;
+  const { open, onClose, onClickCommit, onCommitSuccess, onCommitError } = props;
+  const siteId = useActiveSiteId();
+  const [message, setMessage] = useState('');
 
   const onChange = (e: any) => {
     e.persist();
     setMessage(e.target.value);
+  };
+
+  const onCommit = () => {
+    onClickCommit?.();
+    commitResolution(siteId, message).subscribe(
+      (status) => {
+        onCommitSuccess?.(status);
+      },
+      ({ response }) => {
+        onCommitError?.(response);
+      }
+    );
   };
 
   return (
@@ -80,7 +96,7 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
           onClick={onCommit}
           disabled={!message || message.replace(/ /g, '') === ''}
         >
-          <FormattedMessage id="words.commitResolution" defaultMessage="Commit Resolution" />
+          <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
         </Button>
       </DialogFooter>
     </Dialog>

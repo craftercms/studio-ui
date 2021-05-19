@@ -14,10 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RemoteRepositoriesGrid';
+export { default } from './RemoteRepositoriesPushDialog';
 
-export * from './RemoteRepositoriesGrid';
-
-export * from './RemoteRepositoriesGridUI';
-
-export * from './RemoteRepositoriesGridSkeletonTable';
+export * from './RemoteRepositoriesPushDialog';

@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RemoteRepositoriesGrid';
+export { default } from './RemoteRepositoriesStatus';
 
-export * from './RemoteRepositoriesGrid';
+export * from './RemoteRepositoriesStatus';
 
-export * from './RemoteRepositoriesGridUI';
+export * from './RemoteRepositoriesStatusUI';
 
-export * from './RemoteRepositoriesGridSkeletonTable';
+export * from './RemoteRepositoriesStatusSkeleton';

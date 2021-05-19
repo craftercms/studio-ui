@@ -34,11 +34,13 @@ import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 export interface RemoteRepositoriesGridUIProps {
   resource: Resource<Array<Repository>>;
+  onClickPull(remoteName: string, branches: string[]): void;
+  onClickPush(remoteName: string, branches: string[]): void;
   onDeleteRemote(remoteName: string): void;
 }
 
 export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
-  const { resource, onDeleteRemote } = props;
+  const { resource, onDeleteRemote, onClickPull, onClickPush } = props;
   const repositories = resource.read();
 
   return (
@@ -54,14 +56,14 @@ export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUI
               <GlobalAppGridCell align="left">{repository.pushUrl}</GlobalAppGridCell>
               <GlobalAppGridCell>
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
-                  <IconButton onClick={null}>
+                  <IconButton onClick={() => onClickPull(repository.name, repository.branches)}>
                     <ArrowDownwardRoundedIcon />
                   </IconButton>
                 </Tooltip>
               </GlobalAppGridCell>
               <GlobalAppGridCell>
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
-                  <IconButton onClick={null}>
+                  <IconButton onClick={() => onClickPush(repository.name, repository.branches)}>
                     <ArrowUpwardRoundedIcon />
                   </IconButton>
                 </Tooltip>
