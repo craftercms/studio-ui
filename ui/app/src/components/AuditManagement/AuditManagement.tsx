@@ -115,7 +115,7 @@ export default function AuditManagement(props: AuditManagementProps) {
   };
 
   const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {
-    setOptions({ [id]: value });
+    setOptions({ [id]: value, offset: 0 });
   };
 
   const onResetFilter = (id: string | string[]) => {
