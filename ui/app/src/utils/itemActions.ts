@@ -100,6 +100,7 @@ import {
   hasReadHistoryAction,
   hasRenameAction,
   hasSchedulePublishAction,
+  hasUnlockAction,
   hasUploadAction
 } from './content';
 import { isNavigable } from '../components/PathNavigator/utils';
@@ -343,6 +344,9 @@ export function generateSingleItemOptions(
     } else {
       sectionA.push(menuOptions.editCode);
     }
+  }
+  if (hasUnlockAction(item.availableActions) && actionsToInclude.unlock) {
+    sectionA.push(menuOptions.unlock);
   }
   if (hasCreateAction(item.availableActions) && actionsToInclude.createContent) {
     sectionA.push(menuOptions.createContent);
