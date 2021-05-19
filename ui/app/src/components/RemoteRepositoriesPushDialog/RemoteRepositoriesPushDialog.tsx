@@ -52,9 +52,11 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
   const [selectedBranch, setSelectedBranch] = useState('');
   const classes = useStyles();
   const siteId = useActiveSiteId();
+  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
 
   const onChange = (e: any) => {
     setSelectedBranch(e.target.value);
+    setDisableBackdropClick(true);
   };
 
   const push = () => {
@@ -70,10 +72,17 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onDismiss={onClose} />
-      <DialogBody>
-        <form>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="xs"
+      disableBackdropClick={disableBackdropClick}
+      disableEscapeKeyDown={disableBackdropClick}
+    >
+      <form>
+        <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onDismiss={onClose} />
+        <DialogBody>
           <FormControl variant="outlined" fullWidth className={classes.formControl}>
             <InputLabel id="remoteBranchToPushLabel">
               <FormattedMessage id="repositories.remoteBranchToPush" defaultMessage="Remote Branch to Push" />
@@ -93,16 +102,16 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
               ))}
             </Select>
           </FormControl>
-        </form>
-      </DialogBody>
-      <DialogFooter>
-        <Button variant="outlined" color="default" onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button variant="contained" color="primary" onClick={push} disabled={selectedBranch === ''}>
-          <FormattedMessage id="words.ok" defaultMessage="Ok" />
-        </Button>
-      </DialogFooter>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="outlined" color="default" onClick={onClose}>
+            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+          </Button>
+          <Button type="submit" variant="contained" color="primary" onClick={push} disabled={selectedBranch === ''}>
+            <FormattedMessage id="words.ok" defaultMessage="Ok" />
+          </Button>
+        </DialogFooter>
+      </form>
     </Dialog>
   );
 }

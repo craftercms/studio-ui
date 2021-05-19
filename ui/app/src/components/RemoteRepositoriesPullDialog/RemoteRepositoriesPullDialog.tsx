@@ -55,11 +55,13 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
   const classes = useStyles();
   const siteId = useActiveSiteId();
+  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
 
   const onChange = (e: any) => {
     e.persist();
     if (e.target.name === 'branch') {
       setSelectedBranch(e.target.value);
+      setDisableBackdropClick(true);
     } else if (e.target.name === 'mergeStrategy') {
       setSelectedMergeStrategy(e.target.value);
     }
@@ -83,10 +85,17 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onDismiss={onClose} />
-      <DialogBody>
-        <form>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="xs"
+      disableBackdropClick={disableBackdropClick}
+      disableEscapeKeyDown={disableBackdropClick}
+    >
+      <form>
+        <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onDismiss={onClose} />
+        <DialogBody>
           <FormControl variant="outlined" fullWidth className={classes.formControl}>
             <InputLabel id="remoteBranchToPullLabel">
               <FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />
@@ -125,16 +134,16 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
               ))}
             </Select>
           </FormControl>
-        </form>
-      </DialogBody>
-      <DialogFooter>
-        <Button variant="outlined" color="default" onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button variant="contained" color="primary" onClick={pull} disabled={selectedBranch === ''}>
-          <FormattedMessage id="words.ok" defaultMessage="Ok" />
-        </Button>
-      </DialogFooter>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="outlined" color="default" onClick={onClose}>
+            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+          </Button>
+          <Button type="submit" variant="contained" color="primary" onClick={pull} disabled={selectedBranch === ''}>
+            <FormattedMessage id="words.ok" defaultMessage="Ok" />
+          </Button>
+        </DialogFooter>
+      </form>
     </Dialog>
   );
 }

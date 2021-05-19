@@ -25,9 +25,6 @@ import { SiteState } from '../../models/Site';
 
 const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      display: 'contents'
-    },
     gitInfo: {
       width: '100%',
       '& .MuiGrid-item': {
@@ -52,56 +49,55 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
   };
 
   return (
-    <form className={classes.root}>
-      <Grid container spacing={0} className={classes.gitInfo}>
-        <Grid item xs={12}>
-          <TextField
-            id="remoteName"
-            name="remoteName"
-            label={<FormattedMessage id="repositories.remoteName" defaultMessage="Remote Git Repository Name" />}
-            InputLabelProps={{ shrink: true }}
-            placeholder="origin"
-            fullWidth
-            onKeyPress={null}
-            onChange={handleInputChange}
-            value={inputs.remoteName}
-            error={inputs.submitted && !inputs.remoteName}
-            helperText={
-              <FormattedMessage
-                id="repositories.repoRemoteNameHelper"
-                defaultMessage="Name the remote that will refer to the source repo to pull from."
-              />
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="remoteUrl"
-            name="remoteUrl"
-            label={<FormattedMessage id="repositories.remoteUrl" defaultMessage="Remote Repository URL" />}
-            InputLabelProps={{ shrink: true }}
-            required
-            fullWidth
-            placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
-            onKeyPress={null}
-            onChange={handleInputChange}
-            value={inputs.remoteUrl}
-            error={inputs.submitted && !inputs.remoteUrl}
-            helperText={
-              <FormattedMessage
-                id="repositories.repoRemoteUrlHelper"
-                defaultMessage="The git repository URL to create from."
-              />
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" color={'textSecondary'}>
-            <FormattedMessage id="words.authentication" defaultMessage="Authentication" />
-          </Typography>
-          <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
-        </Grid>
+    <Grid container spacing={0} className={classes.gitInfo}>
+      <Grid item xs={12}>
+        <TextField
+          id="remoteName"
+          name="remoteName"
+          label={<FormattedMessage id="repositories.remoteName" defaultMessage="Remote Git Repository Name" />}
+          InputLabelProps={{ shrink: true }}
+          placeholder="origin"
+          autoFocus
+          fullWidth
+          onKeyPress={null}
+          onChange={handleInputChange}
+          value={inputs.remoteName}
+          error={inputs.submitted && !inputs.remoteName}
+          helperText={
+            <FormattedMessage
+              id="repositories.repoRemoteNameHelper"
+              defaultMessage="Name the remote that will refer to the source repo to pull from."
+            />
+          }
+        />
       </Grid>
-    </form>
+      <Grid item xs={12}>
+        <TextField
+          id="remoteUrl"
+          name="remoteUrl"
+          label={<FormattedMessage id="repositories.remoteUrl" defaultMessage="Remote Repository URL" />}
+          InputLabelProps={{ shrink: true }}
+          required
+          fullWidth
+          placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
+          onKeyPress={null}
+          onChange={handleInputChange}
+          value={inputs.remoteUrl}
+          error={inputs.submitted && !inputs.remoteUrl}
+          helperText={
+            <FormattedMessage
+              id="repositories.repoRemoteUrlHelper"
+              defaultMessage="The git repository URL to create from."
+            />
+          }
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1" color={'textSecondary'}>
+          <FormattedMessage id="words.authentication" defaultMessage="Authentication" />
+        </Typography>
+        <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
+      </Grid>
+    </Grid>
   );
 }

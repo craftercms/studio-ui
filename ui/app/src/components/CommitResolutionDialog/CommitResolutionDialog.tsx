@@ -38,10 +38,12 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
   const { open, onClose, onClickCommit, onCommitSuccess, onCommitError } = props;
   const siteId = useActiveSiteId();
   const [message, setMessage] = useState('');
+  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
 
   const onChange = (e: any) => {
     e.persist();
     setMessage(e.target.value);
+    setDisableBackdropClick(Boolean(e.target.value));
   };
 
   const onCommit = () => {
@@ -57,16 +59,24 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogHeader
-        title={<FormattedMessage id="repositories.commitResolution" defaultMessage="CommitResolution" />}
-        onDismiss={onClose}
-      />
-      <DialogBody>
-        <form>
+    <form>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="sm"
+        disableBackdropClick={disableBackdropClick}
+        disableEscapeKeyDown={disableBackdropClick}
+      >
+        <DialogHeader
+          title={<FormattedMessage id="repositories.commitResolution" defaultMessage="CommitResolution" />}
+          onDismiss={onClose}
+        />
+        <DialogBody>
           <Grid container spacing={0}>
             <Grid item xs={12}>
               <TextField
+                autoFocus
                 label={<FormattedMessage id="repositories.messageLabel" defaultMessage="Conflict resolution message" />}
                 multiline
                 fullWidth
@@ -84,21 +94,22 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
               />
             </Grid>
           </Grid>
-        </form>
-      </DialogBody>
-      <DialogFooter>
-        <Button variant="outlined" color="default" onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onCommit}
-          disabled={!message || message.replace(/ /g, '') === ''}
-        >
-          <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
-        </Button>
-      </DialogFooter>
-    </Dialog>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="outlined" color="default" onClick={onClose}>
+            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            onClick={onCommit}
+            disabled={!message || message.replace(/ /g, '') === ''}
+          >
+            <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </form>
   );
 }

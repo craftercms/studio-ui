@@ -37,6 +37,9 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
+    root: {
+      padding: theme.spacing(2)
+    },
     statusAlert: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2)
@@ -190,7 +193,7 @@ export default function RemoteRepositoriesManagement() {
   );
 
   return (
-    <section>
+    <section className={classes.root}>
       <GlobalAppToolbar
         title={<FormattedMessage id="repositories.title" defaultMessage="Remote Repositories" />}
         leftContent={
@@ -203,6 +206,8 @@ export default function RemoteRepositoriesManagement() {
             <FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
           </Button>
         }
+        showHamburgerMenuButton={false}
+        showAppsButton={false}
       />
 
       {currentStatusValue && (

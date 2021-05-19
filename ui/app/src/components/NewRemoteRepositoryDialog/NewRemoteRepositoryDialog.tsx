@@ -14,16 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import { FormattedMessage } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
-import DialogBody from '../Dialogs/DialogBody';
-import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
-import DialogFooter from '../Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import { addRemote } from '../../services/repositories';
+import NewRemoteRepositoryDialogUI from './NewRemoteRepositoryDialogUI';
 
 const inputsInitialState = {
   authenticationType: 'none',
@@ -52,6 +46,7 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
   const { open, onClose, onCreateSuccess } = props;
   const siteId = useActiveSiteId();
   const [inputs, setInputs] = useSpreadState(inputsInitialState);
+  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
 
   const isFormValid = useCallback(() => {
     if (!inputs.remoteName || !inputs.remoteUrl) {
@@ -91,23 +86,19 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
     }
   };
 
+  useEffect(() => {
+    const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
+    setDisableBackdropClick(Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername));
+  }, [inputs, setDisableBackdropClick]);
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogHeader
-        title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
-        onDismiss={onClose}
-      />
-      <DialogBody>
-        <NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
-      </DialogBody>
-      <DialogFooter>
-        <Button variant="outlined" color="default" onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </Button>
-        <Button variant="contained" color="primary" disabled={false} onClick={createRemote}>
-          <FormattedMessage id="words.create" defaultMessage="Create" />
-        </Button>
-      </DialogFooter>
-    </Dialog>
+    <NewRemoteRepositoryDialogUI
+      open={open}
+      inputs={inputs}
+      setInputs={setInputs}
+      disableBackdropClick={disableBackdropClick}
+      onCreate={createRemote}
+      onClose={onClose}
+    />
   );
 }
