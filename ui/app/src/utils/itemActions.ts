@@ -123,6 +123,7 @@ export type ItemActions =
   | 'createContent'
   | 'paste'
   | 'edit'
+  | 'unlock'
   | 'rename'
   | 'cut'
   | 'upload'
@@ -140,7 +141,7 @@ export type ItemActions =
   | 'schedulePublish'
   | 'rejectPublish';
 
-export type VirtualItemActions = 'preview' | 'unlock';
+export type VirtualItemActions = 'preview';
 
 export type AssessRemovalItemActions =
   | 'editCode'
@@ -157,6 +158,10 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   edit: {
     id: 'edit',
     label: translations.edit
+  },
+  unlock: {
+    id: 'unlock',
+    label: translations.unlock
   },
   view: {
     id: 'view',
@@ -270,10 +275,6 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   },
   // endregion
   // region VirtualItemActions
-  unlock: {
-    id: 'unlock',
-    label: translations.unlock
-  },
   editCode: {
     id: 'editCode',
     label: translations.edit
