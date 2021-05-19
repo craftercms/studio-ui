@@ -15,7 +15,6 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -24,7 +23,7 @@ export const useStyles = makeStyles((theme) =>
     },
     paper: {
       padding: '20px',
-      margin: '50px 0',
+      margin: '20px 0',
       background: theme.palette.background.default,
       '& .mt20': {
         marginTop: '20px'
@@ -38,25 +37,8 @@ export const useStyles = makeStyles((theme) =>
     },
     save: {
       marginLeft: 'auto'
-    },
-    // Password requirements
-    listOfConditions: {
-      listStyle: 'none',
-      padding: 0,
-      margin: '16px 0 16px 0'
-    },
-    conditionItem: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    conditionItemIcon: {
-      marginRight: theme.spacing(1)
-    },
-    conditionItemNotMet: {
-      color: palette.yellow.shade
-    },
-    conditionItemMet: {
-      color: palette.green.shade
     }
   })
 );
+
+export default useStyles;

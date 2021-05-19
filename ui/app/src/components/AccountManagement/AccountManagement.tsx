@@ -20,7 +20,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import { useStyles } from './styles';
+import useStyles from './styles';
 import Avatar from '@material-ui/core/Avatar';
 import { useActiveUser } from '../../utils/hooks';
 import Container from '@material-ui/core/Container';
@@ -205,7 +205,6 @@ export default function AccountManagement(props: AccountManagementProps) {
               }
             />
             <PasswordRequirementsDisplay
-              classes={classes}
               value={newPassword}
               onValidStateChanged={setValidPassword}
               formatMessage={formatMessage}

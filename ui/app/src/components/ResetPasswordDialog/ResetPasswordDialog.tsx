@@ -28,8 +28,6 @@ import { setPassword } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import PasswordTextField from '../Controls/PasswordTextField';
 
@@ -40,44 +38,6 @@ interface ResetPasswordDialogProps {
   passwordRequirementsRegex: string;
 }
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    helperText: {
-      display: 'flex',
-      alignItems: 'center',
-      '& svg': { marginRight: '5px' }
-    },
-    iconWarning: {
-      color: theme.palette.error.main
-    },
-    iconSuccess: {
-      color: theme.palette.success.main
-    },
-    specialCharacters: {
-      marginLeft: '5px'
-    },
-    // Password requirements
-    listOfConditions: {
-      listStyle: 'none',
-      padding: 0,
-      margin: `${theme.spacing(1.5)}px 0`
-    },
-    conditionItem: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    conditionItemIcon: {
-      marginRight: theme.spacing(1)
-    },
-    conditionItemNotMet: {
-      color: palette.yellow.shade
-    },
-    conditionItemMet: {
-      color: palette.green.shade
-    }
-  })
-);
-
 const translations = defineMessages({
   passwordUpdated: {
     id: 'resetPasswordDialog.passwordUpdated',
@@ -87,7 +47,6 @@ const translations = defineMessages({
 
 export default function ResetPasswordDialog(props: ResetPasswordDialogProps) {
   const { open, onClose } = props;
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <ResetPasswordDialogUI {...props} />
@@ -100,7 +59,6 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
   const [newPassword, setNewPassword] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
   const [updating, setUpdating] = useState(false);
-  const classes = styles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -149,7 +107,6 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
           }}
         />
         <PasswordRequirementsDisplay
-          classes={classes}
           value={newPassword}
           onValidStateChanged={setValid}
           formatMessage={formatMessage}
