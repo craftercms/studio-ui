@@ -164,7 +164,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         showAppsButton={false}
         showHamburgerMenuButton={false}
         styles={
-          !embedded && {
+          embedded && {
             leftContent: {
               marginLeft: 0
             }
