@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const messages = defineMessages({
+export const messages = defineMessages({
   revertAll: {
     id: 'repositories.revertAll',
     defaultMessage: 'Revert All'
@@ -120,10 +120,11 @@ export interface RemoteRepositoriesStatusUIProps {
   onRevertPull(): void;
   onClickCommit(): void;
   onResolveConflict(strategy: string, path: string): void;
+  onDiffClick(path: string): void;
 }
 
 export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
-  const { status, onRevertPull, onClickCommit, onResolveConflict } = props;
+  const { status, onRevertPull, onClickCommit, onResolveConflict, onDiffClick } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
@@ -191,7 +192,7 @@ export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStat
                         confirmHelperText={formatMessage(messages.keepLocalHelper)}
                         onConfirm={() => onResolveConflict('ours', file)}
                       />
-                      <Button variant="outlined" onClick={null}>
+                      <Button variant="outlined" onClick={() => onDiffClick(file)}>
                         {formatMessage(messages.diff)}
                       </Button>
                     </GlobalAppGridCell>

@@ -52,7 +52,7 @@ export function resolveConflict(siteId: string, path: string, resolution: string
 }
 
 export function diffConflictedFile(siteId: string, path: string): Observable<FileDiff> {
-  return get(`${repositoryUrl}/diff_conflicted_file?siteId=${siteId}&path${path}`).pipe(pluck('response', 'diff'));
+  return get(`${repositoryUrl}/diff_conflicted_file?siteId=${siteId}&path=${path}`).pipe(pluck('response', 'diff'));
 }
 
 export function commitResolution(siteId: string, commitMessage: string): Observable<RepositoryStatus> {

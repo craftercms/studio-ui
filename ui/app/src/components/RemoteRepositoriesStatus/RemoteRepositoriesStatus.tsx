@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
+import RemoteRepositoriesDiffDialog from '../RemoteRepositoriesDiffDialog';
 
 const messages = defineMessages({
   revertPullSuccessMessage: {
@@ -48,6 +49,8 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
   const status = resource.read();
   const siteId = useActiveSiteId();
   const [openCommitResolutionDialog, setOpenCommitResolutionDialog] = useState(false);
+  const [openRemoteRepositoriesDiffDialog, setOpenRemoteRepositoriesDiffDialog] = useState(false);
+  const [diffPath, setDiffPath] = useState(null);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -92,6 +95,10 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
       }
     );
   };
+  const openDiffDialog = (path) => {
+    setDiffPath(path);
+    setOpenRemoteRepositoriesDiffDialog(true);
+  };
 
   return (
     <>
@@ -100,6 +107,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
         onRevertPull={revertPull}
         onClickCommit={() => setOpenCommitResolutionDialog(true)}
         onResolveConflict={resolveConflict}
+        onDiffClick={openDiffDialog}
       />
       <CommitResolutionDialog
         open={openCommitResolutionDialog}
@@ -107,6 +115,12 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
         onClickCommit={() => setFetching(true)}
         onCommitSuccess={onCommitSuccess}
         onCommitError={onCommitError}
+      />
+      <RemoteRepositoriesDiffDialog
+        open={openRemoteRepositoriesDiffDialog}
+        path={diffPath}
+        onResolveConflict={resolveConflict}
+        onClose={() => setOpenRemoteRepositoriesDiffDialog(false)}
       />
     </>
   );

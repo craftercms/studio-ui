@@ -34,13 +34,14 @@ import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 export interface RemoteRepositoriesGridUIProps {
   resource: Resource<Array<Repository>>;
+  disableActions: boolean;
   onClickPull(remoteName: string, branches: string[]): void;
   onClickPush(remoteName: string, branches: string[]): void;
   onDeleteRemote(remoteName: string): void;
 }
 
 export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
-  const { resource, onDeleteRemote, onClickPull, onClickPush } = props;
+  const { resource, disableActions, onDeleteRemote, onClickPull, onClickPush } = props;
   const repositories = resource.read();
 
   return (
@@ -56,16 +57,26 @@ export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUI
               <GlobalAppGridCell align="left">{repository.pushUrl}</GlobalAppGridCell>
               <GlobalAppGridCell>
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
-                  <IconButton onClick={() => onClickPull(repository.name, repository.branches)}>
-                    <ArrowDownwardRoundedIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      onClick={() => onClickPull(repository.name, repository.branches)}
+                      disabled={disableActions}
+                    >
+                      <ArrowDownwardRoundedIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               </GlobalAppGridCell>
               <GlobalAppGridCell>
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
-                  <IconButton onClick={() => onClickPush(repository.name, repository.branches)}>
-                    <ArrowUpwardRoundedIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      onClick={() => onClickPush(repository.name, repository.branches)}
+                      disabled={disableActions}
+                    >
+                      <ArrowUpwardRoundedIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               </GlobalAppGridCell>
               <GlobalAppGridCell>

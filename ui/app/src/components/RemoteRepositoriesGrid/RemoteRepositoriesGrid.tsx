@@ -56,12 +56,13 @@ const messages = defineMessages({
 
 export interface RemoteRepositoriesGridProps {
   resource: Resource<Array<Repository>>;
+  disableActions: boolean;
   fetchStatus(): void;
   fetchRepositories(): void;
 }
 
 export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
-  const { resource, fetchStatus, fetchRepositories } = props;
+  const { resource, disableActions, fetchStatus, fetchRepositories } = props;
   const [openRepositoriesPullDialog, setOpenRepositoriesPullDialog] = useState(false);
   const [openRepositoriesPushDialog, setOpenRepositoriesPushDialog] = useState(false);
   const [repositoriesPullDialogBranches, setRepositoriesPullDialogBranches] = useState([]);
@@ -143,6 +144,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
     <>
       <RemoteRepositoriesGridUI
         resource={resource}
+        disableActions={disableActions}
         onClickPull={onClickPull}
         onClickPush={onClickPush}
         onDeleteRemote={deleteRemote}

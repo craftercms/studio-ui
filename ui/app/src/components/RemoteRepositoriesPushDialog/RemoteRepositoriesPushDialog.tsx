@@ -21,7 +21,6 @@ import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -29,6 +28,8 @@ import Select from '@material-ui/core/Select/Select';
 import { push as pushService } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 export interface RemoteRepositoriesPushDialogProps {
   open: boolean;
@@ -109,12 +110,12 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
           </FormControl>
         </DialogBody>
         <DialogFooter>
-          <Button variant="outlined" color="default" onClick={onClose}>
+          <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={selectedBranch === ''}>
+          </SecondaryButton>
+          <PrimaryButton type="submit" disabled={selectedBranch === ''}>
             <FormattedMessage id="words.ok" defaultMessage="Ok" />
-          </Button>
+          </PrimaryButton>
         </DialogFooter>
       </form>
     </Dialog>

@@ -19,10 +19,11 @@ import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm/NewRemoteRepositoryForm';
 import DialogFooter from '../Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import React from 'react';
 import { SiteState } from '../../models/Site';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 export interface NewRemoteRepositoryDialogUIProps {
   open: boolean;
@@ -59,12 +60,12 @@ export default function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDi
           <NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
         </DialogBody>
         <DialogFooter>
-          <Button variant="outlined" color="default" onClick={onClose}>
+          <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
+          </SecondaryButton>
+          <PrimaryButton type="submit">
             <FormattedMessage id="words.create" defaultMessage="Create" />
-          </Button>
+          </PrimaryButton>
         </DialogFooter>
       </form>
     </Dialog>

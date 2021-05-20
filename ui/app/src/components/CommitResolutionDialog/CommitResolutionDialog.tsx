@@ -20,11 +20,12 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { commitResolution } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 export interface CommitResolutionDialogProps {
   open: boolean;
@@ -66,15 +67,15 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth="sm"
-        disableBackdropClick={disableBackdropClick}
-        disableEscapeKeyDown={disableBackdropClick}
-      >
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      disableBackdropClick={disableBackdropClick}
+      disableEscapeKeyDown={disableBackdropClick}
+    >
+      <form onSubmit={onSubmit}>
         <DialogHeader
           title={<FormattedMessage id="repositories.commitResolution" defaultMessage="CommitResolution" />}
           onDismiss={onClose}
@@ -103,19 +104,14 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
           </Grid>
         </DialogBody>
         <DialogFooter>
-          <Button variant="outlined" color="default" onClick={onClose}>
+          <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={!message || message.replace(/ /g, '') === ''}
-          >
+          </SecondaryButton>
+          <PrimaryButton type="submit" disabled={!message || message.replace(/ /g, '') === ''}>
             <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
-          </Button>
+          </PrimaryButton>
         </DialogFooter>
-      </Dialog>
-    </form>
+      </form>
+    </Dialog>
   );
 }

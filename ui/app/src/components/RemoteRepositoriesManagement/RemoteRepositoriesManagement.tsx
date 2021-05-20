@@ -225,6 +225,7 @@ export default function RemoteRepositoriesManagement() {
           resource={resource}
           fetchStatus={fetchRepositoriesStatus}
           fetchRepositories={fetchRepositories}
+          disableActions={repositoriesStatus?.conflicting.length > 0}
         />
       </SuspenseWithEmptyState>
 

@@ -81,6 +81,7 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
           : {})
       }).subscribe(() => {
         onCreateSuccess?.();
+        setInputs(inputsInitialState);
         onClose();
       });
     }
@@ -98,7 +99,10 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
       setInputs={setInputs}
       disableQuickDismiss={disableQuickDismiss}
       onCreate={createRemote}
-      onClose={onClose}
+      onClose={() => {
+        setInputs(inputsInitialState);
+        onClose();
+      }}
     />
   );
 }

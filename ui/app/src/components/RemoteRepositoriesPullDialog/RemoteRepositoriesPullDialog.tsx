@@ -20,7 +20,6 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -30,6 +29,8 @@ import { MergeStrategy } from '../../models/Repository';
 import { pull as pullService } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -141,12 +142,12 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
           </FormControl>
         </DialogBody>
         <DialogFooter>
-          <Button variant="outlined" color="default" onClick={onClose}>
+          <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={selectedBranch === ''}>
+          </SecondaryButton>
+          <PrimaryButton type="submit" disabled={selectedBranch === ''}>
             <FormattedMessage id="words.ok" defaultMessage="Ok" />
-          </Button>
+          </PrimaryButton>
         </DialogFooter>
       </form>
     </Dialog>
