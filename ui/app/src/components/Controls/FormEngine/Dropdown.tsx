@@ -17,31 +17,31 @@
 import React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { FormattedMessage } from 'react-intl';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { Control } from '../../../models/FormsEngine';
-
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { controlBaseStyles } from './commonStyles';
-
-const useStyles = makeStyles(() => createStyles(controlBaseStyles));
+import useStyles from './styles';
 
 export default function Dropdown(props: Control) {
   const { field, value = '', onChange, disabled } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     onChange(event.target.value);
   };
 
   return (
-    <FormControl className={classes.formControl}>
-      <InputLabel className={classes.inputLabel}>{field.name}</InputLabel>
-      <Select value={value} onChange={handleSelectChange} disabled={disabled} displayEmpty>
-        <MenuItem value="">
-          <FormattedMessage id="audiencesPanelControl.optionSelectorNoOptionSelected" defaultMessage="Select Option" />
-        </MenuItem>
+    <FormControl variant="outlined" className={classes.formControl} fullWidth>
+      <InputLabel id={`labelFor_${field.id}`}>{field.name}</InputLabel>
+      <Select
+        labelId={`labelFor_${field.id}`}
+        id={`select_${field.id}`}
+        label={field.name}
+        fullWidth
+        value={value}
+        onChange={handleSelectChange}
+        disabled={disabled}
+      >
         {field.values?.map((possibleValue: any) => (
           <MenuItem value={possibleValue.value} key={possibleValue.value}>
             {possibleValue.label}

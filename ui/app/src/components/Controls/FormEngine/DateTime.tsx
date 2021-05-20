@@ -19,23 +19,19 @@ import DateTimePicker from '../DateTimePicker';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { DateTimeControl } from '../../../models/FormsEngine';
-
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { controlBaseStyles } from './commonStyles';
 import { useSelection } from '../../../utils/hooks';
 import GlobalState from '../../../models/GlobalState';
-
-const useStyles = makeStyles(() => createStyles(controlBaseStyles));
+import useStyles from './styles';
 
 export default function DateTime(props: DateTimeControl) {
   const { field, value, timezone, onChange, disabled } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
   const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
     (state) => state.uiConfig.locale.localeCode
   );
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl variant="outlined" className={classes.formControl} fullWidth>
       <InputLabel className={classes.inputLabel} htmlFor={field.id}>
         {field.name}
       </InputLabel>

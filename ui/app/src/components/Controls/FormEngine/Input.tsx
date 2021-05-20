@@ -16,32 +16,26 @@
 
 import TextField from '@material-ui/core/TextField';
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Control } from '../../../models/FormsEngine';
-import { controlBaseStyles } from './commonStyles';
-
-const useStyles = makeStyles((theme: Theme) => createStyles(controlBaseStyles));
+import useStyles from './styles';
 
 export default function Input(props: Control) {
   const { field, value = '', onChange, disabled } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
 
   return (
-    <FormControl className={classes.formControl}>
-      <InputLabel className={classes.inputLabel} htmlFor={field.id}>
-        {field.name}
-      </InputLabel>
+    <FormControl variant="outlined" className={classes.formControl} fullWidth>
       <TextField
         id={field.id}
         type="text"
         placeholder="auto"
         fullWidth
+        label={field.name}
         value={value}
         onChange={handleInputChange}
         disabled={disabled}
