@@ -72,7 +72,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                 mode === 'studio' ? (
                   <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Path to Publish" />
                 ) : (
-                  <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Commit or tag IDs" />
+                  <FormattedMessage id="publishOnDemand.formPathLabelPreview" defaultMessage="Commit or tag IDs" />
                 )
               }
               fullWidth
@@ -85,7 +85,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                   />
                 ) : (
                   <FormattedMessage
-                    id="publishOnDemand.formPathExample"
+                    id="publishOnDemand.formPathExamplePreview"
                     defaultMessage="You may enter multiple separate by comma"
                   />
                 )

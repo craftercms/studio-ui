@@ -302,9 +302,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
                   error={validateRequiredField(newUser.password) || isInvalidPassword(newUser.password)}
                   helperText={
                     validateRequiredField(newUser.password) ? (
-                      <FormattedMessage id="createUserDialog.password" defaultMessage="Password is required." />
+                      <FormattedMessage id="createUserDialog.passwordRequired" defaultMessage="Password is required." />
                     ) : isInvalidPassword(newUser.password) ? (
-                      <FormattedMessage id="createUserDialog.password" defaultMessage="Password is invalid." />
+                      <FormattedMessage id="createUserDialog.passwordInvalid" defaultMessage="Password is invalid." />
                     ) : null
                   }
                   onChange={(e) => setNewUser({ password: e.target.value })}

@@ -38,7 +38,7 @@ import { NEVER, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
 import { fetchHistory as getConfigurationHistory } from '../../services/configuration';
 import { reloadDetailedItem } from '../actions/content';
-import { showRevertItemSuccessNotification } from '../actions/system';
+import { emitSystemEvent, itemReverted, showRevertItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { RELOAD_REQUEST } from '../actions/preview';
@@ -52,9 +52,9 @@ export default [
         const service = state.versions.isConfig
           ? getConfigurationHistory(
               state.sites.active,
-              payload.path ?? state.versions.item.path,
-              payload.environment ?? state.versions.environment,
-              payload.module ?? state.versions.module
+              payload?.path ?? state.versions.item.path,
+              payload?.environment ?? state.versions.environment,
+              payload?.module ?? state.versions.module
             )
           : getContentHistory(state.sites.active, payload?.path ?? state.versions.item.path);
         return service.pipe(map(fetchItemVersionsComplete), catchAjaxError(fetchItemVersionsFailed));
@@ -93,11 +93,12 @@ export default [
       ofType(revertContentComplete.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        if (payload.path === state.preview.guest.path) {
+        if (payload.path === state.preview.guest?.path) {
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
         }
         return of(
           batchActions([
+            emitSystemEvent(itemReverted({ target: payload.path })),
             fetchItemVersions(),
             showRevertItemSuccessNotification(),
             reloadDetailedItem({ path: payload.path })
