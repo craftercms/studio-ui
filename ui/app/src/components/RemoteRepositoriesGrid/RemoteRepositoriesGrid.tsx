@@ -46,11 +46,11 @@ const messages = defineMessages({
   },
   pullSuccessMessage: {
     id: 'repositories.pullSuccessMessage',
-    defaultMessage: 'Successfully pushed.'
+    defaultMessage: 'Successfully pulled.'
   },
   pushSuccessMessage: {
     id: 'repositories.pushSuccessMessage',
-    defaultMessage: 'Successfully pulled.'
+    defaultMessage: 'Successfully pushed.'
   }
 });
 
