@@ -50,7 +50,7 @@ export default function AboutCrafterCMSView() {
           </div>
           <div className={classes.row}>
             <Typography variant="subtitle2" className={'aboutLabel'}>
-              <FormattedMessage id="about.buildNumber" defaultMessage="Build Date" />:
+              <FormattedMessage id="about.buildDate" defaultMessage="Build Date" />:
             </Typography>
             <Typography variant="body2">
               {new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(

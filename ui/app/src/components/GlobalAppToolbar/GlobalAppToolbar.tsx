@@ -25,17 +25,19 @@ import LauncherOpenerButton from '../LauncherOpenerButton';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 import { defineMessages, useIntl } from 'react-intl';
 
-type GlobalAppToolbarClassKey = 'appBar' | 'toolbar' | 'title' | 'leftContent' | 'rightContent';
+type GlobalAppToolbarClassKey = 'appBar' | 'toolbar' | 'title' | 'leftContent' | 'rightContent' | 'ellipsis';
 
 type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProperties>>;
 
 interface GlobalAppToolbarProps {
   elevation?: number;
   title: React.ReactNode;
+  subtitle?: React.ReactNode;
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
   styles?: GlobalAppToolbarStyles;
   classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
+  startContent?: React.ReactNode;
   showHamburgerMenuButton?: boolean;
   showAppsButton?: boolean;
 }
@@ -57,24 +59,35 @@ const useStyles = makeStyles((theme) =>
       paddingLeft: theme.spacing(1.5),
       paddingRight: theme.spacing(1.5),
       alignItems: 'center',
-      '& > section': {
-        display: 'flex',
-        alignItems: 'center'
-      },
       ...styles.toolbar
     }),
     title: (styles) => ({
       marginLeft: '10px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      overflow: 'hidden',
       ...styles.title
     }),
     leftContent: (styles) => ({
       marginLeft: '25px',
+      display: 'flex',
+      alignItems: 'center',
+      whiteSpace: 'nowrap',
       ...styles.leftContent
     }),
     rightContent: (styles) => ({
       marginLeft: 'auto',
+      display: 'flex',
+      alignItems: 'center',
+      whiteSpace: 'nowrap',
       ...styles.rightContent
-    })
+    }),
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    }
   })
 );
 
@@ -82,11 +95,13 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
   const classes = useStyles(props.styles);
   const {
     title,
+    subtitle,
     leftContent,
     rightContent,
     elevation = 0,
     showHamburgerMenuButton = true,
-    showAppsButton = true
+    showAppsButton = true,
+    startContent
   } = props;
   const { formatMessage } = useIntl();
   return (
@@ -109,10 +124,16 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
             }}
           />
         )}
+        {startContent}
         <section className={clsx(classes.title, props.classes?.title)}>
-          <Typography variant="h5" component="h1">
+          <Typography variant="h5" component="h1" className={classes.ellipsis}>
             {title}
           </Typography>
+          {subtitle && (
+            <Typography variant="body2" component="h2" color="textSecondary" className={classes.ellipsis}>
+              {subtitle}
+            </Typography>
+          )}
         </section>
         <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
         <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>

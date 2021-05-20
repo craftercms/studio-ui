@@ -25,34 +25,47 @@ import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { defineMessages } from 'react-intl';
+import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
 
-type CrafterCMSModules = 'studio' | 'engine';
+export type CrafterCMSModules = 'studio' | 'engine';
 
-export function fetchConfigurationXML(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
-  return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
-    pluck('response', 'content')
-  );
+export function fetchConfigurationXML(
+  site: string,
+  configPath: string,
+  module: CrafterCMSModules,
+  environment?: string
+): Observable<string> {
+  const qs = toQueryString({
+    siteId: site,
+    module,
+    path: configPath,
+    environment
+  });
+  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(pluck('response', 'content'));
 }
 
 export function fetchConfigurationDOM(
   site: string,
   configPath: string,
-  module: CrafterCMSModules
+  module: CrafterCMSModules,
+  environment?: string
 ): Observable<XMLDocument> {
-  return fetchConfigurationXML(site, configPath, module).pipe(map(fromString));
+  return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
 }
 
 export function writeConfiguration(
   site: string,
   path: string,
   module: CrafterCMSModules,
-  content: string
+  content: string,
+  environment?: string
 ): Observable<any> {
   return postJSON('/studio/api/2/configuration/write_configuration', {
     siteId: site,
     module,
     path,
-    content
+    content,
+    ...(environment && { environment })
   });
 }
 
@@ -258,7 +271,7 @@ export function fetchHistory(
   environment: string,
   module: string
 ): Observable<VersionsResponse> {
-  const parsedPath = encodeURIComponent(path.replace('/config/studio', ''));
+  const parsedPath = encodeURIComponent(path.replace(/(\/config\/)(studio|engine)/g, ''));
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
@@ -282,6 +295,21 @@ export function fetchSiteLocale(site: string): Observable<any> {
         }
       }
       return settings;
+    })
+  );
+}
+
+export function fetchSiteConfigurationFiles(site: string, environment?: string): Observable<SiteConfigurationFile[]> {
+  return fetchConfigurationDOM(site, '/administration/config-list.xml', 'studio', environment).pipe(
+    map((xml) => {
+      let files = [];
+      if (xml) {
+        const filesXML = xml.querySelector('files');
+        if (filesXML) {
+          files = deserialize(filesXML).files.file;
+        }
+      }
+      return files;
     })
   );
 }

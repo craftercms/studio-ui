@@ -119,8 +119,8 @@ input[type='checkbox'].content-type-selector--checkbox {
 }
 
 #admin-console #cstudio-admin-console-workarea {
-  width: calc(100% - 239px);
-  margin-left: 239px;
+  width: calc(100% - 240px);
+  margin-left: 240px;
 }
 
 #cstudio-admin-console-workarea .iframe-container,

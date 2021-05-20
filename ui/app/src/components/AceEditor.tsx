@@ -15,12 +15,13 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useMount } from '../utils/hooks';
 import { pluckProps } from '../utils/object';
+import { CSSProperties } from '@material-ui/styles';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
-interface AceOptions {
+export interface AceOptions {
   // editor options
   selectionStyle: 'line' | 'text';
   highlightActiveLine: boolean;
@@ -89,10 +90,15 @@ interface AceOptions {
   useElasticTabstops: boolean;
 }
 
-interface AceEditorProps extends Partial<AceOptions> {
+export type AceEditorClassKey = 'base';
+
+export type AceEditorStyles = Partial<Record<AceEditorClassKey, CSSProperties>>;
+
+export interface AceEditorProps extends Partial<AceOptions> {
   value?: any;
   className?: string;
   autoFocus?: boolean;
+  styles?: AceEditorStyles;
   onChange?(e: any): void;
 }
 
@@ -159,16 +165,19 @@ const aceOptions: Array<keyof AceOptions> = [
 // const aceModes = [];
 // const aceThemes = [];
 
-const useStyles = makeStyles(() => ({
-  base: {
-    width: '100%',
-    height: '100%'
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles<AceEditorClassKey, AceEditorStyles>({
+    base: (styles) => ({
+      width: '100%',
+      height: '100%',
+      ...styles.base
+    })
+  })
+);
 
 export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   const { value = '', autoFocus = false, onChange } = props;
-  const classes = useStyles();
+  const classes = useStyles(props.styles);
   const refs = useRef({
     ace: null,
     elem: null,
