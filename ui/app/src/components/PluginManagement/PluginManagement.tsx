@@ -14,11 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import SecondaryButton from '../SecondaryButton';
 import AddIcon from '@material-ui/icons/Add';
 import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { PluginRecord } from '../../models/Plugin';
@@ -28,7 +26,7 @@ import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import { ListSubheader, TableBody } from '@material-ui/core';
+import { Button, ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
 import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import EmptyState from '../SystemStatus/EmptyState';
@@ -44,11 +42,11 @@ import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
-import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import { createLookupTable } from '../../utils/object';
 import GlobalState from '../../models/GlobalState';
+import GlobalAppToolbar from '../GlobalAppToolbar';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -59,25 +57,6 @@ const messages = defineMessages({
 
 const styles = makeStyles((theme) =>
   createStyles({
-    root: {
-      padding: '20px'
-    },
-    title: {
-      marginBottom: '25px'
-    },
-    createToken: {
-      margin: '10px 0',
-      borderRadius: '50px',
-      border: 0,
-      padding: '5px 25px',
-      boxShadow: '0px 3px 5px 0px rgba(0, 0, 0, 0.2)',
-      '&.embedded': {
-        marginLeft: '15px'
-      }
-    },
-    tableWrapper: {
-      marginTop: '25px'
-    },
     table: {
       minWidth: 650
     },
@@ -175,28 +154,36 @@ export const PluginManagement = (props: PluginManagementProps) => {
   };
 
   return (
-    <section className={clsx(!embedded && classes.root)}>
-      {!embedded && (
-        <>
-          <Typography variant="h4" component="h1" className={classes.title}>
+    <section>
+      <GlobalAppToolbar
+        title={
+          !embedded && (
             <FormattedMessage id="globalMenu.pluginManagementEntryLabel" defaultMessage="Plugin Management" />
-          </Typography>
-          <Divider />
-        </>
-      )}
-      <SecondaryButton
-        startIcon={<AddIcon />}
-        className={clsx(classes.createToken, embedded && 'embedded')}
-        onClick={onSearchPlugin}
-        disabled={permissions === null || listPluginsPermission === false}
-      >
-        {installPluginsPermission ? (
-          <FormattedMessage id="pluginManagement.searchPlugin" defaultMessage="Search & install" />
-        ) : (
-          <FormattedMessage id="words.search" defaultMessage="Search" />
-        )}
-      </SecondaryButton>
-      <Divider />
+          )
+        }
+        showAppsButton={false}
+        showHamburgerMenuButton={false}
+        styles={{
+          leftContent: {
+            marginLeft: 0
+          }
+        }}
+        leftContent={
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={onSearchPlugin}
+            disabled={permissions === null || listPluginsPermission === false}
+          >
+            {installPluginsPermission ? (
+              <FormattedMessage id="pluginManagement.searchPlugin" defaultMessage="Search & install" />
+            ) : (
+              <FormattedMessage id="words.search" defaultMessage="Search" />
+            )}
+          </Button>
+        }
+      />
       {permissions && listPluginsPermission === false ? (
         <EmptyState
           title={
@@ -208,7 +195,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         />
       ) : (
         <ConditionalLoadingState isLoading={plugins === null}>
-          <TableContainer className={classes.tableWrapper}>
+          <TableContainer>
             <Table className={classes.table}>
               <TableHead>
                 <TableRow>
