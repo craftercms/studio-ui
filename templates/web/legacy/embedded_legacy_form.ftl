@@ -248,6 +248,12 @@
               action: 'cancelled'
             }, '*');
           },
+          pendingChanges: function() {
+            window.top.postMessage({
+              type: 'LEGACY_CODE_EDITOR_PENDING_CHANGES',
+              action: 'pendingChanges'
+            }, '*');
+          },
           renderComplete: function () {
             window.top.postMessage({
               type: 'LEGACY_CODE_EDITOR_RENDERED',

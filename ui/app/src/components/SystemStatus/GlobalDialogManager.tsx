@@ -186,6 +186,7 @@ function GlobalDialogManager() {
         authoringBase={state.codeEditor.authoringBase}
         readonly={state.codeEditor.readonly}
         inProgress={state.codeEditor.inProgress}
+        pendingChanges={state.codeEditor.pendingChanges}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onDismiss={createCallback(state.codeEditor.onDismiss, dispatch)}

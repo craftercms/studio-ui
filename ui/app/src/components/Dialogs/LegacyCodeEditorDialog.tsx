@@ -24,6 +24,7 @@ import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   LEGACY_CODE_EDITOR_CLOSE,
+  LEGACY_CODE_EDITOR_PENDING_CHANGES,
   LEGACY_CODE_EDITOR_RENDERED,
   LEGACY_CODE_EDITOR_SUCCESS,
   RELOAD_REQUEST
@@ -33,9 +34,15 @@ import { filter } from 'rxjs/operators';
 import StandardAction from '../../models/StandardAction';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { updateCodeEditorDialog } from '../../state/actions/dialogs';
+import {
+  closeCodeEditorDialog,
+  closeConfirmDialog,
+  showConfirmDialog,
+  updateCodeEditorDialog
+} from '../../state/actions/dialogs';
 import DialogHeader from './DialogHeader';
 import { getCodeEditorSrc } from '../../utils/path';
+import { batchActions } from '../../state/actions/misc';
 
 const translations = defineMessages({
   title: {
@@ -45,6 +52,10 @@ const translations = defineMessages({
   loadingForm: {
     id: 'craftercms.codeEditor.loadingForm',
     defaultMessage: 'Loading...'
+  },
+  pendingChanges: {
+    id: 'craftercms.codeEditor.pendingChangesConfirmation',
+    defaultMessage: 'You have unsaved changes, do you want to close?'
   }
 });
 
@@ -81,6 +92,7 @@ interface LegacyCodeEditorDialogBaseProps {
   authoringBase: string;
   readonly?: boolean;
   inProgress?: boolean;
+  pendingChanges?: boolean;
   onMinimized?(): void;
 }
 
@@ -124,6 +136,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
         case LEGACY_CODE_EDITOR_SUCCESS: {
           onSuccess?.();
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          dispatch(updateCodeEditorDialog({ pendingChanges: false }));
           switch (e.data.action) {
             case 'save': {
               break;
@@ -148,6 +161,10 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
             const config = { inProgress: false };
             dispatch(updateCodeEditorDialog(config));
           }
+          break;
+        }
+        case LEGACY_CODE_EDITOR_PENDING_CHANGES: {
+          dispatch(updateCodeEditorDialog({ pendingChanges: true }));
           break;
         }
       }
@@ -179,9 +196,9 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();
+  const { open, pendingChanges } = props;
 
   const title = formatMessage(translations.title);
-
   const minimized = useMinimizeDialog({
     id,
     title,
@@ -192,17 +209,32 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
     dispatch(minimizeDialog({ id }));
   };
 
+  const onClose = () => {
+    if (pendingChanges) {
+      dispatch(
+        showConfirmDialog({
+          title: formatMessage(translations.pendingChanges),
+          onOk: batchActions([closeConfirmDialog(), closeCodeEditorDialog()]),
+          onCancel: closeConfirmDialog()
+        })
+      );
+    } else {
+      props.onClose();
+    }
+  };
+
   return (
     <Dialog
-      open={props.open && !minimized}
+      open={open && !minimized}
       keepMounted={minimized}
-      onClose={props.onClose}
+      onClose={onClose}
       fullWidth
       maxWidth="xl"
       classes={{ paper: classes.dialog }}
     >
       <DialogHeader
         title={title}
+        onDismiss={onClose}
         rightActions={[
           {
             icon: 'MinimizeIcon',

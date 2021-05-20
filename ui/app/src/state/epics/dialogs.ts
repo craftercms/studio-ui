@@ -167,7 +167,7 @@ const dialogEpics: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) => {
         if (payload.src === state.dialogs.codeEditor.src) {
           const id = 'legacy-code-editor';
-          if (state.dialogs.minimizedDialogs[id].minimized === true) {
+          if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
             return of(
               updateDialog({
                 id,
