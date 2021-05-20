@@ -46,7 +46,7 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
   const { open, onClose, onCreateSuccess } = props;
   const siteId = useActiveSiteId();
   const [inputs, setInputs] = useSpreadState(inputsInitialState);
-  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
+  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
 
   const isFormValid = useCallback(() => {
     if (!inputs.remoteName || !inputs.remoteUrl) {
@@ -88,15 +88,15 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
 
   useEffect(() => {
     const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
-    setDisableBackdropClick(Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername));
-  }, [inputs, setDisableBackdropClick]);
+    setDisableQuickDismiss(Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername));
+  }, [inputs, setDisableQuickDismiss]);
 
   return (
     <NewRemoteRepositoryDialogUI
       open={open}
       inputs={inputs}
       setInputs={setInputs}
-      disableBackdropClick={disableBackdropClick}
+      disableQuickDismiss={disableQuickDismiss}
       onCreate={createRemote}
       onClose={onClose}
     />

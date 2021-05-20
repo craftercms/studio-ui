@@ -60,8 +60,13 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
     );
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    onCommit();
+  };
+
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       <Dialog
         open={open}
         onClose={onClose}
@@ -105,7 +110,6 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
             variant="contained"
             color="primary"
             type="submit"
-            onClick={onCommit}
             disabled={!message || message.replace(/ /g, '') === ''}
           >
             <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />

@@ -55,13 +55,13 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
   const classes = useStyles();
   const siteId = useActiveSiteId();
-  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
+  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
 
   const onChange = (e: any) => {
     e.persist();
     if (e.target.name === 'branch') {
       setSelectedBranch(e.target.value);
-      setDisableBackdropClick(true);
+      setDisableQuickDismiss(true);
     } else if (e.target.name === 'mergeStrategy') {
       setSelectedMergeStrategy(e.target.value);
     }
@@ -84,16 +84,21 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
     onClose();
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    pull();
+  };
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      disableBackdropClick={disableBackdropClick}
-      disableEscapeKeyDown={disableBackdropClick}
+      disableBackdropClick={disableQuickDismiss}
+      disableEscapeKeyDown={disableQuickDismiss}
     >
-      <form>
+      <form onSubmit={onSubmit}>
         <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onDismiss={onClose} />
         <DialogBody>
           <FormControl variant="outlined" fullWidth className={classes.formControl}>
@@ -139,7 +144,7 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
           <Button variant="outlined" color="default" onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </Button>
-          <Button type="submit" variant="contained" color="primary" onClick={pull} disabled={selectedBranch === ''}>
+          <Button type="submit" variant="contained" color="primary" disabled={selectedBranch === ''}>
             <FormattedMessage id="words.ok" defaultMessage="Ok" />
           </Button>
         </DialogFooter>

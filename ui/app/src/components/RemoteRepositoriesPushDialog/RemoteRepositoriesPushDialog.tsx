@@ -52,11 +52,11 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
   const [selectedBranch, setSelectedBranch] = useState('');
   const classes = useStyles();
   const siteId = useActiveSiteId();
-  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
+  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
 
   const onChange = (e: any) => {
     setSelectedBranch(e.target.value);
-    setDisableBackdropClick(true);
+    setDisableQuickDismiss(true);
   };
 
   const push = () => {
@@ -71,16 +71,21 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
     onClose();
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    push();
+  };
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      disableBackdropClick={disableBackdropClick}
-      disableEscapeKeyDown={disableBackdropClick}
+      disableBackdropClick={disableQuickDismiss}
+      disableEscapeKeyDown={disableQuickDismiss}
     >
-      <form>
+      <form onSubmit={onSubmit}>
         <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onDismiss={onClose} />
         <DialogBody>
           <FormControl variant="outlined" fullWidth className={classes.formControl}>
@@ -107,7 +112,7 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
           <Button variant="outlined" color="default" onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </Button>
-          <Button type="submit" variant="contained" color="primary" onClick={push} disabled={selectedBranch === ''}>
+          <Button type="submit" variant="contained" color="primary" disabled={selectedBranch === ''}>
             <FormattedMessage id="words.ok" defaultMessage="Ok" />
           </Button>
         </DialogFooter>

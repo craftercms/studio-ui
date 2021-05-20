@@ -27,6 +27,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -37,6 +38,9 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(3),
       fontWeight: 400,
       color: theme.palette.success.dark
+    },
+    conflictedFilesLabel: {
+      color: theme.palette.error.dark
     },
     fileName: {
       fontWeight: 600
@@ -60,6 +64,14 @@ const useStyles = makeStyles((theme) =>
     },
     statusNote: {
       color: theme.palette.text.secondary
+    },
+    conflictActions: {
+      textAlign: 'right'
+    },
+    conflictActionButton: {
+      marginRight: theme.spacing(2),
+      color: theme.palette.warning.dark,
+      borderColor: theme.palette.warning.main
     }
   })
 );
@@ -80,6 +92,26 @@ const messages = defineMessages({
   confirmHelper: {
     id: 'repositories.confirmHelper',
     defaultMessage: "Cancel pull operation and keep what's on this repository."
+  },
+  acceptRemote: {
+    id: 'repositories.acceptRemote',
+    defaultMessage: 'Accept Remote'
+  },
+  acceptRemoteHelper: {
+    id: 'repositories.acceptRemoteHelper',
+    defaultMessage: 'Override local file with the version pulled from remote.'
+  },
+  keepLocal: {
+    id: 'repositories.keepLocal',
+    defaultMessage: 'Keep Local'
+  },
+  keepLocalHelper: {
+    id: 'repositories.keepLocalHelper',
+    defaultMessage: 'Discard remote changes and keep the local file.'
+  },
+  diff: {
+    id: 'words.diff',
+    defaultMessage: 'Diff'
   }
 });
 
@@ -87,10 +119,11 @@ export interface RemoteRepositoriesStatusUIProps {
   status: RepositoryStatus;
   onRevertPull(): void;
   onClickCommit(): void;
+  onResolveConflict(strategy: string, path: string): void;
 }
 
 export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
-  const { status, onRevertPull, onClickCommit } = props;
+  const { status, onRevertPull, onClickCommit, onResolveConflict } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
@@ -130,7 +163,7 @@ export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStat
 
       {status.conflicting.length > 0 && (
         <>
-          <Typography variant="h6" className={classes.sectionLabel}>
+          <Typography variant="h6" className={clsx(classes.sectionLabel, classes.conflictedFilesLabel)}>
             <FormattedMessage id="repository.conflictedFiles" defaultMessage="Conflicted Files" />
           </Typography>
           <TableContainer>
@@ -140,6 +173,27 @@ export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStat
                   <GlobalAppGridRow key={file} className="hoverDisabled">
                     <GlobalAppGridCell>
                       <span className={classes.fileName}>{file.substr(file.lastIndexOf('/') + 1)}</span> - {file}
+                    </GlobalAppGridCell>
+                    <GlobalAppGridCell className={classes.conflictActions}>
+                      <ConfirmDropdown
+                        classes={{ button: classes.conflictActionButton }}
+                        text={formatMessage(messages.acceptRemote)}
+                        cancelText={formatMessage(messages.no)}
+                        confirmText={formatMessage(messages.yes)}
+                        confirmHelperText={formatMessage(messages.acceptRemoteHelper)}
+                        onConfirm={() => onResolveConflict('theirs', file)}
+                      />
+                      <ConfirmDropdown
+                        classes={{ button: classes.conflictActionButton }}
+                        text={formatMessage(messages.keepLocal)}
+                        cancelText={formatMessage(messages.no)}
+                        confirmText={formatMessage(messages.yes)}
+                        confirmHelperText={formatMessage(messages.keepLocalHelper)}
+                        onConfirm={() => onResolveConflict('ours', file)}
+                      />
+                      <Button variant="outlined" onClick={null}>
+                        {formatMessage(messages.diff)}
+                      </Button>
                     </GlobalAppGridCell>
                   </GlobalAppGridRow>
                 ))}

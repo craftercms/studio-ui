@@ -19,7 +19,7 @@ import { Resource } from '../../models/Resource';
 import { RepositoryStatus } from '../../models/Repository';
 import RemoteRepositoriesStatusUI from './RemoteRepositoriesStatusUI';
 import CommitResolutionDialog from '../CommitResolutionDialog/CommitResolutionDialog';
-import { cancelFailedPull } from '../../services/repositories';
+import { cancelFailedPull, resolveConflict as resolveConflictService } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
@@ -80,6 +80,18 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
   const onCommitError = (response) => {
     dispatch(showErrorDialog({ error: response }));
   };
+  const resolveConflict = (resolution: string, path: string) => {
+    setFetching(true);
+    resolveConflictService(siteId, path, resolution).subscribe(
+      (status) => {
+        onActionSuccess?.(status);
+        setFetching(false);
+      },
+      ({ response }) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
 
   return (
     <>
@@ -87,6 +99,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
         status={status}
         onRevertPull={revertPull}
         onClickCommit={() => setOpenCommitResolutionDialog(true)}
+        onResolveConflict={resolveConflict}
       />
       <CommitResolutionDialog
         open={openCommitResolutionDialog}

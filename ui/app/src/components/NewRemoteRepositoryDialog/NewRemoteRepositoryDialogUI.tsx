@@ -28,15 +28,15 @@ export interface NewRemoteRepositoryDialogUIProps {
   open: boolean;
   inputs: Partial<SiteState>;
   setInputs(inputs): void;
-  disableBackdropClick: boolean;
+  disableQuickDismiss: boolean;
   onClose(): void;
   onCreate(): void;
 }
 
 export default function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {
-  const { open, inputs, setInputs, onClose, onCreate, disableBackdropClick } = props;
+  const { open, inputs, setInputs, onClose, onCreate, disableQuickDismiss } = props;
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const onSubmit = (e) => {
     e.preventDefault();
     onCreate();
   };
@@ -47,10 +47,10 @@ export default function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDi
       onClose={onClose}
       fullWidth
       maxWidth="md"
-      disableBackdropClick={disableBackdropClick}
-      disableEscapeKeyDown={disableBackdropClick}
+      disableBackdropClick={disableQuickDismiss}
+      disableEscapeKeyDown={disableQuickDismiss}
     >
-      <form>
+      <form onSubmit={onSubmit}>
         <DialogHeader
           title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
           onDismiss={onClose}
@@ -62,7 +62,7 @@ export default function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDi
           <Button variant="outlined" color="default" onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </Button>
-          <Button type="submit" variant="contained" color="primary" onClick={onSubmit}>
+          <Button type="submit" variant="contained" color="primary">
             <FormattedMessage id="words.create" defaultMessage="Create" />
           </Button>
         </DialogFooter>
