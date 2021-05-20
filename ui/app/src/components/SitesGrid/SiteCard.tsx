@@ -108,7 +108,7 @@ export default function SiteCard(props: SiteCardProps) {
           <CardMedia
             component="img"
             className={classes.media}
-            image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
+            image={`/.crafter/screenshots/default.png?crafterSite=${site.id}`}
             title={site.name}
             onError={(event) => (event.target.src = fallbackImageSrc)}
           />
