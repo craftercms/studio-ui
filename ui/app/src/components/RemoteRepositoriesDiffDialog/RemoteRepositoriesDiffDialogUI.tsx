@@ -30,7 +30,9 @@ const useStyles = makeStyles((theme) =>
       overflowX: 'auto'
     },
     diffContent: {
-      fontSize: '14px'
+      fontSize: '14px',
+      background: 'none',
+      border: 'none'
     },
     splitView: {
       height: Math.floor(tabsHeight / 2),
