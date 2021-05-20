@@ -163,11 +163,13 @@ export const PluginManagement = (props: PluginManagementProps) => {
         }
         showAppsButton={false}
         showHamburgerMenuButton={false}
-        styles={{
-          leftContent: {
-            marginLeft: 0
+        styles={
+          !embedded && {
+            leftContent: {
+              marginLeft: 0
+            }
           }
-        }}
+        }
         leftContent={
           <Button
             startIcon={<AddIcon />}
