@@ -15,4 +15,9 @@
  */
 
 export { default } from './PreviewAudiencesPanel';
+
 export * from './PreviewAudiencesPanel';
+
+export * from './AudiencesFormSection';
+
+export * from './AudiencesPanelUI';

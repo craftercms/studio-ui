@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { forwardRef } from 'react';
+import { ElementType, forwardRef } from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
@@ -41,6 +41,7 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   item: DetailedItem | SandboxItem;
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
   isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
+  labelComponent?: ElementType;
 }
 
 export const useStyles = makeStyles((theme) =>
@@ -54,6 +55,7 @@ export const useStyles = makeStyles((theme) =>
     }),
     label: (styles) => ({
       marginLeft: 2,
+      display: 'inline-block',
       ...styles.label
     }),
     labelPreviewable: (styles) => ({
@@ -82,6 +84,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     showNavigableAsLinks = true,
     isNavigableFn = isPreviewable,
     labelTypographyProps,
+    labelComponent = 'span',
     ...rest
   } = props;
   const classes = useStyles(props.styles);
@@ -94,7 +97,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
       {showItemType && <ItemTypeIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
       <Typography
         noWrap
-        component="span"
+        component={labelComponent}
         {...labelTypographyProps}
         className={clsx(
           classes.label,
