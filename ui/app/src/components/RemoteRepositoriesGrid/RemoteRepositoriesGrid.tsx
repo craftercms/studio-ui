@@ -121,12 +121,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
     );
   };
   const onPushError = (response) => {
-    dispatch(
-      showSystemNotification({
-        message: response.message,
-        options: { variant: 'error' }
-      })
-    );
+    dispatch(showErrorDialog({ error: response }));
   };
   const deleteRemote = (remoteName: string) => {
     deleteRemoteService(siteId, remoteName).subscribe(
