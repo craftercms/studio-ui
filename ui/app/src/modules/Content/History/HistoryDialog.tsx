@@ -270,7 +270,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
         activeItem: version
       });
     },
-    [item.systemType, item.availableActions, count, setMenu, formatMessage]
+    [item.systemType, item.availableActions, count, setMenu, formatMessage, isConfig]
   );
 
   const compareVersionDialogWithActions = () =>
