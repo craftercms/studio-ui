@@ -46,11 +46,11 @@ const messages = defineMessages({
   },
   pullSuccessMessage: {
     id: 'repositories.pullSuccessMessage',
-    defaultMessage: ''
+    defaultMessage: 'Successfully pushed.'
   },
   pushSuccessMessage: {
     id: 'repositories.pushSuccessMessage',
-    defaultMessage: ''
+    defaultMessage: 'Successfully pulled.'
   }
 });
 
@@ -106,7 +106,12 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   };
   const onPullError = (response) => {
     fetchStatus();
-    dispatch(showErrorDialog({ error: response }));
+    dispatch(
+      showSystemNotification({
+        message: response.message,
+        options: { variant: 'error' }
+      })
+    );
   };
   const onPushSuccess = () => {
     dispatch(
@@ -116,7 +121,12 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
     );
   };
   const onPushError = (response) => {
-    dispatch(showErrorDialog({ error: response }));
+    dispatch(
+      showSystemNotification({
+        message: response.message,
+        options: { variant: 'error' }
+      })
+    );
   };
   const deleteRemote = (remoteName: string) => {
     deleteRemoteService(siteId, remoteName).subscribe(

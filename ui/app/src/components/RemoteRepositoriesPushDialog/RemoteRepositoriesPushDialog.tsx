@@ -65,7 +65,7 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
         onPushSuccess?.();
       },
       ({ response }) => {
-        onPushError?.(response);
+        onPushError?.(response.response);
       }
     );
     onClose();

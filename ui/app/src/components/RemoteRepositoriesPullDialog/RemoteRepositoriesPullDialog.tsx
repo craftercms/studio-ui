@@ -78,7 +78,7 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
         onPullSuccess?.();
       },
       ({ response }) => {
-        onPullError?.(response);
+        onPullError?.(response.response);
       }
     );
     onClose();

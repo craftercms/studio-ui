@@ -96,38 +96,37 @@ export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStat
 
   return (
     <div className={classes.root}>
-      {status.conflicting.length > 0 ||
-        (status.uncommittedChanges.length > 0 && (
-          <>
-            <Toolbar className={classes.toolbar}>
-              <section>
-                <Typography variant="h5">
-                  <FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
-                </Typography>
-              </section>
-              <section className={classes.rightContent}>
-                <ConfirmDropdown
-                  classes={{ button: classes.revertAllButton }}
-                  text={formatMessage(messages.revertAll)}
-                  cancelText={formatMessage(messages.no)}
-                  confirmText={formatMessage(messages.yes)}
-                  confirmHelperText={formatMessage(messages.confirmHelper)}
-                  onConfirm={onRevertPull}
-                />
-                <Button variant="outlined" className={classes.commitButton} onClick={onClickCommit}>
-                  <FormattedMessage id="repositories.newRepository" defaultMessage="Commit Resolution" />
-                </Button>
-              </section>
-            </Toolbar>
-
-            <Typography variant="caption" className={classes.statusNote}>
-              <FormattedMessage
-                id="repository.statusNote"
-                defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
+      {(status.conflicting.length > 0 || status.uncommittedChanges.length > 0) && (
+        <>
+          <Toolbar className={classes.toolbar}>
+            <section>
+              <Typography variant="h5">
+                <FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
+              </Typography>
+            </section>
+            <section className={classes.rightContent}>
+              <ConfirmDropdown
+                classes={{ button: classes.revertAllButton }}
+                text={formatMessage(messages.revertAll)}
+                cancelText={formatMessage(messages.no)}
+                confirmText={formatMessage(messages.yes)}
+                confirmHelperText={formatMessage(messages.confirmHelper)}
+                onConfirm={onRevertPull}
               />
-            </Typography>
-          </>
-        ))}
+              <Button variant="outlined" className={classes.commitButton} onClick={onClickCommit}>
+                <FormattedMessage id="repositories.newRepository" defaultMessage="Commit Resolution" />
+              </Button>
+            </section>
+          </Toolbar>
+
+          <Typography variant="caption" className={classes.statusNote}>
+            <FormattedMessage
+              id="repository.statusNote"
+              defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
+            />
+          </Typography>
+        </>
+      )}
 
       {status.conflicting.length > 0 && (
         <>
