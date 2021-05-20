@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) =>
     statusNote: {
       display: 'flex',
       justifyContent: 'center',
-      color: theme.palette.text.secondary
+      color: theme.palette.text.secondary,
+      marginTop: theme.spacing(2)
     }
   })
 );
@@ -107,7 +108,6 @@ export default function RemoteRepositoriesManagement() {
     setFetchingRepositories(true);
     fetchRepositoriesService(siteId).subscribe(
       (repositories) => {
-        console.log('repositories', repositories);
         setRepositories(repositories);
         setFetchingRepositories(false);
       },
@@ -142,8 +142,7 @@ export default function RemoteRepositoriesManagement() {
     fetchRepositories();
     dispatch(
       showSystemNotification({
-        message: formatMessage(messages.remoteCreateSuccessMessage),
-        options: { variant: 'success' }
+        message: formatMessage(messages.remoteCreateSuccessMessage)
       })
     );
   };

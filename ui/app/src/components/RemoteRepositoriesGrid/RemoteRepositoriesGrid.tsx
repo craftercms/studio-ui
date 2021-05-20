@@ -100,8 +100,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
     fetchStatus();
     dispatch(
       showSystemNotification({
-        message: formatMessage(messages.pullSuccessMessage),
-        options: { variant: 'success' }
+        message: formatMessage(messages.pullSuccessMessage)
       })
     );
   };
@@ -112,8 +111,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   const onPushSuccess = () => {
     dispatch(
       showSystemNotification({
-        message: formatMessage(messages.pushSuccessMessage),
-        options: { variant: 'success' }
+        message: formatMessage(messages.pushSuccessMessage)
       })
     );
   };
@@ -126,8 +124,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
         fetchRepositories();
         dispatch(
           showSystemNotification({
-            message: formatMessage(messages.remoteDeleteSuccessMessage),
-            options: { variant: 'success' }
+            message: formatMessage(messages.remoteDeleteSuccessMessage)
           })
         );
       },

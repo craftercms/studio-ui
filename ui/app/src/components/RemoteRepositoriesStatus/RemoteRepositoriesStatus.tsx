@@ -29,7 +29,7 @@ import { defineMessages, useIntl } from 'react-intl';
 const messages = defineMessages({
   revertPullSuccessMessage: {
     id: 'repositories.revertPullSuccessMessage',
-    defaultMessage: 'Successfully pulled from repository.'
+    defaultMessage: 'Successfully reverted repository.'
   },
   commitSuccessMessage: {
     id: 'repositories.commitSuccessMessage',
@@ -59,8 +59,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
         setFetching(false);
         dispatch(
           showSystemNotification({
-            message: formatMessage(messages.revertPullSuccessMessage),
-            options: { variant: 'success' }
+            message: formatMessage(messages.revertPullSuccessMessage)
           })
         );
       },
@@ -74,8 +73,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
     setFetching(false);
     dispatch(
       showSystemNotification({
-        message: formatMessage(messages.commitSuccessMessage),
-        options: { variant: 'success' }
+        message: formatMessage(messages.commitSuccessMessage)
       })
     );
   };
