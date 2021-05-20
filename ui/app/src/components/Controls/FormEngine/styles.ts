@@ -14,10 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PreviewAudiencesPanel';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export * from './PreviewAudiencesPanel';
+export const useStyles = makeStyles(() =>
+  createStyles({
+    formControl: {},
+    inputLabel: {}
+  })
+);
 
-export * from './AudiencesFormSection';
-
-export * from './AudiencesPanelUI';
+export default useStyles;

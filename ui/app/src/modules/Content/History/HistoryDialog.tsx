@@ -260,7 +260,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
             ]);
           }
         }
-        if (hasRevertAction(item.availableActions)) {
+        if (hasRevertAction(item.availableActions) || isConfig) {
           sections.push([isCurrent ? contextMenuOptions.revertToPrevious : contextMenuOptions.revertToThisVersion]);
         }
       }
@@ -270,7 +270,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
         activeItem: version
       });
     },
-    [item.systemType, item.availableActions, count, setMenu, formatMessage]
+    [item.systemType, item.availableActions, count, setMenu, formatMessage, isConfig]
   );
 
   const compareVersionDialogWithActions = () =>

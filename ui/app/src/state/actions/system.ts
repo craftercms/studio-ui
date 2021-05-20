@@ -27,6 +27,8 @@ import LookupTable from '../../models/LookupTable';
 
 export const itemUpdated = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UPDATED');
 
+export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM_REVERTED');
+
 export const itemCreated = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CREATED');
 
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');

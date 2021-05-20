@@ -51,17 +51,18 @@ export type ContentTypeFieldValidations = {
 export interface ContentTypeField {
   id: string;
   name: string;
+  description?: string;
   type: string;
-  sortable: boolean;
+  sortable?: boolean;
   validations: Partial<ContentTypeFieldValidations>;
   defaultValue: any;
-  required: boolean;
+  required?: boolean;
   fields?: LookupTable<ContentTypeField>;
   values?: { label: string; value: string }[];
   helpText?: string;
   // localized: boolean;
   // disabled: boolean;
-  // readonly: boolean;
+  // readOnly: boolean;
   // mapsTo: string;
   // mapsToType: string;
   // mapsToTarget: string;

@@ -22,11 +22,11 @@ import { createLookupTable } from '../../utils/object';
 import { DetailedItem } from '../../models/Item';
 
 interface HistoryConfigProps {
-  item: DetailedItem;
+  item: Partial<DetailedItem>;
   rootPath?: string;
   environment?: string;
   module?: string;
-  config?: boolean;
+  isConfig?: boolean;
 }
 
 export const fetchItemVersions = /*#__PURE__*/ createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
