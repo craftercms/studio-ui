@@ -24,7 +24,7 @@ import { Site } from '../models/Site';
 import { PagedArray } from '../models/PagedArray';
 import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
-import { asArray } from '../utils/array';
+import { asArray, createPresenceTable } from '../utils/array';
 import { fetchAuthenticationType } from './auth';
 
 // Check services/auth/login if `me` method is changed.
@@ -207,6 +207,13 @@ export function fetchMyPermissions(site: string): Observable<string[]> {
 export function hasPermissions(site: string, ...permissions: string[]): Observable<LookupTable<boolean>> {
   return postJSON(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
     pluck('response', 'permissions')
+  );
+}
+
+export function hasGlobalPermissions(...permissions: string[]): Observable<LookupTable<boolean>> {
+  return get('/studio/api/1/services/api/1/security/get-user-permissions.json?site=studio_root&path=/').pipe(
+    pluck('response', 'permissions'),
+    map((response) => createPresenceTable(permissions, (value) => response.includes(value)))
   );
 }
 

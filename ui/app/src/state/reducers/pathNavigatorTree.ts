@@ -180,8 +180,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         });
         total[path] = data[path].total;
 
-        if (!keywordByPath[path] && children[path].length) {
-          // If the expanded node has no children and is not filtered, it's a leaf node and there's no point keeping it in `expanded`
+        if (keywordByPath[path] || children[path].length) {
+          // If the expanded node has no children or is not filtered, it's a leaf node and there's no point keeping it in `expanded`
           expanded.push(path);
         }
       });
