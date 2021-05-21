@@ -235,7 +235,7 @@ export default function GitAuthForm(props: GitAuthFormProps) {
           label={<FormattedMessage id="gitForm.usernameAndPassword" defaultMessage="Username & Password" />}
         />
         <Collapse in={inputs.expanded.basic} timeout={300} unmountOnExit>
-          {inputs.expanded.basic && renderAuth(inputs.repoAuthentication)}
+          {renderAuth(inputs.repoAuthentication)}
         </Collapse>
         <FormControlLabel
           value="token"
@@ -243,7 +243,7 @@ export default function GitAuthForm(props: GitAuthFormProps) {
           label={<FormattedMessage id="gitForm.token" defaultMessage="Token" />}
         />
         <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
-          {inputs.expanded.token && renderAuth(inputs.repoAuthentication)}
+          {renderAuth(inputs.repoAuthentication)}
         </Collapse>
         <FormControlLabel
           value="key"
@@ -251,7 +251,7 @@ export default function GitAuthForm(props: GitAuthFormProps) {
           label={<FormattedMessage id="gitForm.privateKey" defaultMessage="Private Key" />}
         />
         <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
-          {inputs.expanded.key && renderAuth(inputs.repoAuthentication)}
+          {renderAuth(inputs.repoAuthentication)}
         </Collapse>
       </RadioGroup>
     </>
