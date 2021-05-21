@@ -54,6 +54,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
+import { foo } from '../../utils/object';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -77,7 +78,7 @@ export default function SitesManagement() {
   const isFetching = sitesBranch.isFetching;
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-  const [permissionsLookup, setPermissionsLookup] = useState(null);
+  const [permissionsLookup, setPermissionsLookup] = useState({});
 
   useEffect(() => {
     merge(
@@ -103,7 +104,7 @@ export default function SitesManagement() {
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
     useMemo(() => ({ sitesById, isFetching, permissionsLookup }), [sitesById, isFetching, permissionsLookup]),
     {
-      shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup && !isFetching,
+      shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
       shouldReject: () => false,
       shouldRenew: (source, resource) => isFetching && resource.complete,
       resultSelector: (source) => Object.values(sitesById),

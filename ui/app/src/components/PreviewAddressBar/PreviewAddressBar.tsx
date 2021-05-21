@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -106,20 +106,8 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const translations = defineMessages({
-  reload: {
-    id: 'words.reload',
-    defaultMessage: 'Reload'
-  },
-  options: {
-    id: 'words.options',
-    defaultMessage: 'Options'
-  }
-});
-
 export function AddressBar(props: AddressBarProps) {
   const classes = useAddressBarStyles();
-  const { formatMessage } = useIntl();
   const { site, url = '', item, onUrlChange, onRefresh } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
