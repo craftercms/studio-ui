@@ -92,11 +92,13 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
     setPullRemoteName(remoteName);
     setOpenRepositoriesPullDialog(true);
   };
+
   const onClickPush = (remoteName: string, branches: string[]) => {
     setRepositoriesPushDialogBranches(branches);
     setPushRemoteName(remoteName);
     setOpenRepositoriesPushDialog(true);
   };
+
   const onPullSuccess = () => {
     fetchStatus();
     dispatch(
@@ -105,6 +107,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
       })
     );
   };
+
   const onPullError = (response) => {
     fetchStatus();
     dispatch(
@@ -114,6 +117,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
       })
     );
   };
+
   const onPushSuccess = () => {
     dispatch(
       showSystemNotification({
@@ -121,9 +125,11 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
       })
     );
   };
+
   const onPushError = (response) => {
     dispatch(showErrorDialog({ error: response }));
   };
+
   const deleteRemote = (remoteName: string) => {
     deleteRemoteService(siteId, remoteName).subscribe(
       () => {

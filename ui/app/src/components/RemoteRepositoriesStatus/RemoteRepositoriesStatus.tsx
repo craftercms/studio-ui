@@ -71,6 +71,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
       }
     );
   };
+
   const onCommitSuccess = (status) => {
     onActionSuccess?.(status);
     setFetching(false);
@@ -80,9 +81,11 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
       })
     );
   };
+
   const onCommitError = (response) => {
     dispatch(showErrorDialog({ error: response }));
   };
+
   const resolveConflict = (resolution: string, path: string) => {
     setFetching(true);
     resolveConflictService(siteId, path, resolution).subscribe(
@@ -95,6 +98,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
       }
     );
   };
+
   const openDiffDialog = (path) => {
     setDiffPath(path);
     setOpenRemoteRepositoriesDiffDialog(true);
