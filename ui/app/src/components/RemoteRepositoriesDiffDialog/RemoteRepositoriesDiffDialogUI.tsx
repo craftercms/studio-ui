@@ -47,7 +47,7 @@ export interface RemoteRepositoriesDiffDialogUIProps {
   handleTabChange(e: React.ChangeEvent<{}>, newValue: number): void;
 }
 
-export default function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
+export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
   const { resource, tab, handleTabChange } = props;
   const fileDiff = resource.read();
   const classes = useStyles();
@@ -78,3 +78,5 @@ export default function RemoteRepositoriesDiffDialogUI(props: RemoteRepositories
     </>
   );
 }
+
+export default RemoteRepositoriesDiffDialogUI;

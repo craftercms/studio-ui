@@ -40,7 +40,7 @@ export interface RemoteRepositoriesGridUIProps {
   onDeleteRemote(remoteName: string): void;
 }
 
-export default function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
+export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
   const { resource, disableActions, onDeleteRemote, onClickPull, onClickPush } = props;
   const repositories = resource.read();
 
@@ -133,3 +133,5 @@ export function RepositoriesGridTableHead() {
     </TableHead>
   );
 }
+
+export default RemoteRepositoriesGridUI;

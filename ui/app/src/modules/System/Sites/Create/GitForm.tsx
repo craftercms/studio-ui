@@ -20,7 +20,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
 import GitAuthForm from '../../../../components/GitAuthForm';
 
 const useStyles = makeStyles((theme) => ({

@@ -34,7 +34,7 @@ export interface NewRemoteRepositoryDialogUIProps {
   onCreate(): void;
 }
 
-export default function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {
+export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {
   const { open, inputs, setInputs, onClose, onCreate, disableQuickDismiss } = props;
 
   const onSubmit = (e) => {
@@ -71,3 +71,5 @@ export default function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDi
     </Dialog>
   );
 }
+
+export default NewRemoteRepositoryDialogUI;

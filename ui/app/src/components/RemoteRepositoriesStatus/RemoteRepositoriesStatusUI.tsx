@@ -123,7 +123,7 @@ export const messages = defineMessages({
   }
 });
 
-export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
+export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
   const { status, onRevertPull, onClickCommit, onResolveConflict, onDiffClick } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -227,3 +227,5 @@ export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStat
     </div>
   );
 }
+
+export default RemoteRepositoriesStatusUI;

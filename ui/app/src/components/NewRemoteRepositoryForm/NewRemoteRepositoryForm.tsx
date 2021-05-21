@@ -20,7 +20,6 @@ import GitAuthForm from '../GitAuthForm';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
 import { SiteState } from '../../models/Site';
 
 const useStyles = makeStyles(() =>
@@ -75,7 +74,7 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
           name="remoteUrl"
           label={<FormattedMessage id="repositories.remoteUrl" defaultMessage="Remote Repository URL" />}
           InputLabelProps={{ shrink: true }}
-          required
+          // required
           fullWidth
           placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
           onChange={handleInputChange}
