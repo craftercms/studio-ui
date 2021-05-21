@@ -40,9 +40,10 @@ import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
 import palette from '../../../styles/palette';
 import { isFolder } from '../../../components/PathNavigator/utils';
-import { parseSandBoxItemToDetailedItem } from '../../../utils/content';
+import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../../utils/content';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 import Pagination from '../../../components/Pagination';
+import NavItem from '../../../components/PathNavigator/PathNavigatorItem';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -431,6 +432,15 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           onSearch={onSearch}
           onCrumbSelected={onCrumbSelected}
         />
+        {state.byId && lookupItemByPath(state.currentPath, state.byId) && (
+          <NavItem
+            item={lookupItemByPath(state.currentPath, state.byId)}
+            locale="en_US"
+            isLevelDescriptor={false}
+            isCurrentPath
+            onItemClicked={handleItemClicked}
+          />
+        )}
         <SuspenseWithEmptyState resource={itemsResource}>
           <PathNavigatorList
             leaves={state?.leaves ?? []}
