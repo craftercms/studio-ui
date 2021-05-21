@@ -67,13 +67,7 @@ const messages = defineMessages({
   }
 });
 
-function renderHelperText(
-  name: string,
-  value: string = '',
-  helperText: string,
-  required: boolean,
-  submitted: boolean
-) {
+function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean) {
   if (required && !value && submitted) {
     return <FormattedMessage id="gitForm.required" defaultMessage="{name} is required." values={{ name }} />;
   } else {
