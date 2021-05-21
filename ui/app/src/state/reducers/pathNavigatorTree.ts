@@ -181,7 +181,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         total[path] = data[path].total;
 
         if (keywordByPath[path] || children[path].length) {
-          // If the expanded node has no children or is not filtered, it's a leaf node and there's no point keeping it in `expanded`
+          // If the expanded node is filtered or has children it means, it's not a leaf and and we should keep it in 'expanded'
           expanded.push(path);
         }
       });
