@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
+  EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDER_FAILED,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
@@ -38,11 +39,12 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { updateEditConfig } from '../../state/actions/dialogs';
+import { closeConfirmDialog, closeEditDialog, showConfirmDialog, updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import { getEditFormSrc } from '../../utils/path';
 import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { batchActions } from '../../state/actions/misc';
 
 const translations = defineMessages({
   title: {
@@ -56,6 +58,10 @@ const translations = defineMessages({
   error: {
     id: 'legacyFormDialog.errorLoadingForm',
     defaultMessage: 'An error occurred trying to load the form'
+  },
+  pendingChanges: {
+    id: 'legacyFormDialog.pendingChangesConfirmation',
+    defaultMessage: 'You have unsaved changes, do you want to close?'
   }
 });
 
@@ -97,6 +103,7 @@ interface LegacyFormDialogBaseProps {
   isNewContent?: boolean;
   inProgress?: boolean;
   onMinimized?(): void;
+  pendingChanges?: boolean;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -180,6 +187,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
           onSave(e.data);
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          dispatch(updateEditConfig({ pendingChanges: false }));
           switch (e.data.action) {
             case 'save': {
               break;
@@ -218,6 +226,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
           onSave(e.data);
+          dispatch(updateEditConfig({ pendingChanges: false }));
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
@@ -237,6 +246,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           setError({
             message: e.data.message
           });
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
+          dispatch(updateEditConfig({ pendingChanges: true }));
           break;
         }
       }
@@ -269,6 +282,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();
+  const { open, pendingChanges } = props;
 
   const title = formatMessage(translations.title);
 
@@ -282,17 +296,32 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
     dispatch(minimizeDialog({ id }));
   };
 
+  const onClose = () => {
+    if (pendingChanges) {
+      dispatch(
+        showConfirmDialog({
+          title: formatMessage(translations.pendingChanges),
+          onOk: batchActions([closeConfirmDialog(), closeEditDialog()]),
+          onCancel: closeConfirmDialog()
+        })
+      );
+    } else {
+      props.onClose();
+    }
+  };
+
   return (
     <Dialog
-      open={props.open && !minimized}
+      open={open && !minimized}
       keepMounted={minimized}
-      onClose={props.onClose}
+      onClose={onClose}
       fullWidth
       maxWidth="xl"
       classes={{ paper: classes.dialog }}
     >
       <DialogHeader
         title={title}
+        onDismiss={onClose}
         rightActions={[
           {
             icon: 'MinimizeIcon',

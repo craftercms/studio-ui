@@ -636,6 +636,24 @@ var CStudioForms =
       },
 
       updateModel: function(id, value, remote) {
+        let formField = null;
+
+        this.sections.forEach((section) => {
+          let field = section.fields.find((field) => field.id === id);
+          if (field) {
+            formField = field;
+          }
+        });
+
+        if (formField && formField.edited) {
+          var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+          var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
+          if (iceWindowCallback.pendingChanges) {
+            let callback = getCustomCallback(iceWindowCallback.pendingChanges);
+            callback();
+          }
+        }
+
         if (id.indexOf('|') != -1) {
           var parts = id.split('|');
           var repeatGroup = parts[0];

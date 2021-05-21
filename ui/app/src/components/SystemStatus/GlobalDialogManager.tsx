@@ -170,6 +170,7 @@ function GlobalDialogManager() {
         contentTypeId={state.edit.contentTypeId}
         isNewContent={state.edit.isNewContent}
         inProgress={state.edit.inProgress}
+        pendingChanges={state.edit.pendingChanges}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}

@@ -158,6 +158,9 @@
                                     });
                                   }
                                 },
+                                pendingChanges: () => {
+                                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
+                                },
                                 renderFailed(error) {
                                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
                                 },
@@ -219,6 +222,9 @@
                     },
                     renderComplete: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                    },
+                    pendingChanges: () => {
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
                     },
                     id: type
                   },
