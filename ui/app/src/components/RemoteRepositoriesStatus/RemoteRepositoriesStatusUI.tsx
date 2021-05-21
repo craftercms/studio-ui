@@ -29,6 +29,14 @@ import Button from '@material-ui/core/Button';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import clsx from 'clsx';
 
+export interface RemoteRepositoriesStatusUIProps {
+  status: RepositoryStatus;
+  onRevertPull(): void;
+  onClickCommit(): void;
+  onResolveConflict(strategy: string, path: string): void;
+  onDiffClick(path: string): void;
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
@@ -114,14 +122,6 @@ export const messages = defineMessages({
     defaultMessage: 'Diff'
   }
 });
-
-export interface RemoteRepositoriesStatusUIProps {
-  status: RepositoryStatus;
-  onRevertPull(): void;
-  onClickCommit(): void;
-  onResolveConflict(strategy: string, path: string): void;
-  onDiffClick(path: string): void;
-}
 
 export default function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
   const { status, onRevertPull, onClickCommit, onResolveConflict, onDiffClick } = props;

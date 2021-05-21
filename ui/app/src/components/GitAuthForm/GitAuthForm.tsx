@@ -29,6 +29,13 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { SiteState } from '../../models/Site';
 
+export interface GitAuthFormProps {
+  inputs: Partial<SiteState>;
+  setInputs(inputs): void;
+  handleInputChange(event: React.ChangeEvent): any;
+  onKeyPress?(event: any): any;
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     authBox: {
@@ -73,13 +80,6 @@ function renderHelperText(name: string, value: string = '', helperText: string, 
   } else {
     return helperText;
   }
-}
-
-export interface GitAuthFormProps {
-  inputs: Partial<SiteState>;
-  setInputs(inputs): void;
-  handleInputChange(event: React.ChangeEvent): any;
-  onKeyPress?(event: any): any;
 }
 
 export default function GitAuthForm(props: GitAuthFormProps) {

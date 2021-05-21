@@ -27,6 +27,12 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
 import RemoteRepositoriesDiffDialog from '../RemoteRepositoriesDiffDialog';
 
+export interface RemoteRepositoriesStatusProps {
+  resource: Resource<RepositoryStatus>;
+  setFetching(fetching): void;
+  onActionSuccess?(status): void;
+}
+
 const messages = defineMessages({
   revertPullSuccessMessage: {
     id: 'repositories.revertPullSuccessMessage',
@@ -37,12 +43,6 @@ const messages = defineMessages({
     defaultMessage: 'Successfully committed.'
   }
 });
-
-export interface RemoteRepositoriesStatusProps {
-  resource: Resource<RepositoryStatus>;
-  setFetching(fetching): void;
-  onActionSuccess?(status): void;
-}
 
 export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatusProps) {
   const { resource, setFetching, onActionSuccess } = props;

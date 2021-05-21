@@ -19,6 +19,12 @@ import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
 import { addRemote } from '../../services/repositories';
 import NewRemoteRepositoryDialogUI from './NewRemoteRepositoryDialogUI';
 
+export interface NewRemoteRepositoryDialogProps {
+  open: boolean;
+  onClose(): void;
+  onCreateSuccess?(): void;
+}
+
 const inputsInitialState = {
   authenticationType: 'none',
   expanded: {
@@ -51,12 +57,6 @@ const isFormValid = (inputs) => {
     return false;
   }
 };
-
-export interface NewRemoteRepositoryDialogProps {
-  open: boolean;
-  onClose(): void;
-  onCreateSuccess?(): void;
-}
 
 export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
   const { open, onClose, onCreateSuccess } = props;

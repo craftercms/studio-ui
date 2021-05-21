@@ -27,6 +27,13 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 
+export interface RemoteRepositoriesGridProps {
+  resource: Resource<Array<Repository>>;
+  disableActions: boolean;
+  fetchStatus(): void;
+  fetchRepositories(): void;
+}
+
 const messages = defineMessages({
   mergeStrategyNone: {
     id: 'repositories.mergeStrategyNone',
@@ -53,13 +60,6 @@ const messages = defineMessages({
     defaultMessage: 'Successfully pushed.'
   }
 });
-
-export interface RemoteRepositoriesGridProps {
-  resource: Resource<Array<Repository>>;
-  disableActions: boolean;
-  fetchStatus(): void;
-  fetchRepositories(): void;
-}
 
 export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
   const { resource, disableActions, fetchStatus, fetchRepositories } = props;

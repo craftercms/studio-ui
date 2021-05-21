@@ -33,6 +33,13 @@ import { messages } from '../RemoteRepositoriesStatus';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 
+export interface RemoteRepositoriesDiffDialogProps {
+  open: boolean;
+  path: string;
+  onResolveConflict(strategy: string, path: string): void;
+  onClose(): void;
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     conflictActionButton: {
@@ -41,13 +48,6 @@ const useStyles = makeStyles((theme) =>
     }
   })
 );
-
-export interface RemoteRepositoriesDiffDialogProps {
-  open: boolean;
-  path: string;
-  onResolveConflict(strategy: string, path: string): void;
-  onClose(): void;
-}
 
 export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
   const { open, path, onResolveConflict, onClose } = props;

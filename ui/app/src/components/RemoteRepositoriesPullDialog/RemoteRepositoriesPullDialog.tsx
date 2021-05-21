@@ -33,14 +33,6 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    formControl: {
-      marginBottom: '15px'
-    }
-  })
-);
-
 export interface RemoteRepositoriesPullDialogProps {
   open: boolean;
   branches: string[];
@@ -50,6 +42,14 @@ export interface RemoteRepositoriesPullDialogProps {
   onPullSuccess?(): void;
   onPullError?(response: ApiResponse): void;
 }
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    formControl: {
+      marginBottom: '15px'
+    }
+  })
+);
 
 export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPullDialogProps) {
   const { open, branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError } = props;
