@@ -31,7 +31,7 @@ type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProper
 
 interface GlobalAppToolbarProps {
   elevation?: number;
-  title: React.ReactNode;
+  title?: React.ReactNode;
   subtitle?: React.ReactNode;
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
@@ -125,16 +125,20 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
           />
         )}
         {startContent}
-        <section className={clsx(classes.title, props.classes?.title)}>
-          <Typography variant="h5" component="h1" className={classes.ellipsis}>
-            {title}
-          </Typography>
-          {subtitle && (
-            <Typography variant="body2" component="h2" color="textSecondary" className={classes.ellipsis}>
-              {subtitle}
-            </Typography>
-          )}
-        </section>
+        {(title || subtitle) && (
+          <section className={clsx(classes.title, props.classes?.title)}>
+            {title && (
+              <Typography variant="h5" component="h1" className={classes.ellipsis}>
+                {title}
+              </Typography>
+            )}
+            {subtitle && (
+              <Typography variant="body2" component="h2" color="textSecondary" className={classes.ellipsis}>
+                {subtitle}
+              </Typography>
+            )}
+          </section>
+        )}
         <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
         <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
         {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}

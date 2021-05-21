@@ -53,7 +53,7 @@ export function createPresenceTable<T extends any = boolean>(
   const table = {};
   const callback =
     typeof valueOrGenerator === 'function'
-      ? (value) => (table[value] = valueOrGenerator(table[value]))
+      ? (value) => (table[value] = valueOrGenerator(value))
       : (value) => (table[value] = valueOrGenerator);
   list.forEach(callback);
   return table;
