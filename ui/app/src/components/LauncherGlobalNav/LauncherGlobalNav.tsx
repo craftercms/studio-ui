@@ -30,7 +30,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 export interface LauncherGlobalNavProps {
   title?: TranslationOrText;
-  onTileClicked?(): void;
+  onTileClicked?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>, id: string, label: string): any;
   tileStyles?: LauncherTileProps['styles'];
 }
 
@@ -74,7 +74,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
           title={formatMessage(globalMenuMessages[item.id])}
           icon={item.icon}
           link={getLauncherSectionLink(item.id, authoringBase)}
-          onClick={onTileClicked}
+          onClick={(e) => onTileClicked(e, item.id, item.label)}
           styles={props.tileStyles}
         />
       ))}
@@ -83,7 +83,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
         icon={{ id: 'craftercms.icons.Docs' }}
         link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
         target="_blank"
-        onClick={onTileClicked}
+        onClick={(e) => onTileClicked(e, 'home.globalMenu.docs', formatMessage(messages.docs))}
         styles={props.tileStyles}
       />
     </LauncherSectionUI>
