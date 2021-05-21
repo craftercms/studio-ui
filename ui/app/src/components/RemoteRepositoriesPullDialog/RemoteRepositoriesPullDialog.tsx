@@ -26,11 +26,12 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MergeStrategy } from '../../models/Repository';
-import { pull as pullService } from '../../services/repositories';
+import { pull } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { isBlank } from '../../utils/string';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -68,26 +69,25 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
     }
   };
 
-  const pull = () => {
-    pullService({
-      siteId,
-      remoteName,
-      remoteBranch: selectedBranch,
-      mergeStrategy: selectedMergeStrategy
-    }).subscribe(
-      () => {
-        onPullSuccess?.();
-      },
-      ({ response }) => {
-        onPullError?.(response.response);
-      }
-    );
-    onClose();
-  };
-
   const onSubmit = (e) => {
     e.preventDefault();
-    pull();
+
+    if (!isBlank(selectedBranch)) {
+      pull({
+        siteId,
+        remoteName,
+        remoteBranch: selectedBranch,
+        mergeStrategy: selectedMergeStrategy
+      }).subscribe(
+        () => {
+          onPullSuccess?.();
+        },
+        ({ response }) => {
+          onPullError?.(response.response);
+        }
+      );
+      onClose();
+    }
   };
 
   return (
@@ -145,7 +145,7 @@ export default function RemoteRepositoriesPullDialog(props: RemoteRepositoriesPu
           <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
-          <PrimaryButton type="submit" disabled={selectedBranch === ''}>
+          <PrimaryButton type="submit" disabled={isBlank(selectedBranch)}>
             <FormattedMessage id="words.ok" defaultMessage="Ok" />
           </PrimaryButton>
         </DialogFooter>

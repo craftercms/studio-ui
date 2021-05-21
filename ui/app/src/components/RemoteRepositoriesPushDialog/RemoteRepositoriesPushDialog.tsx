@@ -25,11 +25,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select/Select';
-import { push as pushService } from '../../services/repositories';
+import { push } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { isBlank } from '../../utils/string';
 
 export interface RemoteRepositoriesPushDialogProps {
   open: boolean;
@@ -60,21 +61,20 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
     setDisableQuickDismiss(true);
   };
 
-  const push = () => {
-    pushService(siteId, remoteName, selectedBranch, true).subscribe(
-      () => {
-        onPushSuccess?.();
-      },
-      ({ response }) => {
-        onPushError?.(response.response);
-      }
-    );
-    onClose();
-  };
-
   const onSubmit = (e) => {
     e.preventDefault();
-    push();
+
+    if (!isBlank(selectedBranch)) {
+      push(siteId, remoteName, selectedBranch, true).subscribe(
+        () => {
+          onPushSuccess?.();
+        },
+        ({ response }) => {
+          onPushError?.(response.response);
+        }
+      );
+      onClose();
+    }
   };
 
   return (
@@ -113,7 +113,7 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
           <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
-          <PrimaryButton type="submit" disabled={selectedBranch === ''}>
+          <PrimaryButton type="submit" disabled={isBlank(selectedBranch)}>
             <FormattedMessage id="words.ok" defaultMessage="Ok" />
           </PrimaryButton>
         </DialogFooter>
