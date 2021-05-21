@@ -78,7 +78,7 @@ export default function SitesManagement() {
   const isFetching = sitesBranch.isFetching;
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-  const [permissionsLookup, setPermissionsLookup] = useState({});
+  const [permissionsLookup, setPermissionsLookup] = useState(foo);
 
   useEffect(() => {
     merge(
@@ -171,7 +171,7 @@ export default function SitesManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />}
         leftContent={
-          permissionsLookup?.['create-site'] && (
+          permissionsLookup['create-site'] && (
             <Button
               startIcon={<AddIcon />}
               variant="outlined"
@@ -206,8 +206,8 @@ export default function SitesManagement() {
             resource={resource}
             publishingStatusLookup={publishingStatusLookup}
             onSiteClick={onSiteClick}
-            onDeleteSiteClick={permissionsLookup?.['site_delete'] && onDeleteSiteClick}
-            onEditSiteClick={permissionsLookup?.['edit_site'] && onEditSiteClick}
+            onDeleteSiteClick={permissionsLookup['site_delete'] && onDeleteSiteClick}
+            onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
           />
