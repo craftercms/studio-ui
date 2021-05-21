@@ -54,4 +54,5 @@ export const PUBLISH_MASK /*                         */ = 0b10000000000000000000
 export const PUBLISH_APPROVE_MASK /*                 */ = 0b1000000000000000000000;
 export const PUBLISH_SCHEDULE_MASK /*                */ = 0b10000000000000000000000;
 export const PUBLISH_REJECT_MASK /*                  */ = 0b100000000000000000000000;
+export const CONTENT_ITEM_UNLOCK /*                  */ = 0b1000000000000000000000000;
 // endregion
