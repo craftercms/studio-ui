@@ -44,7 +44,6 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
   const { inputs, setInputs } = props;
 
   const handleInputChange = (e: any) => {
-    e.persist();
     setInputs({ [e.target.name]: e.target.value });
   };
 
@@ -59,7 +58,6 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
           placeholder="origin"
           autoFocus
           fullWidth
-          onKeyPress={null}
           onChange={handleInputChange}
           value={inputs.remoteName}
           error={inputs.submitted && !inputs.remoteName}
@@ -80,7 +78,6 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
           required
           fullWidth
           placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
-          onKeyPress={null}
           onChange={handleInputChange}
           value={inputs.remoteUrl}
           error={inputs.submitted && !inputs.remoteUrl}

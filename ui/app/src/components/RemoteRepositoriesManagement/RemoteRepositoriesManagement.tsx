@@ -140,6 +140,7 @@ export default function RemoteRepositoriesManagement() {
 
   const onCreateSuccess = () => {
     fetchRepositories();
+    setOpenNewRemoteDialog(false);
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.remoteCreateSuccessMessage)

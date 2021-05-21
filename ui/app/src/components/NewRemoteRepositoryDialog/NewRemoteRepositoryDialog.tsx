@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
 import { addRemote } from '../../services/repositories';
 import NewRemoteRepositoryDialogUI from './NewRemoteRepositoryDialogUI';
@@ -36,6 +36,22 @@ const inputsInitialState = {
   submitted: false
 };
 
+const isFormValid = (inputs) => {
+  if (!inputs.remoteName || !inputs.remoteUrl) {
+    return false;
+  } else if (inputs.repoAuthentication === 'none') {
+    return true;
+  } else if (inputs.repoAuthentication === 'basic' && inputs.repoUsername !== '' && inputs.repoPassword !== '') {
+    return true;
+  } else if (inputs.repoAuthentication === 'token' && inputs.repoUsername !== '' && inputs.repoToken !== '') {
+    return true;
+  } else if (inputs.repoAuthentication === 'key' && inputs.repoKey) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export interface NewRemoteRepositoryDialogProps {
   open: boolean;
   onClose(): void;
@@ -48,25 +64,9 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
   const [inputs, setInputs] = useSpreadState(inputsInitialState);
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
 
-  const isFormValid = useCallback(() => {
-    if (!inputs.remoteName || !inputs.remoteUrl) {
-      return false;
-    } else if (inputs.repoAuthentication === 'none') {
-      return true;
-    } else if (inputs.repoAuthentication === 'basic' && inputs.repoUsername !== '' && inputs.repoPassword !== '') {
-      return true;
-    } else if (inputs.repoAuthentication === 'token' && inputs.repoUsername !== '' && inputs.repoToken !== '') {
-      return true;
-    } else if (inputs.repoAuthentication === 'key' && inputs.repoKey) {
-      return true;
-    } else {
-      return false;
-    }
-  }, [inputs]);
-
   const createRemote = () => {
     setInputs({ submitted: true });
-    if (isFormValid()) {
+    if (isFormValid(inputs)) {
       addRemote({
         siteId,
         remoteName: inputs.remoteName,
@@ -82,7 +82,6 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
       }).subscribe(() => {
         onCreateSuccess?.();
         setInputs(inputsInitialState);
-        onClose();
       });
     }
   };
@@ -99,10 +98,7 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
       setInputs={setInputs}
       disableQuickDismiss={disableQuickDismiss}
       onCreate={createRemote}
-      onClose={() => {
-        setInputs(inputsInitialState);
-        onClose();
-      }}
+      onClose={onClose}
     />
   );
 }
