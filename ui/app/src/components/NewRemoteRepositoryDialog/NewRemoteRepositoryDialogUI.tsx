@@ -51,7 +51,7 @@ export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIPr
       disableBackdropClick={disableQuickDismiss}
       disableEscapeKeyDown={disableQuickDismiss}
     >
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} noValidate>
         <DialogHeader
           title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
           onDismiss={onClose}

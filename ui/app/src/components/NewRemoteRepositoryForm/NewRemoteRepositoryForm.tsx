@@ -74,7 +74,7 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
           name="remoteUrl"
           label={<FormattedMessage id="repositories.remoteUrl" defaultMessage="Remote Repository URL" />}
           InputLabelProps={{ shrink: true }}
-          // required
+          required
           fullWidth
           placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
           onChange={handleInputChange}
