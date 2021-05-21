@@ -50,22 +50,36 @@ const useStyles = makeStyles((theme) =>
 
 const messages = defineMessages({
   userName: {
-    id: 'common.userName',
+    id: 'words.userName',
     defaultMessage: 'Username'
   },
   password: {
-    id: 'common.password',
+    id: 'words.password',
     defaultMessage: 'Password'
   },
   token: {
-    id: 'common.token',
+    id: 'words.token',
     defaultMessage: 'Token'
   },
   privateKey: {
-    id: 'common.privateKey',
+    id: 'gitAuthForm.privateKey',
     defaultMessage: 'Private Key'
   }
 });
+
+function renderHelperText(
+  name: string,
+  value: string = '',
+  helperText: string,
+  required: boolean,
+  submitted: boolean
+) {
+  if (required && !value && submitted) {
+    return <FormattedMessage id="gitForm.required" defaultMessage="{name} is required." values={{ name }} />;
+  } else {
+    return helperText;
+  }
+}
 
 export interface GitAuthFormProps {
   inputs: Partial<SiteState>;
@@ -90,20 +104,6 @@ export default function GitAuthForm(props: GitAuthFormProps) {
     });
     setInputs({ ...inputs, expanded: _expanded });
   };
-
-  function renderHelperText(
-    name: string,
-    value: string = '',
-    helperText: string,
-    required: boolean,
-    submitted: boolean
-  ) {
-    if (required && !value && submitted) {
-      return <FormattedMessage id="gitForm.required" defaultMessage="{name} is required." values={{ name }} />;
-    } else {
-      return helperText;
-    }
-  }
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
