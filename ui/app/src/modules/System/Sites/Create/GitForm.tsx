@@ -90,10 +90,6 @@ const messages = defineMessages({
     id: 'createSiteDialog.repoUrl',
     defaultMessage: 'Git Repo URL'
   },
-  authentication: {
-    id: 'common.authentication',
-    defaultMessage: 'Authentication'
-  },
   authenticationNoRequired: {
     id: 'createSiteDialog.authenticationNoRequired',
     defaultMessage: 'Authentication not required (public URL)'
@@ -156,9 +152,6 @@ function GitForm(props: GitFormProps) {
         />
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="subtitle1" color={'textSecondary'}>
-          {formatMessage(messages.authentication)}
-        </Typography>
         <div className={classes.formControl}>
           <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
         </div>

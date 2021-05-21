@@ -28,6 +28,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { SiteState } from '../../models/Site';
+import Typography from '@material-ui/core/Typography';
 
 export interface GitAuthFormProps {
   inputs: Partial<SiteState>;
@@ -207,47 +208,52 @@ export default function GitAuthForm(props: GitAuthFormProps) {
   }
 
   return (
-    <RadioGroup
-      aria-label="repoAuthentication"
-      name="repoAuthentication"
-      value={inputs.repoAuthentication}
-      onChange={handleInputChange}
-      onKeyPress={onKeyPress}
-    >
-      <FormControlLabel
-        value="none"
-        control={<Radio onChange={() => viewAuth('none')} />}
-        label={
-          <FormattedMessage
-            id="gitForm.noAuthenticationRequired"
-            defaultMessage="Authentication not required (public URL)"
-          />
-        }
-      />
-      <FormControlLabel
-        value="basic"
-        control={<Radio onChange={() => viewAuth('basic')} />}
-        label={<FormattedMessage id="gitForm.usernameAndPassword" defaultMessage="Username & Password" />}
-      />
-      <Collapse in={inputs.expanded.basic} timeout={300} unmountOnExit>
-        {inputs.expanded.basic && renderAuth(inputs.repoAuthentication)}
-      </Collapse>
-      <FormControlLabel
-        value="token"
-        control={<Radio onChange={() => viewAuth('token')} />}
-        label={<FormattedMessage id="gitForm.token" defaultMessage="Token" />}
-      />
-      <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
-        {inputs.expanded.token && renderAuth(inputs.repoAuthentication)}
-      </Collapse>
-      <FormControlLabel
-        value="key"
-        control={<Radio onChange={() => viewAuth('key')} />}
-        label={<FormattedMessage id="gitForm.privateKey" defaultMessage="Private Key" />}
-      />
-      <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
-        {inputs.expanded.key && renderAuth(inputs.repoAuthentication)}
-      </Collapse>
-    </RadioGroup>
+    <>
+      <Typography variant="subtitle1" color={'textSecondary'}>
+        <FormattedMessage id="words.authentication" defaultMessage="Authentication" />
+      </Typography>
+      <RadioGroup
+        aria-label="repoAuthentication"
+        name="repoAuthentication"
+        value={inputs.repoAuthentication}
+        onChange={handleInputChange}
+        onKeyPress={onKeyPress}
+      >
+        <FormControlLabel
+          value="none"
+          control={<Radio onChange={() => viewAuth('none')} />}
+          label={
+            <FormattedMessage
+              id="gitForm.noAuthenticationRequired"
+              defaultMessage="Authentication not required (public URL)"
+            />
+          }
+        />
+        <FormControlLabel
+          value="basic"
+          control={<Radio onChange={() => viewAuth('basic')} />}
+          label={<FormattedMessage id="gitForm.usernameAndPassword" defaultMessage="Username & Password" />}
+        />
+        <Collapse in={inputs.expanded.basic} timeout={300} unmountOnExit>
+          {inputs.expanded.basic && renderAuth(inputs.repoAuthentication)}
+        </Collapse>
+        <FormControlLabel
+          value="token"
+          control={<Radio onChange={() => viewAuth('token')} />}
+          label={<FormattedMessage id="gitForm.token" defaultMessage="Token" />}
+        />
+        <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
+          {inputs.expanded.token && renderAuth(inputs.repoAuthentication)}
+        </Collapse>
+        <FormControlLabel
+          value="key"
+          control={<Radio onChange={() => viewAuth('key')} />}
+          label={<FormattedMessage id="gitForm.privateKey" defaultMessage="Private Key" />}
+        />
+        <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
+          {inputs.expanded.key && renderAuth(inputs.repoAuthentication)}
+        </Collapse>
+      </RadioGroup>
+    </>
   );
 }
