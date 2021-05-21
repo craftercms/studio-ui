@@ -112,7 +112,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
       <CommitResolutionDialog
         open={openCommitResolutionDialog}
         onClose={() => setOpenCommitResolutionDialog(false)}
-        onClickCommit={() => setFetching(true)}
+        onCommit={() => setFetching(true)}
         onCommitSuccess={onCommitSuccess}
         onCommitError={onCommitError}
       />

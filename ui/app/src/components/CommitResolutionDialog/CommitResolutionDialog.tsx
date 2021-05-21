@@ -26,44 +26,44 @@ import { commitResolution } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { isBlank } from '../../utils/string';
 
 export interface CommitResolutionDialogProps {
   open: boolean;
   onClose(): void;
-  onClickCommit?(): void;
+  onCommit?(): void;
   onCommitSuccess?(status): void;
   onCommitError?(status): void;
 }
 
 export default function CommitResolutionDialog(props: CommitResolutionDialogProps) {
-  const { open, onClose, onClickCommit, onCommitSuccess, onCommitError } = props;
+  const { open, onClose, onCommit, onCommitSuccess, onCommitError } = props;
   const siteId = useActiveSiteId();
   const [message, setMessage] = useState('');
-  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
+  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
 
   const onChange = (e: any) => {
     e.persist();
     setMessage(e.target.value);
-    setDisableBackdropClick(Boolean(e.target.value));
-  };
-
-  const onCommit = () => {
-    onClickCommit?.();
-    commitResolution(siteId, message).subscribe(
-      (status) => {
-        onCommitSuccess?.(status);
-        onClose();
-      },
-      ({ response }) => {
-        onCommitError?.(response);
-        onClose();
-      }
-    );
+    setDisableQuickDismiss(Boolean(e.target.value));
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    onCommit();
+
+    if (!isBlank(message)) {
+      onCommit?.();
+      commitResolution(siteId, message).subscribe(
+        (status) => {
+          onCommitSuccess?.(status);
+          onClose();
+        },
+        ({ response }) => {
+          onCommitError?.(response);
+          onClose();
+        }
+      );
+    }
   };
 
   return (
@@ -72,12 +72,12 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      disableBackdropClick={disableBackdropClick}
-      disableEscapeKeyDown={disableBackdropClick}
+      disableBackdropClick={disableQuickDismiss}
+      disableEscapeKeyDown={disableQuickDismiss}
     >
       <form onSubmit={onSubmit}>
         <DialogHeader
-          title={<FormattedMessage id="repositories.commitResolution" defaultMessage="CommitResolution" />}
+          title={<FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />}
           onDismiss={onClose}
         />
         <DialogBody>
@@ -107,7 +107,7 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
           <SecondaryButton onClick={onClose}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
-          <PrimaryButton type="submit" disabled={!message || message.replace(/ /g, '') === ''}>
+          <PrimaryButton type="submit" disabled={isBlank(message)}>
             <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
           </PrimaryButton>
         </DialogFooter>
