@@ -24,10 +24,10 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import clsx from 'clsx';
+import GlobalAppToolbar from '../GlobalAppToolbar';
 
 export interface RemoteRepositoriesStatusUIProps {
   status: RepositoryStatus;
@@ -52,14 +52,6 @@ const useStyles = makeStyles((theme) =>
     },
     fileName: {
       fontWeight: 600
-    },
-    toolbar: {
-      paddingLeft: 0,
-      paddingRight: 0,
-      alignItems: 'center'
-    },
-    rightContent: {
-      marginLeft: 'auto'
     },
     revertAllButton: {
       color: theme.palette.error.dark,
@@ -131,14 +123,16 @@ export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProp
   return (
     <div className={classes.root}>
       {(status.conflicting.length > 0 || status.uncommittedChanges.length > 0) && (
-        <>
-          <Toolbar className={classes.toolbar}>
-            <section>
-              <Typography variant="h5">
-                <FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
-              </Typography>
-            </section>
-            <section className={classes.rightContent}>
+        <GlobalAppToolbar
+          title={<FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />}
+          subtitle={
+            <FormattedMessage
+              id="repository.statusNote"
+              defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
+            />
+          }
+          rightContent={
+            <>
               <ConfirmDropdown
                 classes={{ button: classes.revertAllButton }}
                 text={formatMessage(messages.revertAll)}
@@ -150,16 +144,18 @@ export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProp
               <Button variant="outlined" className={classes.commitButton} onClick={onClickCommit}>
                 <FormattedMessage id="repositories.newRepository" defaultMessage="Commit Resolution" />
               </Button>
-            </section>
-          </Toolbar>
-
-          <Typography variant="caption" className={classes.statusNote}>
-            <FormattedMessage
-              id="repository.statusNote"
-              defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
-            />
-          </Typography>
-        </>
+            </>
+          }
+          showHamburgerMenuButton={false}
+          showAppsButton={false}
+          styles={{
+            toolbar: {
+              '& > section': {
+                alignItems: 'start'
+              }
+            }
+          }}
+        />
       )}
 
       {status.conflicting.length > 0 && (

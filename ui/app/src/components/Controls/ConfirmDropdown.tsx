@@ -104,13 +104,15 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
       {Icon ? (
         iconTooltip ? (
           <Tooltip title={iconTooltip}>
-            <IconButton onClick={handleClick}>
-              <Icon color={iconColor} />
-            </IconButton>
+            <span>
+              <IconButton onClick={handleClick} disabled={disabled}>
+                <Icon color={disabled ? 'disabled' : iconColor} />
+              </IconButton>
+            </span>
           </Tooltip>
         ) : (
-          <IconButton onClick={handleClick}>
-            <Icon color={iconColor} />
+          <IconButton onClick={handleClick} disabled={disabled}>
+            <Icon color={disabled ? 'disabled' : iconColor} />
           </IconButton>
         )
       ) : (

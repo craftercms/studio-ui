@@ -55,7 +55,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
               <GlobalAppGridCell align="left">{repository.url}</GlobalAppGridCell>
               <GlobalAppGridCell align="left">{repository.fetch}</GlobalAppGridCell>
               <GlobalAppGridCell align="left">{repository.pushUrl}</GlobalAppGridCell>
-              <GlobalAppGridCell>
+              <GlobalAppGridCell align="right">
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
                   <span>
                     <IconButton
@@ -66,8 +66,6 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                     </IconButton>
                   </span>
                 </Tooltip>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell>
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
                   <span>
                     <IconButton
@@ -78,8 +76,6 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                     </IconButton>
                   </span>
                 </Tooltip>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell>
                 <ConfirmDropdown
                   cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
                   confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
@@ -92,6 +88,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                   onConfirm={() => {
                     onDeleteRemote(repository.name);
                   }}
+                  disabled={disableActions}
                 />
               </GlobalAppGridCell>
             </GlobalAppGridRow>
@@ -126,8 +123,6 @@ export function RepositoriesGridTableHead() {
             <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
           </Typography>
         </GlobalAppGridCell>
-        <GlobalAppGridCell className="bordered" />
-        <GlobalAppGridCell className="bordered" />
         <GlobalAppGridCell className="bordered" />
       </GlobalAppGridRow>
     </TableHead>

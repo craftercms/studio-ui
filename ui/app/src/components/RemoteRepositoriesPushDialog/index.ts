@@ -17,3 +17,5 @@
 export { default } from './RemoteRepositoriesPushDialog';
 
 export * from './RemoteRepositoriesPushDialog';
+
+export * from './RemoteRepositoriesPushDialogContainer';

@@ -18,4 +18,6 @@ export { default } from './NewRemoteRepositoryDialog';
 
 export * from './NewRemoteRepositoryDialog';
 
+export * from './NewRemoteRepositoryDialogContainer';
+
 export * from './NewRemoteRepositoryDialogUI';

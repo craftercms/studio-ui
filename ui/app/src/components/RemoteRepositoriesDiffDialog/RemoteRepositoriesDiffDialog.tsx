@@ -31,7 +31,8 @@ import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import { useIntl } from 'react-intl';
 import { messages } from '../RemoteRepositoriesStatus';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
 export interface RemoteRepositoriesDiffDialogProps {
   open: boolean;
@@ -45,6 +46,25 @@ const useStyles = makeStyles((theme) =>
     conflictActionButton: {
       color: theme.palette.warning.dark,
       borderColor: theme.palette.warning.main
+    },
+    dialogHeader: {
+      paddingBottom: 0
+    },
+    dialogHeaderChildren: {
+      padding: 0
+    },
+    tabs: {
+      minHeight: 'inherit'
+    },
+    tab: {
+      minWidth: '80px',
+      minHeight: '0',
+      padding: '0 0 5px 0',
+      marginRight: '20px',
+      opacity: 1,
+      '& span': {
+        textTransform: 'none'
+      }
     }
   })
 );
@@ -104,15 +124,34 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
       <DialogHeader
         title={
           <>
-            <FormattedMessage id="words.diff" defaultMessage="Diff" />
-            <Typography variant="subtitle2">{path}</Typography>
+            <FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
           </>
         }
         onDismiss={onClose}
-      />
+        classes={{
+          root: classes.dialogHeader,
+          subtitleWrapper: classes.dialogHeaderChildren
+        }}
+      >
+        <Tabs
+          value={tab}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={handleTabChange}
+          classes={{
+            root: classes.tabs
+          }}
+        >
+          <Tab label={<FormattedMessage id="words.diff" defaultMessage="Diff" />} className={classes.tab} />
+          <Tab
+            label={<FormattedMessage id="repositories.splitView" defaultMessage="Split View" />}
+            className={classes.tab}
+          />
+        </Tabs>
+      </DialogHeader>
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>
-          <RemoteRepositoriesDiffDialogUI resource={resource} tab={tab} handleTabChange={handleTabChange} />
+          <RemoteRepositoriesDiffDialogUI resource={resource} tab={tab} />
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>

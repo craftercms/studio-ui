@@ -16,9 +16,6 @@
 
 import { Resource } from '../../models/Resource';
 import { FileDiff } from '../../models/Repository';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
@@ -44,21 +41,15 @@ const useStyles = makeStyles((theme) =>
 export interface RemoteRepositoriesDiffDialogUIProps {
   resource: Resource<FileDiff>;
   tab: number;
-  handleTabChange(e: React.ChangeEvent<{}>, newValue: number): void;
 }
 
 export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
-  const { resource, tab, handleTabChange } = props;
+  const { resource, tab } = props;
   const fileDiff = resource.read();
   const classes = useStyles();
 
   return (
     <>
-      <Tabs value={tab} indicatorColor="primary" textColor="primary" onChange={handleTabChange}>
-        <Tab label={<FormattedMessage id="words.diff" defaultMessage="Diff" />} />
-        <Tab label={<FormattedMessage id="repositories.splitView" defaultMessage="Split View" />} />
-      </Tabs>
-
       {tab === 0 && (
         <div className={classes.diffTab}>
           <pre className={classes.diffContent}>{fileDiff.diff}</pre>

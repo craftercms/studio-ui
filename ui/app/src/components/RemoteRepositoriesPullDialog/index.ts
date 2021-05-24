@@ -17,3 +17,5 @@
 export { default } from './RemoteRepositoriesPullDialog';
 
 export * from './RemoteRepositoriesPullDialog';
+
+export * from './RemoteRepositoriesPullDialogContainer';

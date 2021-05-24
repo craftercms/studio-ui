@@ -19,7 +19,6 @@ import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm/NewRemoteRepositoryForm';
 import DialogFooter from '../Dialogs/DialogFooter';
-import Dialog from '@material-ui/core/Dialog/Dialog';
 import React from 'react';
 import { SiteState } from '../../models/Site';
 import SecondaryButton from '../SecondaryButton';
@@ -29,13 +28,12 @@ export interface NewRemoteRepositoryDialogUIProps {
   open: boolean;
   inputs: Partial<SiteState>;
   setInputs(inputs): void;
-  disableQuickDismiss: boolean;
   onClose(): void;
   onCreate(): void;
 }
 
 export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {
-  const { open, inputs, setInputs, onClose, onCreate, disableQuickDismiss } = props;
+  const { inputs, setInputs, onClose, onCreate } = props;
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -43,32 +41,23 @@ export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIPr
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="md"
-      disableBackdropClick={disableQuickDismiss}
-      disableEscapeKeyDown={disableQuickDismiss}
-    >
-      <form onSubmit={onSubmit} noValidate>
-        <DialogHeader
-          title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
-          onDismiss={onClose}
-        />
-        <DialogBody>
-          <NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
-        </DialogBody>
-        <DialogFooter>
-          <SecondaryButton onClick={onClose}>
-            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </SecondaryButton>
-          <PrimaryButton type="submit">
-            <FormattedMessage id="words.create" defaultMessage="Create" />
-          </PrimaryButton>
-        </DialogFooter>
-      </form>
-    </Dialog>
+    <form onSubmit={onSubmit} noValidate>
+      <DialogHeader
+        title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
+        onDismiss={onClose}
+      />
+      <DialogBody>
+        <NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
+      </DialogBody>
+      <DialogFooter>
+        <SecondaryButton onClick={onClose}>
+          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+        </SecondaryButton>
+        <PrimaryButton type="submit">
+          <FormattedMessage id="words.create" defaultMessage="Create" />
+        </PrimaryButton>
+      </DialogFooter>
+    </form>
   );
 }
 
