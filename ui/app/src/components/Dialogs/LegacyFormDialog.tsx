@@ -57,10 +57,6 @@ const translations = defineMessages({
   error: {
     id: 'legacyFormDialog.errorLoadingForm',
     defaultMessage: 'An error occurred trying to load the form'
-  },
-  pendingChanges: {
-    id: 'legacyFormDialog.pendingChangesConfirmation',
-    defaultMessage: 'Close without saving changes?'
   }
 });
 
