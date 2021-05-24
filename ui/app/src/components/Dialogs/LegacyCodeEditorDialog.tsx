@@ -43,6 +43,7 @@ import {
 import DialogHeader from './DialogHeader';
 import { getCodeEditorSrc } from '../../utils/path';
 import { batchActions } from '../../state/actions/misc';
+import { unlockItem } from '../../state/actions/content';
 
 const translations = defineMessages({
   title: {
@@ -55,7 +56,7 @@ const translations = defineMessages({
   },
   pendingChanges: {
     id: 'craftercms.codeEditor.pendingChangesConfirmation',
-    defaultMessage: 'You have unsaved changes, do you want to close?'
+    defaultMessage: 'Close without saving changes?'
   }
 });
 
@@ -214,11 +215,16 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
       dispatch(
         showConfirmDialog({
           title: formatMessage(translations.pendingChanges),
-          onOk: batchActions([closeConfirmDialog(), closeCodeEditorDialog()]),
+          onOk: batchActions([
+            closeConfirmDialog(),
+            closeCodeEditorDialog(),
+            unlockItem({ path: props.path, notify: false })
+          ]),
           onCancel: closeConfirmDialog()
         })
       );
     } else {
+      dispatch(unlockItem({ path: props.path, notify: false }));
       props.onClose();
     }
   };

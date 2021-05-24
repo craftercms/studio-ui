@@ -729,7 +729,8 @@ var CStudioForms =
       CHILD_FORM_DRAFT_COMPLETE = 'CHILD_FORM_DRAFT_COMPLETE',
       FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
       FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
-      FORM_CANCEL = 'FORM_CANCEL';
+      FORM_CANCEL = 'FORM_CANCEL',
+      LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST';
 
     const { fromEvent, operators } = CrafterCMSNext.rxjs;
     const { map, filter, take } = operators;
@@ -940,12 +941,26 @@ var CStudioForms =
                 cfe.engine.cancelForm();
                 break;
               }
+              case LEGACY_FORM_DIALOG_CANCEL_REQUEST: {
+                const dialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
+                const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
+                if (dialog.stackNumber === dialogs.length) {
+                  cfe.engine.cancelForm();
+                }
+                break;
+              }
             }
           });
         } else {
           messages$.subscribe((message) => {
             if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
               setButtonsEnabled(true);
+            } else if (message.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
+              const dialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
+              const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
+              if (dialog.stackNumber === dialogs.length) {
+                cfe.engine.cancelForm();
+              }
             }
           });
         }

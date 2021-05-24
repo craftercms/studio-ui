@@ -85,6 +85,7 @@
   const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
   const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
+  const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST'
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -273,6 +274,12 @@
       }
     }
   }
+
+  window.addEventListener("message", (event) => {
+    if(event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
+      CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
+    }
+  }, false);
 
   CrafterCMSNext.system.getStore().subscribe(() => {
     openDialog(type, path);

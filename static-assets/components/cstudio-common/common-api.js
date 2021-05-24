@@ -7621,7 +7621,17 @@ CStudioAuthoring.InContextEdit = {
     if (!topWindow.iceDialogs) {
       topWindow.iceDialogs = [];
     }
-    topWindow.iceDialogs.push({ key: editorId, value: context, iframe });
+    topWindow.iceDialogs.push({ key: editorId, value: context, iframe, stackNumber: topWindow.iceDialogs.length + 1 });
+  },
+
+  getDialog: function(editorId) {
+    let topWindow = getTopLegacyWindow();
+    return topWindow.iceDialogs.find((dialog) => dialog.key === editorId);
+  },
+
+  getDialogs: function() {
+    let topWindow = getTopLegacyWindow();
+    return topWindow.iceDialogs;
   },
 
   registerIceCallback: function(editorId, callback) {
