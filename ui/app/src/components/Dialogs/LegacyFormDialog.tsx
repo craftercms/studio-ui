@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
+  EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDER_FAILED,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
@@ -97,6 +98,7 @@ interface LegacyFormDialogBaseProps {
   isNewContent?: boolean;
   inProgress?: boolean;
   onMinimized?(): void;
+  pendingChanges?: boolean;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -115,7 +117,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
+const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(props: LegacyFormDialogProps, ref) {
   const {
     path,
     authoringBase,
@@ -180,6 +182,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
           onSave(e.data);
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          dispatch(updateEditConfig({ pendingChanges: false }));
           switch (e.data.action) {
             case 'save': {
               break;
@@ -218,6 +221,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
           onSave(e.data);
+          dispatch(updateEditConfig({ pendingChanges: false }));
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
@@ -239,6 +243,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           });
           break;
         }
+        case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
+          dispatch(updateEditConfig({ pendingChanges: true }));
+          break;
+        }
       }
     });
     return () => {
@@ -254,7 +262,12 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
         <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
       <iframe
-        ref={iframeRef}
+        ref={(e) => {
+          iframeRef.current = e;
+          if (ref) {
+            typeof ref === 'function' ? ref(e) : (ref.current = e);
+          }
+        }}
         src={src}
         title="Embedded Legacy Form"
         className={clsx(classes.iframe, !inProgress && 'complete')}
@@ -262,13 +275,16 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
       <ErrorDialog open={Boolean(error)} error={error} onDismiss={onErrorClose} />
     </>
   );
-}
+});
 
 export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const id = 'legacy-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();
+  const { open } = props;
+
+  const iframeRef = useRef<HTMLIFrameElement>();
 
   const title = formatMessage(translations.title);
 
@@ -282,17 +298,22 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
     dispatch(minimizeDialog({ id }));
   };
 
+  const onClose = () => {
+    iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
+  };
+
   return (
     <Dialog
-      open={props.open && !minimized}
+      open={open && !minimized}
       keepMounted={minimized}
-      onClose={props.onClose}
+      onClose={onClose}
       fullWidth
       maxWidth="xl"
       classes={{ paper: classes.dialog }}
     >
       <DialogHeader
         title={title}
+        onDismiss={onClose}
         rightActions={[
           {
             icon: 'MinimizeIcon',
@@ -300,7 +321,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
           }
         ]}
       />
-      <EmbeddedLegacyEditor {...props} onMinimized={onMinimized} />
+      <EmbeddedLegacyEditor ref={iframeRef} {...props} onMinimized={onMinimized} />
     </Dialog>
   );
 }

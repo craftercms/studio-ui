@@ -28,6 +28,7 @@ import {
   useActiveUser,
   useEnv,
   useLogicResource,
+  useMount,
   usePreviewState,
   useSitesBranch,
   useSpreadState
@@ -95,7 +96,7 @@ export default function SitesManagement() {
     });
   }, [setPublishingStatusLookup, sitesById]);
 
-  useEffect(() => {
+  useMount(() => {
     hasGlobalPermissions('create-site', 'edit_site', 'site_delete').subscribe((permissions) => {
       setPermissionsLookup(permissions);
     });

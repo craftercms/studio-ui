@@ -394,6 +394,7 @@ CStudioAuthoring.Module.requireModule(
 
                         aceEditor.getSession().on('change', function() {
                           aceEditor.isModified = true;
+                          onSaveCb.pendingChanges(true);
                         });
 
                         return aceEditor;

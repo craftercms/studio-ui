@@ -518,6 +518,9 @@ export default function SiteConfigurationManagement() {
               classes={{
                 appBar: classes.appBar
               }}
+              styles={{
+                toolbar: { '& > section': {} }
+              }}
               showHamburgerMenuButton={false}
               showAppsButton={false}
               startContent={
