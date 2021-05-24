@@ -27,7 +27,7 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveUser,
   useEnv,
-  useLogicResource,
+  useLogicResource, useMount,
   usePreviewState,
   useSitesBranch,
   useSpreadState
@@ -95,7 +95,7 @@ export default function SitesManagement() {
     });
   }, [setPublishingStatusLookup, sitesById]);
 
-  useEffect(() => {
+  useMount(() => {
     hasGlobalPermissions('create-site', 'edit_site', 'site_delete').subscribe((permissions) => {
       setPermissionsLookup(permissions);
     });
