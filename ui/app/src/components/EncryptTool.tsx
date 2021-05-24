@@ -33,7 +33,7 @@ import GlobalAppToolbar from './GlobalAppToolbar';
 import Box from '@material-ui/core/Box';
 
 interface EncryptToolProps {
-  site: string;
+  site?: string;
 }
 
 const messages = defineMessages({

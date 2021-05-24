@@ -23,7 +23,8 @@ export const useStyles = makeStyles((theme) =>
       width: '100%'
     },
     drawerPaper: {
-      top: '0 !important'
+      top: '0 !important',
+      padding: '16px'
     }
   })
 );

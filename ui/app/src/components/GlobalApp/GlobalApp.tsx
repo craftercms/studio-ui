@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import { useStyles } from './styles';
-import { Route, useHistory } from 'react-router';
+import { Route } from 'react-router';
 import SitesManagement from '../SitesManagement';
 import UsersManagement from '../UsersManagement';
 import GroupsManagement from '../GroupsManagement';
@@ -32,14 +32,65 @@ import EncryptTool from '../EncryptTool';
 import TokenManagement from '../TokenManagement';
 import AboutCrafterCMSView from '../AboutCrafterCMSView';
 import AccountManagement from '../AccountManagement';
-import { useSystemVersion } from '../../utils/hooks';
-import { getSimplifiedVersion } from '../../utils/string';
+import { useGlobalNavigation } from '../../utils/hooks';
 
 export default function GlobalApp() {
   const classes = useStyles({});
-  const history = useHistory();
   const [width, setWidth] = useState(240);
-  const version = useSystemVersion();
+  const globalNavigation = useGlobalNavigation();
+
+  const renderComponent = (id: string) => {
+    switch (id) {
+      case 'home.globalMenu.sites':
+      case '/globalMenu/sites': {
+        return <SitesManagement />;
+      }
+      case 'home.globalMenu.users':
+      case '/globalMenu/users': {
+        return <UsersManagement />;
+      }
+      case 'home.globalMenu.groups':
+      case '/globalMenu/groups': {
+        return <GroupsManagement />;
+      }
+      case 'home.globalMenu.cluster':
+      case '/globalMenu/cluster': {
+        return <ClustersManagement />;
+      }
+      case 'home.globalMenu.audit':
+      case '/globalMenu/audit': {
+        return <AuditManagement />;
+      }
+      case 'home.globalMenu.logging-levels':
+      case '/globalMenu/logging': {
+        return <LoggingLevelsManagement />;
+      }
+      case 'home.globalMenu.log-console':
+      case '/globalMenu/log': {
+        return <LogConsole />;
+      }
+      case 'home.globalMenu.globalConfig':
+      case '/globalMenu/global-config': {
+        return <GlobalConfigManagement onEditorChanges={() => {}} />;
+      }
+      case 'home.globalMenu.encryptionTool':
+      case '/globalMenu/encryption-tool': {
+        return <EncryptTool />;
+      }
+      case 'home.globalMenu.tokenManagement':
+      case '/globalMenu/token-management': {
+        return <TokenManagement />;
+      }
+      case 'home.globalMenu.about-us':
+      case '/globalMenu/about-us': {
+        return <AboutCrafterCMSView />;
+      }
+      case 'home.globalMenu.settings':
+      case '/globalMenu/settings': {
+        return <AccountManagement />;
+      }
+    }
+  };
 
   return (
     <section className={classes.root}>
@@ -51,11 +102,6 @@ export default function GlobalApp() {
       >
         <LauncherGlobalNav
           title=""
-          onTileClicked={(e, id, label) => {
-            e.preventDefault();
-            console.log(id, label);
-            history.push(id);
-          }}
           tileStyles={{
             tile: {
               width: '100%',
@@ -73,25 +119,25 @@ export default function GlobalApp() {
         />
       </ResizeableDrawer>
       <Box height="100%" width="100%" paddingLeft={`${width}px`}>
-        <Route path="/home.globalMenu.sites" component={SitesManagement} />
-        <Route path="/home.globalMenu.users" component={UsersManagement} />
-        <Route path="/home.globalMenu.groups" component={GroupsManagement} />
-        <Route path="/home.globalMenu.cluster" component={ClustersManagement} />
-        <Route path="/home.globalMenu.audit" component={AuditManagement} />
-        <Route path="/home.globalMenu.logging-levels" component={LoggingLevelsManagement} />
-        <Route path="/home.globalMenu.log-console" component={LogConsole} />
-        <Route path="/home.globalMenu.globalConfig" component={GlobalConfigManagement} />
-        <Route path="/home.globalMenu.encryptionTool" component={EncryptTool} />
-        <Route path="/home.globalMenu.tokenManagement" component={TokenManagement} />
-        <Route path="/home.globalMenu.about-us" component={AboutCrafterCMSView} />
-        <Route path="/home.globalMenu.settings" component={AccountManagement} />
+        <Route path="/sites" component={SitesManagement} />
+        <Route path="/users" component={UsersManagement} />
+        <Route path="/groups" component={GroupsManagement} />
+        <Route path="/cluster" component={ClustersManagement} />
+        <Route path="/audit" component={AuditManagement} />
+        <Route path="/logging-levels" component={LoggingLevelsManagement} />
+        <Route path="/log-console" component={LogConsole} />
         <Route
-          path="/home.globalMenu.docs"
+          path="/global-config"
           render={() => {
-            window.location.replace(`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`);
-            return null;
+            return <GlobalConfigManagement onEditorChanges={() => {}} />;
           }}
         />
+        <Route path="/encryption-tool" component={EncryptTool} />
+        <Route path="/token-management" component={TokenManagement} />
+        <Route path="/about-us" component={AboutCrafterCMSView} />
+        <Route path="/settings" component={AccountManagement} />
+        <Route path="/globalMenu/:id" render={(props) => renderComponent(props.location.pathname)} />
+        <Route exact path="/" render={() => renderComponent(globalNavigation.items[0].id)} />
       </Box>
     </section>
   );
