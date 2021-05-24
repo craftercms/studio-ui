@@ -21,9 +21,9 @@ import React, { PropsWithChildren } from 'react';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 
-type ViewToolbarClassKey = 'appBar' | 'toolbar';
+export type ViewToolbarClassKey = 'appBar' | 'toolbar';
 
-type ViewToolbarStyles = Partial<Record<ViewToolbarClassKey, CSSProperties>>;
+export type ViewToolbarStyles = Partial<Record<ViewToolbarClassKey, CSSProperties>>;
 
 type ViewToolbarProps = PropsWithChildren<{
   elevation?: number;
@@ -35,6 +35,8 @@ const useStyles = makeStyles((theme) =>
   createStyles<ViewToolbarClassKey, ViewToolbarStyles>({
     appBar: (styles) => ({
       borderBottom: `1px solid ${theme.palette.divider}`,
+      background: theme.palette.background.paper,
+      color: theme.palette.text.primary,
       ...styles.appBar
     }),
     toolbar: (styles) => ({

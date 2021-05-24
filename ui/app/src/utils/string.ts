@@ -85,7 +85,7 @@ export function formatBytes(bytes: number, decimals: number = 2) {
 }
 
 export function isBlank(str: string): boolean {
-  return str === '';
+  return (str ?? '').trim() === '';
 }
 
 export function dataUriToBlob(dataURI: string) {

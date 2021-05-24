@@ -15,8 +15,6 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import React from 'react';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
@@ -24,8 +22,9 @@ import Typography from '@material-ui/core/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 import { defineMessages, useIntl } from 'react-intl';
+import ViewToolbar, { ViewToolbarClassKey } from '../ViewToolbar/ViewToolbar';
 
-type GlobalAppToolbarClassKey = 'appBar' | 'toolbar' | 'title' | 'leftContent' | 'rightContent' | 'ellipsis';
+type GlobalAppToolbarClassKey = ViewToolbarClassKey | 'title' | 'leftContent' | 'rightContent' | 'ellipsis';
 
 type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProperties>>;
 
@@ -51,16 +50,8 @@ const translations = defineMessages({
 
 const useStyles = makeStyles((theme) =>
   createStyles<GlobalAppToolbarClassKey, GlobalAppToolbarStyles>({
-    appBar: (styles) => ({
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      ...styles.appBar
-    }),
-    toolbar: (styles) => ({
-      paddingLeft: theme.spacing(1.5),
-      paddingRight: theme.spacing(1.5),
-      alignItems: 'center',
-      ...styles.toolbar
-    }),
+    appBar: null,
+    toolbar: null,
     title: (styles) => ({
       marginLeft: '10px',
       display: 'flex',
@@ -92,58 +83,51 @@ const useStyles = makeStyles((theme) =>
 );
 
 export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
-  const classes = useStyles(props.styles);
   const {
     title,
     subtitle,
     leftContent,
     rightContent,
-    elevation = 0,
     showHamburgerMenuButton = true,
     showAppsButton = true,
-    startContent
+    startContent,
+    styles
   } = props;
+  const classes = useStyles(styles);
   const { formatMessage } = useIntl();
   return (
-    <AppBar
-      color="inherit"
-      position="relative"
-      elevation={elevation}
-      className={clsx(classes.appBar, props.classes?.appBar)}
-    >
-      <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>
-        {showHamburgerMenuButton && (
-          <LogoAndMenuBundleButton
-            aria-label={formatMessage(translations.toggleSidebar)}
-            onClick={() => {
-              if (window.location.hash.includes('/globalMenu/')) {
-                window.location.hash = window.location.hash.replace('/globalMenu', '');
-              } else {
-                window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
-              }
-            }}
-          />
-        )}
-        {startContent}
-        {(title || subtitle) && (
-          <section className={clsx(classes.title, props.classes?.title)}>
-            {title && (
-              <Typography variant="h5" component="h1" className={classes.ellipsis}>
-                {title}
-              </Typography>
-            )}
-            {subtitle && (
-              <Typography variant="body2" component="h2" color="textSecondary" className={classes.ellipsis}>
-                {subtitle}
-              </Typography>
-            )}
-          </section>
-        )}
-        <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
-        <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
-        {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
-      </Toolbar>
-    </AppBar>
+    <ViewToolbar elevation={props.elevation} styles={styles} classes={props.classes}>
+      {showHamburgerMenuButton && (
+        <LogoAndMenuBundleButton
+          aria-label={formatMessage(translations.toggleSidebar)}
+          onClick={() => {
+            if (window.location.hash.includes('/globalMenu/')) {
+              window.location.hash = window.location.hash.replace('/globalMenu', '');
+            } else {
+              window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
+            }
+          }}
+        />
+      )}
+      {startContent}
+      {Boolean(title || subtitle) && (
+        <section className={clsx(classes.title, props.classes?.title)}>
+          {title && (
+            <Typography variant="h5" component="h1" className={classes.ellipsis}>
+              {title}
+            </Typography>
+          )}
+          {subtitle && (
+            <Typography variant="body2" component="h2" color="textSecondary" className={classes.ellipsis}>
+              {subtitle}
+            </Typography>
+          )}
+        </section>
+      )}
+      <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
+      <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
+      {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
+    </ViewToolbar>
   );
 });
 
