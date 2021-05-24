@@ -58,6 +58,7 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemUnlocked,
   itemUpdated
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
@@ -193,6 +194,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     const events = [
       itemsPasted.type,
       itemUpdated.type,
+      itemUnlocked.type,
       folderCreated.type,
       folderRenamed.type,
       itemsDeleted.type,
@@ -203,6 +205,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
         case itemCreated.type:
+        case itemUnlocked.type:
         case itemUpdated.type:
         case folderRenamed.type:
         case itemDuplicated.type: {

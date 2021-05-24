@@ -53,6 +53,8 @@ import PublishingStatusDialog from '../PublishingStatusDialog';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
+import { hasGlobalPermissions } from '../../services/users';
+import { foo } from '../../utils/object';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -76,6 +78,7 @@ export default function SitesManagement() {
   const isFetching = sitesBranch.isFetching;
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
+  const [permissionsLookup, setPermissionsLookup] = useState(foo);
 
   useEffect(() => {
     merge(
@@ -92,10 +95,16 @@ export default function SitesManagement() {
     });
   }, [setPublishingStatusLookup, sitesById]);
 
+  useEffect(() => {
+    hasGlobalPermissions('create-site', 'edit_site', 'site_delete').subscribe((permissions) => {
+      setPermissionsLookup(permissions);
+    });
+  });
+
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
-    useMemo(() => ({ sitesById, isFetching }), [sitesById, isFetching]),
+    useMemo(() => ({ sitesById, isFetching, permissionsLookup }), [sitesById, isFetching, permissionsLookup]),
     {
-      shouldResolve: (source) => Boolean(source.sitesById) && !isFetching,
+      shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
       shouldReject: () => false,
       shouldRenew: (source, resource) => isFetching && resource.complete,
       resultSelector: (source) => Object.values(sitesById),
@@ -162,14 +171,16 @@ export default function SitesManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />}
         leftContent={
-          <Button
-            startIcon={<AddIcon />}
-            variant="outlined"
-            color="primary"
-            onClick={() => setOpenCreateSiteDialog(true)}
-          >
-            <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
-          </Button>
+          permissionsLookup['create-site'] && (
+            <Button
+              startIcon={<AddIcon />}
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenCreateSiteDialog(true)}
+            >
+              <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
+            </Button>
+          )
         }
         rightContent={
           <Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
@@ -195,8 +206,8 @@ export default function SitesManagement() {
             resource={resource}
             publishingStatusLookup={publishingStatusLookup}
             onSiteClick={onSiteClick}
-            onDeleteSiteClick={onDeleteSiteClick}
-            onEditSiteClick={onEditSiteClick}
+            onDeleteSiteClick={permissionsLookup['site_delete'] && onDeleteSiteClick}
+            onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
           />

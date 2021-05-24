@@ -114,26 +114,32 @@ export default function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActionArea>
-      <CardActions disableSpacing>
-        <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-          <IconButton onClick={() => onEditSiteClick(site)}>
-            <EditRoundedIcon />
-          </IconButton>
-        </Tooltip>
-        <ConfirmDropdown
-          cancelText={formatMessage(translations.confirmCancel)}
-          confirmText={formatMessage(translations.confirmOk)}
-          confirmHelperText={formatMessage(translations.confirmHelperText, {
-            site: site.name
-          })}
-          iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
-          icon={DeleteRoundedIcon}
-          iconColor="action"
-          onConfirm={() => {
-            onDeleteSiteClick(site);
-          }}
-        />
-      </CardActions>
+      {(onEditSiteClick || onDeleteSiteClick) && (
+        <CardActions disableSpacing>
+          {onEditSiteClick && (
+            <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
+              <IconButton onClick={() => onEditSiteClick(site)}>
+                <EditRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {onDeleteSiteClick && (
+            <ConfirmDropdown
+              cancelText={formatMessage(translations.confirmCancel)}
+              confirmText={formatMessage(translations.confirmOk)}
+              confirmHelperText={formatMessage(translations.confirmHelperText, {
+                site: site.name
+              })}
+              iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
+              icon={DeleteRoundedIcon}
+              iconColor="action"
+              onConfirm={() => {
+                onDeleteSiteClick(site);
+              }}
+            />
+          )}
+        </CardActions>
+      )}
     </Card>
   );
 }

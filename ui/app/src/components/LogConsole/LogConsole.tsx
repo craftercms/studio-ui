@@ -51,7 +51,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
     let since = moment()
       .subtract(1, 'hour')
       .valueOf();
-    fetchPreviewLog('editorial', since).subscribe();
+    fetchPreviewLog(site, since).subscribe();
   });
 
   const refresh = useCallback(
