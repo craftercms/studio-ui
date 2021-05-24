@@ -71,7 +71,7 @@ export default function GlobalApp() {
       }
       case 'home.globalMenu.globalConfig':
       case '/globalMenu/global-config': {
-        return <GlobalConfigManagement onEditorChanges={() => {}} />;
+        return <GlobalConfigManagement />;
       }
       case 'home.globalMenu.encryptionTool':
       case '/globalMenu/encryption-tool': {
@@ -126,12 +126,7 @@ export default function GlobalApp() {
         <Route path="/audit" component={AuditManagement} />
         <Route path="/logging-levels" component={LoggingLevelsManagement} />
         <Route path="/log-console" component={LogConsole} />
-        <Route
-          path="/global-config"
-          render={() => {
-            return <GlobalConfigManagement onEditorChanges={() => {}} />;
-          }}
-        />
+        <Route path="/global-config" component={GlobalConfigManagement} />
         <Route path="/encryption-tool" component={EncryptTool} />
         <Route path="/token-management" component={TokenManagement} />
         <Route path="/about-us" component={AboutCrafterCMSView} />

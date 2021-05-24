@@ -28,7 +28,7 @@ export const useStyles = makeStyles((theme) =>
     paper: {
       borderRadius: 0,
       minHeight: '400px',
-      height: 'calc(100vh - 350px)',
+      height: 'calc(100vh - 120px)',
       borderBottom: `1px solid ${theme.palette.divider}`
     },
     marginLeftAuto: {
