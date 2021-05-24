@@ -303,27 +303,25 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   };
 
   return (
-    <>
-      <Dialog
-        open={open && !minimized}
-        keepMounted={minimized}
-        onClose={onClose}
-        fullWidth
-        maxWidth="xl"
-        classes={{ paper: classes.dialog }}
-      >
-        <DialogHeader
-          title={title}
-          onDismiss={onClose}
-          rightActions={[
-            {
-              icon: 'MinimizeIcon',
-              onClick: onMinimized
-            }
-          ]}
-        />
-        <EmbeddedLegacyEditor ref={iframeRef} {...props} onMinimized={onMinimized} />
-      </Dialog>
-    </>
+    <Dialog
+      open={open && !minimized}
+      keepMounted={minimized}
+      onClose={onClose}
+      fullWidth
+      maxWidth="xl"
+      classes={{ paper: classes.dialog }}
+    >
+      <DialogHeader
+        title={title}
+        onDismiss={onClose}
+        rightActions={[
+          {
+            icon: 'MinimizeIcon',
+            onClick: onMinimized
+          }
+        ]}
+      />
+      <EmbeddedLegacyEditor ref={iframeRef} {...props} onMinimized={onMinimized} />
+    </Dialog>
   );
 }
