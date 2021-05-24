@@ -18,7 +18,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
-import { SiteConfigurationFile } from '../../models/SiteConfigurationFile';
+import { SiteConfigurationFileWithId } from '../../models/SiteConfigurationFile';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -71,8 +71,8 @@ export default function SiteConfigurationManagement() {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [environment, setEnvironment] = useState<string>();
-  const [files, setFiles] = useState<SiteConfigurationFile[]>();
-  const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFile>(null);
+  const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
+  const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(null);
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
   const [selectedSampleConfigFileXml, setSelectedSampleConfigFileXml] = useState(null);
   const [loadingXml, setLoadingXml] = useState(true);
@@ -100,7 +100,7 @@ export default function SiteConfigurationManagement() {
   useEffect(() => {
     if (site && environment) {
       fetchSiteConfigurationFiles(site, environment).subscribe((files) => {
-        setFiles(files);
+        setFiles(files.map((file) => ({ ...file, id: `${file.module}/${file.path}` })));
       });
     }
   }, [environment, site]);
@@ -247,15 +247,15 @@ export default function SiteConfigurationManagement() {
     }
   };
 
-  const onListItemClick = (file: SiteConfigurationFile) => {
-    if (file.path !== selectedConfigFile?.path) {
+  const onListItemClick = (file: SiteConfigurationFileWithId) => {
+    if (file.id !== selectedConfigFile?.id) {
       setLoadingXml(true);
       setSelectedConfigFile(file);
     }
     onClean();
   };
 
-  const onUnsavedChangesOk = (file: SiteConfigurationFile) => {
+  const onUnsavedChangesOk = (file: SiteConfigurationFileWithId) => {
     setConfirmDialogProps({ ...confirmDialogProps, open: false });
     onListItemClick(file);
   };
@@ -303,7 +303,7 @@ export default function SiteConfigurationManagement() {
     setSelectedConfigFile(null);
   };
 
-  const showUnsavedChangesConfirm = (file: SiteConfigurationFile) => {
+  const showUnsavedChangesConfirm = (file: SiteConfigurationFileWithId) => {
     setConfirmDialogProps({
       open: true,
       title: <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />,
@@ -463,9 +463,9 @@ export default function SiteConfigurationManagement() {
                 )
                 .map((file, i) => (
                   <ListItem
-                    selected={file.path === selectedConfigFile?.path}
+                    selected={file.id === selectedConfigFile?.id}
                     onClick={() => {
-                      if (!disabledSaveButton && file.path !== selectedConfigFile?.path) {
+                      if (!disabledSaveButton && file.id !== selectedConfigFile?.id) {
                         showUnsavedChangesConfirm(file);
                       } else {
                         onListItemClick(file);
@@ -517,6 +517,9 @@ export default function SiteConfigurationManagement() {
             <GlobalAppToolbar
               classes={{
                 appBar: classes.appBar
+              }}
+              styles={{
+                toolbar: { '& > section': {} }
               }}
               showHamburgerMenuButton={false}
               showAppsButton={false}

@@ -100,6 +100,7 @@ import {
   hasReadHistoryAction,
   hasRenameAction,
   hasSchedulePublishAction,
+  hasUnlockAction,
   hasUploadAction
 } from './content';
 import { isNavigable } from '../components/PathNavigator/utils';
@@ -122,6 +123,7 @@ export type ItemActions =
   | 'createContent'
   | 'paste'
   | 'edit'
+  | 'unlock'
   | 'rename'
   | 'cut'
   | 'upload'
@@ -139,7 +141,7 @@ export type ItemActions =
   | 'schedulePublish'
   | 'rejectPublish';
 
-export type VirtualItemActions = 'preview' | 'unlock';
+export type VirtualItemActions = 'preview';
 
 export type AssessRemovalItemActions =
   | 'editCode'
@@ -156,6 +158,10 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   edit: {
     id: 'edit',
     label: translations.edit
+  },
+  unlock: {
+    id: 'unlock',
+    label: translations.unlock
   },
   view: {
     id: 'view',
@@ -269,10 +275,6 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   },
   // endregion
   // region VirtualItemActions
-  unlock: {
-    id: 'unlock',
-    label: translations.unlock
-  },
   editCode: {
     id: 'editCode',
     label: translations.edit
@@ -343,6 +345,9 @@ export function generateSingleItemOptions(
     } else {
       sectionA.push(menuOptions.editCode);
     }
+  }
+  if (hasUnlockAction(item.availableActions) && actionsToInclude.unlock) {
+    sectionA.push(menuOptions.unlock);
   }
   if (hasCreateAction(item.availableActions) && actionsToInclude.createContent) {
     sectionA.push(menuOptions.createContent);

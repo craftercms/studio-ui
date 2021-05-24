@@ -37,6 +37,7 @@ import {
   CONTENT_EDIT_MASK,
   CONTENT_EDIT_TEMPLATE_MASK,
   CONTENT_GET_DEPENDENCIES_ACTION_MASK,
+  CONTENT_ITEM_UNLOCK,
   CONTENT_PASTE_MASK,
   CONTENT_READ_VERSION_HISTORY_MASK,
   CONTENT_RENAME_MASK,
@@ -672,6 +673,7 @@ export const hasPublishAction = (value: number) => Boolean(value & PUBLISH_MASK)
 export const hasApprovePublishAction = (value: number) => Boolean(value & PUBLISH_APPROVE_MASK);
 export const hasSchedulePublishAction = (value: number) => Boolean(value & PUBLISH_SCHEDULE_MASK);
 export const hasPublishRejectAction = (value: number) => Boolean(value & PUBLISH_REJECT_MASK);
+export const hasUnlockAction = (value: number) => Boolean(value & CONTENT_ITEM_UNLOCK);
 // endregion
 
 export const createItemActionMap: (availableActions: number) => ItemActionsMap = (value: number) => ({
@@ -698,7 +700,8 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
   publish: hasPublishAction(value),
   approvePublish: hasApprovePublishAction(value),
   schedulePublish: hasSchedulePublishAction(value),
-  rejectPublish: hasPublishRejectAction(value)
+  rejectPublish: hasPublishRejectAction(value),
+  unlock: hasUnlockAction(value)
 });
 
 export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {

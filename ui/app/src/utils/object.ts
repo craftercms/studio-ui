@@ -269,3 +269,5 @@ export function applyDeserializedXMLTransforms<T extends object = {}>(
 export function deepCopy<T extends object = any>(target: T): T {
   return JSON.parse(JSON.stringify(target));
 }
+
+export const foo = {};

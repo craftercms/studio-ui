@@ -171,7 +171,7 @@ CStudioAuthoring.Module.requireModule(
                     .fetchConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
                     .toPromise(),
                   new Promise((resolve, reject) => {
-                    CStudioAuthoring.Service.getContent(templatePath, true, {
+                    CStudioAuthoring.Service.getContent(templatePath, !readonly, {
                       success: resolve,
                       failure: reject
                     });
