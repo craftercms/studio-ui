@@ -170,6 +170,7 @@ function GlobalDialogManager() {
         contentTypeId={state.edit.contentTypeId}
         isNewContent={state.edit.isNewContent}
         inProgress={state.edit.inProgress}
+        pendingChanges={state.edit.pendingChanges}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
@@ -186,6 +187,7 @@ function GlobalDialogManager() {
         authoringBase={state.codeEditor.authoringBase}
         readonly={state.codeEditor.readonly}
         inProgress={state.codeEditor.inProgress}
+        pendingChanges={state.codeEditor.pendingChanges}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onDismiss={createCallback(state.codeEditor.onDismiss, dispatch)}
