@@ -124,6 +124,10 @@ export function isImage(path: string): boolean {
   );
 }
 
+export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
+  return item ? item.lockOwner && item.lockOwner !== username : true;
+}
+
 export function getSystemTypeFromPath(path: string): SystemType {
   const rootPath = getRootPath(path);
   if (rootPath.includes('/site/website')) {

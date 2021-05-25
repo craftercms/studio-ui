@@ -105,6 +105,7 @@ import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
   hasEditAction,
+  isItemLockedForMe,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -316,6 +317,7 @@ export function PreviewConcierge(props: any) {
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
   const write = hasEditAction(items[currentItemPath]?.availableActions);
+  const isLocked = isItemLockedForMe(items[currentItemPath], user.username);
 
   useEffect(() => {
     if (currentItemPath && site) {
@@ -324,10 +326,11 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, currentItemPath, site]);
 
   useEffect(() => {
-    if (write === false && editMode) {
+    if ((write === false || isLocked) && editMode) {
+      console.log('editMode', false);
       getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
     }
-  }, [dispatch, write, editMode]);
+  }, [dispatch, write, editMode, isLocked]);
 
   // endregion
 
@@ -338,6 +341,7 @@ export function PreviewConcierge(props: any) {
       ? getStoredEditModeChoice(user.username) === 'true'
       : null;
     if (nnou(localEditMode) && editMode !== localEditMode) {
+      console.log('restoring localEditMode');
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
@@ -437,7 +441,6 @@ export function PreviewConcierge(props: any) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
             }
-
             getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
             dispatch(checkInGuest(payload));
 
