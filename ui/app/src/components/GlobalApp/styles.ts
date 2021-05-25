@@ -22,8 +22,28 @@ export const useStyles = makeStyles((theme) =>
       height: '100vh',
       width: '100%'
     },
+    footerDescription: {
+      color: theme.palette.text.secondary,
+      '& > a': {
+        textDecoration: 'none',
+        color: theme.palette.primary.main
+      }
+    },
+    footer: {
+      padding: '20px 0',
+      textAlign: 'center'
+    },
+    logo: {
+      margin: '0 auto 10px auto'
+    },
+    drawerBody: {
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between'
+    },
     drawerPaper: {
-      top: '0 !important',
+      top: '0',
       padding: '16px'
     }
   })

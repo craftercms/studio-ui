@@ -37,9 +37,17 @@ import { urlMapping } from '../LauncherSection';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { useGlobalAppState } from './GlobalContext';
+import Typography from '@material-ui/core/Typography';
+import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 
-export default function GlobalApp() {
+interface GlobalAppProps {
+  passwordRequirementsRegex: string;
+  footerHtml: string;
+}
+
+export default function GlobalApp(props: GlobalAppProps) {
   const classes = useStyles({});
+  const { passwordRequirementsRegex, footerHtml } = props;
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();
   const [{ openSidebar }] = useGlobalAppState();
@@ -47,13 +55,19 @@ export default function GlobalApp() {
   return (
     <section className={classes.root}>
       <ResizeableDrawer
-        classes={{ drawerPaper: classes.drawerPaper }}
+        classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}
         width={width}
         onWidthChange={setWidth}
       >
         <LauncherGlobalNav
           title=""
+          navStyles={{
+            nav: {
+              maxHeight: '100%',
+              overflow: 'auto'
+            }
+          }}
           tileStyles={{
             tile: {
               width: '100%',
@@ -69,11 +83,23 @@ export default function GlobalApp() {
             }
           }}
         />
+        <footer className={classes.footer}>
+          <CrafterCMSLogo width={100} className={classes.logo} />
+          <Typography
+            component="p"
+            variant="caption"
+            className={classes.footerDescription}
+            dangerouslySetInnerHTML={{ __html: footerHtml }}
+          />
+        </footer>
       </ResizeableDrawer>
       <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
           <Route path="/sites" component={SitesManagement} />
-          <Route path="/users" component={UsersManagement} />
+          <Route
+            path="/users"
+            render={() => <UsersManagement passwordRequirementsRegex={passwordRequirementsRegex} />}
+          />
           <Route path="/groups" component={GroupsManagement} />
           <Route path="/cluster" component={ClustersManagement} />
           <Route path="/audit" component={AuditManagement} />
@@ -83,7 +109,10 @@ export default function GlobalApp() {
           <Route path="/encryption-tool" component={EncryptTool} />
           <Route path="/token-management" component={TokenManagement} />
           <Route path="/about-us" component={AboutCrafterCMSView} />
-          <Route path="/settings" component={AccountManagement} />
+          <Route
+            path="/settings"
+            render={() => <AccountManagement passwordRequirementsRegex={passwordRequirementsRegex} />}
+          />
           <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
           <Route exact path="/">
             <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />

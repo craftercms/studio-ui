@@ -40,7 +40,10 @@
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
-  CrafterCMSNext.render('#root', 'Global', {}, false);
+  CrafterCMSNext.render('#root', 'Global', {
+    passwordRequirementsRegex: '${passwordRequirementsRegex?js_string}',
+    footerHtml: '${applicationContext.get("crafter.entitlementValidator").getDescription()}'
+  }, false);
 </script>
 </body>
 </html>
