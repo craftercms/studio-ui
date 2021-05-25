@@ -34,7 +34,8 @@ export default function RemoteRepositoriesDiffDialogSplitView(props: SplitViewPr
       const diffEditor = monaco.editor.createDiffEditor(ref.current, {
         scrollbar: {
           alwaysConsumeMouseWheel: false
-        }
+        },
+        readOnly: true
       });
       diffEditor.setModel({
         original: studioVersion,

@@ -53,6 +53,9 @@ const useStyles = makeStyles((theme) =>
     dialogHeaderChildren: {
       padding: 0
     },
+    dialogContent: {
+      padding: 0
+    },
     tabs: {
       minHeight: 'inherit'
     },
@@ -149,7 +152,7 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
           />
         </Tabs>
       </DialogHeader>
-      <DialogBody>
+      <DialogBody className={classes.dialogContent}>
         <SuspenseWithEmptyState resource={resource}>
           <RemoteRepositoriesDiffDialogUI resource={resource} tab={tab} />
         </SuspenseWithEmptyState>

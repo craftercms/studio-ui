@@ -20,6 +20,9 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import AceEditor from '../AceEditor';
 import RemoteRepositoriesDiffDialogSplitView from './RemoteRepositoriesDiffDialogSplitView';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { FormattedMessage } from 'react-intl';
 
 const tabsHeight = 450;
 const useStyles = makeStyles((theme) =>
@@ -38,10 +41,15 @@ const useStyles = makeStyles((theme) =>
     },
     splitView: {
       width: '100%',
-      height: '100%',
+      height: 'calc(100% - 24px)',
       '&.unChanged': {
         height: 'auto'
       }
+    },
+    labelsContainer: {
+      width: 'calc(100% - 30px)',
+      textAlign: 'center',
+      backgroundColor: theme.palette.background.paper
     }
   })
 );
@@ -74,6 +82,18 @@ export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDial
 
       {tab === 1 && (
         <div className={classes.diffTab}>
+          <Grid container className={classes.labelsContainer}>
+            <Grid item xs={6}>
+              <Typography variant="body1">
+                <FormattedMessage id="words.local" defaultMessage="Local" />
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1">
+                <FormattedMessage id="words.remote" defaultMessage="Remote" />
+              </Typography>
+            </Grid>
+          </Grid>
           <RemoteRepositoriesDiffDialogSplitView diff={fileDiff} className={classes.splitView} />
         </div>
       )}
