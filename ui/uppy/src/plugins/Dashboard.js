@@ -119,7 +119,6 @@ class Dashboard extends UppyDashboard {
       .subscribe((response) => {
         let uploading = false;
         response.forEach(({ allowed, modifiedValue, target }) => {
-          console.log(target);
           let fileId = fileIdLookup[target];
           this.uppy.setFileMeta(fileId, {
             validating: false,
