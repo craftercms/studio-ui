@@ -18,13 +18,18 @@ import { Resource } from '../../models/Resource';
 import { FileDiff } from '../../models/Repository';
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import AceEditor from '../AceEditor';
+import RemoteRepositoriesDiffDialogSplitView from './RemoteRepositoriesDiffDialogSplitView';
 
 const tabsHeight = 450;
 const useStyles = makeStyles((theme) =>
   createStyles({
     diffTab: {
       height: tabsHeight,
-      overflowX: 'auto'
+      overflowX: 'auto',
+      '& .ace_editor': {
+        margin: 0
+      }
     },
     diffContent: {
       fontSize: '14px',
@@ -32,8 +37,11 @@ const useStyles = makeStyles((theme) =>
       border: 'none'
     },
     splitView: {
-      height: Math.floor(tabsHeight / 2),
-      overflowX: 'auto'
+      width: '100%',
+      height: '100%',
+      '&.unChanged': {
+        height: 'auto'
+      }
     }
   })
 );
@@ -52,18 +60,21 @@ export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDial
     <>
       {tab === 0 && (
         <div className={classes.diffTab}>
-          <pre className={classes.diffContent}>{fileDiff.diff}</pre>
+          <AceEditor
+            mode="ace/mode/diff"
+            theme="ace/theme/textmate"
+            autoFocus={false}
+            readOnly={true}
+            value={fileDiff.diff}
+            fontSize="14px"
+            fontFamily={`"Droid Sans Mono", monospace, monospace, "Droid Sans Fallback"`}
+          />
         </div>
       )}
 
       {tab === 1 && (
         <div className={classes.diffTab}>
-          <div className={classes.splitView}>
-            <pre className={classes.diffContent}> {fileDiff.studioVersion}</pre>
-          </div>
-          <div className={classes.splitView}>
-            <pre className={classes.diffContent}>{fileDiff.remoteVersion}</pre>
-          </div>
+          <RemoteRepositoriesDiffDialogSplitView diff={fileDiff} className={classes.splitView} />
         </div>
       )}
     </>

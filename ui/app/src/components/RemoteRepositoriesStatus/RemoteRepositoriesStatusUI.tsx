@@ -65,6 +65,10 @@ const useStyles = makeStyles((theme) =>
     statusNote: {
       color: theme.palette.text.secondary
     },
+    conflictFilesContainer: {
+      borderBottom: `1px solid ${theme.palette.divider}`,
+      paddingBottom: theme.spacing(2)
+    },
     conflictActions: {
       textAlign: 'right'
     },
@@ -159,7 +163,7 @@ export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProp
       )}
 
       {status.conflicting.length > 0 && (
-        <>
+        <div className={classes.conflictFilesContainer}>
           <Typography variant="h6" className={clsx(classes.sectionLabel, classes.conflictedFilesLabel)}>
             <FormattedMessage id="repository.conflictedFiles" defaultMessage="Conflicted Files" />
           </Typography>
@@ -197,7 +201,7 @@ export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProp
               </TableBody>
             </Table>
           </TableContainer>
-        </>
+        </div>
       )}
 
       {status.uncommittedChanges.length > 0 && (

@@ -19,3 +19,5 @@ export { default } from './RemoteRepositoriesDiffDialog';
 export * from './RemoteRepositoriesDiffDialog';
 
 export * from './RemoteRepositoriesDiffDialogUI';
+
+export * from './RemoteRepositoriesDiffDialogSplitView';
