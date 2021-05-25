@@ -44,7 +44,7 @@ export const useStyles = makeStyles((theme) =>
     },
     drawerPaper: {
       top: '0',
-      padding: '16px'
+      padding: theme.spacing(2)
     }
   })
 );
