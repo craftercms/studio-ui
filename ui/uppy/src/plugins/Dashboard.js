@@ -123,7 +123,7 @@ class Dashboard extends UppyDashboard {
           this.uppy.setFileMeta(fileId, {
             validating: false,
             allowed,
-            ...(modifiedValue && { suggestedName: modifiedValue.replace(`${this.opts.path}/`, '') })
+            ...(modifiedValue && { suggestedName: modifiedValue.replace(/^.*[\\\/]/, '') })
           });
           if (allowed && modifiedValue === null) {
             this.uppy.retryUpload(fileId);
