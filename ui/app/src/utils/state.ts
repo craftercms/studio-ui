@@ -29,9 +29,18 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
-    ...(item.isDeleted && { deleted: true }),
-    ...(item.isSubmitted && { submitted: true }),
-    ...(item.isScheduled && { scheduled: true })
+    live: false,
+    locked: false,
+    modified: false,
+    new: false,
+    staged: false,
+    systemProcessing: false,
+    translationInProgress: false,
+    translationPending: false,
+    translationUpToDate: false,
+    deleted: Boolean(item.isDeleted),
+    submitted: Boolean(item.isSubmitted),
+    scheduled: Boolean(item.isScheduled)
   };
 }
 

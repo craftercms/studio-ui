@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
@@ -113,45 +113,6 @@ export type ContextMenuOptionDescriptor<ID extends string = string> = {
   label: MessageDescriptor;
   values?: any;
 };
-
-export type ItemActions =
-  | 'view'
-  | 'copy'
-  | 'history'
-  | 'dependencies'
-  | 'requestPublish'
-  | 'createContent'
-  | 'paste'
-  | 'edit'
-  | 'unlock'
-  | 'rename'
-  | 'cut'
-  | 'upload'
-  | 'duplicate'
-  | 'changeContentType'
-  | 'revert'
-  | 'editController'
-  | 'editTemplate'
-  | 'createFolder'
-  | 'delete'
-  | 'deleteController'
-  | 'deleteTemplate'
-  | 'publish'
-  | 'approvePublish'
-  | 'schedulePublish'
-  | 'rejectPublish';
-
-export type VirtualItemActions = 'preview';
-
-export type AssessRemovalItemActions =
-  | 'editCode'
-  | 'viewCode'
-  | 'viewImage'
-  | 'duplicateAsset'
-  | 'createTemplate'
-  | 'createController';
-
-export type AllItemActions = ItemActions | VirtualItemActions | AssessRemovalItemActions;
 
 const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<AllItemActions>> = {
   // region ItemActions

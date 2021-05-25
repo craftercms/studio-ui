@@ -56,6 +56,9 @@ export const useSiteCardStyles = makeStyles(() =>
         '-webkit-line-clamp': 1,
         '-webkit-box-orient': 'vertical'
       }
+    },
+    cardActions: {
+      placeContent: 'center space-between'
     }
   })
 );
