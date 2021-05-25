@@ -37,6 +37,12 @@ export interface GitAuthFormProps {
   onKeyPress?(event: any): any;
 }
 
+interface AuthFieldsProps {
+  inputs: Partial<SiteState>;
+  handleInputChange(event: React.ChangeEvent): any;
+  onKeyPress?(event: any): any;
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     authBox: {
@@ -83,11 +89,115 @@ function renderHelperText(name: string, value: string = '', helperText: string, 
   }
 }
 
+function AuthFields(props: AuthFieldsProps) {
+  const { inputs, handleInputChange, onKeyPress } = props;
+  const type = inputs.repoAuthentication;
+  const [showPassword, setShowPassword] = useState(false);
+  const { formatMessage } = useIntl();
+  const classes = useStyles();
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div className={classes.authBox}>
+      {(type === 'basic' || type === 'token') && (
+        <TextField
+          id="repoUsername"
+          name="repoUsername"
+          className={clsx(classes.margin, classes.textField)}
+          label={formatMessage(messages.userName)}
+          required
+          value={inputs.repoUsername}
+          onKeyPress={onKeyPress}
+          onChange={handleInputChange}
+          error={inputs.submitted && !inputs.repoUsername}
+          helperText={renderHelperText(
+            formatMessage(messages.userName),
+            inputs.repoUsername,
+            '',
+            true,
+            inputs.submitted
+          )}
+        />
+      )}
+      {type === 'basic' && (
+        <TextField
+          id="repoPassword"
+          name="repoPassword"
+          className={clsx(classes.margin, classes.textField)}
+          type={showPassword ? 'text' : 'password'}
+          label={formatMessage(messages.password)}
+          required
+          value={inputs.repoPassword}
+          onKeyPress={onKeyPress}
+          onChange={handleInputChange}
+          error={inputs.submitted && !inputs.repoPassword}
+          helperText={renderHelperText(
+            formatMessage(messages.password),
+            inputs.repoPassword,
+            '',
+            true,
+            inputs.submitted
+          )}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        />
+      )}
+      {type === 'token' && (
+        <TextField
+          id="repoToken"
+          name="repoToken"
+          className={clsx(classes.margin, classes.textField)}
+          type={showPassword ? 'text' : 'password'}
+          label={formatMessage(messages.token)}
+          required
+          value={inputs.repoToken}
+          error={inputs.submitted && !inputs.repoToken}
+          helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, '', true, inputs.submitted)}
+          onKeyPress={onKeyPress}
+          onChange={handleInputChange}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        />
+      )}
+      {type === 'key' && (
+        <TextField
+          id="repoKey"
+          name="repoKey"
+          label={formatMessage(messages.privateKey)}
+          required
+          fullWidth
+          multiline
+          className={classes.margin}
+          error={inputs.submitted && !inputs.repoKey}
+          helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, '', true, inputs.submitted)}
+          onKeyPress={onKeyPress}
+          onChange={handleInputChange}
+          value={inputs.repoKey}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function GitAuthForm(props: GitAuthFormProps) {
   const { inputs, setInputs, handleInputChange, onKeyPress } = props;
-  const [showPassword, setShowPassword] = useState(false);
-  const classes = useStyles();
-  const { formatMessage } = useIntl();
 
   const viewAuth = (type: string) => {
     const _expanded: any = { ...inputs.expanded };
@@ -99,113 +209,6 @@ export default function GitAuthForm(props: GitAuthFormProps) {
     });
     setInputs({ ...inputs, expanded: _expanded });
   };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  function renderAuth(type: string) {
-    return (
-      <div className={classes.authBox}>
-        {(type === 'basic' || type === 'token') && (
-          <TextField
-            id="repoUsername"
-            name="repoUsername"
-            className={clsx(classes.margin, classes.textField)}
-            label={formatMessage(messages.userName)}
-            required
-            value={inputs.repoUsername}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            error={inputs.submitted && !inputs.repoUsername}
-            helperText={renderHelperText(
-              formatMessage(messages.userName),
-              inputs.repoUsername,
-              '',
-              true,
-              inputs.submitted
-            )}
-          />
-        )}
-        {type === 'basic' && (
-          <TextField
-            id="repoPassword"
-            name="repoPassword"
-            className={clsx(classes.margin, classes.textField)}
-            type={showPassword ? 'text' : 'password'}
-            label={formatMessage(messages.password)}
-            required
-            value={inputs.repoPassword}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            error={inputs.submitted && !inputs.repoPassword}
-            helperText={renderHelperText(
-              formatMessage(messages.password),
-              inputs.repoPassword,
-              '',
-              true,
-              inputs.submitted
-            )}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        )}
-        {type === 'token' && (
-          <TextField
-            id="repoToken"
-            name="repoToken"
-            className={clsx(classes.margin, classes.textField)}
-            type={showPassword ? 'text' : 'password'}
-            label={formatMessage(messages.token)}
-            required
-            value={inputs.repoToken}
-            error={inputs.submitted && !inputs.repoToken}
-            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, '', true, inputs.submitted)}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        )}
-        {type === 'key' && (
-          <TextField
-            id="repoKey"
-            name="repoKey"
-            label={formatMessage(messages.privateKey)}
-            required
-            fullWidth
-            multiline
-            className={classes.margin}
-            error={inputs.submitted && !inputs.repoKey}
-            helperText={renderHelperText(
-              formatMessage(messages.privateKey),
-              inputs.repoKey,
-              '',
-              true,
-              inputs.submitted
-            )}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            value={inputs.repoKey}
-          />
-        )}
-      </div>
-    );
-  }
 
   return (
     <>
@@ -235,7 +238,7 @@ export default function GitAuthForm(props: GitAuthFormProps) {
           label={<FormattedMessage id="gitForm.usernameAndPassword" defaultMessage="Username & Password" />}
         />
         <Collapse in={inputs.expanded.basic} timeout={300} unmountOnExit>
-          {renderAuth(inputs.repoAuthentication)}
+          <AuthFields inputs={inputs} handleInputChange={handleInputChange} />
         </Collapse>
         <FormControlLabel
           value="token"
@@ -243,7 +246,7 @@ export default function GitAuthForm(props: GitAuthFormProps) {
           label={<FormattedMessage id="gitForm.token" defaultMessage="Token" />}
         />
         <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
-          {renderAuth(inputs.repoAuthentication)}
+          <AuthFields inputs={inputs} handleInputChange={handleInputChange} />
         </Collapse>
         <FormControlLabel
           value="key"
@@ -251,7 +254,7 @@ export default function GitAuthForm(props: GitAuthFormProps) {
           label={<FormattedMessage id="gitForm.privateKey" defaultMessage="Private Key" />}
         />
         <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
-          {renderAuth(inputs.repoAuthentication)}
+          <AuthFields inputs={inputs} handleInputChange={handleInputChange} />
         </Collapse>
       </RadioGroup>
     </>
