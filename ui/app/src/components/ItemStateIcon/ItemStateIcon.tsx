@@ -95,10 +95,6 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
   let TheIcon = UnknownStateIcon;
   let stateSpecificClass;
   switch (true) {
-    case item.stateMap.modified:
-      TheIcon = EditedStateIcon;
-      stateSpecificClass = classes.stateModifiedIcon;
-      break;
     case item.stateMap.deleted:
       TheIcon = DeletedStateIcon;
       stateSpecificClass = classes.stateDeletedIcon;
@@ -106,6 +102,10 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
     case item.stateMap.locked:
       TheIcon = LockedStateIcon;
       stateSpecificClass = classes.stateLockedIcon;
+      break;
+    case item.stateMap.modified:
+      TheIcon = EditedStateIcon;
+      stateSpecificClass = classes.stateModifiedIcon;
       break;
     case item.stateMap.systemProcessing:
       TheIcon = SystemProcessingStateIcon;
