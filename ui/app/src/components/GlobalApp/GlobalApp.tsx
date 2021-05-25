@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import { useStyles } from './styles';
-import { Route } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router';
 import SitesManagement from '../SitesManagement';
 import UsersManagement from '../UsersManagement';
 import GroupsManagement from '../GroupsManagement';
@@ -33,107 +33,81 @@ import TokenManagement from '../TokenManagement';
 import AboutCrafterCMSView from '../AboutCrafterCMSView';
 import AccountManagement from '../AccountManagement';
 import { useGlobalNavigation } from '../../utils/hooks';
+import { urlMapping } from '../LauncherSection';
+import EmptyState from '../SystemStatus/EmptyState';
+import { FormattedMessage } from 'react-intl';
+import { GlobalProvider } from './GlobalContext';
 
 export default function GlobalApp() {
   const classes = useStyles({});
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();
-
-  const renderComponent = (id: string) => {
-    switch (id) {
-      case 'home.globalMenu.sites':
-      case '/globalMenu/sites': {
-        return <SitesManagement />;
-      }
-      case 'home.globalMenu.users':
-      case '/globalMenu/users': {
-        return <UsersManagement />;
-      }
-      case 'home.globalMenu.groups':
-      case '/globalMenu/groups': {
-        return <GroupsManagement />;
-      }
-      case 'home.globalMenu.cluster':
-      case '/globalMenu/cluster': {
-        return <ClustersManagement />;
-      }
-      case 'home.globalMenu.audit':
-      case '/globalMenu/audit': {
-        return <AuditManagement />;
-      }
-      case 'home.globalMenu.logging-levels':
-      case '/globalMenu/logging': {
-        return <LoggingLevelsManagement />;
-      }
-      case 'home.globalMenu.log-console':
-      case '/globalMenu/log': {
-        return <LogConsole />;
-      }
-      case 'home.globalMenu.globalConfig':
-      case '/globalMenu/global-config': {
-        return <GlobalConfigManagement />;
-      }
-      case 'home.globalMenu.encryptionTool':
-      case '/globalMenu/encryption-tool': {
-        return <EncryptTool />;
-      }
-      case 'home.globalMenu.tokenManagement':
-      case '/globalMenu/token-management': {
-        return <TokenManagement />;
-      }
-      case 'home.globalMenu.about-us':
-      case '/globalMenu/about-us': {
-        return <AboutCrafterCMSView />;
-      }
-      case 'home.globalMenu.settings':
-      case '/globalMenu/settings': {
-        return <AccountManagement />;
-      }
-    }
-  };
+  const [open, setOpen] = useState(true);
 
   return (
-    <section className={classes.root}>
-      <ResizeableDrawer
-        classes={{ drawerPaper: classes.drawerPaper }}
-        open={true}
-        width={width}
-        onWidthChange={setWidth}
-      >
-        <LauncherGlobalNav
-          title=""
-          tileStyles={{
-            tile: {
-              width: '100%',
-              height: 'auto',
-              flexDirection: 'row',
-              justifyContent: 'left',
-              margin: '0 0 5px'
-            },
-            iconAvatar: {
-              width: '25px',
-              height: '25px',
-              margin: '5px 10px'
-            }
-          }}
-        />
-      </ResizeableDrawer>
-      <Box height="100%" width="100%" paddingLeft={`${width}px`}>
-        <Route path="/sites" component={SitesManagement} />
-        <Route path="/users" component={UsersManagement} />
-        <Route path="/groups" component={GroupsManagement} />
-        <Route path="/cluster" component={ClustersManagement} />
-        <Route path="/audit" component={AuditManagement} />
-        <Route path="/logging-levels" component={LoggingLevelsManagement} />
-        <Route path="/log-console" component={LogConsole} />
-        <Route path="/global-config" component={GlobalConfigManagement} />
-        <Route path="/encryption-tool" component={EncryptTool} />
-        <Route path="/token-management" component={TokenManagement} />
-        <Route path="/about-us" component={AboutCrafterCMSView} />
-        <Route path="/settings" component={AccountManagement} />
-        <Route path="/globalMenu/:id" render={(props) => renderComponent(props.location.pathname)} />
-        <Route exact path="/" render={() => renderComponent(globalNavigation.items[0].id)} />
-      </Box>
-    </section>
+    <GlobalProvider value={{ open, setOpen }}>
+      <section className={classes.root}>
+        <ResizeableDrawer
+          classes={{ drawerPaper: classes.drawerPaper }}
+          open={open}
+          width={width}
+          onWidthChange={setWidth}
+        >
+          <LauncherGlobalNav
+            title=""
+            tileStyles={{
+              tile: {
+                width: '100%',
+                height: 'auto',
+                flexDirection: 'row',
+                justifyContent: 'left',
+                margin: '0 0 5px'
+              },
+              iconAvatar: {
+                width: '25px',
+                height: '25px',
+                margin: '5px 10px'
+              }
+            }}
+          />
+        </ResizeableDrawer>
+        <Box height="100%" width="100%" paddingLeft={open ? `${width}px` : 0}>
+          <Switch>
+            <Route path="/sites" component={SitesManagement} />
+            <Route path="/users" component={UsersManagement} />
+            <Route path="/groups" component={GroupsManagement} />
+            <Route path="/cluster" component={ClustersManagement} />
+            <Route path="/audit" component={AuditManagement} />
+            <Route path="/logging" component={LoggingLevelsManagement} />
+            <Route path="/log" component={LogConsole} />
+            <Route path="/global-config" component={GlobalConfigManagement} />
+            <Route path="/encryption-tool" component={EncryptTool} />
+            <Route path="/token-management" component={TokenManagement} />
+            <Route path="/about-us" component={AboutCrafterCMSView} />
+            <Route path="/settings" component={AccountManagement} />
+            <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
+            <Route exact path="/">
+              <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
+            </Route>
+            <Route
+              render={() => {
+                return (
+                  <EmptyState
+                    styles={{
+                      root: {
+                        height: '100%',
+                        margin: 0
+                      }
+                    }}
+                    title="404"
+                    subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
+                  />
+                );
+              }}
+            />
+          </Switch>
+        </Box>
+      </section>
+    </GlobalProvider>
   );
 }

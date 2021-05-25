@@ -20,8 +20,8 @@ import LookupTable from '../../models/LookupTable';
 export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
 
 export const urlMapping = {
-  'home.globalMenu.logging-levels': '#/logging-levels',
-  'home.globalMenu.log-console': '#/log-console',
+  'home.globalMenu.logging-levels': '#/logging',
+  'home.globalMenu.log-console': '#/log',
   'home.globalMenu.users': '#/users',
   'home.globalMenu.sites': '#/sites',
   'home.globalMenu.audit': '#/audit',

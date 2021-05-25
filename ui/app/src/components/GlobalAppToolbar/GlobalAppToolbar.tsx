@@ -23,6 +23,7 @@ import LauncherOpenerButton from '../LauncherOpenerButton';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 import { defineMessages, useIntl } from 'react-intl';
 import ViewToolbar, { ViewToolbarClassKey } from '../ViewToolbar/ViewToolbar';
+import { useGlobalContext } from '../GlobalApp/GlobalContext';
 
 type GlobalAppToolbarClassKey = ViewToolbarClassKey | 'title' | 'leftContent' | 'rightContent' | 'ellipsis';
 
@@ -95,18 +96,15 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props
   } = props;
   const classes = useStyles(styles);
   const { formatMessage } = useIntl();
+
+  const { open, setOpen } = useGlobalContext();
+
   return (
     <ViewToolbar elevation={props.elevation} styles={styles} classes={props.classes}>
       {showHamburgerMenuButton && (
         <LogoAndMenuBundleButton
           aria-label={formatMessage(translations.toggleSidebar)}
-          onClick={() => {
-            if (window.location.hash.includes('/globalMenu/')) {
-              window.location.hash = window.location.hash.replace('/globalMenu', '');
-            } else {
-              window.location.hash = window.location.hash.replace('#/', '#/globalMenu/');
-            }
-          }}
+          onClick={() => setOpen(!open)}
         />
       )}
       {startContent}
