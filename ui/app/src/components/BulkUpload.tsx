@@ -49,6 +49,7 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import Paper from '@material-ui/core/Paper';
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
+import { UppyFile } from '@uppy/core';
 
 const translations = defineMessages({
   title: {
@@ -90,7 +91,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     dialogContent: {
       backgroundColor: palette.gray.light0
@@ -166,7 +167,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const UppyItemStyles = makeStyles((theme: Theme) =>
+const useUppyItemStyles = makeStyles(() =>
   createStyles({
     cardRoot: {
       display: 'flex',
@@ -205,48 +206,31 @@ const UppyItemStyles = makeStyles((theme: Theme) =>
 
 const uppy = Core({ debug: false, autoProceed: true });
 
-interface UppyFile {
-  source: string;
-  id: string;
+type FileWithRelativePath = File & { relativePath?: string };
+
+interface LocalUppyFileMeta {
+  site?: string;
+  relativePath?: string;
   name: string;
-  extension: string;
-  meta: {
-    site?: string;
-    relativePath?: string;
-    name: string;
-    type: string;
-    path: string;
-  };
   type: string;
-  data: File | Blob;
-  progress: {
-    percentage: number;
-    bytesUploaded: number;
-    bytesTotal: number;
-    uploadComplete: boolean;
-    uploadStarted: number;
-    status?: string;
-  };
-  size: number;
-  isRemote: boolean;
-  remote: {
-    host: string;
-    url: string;
-  };
-  preview: any;
+  path: string;
+  status: string;
+  progressPercentage: number;
 }
+
+type LocalUppyFile = UppyFile<LocalUppyFileMeta>;
 
 interface UppyItemProps {
   file: any;
 
-  retryFileUpload(file: UppyFile): void;
+  retryFileUpload(file: LocalUppyFile): void;
 }
 
 function UppyItem(props: UppyItemProps) {
-  const classes = UppyItemStyles({});
+  const classes = useUppyItemStyles({});
   const { file, retryFileUpload } = props;
 
-  const handleRetry = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: UppyFile) => {
+  const handleRetry = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: LocalUppyFile) => {
     event.preventDefault();
     event.stopPropagation();
     retryFileUpload(file);
@@ -258,14 +242,14 @@ function UppyItem(props: UppyItemProps) {
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+            <Typography variant="body2" className={clsx(file.meta.status === 'failed' && classes.textFailed)}>
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
               {file.type} @ {bytesToSize(file.size)}
             </Typography>
           </div>
-          {file.progress.status === 'failed' && (
+          {file.meta.status === 'failed' && (
             <IconButton
               onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                 handleRetry(event, file);
@@ -276,7 +260,7 @@ function UppyItem(props: UppyItemProps) {
             </IconButton>
           )}
         </div>
-        <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
+        <ProgressBar status={file.meta.status} progress={file.meta.progressPercentage} />
       </CardContent>
     </Card>
   );
@@ -297,12 +281,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
-  const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
+  const [files, setFiles] = useSpreadState<LookupTable<LocalUppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
 
-  const retryFileUpload = (file: UppyFile) => {
+  const retryFileUpload = (file: LocalUppyFile) => {
     uppy.retryUpload(file.id);
   };
 
@@ -339,7 +323,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     interval(50)
       .pipe(takeUntil(cancelRequestObservable$), take(files.length))
       .subscribe((index) => {
-        const file: File & { relativePath?: string } = files[index];
+        const file: FileWithRelativePath = files[index];
         checkFileExist(file) &&
           uppy.addFile({
             name: file.name,
@@ -352,8 +336,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       });
   }
 
-  function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
+  function checkFileExist(newFile: FileWithRelativePath) {
+    return !uppy
+      .getFiles<LocalUppyFileMeta>()
+      .some((file) =>
+        newFile.relativePath
+          ? file.meta.relativePath === newFile.relativePath && file.type === newFile.type
+          : file.name === newFile.name && file.type === newFile.type
+      );
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -370,7 +360,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         uppy.cancelAll();
         let successFiles = { ...files };
         let count = 0;
-        Object.values(files).forEach((file: UppyFile) => {
+        Object.values(files).forEach((file: LocalUppyFile) => {
           if (file?.progress?.percentage < 100) {
             successFiles[file.id] = null;
           } else {
@@ -403,24 +393,24 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }, [maxSimultaneousUploads, path, site]);
 
   useEffect(() => {
-    const handleUploadProgress = (file: UppyFile, progress: any) => {
+    const handleUploadProgress = (file: LocalUppyFile, progress: any) => {
       const newFile = { ...file, preview: uppy.getFile(file.id).preview };
       newFile.progress.bytesUploaded = progress.bytesUploaded;
       newFile.progress.bytesTotal = progress.bytesTotal;
-      newFile.progress.percentage = Math.floor(
+      newFile.meta.progressPercentage = Math.floor(
         parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
       );
       setFiles({ [file.id]: newFile });
       onStatusChange({ status: 'uploading' });
     };
 
-    const handleUploadError = (file: UppyFile) => {
-      const newFile = uppy.getFile(file.id) as UppyFile;
-      newFile.progress.status = 'failed';
+    const handleUploadError = (file: LocalUppyFile) => {
+      const newFile = uppy.getFile(file.id) as LocalUppyFile;
+      newFile.meta.status = 'failed';
       setFiles({ [file.id]: newFile });
     };
 
-    const handleFileAdded = (file: UppyFile) => {
+    const handleFileAdded = (file: LocalUppyFile) => {
       const newPath = file.meta.relativePath
         ? path + file.meta.relativePath.substring(0, file.meta.relativePath.lastIndexOf('/'))
         : path;
@@ -429,7 +419,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       if (file.type.includes('image')) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          file.preview = e.target.result;
+          file.preview = e.target.result as string;
           try {
             uppy.setFileState(file.id, { preview: e.target.result });
             setFiles({ [file.id]: file });
@@ -483,7 +473,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     if (files !== null) {
       let filesPerPath: any = {};
-      Object.values(files).forEach((file: UppyFile) => {
+      Object.values(files).forEach((file: LocalUppyFile) => {
         if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
