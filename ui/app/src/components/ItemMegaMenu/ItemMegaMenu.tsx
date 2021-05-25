@@ -20,11 +20,12 @@ import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/c
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import { AllItemActions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { PopoverProps } from '@material-ui/core/Popover';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import GlobalState from '../../models/GlobalState';
 import ItemMegaMenuUI from './ItemMegaMenuUI';
+import { AllItemActions } from '../../models/Item';
 
 export interface ItemMegaMenuBaseProps {
   path: string;
