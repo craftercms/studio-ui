@@ -14,15 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useActiveUser, useSpreadState } from '../../utils/hooks';
+import { getStoredGlobalAppOpenSidebar, setStoredGlobalAppOpenSidebar } from '../../utils/state';
 
-const GlobalContext = React.createContext({
-  open: true,
-  setOpen: (open) => open
-});
+const GlobalAppContext = React.createContext(void 0);
 
-export const GlobalProvider = ({ value, children }) => {
-  return <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>;
+export const GlobalAppContextProvider = ({ children }) => {
+  const user = useActiveUser();
+  const [state, setState] = useSpreadState(null, () => ({
+    openSidebar: getStoredGlobalAppOpenSidebar(user.username)
+      ? getStoredGlobalAppOpenSidebar(user.username) === 'true'
+      : true
+  }));
+  useEffect(() => {
+    setStoredGlobalAppOpenSidebar(user.username, state.openSidebar);
+  }, [state.openSidebar, user.username]);
+  const value = useMemo(() => [state, setState], [state, setState]);
+  return <GlobalAppContext.Provider value={value}>{children}</GlobalAppContext.Provider>;
 };
 
-export const useGlobalContext = () => React.useContext(GlobalContext);
+export const useGlobalAppState = () => {
+  const context = React.useContext(GlobalAppContext);
+  if (context === void 0) {
+    throw new Error('useGlobalAppContext should be used within GlobalAppProvider');
+  }
+  return context;
+};

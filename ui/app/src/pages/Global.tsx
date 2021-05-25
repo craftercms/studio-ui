@@ -16,11 +16,14 @@
 import React from 'react';
 import { HashRouter } from 'react-router-dom';
 import GlobalApp from '../components/GlobalApp';
+import { GlobalAppContextProvider } from '../components/GlobalApp/GlobalContext';
 
 export default function Global(topProps: any) {
   return (
-    <HashRouter>
-      <GlobalApp {...topProps} />
-    </HashRouter>
+    <GlobalAppContextProvider>
+      <HashRouter>
+        <GlobalApp {...topProps} />
+      </HashRouter>
+    </GlobalAppContextProvider>
   );
 }

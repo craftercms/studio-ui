@@ -36,78 +36,76 @@ import { useGlobalNavigation } from '../../utils/hooks';
 import { urlMapping } from '../LauncherSection';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
-import { GlobalProvider } from './GlobalContext';
+import { useGlobalAppState } from './GlobalContext';
 
 export default function GlobalApp() {
   const classes = useStyles({});
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();
-  const [open, setOpen] = useState(true);
+  const [{ openSidebar }] = useGlobalAppState();
 
   return (
-    <GlobalProvider value={{ open, setOpen }}>
-      <section className={classes.root}>
-        <ResizeableDrawer
-          classes={{ drawerPaper: classes.drawerPaper }}
-          open={open}
-          width={width}
-          onWidthChange={setWidth}
-        >
-          <LauncherGlobalNav
-            title=""
-            tileStyles={{
-              tile: {
-                width: '100%',
-                height: 'auto',
-                flexDirection: 'row',
-                justifyContent: 'left',
-                margin: '0 0 5px'
-              },
-              iconAvatar: {
-                width: '25px',
-                height: '25px',
-                margin: '5px 10px'
-              }
+    <section className={classes.root}>
+      <ResizeableDrawer
+        classes={{ drawerPaper: classes.drawerPaper }}
+        open={openSidebar}
+        width={width}
+        onWidthChange={setWidth}
+      >
+        <LauncherGlobalNav
+          title=""
+          tileStyles={{
+            tile: {
+              width: '100%',
+              height: 'auto',
+              flexDirection: 'row',
+              justifyContent: 'left',
+              margin: '0 0 5px'
+            },
+            iconAvatar: {
+              width: '25px',
+              height: '25px',
+              margin: '5px 10px'
+            }
+          }}
+        />
+      </ResizeableDrawer>
+      <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
+        <Switch>
+          <Route path="/sites" component={SitesManagement} />
+          <Route path="/users" component={UsersManagement} />
+          <Route path="/groups" component={GroupsManagement} />
+          <Route path="/cluster" component={ClustersManagement} />
+          <Route path="/audit" component={AuditManagement} />
+          <Route path="/logging" component={LoggingLevelsManagement} />
+          <Route path="/log" component={LogConsole} />
+          <Route path="/global-config" component={GlobalConfigManagement} />
+          <Route path="/encryption-tool" component={EncryptTool} />
+          <Route path="/token-management" component={TokenManagement} />
+          <Route path="/about-us" component={AboutCrafterCMSView} />
+          <Route path="/settings" component={AccountManagement} />
+          <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
+          <Route exact path="/">
+            <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
+          </Route>
+          <Route
+            render={() => {
+              return (
+                <EmptyState
+                  styles={{
+                    root: {
+                      height: '100%',
+                      margin: 0
+                    }
+                  }}
+                  title="404"
+                  subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
+                />
+              );
             }}
           />
-        </ResizeableDrawer>
-        <Box height="100%" width="100%" paddingLeft={open ? `${width}px` : 0}>
-          <Switch>
-            <Route path="/sites" component={SitesManagement} />
-            <Route path="/users" component={UsersManagement} />
-            <Route path="/groups" component={GroupsManagement} />
-            <Route path="/cluster" component={ClustersManagement} />
-            <Route path="/audit" component={AuditManagement} />
-            <Route path="/logging" component={LoggingLevelsManagement} />
-            <Route path="/log" component={LogConsole} />
-            <Route path="/global-config" component={GlobalConfigManagement} />
-            <Route path="/encryption-tool" component={EncryptTool} />
-            <Route path="/token-management" component={TokenManagement} />
-            <Route path="/about-us" component={AboutCrafterCMSView} />
-            <Route path="/settings" component={AccountManagement} />
-            <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
-            <Route exact path="/">
-              <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
-            </Route>
-            <Route
-              render={() => {
-                return (
-                  <EmptyState
-                    styles={{
-                      root: {
-                        height: '100%',
-                        margin: 0
-                      }
-                    }}
-                    title="404"
-                    subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
-                  />
-                );
-              }}
-            />
-          </Switch>
-        </Box>
-      </section>
-    </GlobalProvider>
+        </Switch>
+      </Box>
+    </section>
   );
 }
