@@ -731,11 +731,27 @@ var CStudioForms =
     function parseDOM(content) {
       try {
         let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
+
+        if (isParseError(parseResult)) {
+          throw new Error('Error attempting to parse content XML.');
+        }
         return parseResult.documentElement;
       } catch (ex) {
         console.error(`Error attempting to parse content XML.`);
-        return null;
+        throw new Error('Error attempting to parse content XML.');
       }
+    }
+
+    function isParseError(parsedDocument) {
+      var parser = new DOMParser(),
+        errorneousParse = parser.parseFromString('<', 'application/xml'),
+        parsererrorNS = errorneousParse.getElementsByTagName('parsererror')[0].namespaceURI;
+
+      if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
+        return parsedDocument.getElementsByTagName('parsererror').length > 0;
+      }
+
+      return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
     }
 
     function sendAndAwait(key, observer) {
@@ -1319,7 +1335,21 @@ var CStudioForms =
               return;
             }
 
-            var xml = CStudioForms.Util.serializeModelToXml(form, saveDraft);
+            try {
+              var xml = CStudioForms.Util.serializeModelToXml(form, saveDraft);
+            } catch (e) {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'error-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(formsLangBundle, 'notification'),
+                e,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+              setButtonsEnabled(true);
+              return;
+            }
 
             var serviceUrl =
               '/api/1/services/api/1/content/write-content.json' +
