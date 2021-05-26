@@ -32,7 +32,7 @@ export interface LauncherGlobalNavProps {
   title?: TranslationOrText;
   onTileClicked?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>, id: string, label: string): any;
   tileStyles?: LauncherTileProps['styles'];
-  navStyles?: LauncherSectionUIStyles;
+  sectionStyles?: LauncherSectionUIStyles;
 }
 
 function LauncherGlobalNav(props: LauncherGlobalNavProps) {
