@@ -729,17 +729,12 @@ var CStudioForms =
     };
 
     function parseDOM(content) {
-      try {
-        let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
+      let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
 
-        if (isParseError(parseResult)) {
-          throw new Error('Error attempting to parse content XML.');
-        }
-        return parseResult.documentElement;
-      } catch (ex) {
-        console.error(`Error attempting to parse content XML.`);
+      if (isParseError(parseResult)) {
         throw new Error('Error attempting to parse content XML.');
       }
+      return parseResult.documentElement;
     }
 
     function isParseError(parsedDocument) {
@@ -2957,6 +2952,8 @@ var CStudioForms =
         xml += this.printFieldsToXml(form.model, form.dynamicFields, form.definition.sections, form.definition.config);
 
         xml += '</' + form.definition.objectType + '>';
+
+        xml = xml.replaceAll('', '');
 
         if (!cfe.engine.config.isInclude) {
           const doc = parseDOM(xml);
