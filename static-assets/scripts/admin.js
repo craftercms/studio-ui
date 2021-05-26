@@ -355,15 +355,14 @@
   app.controller('RepositoriesCtrl', [
     '$rootScope',
     function($rootScope) {
-      CrafterCMSNext.render(
-        document.querySelector('#remote-repositories-management-view'),
-        'RemoteRepositoriesManagement'
-      ).then((done) => {
-        const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
-          unsubscribe();
-          done.unmount();
-        });
-      });
+      CrafterCMSNext.render(document.querySelector('#remote-repositories-management-view'), 'RemotesManagement').then(
+        (done) => {
+          const unsubscribe = $rootScope.$on('$stateChangeStart', function() {
+            unsubscribe();
+            done.unmount();
+          });
+        }
+      );
     }
   ]);
 })(angular, $);
