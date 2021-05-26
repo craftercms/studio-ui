@@ -326,13 +326,13 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, currentItemPath, site]);
 
   useEffect(() => {
-    if (write === true || isLocked === false) {
+    if (write === false || isLocked === true) {
+      dispatch(setPreviewEditMode({ editMode: false, skipLocalStorage: true }));
+    } else {
       const localEditMode = getStoredEditModeChoice(user.username)
         ? getStoredEditModeChoice(user.username) === 'true'
         : null;
       dispatch(setPreviewEditMode({ editMode: nnou(localEditMode) ? localEditMode : true, skipLocalStorage: true }));
-    } else {
-      dispatch(setPreviewEditMode({ editMode: false, skipLocalStorage: true }));
     }
   }, [dispatch, write, isLocked, user.username]);
 
