@@ -128,6 +128,20 @@ export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem,
   return item ? item.lockOwner && item.lockOwner !== username : true;
 }
 
+export function getComputedEditMode({
+  item,
+  username,
+  editMode
+}: {
+  item: DetailedItem;
+  username: string;
+  editMode: boolean;
+}): boolean {
+  return isItemLockedForMe(item, username) === true || hasEditAction(item.availableActions) === false
+    ? false
+    : editMode;
+}
+
 export function getSystemTypeFromPath(path: string): SystemType {
   const rootPath = getRootPath(path);
   if (rootPath.includes('/site/website')) {

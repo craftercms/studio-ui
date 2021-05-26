@@ -31,6 +31,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EDIT_MODE_CHANGED,
   FETCH_GUEST_MODEL,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
@@ -104,8 +105,7 @@ import { completeDetailedItem, restoreClipboard } from '../../state/actions/cont
 import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
-  hasEditAction,
-  isItemLockedForMe,
+  getComputedEditMode,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -316,8 +316,16 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const write = hasEditAction(items[currentItemPath]?.availableActions);
-  const isLocked = isItemLockedForMe(items[currentItemPath], user.username);
+
+  useEffect(() => {
+    if (items[currentItemPath]) {
+      getHostToGuestBus().next({
+        type: EDIT_MODE_CHANGED,
+        payload: { editMode: getComputedEditMode({ item: items[currentItemPath], username: user.username, editMode }) }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items[currentItemPath], editMode, user.username]);
 
   useEffect(() => {
     if (currentItemPath && site) {
@@ -325,22 +333,18 @@ export function PreviewConcierge(props: any) {
     }
   }, [dispatch, currentItemPath, site]);
 
-  useEffect(() => {
-    if (write === false || isLocked === true) {
-      dispatch(setPreviewEditMode({ editMode: false, skipLocalStorage: true }));
-    } else {
-      const localEditMode = getStoredEditModeChoice(user.username)
-        ? getStoredEditModeChoice(user.username) === 'true'
-        : null;
-      dispatch(setPreviewEditMode({ editMode: nnou(localEditMode) ? localEditMode : true, skipLocalStorage: true }));
-    }
-  }, [dispatch, write, isLocked, user.username]);
-
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
+    const localEditMode = getStoredEditModeChoice(user.username)
+      ? getStoredEditModeChoice(user.username) === 'true'
+      : null;
+    if (nnou(localEditMode) && editMode !== localEditMode) {
+      dispatch(setPreviewEditMode({ editMode: localEditMode }));
+    }
+
     const localHighlightMode = getStoredHighlightModeChoice(user.username);
     if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
@@ -437,7 +441,11 @@ export function PreviewConcierge(props: any) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
             }
-            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
+
+            getHostToGuestBus().next({
+              type: HOST_CHECK_IN,
+              payload: { editMode: false, highlightMode }
+            });
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -824,7 +832,6 @@ export function PreviewConcierge(props: any) {
     guestBase,
     site,
     xsrfArgument,
-    editMode,
     highlightMode,
     previewChoice,
     handlePreviewCompatibilityDialogGo
