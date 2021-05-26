@@ -20,7 +20,7 @@ import React, { useEffect, useState } from 'react';
 import { useEnv, useGlobalNavigation, useSystemVersion } from '../../utils/hooks';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useIntl } from 'react-intl';
-import { getLauncherSectionLink, LauncherSectionUI, urlMapping } from '../LauncherSection';
+import { getLauncherSectionLink, LauncherSectionUI, LauncherSectionUIStyles, urlMapping } from '../LauncherSection';
 import { messages } from '../LauncherSection/utils';
 import { closeLauncher } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
@@ -30,8 +30,9 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 export interface LauncherGlobalNavProps {
   title?: TranslationOrText;
-  onTileClicked?(): void;
+  onTileClicked?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>, id: string, label: string): any;
   tileStyles?: LauncherTileProps['styles'];
+  sectionStyles?: LauncherSectionUIStyles;
 }
 
 function LauncherGlobalNav(props: LauncherGlobalNavProps) {
@@ -66,7 +67,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
     return <ApiResponseErrorState error={error.response ?? error} />;
   }
   return (
-    <LauncherSectionUI title={props.title ?? formatMessage(messages.global)}>
+    <LauncherSectionUI styles={props.sectionStyles} title={props.title ?? formatMessage(messages.global)}>
       {items.map((item) => (
         <LauncherTile
           key={item.id}
@@ -74,7 +75,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
           title={formatMessage(globalMenuMessages[item.id])}
           icon={item.icon}
           link={getLauncherSectionLink(item.id, authoringBase)}
-          onClick={onTileClicked}
+          onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => onTileClicked(e, item.id, item.label)}
           styles={props.tileStyles}
         />
       ))}
@@ -83,7 +84,6 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
         icon={{ id: 'craftercms.icons.Docs' }}
         link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
         target="_blank"
-        onClick={onTileClicked}
         styles={props.tileStyles}
       />
     </LauncherSectionUI>

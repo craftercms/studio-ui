@@ -42,7 +42,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
-import { hasCreateAction, hasEditAction } from '../../utils/content';
 import { PublishingStatusButton } from '../../components/PublishingStatusButton';
 import EditModeSwitch from '../../components/EditModeSwitch';
 import { AddressBar } from '../../components/PreviewAddressBar/PreviewAddressBar';
@@ -65,6 +64,10 @@ const translations = defineMessages({
   itemMenu: {
     id: 'previewToolbar.itemMenu',
     defaultMessage: 'Item menu'
+  },
+  itemLocked: {
+    id: 'previewToolbar.editModeSwitchLockedMessage',
+    defaultMessage: 'Item is locked by {lockOwner}'
   }
 });
 
@@ -82,8 +85,9 @@ export default function ToolBar() {
   const item = items?.[models?.[modelId]?.craftercms.path];
   const { previewChoice } = usePreviewState();
   const { authoringBase } = useEnv();
-  const write = hasEditAction(item?.availableActions);
-  const createContent = hasCreateAction(item?.availableActions);
+  const write = item?.availableActionsMap.edit;
+  const createContent = item?.availableActionsMap.createContent;
+  const isLocked = item?.stateMap.locked;
   const classes = useSiteSwitcherMinimalistStyles();
 
   const onSiteChange = ({ target: { value } }) => {
@@ -140,15 +144,25 @@ export default function ToolBar() {
         />
       </section>
       <section>
-        <Tooltip title={!write ? '' : formatMessage(translations.toggleEditMode)}>
-          <EditModeSwitch
-            disabled={!write}
-            color="default"
-            checked={editMode}
-            onChange={(e) => {
-              dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-            }}
-          />
+        <Tooltip
+          title={
+            isLocked
+              ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner })
+              : !write
+              ? ''
+              : formatMessage(translations.toggleEditMode)
+          }
+        >
+          <span>
+            <EditModeSwitch
+              disabled={!write}
+              color="default"
+              checked={editMode}
+              onChange={(e) => {
+                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+              }}
+            />
+          </span>
         </Tooltip>
         <PublishingStatusButton variant="icon" />
         <LauncherOpenerButton sitesRailPosition="left" icon="apps" />

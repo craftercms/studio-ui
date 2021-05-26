@@ -198,7 +198,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     localeCode: 'en',
     translationSourceId: null,
     availableActions: 0,
-    availableActionsMap: {}
+    availableActionsMap: {} as ItemActionsMap
   };
 }
 
@@ -681,7 +681,7 @@ export const hasUnlockAction = (value: number) => Boolean(value & CONTENT_ITEM_U
 // endregion
 
 export const createItemActionMap: (availableActions: number) => ItemActionsMap = (value: number) => ({
-  read: hasReadAction(value),
+  view: hasReadAction(value),
   copy: hasCopyAction(value),
   history: hasReadHistoryAction(value),
   dependencies: hasGetDependenciesAction(value),
@@ -689,23 +689,23 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
   createContent: hasCreateAction(value),
   paste: hasPasteAction(value),
   edit: hasEditAction(value),
+  unlock: hasUnlockAction(value),
   rename: hasRenameAction(value),
   cut: hasCutAction(value),
   upload: hasUploadAction(value),
   duplicate: hasDuplicateAction(value),
-  changeType: hasChangeTypeAction(value),
+  changeContentType: hasChangeTypeAction(value),
   revert: hasRevertAction(value),
   editController: hasEditControllerAction(value),
   editTemplate: hasEditTemplateAction(value),
   createFolder: hasCreateFolderAction(value),
-  deleteContent: hasContentDeleteAction(value),
+  delete: hasContentDeleteAction(value),
   deleteController: hasDeleteControllerAction(value),
   deleteTemplate: hasDeleteTemplateAction(value),
   publish: hasPublishAction(value),
   approvePublish: hasApprovePublishAction(value),
   schedulePublish: hasSchedulePublishAction(value),
-  rejectPublish: hasPublishRejectAction(value),
-  unlock: hasUnlockAction(value)
+  rejectPublish: hasPublishRejectAction(value)
 });
 
 export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {

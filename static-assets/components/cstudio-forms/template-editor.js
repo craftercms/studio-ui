@@ -165,6 +165,7 @@ CStudioAuthoring.Module.requireModule(
             CStudioForms.TemplateEditor.prototype = {
               render: function(templatePath, channel, onSaveCb, contentType, mode) {
                 var me = this;
+                const readonly = mode === 'read';
 
                 Promise.all([
                   CrafterCMSNext.services.configuration
