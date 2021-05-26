@@ -119,6 +119,7 @@ export interface PathNavigatorStateProps {
   offset: number;
   collapsed?: boolean;
   isFetching: boolean;
+  error: any;
 }
 
 const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {

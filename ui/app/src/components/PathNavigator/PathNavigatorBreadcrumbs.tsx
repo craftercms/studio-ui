@@ -44,7 +44,7 @@ const messages = defineMessages({
 
 // PathBreadcrumbs + PathOptions + (Path)Search
 function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { formatMessage } = useIntl();
   const { breadcrumb, onCrumbSelected, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);

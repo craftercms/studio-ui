@@ -79,7 +79,7 @@ export default function SitesManagement() {
   const isFetching = sitesBranch.isFetching;
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-  const [permissionsLookup, setPermissionsLookup] = useState(foo);
+  const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
 
   useEffect(() => {
     merge(
@@ -97,9 +97,7 @@ export default function SitesManagement() {
   }, [setPublishingStatusLookup, sitesById]);
 
   useMount(() => {
-    hasGlobalPermissions('create-site', 'edit_site', 'site_delete').subscribe((permissions) => {
-      setPermissionsLookup(permissions);
-    });
+    hasGlobalPermissions('create-site', 'edit_site', 'site_delete').subscribe(setPermissionsLookup);
   });
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(

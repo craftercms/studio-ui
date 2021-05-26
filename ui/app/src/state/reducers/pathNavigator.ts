@@ -15,7 +15,7 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
+import { PathNavigatorStateProps } from '../../components/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
@@ -62,7 +62,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           offset: 0,
           total: 0,
           collapsed,
-          isFetching: null
+          isFetching: null,
+          error: null
         }
       };
     },
@@ -81,13 +82,14 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         [id]: {
           ...state[id],
           keyword: '',
-          currentPath: path
+          currentPath: path,
+          error: null
         }
       };
     },
     [pathNavigatorConditionallySetPath.type]: (state, { payload }) => ({
       ...state,
-      [payload.id]: { ...state[payload.id], isFetching: true }
+      [payload.id]: { ...state[payload.id], isFetching: true, error: null }
     }),
     [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, children } }) => {
       if (children.length > 0) {
@@ -100,7 +102,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
             itemsInPath: children.map((item) => item.path),
             levelDescriptor: children.levelDescriptor?.path,
             total: children.total,
-            isFetching: false
+            isFetching: false,
+            error: null
           }
         };
       } else {
@@ -109,14 +112,15 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           [id]: {
             ...state[id],
             leaves: state[id].leaves.concat(path),
-            isFetching: false
+            isFetching: false,
+            error: null
           }
         };
       }
     },
     [pathNavigatorConditionallySetPathFailed.type]: (state, { payload }) => ({
       ...state,
-      [payload.id]: { ...state[payload.id], isFetching: false }
+      [payload.id]: { ...state[payload.id], isFetching: false, error: payload.error }
     }),
     [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children } }) => {
       const path = state[id].currentPath;
@@ -131,13 +135,14 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           offset: children.offset,
           limit: children.limit,
           leaves: children.length === 0 ? state[id].leaves.concat(path) : state[id].leaves,
-          isFetching: false
+          isFetching: false,
+          error: null
         }
       };
     },
-    [pathNavigatorFetchPathFailed.type]: (state, { payload: { id } }) => ({
+    [pathNavigatorFetchPathFailed.type]: (state, { payload: { id, error } }) => ({
       ...state,
-      [id]: { ...state[id], isFetching: false }
+      [id]: { ...state[id], isFetching: false, error: error }
     }),
     [pathNavigatorFetchParentItems.type]: (state, { payload: { id, path } }) => {
       return {
@@ -145,7 +150,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         [id]: {
           ...state[id],
           keyword: '',
-          currentPath: path
+          currentPath: path,
+          error: null
         }
       };
     },
