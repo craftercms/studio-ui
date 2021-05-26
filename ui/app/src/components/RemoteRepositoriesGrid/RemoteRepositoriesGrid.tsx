@@ -101,6 +101,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
 
   const onPullSuccess = () => {
     fetchStatus();
+    setOpenRepositoriesPullDialog(false);
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.pullSuccessMessage)
@@ -119,6 +120,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   };
 
   const onPushSuccess = () => {
+    setOpenRepositoriesPushDialog(false);
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.pushSuccessMessage)

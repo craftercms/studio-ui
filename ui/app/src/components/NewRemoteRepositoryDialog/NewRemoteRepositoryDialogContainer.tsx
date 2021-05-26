@@ -81,7 +81,6 @@ export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepos
           : {})
       }).subscribe(() => {
         onCreateSuccess?.();
-        setInputs(inputsInitialState);
       });
     }
   };

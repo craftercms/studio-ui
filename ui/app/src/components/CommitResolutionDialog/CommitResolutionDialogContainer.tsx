@@ -54,7 +54,6 @@ export default function CommitResolutionDialogContainer(props: CommitResolutionD
       commitResolution(siteId, message).subscribe(
         (status) => {
           onCommitSuccess?.(status);
-          onClose();
         },
         ({ response }) => {
           onCommitError?.(response);

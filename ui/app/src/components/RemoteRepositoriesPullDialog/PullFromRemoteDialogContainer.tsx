@@ -85,7 +85,6 @@ export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialo
           onPullError?.(response.response);
         }
       );
-      onClose();
     }
   };
 
