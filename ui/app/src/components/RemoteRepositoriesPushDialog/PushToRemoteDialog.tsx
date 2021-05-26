@@ -16,11 +16,9 @@
 
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import RemoteRepositoriesPushDialogContainer, {
-  RemoteRepositoriesPushDialogContainerProps
-} from './RemoteRepositoriesPushDialogContainer';
+import PushToRemoteDialogContainer, { PushToRemoteDialogContainerProps } from './PushToRemoteDialogContainer';
 
-export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPushDialogContainerProps) {
+export default function PushToRemoteDialog(props: PushToRemoteDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
 
@@ -33,7 +31,7 @@ export default function RemoteRepositoriesPushDialog(props: RemoteRepositoriesPu
       disableBackdropClick={disableQuickDismiss}
       disableEscapeKeyDown={disableQuickDismiss}
     >
-      <RemoteRepositoriesPushDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
+      <PushToRemoteDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );
 }

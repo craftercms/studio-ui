@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RemoteRepositoriesStatus';
+export { default } from './StudioRepositoryStatus';
 
-export * from './RemoteRepositoriesStatus';
+export * from './StudioRepositoryStatus';
 
 export * from './RemoteRepositoriesStatusUI';
 

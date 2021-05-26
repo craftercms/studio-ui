@@ -19,26 +19,28 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select/Select';
-import { push } from '../../services/repositories';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { MergeStrategy } from '../../models/Repository';
+import { pull } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 
-export interface RemoteRepositoriesPushDialogContainerProps {
+export interface PullFromRemoteDialogContainerProps {
   open: boolean;
   branches: string[];
   remoteName: string;
+  mergeStrategies: MergeStrategy[];
   setDisableQuickDismiss?(disable: boolean): void;
   onClose(): void;
-  onPushSuccess?(): void;
-  onPushError?(response: ApiResponse): void;
+  onPullSuccess?(): void;
+  onPullError?(response: ApiResponse): void;
 }
 
 const useStyles = makeStyles(() =>
@@ -49,27 +51,38 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function RemoteRepositoriesPushDialogContainer(props: RemoteRepositoriesPushDialogContainerProps) {
-  const { branches, remoteName, onClose, onPushSuccess, onPushError, setDisableQuickDismiss } = props;
+export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContainerProps) {
+  const { branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError, setDisableQuickDismiss } = props;
   const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
   const classes = useStyles();
   const siteId = useActiveSiteId();
 
   const onChange = (e: any) => {
-    setSelectedBranch(e.target.value);
-    setDisableQuickDismiss(true);
+    e.persist();
+    if (e.target.name === 'branch') {
+      setSelectedBranch(e.target.value);
+      setDisableQuickDismiss(true);
+    } else if (e.target.name === 'mergeStrategy') {
+      setSelectedMergeStrategy(e.target.value);
+    }
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
 
     if (!isBlank(selectedBranch)) {
-      push(siteId, remoteName, selectedBranch, true).subscribe(
+      pull({
+        siteId,
+        remoteName,
+        remoteBranch: selectedBranch,
+        mergeStrategy: selectedMergeStrategy
+      }).subscribe(
         () => {
-          onPushSuccess?.();
+          onPullSuccess?.();
         },
         ({ response }) => {
-          onPushError?.(response.response);
+          onPullError?.(response.response);
         }
       );
       onClose();
@@ -78,23 +91,42 @@ export default function RemoteRepositoriesPushDialogContainer(props: RemoteRepos
 
   return (
     <form onSubmit={onSubmit}>
-      <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onDismiss={onClose} />
+      <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onDismiss={onClose} />
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl}>
-          <InputLabel id="remoteBranchToPushLabel">
-            <FormattedMessage id="repositories.remoteBranchToPush" defaultMessage="Remote Branch to Push" />
+          <InputLabel id="remoteBranchToPullLabel">
+            <FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />
           </InputLabel>
           <Select
             labelId="remoteBranchToPullLabel"
             name="branch"
             value={selectedBranch}
             onChange={onChange}
-            label={<FormattedMessage id="repositories.remoteBranchToPush" defaultMessage="Remote Branch to Push" />}
+            label={<FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />}
             fullWidth
           >
             {branches.map((branch) => (
               <MenuItem key={branch} value={branch}>
                 {branch}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" fullWidth>
+          <InputLabel id="mergeStrategyLabel">
+            <FormattedMessage id="repositories.mergeStrategyLabel" defaultMessage="Merge Strategy" />
+          </InputLabel>
+          <Select
+            labelId="mergeStrategyLabel"
+            name="mergeStrategy"
+            value={selectedMergeStrategy}
+            onChange={onChange}
+            label={<FormattedMessage id="repositories.mergeStrategyLabel" defaultMessage="Merge Strategy" />}
+            fullWidth
+          >
+            {mergeStrategies.map((strategy) => (
+              <MenuItem key={strategy.key} value={strategy.key}>
+                {strategy.value}
               </MenuItem>
             ))}
           </Select>

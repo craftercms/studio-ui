@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RemoteRepositoriesPushDialog';
+export { default } from './PushToRemoteDialog';
 
-export * from './RemoteRepositoriesPushDialog';
+export * from './PushToRemoteDialog';
 
-export * from './RemoteRepositoriesPushDialogContainer';
+export * from './PushToRemoteDialogContainer';

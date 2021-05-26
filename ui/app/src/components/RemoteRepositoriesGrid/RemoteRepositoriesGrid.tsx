@@ -18,9 +18,9 @@ import { Resource } from '../../models/Resource';
 import { MergeStrategy, Repository } from '../../models/Repository';
 import RemoteRepositoriesGridUI from './RemoteRepositoriesGridUI';
 import React, { useState } from 'react';
-import RemoteRepositoriesPullDialog from '../RemoteRepositoriesPullDialog/RemoteRepositoriesPullDialog';
+import PullFromRemoteDialog from '../RemoteRepositoriesPullDialog';
 import { defineMessages, useIntl } from 'react-intl';
-import RemoteRepositoriesPushDialog from '../RemoteRepositoriesPushDialog';
+import PushToRemoteDialog from '../RemoteRepositoriesPushDialog';
 import { deleteRemote as deleteRemoteService } from '../../services/repositories';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -151,11 +151,11 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
       <RemoteRepositoriesGridUI
         resource={resource}
         disableActions={disableActions}
-        onClickPull={onClickPull}
-        onClickPush={onClickPush}
+        onPullClick={onClickPull}
+        onPushClick={onClickPush}
         onDeleteRemote={deleteRemote}
       />
-      <RemoteRepositoriesPullDialog
+      <PullFromRemoteDialog
         open={openRepositoriesPullDialog}
         onClose={() => setOpenRepositoriesPullDialog(false)}
         branches={repositoriesPullDialogBranches}
@@ -164,7 +164,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
         onPullSuccess={onPullSuccess}
         onPullError={onPullError}
       />
-      <RemoteRepositoriesPushDialog
+      <PushToRemoteDialog
         open={openRepositoriesPushDialog}
         branches={repositoriesPushDialogBranches}
         remoteName={pushRemoteName}

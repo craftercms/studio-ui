@@ -35,13 +35,13 @@ import ConfirmDropdown from '../Controls/ConfirmDropdown';
 export interface RemoteRepositoriesGridUIProps {
   resource: Resource<Array<Repository>>;
   disableActions: boolean;
-  onClickPull(remoteName: string, branches: string[]): void;
-  onClickPush(remoteName: string, branches: string[]): void;
+  onPullClick(remoteName: string, branches: string[]): void;
+  onPushClick(remoteName: string, branches: string[]): void;
   onDeleteRemote(remoteName: string): void;
 }
 
 export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
-  const { resource, disableActions, onDeleteRemote, onClickPull, onClickPush } = props;
+  const { resource, disableActions, onDeleteRemote, onPullClick, onPushClick } = props;
   const repositories = resource.read();
 
   return (
@@ -59,7 +59,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
                   <span>
                     <IconButton
-                      onClick={() => onClickPull(repository.name, repository.branches)}
+                      onClick={() => onPullClick(repository.name, repository.branches)}
                       disabled={disableActions}
                     >
                       <ArrowDownwardRoundedIcon />
@@ -69,7 +69,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                 <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
                   <span>
                     <IconButton
-                      onClick={() => onClickPush(repository.name, repository.branches)}
+                      onClick={() => onPushClick(repository.name, repository.branches)}
                       disabled={disableActions}
                     >
                       <ArrowUpwardRoundedIcon />

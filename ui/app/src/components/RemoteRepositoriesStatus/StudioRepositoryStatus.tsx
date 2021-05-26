@@ -27,7 +27,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
 import RemoteRepositoriesDiffDialog from '../RemoteRepositoriesDiffDialog';
 
-export interface RemoteRepositoriesStatusProps {
+export interface StudioRepositoryStatusProps {
   resource: Resource<RepositoryStatus>;
   setFetching(fetching): void;
   onActionSuccess?(status): void;
@@ -44,7 +44,7 @@ const messages = defineMessages({
   }
 });
 
-export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatusProps) {
+export default function StudioRepositoryStatus(props: StudioRepositoryStatusProps) {
   const { resource, setFetching, onActionSuccess } = props;
   const status = resource.read();
   const siteId = useActiveSiteId();

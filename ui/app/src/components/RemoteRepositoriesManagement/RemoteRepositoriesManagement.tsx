@@ -26,7 +26,7 @@ import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesGridSkeletonTable from '../RemoteRepositoriesGrid/RemoteRepositoriesGridSkeletonTable';
 import RemoteRepositoriesGrid from '../RemoteRepositoriesGrid';
-import RemoteRepositoriesStatus from '../RemoteRepositoriesStatus/RemoteRepositoriesStatus';
+import StudioRepositoryStatus from '../RemoteRepositoriesStatus/StudioRepositoryStatus';
 import RemoteRepositoriesStatusSkeleton from '../RemoteRepositoriesStatus/RemoteRepositoriesStatusSkeleton';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';
@@ -247,7 +247,7 @@ export default function RemoteRepositoriesManagement() {
           fallback: <RemoteRepositoriesStatusSkeleton />
         }}
       >
-        <RemoteRepositoriesStatus
+        <StudioRepositoryStatus
           resource={statusResource}
           setFetching={setFetchingStatus}
           onActionSuccess={updateRepositoriesStatus}

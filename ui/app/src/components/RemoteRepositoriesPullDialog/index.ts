@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RemoteRepositoriesPullDialog';
+export { default } from './PullFromRemoteDialog';
 
-export * from './RemoteRepositoriesPullDialog';
+export * from './PullFromRemoteDialog';
 
-export * from './RemoteRepositoriesPullDialogContainer';
+export * from './PullFromRemoteDialogContainer';
