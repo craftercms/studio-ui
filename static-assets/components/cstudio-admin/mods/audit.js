@@ -29,18 +29,12 @@ CStudioAdminConsole.Tool.Audit =
  */
 YAHOO.extend(CStudioAdminConsole.Tool.Audit, CStudioAdminConsole.Tool, {
   renderWorkarea: function() {
-    var workareaEl = document.getElementById('cstudio-admin-console-workarea'),
-      auditUrl = '/studio/#/audit?iframe=true&site=' + CStudioAuthoringContext.siteId,
-      actions = [];
-
-    workareaEl.innerHTML =
-      '<div class="iframe-container">' +
-      '<iframe src="' +
-      auditUrl +
-      '" style="width: 100%; height: 100%;"></iframe>' +
-      '</div>';
-
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+    const workarea = document.getElementById('cstudio-admin-console-workarea');
+    var el = document.createElement('div');
+    el.className = 'cstudio-admin-console-workarea-container';
+    $(workarea).html('');
+    workarea.appendChild(el);
+    CrafterCMSNext.render(el, 'AuditSiteManagement');
   }
 });
 

@@ -29,18 +29,12 @@ CStudioAdminConsole.Tool.Repository =
  */
 YAHOO.extend(CStudioAdminConsole.Tool.Repository, CStudioAdminConsole.Tool, {
   renderWorkarea: function() {
-    var workareaEl = document.getElementById('cstudio-admin-console-workarea'),
-      repoUrl = '/studio/#/repositories?iframe=true&site=' + CStudioAuthoringContext.siteId,
-      actions = [];
-
-    workareaEl.innerHTML =
-      '<div class="iframe-container">' +
-      '<iframe src="' +
-      repoUrl +
-      '" style="width: 100%; height: 100%;"></iframe>' +
-      '</div>';
-
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+    const workarea = document.getElementById('cstudio-admin-console-workarea');
+    var el = document.createElement('div');
+    el.className = 'cstudio-admin-console-workarea-container';
+    $(workarea).html('');
+    workarea.appendChild(el);
+    CrafterCMSNext.render(el, 'RemotesManagement');
   }
 });
 
