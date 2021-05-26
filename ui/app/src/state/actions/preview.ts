@@ -284,7 +284,9 @@ export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTE
 
 export const updateToolsPanelWidth = /*#__PURE__*/ createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
-export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean; skipLocalStorage?: boolean }>(
+  EDIT_MODE_CHANGED
+);
 
 export const setPreviewChoice = /*#__PURE__*/ createAction<{ site: string; choice: string }>('SET_PREVIEW_CHOICE');
 

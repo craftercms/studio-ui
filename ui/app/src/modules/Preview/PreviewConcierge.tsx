@@ -326,25 +326,21 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, currentItemPath, site]);
 
   useEffect(() => {
-    if ((write === false || isLocked) && editMode) {
-      console.log('editMode', false);
-      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
+    if (write === true || isLocked === false) {
+      const localEditMode = getStoredEditModeChoice(user.username)
+        ? getStoredEditModeChoice(user.username) === 'true'
+        : null;
+      dispatch(setPreviewEditMode({ editMode: nnou(localEditMode) ? localEditMode : true, skipLocalStorage: true }));
+    } else {
+      dispatch(setPreviewEditMode({ editMode: false, skipLocalStorage: true }));
     }
-  }, [dispatch, write, editMode, isLocked]);
+  }, [dispatch, write, isLocked, user.username]);
 
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice(user.username)
-      ? getStoredEditModeChoice(user.username) === 'true'
-      : null;
-    if (nnou(localEditMode) && editMode !== localEditMode) {
-      console.log('restoring localEditMode');
-      dispatch(setPreviewEditMode({ editMode: localEditMode }));
-    }
-
     const localHighlightMode = getStoredHighlightModeChoice(user.username);
     if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));

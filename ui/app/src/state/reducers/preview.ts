@@ -146,7 +146,7 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 
 const reducer = createReducer<GlobalState['preview']>(
   {
-    editMode: true,
+    editMode: false,
     highlightMode: 'ALL',
     previewChoice: {},
     // What's shown to the user across the board (url, address bar, etc)

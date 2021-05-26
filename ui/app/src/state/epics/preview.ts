@@ -74,7 +74,9 @@ export default [
       ofType(setPreviewEditMode.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
-        setStoredEditModeChoice(action.payload.editMode, state.user.username);
+        if (action.payload.skipLocalStorage !== true) {
+          setStoredEditModeChoice(action.payload.editMode, state.user.username);
+        }
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
