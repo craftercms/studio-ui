@@ -93,6 +93,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
       (status) => {
         onActionSuccess?.(status);
         setFetching(false);
+        setOpenRemoteRepositoriesDiffDialog(false);
       },
       ({ response }) => {
         dispatch(showErrorDialog({ error: response }));

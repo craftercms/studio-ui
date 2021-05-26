@@ -83,23 +83,19 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
   const classes = useStyles();
 
   useEffect(() => {
-    const diffConflictedFile = (path) => {
-      if (path) {
-        setFetching(true);
-        diffConflictedFileService(siteId, path).subscribe(
-          (fileDiff) => {
-            setFileDiff(fileDiff);
-            setFetching(false);
-          },
-          ({ response }) => {
-            setError(response);
-            setFetching(false);
-          }
-        );
-      }
-    };
-
-    diffConflictedFile(path);
+    if (path) {
+      setFetching(true);
+      diffConflictedFileService(siteId, path).subscribe(
+        (fileDiff) => {
+          setFileDiff(fileDiff);
+          setFetching(false);
+        },
+        ({ response }) => {
+          setError(response);
+          setFetching(false);
+        }
+      );
+    }
   }, [path, siteId]);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -116,11 +112,6 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
       errorSelector: () => error
     }
   );
-
-  const resolveConflict = (strategy: string, path: string) => {
-    onResolveConflict(strategy, path);
-    onClose();
-  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -167,7 +158,7 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
           cancelText={formatMessage(messages.no)}
           confirmText={formatMessage(messages.yes)}
           confirmHelperText={formatMessage(messages.acceptRemoteHelper)}
-          onConfirm={() => resolveConflict('theirs', path)}
+          onConfirm={() => onResolveConflict('theirs', path)}
         />
         <ConfirmDropdown
           classes={{ button: classes.conflictActionButton }}
@@ -175,7 +166,7 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
           cancelText={formatMessage(messages.no)}
           confirmText={formatMessage(messages.yes)}
           confirmHelperText={formatMessage(messages.keepLocalHelper)}
-          onConfirm={() => resolveConflict('ours', path)}
+          onConfirm={() => onResolveConflict('ours', path)}
         />
       </DialogFooter>
     </Dialog>

@@ -19,7 +19,6 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { commitResolution } from '../../services/repositories';
 import { useActiveSiteId } from '../../utils/hooks';

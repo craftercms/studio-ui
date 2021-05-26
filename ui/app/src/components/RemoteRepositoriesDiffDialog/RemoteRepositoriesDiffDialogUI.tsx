@@ -68,15 +68,7 @@ export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDial
     <>
       {tab === 0 && (
         <div className={classes.diffTab}>
-          <AceEditor
-            mode="ace/mode/diff"
-            theme="ace/theme/textmate"
-            autoFocus={false}
-            readOnly={true}
-            value={fileDiff.diff}
-            fontSize="14px"
-            fontFamily={`"Droid Sans Mono", monospace, monospace, "Droid Sans Fallback"`}
-          />
+          <AceEditor mode="ace/mode/diff" autoFocus={false} value={fileDiff.diff} />
         </div>
       )}
 
