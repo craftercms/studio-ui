@@ -292,8 +292,8 @@ export function useDebouncedInput(observer: (keywords: string) => any, time: num
   return subject$Ref.current;
 }
 
-export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
-  return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
+export function useSpreadState<S>(initialState: S, init?: (args: S) => S): [S, Dispatch<SetStateAction<Partial<S>>>] {
+  return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState, init);
 }
 
 export function useSubject<T = unknown>(): Subject<T> {

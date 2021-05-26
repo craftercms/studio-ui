@@ -16,7 +16,7 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useMount } from '../../utils/hooks';
 import { fetchConfigurationXML, writeConfiguration } from '../../services/configuration';
@@ -30,6 +30,8 @@ import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialo
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
+import { useHistory } from 'react-router';
+import ConfirmDialog from '../Dialogs/ConfirmDialog';
 
 export const translations = defineMessages({
   configSaved: {
@@ -42,22 +44,32 @@ export const translations = defineMessages({
   }
 });
 
-interface GlobalConfigManagementProps {
-  onEditorChanges(hasChanges: boolean): void;
-}
-
-export default function GlobalConfigManagement(props: GlobalConfigManagementProps) {
+export default function GlobalConfigManagement() {
   const [content, setContent] = useState('');
   const [sample, setSample] = useState('');
   const [lastSavedContent, setLastSavedContent] = useState('');
   const [enable, setEnable] = useState(true);
   const [viewSample, setViewSample] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [nextRoute, setNextRoute] = useState<string>();
+  const history = useHistory();
   const classes = useStyles();
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+
+  useEffect(() => {
+    history.block((props) => {
+      if (hasChanges) {
+        history.goBack();
+        setNextRoute(props.pathname);
+        setShowConfirmDialog(true);
+        return false;
+      }
+    });
+  }, [hasChanges, history]);
 
   useMount(() => {
     const requests = [
@@ -110,7 +122,7 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
       writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(
         () => {
           setLastSavedContent(value);
-          props.onEditorChanges(false);
+          setHasChanges(false);
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.configSaved)
@@ -134,8 +146,13 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
 
   const onChange = (e) => {
     const hasChanges = lastSavedContent !== aceEditorRef.current.getValue();
-    props.onEditorChanges(hasChanges);
     setHasChanges(hasChanges);
+  };
+
+  const onConfirmOk = () => {
+    setHasChanges(false);
+    setShowConfirmDialog(false);
+    history.push(nextRoute);
   };
 
   return (
@@ -181,6 +198,19 @@ export default function GlobalConfigManagement(props: GlobalConfigManagementProp
         open={viewSample}
         onClose={() => setViewSample(false)}
         content={sample}
+      />
+      <ConfirmDialog
+        open={showConfirmDialog}
+        title={
+          <FormattedMessage
+            id="globalConfigManagement.pendingChanges"
+            defaultMessage="You have unsaved changes. Discard changes?"
+          />
+        }
+        onOk={onConfirmOk}
+        onCancel={() => {
+          setShowConfirmDialog(false);
+        }}
       />
     </section>
   );

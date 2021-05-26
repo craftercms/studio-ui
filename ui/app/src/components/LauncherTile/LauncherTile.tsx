@@ -36,7 +36,7 @@ export interface LauncherTileProps {
   active?: boolean;
   classes?: Partial<Record<LauncherTileClassKey, string>>;
   styles?: LauncherTileStyles;
-  onClick?(id?: string, type?: string): any;
+  onClick?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>): any;
 }
 
 const useStyles = makeStyles((theme) =>
@@ -94,7 +94,7 @@ function LauncherTile(props: LauncherTileProps) {
     <Link
       className={clsx(classes.tile, props.classes?.tile, disabled && 'disabled', active && classes.tileActive)}
       href={disabled ? null : link}
-      onClick={() => (!disabled && onClick ? onClick() : null)}
+      onClick={(e) => (!disabled && onClick ? onClick(e) : null)}
       target={target ? target : '_self'}
     >
       <Avatar variant="rounded" className={clsx(classes.iconAvatar, props.classes?.iconAvatar)}>

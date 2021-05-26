@@ -103,6 +103,14 @@ export function getStoredPathNavigatorTree(site: string, user: string, id: strin
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`));
 }
 
+export function setStoredGlobalAppOpenSidebar(user: string, value) {
+  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, value);
+}
+
+export function getStoredGlobalAppOpenSidebar(user: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.globalAppOpenSidebar`);
+}
+
 export function createToolsPanelPage(title: TranslationOrText, widgets: WidgetDescriptor[]): WidgetDescriptor {
   return createWidgetDescriptor({
     id: 'craftercms.components.ToolsPanelPage',

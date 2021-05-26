@@ -27,7 +27,7 @@ import clsx from 'clsx';
 
 export type LauncherSectionUIClassKey = 'title' | 'nav';
 
-type LauncherSectionUIStyles = Partial<Record<LauncherSectionUIClassKey, CSSProperties>>;
+export type LauncherSectionUIStyles = Partial<Record<LauncherSectionUIClassKey, CSSProperties>>;
 
 export type LauncherSectionUIProps = PropsWithChildren<{
   title: TranslationOrText;
