@@ -111,6 +111,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
 
   const onPullError = (response) => {
     fetchStatus();
+    setOpenRepositoriesPullDialog(false);
     dispatch(
       showSystemNotification({
         message: response.message,
@@ -129,6 +130,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   };
 
   const onPushError = (response) => {
+    setOpenRepositoriesPushDialog(false);
     dispatch(showErrorDialog({ error: response }));
   };
 
