@@ -75,6 +75,7 @@ export default function RemoteRepositoriesStatus(props: RemoteRepositoriesStatus
   const onCommitSuccess = (status) => {
     onActionSuccess?.(status);
     setFetching(false);
+    setOpenCommitResolutionDialog(false);
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.commitSuccessMessage)

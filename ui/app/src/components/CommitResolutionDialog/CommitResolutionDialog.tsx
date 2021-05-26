@@ -16,55 +16,13 @@
 
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../Dialogs/DialogHeader';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
-import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { commitResolution } from '../../services/repositories';
-import { useActiveSiteId } from '../../utils/hooks';
-import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
-import { isBlank } from '../../utils/string';
+import CommitResolutionDialogContainer, {
+  CommitResolutionDialogContainerProps
+} from './CommitResolutionDialogContainer';
 
-export interface CommitResolutionDialogProps {
-  open: boolean;
-  onClose(): void;
-  onCommit?(): void;
-  onCommitSuccess?(status): void;
-  onCommitError?(status): void;
-}
-
-export default function CommitResolutionDialog(props: CommitResolutionDialogProps) {
-  const { open, onClose, onCommit, onCommitSuccess, onCommitError } = props;
-  const siteId = useActiveSiteId();
-  const [message, setMessage] = useState('');
+export default function CommitResolutionDialog(props: CommitResolutionDialogContainerProps) {
+  const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-
-  const onChange = (e: any) => {
-    e.persist();
-    setMessage(e.target.value);
-    setDisableQuickDismiss(Boolean(e.target.value));
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    if (!isBlank(message)) {
-      onCommit?.();
-      commitResolution(siteId, message).subscribe(
-        (status) => {
-          onCommitSuccess?.(status);
-          onClose();
-        },
-        ({ response }) => {
-          onCommitError?.(response);
-          onClose();
-        }
-      );
-    }
-  };
 
   return (
     <Dialog
@@ -75,43 +33,7 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogProp
       disableBackdropClick={disableQuickDismiss}
       disableEscapeKeyDown={disableQuickDismiss}
     >
-      <form onSubmit={onSubmit}>
-        <DialogHeader
-          title={<FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />}
-          onDismiss={onClose}
-        />
-        <DialogBody>
-          <Grid container spacing={0}>
-            <Grid item xs={12}>
-              <TextField
-                autoFocus
-                label={<FormattedMessage id="repositories.messageLabel" defaultMessage="Conflict resolution message" />}
-                multiline
-                fullWidth
-                rows={4}
-                placeholder="Please supply a message for the repository history log."
-                variant="outlined"
-                value={message}
-                onChange={onChange}
-                helperText={
-                  <FormattedMessage
-                    id="repositories.commitResolutionHelper"
-                    defaultMessage="After committing this resolution. you should 'push' the changes to remote(s) to sync up the new state that you have just defined."
-                  />
-                }
-              />
-            </Grid>
-          </Grid>
-        </DialogBody>
-        <DialogFooter>
-          <SecondaryButton onClick={onClose}>
-            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </SecondaryButton>
-          <PrimaryButton type="submit" disabled={isBlank(message)}>
-            <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
-          </PrimaryButton>
-        </DialogFooter>
-      </form>
+      <CommitResolutionDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );
 }
