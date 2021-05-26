@@ -24,7 +24,7 @@ import { Site } from '../models/Site';
 import { PagedArray } from '../models/PagedArray';
 import PaginationOptions from '../models/PaginationOptions';
 import { toQueryString } from '../utils/object';
-import { asArray, createPresenceTable } from '../utils/array';
+import { asArray } from '../utils/array';
 import { fetchAuthenticationType } from './auth';
 
 // Check services/auth/login if `me` method is changed.
@@ -210,13 +210,20 @@ export function hasPermissions(site: string, ...permissions: string[]): Observab
   );
 }
 
+export function hasPermission(site: string, permission: string): Observable<boolean> {
+  return hasPermissions(site, permission).pipe(pluck(permission));
+}
+
+export function fetchGlobalPermissions(): Observable<string[]> {
+  return get(`/studio/api/2/users/me/global/permissions`).pipe(pluck('response', 'permissions'));
+}
+
 export function hasGlobalPermissions(...permissions: string[]): Observable<LookupTable<boolean>> {
-  return get('/studio/api/1/services/api/1/security/get-user-permissions.json?site=studio_root&path=/').pipe(
-    pluck('response', 'permissions'),
-    map((response) => createPresenceTable(permissions, (value) => response.includes(value)))
+  return postJSON('/studio/api/2/users/me/global/has_permissions', { permissions }).pipe(
+    pluck('response', 'permissions')
   );
 }
 
-export function hasPermission(site: string, permission: string): Observable<boolean> {
-  return hasPermissions(site, permission).pipe(pluck(permission));
+export function hasGlobalPermission(permission: string): Observable<boolean> {
+  return hasGlobalPermissions(permission).pipe(pluck(permission));
 }

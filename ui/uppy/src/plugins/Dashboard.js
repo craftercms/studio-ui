@@ -105,7 +105,7 @@ class Dashboard extends UppyDashboard {
       .validateActionPolicy(
         this.opts.site,
         files.map((file) => {
-          let target = `${this.opts.path}/${file.name}`;
+          let target = `${file.meta.path}/${file.name}`;
           fileIdLookup[target] = file.id;
           return {
             type: 'CREATE',
@@ -123,7 +123,7 @@ class Dashboard extends UppyDashboard {
           this.uppy.setFileMeta(fileId, {
             validating: false,
             allowed,
-            ...(modifiedValue && { suggestedName: modifiedValue.replace(`${this.opts.path}/`, '') })
+            ...(modifiedValue && { suggestedName: modifiedValue.replace(/^.*[\\\/]/, '') })
           });
           if (allowed && modifiedValue === null) {
             this.uppy.retryUpload(fileId);

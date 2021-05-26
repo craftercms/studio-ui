@@ -64,5 +64,5 @@ export const pasteItem = /*#__PURE__*/ createAction<{ path: string }>('PASTE_ITE
 export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string }>(
   'PASTE_ITEM_WITH_POLICY_VALIDATION'
 );
-export const unlockItem = /*#__PURE__*/ createAction<{ path: string }>('UNLOCK_ITEM');
+export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
 // endregion

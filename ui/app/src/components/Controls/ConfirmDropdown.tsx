@@ -16,13 +16,13 @@
 
 import ArrowDown from '@material-ui/icons/ArrowDropDownRounded';
 import Button, { ButtonTypeMap } from '@material-ui/core/Button';
-import React, { ReactNode } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -57,6 +57,7 @@ interface ConfirmDropdownProps {
     button?: string;
     menuPaper?: string;
   };
+  size?: IconButtonProps['size'];
   icon?: OverridableComponent<SvgIconTypeMap>;
   iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
   iconTooltip?: React.ReactNode;
@@ -78,8 +79,11 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     buttonVariant = 'outlined',
     icon: Icon,
     iconColor = 'primary',
-    iconTooltip
+    iconTooltip,
+    size = 'medium'
   } = props;
+
+  const TooltipComponent = iconTooltip ? Tooltip : Fragment;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -102,22 +106,20 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
   return (
     <>
       {Icon ? (
-        iconTooltip ? (
-          <Tooltip title={iconTooltip}>
-            <span>
-              <IconButton onClick={handleClick} disabled={disabled}>
-                <Icon color={disabled ? 'disabled' : iconColor} />
-              </IconButton>
-            </span>
-          </Tooltip>
-        ) : (
-          <IconButton onClick={handleClick} disabled={disabled}>
-            <Icon color={disabled ? 'disabled' : iconColor} />
+        <TooltipComponent title={iconTooltip}>
+          <IconButton onClick={handleClick} size={size}>
+            <Icon color={iconColor} />
           </IconButton>
-        )
+        </TooltipComponent>
       ) : (
-        <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>
-          {text} <ArrowDown />
+        <Button
+          className={props.classes?.button}
+          variant={buttonVariant}
+          onClick={handleClick}
+          disabled={disabled}
+          endIcon={<ArrowDown />}
+        >
+          {text}
         </Button>
       )}
       <Menu

@@ -21,7 +21,6 @@ import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
 import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { withIndex } from '../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -172,23 +171,28 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
 
   const resource = useLogicResource<
     DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem>; isFetching: boolean }
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem>; isFetching: boolean; error: any }
   >(
-    // We only want to renew the state when itemsInPath changes.
-    // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath, isFetching: state.isFetching }), [
-      state.itemsInPath,
-      state.isFetching
-    ]),
+    useMemo(
+      () => ({
+        itemsByPath,
+        itemsInPath: state.itemsInPath,
+        isFetching: state.isFetching,
+        error: state.error
+      }),
+      // We only want to renew the state when itemsInPath changes.
+      // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [state.itemsInPath, state.isFetching, state.error]
+    ),
     {
-      shouldResolve: ({ itemsInPath, itemsByPath, isFetching }) => {
-        return !isFetching && Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
+      shouldResolve: ({ itemsInPath, itemsByPath, isFetching, error }) => {
+        return !isFetching && Boolean(itemsInPath) && !itemsInPath.some((path) => !lookupItemByPath(path, itemsByPath));
       },
       shouldRenew: ({ isFetching }, resource) => isFetching && resource.complete,
-      shouldReject: () => false,
+      shouldReject: ({ error }) => Boolean(error),
       resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
-      errorSelector: null
+      errorSelector: ({ error }) => error.response
     }
   );
 
@@ -228,7 +232,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <Breadcrumbs
           keyword={keyword}
-          breadcrumb={state.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
+          breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
           onSearch={onSearch}
           onCrumbSelected={onBreadcrumbSelected}
           classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
@@ -246,7 +250,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         <SuspenseWithEmptyState
           resource={resource}
           errorBoundaryProps={{
-            errorStateProps: { classes: { graphic: classes.stateGraphics } }
+            errorStateProps: { classes: { image: classes.stateGraphics } }
           }}
           withEmptyStateProps={{
             emptyStateProps: {

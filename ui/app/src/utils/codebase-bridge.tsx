@@ -160,6 +160,7 @@ export function createCodebaseBridge() {
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       Search: lazy(() => import('../pages/Search')),
+      Global: lazy(() => import('../pages/Global')),
       Preview: lazy(() => import('../pages/Preview')),
       PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
       DependenciesDialog: lazy(() => import('../modules/Content/Dependencies/DependenciesDialog')),

@@ -31,7 +31,7 @@ export type ItemStates =
   | 'translationInProgress';
 
 export type ItemActions =
-  | 'read'
+  | 'view'
   | 'copy'
   | 'history'
   | 'dependencies'
@@ -39,16 +39,17 @@ export type ItemActions =
   | 'createContent'
   | 'paste'
   | 'edit'
+  | 'unlock'
   | 'rename'
   | 'cut'
   | 'upload'
   | 'duplicate'
-  | 'changeType'
+  | 'changeContentType'
   | 'revert'
   | 'editController'
   | 'editTemplate'
   | 'createFolder'
-  | 'deleteContent'
+  | 'delete'
   | 'deleteController'
   | 'deleteTemplate'
   | 'publish'
@@ -56,9 +57,21 @@ export type ItemActions =
   | 'schedulePublish'
   | 'rejectPublish';
 
-export type ItemStateMap = { [key in ItemStates]?: boolean };
+export type VirtualItemActions = 'preview';
 
-export type ItemActionsMap = { [key in ItemActions]?: boolean };
+export type AssessRemovalItemActions =
+  | 'editCode'
+  | 'viewCode'
+  | 'viewImage'
+  | 'duplicateAsset'
+  | 'createTemplate'
+  | 'createController';
+
+export type AllItemActions = ItemActions | VirtualItemActions | AssessRemovalItemActions;
+
+export type ItemStateMap = { [key in ItemStates]: boolean };
+
+export type ItemActionsMap = { [key in ItemActions]: boolean };
 
 export interface BaseItem {
   id: number;

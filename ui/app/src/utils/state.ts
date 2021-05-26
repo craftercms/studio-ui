@@ -29,9 +29,18 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
-    ...(item.isDeleted && { deleted: true }),
-    ...(item.isSubmitted && { submitted: true }),
-    ...(item.isScheduled && { scheduled: true })
+    live: false,
+    locked: false,
+    modified: false,
+    new: false,
+    staged: false,
+    systemProcessing: false,
+    translationInProgress: false,
+    translationPending: false,
+    translationUpToDate: false,
+    deleted: Boolean(item.isDeleted),
+    submitted: Boolean(item.isSubmitted),
+    scheduled: Boolean(item.isScheduled)
   };
 }
 
@@ -92,6 +101,14 @@ export function setStoredPathNavigatorTree(site: string, user: string, id: strin
 
 export function getStoredPathNavigatorTree(site: string, user: string, id: string) {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`));
+}
+
+export function setStoredGlobalAppOpenSidebar(user: string, value) {
+  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, value);
+}
+
+export function getStoredGlobalAppOpenSidebar(user: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.globalAppOpenSidebar`);
 }
 
 export function createToolsPanelPage(title: TranslationOrText, widgets: WidgetDescriptor[]): WidgetDescriptor {
