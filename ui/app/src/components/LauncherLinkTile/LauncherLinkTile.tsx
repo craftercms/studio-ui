@@ -20,6 +20,9 @@ import React from 'react';
 import { SystemIconDescriptor } from '../SystemIcon';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getSystemLink, SystemLinkId } from '../LauncherSection/utils';
+import { useDispatch } from 'react-redux';
+import { closeLauncher, showPreviewDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;
@@ -29,14 +32,39 @@ export interface LauncherLinkTileProps {
 }
 
 const LauncherLinkTile = (props: LauncherLinkTileProps) => {
-  const { title, icon, systemLinkId, link } = props;
+  const { icon, systemLinkId, link } = props;
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const site = useActiveSiteId();
+  const dispatch = useDispatch();
+
+  const title = usePossibleTranslation(props.title);
+
+  const onClick = (e) => {
+    e.preventDefault();
+    if (systemLinkId === 'siteDashboard') {
+      dispatch(
+        batchActions([
+          closeLauncher(),
+          showPreviewDialog({
+            type: 'page',
+            title,
+            url: `${getSystemLink({ systemLinkId, authoringBase, previewChoice, site })}?mode=embedded`,
+            dialogProps: {
+              fullWidth: true,
+              maxWidth: 'xl'
+            }
+          })
+        ])
+      );
+    }
+  };
+
   return (
     <LauncherTile
       icon={icon}
       title={usePossibleTranslation(title)}
+      onClick={systemLinkId === 'siteDashboard' ? onClick : null}
       link={link ?? getSystemLink({ systemLinkId, authoringBase, previewChoice, site })}
     />
   );

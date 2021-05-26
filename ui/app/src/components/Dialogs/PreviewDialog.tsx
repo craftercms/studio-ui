@@ -25,11 +25,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useUnmount } from '../../utils/hooks';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { nou } from '../../utils/object';
+import { DialogProps } from '@material-ui/core/Dialog/Dialog';
 
 const useStyles = makeStyles(() => ({
   container: {
-    maxWidth: '700px',
-    minWidth: '500px',
     minHeight: '400px',
     display: 'flex',
     justifyContent: 'center',
@@ -52,6 +51,7 @@ interface PreviewDialogBaseProps {
   mode?: string;
   url?: string;
   content?: string;
+  dialogProps?: DialogProps;
 }
 
 export type PreviewDialogProps = PropsWithChildren<
@@ -68,7 +68,7 @@ export interface PreviewDialogStateProps extends PreviewDialogBaseProps {
 
 export default function PreviewDialog(props: PreviewDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose} maxWidth="md">
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md" {...props.dialogProps}>
       <PreviewDialogUI {...props} />
     </Dialog>
   );

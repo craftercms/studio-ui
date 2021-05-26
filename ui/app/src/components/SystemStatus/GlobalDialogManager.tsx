@@ -392,6 +392,7 @@ function GlobalDialogManager() {
         mode={state.preview.mode}
         title={state.preview.title}
         content={state.preview.content}
+        dialogProps={state.preview.dialogProps}
         onClose={createCallback(state.preview.onClose, dispatch)}
         onClosed={createCallback(state.preview.onClosed, dispatch)}
       />
