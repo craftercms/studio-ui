@@ -67,7 +67,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
     return <ApiResponseErrorState error={error.response ?? error} />;
   }
   return (
-    <LauncherSectionUI styles={props.navStyles} title={props.title ?? formatMessage(messages.global)}>
+    <LauncherSectionUI styles={props.sectionStyles} title={props.title ?? formatMessage(messages.global)}>
       {items.map((item) => (
         <LauncherTile
           key={item.id}
