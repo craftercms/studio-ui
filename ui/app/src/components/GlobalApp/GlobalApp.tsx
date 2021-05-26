@@ -62,7 +62,7 @@ export default function GlobalApp(props: GlobalAppProps) {
       >
         <LauncherGlobalNav
           title=""
-          navStyles={{
+          sectionStyles={{
             nav: {
               maxHeight: '100%',
               overflow: 'auto'
