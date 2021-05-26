@@ -21,8 +21,6 @@ import {
   checkOutGuest,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
-  COMPONENT_INSTANCE_HTML_REQUEST,
-  COMPONENT_INSTANCE_HTML_RESPONSE,
   CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
@@ -611,6 +609,10 @@ export function PreviewConcierge(props: any) {
                 completeAction: fetchGuestModelComplete
               });
 
+              hostToGuest$.next({
+                type: INSERT_OPERATION_COMPLETE,
+                payload: { ...payload, currentUrl }
+              });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
@@ -788,15 +790,6 @@ export function PreviewConcierge(props: any) {
         }
         case CONTENT_TYPE_DROP_TARGETS_RESPONSE: {
           dispatch(setContentTypeDropTargets(payload));
-          break;
-        }
-        case COMPONENT_INSTANCE_HTML_REQUEST: {
-          fetchComponentInstanceHTML(payload.path).subscribe((htmlString) => {
-            hostToGuest$.next({
-              type: COMPONENT_INSTANCE_HTML_RESPONSE,
-              payload: { response: htmlString, id: payload.id }
-            });
-          });
           break;
         }
         case VALIDATION_MESSAGE: {

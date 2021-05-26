@@ -31,11 +31,9 @@ import {
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import * as ContentType from '../utils/contentType';
-import { message$, post } from '../utils/communicator';
+import { message$ } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
-  COMPONENT_INSTANCE_HTML_REQUEST,
-  COMPONENT_INSTANCE_HTML_RESPONSE,
   DELETE_ITEM_OPERATION,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
@@ -286,7 +284,8 @@ export function GuestProxy() {
 
           break;
         }
-        case INSERT_COMPONENT_OPERATION: {
+        case INSERT_COMPONENT_OPERATION:
+        case INSERT_INSTANCE_OPERATION: {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
           const $spinner = $(`
@@ -317,51 +316,16 @@ export function GuestProxy() {
 
               ifrm.onload = function() {
                 $spinner.remove();
-                const htmlString = ifrm.contentWindow.document.documentElement.querySelector(
+                const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
                   `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                 );
-                const $component = $(htmlString?.outerHTML);
+                const $component = $(itemElement?.outerHTML);
                 insertElement($component, $daddy, targetIndex);
                 updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
                 $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
                 ifrm.remove();
               };
             });
-
-          break;
-        }
-        case INSERT_INSTANCE_OPERATION: {
-          const { modelId, fieldId, targetIndex, instance } = op.args;
-
-          const $spinner = $(`
-            <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-              <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
-            </svg>
-          `);
-
-          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
-
-          insertElement($spinner, $daddy, targetIndex);
-
-          const id = Date.now();
-
-          message$
-            .pipe(
-              filter((e) => e.type === COMPONENT_INSTANCE_HTML_RESPONSE && e.payload.id === id),
-              take(1)
-            )
-            .subscribe(function({ payload }) {
-              const $root = $('<div/>').html(payload.response);
-              const $component = $root.children().length > 1 ? $root : $($root.children()[0]);
-              $component.attr('data-craftercms-model-id', modelId);
-              $component.attr('data-craftercms-field-id', fieldId);
-              $spinner.remove();
-              insertElement($component, $daddy, targetIndex);
-              updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
-              $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
-            });
-
-          post(COMPONENT_INSTANCE_HTML_REQUEST, { id, path: instance.craftercms.path });
 
           break;
         }
