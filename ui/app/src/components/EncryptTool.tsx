@@ -63,6 +63,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   form: {
     padding: '20px'
   },
+  formGroup: {
+    marginBottom: '15px'
+  },
   title: {
     color: '#555555'
   },
@@ -187,7 +190,7 @@ const EncryptTool = (props: EncryptToolProps) => {
       />
       <Box p="20px">
         <form onSubmit={encrypt}>
-          <div className="form-group">
+          <div className={classes.formGroup}>
             <TextField
               label={formatMessage(messages.inputLabel)}
               value={text}
@@ -200,7 +203,7 @@ const EncryptTool = (props: EncryptToolProps) => {
             />
           </div>
           {result && (
-            <div className="form-group">
+            <div className={classes.formGroup}>
               <input
                 readOnly
                 type="text"
@@ -218,7 +221,7 @@ const EncryptTool = (props: EncryptToolProps) => {
               />
             </div>
           )}
-          <div className="form-group">
+          <div className={classes.formGroup}>
             <Button type="button" onClick={clear} disabled={fetching} color="default" variant="outlined">
               {formatMessage(messages.clearResultButtonText)}
             </Button>{' '}
