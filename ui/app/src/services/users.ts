@@ -219,7 +219,7 @@ export function fetchGlobalPermissions(): Observable<string[]> {
 }
 
 export function hasGlobalPermissions(...permissions: string[]): Observable<LookupTable<boolean>> {
-  return postJSON('/studio/api/2//users/me/global/has_permissions', { permissions }).pipe(
+  return postJSON('/studio/api/2/users/me/global/has_permissions', { permissions }).pipe(
     pluck('response', 'permissions')
   );
 }
