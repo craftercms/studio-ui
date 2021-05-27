@@ -31,6 +31,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EDIT_MODE_CHANGED,
   FETCH_GUEST_MODEL,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
@@ -100,11 +101,11 @@ import {
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
-import { completeDetailedItem, restoreClipboard } from '../../state/actions/content';
+import { restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
-  hasEditAction,
+  getComputedEditMode,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -315,20 +316,16 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const write = hasEditAction(items[currentItemPath]?.availableActions);
 
   useEffect(() => {
-    if (currentItemPath && site) {
-      dispatch(completeDetailedItem({ path: currentItemPath }));
+    if (items[currentItemPath]) {
+      getHostToGuestBus().next({
+        type: EDIT_MODE_CHANGED,
+        payload: { editMode: getComputedEditMode({ item: items[currentItemPath], username: user.username, editMode }) }
+      });
     }
-  }, [dispatch, currentItemPath, site]);
-
-  useEffect(() => {
-    if (write === false && editMode) {
-      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
-    }
-  }, [dispatch, write, editMode]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items[currentItemPath], editMode, user.username]);
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -437,8 +434,10 @@ export function PreviewConcierge(props: any) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
             }
-
-            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
+            getHostToGuestBus().next({
+              type: HOST_CHECK_IN,
+              payload: { editMode: false, highlightMode }
+            });
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -825,7 +824,6 @@ export function PreviewConcierge(props: any) {
     guestBase,
     site,
     xsrfArgument,
-    editMode,
     highlightMode,
     previewChoice,
     handlePreviewCompatibilityDialogGo
