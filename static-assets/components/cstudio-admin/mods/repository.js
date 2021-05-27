@@ -35,6 +35,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.Repository, CStudioAdminConsole.Tool, {
     $(workarea).html('');
     workarea.appendChild(el);
     CrafterCMSNext.render(el, 'RemotesManagement');
+    // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
   }
 });
 

@@ -83,7 +83,7 @@ import EmptyState from '../../components/SystemStatus/EmptyState';
 import GraphQL from '../../components/Icons/GraphQL';
 import SiteEncryptTool from '../../components/SiteEncryptTool';
 import SiteConfigurationManagement from '../../components/SiteConfigurationManagement';
-import AuditSiteManagement from '../../components/AuditSiteManagement';
+import SiteAuditManagement from '../../components/SiteAuditManagement';
 import LogConsole from '../../components/LogConsole';
 import PublishingDashboard from '../../components/PublishingDashboard';
 import Graphi from '../../components/GraphiQL';
@@ -230,7 +230,7 @@ Object.entries({
   'craftercms.component.EmptyState': EmptyState,
   'craftercms.components.SiteEncryptTool': SiteEncryptTool,
   'craftercms.components.SiteConfigurationManagement': SiteConfigurationManagement,
-  'craftercms.components.AuditSiteManagement': AuditSiteManagement,
+  'craftercms.components.SiteAuditManagement': SiteAuditManagement,
   'craftercms.components.LogConsole': LogConsole,
   'craftercms.components.PublishingDashboard': PublishingDashboard,
   'craftercms.components.Graphi': Graphi

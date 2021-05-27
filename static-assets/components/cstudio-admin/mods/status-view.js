@@ -34,6 +34,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.statusView, CStudioAdminConsole.Tool, {
     $(workarea).html('');
     workarea.appendChild(el);
     CrafterCMSNext.render(el, 'PublishingDashboard');
+    // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
   }
 });
 

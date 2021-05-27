@@ -34,7 +34,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.Audit, CStudioAdminConsole.Tool, {
     el.className = 'cstudio-admin-console-workarea-container';
     $(workarea).html('');
     workarea.appendChild(el);
-    CrafterCMSNext.render(el, 'AuditSiteManagement');
+    CrafterCMSNext.render(el, 'SiteAuditManagement');
+    // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
   }
 });
 

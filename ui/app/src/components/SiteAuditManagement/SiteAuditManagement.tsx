@@ -14,5 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './AuditSiteManagement';
-export * from './AuditSiteManagement';
+import React from 'react';
+import AuditManagement from '../AuditManagement';
+import { useActiveSiteId } from '../../utils/hooks';
+
+export default function SiteAuditManagement() {
+  const site = useActiveSiteId();
+  return <AuditManagement site={site} />;
+}

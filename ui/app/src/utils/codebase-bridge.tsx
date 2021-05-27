@@ -197,7 +197,7 @@ export function createCodebaseBridge() {
       GroupsManagement: lazy(() => import('../components/GroupsManagement')),
       ClustersManagement: lazy(() => import('../components/ClustersManagement')),
       AuditManagement: lazy(() => import('../components/AuditManagement')),
-      AuditSiteManagement: lazy(() => import('../components/AuditSiteManagement')),
+      SiteAuditManagement: lazy(() => import('../components/SiteAuditManagement')),
       LoggingLevelsManagement: lazy(() => import('../components/LoggingLevelsManagement')),
       LogConsole: lazy(() => import('../components/LogConsole')),
       GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
