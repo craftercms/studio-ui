@@ -101,7 +101,7 @@ import {
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
-import { completeDetailedItem, restoreClipboard } from '../../state/actions/content';
+import { restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
@@ -326,13 +326,6 @@ export function PreviewConcierge(props: any) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items[currentItemPath], editMode, user.username]);
-
-  useEffect(() => {
-    if (currentItemPath && site) {
-      dispatch(completeDetailedItem({ path: currentItemPath }));
-    }
-  }, [dispatch, currentItemPath, site]);
-
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -441,7 +434,6 @@ export function PreviewConcierge(props: any) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
             }
-
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
               payload: { editMode: false, highlightMode }
