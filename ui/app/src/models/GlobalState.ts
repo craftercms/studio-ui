@@ -61,6 +61,7 @@ import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
+import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -195,6 +196,7 @@ export interface GlobalState {
     launcher: LauncherStateProps;
     publishingStatus: PublishingStatusDialogStateProps;
     unlockPublisher: UnlockPublisherDialogStateProps;
+    widget: WidgetDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;

@@ -35,10 +35,11 @@ import EmptyState from '../SystemStatus/EmptyState';
 
 interface LogConsoleManagementProps {
   logType?: 'studio' | 'preview';
+  embedded?: boolean;
 }
 
 export default function LogConsole(props: LogConsoleManagementProps) {
-  const { logType = 'studio' } = props;
+  const { logType = 'studio', embedded } = props;
   const [logEvents, setLogEvents] = useState<LogEvent[]>();
   const [showLogEventDialog, setShowLogEventDialog] = useState(false);
   const site = useActiveSiteId();
@@ -119,7 +120,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
   return (
     <Box>
       <GlobalAppToolbar
-        title={<FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
+        title={!embedded && <FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
         rightContent={
           <>
             <Button

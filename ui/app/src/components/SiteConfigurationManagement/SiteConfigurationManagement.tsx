@@ -65,7 +65,12 @@ import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 
-export default function SiteConfigurationManagement() {
+interface SiteConfigurationManagementProps {
+  embedded?: boolean;
+}
+
+export default function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
+  const { embedded } = props;
   const site = useActiveSiteId();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const classes = useStyles();

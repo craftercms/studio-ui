@@ -42,6 +42,7 @@ import itemMegaMenu from './itemMegaMenu';
 import launcher from './launcher';
 import publishingStatus from './publishingStatus';
 import unlockPublisher from './unlockPublisher';
+import widget from './widget';
 
 export default combineReducers({
   confirm,
@@ -70,5 +71,6 @@ export default combineReducers({
   itemMegaMenu,
   launcher,
   publishingStatus,
-  unlockPublisher
+  unlockPublisher,
+  widget
 });
