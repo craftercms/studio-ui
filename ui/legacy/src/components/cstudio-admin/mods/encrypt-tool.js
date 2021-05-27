@@ -37,6 +37,8 @@
       CrafterCMSNext.render(el, 'EncryptTool', {
         site: CStudioAuthoringContext.site
       });
+      // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+      CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
     }
   }
 
