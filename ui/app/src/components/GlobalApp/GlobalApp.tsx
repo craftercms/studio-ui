@@ -39,6 +39,7 @@ import { FormattedMessage } from 'react-intl';
 import { useGlobalAppState } from './GlobalContext';
 import Typography from '@material-ui/core/Typography';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import LoadingState from '../SystemStatus/LoadingState';
 
 interface GlobalAppProps {
   passwordRequirementsRegex: string;
@@ -115,7 +116,18 @@ export default function GlobalApp(props: GlobalAppProps) {
           />
           <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
           <Route exact path="/">
-            <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
+            {globalNavigation.items ? (
+              <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
+            ) : (
+              <LoadingState
+                styles={{
+                  root: {
+                    height: '100%',
+                    margin: 0
+                  }
+                }}
+              />
+            )}
           </Route>
           <Route
             render={() => {
