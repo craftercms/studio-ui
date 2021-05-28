@@ -19,7 +19,7 @@ import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
-import { applyDeserializedXMLTransforms, reversePluckProps, toQueryString } from '../utils/object';
+import { applyDeserializedXMLTransforms, reversePluckProps, toQueryString, valuesToString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
@@ -51,6 +51,17 @@ export function fetchConfigurationDOM(
   environment?: string
 ): Observable<XMLDocument> {
   return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
+}
+
+export function fetchConfigurationJSON(
+  site: string,
+  configPath: string,
+  module: CrafterCMSModules,
+  environment?: string
+): Observable<any> {
+  return fetchConfigurationXML(site, configPath, module, environment).pipe(
+    map((conf) => valuesToString(deserialize(conf)))
+  );
 }
 
 export function writeConfiguration(
