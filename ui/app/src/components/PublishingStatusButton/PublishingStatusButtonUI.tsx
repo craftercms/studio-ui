@@ -20,6 +20,7 @@ import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import { Badge, CircularProgress, Tooltip } from '@material-ui/core';
 import { PublishingStatus } from '../../models/Publishing';
 import { FormattedMessage } from 'react-intl';
+import { publishingStatusTileMessages } from '../PublishingStatusTile';
 
 export interface PublishingStatusButtonUIProps extends IconButtonProps {
   isFetching: boolean;
@@ -30,7 +31,22 @@ export interface PublishingStatusButtonUIProps extends IconButtonProps {
 
 export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>(
   ({ enabled, status, isFetching, style, onClick, variant, ...rest }, ref) => (
-    <Tooltip title={<FormattedMessage id="publishingStatusButton.tooltipMessage" defaultMessage="Publishing status" />}>
+    <Tooltip
+      title={
+        <>
+          <FormattedMessage id="publishingStatusButton.tooltipMessage" defaultMessage="Publishing status" />
+          {status &&
+            (publishingStatusTileMessages[status] ? (
+              <>
+                {' '}
+                (<FormattedMessage id={publishingStatusTileMessages[status].id} />)
+              </>
+            ) : (
+              ` (${status})`
+            ))}
+        </>
+      }
+    >
       <Badge
         badgeContent={status === 'error' || enabled === false ? '!' : null}
         color="error"

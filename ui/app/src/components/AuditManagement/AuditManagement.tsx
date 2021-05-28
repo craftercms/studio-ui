@@ -37,10 +37,11 @@ import { GridPageChangeParams } from '@material-ui/data-grid';
 
 interface AuditManagementProps {
   site?: string;
+  embedded?: boolean;
 }
 
 export default function AuditManagement(props: AuditManagementProps) {
-  const site = props.site;
+  const { site, embedded } = props;
   const [fetching, setFetching] = useState(false);
   const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -175,13 +176,11 @@ export default function AuditManagement(props: AuditManagementProps) {
   return (
     <>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
+        title={!embedded && <FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
         rightContent={
-          hasActiveFilters && (
-            <Button variant="text" color="primary" onClick={() => onResetFilters()}>
-              <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
-            </Button>
-          )
+          <Button disabled={!hasActiveFilters} variant="text" color="primary" onClick={() => onResetFilters()}>
+            <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
+          </Button>
         }
         showHamburgerMenuButton={!site}
         showAppsButton={!site}

@@ -34,6 +34,7 @@ import Box from '@material-ui/core/Box';
 
 interface EncryptToolProps {
   site?: string;
+  embedded?: boolean;
 }
 
 const messages = defineMessages({
@@ -132,7 +133,7 @@ function SnackbarContentWrapper(props: any) {
 }
 
 const EncryptTool = (props: EncryptToolProps) => {
-  const { site } = props;
+  const { site, embedded = false } = props;
   const classes = useStyles({});
   const inputRef = useRef();
   const [text, setText] = useState('');
@@ -183,11 +184,13 @@ const EncryptTool = (props: EncryptToolProps) => {
 
   return (
     <section>
-      <GlobalAppToolbar
-        title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
-        showHamburgerMenuButton={!site}
-        showAppsButton={!site}
-      />
+      {!embedded && (
+        <GlobalAppToolbar
+          title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
+          showHamburgerMenuButton={!site}
+          showAppsButton={!site}
+        />
+      )}
       <Box p="20px">
         <form onSubmit={encrypt}>
           <div className={classes.formGroup}>

@@ -15,14 +15,11 @@
  */
 
 import React from 'react';
-import AuditManagement from '../AuditManagement';
-import { useActiveSiteId } from '../../utils/hooks';
+import Graphi from '../GraphiQL';
+import { useActiveSiteId, useEnv } from '../../utils/hooks';
 
-interface SiteAuditManagementProps {
-  embedded?: boolean;
-}
-
-export default function SiteAuditManagement(props: SiteAuditManagementProps) {
+export default function SiteGraphiQL() {
   const site = useActiveSiteId();
-  return <AuditManagement site={site} embedded={props.embedded} />;
+  const { guestBase } = useEnv();
+  return <Graphi storageKey={site} url={`${guestBase}/api/1/site/graphql`} />;
 }

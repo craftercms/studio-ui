@@ -42,6 +42,7 @@ import { ItemMegaMenuStateProps } from '../../components/ItemMegaMenu';
 import { LauncherStateProps } from '../../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
+import { WidgetDialogStateProps } from '../../components/WidgetDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -209,45 +210,38 @@ export const pathSelectionDialogClosed = /*#__PURE__*/ createAction('PATH_SELECT
 // endregion
 
 // region Item Menu
-
 export const showItemMenu = /*#__PURE__*/ createAction<Partial<ItemMenuStateProps>>('SHOW_ITEM_MENU');
 export const closeItemMenu = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ITEM_MENU');
 export const itemMenuClosed = /*#__PURE__*/ createAction('ITEM_MENU_CLOSED');
-
 // endregion
 
 // region Item Mega Menu
-
 export const showItemMegaMenu = /*#__PURE__*/ createAction<Partial<ItemMegaMenuStateProps>>('SHOW_ITEM_MEGA_MENU');
 export const closeItemMegaMenu = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ITEM_MEGA_MENU');
 export const itemMegaMenuClosed = /*#__PURE__*/ createAction('ITEM_MEGA_MENU_CLOSED');
-
 // endregion
 
 // region Global Nav
-
 export const showLauncher = /*#__PURE__*/ createAction<Partial<LauncherStateProps>>('SHOW_LAUNCHER');
-
 export const closeLauncher = /*#__PURE__*/ createAction('CLOSE_LAUNCHER');
-
 // endregion
 
 // region PublishingStatusDialog
-
 export const showPublishingStatusDialog = /*#__PURE__*/ createAction<Partial<PublishingStatusDialogStateProps>>(
   'SHOW_PUBLISHING_STATUS_DIALOG'
 );
-
 export const closePublishingStatusDialog = /*#__PURE__*/ createAction('HIDE_PUBLISHING_STATUS_DIALOG');
-
 // endregion
 
 // region Unlock Publisher Dialog
-
 export const showUnlockPublisherDialog = /*#__PURE__*/ createAction<Partial<UnlockPublisherDialogStateProps>>(
   'SHOW_UNLOCK_PUBLISHER_DIALOG'
 );
-
 export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('CLOSE_UNLOCK_PUBLISHER_DIALOG');
+// endregion
 
+// region Widget Dialog
+export const showWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialogStateProps>>('SHOW_WIDGET_DIALOG');
+export const closeWidgetDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_WIDGET_DIALOG');
+export const widgetDialogClosed = /*#__PURE__*/ createAction('WIDGET_DIALOG_CLOSED');
 // endregion
