@@ -20,6 +20,9 @@ import React from 'react';
 import { SystemIconDescriptor } from '../SystemIcon';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getSystemLink, SystemLinkId } from '../LauncherSection/utils';
+import { useDispatch } from 'react-redux';
+import { closeLauncher, showWidgetDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;
@@ -29,17 +32,38 @@ export interface LauncherLinkTileProps {
 }
 
 const LauncherLinkTile = (props: LauncherLinkTileProps) => {
-  const { title, icon, systemLinkId, link } = props;
+  const { icon, systemLinkId } = props;
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const site = useActiveSiteId();
-  return (
-    <LauncherTile
-      icon={icon}
-      title={usePossibleTranslation(title)}
-      link={link ?? getSystemLink({ systemLinkId, authoringBase, previewChoice, site })}
-    />
-  );
+  const dispatch = useDispatch();
+  const title = usePossibleTranslation(props.title);
+
+  const onClick =
+    systemLinkId === 'siteDashboard' && previewChoice[site] === '2'
+      ? (e) => {
+          e.preventDefault();
+          dispatch(
+            batchActions([
+              closeLauncher(),
+              showWidgetDialog({
+                id: systemLinkId,
+                title,
+                widget: {
+                  id: 'craftercms.components.LegacyDashboardFrame'
+                }
+              })
+            ])
+          );
+        }
+      : null;
+
+  const link =
+    systemLinkId === 'siteDashboard' && previewChoice[site] === '2'
+      ? null
+      : props.link ?? getSystemLink({ systemLinkId, authoringBase, previewChoice, site });
+
+  return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };
 
 export default LauncherLinkTile;

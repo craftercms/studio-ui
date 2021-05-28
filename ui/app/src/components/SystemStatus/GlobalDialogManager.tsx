@@ -31,6 +31,7 @@ import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import UnlockPublisherDialog from '../UnlockPublisherDialog';
+import WidgetDialog from '../WidgetDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -468,6 +469,17 @@ function GlobalDialogManager() {
         onError={createCallback(state.unlockPublisher.onError, dispatch)}
         onCancel={createCallback(state.unlockPublisher.onCancel, dispatch)}
         onComplete={createCallback(state.unlockPublisher.onComplete, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Widget Dialog */}
+      <WidgetDialog
+        id={state.widget.id}
+        open={state.widget.open}
+        title={state.widget.title}
+        widget={state.widget.widget}
+        onClose={createCallback(state.widget.onClose, dispatch)}
+        onClosed={createCallback(state.widget.onClosed, dispatch)}
       />
       {/* endregion */}
     </Suspense>

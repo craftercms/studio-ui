@@ -18,7 +18,11 @@ import React from 'react';
 import { useActiveSiteId } from '../../utils/hooks';
 import EncryptTool from '../EncryptTool';
 
-export default function SiteEncryptTool() {
+interface SiteEncryptToolProps {
+  embedded?: boolean;
+}
+
+export default function SiteEncryptTool(props: SiteEncryptToolProps) {
   const site = useActiveSiteId();
-  return <EncryptTool site={site} />;
+  return <EncryptTool site={site} embedded={props.embedded} />;
 }

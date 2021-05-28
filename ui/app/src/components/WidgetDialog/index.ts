@@ -14,15 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import AuditManagement from '../AuditManagement';
-import { useActiveSiteId } from '../../utils/hooks';
+export { default } from './WidgetDialog';
 
-interface SiteAuditManagementProps {
-  embedded?: boolean;
-}
+export * from './WidgetDialog';
 
-export default function SiteAuditManagement(props: SiteAuditManagementProps) {
-  const site = useActiveSiteId();
-  return <AuditManagement site={site} embedded={props.embedded} />;
-}
+export * from './WidgetDialogUI';

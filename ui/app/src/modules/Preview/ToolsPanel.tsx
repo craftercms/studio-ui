@@ -86,7 +86,7 @@ import SiteConfigurationManagement from '../../components/SiteConfigurationManag
 import SiteAuditManagement from '../../components/SiteAuditManagement';
 import LogConsole from '../../components/LogConsole';
 import PublishingDashboard from '../../components/PublishingDashboard';
-import Graphi from '../../components/GraphiQL';
+import SiteGraphiQL from '../../components/SiteGraphiQL';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -233,7 +233,7 @@ Object.entries({
   'craftercms.components.SiteAuditManagement': SiteAuditManagement,
   'craftercms.components.LogConsole': LogConsole,
   'craftercms.components.PublishingDashboard': PublishingDashboard,
-  'craftercms.components.Graphi': Graphi
+  'craftercms.components.SiteGraphiQL': SiteGraphiQL
 }).forEach(([id, component]) => {
   components.set(id, component);
 });
