@@ -204,22 +204,11 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
    * create clicked
    */
   createClick: function(event, params) {
-    var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
     var label = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.labelEl.value);
     var name = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.typeNameEl.value);
     var type = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.objectTypeEl.value);
-
     var contentAsFolder = type == 'component' ? false : params.asFolderEl.checked;
-    var baseServicePath =
-      '/api/1/services/api/1/site/write-configuration.json?site=' +
-      CStudioAuthoringContext.site +
-      '&path=' +
-      configFilesPath +
-      '/content-types/' +
-      type +
-      '/' +
-      name +
-      '/';
+    const basePath = `/content-types/${type}/${name}/`;
 
     var typeConfig =
       '<content-type name="/' +
@@ -250,9 +239,12 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       '<image-thumbnail></image-thumbnail>\r\n' +
       '</content-type>';
 
-    var contentTypeCb = {
-      success: function() {
-        var controllerContent =
+    // TODO: change to forkJoin
+    // Create config.xml file
+    CrafterCMSNext.services.configuration
+      .writeConfiguration(CStudioAuthoringContext.site, `${basePath}config.xml`, 'studio', typeConfig)
+      .subscribe(() => {
+        const controllerContent =
           'import scripts.libs.CommonLifecycleApi;\r\n\r\n' +
           'def contentLifecycleParams =[:];\r\n' +
           'contentLifecycleParams.site = site;\r\n' +
@@ -265,13 +257,16 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
           'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
           'controller.execute();\r\n';
 
-        var writeControllerCb = {
-          success: function() {
-            var fileNameLabel = 'Page URL';
+        // Create controller.groovy file
+        CrafterCMSNext.services.configuration
+          .writeConfiguration(CStudioAuthoringContext.site, `${basePath}controller.groovy`, 'studio', controllerContent)
+          .subscribe(() => {
+            const context = CStudioAuthoring.Dialogs.NewContentType;
+            let fileNameLabel = 'Page URL';
             if (type == 'component') {
-              var fileNameLabel = 'Component ID';
+              fileNameLabel = 'Component ID';
             }
-            var formDefContent =
+            let formDefContent =
               '<form>\r\n' +
               '<title>' +
               label +
@@ -299,12 +294,12 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
               '<type>string</type>\r\n' +
               '</property>\r\n';
 
-            if (!this.context.config.objectTypes.type.length) {
-              this.context.config.objectTypes.type = [this.context.config.objectTypes.type];
+            if (!context.config.objectTypes.type.length) {
+              context.config.objectTypes.type = [context.config.objectTypes.type];
             }
 
-            for (var k = 0; k < this.context.config.objectTypes.type.length; k++) {
-              var objectType = this.context.config.objectTypes.type[k];
+            for (var k = 0; k < context.config.objectTypes.type.length; k++) {
+              var objectType = context.config.objectTypes.type[k];
 
               if (objectType.name == type) {
                 if (!objectType.properties.property.length) {
@@ -495,39 +490,20 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
             formDefContent += '</fields>\r\n' + '</section>\r\n' + '</sections>\r\n' + '</form>';
 
-            var writeFormDefCb = {
-              success: function() {
+            // Create form-definition.xml file
+            CrafterCMSNext.services.configuration
+              .writeConfiguration(
+                CStudioAuthoringContext.site,
+                `${basePath}form-definition.xml`,
+                'studio',
+                formDefContent
+              )
+              .subscribe(() => {
                 CStudioAuthoring.Dialogs.NewContentType.closeDialog(true);
                 CStudioAuthoring.Dialogs.NewContentType.cb.success('/' + type + '/' + name);
-              },
-
-              failure: function() {},
-              context: this.context.context
-            };
-
-            this.context.writeConfig(baseServicePath + 'form-definition.xml', formDefContent, writeFormDefCb);
-          },
-          failure: function() {},
-          context: this.context
-        };
-        this.context.writeConfig(baseServicePath + 'controller.groovy', controllerContent, writeControllerCb);
-      },
-      failure: function() {},
-      context: CStudioAuthoring.Dialogs.NewContentType
-    };
-
-    CStudioAuthoring.Dialogs.NewContentType.writeConfig(baseServicePath + 'config.xml', typeConfig, contentTypeCb);
-  },
-
-  writeConfig: function(url, content, cb) {
-    CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(url), content).subscribe(
-      function() {
-        cb.success();
-      },
-      function() {
-        cb.failure();
-      }
-    );
+              });
+          });
+      });
   },
 
   /**

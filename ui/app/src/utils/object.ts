@@ -270,14 +270,4 @@ export function deepCopy<T extends object = any>(target: T): T {
   return JSON.parse(JSON.stringify(target));
 }
 
-export function valuesToString(object) {
-  Object.keys(object).forEach((k) => {
-    if (typeof object[k] === 'object') {
-      return valuesToString(object[k]);
-    }
-    object[k] = '' + object[k];
-  });
-  return object;
-}
-
 export const foo = {};
