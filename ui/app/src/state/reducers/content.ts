@@ -107,7 +107,7 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => ({
     ...state,
-    itemsByPath: { ...state.itemsByPath, [item.path]: item }
+    itemsByPath: { ...state.itemsByPath, [item.path]: parseSandBoxItemToDetailedItem(item) }
   }),
   [restoreClipboard.type]: (state, { payload }) => ({
     ...state,
