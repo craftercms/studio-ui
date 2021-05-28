@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addCss('/static-assets/styles/graphiql.css');
 CStudioAdminConsole.Tool.GraphiQL =
   CStudioAdminConsole.Tool.GraphiQL ||
   function(config, el) {

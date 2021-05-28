@@ -32,7 +32,7 @@ export interface LauncherLinkTileProps {
 }
 
 const LauncherLinkTile = (props: LauncherLinkTileProps) => {
-  const { icon, systemLinkId, link } = props;
+  const { icon, systemLinkId } = props;
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const site = useActiveSiteId();
@@ -58,14 +58,12 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
         }
       : null;
 
-  return (
-    <LauncherTile
-      icon={icon}
-      onClick={onClick}
-      title={usePossibleTranslation(title)}
-      link={link ?? getSystemLink({ systemLinkId, authoringBase, previewChoice, site })}
-    />
-  );
+  const link =
+    systemLinkId === 'siteDashboard' && previewChoice[site] === '2'
+      ? null
+      : props.link ?? getSystemLink({ systemLinkId, authoringBase, previewChoice, site });
+
+  return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };
 
 export default LauncherLinkTile;
