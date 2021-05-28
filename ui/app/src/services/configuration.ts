@@ -213,6 +213,7 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
           '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
         );
         if (pageBuilderPanel) {
+          const lookupTables = ['fields'];
           pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
             e.setAttribute('uiKey', String(index));
             if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
@@ -221,7 +222,8 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
           });
           config.preview.pageBuilderPanel = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
             arrays,
-            renameTable
+            renameTable,
+            lookupTables
           });
         }
         return config;
