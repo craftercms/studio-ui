@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import { AjaxError } from 'rxjs/ajax';
-import { DetailedItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 
 // region Quick Create
@@ -28,7 +28,7 @@ export const fetchQuickCreateListComplete = /*#__PURE__*/ createAction<QuickCrea
 export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
-// region Items
+// region Detailed Item
 export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_DETAILED_ITEM');
 export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
 export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('COMPLETE_DETAILED_ITEM');
@@ -36,7 +36,17 @@ export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem
 export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
 // endregion
 
-// region clipboard
+// region Sandbox Item
+export type FetchSandboxItemPayload = { path: string; force?: boolean };
+export const fetchSandboxItem = /*#__PURE__*/ createAction<FetchSandboxItemPayload>('FETCH_SANDBOX_ITEM');
+export const fetchSandboxItemComplete = /*#__PURE__*/ createAction<{ item: SandboxItem }>(
+  'FETCH_SANDBOX_ITEM_COMPLETE'
+);
+export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
+// endregion
+
+// region Clipboard
+
 export const setClipboard = /*#__PURE__*/ createAction<{
   type: 'CUT' | 'COPY';
   paths?: string[];
@@ -50,19 +60,23 @@ export const restoreClipboard = /*#__PURE__*/ createAction<{
 }>('RESTORE_CLIPBOARD');
 
 export const clearClipboard = /*#__PURE__*/ createAction('CLEAR_CLIPBOARD');
-// endregion
 
-// region item
 export const duplicateItem = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ITEM');
+
 export const duplicateAsset = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>(
   'DUPLICATE_ASSET'
 );
+
 export const duplicateWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string; type: 'item' | 'asset' }>(
   'DUPLICATE_WITH_POLICY_VALIDATION'
 );
+
 export const pasteItem = /*#__PURE__*/ createAction<{ path: string }>('PASTE_ITEM');
+
 export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string }>(
   'PASTE_ITEM_WITH_POLICY_VALIDATION'
 );
-export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
+
 // endregion
+
+export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');

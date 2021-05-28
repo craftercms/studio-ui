@@ -61,7 +61,6 @@ import {
 } from '../../state/actions/preview';
 import {
   deleteItem,
-  fetchComponentInstanceHTML,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
   insertComponent,
@@ -99,7 +98,7 @@ import {
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
-import { restoreClipboard } from '../../state/actions/content';
+import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
@@ -314,7 +313,6 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-
   useEffect(() => {
     if (items[currentItemPath]) {
       getHostToGuestBus().next({
@@ -324,6 +322,11 @@ export function PreviewConcierge(props: any) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items[currentItemPath], editMode, user.username]);
+  useEffect(() => {
+    if (currentItemPath && site) {
+      dispatch(fetchSandboxItem({ path: currentItemPath }));
+    }
+  }, [dispatch, currentItemPath, site]);
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval

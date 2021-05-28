@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ofType } from 'redux-observable';
+import { ActionsObservable, ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
@@ -28,6 +28,10 @@ import {
   fetchQuickCreateList as fetchQuickCreateListAction,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
+  fetchSandboxItem,
+  fetchSandboxItemComplete,
+  fetchSandboxItemFailed,
+  FetchSandboxItemPayload,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
@@ -38,6 +42,7 @@ import {
   duplicate,
   fetchDetailedItem as fetchDetailedItemService,
   fetchQuickCreateList,
+  fetchSandboxItem as fetchSandboxItemService,
   paste,
   unlock
 } from '../../services/content';
@@ -62,6 +67,7 @@ import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
 import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
 import { nanoid as uuid } from 'nanoid';
+import StandardAction from '../../models/StandardAction';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -109,11 +115,11 @@ const content: CrafterCMSEpic[] = [
         ([{ payload, type }, state]) =>
           // Only fetch if the item isn't already in state or it is an explicit re-fetch
           // request (via reloadDetailedItem action)
-          !state.content.itemsByPath?.[payload.path] || type === reloadDetailedItem.type
+          !state.content.itemsByPath[payload.path] || type === reloadDetailedItem.type
       ),
       switchMap(([{ payload }, state]) =>
         fetchDetailedItemService(state.sites.active, payload.path).pipe(
-          map((item) => fetchDetailedItemComplete(item)),
+          map(fetchDetailedItemComplete),
           catchAjaxError(fetchDetailedItemFailed)
         )
       )
@@ -128,6 +134,28 @@ const content: CrafterCMSEpic[] = [
         fetchDetailedItemService(state.sites.active, payload.path).pipe(
           map((item) => fetchDetailedItemComplete(item)),
           catchAjaxError(fetchDetailedItemFailed)
+        )
+      )
+    ),
+  // endregion
+  // region fetchSandboxItem
+  (action$: ActionsObservable<StandardAction<FetchSandboxItemPayload>>, state$) =>
+    action$.pipe(
+      ofType(fetchSandboxItem.type),
+      withLatestFrom(state$),
+      // Only fetch if force is true or the item isn't loaded
+      filter(
+        ([
+          {
+            payload: { path, force }
+          },
+          state
+        ]) => force || !state.content.itemsByPath[path]
+      ),
+      mergeMap(([{ payload }, state]) =>
+        fetchSandboxItemService(state.sites.active, payload.path).pipe(
+          map((item) => fetchSandboxItemComplete({ item })),
+          catchAjaxError(fetchSandboxItemFailed)
         )
       )
     ),

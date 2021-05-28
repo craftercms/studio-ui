@@ -22,6 +22,7 @@ import {
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
+  fetchSandboxItemComplete,
   restoreClipboard,
   setClipboard
 } from '../actions/content';
@@ -100,12 +101,14 @@ const reducer = createReducer<ContentState>(initialState, {
       error: error.payload.response
     }
   }),
-  [fetchDetailedItemComplete.type]: (state, { payload }) => {
-    return {
-      ...state,
-      itemsByPath: { ...state.itemsByPath, [payload.path]: payload }
-    };
-  },
+  [fetchDetailedItemComplete.type]: (state, { payload }) => ({
+    ...state,
+    itemsByPath: { ...state.itemsByPath, [payload.path]: payload }
+  }),
+  [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => ({
+    ...state,
+    itemsByPath: { ...state.itemsByPath, [item.path]: item }
+  }),
   [restoreClipboard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
