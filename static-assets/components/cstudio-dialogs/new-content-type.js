@@ -239,270 +239,272 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       '<image-thumbnail></image-thumbnail>\r\n' +
       '</content-type>';
 
-    // TODO: change to forkJoin
-    // Create config.xml file
-    CrafterCMSNext.services.configuration
-      .writeConfiguration(CStudioAuthoringContext.site, `${basePath}config.xml`, 'studio', typeConfig)
+    const controllerContent =
+      'import scripts.libs.CommonLifecycleApi;\r\n\r\n' +
+      'def contentLifecycleParams =[:];\r\n' +
+      'contentLifecycleParams.site = site;\r\n' +
+      'contentLifecycleParams.path = path;\r\n' +
+      'contentLifecycleParams.user = user;\r\n' +
+      'contentLifecycleParams.contentType = contentType;\r\n' +
+      'contentLifecycleParams.contentLifecycleOperation = contentLifecycleOperation;\r\n' +
+      'contentLifecycleParams.contentLoader = contentLoader;\r\n' +
+      'contentLifecycleParams.applicationContext = applicationContext;\r\n\r\n' +
+      'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
+      'controller.execute();\r\n';
+
+    const context = CStudioAuthoring.Dialogs.NewContentType;
+    let fileNameLabel = 'Page URL';
+    if (type == 'component') {
+      fileNameLabel = 'Component ID';
+    }
+    let formDefContent =
+      '<form>\r\n' +
+      '<title>' +
+      label +
+      '</title>\r\n' +
+      '<description></description>\r\n' +
+      '<content-type>/' +
+      type +
+      '/' +
+      name +
+      '</content-type>\r\n' +
+      '<objectType>' +
+      type +
+      '</objectType>\r\n' +
+      '<quickCreate>false</quickCreate>\r\n' +
+      '<quickCreatePath></quickCreatePath>\r\n' +
+      '<properties>\r\n' +
+      '<property>\r\n' +
+      '<name>content-type</name>\r\n' +
+      '<label>Content Type</label>\r\n' +
+      '<value>/' +
+      type +
+      '/' +
+      name +
+      '</value>\r\n' +
+      '<type>string</type>\r\n' +
+      '</property>\r\n';
+
+    if (!context.config.objectTypes.type.length) {
+      context.config.objectTypes.type = [context.config.objectTypes.type];
+    }
+
+    for (var k = 0; k < context.config.objectTypes.type.length; k++) {
+      var objectType = context.config.objectTypes.type[k];
+
+      if (objectType.name == type) {
+        if (!objectType.properties.property.length) {
+          objectType.properties.property = [objectType.properties.property];
+        }
+
+        var typeProps = objectType.properties.property;
+
+        for (var j = 0; j < typeProps.length; j++) {
+          var typeProperty = typeProps[j];
+
+          formDefContent +=
+            '<property>\r\n' +
+            '<name>' +
+            typeProperty.name +
+            '</name>\r\n' +
+            '<label>' +
+            typeProperty.label +
+            '</label>\r\n' +
+            '<value>' +
+            typeProperty.value +
+            '</value>\r\n' +
+            '<type>' +
+            typeProperty.type +
+            '</type>\r\n' +
+            '</property>\r\n';
+        }
+        break;
+      }
+    }
+
+    formDefContent +=
+      '</properties>\r\n' +
+      '<sections>\r\n' +
+      '<section>\r\n' +
+      '<title>' +
+      label +
+      ' Properties</title>\r\n' +
+      '<description></description>\r\n' +
+      '<defaultOpen>true</defaultOpen>\r\n' +
+      '<fields>\r\n' +
+      '<field>\r\n';
+    if (type == 'component') {
+      formDefContent += '<type>auto-filename</type>\r\n';
+    } else {
+      formDefContent += '<type>file-name</type>\r\n';
+    }
+    formDefContent +=
+      '<id>file-name</id>\r\n' +
+      '<iceId></iceId>\r\n' +
+      '<title>' +
+      fileNameLabel +
+      '</title>\r\n' +
+      '<description></description>\r\n' +
+      '<defaultValue></defaultValue>\r\n' +
+      '<help></help>\r\n' +
+      '<properties>\r\n' +
+      '<property>\r\n' +
+      '<name>size</name>\r\n' +
+      '<value>50</value>\r\n' +
+      '<type>int</type>\r\n' +
+      '</property>\r\n' +
+      '<property>\r\n' +
+      '<name>maxlength</name>\r\n' +
+      '<value>50</value>\r\n' +
+      '<type>int</type>\r\n' +
+      '</property>\r\n' +
+      '<property>\r\n' +
+      '<name>readonly</name>\r\n' +
+      '<value></value>\r\n' +
+      '<type>boolean</type>\r\n' +
+      '</property>\r\n' +
+      '</properties>\r\n' +
+      '<constraints>\r\n' +
+      '</constraints>\r\n' +
+      '</field>\r\n' +
+      '<field>\r\n' +
+      '<type>input</type>\r\n' +
+      '<id>internal-name</id>\r\n' +
+      '<iceId></iceId>\r\n' +
+      '<title>Internal Name</title>\r\n' +
+      '<description></description>\r\n' +
+      '<defaultValue></defaultValue>\r\n' +
+      '<help></help>\r\n' +
+      '<properties>\r\n' +
+      '<property>\r\n' +
+      '<name>size</name>\r\n' +
+      '<value>50</value>\r\n' +
+      '<type>int</type>\r\n' +
+      '</property>\r\n' +
+      '<property>\r\n' +
+      '<name>maxlength</name>\r\n' +
+      '<value>50</value>\r\n' +
+      '<type>int</type>\r\n' +
+      '</property>\r\n' +
+      '</properties>\r\n' +
+      '<constraints>\r\n' +
+      '<constraint>\r\n' +
+      '<name>required</name>\r\n' +
+      '<value>true</value>\r\n' +
+      '<type>boolean</type>\r\n' +
+      '</constraint>\r\n' +
+      '</constraints>\r\n' +
+      '</field>\r\n' +
+      '<field>' +
+      /**/ '<type>locale-selector</type>' +
+      /**/ '<id>localeCode</id>' +
+      /**/ '<iceId></iceId>' +
+      /**/ '<title>Locale</title>' +
+      /**/ '<description></description>' +
+      /**/ '<defaultValue>en</defaultValue>' +
+      /**/ '<help></help>' +
+      /**/ '<properties>' +
+      /****/ '<property>' +
+      /******/ '<name>datasource</name>' +
+      /******/ '<value></value>' +
+      /****/ '<type>datasource:item</type>' +
+      /****/ '</property>' +
+      /****/ '<property>' +
+      /******/ '<name>readonly</name>' +
+      /******/ '<value></value>' +
+      /******/ '<type>boolean</type>' +
+      /****/ '</property>' +
+      /**/ '</properties>' +
+      /**/ '<constraints>' +
+      /****/ '<constraint>' +
+      /******/ '<name>required</name>' +
+      /******/ '<value><![CDATA[]]></value>' +
+      /******/ '<type>boolean</type>' +
+      /****/ '</constraint>' +
+      /**/ '</constraints>' +
+      '</field>';
+
+    if (type == 'page') {
+      formDefContent +=
+        '<field>\r\n' +
+        '<type>page-nav-order</type>\r\n' +
+        '<id>placeInNav</id>\r\n' +
+        '<iceId></iceId>\r\n' +
+        '<title>Place in Nav</title>\r\n' +
+        '<description></description>\r\n' +
+        '<defaultValue></defaultValue>\r\n' +
+        '<help></help>\r\n' +
+        '<properties>\r\n' +
+        '<property>\r\n' +
+        '<name>readonly</name>\r\n' +
+        '<value>[]</value>\r\n' +
+        '<type>boolean</type>\r\n' +
+        '</property>\r\n' +
+        '</properties>\r\n' +
+        '<constraints>\r\n' +
+        '<constraint>\r\n' +
+        '<name>required</name>\r\n' +
+        '<value><![CDATA[]]></value>\r\n' +
+        '<type>boolean</type>\r\n' +
+        '</constraint>\r\n' +
+        '</constraints>\r\n' +
+        '</field>' +
+        '<field>\r\n' +
+        '<type>input</type>\r\n' +
+        '<id>navLabel</id>\r\n' +
+        '<iceId></iceId>\r\n' +
+        '<title>Nav Label</title>\r\n' +
+        '<description></description>\r\n' +
+        '<defaultValue></defaultValue>\r\n' +
+        '<help></help>\r\n' +
+        '<properties>\r\n' +
+        '<property>\r\n' +
+        '<name>size</name>\r\n' +
+        '<value>50</value>\r\n' +
+        '<type>int</type>\r\n' +
+        '</property>\r\n' +
+        '<property>\r\n' +
+        '<name>maxlength</name>\r\n' +
+        '<value>50</value>\r\n' +
+        '<type>int</type>\r\n' +
+        '</property>\r\n' +
+        '</properties>\r\n' +
+        '<constraints>\r\n' +
+        '<constraint>\r\n' +
+        '<name>required</name>\r\n' +
+        '<value>true</value>\r\n' +
+        '<type>boolean</type>\r\n' +
+        '</constraint>\r\n' +
+        '</constraints>\r\n' +
+        '</field>\r\n';
+    }
+
+    formDefContent += '</fields>\r\n' + '</section>\r\n' + '</sections>\r\n' + '</form>';
+
+    CrafterCMSNext.rxjs
+      .forkJoin({
+        config: CrafterCMSNext.services.configuration.writeConfiguration(
+          CStudioAuthoringContext.site,
+          `${basePath}config.xml`,
+          'studio',
+          typeConfig
+        ),
+        controller: CrafterCMSNext.services.configuration.writeConfiguration(
+          CStudioAuthoringContext.site,
+          `${basePath}controller.groovy`,
+          'studio',
+          controllerContent
+        ),
+        formDef: CrafterCMSNext.services.configuration.writeConfiguration(
+          CStudioAuthoringContext.site,
+          `${basePath}form-definition.xml`,
+          'studio',
+          formDefContent
+        )
+      })
       .subscribe(() => {
-        const controllerContent =
-          'import scripts.libs.CommonLifecycleApi;\r\n\r\n' +
-          'def contentLifecycleParams =[:];\r\n' +
-          'contentLifecycleParams.site = site;\r\n' +
-          'contentLifecycleParams.path = path;\r\n' +
-          'contentLifecycleParams.user = user;\r\n' +
-          'contentLifecycleParams.contentType = contentType;\r\n' +
-          'contentLifecycleParams.contentLifecycleOperation = contentLifecycleOperation;\r\n' +
-          'contentLifecycleParams.contentLoader = contentLoader;\r\n' +
-          'contentLifecycleParams.applicationContext = applicationContext;\r\n\r\n' +
-          'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
-          'controller.execute();\r\n';
-
-        // Create controller.groovy file
-        CrafterCMSNext.services.configuration
-          .writeConfiguration(CStudioAuthoringContext.site, `${basePath}controller.groovy`, 'studio', controllerContent)
-          .subscribe(() => {
-            const context = CStudioAuthoring.Dialogs.NewContentType;
-            let fileNameLabel = 'Page URL';
-            if (type == 'component') {
-              fileNameLabel = 'Component ID';
-            }
-            let formDefContent =
-              '<form>\r\n' +
-              '<title>' +
-              label +
-              '</title>\r\n' +
-              '<description></description>\r\n' +
-              '<content-type>/' +
-              type +
-              '/' +
-              name +
-              '</content-type>\r\n' +
-              '<objectType>' +
-              type +
-              '</objectType>\r\n' +
-              '<quickCreate>false</quickCreate>\r\n' +
-              '<quickCreatePath></quickCreatePath>\r\n' +
-              '<properties>\r\n' +
-              '<property>\r\n' +
-              '<name>content-type</name>\r\n' +
-              '<label>Content Type</label>\r\n' +
-              '<value>/' +
-              type +
-              '/' +
-              name +
-              '</value>\r\n' +
-              '<type>string</type>\r\n' +
-              '</property>\r\n';
-
-            if (!context.config.objectTypes.type.length) {
-              context.config.objectTypes.type = [context.config.objectTypes.type];
-            }
-
-            for (var k = 0; k < context.config.objectTypes.type.length; k++) {
-              var objectType = context.config.objectTypes.type[k];
-
-              if (objectType.name == type) {
-                if (!objectType.properties.property.length) {
-                  objectType.properties.property = [objectType.properties.property];
-                }
-
-                var typeProps = objectType.properties.property;
-
-                for (var j = 0; j < typeProps.length; j++) {
-                  var typeProperty = typeProps[j];
-
-                  formDefContent +=
-                    '<property>\r\n' +
-                    '<name>' +
-                    typeProperty.name +
-                    '</name>\r\n' +
-                    '<label>' +
-                    typeProperty.label +
-                    '</label>\r\n' +
-                    '<value>' +
-                    typeProperty.value +
-                    '</value>\r\n' +
-                    '<type>' +
-                    typeProperty.type +
-                    '</type>\r\n' +
-                    '</property>\r\n';
-                }
-                break;
-              }
-            }
-
-            formDefContent +=
-              '</properties>\r\n' +
-              '<sections>\r\n' +
-              '<section>\r\n' +
-              '<title>' +
-              label +
-              ' Properties</title>\r\n' +
-              '<description></description>\r\n' +
-              '<defaultOpen>true</defaultOpen>\r\n' +
-              '<fields>\r\n' +
-              '<field>\r\n';
-            if (type == 'component') {
-              formDefContent += '<type>auto-filename</type>\r\n';
-            } else {
-              formDefContent += '<type>file-name</type>\r\n';
-            }
-            formDefContent +=
-              '<id>file-name</id>\r\n' +
-              '<iceId></iceId>\r\n' +
-              '<title>' +
-              fileNameLabel +
-              '</title>\r\n' +
-              '<description></description>\r\n' +
-              '<defaultValue></defaultValue>\r\n' +
-              '<help></help>\r\n' +
-              '<properties>\r\n' +
-              '<property>\r\n' +
-              '<name>size</name>\r\n' +
-              '<value>50</value>\r\n' +
-              '<type>int</type>\r\n' +
-              '</property>\r\n' +
-              '<property>\r\n' +
-              '<name>maxlength</name>\r\n' +
-              '<value>50</value>\r\n' +
-              '<type>int</type>\r\n' +
-              '</property>\r\n' +
-              '<property>\r\n' +
-              '<name>readonly</name>\r\n' +
-              '<value></value>\r\n' +
-              '<type>boolean</type>\r\n' +
-              '</property>\r\n' +
-              '</properties>\r\n' +
-              '<constraints>\r\n' +
-              '</constraints>\r\n' +
-              '</field>\r\n' +
-              '<field>\r\n' +
-              '<type>input</type>\r\n' +
-              '<id>internal-name</id>\r\n' +
-              '<iceId></iceId>\r\n' +
-              '<title>Internal Name</title>\r\n' +
-              '<description></description>\r\n' +
-              '<defaultValue></defaultValue>\r\n' +
-              '<help></help>\r\n' +
-              '<properties>\r\n' +
-              '<property>\r\n' +
-              '<name>size</name>\r\n' +
-              '<value>50</value>\r\n' +
-              '<type>int</type>\r\n' +
-              '</property>\r\n' +
-              '<property>\r\n' +
-              '<name>maxlength</name>\r\n' +
-              '<value>50</value>\r\n' +
-              '<type>int</type>\r\n' +
-              '</property>\r\n' +
-              '</properties>\r\n' +
-              '<constraints>\r\n' +
-              '<constraint>\r\n' +
-              '<name>required</name>\r\n' +
-              '<value>true</value>\r\n' +
-              '<type>boolean</type>\r\n' +
-              '</constraint>\r\n' +
-              '</constraints>\r\n' +
-              '</field>\r\n' +
-              '<field>' +
-              /**/ '<type>locale-selector</type>' +
-              /**/ '<id>localeCode</id>' +
-              /**/ '<iceId></iceId>' +
-              /**/ '<title>Locale</title>' +
-              /**/ '<description></description>' +
-              /**/ '<defaultValue>en</defaultValue>' +
-              /**/ '<help></help>' +
-              /**/ '<properties>' +
-              /****/ '<property>' +
-              /******/ '<name>datasource</name>' +
-              /******/ '<value></value>' +
-              /****/ '<type>datasource:item</type>' +
-              /****/ '</property>' +
-              /****/ '<property>' +
-              /******/ '<name>readonly</name>' +
-              /******/ '<value></value>' +
-              /******/ '<type>boolean</type>' +
-              /****/ '</property>' +
-              /**/ '</properties>' +
-              /**/ '<constraints>' +
-              /****/ '<constraint>' +
-              /******/ '<name>required</name>' +
-              /******/ '<value><![CDATA[]]></value>' +
-              /******/ '<type>boolean</type>' +
-              /****/ '</constraint>' +
-              /**/ '</constraints>' +
-              '</field>';
-
-            if (type == 'page') {
-              formDefContent +=
-                '<field>\r\n' +
-                '<type>page-nav-order</type>\r\n' +
-                '<id>placeInNav</id>\r\n' +
-                '<iceId></iceId>\r\n' +
-                '<title>Place in Nav</title>\r\n' +
-                '<description></description>\r\n' +
-                '<defaultValue></defaultValue>\r\n' +
-                '<help></help>\r\n' +
-                '<properties>\r\n' +
-                '<property>\r\n' +
-                '<name>readonly</name>\r\n' +
-                '<value>[]</value>\r\n' +
-                '<type>boolean</type>\r\n' +
-                '</property>\r\n' +
-                '</properties>\r\n' +
-                '<constraints>\r\n' +
-                '<constraint>\r\n' +
-                '<name>required</name>\r\n' +
-                '<value><![CDATA[]]></value>\r\n' +
-                '<type>boolean</type>\r\n' +
-                '</constraint>\r\n' +
-                '</constraints>\r\n' +
-                '</field>' +
-                '<field>\r\n' +
-                '<type>input</type>\r\n' +
-                '<id>navLabel</id>\r\n' +
-                '<iceId></iceId>\r\n' +
-                '<title>Nav Label</title>\r\n' +
-                '<description></description>\r\n' +
-                '<defaultValue></defaultValue>\r\n' +
-                '<help></help>\r\n' +
-                '<properties>\r\n' +
-                '<property>\r\n' +
-                '<name>size</name>\r\n' +
-                '<value>50</value>\r\n' +
-                '<type>int</type>\r\n' +
-                '</property>\r\n' +
-                '<property>\r\n' +
-                '<name>maxlength</name>\r\n' +
-                '<value>50</value>\r\n' +
-                '<type>int</type>\r\n' +
-                '</property>\r\n' +
-                '</properties>\r\n' +
-                '<constraints>\r\n' +
-                '<constraint>\r\n' +
-                '<name>required</name>\r\n' +
-                '<value>true</value>\r\n' +
-                '<type>boolean</type>\r\n' +
-                '</constraint>\r\n' +
-                '</constraints>\r\n' +
-                '</field>\r\n';
-            }
-
-            formDefContent += '</fields>\r\n' + '</section>\r\n' + '</sections>\r\n' + '</form>';
-
-            // Create form-definition.xml file
-            CrafterCMSNext.services.configuration
-              .writeConfiguration(
-                CStudioAuthoringContext.site,
-                `${basePath}form-definition.xml`,
-                'studio',
-                formDefContent
-              )
-              .subscribe(() => {
-                CStudioAuthoring.Dialogs.NewContentType.closeDialog(true);
-                CStudioAuthoring.Dialogs.NewContentType.cb.success('/' + type + '/' + name);
-              });
-          });
+        CStudioAuthoring.Dialogs.NewContentType.closeDialog(true);
+        CStudioAuthoring.Dialogs.NewContentType.cb.success('/' + type + '/' + name);
       });
   },
 
