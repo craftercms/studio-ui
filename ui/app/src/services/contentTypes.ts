@@ -33,6 +33,7 @@ import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
+import { fetchConfigurationJSON } from './configuration';
 
 const typeMap = {
   input: 'text',
@@ -92,7 +93,8 @@ function getFieldValidations(
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
     (table, prop) => {
       if (prop.name === 'width' || prop.name === 'height') {
-        const parsedValidation = JSON.parse(prop.value);
+        const propValue = prop.value.replaceAll('&quot;', '"');
+        const parsedValidation = JSON.parse(propValue);
         if (parsedValidation.exact) {
           table[prop.name] = {
             name: prop.name,
@@ -297,7 +299,8 @@ function parseLegacyContentType(legacy: LegacyContentType): ContentType {
 }
 
 function fetchFormDefinition(site: string, contentTypeId: string): Observable<Partial<ContentType>> {
-  return fetchLegacyFormDefinition(site, contentTypeId).pipe(map(parseLegacyFormDef));
+  const path = `/content-types${contentTypeId}/form-definition.xml`;
+  return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDef(def.form)));
 }
 
 export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
@@ -354,12 +357,6 @@ export function fetchLegacyContentTypes(site: string, path?: string): Observable
     pluck('response'),
     catchError(errorSelectorApi1)
   );
-}
-
-export function fetchLegacyFormDefinition(site: string, contentTypeId: string): Observable<LegacyFormDefinition> {
-  return get(
-    `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`
-  ).pipe(pluck('response'));
 }
 
 export interface FetchContentTypeUsageResponse<T = SandboxItem> {
