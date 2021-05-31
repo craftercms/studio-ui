@@ -89,7 +89,7 @@ export function fetchLegacyScheduledItems(
 }
 
 export function fetchLegacyDeploymentHistory(
-  site: string,
+  siteId: string,
   sortBy: string,
   sortAsc: boolean,
   days: number,
@@ -97,7 +97,7 @@ export function fetchLegacyDeploymentHistory(
   filterBy: string
 ): Observable<LegacyDeploymentHistoryItem> {
   const qs = toQueryString({
-    site,
+    siteId,
     ...(sortBy
       ? {
           sort: sortBy,
@@ -109,5 +109,5 @@ export function fetchLegacyDeploymentHistory(
     ...(filterBy && { filterType: filterBy })
   });
 
-  return get(`/studio/api/1/services/api/1/deployment/get-deployment-history.json${qs}`).pipe(pluck('response'));
+  return get(`/studio/api/2/publish/history.json${qs}`).pipe(pluck('response'));
 }

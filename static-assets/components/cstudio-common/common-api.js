@@ -3018,7 +3018,7 @@ var nodeOpen = false,
 
       // DEPLOYMENT SERVICES
       // READ OPS
-      getDeploymentHistoryServiceUrl: '/api/1/services/api/1/deployment/get-deployment-history.json',
+      getDeploymentHistoryServiceUrl: '/api/2/publish/history.json',
       getScheduledItemsServiceUrl: '/api/1/services/api/1/deployment/get-scheduled-items.json',
       getDependenciesServiceUrl: '/api/1/services/api/1/dependency/get-dependencies.json',
 
