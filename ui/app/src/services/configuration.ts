@@ -315,3 +315,47 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
     })
   );
 }
+
+const legacySiteToolsIdMapping = {
+  'content-types': 'content-types',
+  'encrypt-tool': 'encrypt-tool',
+  'admin-configurations': 'configuration',
+  audit: 'audit',
+  'workflow-states': 'item-states',
+  'log-view': 'log',
+  'status-view': 'publishing',
+  repository: 'remote-repositories',
+  graphiql: 'graphiql',
+  'plugin-management': 'plugins'
+};
+
+const legacySiteToolsIconMapping = {
+  'content-types': '@material-ui/icons/WidgetsOutlined',
+  'encrypt-tool': '@material-ui/icons/LockOutlined',
+  'admin-configurations': '@material-ui/icons/SettingsApplicationsOutlined',
+  audit: '@material-ui/icons/SubjectRounded',
+  'workflow-states': '@material-ui/icons/SettingsOutlined',
+  'log-view': '@material-ui/icons/FormatAlignCenterRounded',
+  'status-view': '@material-ui/icons/CloudUploadOutlined',
+  repository: '@material-ui/icons/StorageRounded',
+  graphiql: 'craftercms.icons.GraphQL',
+  'plugin-management': '@material-ui/icons/ExtensionOutlined'
+};
+
+export function fetchSiteTools(site: string): Observable<GlobalState['uiConfig']['siteTools']['tools']> {
+  return fetchConfigurationDOM(site, '/administration/site-config-tools.xml', 'studio').pipe(
+    map((xml) => {
+      let tools = null;
+      if (xml) {
+        const toolsXML = xml.querySelector('tools');
+        if (toolsXML) {
+          tools = deserialize(toolsXML).tools.tool.map((tool) => ({
+            id: legacySiteToolsIdMapping[tool.name],
+            icon: { id: legacySiteToolsIconMapping[tool.name] }
+          }));
+        }
+      }
+      return tools;
+    })
+  );
+}

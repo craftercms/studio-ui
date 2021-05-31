@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,15 +13,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React from 'react';
 import { HashRouter } from 'react-router-dom';
-import GlobalApp, { GlobalAppContextProvider } from '../components/GlobalApp';
+import { GlobalAppContextProvider } from '../components/GlobalApp';
+import SiteToolsApp from '../components/SiteToolsApp';
 
-export default function Global(topProps: any) {
+export default function SiteTools(topProps: any) {
   return (
     <GlobalAppContextProvider>
       <HashRouter>
-        <GlobalApp {...topProps} />
+        <SiteToolsApp {...topProps} />
       </HashRouter>
     </GlobalAppContextProvider>
   );

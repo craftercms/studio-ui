@@ -37,6 +37,9 @@ import {
   fetchSiteLocale,
   fetchSiteLocaleComplete,
   fetchSiteLocaleFailed,
+  fetchSiteTools,
+  fetchSiteToolsComplete,
+  fetchSiteToolsFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
@@ -67,7 +70,11 @@ import { changeSite } from '../reducers/sites';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
-import { fetchGlobalMenuItems, fetchSiteLocale as fetchSiteLocaleService } from '../../services/configuration';
+import {
+  fetchGlobalMenuItems,
+  fetchSiteLocale as fetchSiteLocaleService,
+  fetchSiteTools as fetchSiteToolsService
+} from '../../services/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -377,6 +384,20 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchGlobalMenu.type),
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
+    ),
+  // endregion
+  // region fetchSiteLocale
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchSiteTools.type),
+      withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
+      switchMap(([, state]) =>
+        fetchSiteToolsService(state.sites.active).pipe(
+          map(fetchSiteToolsComplete),
+          catchAjaxError(fetchSiteToolsFailed)
+        )
+      )
     )
   // endregion
 ];

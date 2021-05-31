@@ -36,7 +36,7 @@ import { useGlobalNavigation } from '../../utils/hooks';
 import { urlMapping } from '../LauncherSection';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
-import { useGlobalAppState } from './GlobalContext';
+import { useGlobalAppState } from './GlobalAppContext';
 import Typography from '@material-ui/core/Typography';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import LoadingState from '../SystemStatus/LoadingState';
