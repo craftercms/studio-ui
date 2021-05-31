@@ -236,7 +236,7 @@ input[type='checkbox'].content-type-selector--checkbox {
 
 #cstudio-admin-console-command-bar.content-types-command-bar {
   left: 0;
-  width: calc(100% - 316px);
+  width: calc(100% - calc(calc(100% - 239px) * 0.38));
 }
 
 .content-type-tools-panel.content-type-tools-panel-first {
