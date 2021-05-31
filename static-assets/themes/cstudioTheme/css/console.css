@@ -235,8 +235,8 @@ input[type='checkbox'].content-type-selector--checkbox {
 }
 
 #cstudio-admin-console-command-bar.content-types-command-bar {
-  left: 240px;
-  width: calc(100% - 240px - calc(calc(100% - 239px) * 0.38));
+  left: 0;
+  width: calc(100% - 316px);
 }
 
 .content-type-tools-panel.content-type-tools-panel-first {
