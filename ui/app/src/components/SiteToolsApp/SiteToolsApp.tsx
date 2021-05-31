@@ -43,6 +43,8 @@ import WidgetsOutlinedIcon from '@material-ui/icons/WidgetsOutlined';
 import { translations } from './translations';
 import EmptyState from '../SystemStatus/EmptyState';
 import { useGlobalAppState } from '../GlobalApp';
+import LegacyDashboardFrame from '../LegacyDashboardFrame';
+import ContentTypeManagement from '../ContentTypesManagement';
 
 export default function SiteToolsApp() {
   const classes = useStyles();
@@ -59,7 +61,7 @@ export default function SiteToolsApp() {
   });
 
   const skeletonTools = useMemo(() => {
-    return new Array(15).fill(`${rand(70, 100)}%`);
+    return new Array(15).fill(null).map(() => `${rand(70, 100)}%`);
   }, []);
 
   const onClick = (id: string) => {
@@ -95,6 +97,7 @@ export default function SiteToolsApp() {
       </ResizeableDrawer>
       <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
+          <Route path="/content-types" component={ContentTypeManagement} />
           <Route path="/encrypt-tool" component={SiteEncryptTool} />
           <Route path="/configuration" component={SiteConfigurationManagement} />
           <Route path="/audit" component={SiteAuditManagement} />
@@ -135,7 +138,7 @@ export default function SiteToolsApp() {
                     }
                   }}
                   title="404"
-                  subtitle={<FormattedMessage id={'siteTools.routeNotFound'} defaultMessage={'Route not found'} />}
+                  subtitle={<FormattedMessage id={'siteTools.toolNotFound'} defaultMessage={'Tool not found'} />}
                 />
               );
             }}
@@ -153,7 +156,8 @@ Object.entries({
   '@material-ui/icons/LockOutlined': LockOutlinedIcon,
   '@material-ui/icons/SettingsApplicationsOutlined': SettingsApplicationsOutlinedIcon,
   '@material-ui/icons/CloudUploadOutlined': CloudUploadOutlinedIcon,
-  'craftercms.icons.GraphQL': GraphQL
+  'craftercms.icons.GraphQL': GraphQL,
+  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

@@ -1,83 +1,46 @@
-<#--
-~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
-~
-~ This program is free software: you can redistribute it and/or modify
-~ it under the terms of the GNU General Public License version 3 as published by
-~ the Free Software Foundation.
-~
-~ This program is distributed in the hope that it will be useful,
-~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-~ GNU General Public License for more details.
-~
-~ You should have received a copy of the GNU General Public License
-~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+<!--
+  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License version 3 as published by
+  ~ the Free Software Foundation.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
 
-<#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
-<!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <#include "/templates/web/common/page-fragments/head.ftl" />
-
   <meta charset="utf-8"/>
-  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+  <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/console.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-
-  <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script type="text/javascript" src="/studio/static-assets/components/cstudio-admin/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-
-  <#include "/templates/web/common/page-fragments/studio-context.ftl" />
-  <#include "/templates/web/common/page-fragments/context-nav.ftl" />
-
-  <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/routie/routie-0.3.2.min.js"></script>
-
-  <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}" ></script>
-  <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-
-  <script>
-    CMgs = CStudioAuthoring.Messages;
-    langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
-    formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-  </script>
-
-  <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
-
-</head>
-<#if RequestParameters.mode?? && RequestParameters.mode == "embedded">
-  <#assign embedded = true />
-<#else>
-  <#assign embedded = false />
-</#if>
-
-<body class="yui-skin-cstudioTheme <#if embedded>embedded</#if>">
-  <div id="admin-console" class="categories-panel-active"></div>
-</body>
-</html>
-<#else>
-  <script>window.location.href = '/studio'</script>
+  <meta name="theme-color" content="#000000"/>
+  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+  <link href="/studio/static-assets/styles/typography.css"
+        rel="stylesheet">
   <style>
-    body {
-      text-align: center;
-      font-family: sans-serif;
+    html, body, #root {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
     }
   </style>
-  <noscript>
-    <h1>Access Denied</h1>
-    <p>You don't have the necessary permissions to access this page.</p>
-  </noscript>
-</#if>
+</head>
+<body>
+<div id="root"></div>
+<#include "/templates/web/common/js-next-scripts.ftl" />
+<script>
+  CrafterCMSNext.render('#root', 'SiteTools', {}, false);
+</script>
+</body>
+</html>

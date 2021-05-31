@@ -50,8 +50,6 @@ export default function PublishingDashboard(props: PublishingDashboardProps) {
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
-          showHamburgerMenuButton={!embedded}
-          showAppsButton={!embedded}
         />
       )}
       <Grid container spacing={3} className={classes.grid}>

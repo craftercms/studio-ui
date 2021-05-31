@@ -53,7 +53,10 @@ export const useStyles = makeStyles((theme) =>
       marginRight: 'auto'
     },
     drawerPaper: {
-      position: 'absolute'
+      position: 'absolute',
+      '&.embedded': {
+        top: 0
+      }
     },
     list: {
       width: '100%',

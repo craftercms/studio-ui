@@ -185,11 +185,7 @@ const EncryptTool = (props: EncryptToolProps) => {
   return (
     <section>
       {!embedded && (
-        <GlobalAppToolbar
-          title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
-          showHamburgerMenuButton={!embedded}
-          showAppsButton={!embedded}
-        />
+        <GlobalAppToolbar title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />} />
       )}
       <Box p="20px">
         <form onSubmit={encrypt}>

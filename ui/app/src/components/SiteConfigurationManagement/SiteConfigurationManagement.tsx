@@ -410,14 +410,12 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="siteConfigurationManagement.title" defaultMessage="Configuration" />}
-          showHamburgerMenuButton={!embedded}
-          showAppsButton={!embedded}
         />
       )}
       <ResizeableDrawer
         open={openDrawer}
         width={width}
-        classes={{ drawerPaper: classes.drawerPaper }}
+        classes={{ drawerPaper: clsx(classes.drawerPaper, embedded && 'embedded') }}
         onWidthChange={onDrawerResize}
       >
         <List

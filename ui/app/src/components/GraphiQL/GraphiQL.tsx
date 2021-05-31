@@ -115,13 +115,7 @@ function Graphi(props: GraphiQLProps) {
 
   return (
     <Box display="flex" flexDirection="column" height="100vh">
-      {!embedded && (
-        <GlobalAppToolbar
-          title={<FormattedMessage id="GraphiQL.title" defaultMessage="GraphiQL" />}
-          showHamburgerMenuButton={!embedded}
-          showAppsButton={!embedded}
-        />
-      )}
+      {!embedded && <GlobalAppToolbar title={<FormattedMessage id="GraphiQL.title" defaultMessage="GraphiQL" />} />}
       <div className={clsx(classes.container, 'graphiql-container', embedded && 'embedded')}>
         {/* Explorer plugin for GraphiQL  */}
         <GraphiQLExplorer

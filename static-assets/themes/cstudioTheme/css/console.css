@@ -528,7 +528,7 @@ input[type='checkbox'].content-type-selector--checkbox {
 }
 
 .site-config-landing-page {
-  padding: 0 20px;
+  padding: 20px;
   overflow: auto;
 }
 
