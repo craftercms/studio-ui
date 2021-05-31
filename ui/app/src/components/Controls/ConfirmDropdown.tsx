@@ -108,7 +108,7 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
       {Icon ? (
         <TooltipComponent title={iconTooltip}>
           <IconButton onClick={handleClick} size={size}>
-            <Icon color={iconColor} />
+            <Icon color={disabled ? 'disabled' : iconColor} />
           </IconButton>
         </TooltipComponent>
       ) : (

@@ -14,22 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import Collapse from '@material-ui/core/Collapse';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import clsx from 'clsx';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import GitAuthForm from '../../../../components/GitAuthForm';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -43,20 +34,6 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiGrid-item': {
       padding: '12px'
     }
-  },
-  margin: {
-    margin: theme.spacing(1)
-  },
-  textField: {
-    width: '100%'
-  },
-  authBox: {
-    padding: '10px',
-    background: theme.palette.background.paper,
-    borderRadius: '5px',
-    marginLeft: '30px',
-    display: 'flex',
-    justifyContent: 'center'
   }
 }));
 
@@ -112,10 +89,6 @@ const messages = defineMessages({
     id: 'createSiteDialog.repoUrl',
     defaultMessage: 'Git Repo URL'
   },
-  authentication: {
-    id: 'common.authentication',
-    defaultMessage: 'Authentication'
-  },
   authenticationNoRequired: {
     id: 'createSiteDialog.authenticationNoRequired',
     defaultMessage: 'Authentication not required (public URL)'
@@ -137,23 +110,7 @@ const messages = defineMessages({
 function GitForm(props: GitFormProps) {
   const classes = useStyles({});
   const { inputs, setInputs, handleInputChange, onKeyPress } = props;
-  const [showPassword, setShowPassword] = useState(false);
   const { formatMessage } = useIntl();
-
-  const viewAuth = (type: string) => {
-    const _expanded: any = { ...inputs.expanded };
-    Object.keys(inputs.expanded).map((key: string) => {
-      if (key === type) {
-        return (_expanded[key] = !_expanded[key]);
-      }
-      return (_expanded[key] = false);
-    });
-    setInputs({ ...inputs, expanded: _expanded });
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
 
   function renderHelperText(
     name: string,
@@ -167,109 +124,6 @@ function GitForm(props: GitFormProps) {
     } else {
       return helperText;
     }
-  }
-
-  function renderAuth(type: string) {
-    return (
-      <div className={classes.authBox}>
-        {(type === 'basic' || type === 'token') && (
-          <TextField
-            id="repoUsername"
-            name="repoUsername"
-            className={clsx(classes.margin, classes.textField)}
-            label={formatMessage(messages.userName)}
-            required
-            value={inputs.repoUsername}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            error={inputs.submitted && !inputs.repoUsername}
-            helperText={renderHelperText(
-              formatMessage(messages.userName),
-              inputs.repoUsername,
-              '',
-              true,
-              inputs.submitted
-            )}
-          />
-        )}
-        {type === 'basic' && (
-          <TextField
-            id="repoPassword"
-            name="repoPassword"
-            className={clsx(classes.margin, classes.textField)}
-            type={showPassword ? 'text' : 'password'}
-            label={formatMessage(messages.password)}
-            required
-            value={inputs.repoPassword}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            error={inputs.submitted && !inputs.repoPassword}
-            helperText={renderHelperText(
-              formatMessage(messages.password),
-              inputs.repoPassword,
-              '',
-              true,
-              inputs.submitted
-            )}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        )}
-        {type === 'token' && (
-          <TextField
-            id="repoToken"
-            name="repoToken"
-            className={clsx(classes.margin, classes.textField)}
-            type={showPassword ? 'text' : 'password'}
-            label={formatMessage(messages.token)}
-            required
-            value={inputs.repoToken}
-            error={inputs.submitted && !inputs.repoToken}
-            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, '', true, inputs.submitted)}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        )}
-        {type === 'key' && (
-          <TextField
-            id="repoKey"
-            name="repoKey"
-            label={formatMessage(messages.privateKey)}
-            required
-            fullWidth
-            multiline
-            className={classes.margin}
-            error={inputs.submitted && !inputs.repoKey}
-            helperText={renderHelperText(
-              formatMessage(messages.privateKey),
-              inputs.repoKey,
-              '',
-              true,
-              inputs.submitted
-            )}
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            value={inputs.repoKey}
-          />
-        )}
-      </div>
-    );
   }
 
   return (
@@ -297,47 +151,8 @@ function GitForm(props: GitFormProps) {
         />
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="subtitle1" color={'textSecondary'}>
-          {formatMessage(messages.authentication)}
-        </Typography>
         <div className={classes.formControl}>
-          <RadioGroup
-            aria-label="repoAuthentication"
-            name="repoAuthentication"
-            value={inputs.repoAuthentication}
-            onChange={handleInputChange}
-            onKeyPress={onKeyPress}
-          >
-            <FormControlLabel
-              value="none"
-              control={<Radio color="primary" onChange={() => viewAuth('none')} />}
-              label={formatMessage(messages.authenticationNoRequired)}
-            />
-            <FormControlLabel
-              value="basic"
-              control={<Radio color="primary" onChange={() => viewAuth('basic')} />}
-              label={formatMessage(messages.usernameAndPassword)}
-            />
-            <Collapse in={inputs.expanded.basic} timeout={300}>
-              {inputs.expanded.basic && renderAuth(inputs.repoAuthentication)}
-            </Collapse>
-            <FormControlLabel
-              value="token"
-              control={<Radio color="primary" onChange={() => viewAuth('token')} />}
-              label={formatMessage(messages.token)}
-            />
-            <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
-              {inputs.expanded.token && renderAuth(inputs.repoAuthentication)}
-            </Collapse>
-            <FormControlLabel
-              value="key"
-              control={<Radio color="primary" onChange={() => viewAuth('key')} />}
-              label={formatMessage(messages.privateKey)}
-            />
-            <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
-              {inputs.expanded.key && renderAuth(inputs.repoAuthentication)}
-            </Collapse>
-          </RadioGroup>
+          <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
         </div>
       </Grid>
       <Grid item xs={12}>
