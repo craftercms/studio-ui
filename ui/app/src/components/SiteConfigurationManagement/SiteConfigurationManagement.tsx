@@ -407,6 +407,13 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
 
   return (
     <section className={classes.root}>
+      {!embedded && (
+        <GlobalAppToolbar
+          title={<FormattedMessage id="siteConfigurationManagement.title" defaultMessage="Configuration" />}
+          showHamburgerMenuButton={!embedded}
+          showAppsButton={!embedded}
+        />
+      )}
       <ResizeableDrawer
         open={openDrawer}
         width={width}
@@ -514,7 +521,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
         <Box
           display="flex"
           flexGrow={1}
-          width={openDrawer ? `calc(100% - ${width}px )` : '100%'}
+          width="100%"
           flexDirection={loadingXml ? 'row' : 'column'}
           paddingLeft={openDrawer ? `${width}px` : 0}
         >

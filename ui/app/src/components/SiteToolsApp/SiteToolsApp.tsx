@@ -16,12 +16,11 @@
 
 import useStyles from './styles';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Box, Typography } from '@material-ui/core';
-import { getPossibleTranslation } from '../../utils/i18n';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon from '../SystemIcon';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -35,12 +34,15 @@ import SiteEncryptTool from '../SiteEncryptTool';
 import SiteAuditManagement from '../SiteAuditManagement';
 import LogConsole from '../LogConsole';
 import PublishingDashboard from '../PublishingDashboard';
-import Graphi from '../GraphiQL';
+import Graphi from '../GraphiQL/GraphiQL';
 import PluginManagement from '../PluginManagement';
-import { useSiteTools } from '../../utils/hooks';
+import { useSelection, useSiteTools } from '../../utils/hooks';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import WidgetsOutlinedIcon from '@material-ui/icons/WidgetsOutlined';
+import { translations } from './translations';
+import EmptyState from '../SystemStatus/EmptyState';
+import { useGlobalAppState } from '../GlobalApp';
 
 export default function SiteToolsApp() {
   const classes = useStyles();
@@ -48,8 +50,17 @@ export default function SiteToolsApp() {
   const history = useHistory();
   const { formatMessage } = useIntl();
   const siteTools = useSiteTools();
+  const [activeToolId, setActiveToolId] = useState(history.location.pathname);
+  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const [{ openSidebar }] = useGlobalAppState();
 
-  const skeletonTools = new Array(15).fill(`${rand(70, 100)}%`);
+  history.listen((location) => {
+    setActiveToolId(location.pathname);
+  });
+
+  const skeletonTools = useMemo(() => {
+    return new Array(15).fill(`${rand(70, 100)}%`);
+  }, []);
 
   const onClick = (id: string) => {
     history.push(id);
@@ -59,20 +70,20 @@ export default function SiteToolsApp() {
     <section className={classes.root}>
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
-        open={true}
+        open={openSidebar}
         width={width}
         onWidthChange={setWidth}
       >
         <MenuList disablePadding>
           {siteTools.tools
             ? siteTools.tools.map((link) => (
-                <MenuItem onClick={() => onClick(link.id)} key={link.id}>
+                <MenuItem onClick={() => onClick(link.id)} key={link.id} selected={`/${link.id}` === activeToolId}>
                   <SystemIcon
                     className={classes.icon}
                     icon={link.icon}
                     svgIconProps={{ fontSize: 'small', color: 'action' }}
                   />
-                  <Typography>{getPossibleTranslation(link.id, formatMessage)}</Typography>
+                  <Typography>{formatMessage(translations[link.id])}</Typography>
                 </MenuItem>
               ))
             : skeletonTools.map((width, i) => (
@@ -82,7 +93,7 @@ export default function SiteToolsApp() {
               ))}
         </MenuList>
       </ResizeableDrawer>
-      <Box height="100%" width="100%" paddingLeft={`${width}px`}>
+      <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
           <Route path="/encrypt-tool" component={SiteEncryptTool} />
           <Route path="/configuration" component={SiteConfigurationManagement} />
@@ -93,6 +104,42 @@ export default function SiteToolsApp() {
           <Route path="/remote-repositories" component={SiteEncryptTool} />
           <Route path="/graphiql" component={Graphi} />
           <Route path="/plugins" component={PluginManagement} />
+          <Route
+            exact
+            path="/"
+            render={() => {
+              return (
+                <EmptyState
+                  styles={{
+                    root: {
+                      height: '100%',
+                      margin: 0
+                    }
+                  }}
+                  title={
+                    <FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />
+                  }
+                  image={`${baseUrl}/static-assets/images/choose_option.svg`}
+                />
+              );
+            }}
+          />
+          <Route
+            render={() => {
+              return (
+                <EmptyState
+                  styles={{
+                    root: {
+                      height: '100%',
+                      margin: 0
+                    }
+                  }}
+                  title="404"
+                  subtitle={<FormattedMessage id={'siteTools.routeNotFound'} defaultMessage={'Route not found'} />}
+                />
+              );
+            }}
+          />
         </Switch>
       </Box>
     </section>

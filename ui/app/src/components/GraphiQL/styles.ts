@@ -14,16 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Graphi from '../GraphiQL';
-import { useActiveSiteId, useEnv } from '../../utils/hooks';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-}
-
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return <Graphi storageKey={site} url={`${guestBase}/api/1/site/graphql`} embedded={props.embedded} />;
-}
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    container: {
+      '& .title': {
+        display: 'none'
+      },
+      '&.embedded .title': {
+        display: 'block'
+      },
+      '& .doc-explorer-title, & .history-title': {
+        height: '32px'
+      }
+    }
+  })
+);

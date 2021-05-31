@@ -187,8 +187,8 @@ const EncryptTool = (props: EncryptToolProps) => {
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
-          showHamburgerMenuButton={!site}
-          showAppsButton={!site}
+          showHamburgerMenuButton={!embedded}
+          showAppsButton={!embedded}
         />
       )}
       <Box p="20px">

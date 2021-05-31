@@ -133,8 +133,8 @@ export default function LogConsole(props: LogConsoleManagementProps) {
             </Button>
           </>
         }
-        showHamburgerMenuButton={logType === 'studio'}
-        showAppsButton={logType === 'studio'}
+        showHamburgerMenuButton={embedded}
+        showAppsButton={embedded}
       />
       <ConditionalLoadingState isLoading={!logEvents}>
         <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />

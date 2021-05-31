@@ -21,11 +21,14 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import PublishingQueueWidget from '../PublishingQueueWidget';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
+import GlobalAppToolbar from '../GlobalAppToolbar';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      padding: '50px'
+    root: {},
+    grid: {
+      padding: '20px'
     },
     warningText: {
       display: 'block'
@@ -33,13 +36,25 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PublishingDashboard() {
+interface PublishingDashboardProps {
+  embedded?: boolean;
+}
+
+export default function PublishingDashboard(props: PublishingDashboardProps) {
+  const { embedded } = props;
   const classes = useStyles();
   const site = useActiveSiteId();
 
   return (
     <section className={classes.root}>
-      <Grid container spacing={3}>
+      {!embedded && (
+        <GlobalAppToolbar
+          title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
+          showHamburgerMenuButton={!embedded}
+          showAppsButton={!embedded}
+        />
+      )}
+      <Grid container spacing={3} className={classes.grid}>
         <Grid item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>

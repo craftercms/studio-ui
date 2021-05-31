@@ -21,7 +21,8 @@ export const useStyles = makeStyles((theme) =>
     root: {
       display: 'flex',
       height: '100%',
-      position: 'relative'
+      position: 'relative',
+      flexDirection: 'column'
     },
     editorCleanStyles: {
       border: '0',
@@ -52,7 +53,6 @@ export const useStyles = makeStyles((theme) =>
       marginRight: 'auto'
     },
     drawerPaper: {
-      top: '0 !important',
       position: 'absolute'
     },
     list: {
