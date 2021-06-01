@@ -3018,7 +3018,7 @@ var nodeOpen = false,
 
       // DEPLOYMENT SERVICES
       // READ OPS
-      getDeploymentHistoryServiceUrl: '/api/1/services/api/1/deployment/get-deployment-history.json',
+      getDeploymentHistoryServiceUrl: '/api/2/publish/history.json',
       getScheduledItemsServiceUrl: '/api/1/services/api/1/deployment/get-scheduled-items.json',
       getDependenciesServiceUrl: '/api/1/services/api/1/dependency/get-dependencies.json',
 
@@ -3037,9 +3037,6 @@ var nodeOpen = false,
       logoutUrl: '/api/1/services/api/1/security/logout.json',
       getLogoutInfoURL: '/api/2/users/me/logout/sso/url',
       getActiveEnvironmentURL: '/api/2/ui/system/active_environment',
-
-      // Configuration Services
-      getConfigurationUrl: '/api/1/services/api/1/site/get-configuration.json',
 
       // Workflow Services
       getGoLiveQueueItemsServiceUrl: '/api/1/services/api/1/workflow/get-go-live-items.json',
@@ -3334,43 +3331,41 @@ var nodeOpen = false,
        * lookup configuration
        */
       lookupConfigurtion: function(site, configPath, callback) {
-        CrafterCMSNext.util.ajax
-          .get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=${configPath}`)
-          .subscribe(
-            (config) => {
-              callback.success(config.response);
-              try {
-                var CMgs = CStudioAuthoring.Messages,
-                  previewLangBundle = previewLangBundle
-                    ? previewLangBundle
-                    : CMgs.getBundle('previewTools', CStudioAuthoringContext.lang);
-                CStudioAuthoring.Operations.translateContent(previewLangBundle);
-              } catch (err) {}
-            },
-            () => {
-              if (callback.failure) {
-                callback.failure();
-              }
+        CrafterCMSNext.services.configuration.fetchConfigurationJSON(site, configPath, 'studio').subscribe(
+          (config) => {
+            const configRootKey = Object.keys(config)[0];
+            callback.success(config[configRootKey]);
+            try {
+              var CMgs = CStudioAuthoring.Messages,
+                previewLangBundle = previewLangBundle
+                  ? previewLangBundle
+                  : CMgs.getBundle('previewTools', CStudioAuthoringContext.lang);
+              CStudioAuthoring.Operations.translateContent(previewLangBundle);
+            } catch (err) {}
+          },
+          () => {
+            if (callback.failure) {
+              callback.failure();
             }
-          );
+          }
+        );
       },
 
       /**
        * lookup configuration
        */
       getConfiguration: function(site, configPath, callback) {
-        CrafterCMSNext.util.ajax
-          .get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=${configPath}`)
-          .subscribe(
-            (config) => {
-              callback.success(config.response);
-            },
-            () => {
-              if (callback.failure) {
-                callback.failure();
-              }
+        CrafterCMSNext.services.configuration.fetchConfigurationJSON(site, configPath, 'studio').subscribe(
+          (config) => {
+            const configRootKey = Object.keys(config)[0];
+            callback.success(config[configRootKey]);
+          },
+          () => {
+            if (callback.failure) {
+              callback.failure();
             }
-          );
+          }
+        );
       },
 
       /**
@@ -3477,7 +3472,7 @@ var nodeOpen = false,
       getContent: function(path, edit, callback) {
         CrafterCMSNext.services.content
           .fetchContentXML(CStudioAuthoringContext.site, encodeURI(path), {
-            lock: !edit
+            lock: edit === 'true' || edit === true
           })
           .subscribe(
             function(content) {
@@ -3817,18 +3812,21 @@ var nodeOpen = false,
         const site = CStudioAuthoringContext.site;
         const path = '/context-nav/contextual-nav.xml';
 
-        CrafterCMSNext.util.ajax
-          .get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=${path}`)
-          .subscribe(
-            (config) => {
-              if (!config.response.context.length) {
-                callback.success(config.response.context);
-              }
-            },
-            () => {
+        CrafterCMSNext.services.configuration.fetchConfigurationJSON(site, path, 'studio').subscribe(
+          (config) => {
+            const configRootKey = Object.keys(config)[0];
+            const configContext = config[configRootKey].context;
+
+            if (!configContext.length) {
+              callback.success(configContext);
+            }
+          },
+          () => {
+            if (callback.failure) {
               callback.failure();
             }
-          );
+          }
+        );
       },
 
       /**
@@ -7621,7 +7619,17 @@ CStudioAuthoring.InContextEdit = {
     if (!topWindow.iceDialogs) {
       topWindow.iceDialogs = [];
     }
-    topWindow.iceDialogs.push({ key: editorId, value: context, iframe });
+    topWindow.iceDialogs.push({ key: editorId, value: context, iframe, stackNumber: topWindow.iceDialogs.length + 1 });
+  },
+
+  getDialog: function(editorId) {
+    let topWindow = getTopLegacyWindow();
+    return topWindow.iceDialogs.find((dialog) => dialog.key === editorId);
+  },
+
+  getDialogs: function() {
+    let topWindow = getTopLegacyWindow();
+    return topWindow.iceDialogs;
   },
 
   registerIceCallback: function(editorId, callback) {

@@ -213,3 +213,17 @@ export function hasPermissions(site: string, ...permissions: string[]): Observab
 export function hasPermission(site: string, permission: string): Observable<boolean> {
   return hasPermissions(site, permission).pipe(pluck(permission));
 }
+
+export function fetchGlobalPermissions(): Observable<string[]> {
+  return get(`/studio/api/2/users/me/global/permissions`).pipe(pluck('response', 'permissions'));
+}
+
+export function hasGlobalPermissions(...permissions: string[]): Observable<LookupTable<boolean>> {
+  return postJSON('/studio/api/2/users/me/global/has_permissions', { permissions }).pipe(
+    pluck('response', 'permissions')
+  );
+}
+
+export function hasGlobalPermission(permission: string): Observable<boolean> {
+  return hasGlobalPermissions(permission).pipe(pluck(permission));
+}

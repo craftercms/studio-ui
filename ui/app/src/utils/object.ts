@@ -231,6 +231,12 @@ export function applyDeserializedXMLTransforms<T extends object = {}>(
       if (arrays?.includes(newName)) {
         if (typeof target[prop] === 'string') {
           newObject[newName] = [];
+        } else if (
+          // @ts-ignore
+          target[prop]._preserve === 'true'
+        ) {
+          newObject[newName] = target[prop];
+          delete newObject[newName]._preserve;
         } else {
           const keys = Object.keys(target[prop]);
           const childName = keys[0];
@@ -247,13 +253,19 @@ export function applyDeserializedXMLTransforms<T extends object = {}>(
         } else {
           const keys = Object.keys(target[prop]);
           const childName = keys[0];
-          const tempArray = (Array.isArray(target[prop][childName])
-            ? target[prop][childName]
-            : [target[prop][childName]]
-          )
-            .filter(Boolean)
-            .map((item) => applyDeserializedXMLTransforms(item, options));
-          newObject[newName] = createLookupTable(tempArray);
+          if (Array.isArray(target[prop][childName])) {
+            // Assume single key as in `{ lookupTableKeyName: { childName: [{}, {}, {}] } }`
+            const tempArray = target[prop][childName]
+              .filter(Boolean)
+              .map((item) => applyDeserializedXMLTransforms(item, options));
+            newObject[newName] = createLookupTable(tempArray);
+          } else {
+            // Assume multiple keys that will be used as the index
+            newObject[newName] = {};
+            keys.forEach((key) => {
+              newObject[newName][key] = applyDeserializedXMLTransforms(target[prop][key], options);
+            });
+          }
         }
       } else {
         newObject[newName] =
@@ -269,3 +281,5 @@ export function applyDeserializedXMLTransforms<T extends object = {}>(
 export function deepCopy<T extends object = any>(target: T): T {
   return JSON.parse(JSON.stringify(target));
 }
+
+export const foo = {};

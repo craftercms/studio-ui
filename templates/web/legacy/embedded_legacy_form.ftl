@@ -85,6 +85,7 @@
   const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
   const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
+  const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST'
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -158,6 +159,9 @@
                                     });
                                   }
                                 },
+                                pendingChanges: () => {
+                                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
+                                },
                                 renderFailed(error) {
                                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
                                 },
@@ -220,6 +224,9 @@
                     renderComplete: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                     },
+                    pendingChanges: () => {
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
+                    },
                     id: type
                   },
                   null
@@ -248,6 +255,12 @@
               action: 'cancelled'
             }, '*');
           },
+          pendingChanges: function() {
+            window.top.postMessage({
+              type: 'LEGACY_CODE_EDITOR_PENDING_CHANGES',
+              action: 'pendingChanges'
+            }, '*');
+          },
           renderComplete: function () {
             window.top.postMessage({
               type: 'LEGACY_CODE_EDITOR_RENDERED',
@@ -261,6 +274,12 @@
       }
     }
   }
+
+  window.addEventListener("message", (event) => {
+    if(event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
+      CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
+    }
+  }, false);
 
   CrafterCMSNext.system.getStore().subscribe(() => {
     openDialog(type, path);

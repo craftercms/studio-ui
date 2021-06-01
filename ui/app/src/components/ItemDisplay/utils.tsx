@@ -30,18 +30,18 @@ export function getItemPublishingTargetText(stateMap: ItemStateMap) {
 
 export function getItemStateText(stateMap: ItemStateMap) {
   switch (true) {
-    case stateMap.modified:
-      return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
-    case stateMap.deleted:
-      return <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />;
-    case stateMap.locked:
-      return <FormattedMessage id="itemState.locked" defaultMessage="Locked" />;
     case stateMap.systemProcessing:
       return <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />;
-    case stateMap.submitted:
-      return <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />;
+    case stateMap.locked:
+      return <FormattedMessage id="itemState.locked" defaultMessage="Locked" />;
+    case stateMap.deleted:
+      return <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />;
+    case stateMap.modified:
+      return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
     case stateMap.scheduled:
       return <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />;
+    case stateMap.submitted:
+      return <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />;
     case stateMap.new:
       return <FormattedMessage id="itemState.new" defaultMessage="New" />;
     default:

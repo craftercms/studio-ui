@@ -37,6 +37,7 @@ import {
   CONTENT_EDIT_MASK,
   CONTENT_EDIT_TEMPLATE_MASK,
   CONTENT_GET_DEPENDENCIES_ACTION_MASK,
+  CONTENT_ITEM_UNLOCK,
   CONTENT_PASTE_MASK,
   CONTENT_READ_VERSION_HISTORY_MASK,
   CONTENT_RENAME_MASK,
@@ -123,6 +124,24 @@ export function isImage(path: string): boolean {
   );
 }
 
+export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
+  return item ? item.lockOwner && item.lockOwner !== username : true;
+}
+
+export function getComputedEditMode({
+  item,
+  username,
+  editMode
+}: {
+  item: DetailedItem;
+  username: string;
+  editMode: boolean;
+}): boolean {
+  return isItemLockedForMe(item, username) === true || hasEditAction(item.availableActions) === false
+    ? false
+    : editMode;
+}
+
 export function getSystemTypeFromPath(path: string): SystemType {
   const rootPath = getRootPath(path);
   if (rootPath.includes('/site/website')) {
@@ -193,7 +212,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     localeCode: 'en',
     translationSourceId: null,
     availableActions: 0,
-    availableActionsMap: {}
+    availableActionsMap: {} as ItemActionsMap
   };
 }
 
@@ -672,10 +691,11 @@ export const hasPublishAction = (value: number) => Boolean(value & PUBLISH_MASK)
 export const hasApprovePublishAction = (value: number) => Boolean(value & PUBLISH_APPROVE_MASK);
 export const hasSchedulePublishAction = (value: number) => Boolean(value & PUBLISH_SCHEDULE_MASK);
 export const hasPublishRejectAction = (value: number) => Boolean(value & PUBLISH_REJECT_MASK);
+export const hasUnlockAction = (value: number) => Boolean(value & CONTENT_ITEM_UNLOCK);
 // endregion
 
 export const createItemActionMap: (availableActions: number) => ItemActionsMap = (value: number) => ({
-  read: hasReadAction(value),
+  view: hasReadAction(value),
   copy: hasCopyAction(value),
   history: hasReadHistoryAction(value),
   dependencies: hasGetDependenciesAction(value),
@@ -683,16 +703,17 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
   createContent: hasCreateAction(value),
   paste: hasPasteAction(value),
   edit: hasEditAction(value),
+  unlock: hasUnlockAction(value),
   rename: hasRenameAction(value),
   cut: hasCutAction(value),
   upload: hasUploadAction(value),
   duplicate: hasDuplicateAction(value),
-  changeType: hasChangeTypeAction(value),
+  changeContentType: hasChangeTypeAction(value),
   revert: hasRevertAction(value),
   editController: hasEditControllerAction(value),
   editTemplate: hasEditTemplateAction(value),
   createFolder: hasCreateFolderAction(value),
-  deleteContent: hasContentDeleteAction(value),
+  delete: hasContentDeleteAction(value),
   deleteController: hasDeleteControllerAction(value),
   deleteTemplate: hasDeleteTemplateAction(value),
   publish: hasPublishAction(value),

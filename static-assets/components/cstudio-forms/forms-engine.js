@@ -636,6 +636,24 @@ var CStudioForms =
       },
 
       updateModel: function(id, value, remote) {
+        let formField = null;
+
+        this.sections.forEach((section) => {
+          let field = section.fields.find((field) => field.id === id);
+          if (field) {
+            formField = field;
+          }
+        });
+
+        if (formField && formField.edited) {
+          var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+          var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
+          if (iceWindowCallback.pendingChanges) {
+            let callback = getCustomCallback(iceWindowCallback.pendingChanges);
+            callback();
+          }
+        }
+
         if (id.indexOf('|') != -1) {
           var parts = id.split('|');
           var repeatGroup = parts[0];
@@ -711,7 +729,8 @@ var CStudioForms =
       CHILD_FORM_DRAFT_COMPLETE = 'CHILD_FORM_DRAFT_COMPLETE',
       FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
       FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
-      FORM_CANCEL = 'FORM_CANCEL';
+      FORM_CANCEL = 'FORM_CANCEL',
+      LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST';
 
     const { fromEvent, operators } = CrafterCMSNext.rxjs;
     const { map, filter, take } = operators;
@@ -750,13 +769,24 @@ var CStudioForms =
     };
 
     function parseDOM(content) {
-      try {
-        let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
-        return parseResult.documentElement;
-      } catch (ex) {
-        console.error(`Error attempting to parse content XML.`);
-        return null;
+      let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
+
+      if (isParseError(parseResult)) {
+        throw new Error('Error attempting to parse content XML.');
       }
+      return parseResult.documentElement;
+    }
+
+    function isParseError(parsedDocument) {
+      var parser = new DOMParser(),
+        errorneousParse = parser.parseFromString('<', 'application/xml'),
+        parsererrorNS = errorneousParse.getElementsByTagName('parsererror')[0].namespaceURI;
+
+      if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
+        return parsedDocument.getElementsByTagName('parsererror').length > 0;
+      }
+
+      return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
     }
 
     function sendAndAwait(key, observer) {
@@ -922,12 +952,26 @@ var CStudioForms =
                 cfe.engine.cancelForm();
                 break;
               }
+              case LEGACY_FORM_DIALOG_CANCEL_REQUEST: {
+                const dialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
+                const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
+                if (dialog.stackNumber === dialogs.length) {
+                  cfe.engine.cancelForm();
+                }
+                break;
+              }
             }
           });
         } else {
           messages$.subscribe((message) => {
             if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
               setButtonsEnabled(true);
+            } else if (message.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
+              const dialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
+              const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
+              if (dialog.stackNumber === dialogs.length) {
+                cfe.engine.cancelForm();
+              }
             }
           });
         }
@@ -1344,7 +1388,21 @@ var CStudioForms =
               return;
             }
 
-            var xml = CStudioForms.Util.serializeModelToXml(form, saveDraft);
+            try {
+              var xml = CStudioForms.Util.serializeModelToXml(form, saveDraft);
+            } catch (e) {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'error-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(formsLangBundle, 'notification'),
+                e,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+              setButtonsEnabled(true);
+              return;
+            }
 
             var serviceUrl =
               '/api/1/services/api/1/content/write-content.json' +
@@ -2992,6 +3050,8 @@ var CStudioForms =
 
         xml += '</' + form.definition.objectType + '>';
 
+        xml = xml.replaceAll('', '');
+
         if (!cfe.engine.config.isInclude) {
           const doc = parseDOM(xml);
           xml = resolvePendingComponents(doc);
@@ -3171,7 +3231,7 @@ var CStudioForms =
                 repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${
                   isTokenized ? 'tokenized="true"' : ''
                 }`;
-              output += '\t<' + fieldName + repeatAttr + '>';
+              output += `\t<${fieldName} ${repeatAttr} >`;
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
               } else {

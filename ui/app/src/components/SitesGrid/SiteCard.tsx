@@ -79,15 +79,6 @@ export default function SiteCard(props: SiteCardProps) {
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
-          avatar={
-            <PublishingStatusButtonUI
-              isFetching={!publishingStatus}
-              enabled={publishingStatus?.enabled}
-              status={publishingStatus?.status}
-              variant="icon"
-              onClick={(e) => onPublishButtonClick(e, site)}
-            />
-          }
           subheader={
             site.description && (
               <Tooltip title={site.description}>
@@ -108,31 +99,44 @@ export default function SiteCard(props: SiteCardProps) {
           <CardMedia
             component="img"
             className={classes.media}
-            image={`/static-assets/images/screenshots/site.png?crafterSite=${site.id}`}
+            image={`/.crafter/screenshots/default.png?crafterSite=${site.id}`}
             title={site.name}
             onError={(event) => (event.target.src = fallbackImageSrc)}
           />
         )}
       </CardActionArea>
-      <CardActions disableSpacing>
-        <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-          <IconButton onClick={() => onEditSiteClick(site)}>
-            <EditRoundedIcon />
-          </IconButton>
-        </Tooltip>
-        <ConfirmDropdown
-          cancelText={formatMessage(translations.confirmCancel)}
-          confirmText={formatMessage(translations.confirmOk)}
-          confirmHelperText={formatMessage(translations.confirmHelperText, {
-            site: site.name
-          })}
-          iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
-          icon={DeleteRoundedIcon}
-          iconColor="action"
-          onConfirm={() => {
-            onDeleteSiteClick(site);
-          }}
+      <CardActions className={classes.cardActions} disableSpacing>
+        <PublishingStatusButtonUI
+          isFetching={!publishingStatus}
+          enabled={publishingStatus?.enabled}
+          status={publishingStatus?.status}
+          variant="icon"
+          size={compact ? 'small' : 'medium'}
+          onClick={(e) => onPublishButtonClick(e, site)}
         />
+        {onEditSiteClick && (
+          <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
+            <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
+              <EditRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {onDeleteSiteClick && (
+          <ConfirmDropdown
+            size={compact ? 'small' : 'medium'}
+            cancelText={formatMessage(translations.confirmCancel)}
+            confirmText={formatMessage(translations.confirmOk)}
+            confirmHelperText={formatMessage(translations.confirmHelperText, {
+              site: site.name
+            })}
+            iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
+            icon={DeleteRoundedIcon}
+            iconColor="action"
+            onConfirm={() => {
+              onDeleteSiteClick(site);
+            }}
+          />
+        )}
       </CardActions>
     </Card>
   );

@@ -81,6 +81,12 @@ import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
 import Component from '../../components/Icons/Component';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import GraphQL from '../../components/Icons/GraphQL';
+import SiteEncryptTool from '../../components/SiteEncryptTool';
+import SiteConfigurationManagement from '../../components/SiteConfigurationManagement';
+import SiteAuditManagement from '../../components/SiteAuditManagement';
+import LogConsole from '../../components/LogConsole';
+import PublishingDashboard from '../../components/PublishingDashboard';
+import SiteGraphiQL from '../../components/SiteGraphiQL';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -221,7 +227,13 @@ Object.entries({
   'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
   'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,
   'craftercms.components.PluginManagement': PluginManagement,
-  'craftercms.component.EmptyState': EmptyState
+  'craftercms.component.EmptyState': EmptyState,
+  'craftercms.components.SiteEncryptTool': SiteEncryptTool,
+  'craftercms.components.SiteConfigurationManagement': SiteConfigurationManagement,
+  'craftercms.components.SiteAuditManagement': SiteAuditManagement,
+  'craftercms.components.LogConsole': LogConsole,
+  'craftercms.components.PublishingDashboard': PublishingDashboard,
+  'craftercms.components.SiteGraphiQL': SiteGraphiQL
 }).forEach(([id, component]) => {
   components.set(id, component);
 });

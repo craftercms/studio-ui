@@ -40,7 +40,7 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="bordered width10 minWidth100">
+            <GlobalAppGridCell align="left" className="bordered width10 minWidth100 padded10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Local Address" />
               </Typography>
@@ -71,10 +71,10 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
         <TableBody>
           {items.map((item, i) => (
             <GlobalAppGridRow key={i} className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="width10">
+              <GlobalAppGridCell align="left" className="width10 padded10">
                 <Skeleton variant="text" width={`${rand(60, 80)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="center" className="">
+              <GlobalAppGridCell align="center" className="padded10">
                 <Skeleton className={classes.marginCenter} variant="circle" width={20} height={20} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width50 padded10">

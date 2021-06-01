@@ -16,7 +16,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Guest from './react/Guest';
+import Guest, { GuestProps } from './react/Guest';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { nnou } from './utils/object';
@@ -73,10 +73,10 @@ export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
     .then((response) => response.preview);
 }
 
-export function initPageBuilder({ path, documentDomain }) {
+export function initPageBuilder(props: GuestProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   ReactDOM.render(
-    <Guest path={path} isAuthoring documentDomain={documentDomain}>
+    <Guest isAuthoring {...props}>
       <GuestProxy />
     </Guest>,
     guestProxyElement

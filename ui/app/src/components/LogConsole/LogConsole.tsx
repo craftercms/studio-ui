@@ -35,10 +35,11 @@ import EmptyState from '../SystemStatus/EmptyState';
 
 interface LogConsoleManagementProps {
   logType?: 'studio' | 'preview';
+  embedded?: boolean;
 }
 
 export default function LogConsole(props: LogConsoleManagementProps) {
-  const { logType = 'studio' } = props;
+  const { logType = 'studio', embedded } = props;
   const [logEvents, setLogEvents] = useState<LogEvent[]>();
   const [showLogEventDialog, setShowLogEventDialog] = useState(false);
   const site = useActiveSiteId();
@@ -51,7 +52,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
     let since = moment()
       .subtract(1, 'hour')
       .valueOf();
-    fetchPreviewLog('editorial', since).subscribe();
+    fetchPreviewLog(site, since).subscribe();
   });
 
   const refresh = useCallback(
@@ -117,9 +118,9 @@ export default function LogConsole(props: LogConsoleManagementProps) {
   };
 
   return (
-    <Box p={logType === 'studio' ? 0 : '20px'}>
+    <Box>
       <GlobalAppToolbar
-        title={<FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
+        title={!embedded && <FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
         rightContent={
           <>
             <Button
@@ -139,6 +140,8 @@ export default function LogConsole(props: LogConsoleManagementProps) {
             </Button>
           </>
         }
+        showHamburgerMenuButton={logType === 'studio'}
+        showAppsButton={logType === 'studio'}
       />
       <ConditionalLoadingState isLoading={!logEvents}>
         <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />

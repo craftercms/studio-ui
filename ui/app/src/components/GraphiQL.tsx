@@ -17,6 +17,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // @ts-ignore
 import GraphiQL from 'graphiql';
+
+import 'graphiql/graphiql.min.css';
+
 // @ts-ignore
 import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';

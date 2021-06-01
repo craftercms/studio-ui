@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
@@ -100,6 +100,7 @@ import {
   hasReadHistoryAction,
   hasRenameAction,
   hasSchedulePublishAction,
+  hasUnlockAction,
   hasUploadAction
 } from './content';
 import { isNavigable } from '../components/PathNavigator/utils';
@@ -113,49 +114,15 @@ export type ContextMenuOptionDescriptor<ID extends string = string> = {
   values?: any;
 };
 
-export type ItemActions =
-  | 'view'
-  | 'copy'
-  | 'history'
-  | 'dependencies'
-  | 'requestPublish'
-  | 'createContent'
-  | 'paste'
-  | 'edit'
-  | 'rename'
-  | 'cut'
-  | 'upload'
-  | 'duplicate'
-  | 'changeContentType'
-  | 'revert'
-  | 'editController'
-  | 'editTemplate'
-  | 'createFolder'
-  | 'delete'
-  | 'deleteController'
-  | 'deleteTemplate'
-  | 'publish'
-  | 'approvePublish'
-  | 'schedulePublish'
-  | 'rejectPublish';
-
-export type VirtualItemActions = 'preview' | 'unlock';
-
-export type AssessRemovalItemActions =
-  | 'editCode'
-  | 'viewCode'
-  | 'viewImage'
-  | 'duplicateAsset'
-  | 'createTemplate'
-  | 'createController';
-
-export type AllItemActions = ItemActions | VirtualItemActions | AssessRemovalItemActions;
-
 const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<AllItemActions>> = {
   // region ItemActions
   edit: {
     id: 'edit',
     label: translations.edit
+  },
+  unlock: {
+    id: 'unlock',
+    label: translations.unlock
   },
   view: {
     id: 'view',
@@ -269,10 +236,6 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   },
   // endregion
   // region VirtualItemActions
-  unlock: {
-    id: 'unlock',
-    label: translations.unlock
-  },
   editCode: {
     id: 'editCode',
     label: translations.edit
@@ -343,6 +306,9 @@ export function generateSingleItemOptions(
     } else {
       sectionA.push(menuOptions.editCode);
     }
+  }
+  if (hasUnlockAction(item.availableActions) && actionsToInclude.unlock) {
+    sectionA.push(menuOptions.unlock);
   }
   if (hasCreateAction(item.availableActions) && actionsToInclude.createContent) {
     sectionA.push(menuOptions.createContent);

@@ -16,13 +16,13 @@
 
 import ArrowDown from '@material-ui/icons/ArrowDropDownRounded';
 import Button, { ButtonTypeMap } from '@material-ui/core/Button';
-import React, { ReactNode } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -47,7 +47,7 @@ const useStyles = makeStyles(() =>
 );
 
 interface ConfirmDropdownProps {
-  text?: string;
+  text?: ReactNode;
   cancelText: ReactNode;
   confirmText: ReactNode;
   confirmHelperText?: ReactNode;
@@ -57,10 +57,12 @@ interface ConfirmDropdownProps {
     button?: string;
     menuPaper?: string;
   };
+  size?: IconButtonProps['size'];
   icon?: OverridableComponent<SvgIconTypeMap>;
   iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
   iconTooltip?: React.ReactNode;
   onConfirm(): any;
+  onCancel?(): any;
 }
 
 export default function ConfirmDropdown(props: ConfirmDropdownProps) {
@@ -68,6 +70,7 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
   const classes = useStyles({});
   const {
     onConfirm,
+    onCancel,
     text,
     cancelText,
     confirmText,
@@ -76,8 +79,11 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     buttonVariant = 'outlined',
     icon: Icon,
     iconColor = 'primary',
-    iconTooltip
+    iconTooltip,
+    size = 'medium'
   } = props;
+
+  const TooltipComponent = iconTooltip ? Tooltip : Fragment;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -92,23 +98,28 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     onConfirm();
   };
 
+  const handleCancel = () => {
+    handleClose();
+    onCancel?.();
+  };
+
   return (
     <>
       {Icon ? (
-        iconTooltip ? (
-          <Tooltip title={iconTooltip}>
-            <IconButton onClick={handleClick}>
-              <Icon color={iconColor} />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <IconButton onClick={handleClick}>
-            <Icon color={iconColor} />
+        <TooltipComponent title={iconTooltip}>
+          <IconButton onClick={handleClick} size={size}>
+            <Icon color={disabled ? 'disabled' : iconColor} />
           </IconButton>
-        )
+        </TooltipComponent>
       ) : (
-        <Button className={props.classes?.button} variant={buttonVariant} onClick={handleClick} disabled={disabled}>
-          {text} <ArrowDown />
+        <Button
+          className={props.classes?.button}
+          variant={buttonVariant}
+          onClick={handleClick}
+          disabled={disabled}
+          endIcon={<ArrowDown />}
+        >
+          {text}
         </Button>
       )}
       <Menu
@@ -126,10 +137,12 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
           horizontal: 'right'
         }}
       >
-        <Typography variant="body1" className={classes.helperText}>
-          {confirmHelperText}
-        </Typography>
-        <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
+        {confirmHelperText && (
+          <Typography variant="body1" className={classes.helperText}>
+            {confirmHelperText}
+          </Typography>
+        )}
+        <MenuItem onClick={handleCancel}>{cancelText}</MenuItem>
         <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
       </Menu>
     </>

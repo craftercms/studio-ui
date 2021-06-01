@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import { ContentType } from '../models/ContentType';
@@ -915,7 +915,27 @@ export function fetchItemByPath(
   path: string,
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem | DetailedItem> {
-  return fetchItemsByPath(siteId, [path], options).pipe(pluck('0'));
+  return fetchItemsByPath(siteId, [path], options).pipe(
+    tap((items) => {
+      if (items[0] === void 0) {
+        // Fake out the 404 which the backend won't return for this bulk API
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          name: 'AjaxError',
+          status: 404,
+          response: {
+            response: {
+              code: 7000,
+              message: 'Content not found',
+              remedialAction: `Check that path '${path}' is correct and it exists in site '${siteId}'`,
+              documentationUrl: ''
+            }
+          }
+        };
+      }
+    }),
+    pluck('0')
+  );
 }
 
 export function fetchItemWithChildrenByPath(

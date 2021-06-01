@@ -21,8 +21,6 @@ import {
   checkOutGuest,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
-  COMPONENT_INSTANCE_HTML_REQUEST,
-  COMPONENT_INSTANCE_HTML_RESPONSE,
   CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
@@ -31,6 +29,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EDIT_MODE_CHANGED,
   FETCH_GUEST_MODEL,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
@@ -62,7 +61,6 @@ import {
 } from '../../state/actions/preview';
 import {
   deleteItem,
-  fetchComponentInstanceHTML,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
   insertComponent,
@@ -100,11 +98,11 @@ import {
   getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
-import { completeDetailedItem, restoreClipboard } from '../../state/actions/content';
+import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
-  hasEditAction,
+  getComputedEditMode,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -315,20 +313,20 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const write = hasEditAction(items[currentItemPath]?.availableActions);
-
+  useEffect(() => {
+    if (items[currentItemPath]) {
+      getHostToGuestBus().next({
+        type: EDIT_MODE_CHANGED,
+        payload: { editMode: getComputedEditMode({ item: items[currentItemPath], username: user.username, editMode }) }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items[currentItemPath], editMode, user.username]);
   useEffect(() => {
     if (currentItemPath && site) {
-      dispatch(completeDetailedItem({ path: currentItemPath }));
+      dispatch(fetchSandboxItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, site]);
-
-  useEffect(() => {
-    if (write === false && editMode) {
-      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode: false } });
-    }
-  }, [dispatch, write, editMode]);
-
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -437,8 +435,10 @@ export function PreviewConcierge(props: any) {
             if (previewChoice[site] !== '2') {
               dispatch(setPreviewChoice({ site, choice: '2' }));
             }
-
-            getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode, highlightMode } });
+            getHostToGuestBus().next({
+              type: HOST_CHECK_IN,
+              payload: { editMode: false, highlightMode }
+            });
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -611,6 +611,10 @@ export function PreviewConcierge(props: any) {
                 completeAction: fetchGuestModelComplete
               });
 
+              hostToGuest$.next({
+                type: INSERT_OPERATION_COMPLETE,
+                payload: { ...payload, currentUrl }
+              });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             (error) => {
@@ -790,15 +794,6 @@ export function PreviewConcierge(props: any) {
           dispatch(setContentTypeDropTargets(payload));
           break;
         }
-        case COMPONENT_INSTANCE_HTML_REQUEST: {
-          fetchComponentInstanceHTML(payload.path).subscribe((htmlString) => {
-            hostToGuest$.next({
-              type: COMPONENT_INSTANCE_HTML_RESPONSE,
-              payload: { response: htmlString, id: payload.id }
-            });
-          });
-          break;
-        }
         case VALIDATION_MESSAGE: {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
             variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
@@ -825,7 +820,6 @@ export function PreviewConcierge(props: any) {
     guestBase,
     site,
     xsrfArgument,
-    editMode,
     highlightMode,
     previewChoice,
     handlePreviewCompatibilityDialogGo

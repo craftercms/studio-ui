@@ -17,8 +17,10 @@
 import React, { forwardRef } from 'react';
 import { PublishingStatusAvatar, PublishingStatusAvatarProps } from '../PublishingStatusAvatar/PublishingStatusAvatar';
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import { Badge, CircularProgress } from '@material-ui/core';
+import { Badge, CircularProgress, Tooltip } from '@material-ui/core';
 import { PublishingStatus } from '../../models/Publishing';
+import { FormattedMessage } from 'react-intl';
+import { publishingStatusTileMessages } from '../PublishingStatusTile';
 
 export interface PublishingStatusButtonUIProps extends IconButtonProps {
   isFetching: boolean;
@@ -29,25 +31,52 @@ export interface PublishingStatusButtonUIProps extends IconButtonProps {
 
 export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>(
   ({ enabled, status, isFetching, style, onClick, variant, ...rest }, ref) => (
-    <Badge
-      badgeContent={status === 'error' || !enabled ? '!' : null}
-      color="error"
-      overlap="circle"
-      style={{ position: 'relative' }}
+    <Tooltip
+      title={
+        <>
+          <FormattedMessage id="publishingStatusButton.tooltipMessage" defaultMessage="Publishing status" />
+          {status &&
+            (publishingStatusTileMessages[status] ? (
+              <>
+                {' '}
+                (<FormattedMessage id={publishingStatusTileMessages[status].id} />)
+              </>
+            ) : (
+              ` (${status})`
+            ))}
+        </>
+      }
     >
-      <IconButton {...rest} size="medium" onClick={onClick} ref={ref} style={{ ...style, padding: 0 }}>
-        <PublishingStatusAvatar status={isFetching ? null : status} variant={variant} />
-      </IconButton>
-      {/* TODO:
+      <Badge
+        badgeContent={status === 'error' || enabled === false ? '!' : null}
+        color="error"
+        overlap="circle"
+        style={{ position: 'relative' }}
+      >
+        <IconButton
+          size="medium"
+          {...rest}
+          onClick={onClick}
+          ref={ref}
+          style={{ padding: rest.size === 'small' ? 0 : 4, ...style }}
+        >
+          <PublishingStatusAvatar
+            status={isFetching ? null : status}
+            variant={variant}
+            styles={rest.size === 'small' ? { root: { width: 30, height: 30 } } : null}
+          />
+        </IconButton>
+        {/* TODO:
             The spinner might be better suited to be on the PublishingStatusAvatar component
             so when we have progress, it is show everywhere the publishing avatar shows up. */}
-      {(isFetching || status === 'publishing') && (
-        <CircularProgress
-          variant="indeterminate"
-          style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
-        />
-      )}
-    </Badge>
+        {(isFetching || status === 'publishing') && (
+          <CircularProgress
+            variant="indeterminate"
+            style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+          />
+        )}
+      </Badge>
+    </Tooltip>
   )
 );
 

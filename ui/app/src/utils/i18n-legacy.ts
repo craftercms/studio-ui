@@ -613,46 +613,6 @@ export const codeEditorMessages = defineMessages({
 });
 
 export const globalConfigMessages = defineMessages({
-  title: {
-    id: 'globalConfig.title',
-    defaultMessage: 'Global Config'
-  },
-  viewSample: {
-    id: 'globalConfig.viewSample',
-    defaultMessage: 'View Sample'
-  },
-  sampleFile: {
-    id: 'globalConfig.sampleFile',
-    defaultMessage: 'Sample File'
-  },
-  useSampleContent: {
-    id: 'globalConfig.useSampleContent',
-    defaultMessage: 'Use Sample Content'
-  },
-  replaceContent: {
-    id: 'globalConfig.replaceContent',
-    defaultMessage: 'Replace current value on background editor?'
-  },
-  appendContent: {
-    id: 'globalConfig.appendContent',
-    defaultMessage: 'Append sample on to background editor?'
-  },
-  confirmSave: {
-    id: 'globalConfig.confirmSave',
-    defaultMessage: 'Confirm Save?'
-  },
-  confirmReset: {
-    id: 'globalConfig.confirmReset',
-    defaultMessage: 'Confirm Reset?'
-  },
-  successfulSave: {
-    id: 'globalConfig.successfulSave',
-    defaultMessage: 'Configuration saved successfully.'
-  },
-  failedSave: {
-    id: 'globalConfig.failedSave',
-    defaultMessage: 'Save failed. Please retry momentarily.'
-  },
   unSavedConfirmation: {
     id: 'globalConfig.unsavedConfirmation',
     defaultMessage: 'You have unsaved changes, do you want to leave?'
@@ -660,10 +620,6 @@ export const globalConfigMessages = defineMessages({
   unSavedConfirmationTitle: {
     id: 'globalConfig.unsavedConfirmationTitle',
     defaultMessage: 'Unsaved changes'
-  },
-  documentError: {
-    id: 'globalConfig.documentError',
-    defaultMessage: 'The document contains errors. Check for error markers on side of the editor.'
   }
 });
 
@@ -913,82 +869,6 @@ export const globalMenuMessages = defineMessages({
 
 globalMenuMessages['home.globalMenu.about-us'] = globalMenuMessages['home.about-us'];
 globalMenuMessages['home.globalMenu.settings'] = globalMenuMessages['home.settings'];
-
-export const adminConfigurationMessages = defineMessages({
-  encryptMarked: {
-    id: 'adminConfigurations.encryptMarked',
-    defaultMessage: 'Encrypt Marked'
-  },
-  encryptError: {
-    id: 'adminConfigurations.encryptError',
-    defaultMessage: 'An error has occurred attempting to encrypt items.'
-  },
-  noEncryptItems: {
-    id: 'adminConfigurations.noEncryptItems',
-    defaultMessage: 'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
-  },
-  allEncrypted: {
-    id: 'adminConfigurations.allEncrypted',
-    defaultMessage:
-      'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
-  },
-  xmlContainsErrors: {
-    id: 'adminConfigurations.xmlContainsErrors',
-    defaultMessage: 'The XML document contains errors: {errors}'
-  },
-  encryptionDetail: {
-    id: 'adminConfigurations.encryptionDetail',
-    defaultMessage: '"{name}" with value "{value}"'
-  },
-  pendingEncryptions: {
-    id: 'adminConfigurations.pendingEncryptions',
-    defaultMessage:
-      "{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn't}" +
-      "other {Tag names: \n {tags}\nare marked for encryption but haven't}} been encrypted, please trigger encryption or remove the tag flagging."
-  },
-  encryptHintPt1: {
-    id: 'adminConfigurations.encryptHinPt1',
-    defaultMessage:
-      'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.'
-  },
-  encryptHintPt2: {
-    id: 'adminConfigurations.encryptHinPt2',
-    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
-  },
-  encryptHintPt3: {
-    id: 'adminConfigurations.encryptHinPt3',
-    defaultMessage: 'Example: {lt}accessKey encrypted=""{gt}AKIAIOSFODNN7EXAMPLE{lt}/accessKey{gt}'
-  },
-  encryptHintPt4: {
-    id: 'adminConfigurations.encryptHinPt4',
-    defaultMessage:
-      '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
-  },
-  encryptHintPt5: {
-    id: 'adminConfigurations.encryptHinPt5',
-    defaultMessage:
-      // eslint-disable-next-line no-template-curly-in-string
-      '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
-  },
-  encryptHintPt6: {
-    id: 'adminConfigurations.encryptHinPt6',
-    defaultMessage: 'Remember:'
-  },
-  encryptHintPt7: {
-    id: 'adminConfigurations.encryptHinPt7',
-    defaultMessage:
-      'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
-  },
-  encryptHintPt8: {
-    id: 'adminConfigurations.encryptHinPt8',
-    defaultMessage:
-      'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
-  },
-  encryptHintPt9: {
-    id: 'adminConfigurations.encryptHinPt9',
-    defaultMessage: 'Do not manipulate encryption results manually.'
-  }
-});
 
 export const encryptToolMessages = defineMessages({
   pageTitle: {

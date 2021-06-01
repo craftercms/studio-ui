@@ -16,12 +16,13 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
     paperRoot: {
       display: 'flex',
       padding: '30px',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      backgroundColor: theme.palette.background.default
     },
     logo: {
       margin: '0 auto 20px auto'

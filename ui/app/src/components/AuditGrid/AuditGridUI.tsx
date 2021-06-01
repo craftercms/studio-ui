@@ -46,6 +46,7 @@ import EmptyState from '../SystemStatus/EmptyState';
 import AuditGridFilterPopover from '../AuditGridFilterPopover';
 
 export interface AuditGridUIProps {
+  page: number;
   resource: Resource<PagedArray<AuditLogEntry>>;
   sites: Site[];
   users: PagedArray<User>;
@@ -56,11 +57,11 @@ export interface AuditGridUIProps {
   hasActiveFilters: boolean;
   timezones: string[];
   siteMode?: boolean;
-  onChangePage(page: number): void;
+  onPageChange(param: GridPageChangeParams): void;
   onResetFilters(): void;
   onResetFilter(id: string | string[]): void;
   onFetchParameters(id: number): void;
-  onChangeRowsPerPage(size: number): void;
+  onPageSizeChange(param: GridPageChangeParams): void;
   onFilterChange(filter: { id: string; value: string | string[] }): void;
 }
 
@@ -127,9 +128,10 @@ export const fieldIdMapping = {
 
 export default function AuditGridUI(props: AuditGridUIProps) {
   const {
+    page,
     resource,
-    onChangePage,
-    onChangeRowsPerPage,
+    onPageChange,
+    onPageSizeChange,
     onFilterChange,
     onResetFilter,
     onResetFilters,
@@ -150,7 +152,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
   const [anchorPosition, setAnchorPosition] = useState(null);
   const [openedFilter, setOpenedFilter] = useState<string>();
   const [timezone, setTimezone] = useState(moment.tz.guess());
-  const [sortModel, setSortModel] = React.useState<GridSortModel>([{ field: 'operationTimestamp', sort: 'desc' }]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'operationTimestamp', sort: 'desc' }]);
   const localeBranch = useLocale();
 
   const onFilterSelected = (props: GridColumnMenuProps) => {
@@ -165,7 +167,6 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         setAnchorPosition({ top, left });
       });
     }
-
     return null;
   };
 
@@ -175,14 +176,6 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     },
     [onFetchParameters]
   );
-
-  const onPageChange = (param: GridPageChangeParams) => {
-    onChangePage(param.page);
-  };
-
-  const onPageSizeChange = (param: GridPageChangeParams) => {
-    onChangeRowsPerPage(param.pageSize);
-  };
 
   const onTimestampSortChanges = ({ sortModel: nextSortModel }: GridSortModelParams) => {
     if (nextSortModel !== sortModel) {
@@ -390,7 +383,6 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         sortingMode="server"
         autoHeight
         disableColumnFilter
-        onCellClick={() => {}}
         className={classes.gridRoot}
         components={{
           ColumnMenu: onFilterSelected,
@@ -410,6 +402,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         disableColumnSelector
         rows={auditLogs}
         columns={columns}
+        page={page}
         pageSize={10}
         onSortModelChange={onTimestampSortChanges}
         onPageSizeChange={onPageSizeChange}

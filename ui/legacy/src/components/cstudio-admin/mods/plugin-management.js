@@ -33,6 +33,8 @@
       workarea.appendChild(el);
 
       CrafterCMSNext.render(el, 'PluginManagement');
+      // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+      CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
     }
   }
 

@@ -31,7 +31,7 @@ export default function AboutCrafterCMSView() {
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (
-    <Box display="flex" flexDirection="column" height="calc(100vh - 108px)">
+    <Box display="flex" flexDirection="column" height="calc(100vh - 215px)">
       <GlobalAppToolbar title={<FormattedMessage id="global.about" defaultMessage="About" />} />
       <Box display="flex" alignItems="center" justifyContent="center" flexGrow="1">
         <Paper className={classes.paperRoot}>
@@ -50,7 +50,7 @@ export default function AboutCrafterCMSView() {
           </div>
           <div className={classes.row}>
             <Typography variant="subtitle2" className={'aboutLabel'}>
-              <FormattedMessage id="about.buildNumber" defaultMessage="Build Date" />:
+              <FormattedMessage id="about.buildDate" defaultMessage="Build Date" />:
             </Typography>
             <Typography variant="body2">
               {new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(

@@ -75,7 +75,6 @@ export default [
       withLatestFrom(state$),
       tap(([action, state]) => {
         setStoredEditModeChoice(action.payload.editMode, state.user.username);
-        getHostToGuestBus().next(action);
       }),
       ignoreElements()
     ),

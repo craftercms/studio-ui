@@ -44,19 +44,14 @@ import { Drawer, ListItem, ListItemSecondaryAction, ListItemText } from '@materi
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { DetailedItem } from '../../models/Item';
+import { AllItemActions, DetailedItem } from '../../models/Item';
 import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
 import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import {
-  AllItemActions,
-  generateMultipleItemOptions,
-  generateSingleItemOptions,
-  itemActionDispatcher
-} from '../../utils/itemActions';
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 

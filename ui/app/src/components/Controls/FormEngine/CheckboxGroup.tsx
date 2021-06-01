@@ -20,20 +20,17 @@ import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { Control } from '../../../models/FormsEngine';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { controlBaseStyles } from './commonStyles';
-
-const useStyles = makeStyles(() => createStyles(controlBaseStyles));
+import useStyles from './styles';
 
 export default function CheckboxGroup(props: Control) {
   const { field, value = [], onChange, disabled } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
 
   const handleChange = (e) =>
     onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl variant="outlined" className={classes.formControl} fullWidth>
       <InputLabel className={classes.inputLabel} htmlFor={field.id}>
         {field.name}
       </InputLabel>

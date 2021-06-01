@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import EmptyState from '../SystemStatus/EmptyState';
@@ -26,25 +25,18 @@ import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import React, { ReactNode } from 'react';
-import { CSSProperties } from '@material-ui/styles';
-import {
-  createStyles,
-  makeStyles,
-  PopoverOrigin,
-  PopoverPosition,
-  PopoverProps,
-  PopoverReference
-} from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Popover, { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference } from '@material-ui/core/Popover';
 import palette from '../../styles/palette';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { CSSProperties } from '@material-ui/styles';
 
 export type ItemMegaMenuUIClassKey =
   | 'root'
-  | 'menuMainList'
   | 'mainItem'
   | 'actionsContainer'
   | 'actionsColumn'
@@ -57,6 +49,7 @@ export type ItemMegaMenuUIClassKey =
   | 'itemState'
   | 'infoItem'
   | 'menuItem'
+  | 'itemDisplayRoot'
   | 'itemTypeIcon'
   | 'itemTypography'
   | 'icon';
@@ -95,10 +88,6 @@ export const useStyles = makeStyles((theme) =>
       maxWidth: 400,
       borderRadius: '12px',
       ...styles.root
-    }),
-    menuMainList: (styles) => ({
-      padding: 0,
-      ...styles.menuMainList
     }),
     mainItem: (styles) => ({
       padding: '10px 20px',
@@ -168,6 +157,10 @@ export const useStyles = makeStyles((theme) =>
       minWidth: '100px',
       ...styles.menuItem
     }),
+    itemDisplayRoot: (styles) => ({
+      marginBottom: 5,
+      ...styles.itemDisplayRoot
+    }),
     itemTypeIcon: (styles) => ({
       color: palette.teal.main,
       marginRight: '2px',
@@ -208,7 +201,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
   const classes = useStyles(styles);
 
   return (
-    <Menu
+    <Popover
       open={open}
       onClose={onClose}
       anchorEl={anchorEl}
@@ -217,12 +210,11 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
       anchorPosition={anchorPosition}
       classes={{
         paper: classes.root,
-        list: classes.menuMainList,
         ...propClasses
       }}
     >
-      <MenuItem className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)} button={false}>
-        <Typography variant="body2" component="h2" className={classes.itemInfoContentType}>
+      <section className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
+        <Typography variant="body2" className={classes.itemInfoContentType}>
           {isLoading ? <Skeleton animation="wave" /> : contentType}
         </Typography>
         {isLoading ? (
@@ -230,9 +222,10 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         ) : (
           <ItemDisplay
             item={item}
+            labelComponent="h2"
             showPublishingTarget={false}
             showWorkflowState={false}
-            classes={{ icon: classes.itemTypeIcon }}
+            classes={{ root: classes.itemDisplayRoot, icon: classes.itemTypeIcon }}
             labelTypographyProps={{
               className: classes.itemTypography
             }}
@@ -252,7 +245,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
             </Typography>
           </div>
         )}
-      </MenuItem>
+      </section>
       {isLoading ? (
         <div className={clsx(classes.actionsContainer)}>
           {new Array(2).fill(null).map((value, i) => (
@@ -277,6 +270,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
             {editorialOptions.map((option: MenuOption, y: number) => (
               <MenuItem
                 dense
+                autoFocus={y === 0}
                 key={option.id}
                 onClick={(e) => onMenuItemClicked(option.id, e)}
                 className={clsx(classes.menuItem, propClasses?.menuItem)}
@@ -302,7 +296,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           </div>
         </div>
       )}
-      <MenuItem className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)} button={false}>
+      <section className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
         {isLoading ? (
           <Skeleton animation="wave" width="100%" />
         ) : (
@@ -331,7 +325,7 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
             />
           </Typography>
         )}
-      </MenuItem>
-    </Menu>
+      </section>
+    </Popover>
   );
 }
