@@ -87,7 +87,7 @@ function getGraphQLFetcher(url: string, method = 'post') {
 
 function Graphi(props: GraphiQLProps) {
   const { url, storageKey, method, embedded = false } = props;
-  const [query, setQuery] = useState(window.localStorage.getItem(`${storageKey}graphiql:query`));
+  const [query, setQuery] = useState(() => window.localStorage.getItem(`${storageKey}graphiql:query`));
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
   const graphiql = useRef<GraphiQL>();

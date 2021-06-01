@@ -13,36 +13,39 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
+<#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+    <link
+            href="/studio/static-assets/styles/typography.css"
+            rel="stylesheet"
+    >
+    <link href="/studio/static-assets/next/static/css/11.5109eb64.chunk.css" rel="stylesheet">
+    <link href="/studio/static-assets/next/static/css/main.df9ce95f.chunk.css" rel="stylesheet">
+    <style>
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#000000"/>
-  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
-  <link href="/studio/static-assets/styles/typography.css"
-        rel="stylesheet">
-  <link href="/studio/static-assets/next/static/css/11.5109eb64.chunk.css" rel="stylesheet">
-  <link href="/studio/static-assets/next/static/css/main.df9ce95f.chunk.css" rel="stylesheet">
-  <style>
-    html, body, #root {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-  </style>
-</head>
-<body>
-<div id="root"></div>
-<#include "/templates/web/common/js-next-scripts.ftl" />
-<script>
-  CrafterCMSNext.render('#root', 'SiteTools', {}, false);
-</script>
-</body>
-</html>
+      * {
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+  <div id="root"></div>
+  <#include "/templates/web/common/js-next-scripts.ftl" />
+  <script>
+    CrafterCMSNext.render('#root', 'SiteTools', {}, false);
+  </script>
+  </body>
+  </html>
+</#if>
