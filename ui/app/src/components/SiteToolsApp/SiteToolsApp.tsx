@@ -37,6 +37,7 @@ import { translations } from './translations';
 import EmptyState from '../SystemStatus/EmptyState';
 import { useGlobalAppState } from '../GlobalApp';
 import ContentTypeManagement from '../ContentTypesManagement';
+import LauncherOpenerButton from '../LauncherOpenerButton';
 
 export default function SiteToolsApp() {
   const classes = useStyles();
@@ -104,34 +105,47 @@ export default function SiteToolsApp() {
             path="/"
             render={() => {
               return (
-                <EmptyState
-                  styles={{
-                    root: {
-                      height: '100%',
-                      margin: 0
+                <Box display="flex" flexDirection="column" height="100%">
+                  <section className={classes.marginLeftAuto}>
+                    <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+                  </section>
+                  <EmptyState
+                    styles={{
+                      root: {
+                        height: '100%',
+                        margin: 0
+                      }
+                    }}
+                    title={
+                      <FormattedMessage
+                        id="siteTools.selectTool"
+                        defaultMessage="Please choose a tool from the left."
+                      />
                     }
-                  }}
-                  title={
-                    <FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />
-                  }
-                  image={`${baseUrl}/static-assets/images/choose_option.svg`}
-                />
+                    image={`${baseUrl}/static-assets/images/choose_option.svg`}
+                  />
+                </Box>
               );
             }}
           />
           <Route
             render={() => {
               return (
-                <EmptyState
-                  styles={{
-                    root: {
-                      height: '100%',
-                      margin: 0
-                    }
-                  }}
-                  title="404"
-                  subtitle={<FormattedMessage id={'siteTools.toolNotFound'} defaultMessage={'Tool not found'} />}
-                />
+                <Box display="flex" flexDirection="column" height="100%">
+                  <section className={classes.marginLeftAuto}>
+                    <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+                  </section>
+                  <EmptyState
+                    styles={{
+                      root: {
+                        height: '100%',
+                        margin: 0
+                      }
+                    }}
+                    title="404"
+                    subtitle={<FormattedMessage id={'siteTools.toolNotFound'} defaultMessage={'Tool not found'} />}
+                  />
+                </Box>
               );
             }}
           />

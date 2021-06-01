@@ -48,6 +48,9 @@ export const useStyles = makeStyles((theme) =>
     drawerPaper: {
       top: '0 !important',
       padding: theme.spacing(2)
+    },
+    marginLeftAuto: {
+      marginLeft: 'auto'
     }
   })
 );
