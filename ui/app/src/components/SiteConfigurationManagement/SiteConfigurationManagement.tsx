@@ -64,6 +64,7 @@ import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
+import { useHistory } from 'react-router';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -90,11 +91,41 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
   const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(null);
   const [keyword, setKeyword] = useState('');
+  const history = useHistory();
   const dispatch = useDispatch();
+  const disableBlocking = useRef(false);
 
   const editorRef = useRef<any>({
     container: null
   });
+
+  useEffect(() => {
+    history.block((props) => {
+      if (!disabledSaveButton && !disableBlocking.current && history.location.pathname !== props.pathname) {
+        setConfirmDialogProps({
+          open: true,
+          title: (
+            <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
+          ),
+          body: (
+            <FormattedMessage
+              id="siteConfigurationManagement.unsavedChangesSubtitle"
+              defaultMessage="You have unsaved changes, do you want to leave?"
+            />
+          ),
+          onClosed: () => setConfirmDialogProps(null),
+          onOk: () => {
+            disableBlocking.current = true;
+            history.push(props.pathname, { disableBlocking: true });
+          },
+          onCancel: () => {
+            setConfirmDialogProps({ ...confirmDialogProps, open: false });
+          }
+        });
+        return false;
+      }
+    });
+  }, [confirmDialogProps, disabledSaveButton, history]);
 
   useMount(() => {
     fetchActiveEnvironment().subscribe((env) => {
@@ -519,7 +550,6 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
         <Box
           display="flex"
           flexGrow={1}
-          width="100%"
           flexDirection={loadingXml ? 'row' : 'column'}
           paddingLeft={openDrawer ? `${width}px` : 0}
         >
