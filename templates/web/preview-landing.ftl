@@ -23,9 +23,6 @@
   <meta name="theme-color" content="#000000"/>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
   <script src="${contentModel.script_s}"></script>
-  <link href="/studio/static-assets/styles/typography.css"
-        rel="stylesheet">
-  <style>
     html, body {
       margin: 0;
       padding: 0;
