@@ -19,6 +19,7 @@ export interface Repository {
   url: string;
   fetch: string;
   push_url: string;
+  pushUrl: string;
   branches: string[];
   reachable: boolean;
   unreachableReason: string;
@@ -42,10 +43,15 @@ export interface Remote {
   remoteName: string;
   remoteUrl: string;
   authenticationType: string;
-  remoteUsername: string;
-  remotePassword: string;
-  remoteToken: string;
-  remotePrivateKey: string;
+  remoteUsername?: string;
+  remotePassword?: string;
+  remoteToken?: string;
+  remotePrivateKey?: string;
   remoteBranch?: string;
   mergeStrategy?: string;
+}
+
+export interface MergeStrategy {
+  key: 'none' | 'ours' | 'theirs';
+  value: string;
 }

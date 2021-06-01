@@ -53,6 +53,21 @@ export function fetchConfigurationDOM(
   return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
 }
 
+export function fetchConfigurationJSON(
+  site: string,
+  configPath: string,
+  module: CrafterCMSModules,
+  environment?: string
+): Observable<any> {
+  return fetchConfigurationXML(site, configPath, module, environment).pipe(
+    map((conf) =>
+      deserialize(conf, {
+        parseNodeValue: false
+      })
+    )
+  );
+}
+
 export function writeConfiguration(
   site: string,
   path: string,
