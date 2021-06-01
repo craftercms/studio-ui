@@ -14,26 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from 'react';
+import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import Skeleton from '@material-ui/lab/Skeleton';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Typography from '@material-ui/core/Typography';
+import { rand } from '../PathNavigator/utils';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
-import React from 'react';
-import { WorkflowState } from '../../models/WorkflowState';
-import { Resource } from '../../models/Resource';
-import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
 
-export interface WorkflowStatesGridUIProps {
-  resource: Resource<Array<WorkflowState>>;
+export interface WorkflowStatesGridSkeletonTableProps {
+  numOfItems?: number;
 }
 
-export default function WorkflowStatesGridUI(props: WorkflowStatesGridUIProps) {
-  const { resource } = props;
-  const states = resource.read();
+export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGridSkeletonTableProps) => {
+  const { numOfItems = 10 } = props;
+  const items = new Array(numOfItems).fill(null);
 
   return (
     <TableContainer>
@@ -63,18 +62,24 @@ export default function WorkflowStatesGridUI(props: WorkflowStatesGridUIProps) {
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {states.map((state) => (
-            <GlobalAppGridRow key={state.objectId}>
+          {items.map((item, index) => (
+            <GlobalAppGridRow key={index}>
               <GlobalAppGridCell align="left">
-                <Checkbox />
+                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">{state.objectId}</GlobalAppGridCell>
-              <GlobalAppGridCell align="left">{state.state}</GlobalAppGridCell>
-              <GlobalAppGridCell align="left">{state.systemProcessing}</GlobalAppGridCell>
+              <GlobalAppGridCell align="left">
+                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left">
+                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left">
+                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
+              </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
-}
+});

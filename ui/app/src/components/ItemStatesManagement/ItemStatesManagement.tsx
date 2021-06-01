@@ -17,27 +17,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
 import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
-import { fetchWorkflowStates } from '../../services/workflowStates';
+import { fetchItemStates } from '../../services/workflowStates';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import { WorkflowState } from '../../models/WorkflowState';
+import { ItemStates } from '../../models/WorkflowState';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import WorkflowStatesGridUI, { WorkflowStatesGridSkeletonTable } from '../WorkflowStatesGrid';
+import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../WorkflowStatesGrid';
 import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
 import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
+import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 
-export default function WorkflowStatesManagement() {
+export default function ItemStatesManagement() {
   const [fetching, setFetching] = useState(false);
-  const [states, setStates] = useState(null);
+  const [states, setStates] = useState(null); // TODO: type
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
   const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
 
   const fetchStates = useCallback(() => {
     setFetching(true);
-    fetchWorkflowStates(siteId).subscribe(
+    fetchItemStates(siteId).subscribe(
       (states) => {
+        console.log('states');
         setStates(states);
         setFetching(false);
       },
@@ -52,10 +53,7 @@ export default function WorkflowStatesManagement() {
     fetchStates();
   }, [fetchStates]);
 
-  const resource = useLogicResource<
-    Array<WorkflowState>,
-    { states: Array<WorkflowState>; error: ApiResponse; fetching: boolean }
-  >(
+  const resource = useLogicResource<ItemStates, { states: ItemStates; error: ApiResponse; fetching: boolean }>(
     useMemo(() => ({ states, error, fetching }), [states, error, fetching]),
     {
       shouldResolve: (source) => Boolean(source.states) && !fetching,
@@ -69,26 +67,20 @@ export default function WorkflowStatesManagement() {
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="siteTools.workflowStates" defaultMessage="Worflow States" />}
-        leftContent={
-          <Button
-            startIcon={<AddIcon />}
-            variant="outlined"
-            color="primary"
-            onClick={() => setOpenSetStateDialog(true)}
-            disabled={true} // TODO: this should be enabled only on item selected
-          >
-            <FormattedMessage id="workflowStates.setState" defaultMessage="Set State" />
+        title={<FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
+        rightContent={
+          <Button endIcon={<FilterListRoundedIcon />} variant="outlined" color="primary" onClick={null}>
+            <FormattedMessage id="words.filters" defaultMessage="Filters" />
           </Button>
         }
       />
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <WorkflowStatesGridSkeletonTable />
+          fallback: <ItemStatesGridSkeletonTable />
         }}
       >
-        <WorkflowStatesGridUI resource={resource} />
+        <ItemStatesGridUI resource={resource} />
       </SuspenseWithEmptyState>
 
       <SetWorkflowStateDialog open={openSetStateDialog} onClose={() => setOpenSetStateDialog(false)} />

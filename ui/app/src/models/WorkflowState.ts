@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface WorkflowState {
-  objectId: string;
-  site: string;
-  path: string;
-  state: string;
-  systemProcessing: number;
+import { SandboxItem } from './Item';
+
+export interface ItemStates {
+  total: number;
+  limit: number;
+  offset: number;
+  items: SandboxItem[];
 }

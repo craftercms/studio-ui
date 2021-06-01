@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './WorkflowStatesManagement';
+export { default } from './ItemStatesManagement';
 
-export * from './WorkflowStatesManagement';
+export * from './ItemStatesManagement';
