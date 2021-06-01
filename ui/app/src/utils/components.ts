@@ -70,6 +70,26 @@ import PublishingDashboard from '../components/PublishingDashboard';
 import SiteGraphiQL from '../components/SiteGraphiQL';
 import SiteToolsApp from '../components/SiteToolsApp';
 import { components } from '../services/plugin';
+import LauncherLinkTile from '../components/LauncherLinkTile';
+import LauncherPublishingStatusTile from '../components/LauncherPublishingStatusTile';
+import LauncherSection from '../components/LauncherSection';
+import LauncherGlobalNav from '../components/LauncherGlobalNav';
+import PreviewIcon from '../components/Icons/Preview';
+import About from '../components/Icons/About';
+import Docs from '../components/Icons/Docs';
+import SitesRounded from '../components/Icons/SitesRounded';
+import BuildIcon from '@material-ui/icons/BuildRounded';
+import AccountCircleRounded from '@material-ui/icons/AccountCircleRounded';
+import PeopleRounded from '@material-ui/icons/PeopleRounded';
+import SupervisedUserCircleRounded from '@material-ui/icons/SupervisedUserCircleRounded';
+import StorageRounded from '@material-ui/icons/StorageRounded';
+import SubjectRounded from '@material-ui/icons/SubjectRounded';
+import SettingsApplicationsRounded from '@material-ui/icons/SettingsApplicationsRounded';
+import FormatAlignCenterRounded from '@material-ui/icons/FormatAlignCenterRounded';
+import LockRounded from '@material-ui/icons/LockRounded';
+import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
+import PublicRounded from '@material-ui/icons/PublicRounded';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 
 export const registerComponents = () => {
   Object.entries({
@@ -102,6 +122,26 @@ export const registerComponents = () => {
     'craftercms.icons.SiteExplorer': SiteExplorer,
     'craftercms.icons.Component': Component,
     'craftercms.icons.GraphQL': GraphQL,
+    'craftercms.components.LauncherLinkTile': LauncherLinkTile,
+    'craftercms.components.LauncherPublishingStatusTile': LauncherPublishingStatusTile,
+    'craftercms.components.LauncherSection': LauncherSection,
+    'craftercms.components.LauncherGlobalNav': LauncherGlobalNav,
+    'craftercms.icons.Preview': PreviewIcon,
+    'craftercms.icons.CrafterIcon': About,
+    'craftercms.icons.Docs': Docs,
+    'craftercms.icons.Sites': SitesRounded,
+    '@material-ui/icons/BuildRounded': BuildIcon,
+    '@material-ui/icons/AccountCircleRounded': AccountCircleRounded,
+    '@material-ui/icons/PeopleRounded': PeopleRounded,
+    '@material-ui/icons/SupervisedUserCircleRounded': SupervisedUserCircleRounded,
+    '@material-ui/icons/StorageRounded': StorageRounded,
+    '@material-ui/icons/SubjectRounded': SubjectRounded,
+    '@material-ui/icons/SettingsApplicationsRounded': SettingsApplicationsRounded,
+    '@material-ui/icons/FormatAlignCenterRounded': FormatAlignCenterRounded,
+    '@material-ui/icons/LockRounded': LockRounded,
+    '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
+    '@material-ui/icons/PublicRounded': PublicRounded,
+    '@material-ui/icons/VideocamOutlined': VideocamOutlinedIcon,
     'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
     'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
     'craftercms.components.PathNavigator': PathNavigator,

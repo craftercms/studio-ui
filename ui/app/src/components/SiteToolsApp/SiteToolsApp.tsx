@@ -22,12 +22,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Box, Typography } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon from '../SystemIcon';
-import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import SettingsApplicationsOutlinedIcon from '@material-ui/icons/SettingsApplicationsOutlined';
-import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
-import GraphQL from '../Icons/GraphQL';
-import { components } from '../../services/plugin';
 import { Route, Switch, useHistory } from 'react-router';
 import SiteConfigurationManagement from '../SiteConfigurationManagement';
 import SiteEncryptTool from '../SiteEncryptTool';
@@ -39,11 +33,9 @@ import PluginManagement from '../PluginManagement';
 import { useSelection, useSiteTools } from '../../utils/hooks';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
-import WidgetsOutlinedIcon from '@material-ui/icons/WidgetsOutlined';
 import { translations } from './translations';
 import EmptyState from '../SystemStatus/EmptyState';
 import { useGlobalAppState } from '../GlobalApp';
-import LegacyDashboardFrame from '../LegacyDashboardFrame';
 import ContentTypeManagement from '../ContentTypesManagement';
 
 export default function SiteToolsApp() {
@@ -148,16 +140,3 @@ export default function SiteToolsApp() {
     </section>
   );
 }
-
-// TODO: Duplicate
-Object.entries({
-  '@material-ui/icons/WidgetsOutlined': WidgetsOutlinedIcon,
-  '@material-ui/icons/SettingsOutlined': SettingsOutlinedIcon,
-  '@material-ui/icons/LockOutlined': LockOutlinedIcon,
-  '@material-ui/icons/SettingsApplicationsOutlined': SettingsApplicationsOutlinedIcon,
-  '@material-ui/icons/CloudUploadOutlined': CloudUploadOutlinedIcon,
-  'craftercms.icons.GraphQL': GraphQL,
-  'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame
-}).forEach(([id, component]) => {
-  components.set(id, component);
-});
