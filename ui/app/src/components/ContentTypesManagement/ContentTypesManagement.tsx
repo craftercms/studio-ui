@@ -16,9 +16,10 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { useState } from 'react';
 import LegacyIFrame from '../LegacyIFrame';
 import Box from '@material-ui/core/Box';
+import LoadingState from '../SystemStatus/LoadingState';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
@@ -26,6 +27,7 @@ interface ContentTypeManagementProps {
 
 export default function ContentTypeManagement(props: ContentTypeManagementProps) {
   const { embedded = false } = props;
+  const [loading, setLoading] = useState(true);
   return (
     <Box height="100vh" display="flex" flexDirection="column">
       {!embedded && (
@@ -33,7 +35,18 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
           title={<FormattedMessage id="dropTargetsMessages.contentTypes" defaultMessage="Content Types" />}
         />
       )}
-      <LegacyIFrame path="/legacy-site-config?mode=embedded#tool/content-types" />
+      {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}
+      <LegacyIFrame
+        path="/legacy-site-config?mode=embedded#tool/content-types"
+        iframeProps={{
+          style: {
+            height: loading ? '0' : '100%'
+          },
+          onLoad: () => {
+            setLoading(false);
+          }
+        }}
+      />
     </Box>
   );
 }

@@ -24,6 +24,8 @@
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
   <link href="/studio/static-assets/styles/typography.css"
         rel="stylesheet">
+  <link href="/studio/static-assets/next/static/css/11.5109eb64.chunk.css" rel="stylesheet">
+  <link href="/studio/static-assets/next/static/css/main.df9ce95f.chunk.css" rel="stylesheet">
   <style>
     html, body, #root {
       margin: 0;
