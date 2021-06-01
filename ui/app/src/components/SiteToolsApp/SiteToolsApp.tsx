@@ -33,12 +33,13 @@ import PluginManagement from '../PluginManagement';
 import { useSelection, useSiteTools } from '../../utils/hooks';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
-import { translations } from './translations';
+import translations from './translations';
 import EmptyState from '../SystemStatus/EmptyState';
 import { useGlobalAppState } from '../GlobalApp';
 import ContentTypeManagement from '../ContentTypesManagement';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import RemoteRepositoriesManagement from '../RemoteRepositoriesManagement';
 
 interface SiteToolsAppProps {
   footerHtml: string;
@@ -112,7 +113,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           <Route path="/item-states" component={SiteEncryptTool} />
           <Route path="/log" render={() => <LogConsole logType="preview" />} />
           <Route path="/publishing" component={PublishingDashboard} />
-          <Route path="/remote-repositories" component={SiteEncryptTool} />
+          <Route path="/remote-repositories" component={RemoteRepositoriesManagement} />
           <Route path="/graphiql" component={Graphi} />
           <Route path="/plugins" component={PluginManagement} />
           <Route

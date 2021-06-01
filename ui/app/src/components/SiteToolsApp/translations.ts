@@ -58,3 +58,5 @@ export const translations = defineMessages({
     defaultMessage: 'Plugins'
   }
 });
+
+export default translations;

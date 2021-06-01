@@ -90,6 +90,7 @@ import LockRounded from '@material-ui/icons/LockRounded';
 import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
 import PublicRounded from '@material-ui/icons/PublicRounded';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import RemoteRepositoriesManagement from '../components/RemoteRepositoriesManagement';
 
 export const registerComponents = () => {
   Object.entries({
@@ -167,7 +168,8 @@ export const registerComponents = () => {
     'craftercms.components.LogConsole': LogConsole,
     'craftercms.components.PublishingDashboard': PublishingDashboard,
     'craftercms.components.SiteGraphiQL': SiteGraphiQL,
-    'craftercms.components.SiteToolsApp': SiteToolsApp
+    'craftercms.components.SiteToolsApp': SiteToolsApp,
+    'craftercms.components.RemoteRepositoriesManagement': RemoteRepositoriesManagement
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
