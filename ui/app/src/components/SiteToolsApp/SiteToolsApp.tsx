@@ -38,8 +38,14 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { useGlobalAppState } from '../GlobalApp';
 import ContentTypeManagement from '../ContentTypesManagement';
 import LauncherOpenerButton from '../LauncherOpenerButton';
+import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 
-export default function SiteToolsApp() {
+interface SiteToolsAppProps {
+  footerHtml: string;
+}
+
+export default function SiteToolsApp(props: SiteToolsAppProps) {
+  const { footerHtml } = props;
   const classes = useStyles();
   const [width, setWidth] = useState(240);
   const history = useHistory();
@@ -69,7 +75,7 @@ export default function SiteToolsApp() {
         width={width}
         onWidthChange={setWidth}
       >
-        <MenuList disablePadding>
+        <MenuList disablePadding className={classes.nav}>
           {siteTools.tools
             ? siteTools.tools.map((link) => (
                 <MenuItem onClick={() => onClick(link.id)} key={link.id} selected={`/${link.id}` === activeToolId}>
@@ -87,6 +93,15 @@ export default function SiteToolsApp() {
                 </MenuItem>
               ))}
         </MenuList>
+        <footer className={classes.footer}>
+          <CrafterCMSLogo width={100} className={classes.logo} />
+          <Typography
+            component="p"
+            variant="caption"
+            className={classes.footerDescription}
+            dangerouslySetInnerHTML={{ __html: footerHtml }}
+          />
+        </footer>
       </ResizeableDrawer>
       <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>

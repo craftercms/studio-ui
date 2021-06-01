@@ -44,7 +44,9 @@
   <div id="root"></div>
   <#include "/templates/web/common/js-next-scripts.ftl" />
   <script>
-    CrafterCMSNext.render('#root', 'SiteTools', {}, false);
+    CrafterCMSNext.render('#root', 'SiteTools', {
+      footerHtml: '${applicationContext.get("crafter.entitlementValidator").getDescription()}'
+    }, false);
   </script>
   </body>
   </html>

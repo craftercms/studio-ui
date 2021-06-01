@@ -22,6 +22,9 @@ export const useStyles = makeStyles((theme) =>
       height: '100vh',
       width: '100%'
     },
+    nav: {
+      overflow: 'auto'
+    },
     icon: {
       marginRight: '10px'
     },
