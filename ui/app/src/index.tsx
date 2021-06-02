@@ -15,7 +15,7 @@
  */
 
 import './styles/index.scss';
-import { registerComponents } from './utils/components';
+import { registerComponents } from './utils/registerComponents';
 
 registerComponents();
 
