@@ -22,7 +22,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { ItemStates } from '../../models/WorkflowState';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../WorkflowStatesGrid';
+import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid';
 import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
 import Button from '@material-ui/core/Button';
 import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
