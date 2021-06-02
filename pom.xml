@@ -138,9 +138,6 @@
 							<arguments>build-if-changed</arguments>
 						</configuration>
 					</execution>
-					<!--
-					Disabled until we implement the history dialog or otherwise use monaco
-					editor (possibly in Crafter 3.2.1+)
 					<execution>
 							<id>Monaco editor: dependencies</id>
 							<goals>
@@ -162,7 +159,6 @@
 									<arguments>build</arguments>
 							</configuration>
 					</execution>
-					-->
 				</executions>
 			</plugin>
 		</plugins>

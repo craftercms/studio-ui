@@ -16,7 +16,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { FileDiff } from '../../models/Repository';
-import * as monaco from 'monaco-editor';
+
+declare var monaco: any;
 
 export interface SplitViewProps {
   diff: FileDiff;
