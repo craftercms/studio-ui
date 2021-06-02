@@ -27,39 +27,48 @@ import { ItemStates } from '../../models/WorkflowState';
 import { Resource } from '../../models/Resource';
 import Checkbox from '@material-ui/core/Checkbox';
 import ItemDisplay from '../ItemDisplay';
-import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 
 export interface WorkflowStatesGridUIProps {
   resource: Resource<ItemStates>;
+  openFiltersDrawer: boolean;
 }
 
-const drawerWidth = 250;
+const drawerWidth = 240;
 const useStyles = makeStyles((theme) =>
   createStyles({
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0
-    },
     drawerPaper: {
-      width: drawerWidth,
       padding: theme.spacing(2)
+    },
+    tableContainer: {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen
+      })
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
     }
   })
 );
 
 export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
-  const { resource } = props;
+  const { resource, openFiltersDrawer } = props;
   const states = resource.read();
   const classes = useStyles();
 
-  console.log(states);
-
   return (
     <div>
-      <TableContainer>
+      <TableContainer
+        className={classes.tableContainer}
+        style={{
+          width: `calc(100% - ${openFiltersDrawer ? drawerWidth : 0}px`,
+          marginRight: openFiltersDrawer ? drawerWidth : 0
+        }}
+      >
         <Table>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
@@ -103,7 +112,9 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                 </GlobalAppGridCell>
                 <GlobalAppGridCell>
                   <ItemDisplay item={item} />
-                  <Typography variant="body2">{item.path}</Typography> {/* TODO: proper type */}
+                  <Typography variant="caption" component="p" className={classes.itemPath}>
+                    {item.path}
+                  </Typography>
                 </GlobalAppGridCell>
                 <GlobalAppGridCell>
                   {item.stateMap.systemProcessing ? (
@@ -145,19 +156,20 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      <Drawer
-        variant="persistent"
+      {/* TODO: I don't think this should be resizable */}
+      <ResizeableDrawer
+        open={openFiltersDrawer}
+        width={drawerWidth}
+        onWidthChange={null}
         anchor="right"
-        open={true}
-        className={classes.drawer}
         classes={{
-          paper: classes.drawerPaper
+          drawerPaper: classes.drawerPaper
         }}
       >
-        <Button endIcon={<CloseIcon />} variant="outlined" onClick={null}>
+        <Button endIcon={<CloseIcon />} variant="outlined" onClick={null} fullWidth>
           <FormattedMessage id="itemStates.clearFilters" defaultMessage="Clear Filters" />
         </Button>
-      </Drawer>
+      </ResizeableDrawer>
     </div>
   );
 }

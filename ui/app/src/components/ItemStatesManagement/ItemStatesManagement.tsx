@@ -29,10 +29,11 @@ import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 
 export default function ItemStatesManagement() {
   const [fetching, setFetching] = useState(false);
-  const [states, setStates] = useState(null); // TODO: type
+  const [states, setStates] = useState<ItemStates>(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
   const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
+  const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
 
   const fetchStates = useCallback(() => {
     setFetching(true);
@@ -69,7 +70,12 @@ export default function ItemStatesManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
         rightContent={
-          <Button endIcon={<FilterListRoundedIcon />} variant="outlined" color="primary" onClick={null}>
+          <Button
+            endIcon={<FilterListRoundedIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
+          >
             <FormattedMessage id="words.filters" defaultMessage="Filters" />
           </Button>
         }
@@ -80,7 +86,7 @@ export default function ItemStatesManagement() {
           fallback: <ItemStatesGridSkeletonTable />
         }}
       >
-        <ItemStatesGridUI resource={resource} />
+        <ItemStatesGridUI resource={resource} openFiltersDrawer={openFiltersDrawer} />
       </SuspenseWithEmptyState>
 
       <SetWorkflowStateDialog open={openSetStateDialog} onClose={() => setOpenSetStateDialog(false)} />
