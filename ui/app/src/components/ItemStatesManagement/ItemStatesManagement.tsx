@@ -26,14 +26,21 @@ import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid
 import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
 import Button from '@material-ui/core/Button';
 import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
+import { useStyles } from './styles';
 
-export default function ItemStatesManagement() {
+interface ItemStatesManagementProps {
+  embedded?: boolean;
+}
+
+export default function ItemStatesManagement(props: ItemStatesManagementProps) {
+  const { embedded } = props;
   const [fetching, setFetching] = useState(false);
   const [states, setStates] = useState<ItemStates>(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
   const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
-  const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
+  const [openFiltersDrawer, setOpenFiltersDrawer] = useState(true);
+  const classes = useStyles();
 
   const fetchStates = useCallback(() => {
     setFetching(true);
@@ -65,12 +72,15 @@ export default function ItemStatesManagement() {
     }
   );
 
+  const onFilterChecked = (id: string) => {};
+
   return (
     <section>
       <GlobalAppToolbar
-        title={<FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
+        title={!embedded && <FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
         rightContent={
           <Button
+            className={!embedded && classes.filterButton}
             endIcon={<FilterListRoundedIcon />}
             variant="outlined"
             color="primary"
@@ -79,6 +89,8 @@ export default function ItemStatesManagement() {
             <FormattedMessage id="words.filters" defaultMessage="Filters" />
           </Button>
         }
+        showHamburgerMenuButton={!embedded}
+        showAppsButton={!embedded}
       />
       <SuspenseWithEmptyState
         resource={resource}
@@ -86,7 +98,7 @@ export default function ItemStatesManagement() {
           fallback: <ItemStatesGridSkeletonTable />
         }}
       >
-        <ItemStatesGridUI resource={resource} openFiltersDrawer={openFiltersDrawer} />
+        <ItemStatesGridUI resource={resource} openFiltersDrawer={openFiltersDrawer} onFilterChecked={onFilterChecked} />
       </SuspenseWithEmptyState>
 
       <SetWorkflowStateDialog open={openSetStateDialog} onClose={() => setOpenSetStateDialog(false)} />

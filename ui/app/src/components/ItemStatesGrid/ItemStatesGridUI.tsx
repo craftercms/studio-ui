@@ -23,41 +23,46 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import React from 'react';
-import { ItemStates } from '../../models/WorkflowState';
+import { ItemStates as ResourceType } from '../../models/WorkflowState';
 import { Resource } from '../../models/Resource';
 import Checkbox from '@material-ui/core/Checkbox';
 import ItemDisplay from '../ItemDisplay';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import useStyles from './styles';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import LabeledStateIcon from './LabeledStateIcon';
+import { ItemStates } from '../../models/Item';
+import LabeledPublishingTargetIcon from './LabeledPublishingTargetIcon';
 
 export interface WorkflowStatesGridUIProps {
-  resource: Resource<ItemStates>;
+  resource: Resource<ResourceType>;
   openFiltersDrawer: boolean;
+  onFilterChecked(id: string): void;
 }
 
 const drawerWidth = 240;
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    drawerPaper: {
-      padding: theme.spacing(2)
-    },
-    tableContainer: {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    },
-    itemPath: {
-      color: theme.palette.text.secondary
-    }
-  })
-);
+
+const states: ItemStates[] = [
+  'new',
+  'modified',
+  'deleted',
+  'locked',
+  'systemProcessing',
+  'submitted',
+  'scheduled',
+  'staged',
+  'live'
+];
 
 export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
-  const { resource, openFiltersDrawer } = props;
-  const states = resource.read();
+  const { resource, openFiltersDrawer, onFilterChecked } = props;
+  const itemStates = resource.read();
   const classes = useStyles();
 
   return (
@@ -105,7 +110,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
             </GlobalAppGridRow>
           </TableHead>
           <TableBody>
-            {states.items.map((item) => (
+            {itemStates.items.map((item) => (
               <GlobalAppGridRow key={item.id}>
                 <GlobalAppGridCell align="left">
                   <Checkbox />
@@ -160,15 +165,55 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
       <ResizeableDrawer
         open={openFiltersDrawer}
         width={drawerWidth}
-        onWidthChange={null}
+        onWidthChange={(w) => {}}
         anchor="right"
         classes={{
           drawerPaper: classes.drawerPaper
         }}
       >
-        <Button endIcon={<CloseIcon />} variant="outlined" onClick={null} fullWidth>
-          <FormattedMessage id="itemStates.clearFilters" defaultMessage="Clear Filters" />
-        </Button>
+        <form noValidate autoComplete="off">
+          <Button endIcon={<CloseIcon />} variant="outlined" onClick={null} fullWidth>
+            <FormattedMessage id="itemStates.clearFilters" defaultMessage="Clear Filters" />
+          </Button>
+          <TextField
+            className={classes.inputPath}
+            label={<FormattedMessage id="itemStates.pathRegex" defaultMessage="Path (regex)" />}
+            fullWidth
+            variant="outlined"
+            helperText={
+              <FormattedMessage id="itemStates.pathRegexHelperText" defaultMessage="Use a path-matching regex" />
+            }
+          />
+          <FormControl component="fieldset" className={classes.filtersCheckboxesWrapper}>
+            <FormLabel component="legend">
+              <FormattedMessage id="itemStates.showItemsIn" defaultMessage="Show Items In" />
+            </FormLabel>
+            <FormGroup>
+              {states.map((id) => (
+                <FormControlLabel
+                  key={id}
+                  classes={{ label: classes.iconLabel }}
+                  control={
+                    <Checkbox
+                      checked={false}
+                      name={id}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        onFilterChecked(event.target.name);
+                      }}
+                    />
+                  }
+                  label={
+                    ['staged', 'live'].includes(id) ? (
+                      <LabeledPublishingTargetIcon state={id} classes={{ root: classes.iconRoot }} />
+                    ) : (
+                      <LabeledStateIcon state={id} classes={{ root: classes.iconRoot }} />
+                    )
+                  }
+                />
+              ))}
+            </FormGroup>
+          </FormControl>
+        </form>
       </ResizeableDrawer>
     </div>
   );
