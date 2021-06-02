@@ -2965,48 +2965,26 @@ var nodeOpen = false,
       // content services
       // READ OPS
       getContentUri: '/api/1/services/api/1/content/get-content.json',
-      contentExistsUrl: '/api/1/services/api/1/content/content-exists.json',
       lookupContentItemServiceUri: '/api/1/services/api/1/content/get-item.json',
-      getVersionHistoryServiceUrl: '/api/1/services/api/1/content/get-item-versions.json',
-      getConfigurationVersionHistoryServiceUrl: '/api/2/configuration/get_configuration_history',
-      lookupContentServiceUri: '/api/1/services/api/1/content/get-items-tree.json',
       searchServiceUrl: '/api/2/search/search.json',
       writeContentServiceUrl: '/api/1/services/api/1/content/write-content.json',
-      lookupContentTypeServiceUri: '/api/1/services/api/1/content/get-content-type.json',
       allContentTypesForSite: '/api/1/services/api/1/content/get-content-types.json',
       allowedContentTypesForPath: '/api/1/services/api/1/content/get-content-types.json',
-      retrieveSitesUrl: '/api/1/services/api/1/user/get-sites-3.json',
-      retrievePublishingChannelsUrl: '/api/1/services/api/1/deployment/get-available-publishing-channels.json',
-      getUiResource: '/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg',
 
-      getPagesServiceUrl: '/api/1/services/api/1/content/get-pages.json',
       lookupFoldersServiceUri: '/api/1/services/api/1/content/get-pages.json', // NEED A SERVICE
 
-      getPublishStatusServiceUrl: '/api/1/services/api/1/publish/status.json',
-      startPublishStatusServiceUrl: '/api/1/services/api/1/publish/start.json',
-      stopPublishStatusServiceUrl: '/api/1/services/api/1/publish/stop.json',
-
       //CMIS
-      getCMISCloneUri: '/api/2/cmis/clone',
       writeCMISContentUri: '/api/2/cmis/upload',
 
       //WEBDAV
-      getWebDAVContentByBrowseUri: '/api/2/webdav/list',
       writeWebDAVContentUri: '/api/2/webdav/upload',
 
       //S3
-      getS3ContentByBrowseUri: '/api/2/aws/s3/list',
       writeS3ContentUri: '/api/2/aws/s3/upload.json',
       videoTranscode: '/api/2/aws/mediaconvert/upload',
 
       // WRITE OPS
-      getRevertContentServiceUrl: '/api/1/services/api/1/content/revert-content.json',
       unlockContentItemUrl: '/api/1/services/api/1/content/unlock-content.json',
-      changeContentTypeUrl: '/api/1/services/api/1/content/change-content-type.json',
-      submitDeleteContent: '/api/1/services/api/1/content/delete-content.json',
-      deleteContentUrl: '/api/1/services/api/1/workflow/go-delete.json',
-      createFolderServiceUrl: '/api/1/services/api/1/content/create-folder.json',
-      renameFolderServiceUrl: '/api/1/services/api/1/content/rename-folder.json',
 
       // ORDER SERVICES
       // READ
@@ -3016,54 +2994,15 @@ var nodeOpen = false,
       //WRITE
       reorderServiceSubmitUrl: '/api/1/services/api/1/content/reorder-items.json',
 
-      // DEPLOYMENT SERVICES
-      // READ OPS
-      getDeploymentHistoryServiceUrl: '/api/2/publish/history.json',
-      getScheduledItemsServiceUrl: '/api/1/services/api/1/deployment/get-scheduled-items.json',
-      getDependenciesServiceUrl: '/api/1/services/api/1/dependency/get-dependencies.json',
-
       // Preview Services
       previewSyncAllServiceUrl: '/api/1/services/api/1/preview/sync-site.json',
       syncRepoServiceUrl: '/api/1/services/api/1/repo/sync-from-repo.json',
 
-      // Activity Services
-      getUserActivitiesServiceUrl: '/api/1/services/api/1/activity/get-user-activities.json',
-
       // Security Services
-      loginServiceUrl: '/api/1/services/api/1/security/login.json',
-      getPermissionsServiceUrl: '/api/1/services/api/1/security/get-user-permissions.json',
-      verifyAuthTicketUrl: '/api/1/services/api/1/user/validate-token.json',
-      getUserInfoServiceURL: '/api/2/users',
       logoutUrl: '/api/1/services/api/1/security/logout.json',
-      getLogoutInfoURL: '/api/2/users/me/logout/sso/url',
-      getActiveEnvironmentURL: '/api/2/ui/system/active_environment',
 
       // Workflow Services
-      getGoLiveQueueItemsServiceUrl: '/api/1/services/api/1/workflow/get-go-live-items.json',
-      getWorkflowAffectedPathsServiceUrl: '/api/1/services/api/1/workflow/get-workflow-affected-paths.json',
       createWorkflowJobsServiceUrl: '/api/1/services/api/1/workflow/create-jobs.json',
-      getWorkflowJobsServiceUrl: '/api/1/services/api/1/workflow/get-active-jobs.json',
-      rejectContentServiceUrl: '/api/1/services/api/1/workflow/reject.json',
-      getGoLiveServiceUrl: '/api/1/services/api/1/workflow/go-live.json',
-
-      // Dependencies
-      lookupContentDependenciesServiceUri: '/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&',
-
-      // Crop Image
-      cropImageServiceUri: '/api/1/services/api/1/content/crop-image.json',
-
-      // Load Items
-      loadItemsServiceUri: '/api/1/services/api/1/dependency/get-dependencies.json',
-
-      // Publishing Channels
-      getAvailablePublishingChannelsServiceUri:
-        '/api/1/services/api/1/deployment/get-available-publishing-channels.json',
-
-      // Rejection Reason
-      getRejectionReasonServiceUri: '/api/1/services/api/1/site/get-canned-message.json',
-
-      // Global Menu
-      getGlobalMenuURL: '/api/2/ui/views/global_menu.json',
 
       // Quick Create
       getQuickCreateURL: '/api/2/content/list_quick_create_content.json',

@@ -31,6 +31,9 @@ export const STATE_TRANSLATION_PENDING_MASK /*      */ = 0b000000000000000000000
 export const STATE_TRANSLATION_IN_PROGRESS_MASK /*  */ = 0b0000000000000000000000000000000000000000000000000000100000000000;
 // endregion
 
+// Backend counterpart
+// @see https://github.com/craftercms/studio/blob/develop/src/main/java/org/craftercms/studio/api/v2/security/ContentItemAvailableActionsConstants.java
+
 // region Available Actions Content
 //                                                          6 |    5    |    4    |    3    |    2    |    1    |     0
 //                                                         321|987654321|987654321|987654321|987654321|987654321|9876543210

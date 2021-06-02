@@ -44,7 +44,7 @@ import { getSystemLink } from '../LauncherSection';
 import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
-import { fetchSites } from '../../state/reducers/sites';
+import { fetchSites, popSite } from '../../state/reducers/sites';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
@@ -128,6 +128,7 @@ export default function SitesManagement() {
       () => {
         dispatch(
           batchActions([
+            popSite({ siteId: site.id }),
             showSystemNotification({
               message: formatMessage(translations.siteDeleted)
             }),
