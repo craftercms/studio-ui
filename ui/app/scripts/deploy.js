@@ -32,7 +32,7 @@ const parser = new htmlparser.Parser({
   onopentag(name, attributes) {
     if (name === 'script') {
       jsNextScriptsFileContent += `<script src="${attributes.src}"></script>\n`;
-    } else if (name === 'link' && !attributes.rel.includes('icon')) {
+    } else if (name === 'link' && attributes.rel.includes('stylesheet')) {
       jsNextScriptsFileContent += `<link href="${attributes.href}" rel="stylesheet"/>\n`;
     }
   }
