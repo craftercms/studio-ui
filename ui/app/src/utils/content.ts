@@ -333,7 +333,9 @@ export function parseContentXML(
     }
   };
   if (nnou(doc)) {
-    current.craftercms.label = getInnerHtml(doc.querySelector(':scope > internal-name'));
+    current.craftercms.label = getInnerHtml(
+      doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name')
+    );
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
   }
