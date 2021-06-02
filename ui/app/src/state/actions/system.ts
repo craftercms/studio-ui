@@ -110,3 +110,7 @@ export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_ME
 export const fetchSiteLocale = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE');
 export const fetchSiteLocaleComplete = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_COMPLETE');
 export const fetchSiteLocaleFailed = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_FAILED');
+
+export const fetchSiteTools = /*#__PURE__*/ createAction('FETCH_SITE_TOOLS');
+export const fetchSiteToolsComplete = /*#__PURE__*/ createAction('FETCH_SITE_TOOLS_COMPLETE');
+export const fetchSiteToolsFailed = /*#__PURE__*/ createAction('FETCH_SITE_TOOLS_FAILED');

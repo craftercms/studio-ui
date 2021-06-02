@@ -22,8 +22,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import LauncherSiteCard, { LauncherSiteCardOption } from '../LauncherSiteCard/LauncherSiteCard';
 import CloseIcon from '@material-ui/icons/Close';
-import About from '../Icons/About';
-import Docs from '../Icons/Docs';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import {
@@ -43,17 +41,11 @@ import Avatar from '@material-ui/core/Avatar';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import AccountCircleRounded from '@material-ui/icons/AccountCircleRounded';
 import { Site } from '../../models/Site';
 import EmptyState from '../SystemStatus/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import DashboardIcon from '@material-ui/icons/DashboardRounded';
-import SearchIcon from '@material-ui/icons/SearchRounded';
-import BuildIcon from '@material-ui/icons/BuildRounded';
-import PreviewIcon from '../Icons/Preview';
-import { components } from '../../services/plugin';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { logout } from '../../state/actions/auth';
 import { Tooltip } from '@material-ui/core';
@@ -61,28 +53,10 @@ import { closeLauncher } from '../../state/actions/dialogs';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
-import LauncherPublishingStatusTile from '../LauncherPublishingStatusTile';
 import clsx from 'clsx';
-import LauncherLinkTile from '../LauncherLinkTile';
-import LauncherSection, { getSystemLink } from '../LauncherSection';
+import { getSystemLink } from '../LauncherSection';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
-import SitesRounded from '../Icons/SitesRounded';
-import PeopleRounded from '@material-ui/icons/PeopleRounded';
-import SupervisedUserCircleRounded from '@material-ui/icons/SupervisedUserCircleRounded';
-import StorageRounded from '@material-ui/icons/StorageRounded';
-import SubjectRounded from '@material-ui/icons/SubjectRounded';
-import SettingsApplicationsRounded from '@material-ui/icons/SettingsApplicationsRounded';
-import FormatAlignCenterRounded from '@material-ui/icons/FormatAlignCenterRounded';
-import LockRounded from '@material-ui/icons/LockRounded';
-import PublicRounded from '@material-ui/icons/PublicRounded';
-import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
-
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-import CodeRoundedIcon from '@material-ui/icons/CodeRounded';
-import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
-import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
 
 export interface LauncherProps {
   open: boolean;
@@ -456,34 +430,3 @@ export default function Launcher(props: LauncherStateProps) {
     </Popover>
   );
 }
-
-Object.entries({
-  'craftercms.components.LauncherLinkTile': LauncherLinkTile,
-  'craftercms.components.LauncherPublishingStatusTile': LauncherPublishingStatusTile,
-  'craftercms.components.LauncherSection': LauncherSection,
-  'craftercms.components.LauncherGlobalNav': LauncherGlobalNav,
-  'craftercms.icons.Preview': PreviewIcon,
-  'craftercms.icons.CrafterIcon': About,
-  'craftercms.icons.Docs': Docs,
-  'craftercms.icons.Sites': SitesRounded,
-  '@material-ui/icons/DashboardRounded': DashboardIcon,
-  '@material-ui/icons/SearchRounded': SearchIcon,
-  '@material-ui/icons/BuildRounded': BuildIcon,
-  '@material-ui/icons/AccountCircleRounded': AccountCircleRounded,
-  '@material-ui/icons/PeopleRounded': PeopleRounded,
-  '@material-ui/icons/SupervisedUserCircleRounded': SupervisedUserCircleRounded,
-  '@material-ui/icons/StorageRounded': StorageRounded,
-  '@material-ui/icons/SubjectRounded': SubjectRounded,
-  '@material-ui/icons/SettingsApplicationsRounded': SettingsApplicationsRounded,
-  '@material-ui/icons/FormatAlignCenterRounded': FormatAlignCenterRounded,
-  '@material-ui/icons/LockRounded': LockRounded,
-  '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
-  '@material-ui/icons/PublicRounded': PublicRounded,
-  '@material-ui/icons/InsertDriveFileOutlined': InsertDriveFileOutlinedIcon,
-  '@material-ui/icons/VideocamOutlined': VideocamOutlinedIcon,
-  '@material-ui/icons/CodeRounded': CodeRoundedIcon,
-  '@material-ui/icons/ExtensionOutlined': ExtensionOutlinedIcon,
-  '@material-ui/icons/LocalOfferOutlined': LocalOfferOutlinedIcon
-}).forEach(([id, component]) => {
-  components.set(id, component);
-});

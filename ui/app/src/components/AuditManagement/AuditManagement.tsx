@@ -182,8 +182,8 @@ export default function AuditManagement(props: AuditManagementProps) {
             <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
           </Button>
         }
-        showHamburgerMenuButton={!site}
-        showAppsButton={!site}
+        showHamburgerMenuButton={!embedded}
+        showAppsButton={!embedded}
       />
       <Suspencified
         suspenseProps={{

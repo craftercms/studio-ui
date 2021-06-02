@@ -59,14 +59,11 @@
 
         workareaEl.innerHTML = `
           <section class="site-config-landing-page">
-            <header class="page-header">
-              <h1>${CMgs.format(langBundle, 'contentTypes')}</h1>
-              <div class="header-actions">
-                <button id="createNewContentTypeButton" class="btn btn-default">
-                  <i class="fa fa-plus-circle"></i>
-                  <span class="ng-binding">${CMgs.format(langBundle, 'createNewType')}</span>
-                </button>
-              </div>
+            <header>
+              <button id="createNewContentTypeButton" class="btn btn-outlined btn-outlined-primary">
+                <i class="fa fa-plus-circle"></i>
+                <span class="ng-binding">${CMgs.format(langBundle, 'createNewType')}</span>
+              </button>
             </header>
             <div id="openExistingInlineTarget"></div>
           </section>

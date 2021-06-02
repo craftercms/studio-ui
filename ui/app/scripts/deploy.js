@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const htmlparser = require('htmlparser2');
+
 const //
   fs = require('fs'),
   ncp = require('ncp').ncp,
@@ -22,14 +24,23 @@ const //
   PATH_BUILD = `${APP_DIR}/build`,
   TEMPLATES = `../../templates`,
   DEST = `../../static-assets/next`,
-  PLACEHOLDER = '<script id="_placeholderscript_"></script>',
-  indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString(),
-  position = indexContents.indexOf(PLACEHOLDER),
-  templateScripts = indexContents
-    .substr(position + PLACEHOLDER.length)
-    .replace(/\<\/(body|html)>/gi, '')
-    .replace(/<\/script>/gi, '</script>\n'),
-  jsNextScriptsFileContent = '<#include "/templates/web/common/js-global-context.ftl" />\n' + templateScripts;
+  indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString();
+
+let jsNextScriptsFileContent = '<#include "/templates/web/common/js-global-context.ftl" />\n';
+
+const parser = new htmlparser.Parser({
+  onopentag(name, attributes) {
+    if (name === 'script') {
+      jsNextScriptsFileContent += `<script src="${attributes.src}"></script>\n`;
+    } else if (name === 'link' && attributes.rel.includes('stylesheet')) {
+      jsNextScriptsFileContent += `<link href="${attributes.href}" rel="stylesheet"/>\n`;
+    }
+  }
+});
+
+parser.write(indexContents);
+parser.end();
+
 console.log(`Updating script imports`);
 fs.writeFileSync(`${TEMPLATES}/web/common/js-next-scripts.ftl`, `${jsNextScriptsFileContent}`);
 

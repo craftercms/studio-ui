@@ -25,7 +25,9 @@ interface LegacySiteToolsFrameProps {
 
 function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
   const { tool, workAreaOnly = true, iframeProps } = props;
-  const path = `/site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`].filter(Boolean).join('')}`;
+  const path = `/legacy-site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`]
+    .filter(Boolean)
+    .join('')}`;
   return <LegacyIFrame path={path} title="Site Tools" iframeProps={iframeProps} />;
 }
 

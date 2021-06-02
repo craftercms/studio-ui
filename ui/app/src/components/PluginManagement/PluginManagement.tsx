@@ -161,8 +161,8 @@ export const PluginManagement = (props: PluginManagementProps) => {
             <FormattedMessage id="globalMenu.pluginManagementEntryLabel" defaultMessage="Plugin Management" />
           )
         }
-        showAppsButton={false}
-        showHamburgerMenuButton={false}
+        showAppsButton={!embedded}
+        showHamburgerMenuButton={!embedded}
         styles={
           embedded && {
             leftContent: {

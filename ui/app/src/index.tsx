@@ -15,6 +15,9 @@
  */
 
 import './styles/index.scss';
+import { registerComponents } from './utils/registerComponents';
+
+registerComponents();
 
 if (process.env.NODE_ENV === 'production') {
   require('./utils/codebase-bridge').createCodebaseBridge();

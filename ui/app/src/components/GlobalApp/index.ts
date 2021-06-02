@@ -17,3 +17,5 @@
 export { default } from './GlobalApp';
 
 export * from './GlobalApp';
+
+export * from './GlobalAppContext';
