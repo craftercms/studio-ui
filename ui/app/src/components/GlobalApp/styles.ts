@@ -22,8 +22,8 @@ export const useStyles = makeStyles((theme) =>
       height: '100vh',
       width: '100%'
     },
-    marginLeftAuto: {
-      marginLeft: 'auto'
+    launcher: {
+      margin: '10px 12px 0 auto'
     },
     footerDescription: {
       color: theme.palette.text.secondary,

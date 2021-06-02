@@ -52,8 +52,8 @@ export const useStyles = makeStyles((theme) =>
       top: '0 !important',
       padding: theme.spacing(2)
     },
-    marginLeftAuto: {
-      marginLeft: 'auto'
+    launcher: {
+      margin: '10px 12px 0 auto'
     }
   })
 );
