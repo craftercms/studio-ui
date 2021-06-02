@@ -18,7 +18,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
 import { StandardAction } from '../../models/StandardAction';
 import { Site } from '../../models/Site';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { getSiteCookie } from '../../utils/auth';
 import { storeInitialized } from '../actions/system';
 
@@ -36,6 +36,7 @@ changeSite.type = CHANGE_SITE;
 export const fetchSites = /*#__PURE__*/ createAction('FETCH_SITES');
 export const fetchSitesComplete = /*#__PURE__*/ createAction<Site[]>('FETCH_SITES_COMPLETE');
 export const fetchSitesFailed = /*#__PURE__*/ createAction('FETCH_SITES_FAILED');
+export const popSite = /*#__PURE__*/ createAction<{ siteId: string }>('POP_SITE');
 
 export const initialState: GlobalState['sites'] = {
   byId: {},
@@ -64,7 +65,14 @@ const reducer = createReducer<GlobalState['sites']>(initialState, {
   [fetchSitesFailed.type]: (state, action) => ({
     ...state,
     isFetching: false
-  })
+  }),
+  [popSite.type]: (state, { payload }) =>
+    !payload?.site
+      ? state
+      : {
+          ...state,
+          byId: reversePluckProps(state.byId, payload.site)
+        }
 });
 
 export default reducer;

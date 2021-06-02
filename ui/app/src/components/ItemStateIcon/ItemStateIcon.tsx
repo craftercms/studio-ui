@@ -41,6 +41,7 @@ export type ItemStateIconClassKey =
   | 'stateSubmittedIcon'
   | 'stateScheduledIcon'
   | 'publishingIcon';
+
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
 export interface ItemStateIconProps {
@@ -72,7 +73,7 @@ const useStyles = makeStyles(() =>
       ...styles.stateLockedIcon
     }),
     stateSystemProcessingIcon: (styles) => ({
-      color: palette.pink.main,
+      color: palette.indigo.main,
       ...styles.stateSystemProcessingIcon
     }),
     stateSubmittedIcon: (styles) => ({

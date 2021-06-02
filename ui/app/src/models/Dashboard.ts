@@ -17,22 +17,22 @@
 import { LegacyItem } from './Item';
 
 interface LegacyDeploymentHistoryDocument {
-  children: [LegacyItem];
+  children: LegacyItem[];
   endpoint: string;
   internalName: string;
   numOfChildren: number;
 }
 
-interface LegacyDashboardItemBase {
-  ascending: boolean;
-  sortedBy: boolean;
+export interface LegacyDashboardItem {
   total: number;
+  sortedBy: boolean;
+  ascending: 'true' | 'false';
+  documents: LegacyItem[];
 }
 
-export interface LegacyDashboardItem extends LegacyDashboardItemBase {
-  documents: [LegacyItem];
-}
-
-export interface LegacyDeploymentHistoryItem extends LegacyDashboardItemBase {
-  documents: [LegacyDeploymentHistoryDocument];
+export interface LegacyDeploymentHistoryResponse {
+  total: number;
+  offset: number;
+  limit: number;
+  documents: LegacyDeploymentHistoryDocument[];
 }

@@ -17,7 +17,7 @@
 import { get } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
 import { pluck } from 'rxjs/operators';
-import { LegacyDashboardItem, LegacyDeploymentHistoryItem } from '../models/Dashboard';
+import { LegacyDashboardItem, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
 import { Observable } from 'rxjs';
 
 export function fetchLegacyGetGoLiveItems(
@@ -38,7 +38,6 @@ export function fetchLegacyGetGoLiveItems(
     ...(includeInProgress && { includeInProgress }),
     ...(filterByNumber && { num: filterByNumber })
   });
-
   return get(`/studio/api/1/services/api/1/workflow/get-go-live-items.json${qs}`).pipe(pluck('response'));
 }
 
@@ -64,7 +63,6 @@ export function fetchLegacyUserActivities(
     ...(filterBy && { filterType: filterBy }),
     excludeLive
   });
-
   return get(`/studio/api/1/services/api/1/activity/get-user-activities.json${qs}`).pipe(pluck('response'));
 }
 
@@ -84,7 +82,6 @@ export function fetchLegacyScheduledItems(
       : {}),
     ...(filterBy && { filterType: filterBy })
   });
-
   return get(`/studio/api/1/services/api/1/deployment/get-scheduled-items.json${qs}`).pipe(pluck('response'));
 }
 
@@ -95,7 +92,7 @@ export function fetchLegacyDeploymentHistory(
   days: number,
   numResults: number,
   filterBy: string
-): Observable<LegacyDeploymentHistoryItem> {
+): Observable<LegacyDeploymentHistoryResponse> {
   const qs = toQueryString({
     siteId,
     ...(sortBy
@@ -108,6 +105,5 @@ export function fetchLegacyDeploymentHistory(
     ...(numResults && { num: numResults }),
     ...(filterBy && { filterType: filterBy })
   });
-
   return get(`/studio/api/2/publish/history.json${qs}`).pipe(pluck('response'));
 }

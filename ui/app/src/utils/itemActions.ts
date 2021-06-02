@@ -107,6 +107,7 @@ import { isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
+import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -825,6 +826,7 @@ export const itemActionDispatcher = ({
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),
             closePublishDialog(),
+            fetchPublishingStatus(),
             ...(onActionSuccess ? [onActionSuccess] : [])
           ])
         })
