@@ -122,7 +122,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
             render={() => {
               return (
                 <Box display="flex" flexDirection="column" height="100%">
-                  <section className={classes.marginLeftAuto}>
+                  <section className={classes.launcher}>
                     <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
                   </section>
                   <EmptyState
@@ -148,7 +148,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
             render={() => {
               return (
                 <Box display="flex" flexDirection="column" height="100%">
-                  <section className={classes.marginLeftAuto}>
+                  <section className={classes.launcher}>
                     <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
                   </section>
                   <EmptyState
