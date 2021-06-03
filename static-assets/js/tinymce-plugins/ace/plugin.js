@@ -66,7 +66,7 @@
 				dialog.classList.add('fullscreen');
         dialog.classList.add('acecode');
 
-          const wrapCode = editor.getParam('code_editor_wrap');
+        const wrapCode = editor.getParam('code_editor_wrap');
 				mce_editor = ace.edit('mce-ace-editor-block', {
 				  wrap: wrapCode
         });
