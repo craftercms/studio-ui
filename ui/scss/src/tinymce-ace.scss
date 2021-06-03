@@ -117,4 +117,9 @@
   .ace_fold-widget.ace_closed {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAGCAYAAAAG5SQMAAAAOUlEQVR42jXKwQkAMAgDwKwqKD4EwQ26sSOkVWjgIIHAzPiCgaqiqnJHZnKICBERHN194O5b9vbLuAVRL+l0YWnZAAAAAElFTkSuQmCCXA==');
   }
+
+  &.acecode .tox-dialog__body-content [role='presentation'],
+  .tox-dialog__body-content [role='presentation'] .ace_editor {
+    height: 100%;
+  }
 }
