@@ -30,18 +30,19 @@ export function getItemPublishingTargetText(stateMap: ItemStateMap) {
 
 export function getItemStateText(stateMap: ItemStateMap) {
   switch (true) {
+    // TODO: Check for changes when recycle bin is implemented
+    case stateMap.deleted:
+      return <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />;
     case stateMap.systemProcessing:
       return <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />;
     case stateMap.locked:
       return <FormattedMessage id="itemState.locked" defaultMessage="Locked" />;
-    case stateMap.deleted:
-      return <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />;
-    case stateMap.modified:
-      return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
     case stateMap.scheduled:
       return <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />;
     case stateMap.submitted:
       return <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />;
+    case stateMap.modified:
+      return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
     case stateMap.new:
       return <FormattedMessage id="itemState.new" defaultMessage="New" />;
     default:
