@@ -75,19 +75,19 @@ export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGrid
               <GlobalAppGridCell align="center" className="avatar padded10">
                 <Skeleton variant="circle" width={42} height={42} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width60 padded10">
+              <GlobalAppGridCell className="padded10 maxWidth300">
                 <Skeleton variant="text" width={`${rand(80, 100)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20 padded10">
+              <GlobalAppGridCell className="padded10">
                 <Skeleton variant="text" width="30px" />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width40 padded10">
+              <GlobalAppGridCell className="padded10">
                 <Skeleton variant="text" width={`${rand(40, 60)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20 padded10">
+              <GlobalAppGridCell className="padded10">
                 <Skeleton variant="text" width="30px" />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20 padded10">
+              <GlobalAppGridCell className="padded10">
                 <Skeleton variant="text" width="30px" />
               </GlobalAppGridCell>
             </GlobalAppGridRow>

@@ -30,6 +30,7 @@ import useStyles from './styles';
 import { ItemStates, SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
+import clsx from 'clsx';
 
 export interface WorkflowStatesGridUIProps {
   resource: Resource<PagedArray<SandboxItem>>;
@@ -99,46 +100,58 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                 <GlobalAppGridCell align="center" className="avatar padded10">
                   <Checkbox />
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="width60 padded10">
+                <GlobalAppGridCell className="padded10 ellipsis maxWidth300">
                   <ItemDisplay item={item} />
-                  <Typography variant="caption" component="p" className={classes.itemPath}>
+                  <Typography
+                    title={item.path}
+                    variant="caption"
+                    component="p"
+                    className={clsx(classes.itemPath, classes.ellipsis)}
+                  >
                     {item.path}
                   </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="width20 padded10">
-                  {item.stateMap.systemProcessing ? (
-                    <FormattedMessage id="words.yes" defaultMessage="Yes" />
-                  ) : (
-                    <FormattedMessage id="words.no" defaultMessage="No" />
-                  )}
+                <GlobalAppGridCell className="padded10">
+                  <Typography variant="body2">
+                    {item.stateMap.systemProcessing ? (
+                      <FormattedMessage id="words.yes" defaultMessage="Yes" />
+                    ) : (
+                      <FormattedMessage id="words.no" defaultMessage="No" />
+                    )}
+                  </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="width40 padded10">
-                  {item.stateMap.locked ? (
-                    // TODO: according to design, this needs ellipsis
-                    <FormattedMessage
-                      id="itemStates.lockedBy"
-                      defaultMessage="By {owner}"
-                      values={{
-                        owner: item.lockOwner
-                      }}
-                    />
-                  ) : (
-                    <FormattedMessage id="words.no" defaultMessage="No" />
-                  )}
+                <GlobalAppGridCell className="padded10">
+                  <Typography variant="body2" className={classes.ellipsis} title={item.lockOwner}>
+                    {item.stateMap.locked ? (
+                      <FormattedMessage
+                        id="itemStates.lockedBy"
+                        defaultMessage="By {owner}"
+                        values={{
+                          owner: item.lockOwner
+                        }}
+                      />
+                    ) : (
+                      <FormattedMessage id="words.no" defaultMessage="No" />
+                    )}
+                  </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="width20 padded10">
-                  {item.stateMap.live ? (
-                    <FormattedMessage id="words.yes" defaultMessage="Yes" />
-                  ) : (
-                    <FormattedMessage id="words.no" defaultMessage="No" />
-                  )}
+                <GlobalAppGridCell className="padded10">
+                  <Typography variant="body2">
+                    {item.stateMap.live ? (
+                      <FormattedMessage id="words.yes" defaultMessage="Yes" />
+                    ) : (
+                      <FormattedMessage id="words.no" defaultMessage="No" />
+                    )}
+                  </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="width20 padded10">
-                  {item.stateMap.staged ? (
-                    <FormattedMessage id="words.yes" defaultMessage="Yes" />
-                  ) : (
-                    <FormattedMessage id="words.no" defaultMessage="No" />
-                  )}
+                <GlobalAppGridCell className="padded10">
+                  <Typography variant="body2">
+                    {item.stateMap.staged ? (
+                      <FormattedMessage id="words.yes" defaultMessage="Yes" />
+                    ) : (
+                      <FormattedMessage id="words.no" defaultMessage="No" />
+                    )}
+                  </Typography>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
             ))}

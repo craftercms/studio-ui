@@ -19,6 +19,11 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) =>
   createStyles({
     tableContainer: {},
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
     iconRoot: {
       fontSize: '1em'
     },
