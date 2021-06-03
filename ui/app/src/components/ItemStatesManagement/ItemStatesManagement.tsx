@@ -176,7 +176,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
           resource={resource}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
+              title: <FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />,
               styles: {
                 root: {
                   height: '100%',
