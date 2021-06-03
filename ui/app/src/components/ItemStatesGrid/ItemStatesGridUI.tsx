@@ -64,10 +64,10 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
         <Table>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="center" className="bordered avatar padded10">
+              <GlobalAppGridCell align="center" className="bordered padded10">
                 <Checkbox />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width60 padded10">
+              <GlobalAppGridCell className="bordered width60">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.item" defaultMessage="Item" />
                 </Typography>
@@ -97,10 +97,10 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
           <TableBody>
             {itemStates.map((item) => (
               <GlobalAppGridRow key={item.id}>
-                <GlobalAppGridCell align="center" className="avatar padded10">
+                <GlobalAppGridCell align="center" className="padded10">
                   <Checkbox />
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="padded10 ellipsis maxWidth300">
+                <GlobalAppGridCell className="ellipsis maxWidth300">
                   <ItemDisplay item={item} />
                   <Typography
                     title={item.path}
