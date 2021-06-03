@@ -26,10 +26,10 @@ import PaginationOptions from '../models/PaginationOptions';
 export function fetchItemStates(
   siteId: string,
   path?: string,
-  state?: number,
+  states?: number,
   options?: PaginationOptions
 ): Observable<PagedArray<SandboxItem>> {
-  const qs = toQueryString({ siteId, path, state, ...options });
+  const qs = toQueryString({ siteId, path, states, ...options });
   return get(`/studio/api/2/workflow/item_states${qs}`).pipe(
     pluck('response'),
     map(({ items, total, offset, limit }) =>

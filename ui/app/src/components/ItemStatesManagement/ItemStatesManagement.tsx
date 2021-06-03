@@ -147,7 +147,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   }, []);
 
   return (
-    <section ref={rootRef} style={{ height: '100%', overflow: 'auto' }}>
+    <section ref={rootRef} className={classes.root}>
       <GlobalAppToolbar
         title={!embedded && <FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
         rightContent={
@@ -168,11 +168,23 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
       <Box
         display="flex"
         flexDirection="column"
+        flexGrow={1}
         width={`calc(100% - ${openFiltersDrawer ? drawerWidth : 0}px)`}
         className={classes.wrapper}
       >
         <SuspenseWithEmptyState
           resource={resource}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
+              styles: {
+                root: {
+                  height: '100%',
+                  margin: 0
+                }
+              }
+            }
+          }}
           suspenseProps={{
             fallback: <ItemStatesGridSkeletonTable />
           }}

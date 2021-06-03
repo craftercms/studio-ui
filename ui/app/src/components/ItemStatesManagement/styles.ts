@@ -18,6 +18,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
+    root: {
+      height: '100%',
+      overflow: 'auto',
+      display: 'flex',
+      flexDirection: 'column'
+    },
     wrapper: {
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.easeOut,
