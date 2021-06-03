@@ -14,11 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from './Item';
+export { default } from './PersistentDrawer';
 
-export interface ItemStates {
-  total: number;
-  limit: number;
-  offset: number;
-  items: SandboxItem[];
-}
+export * from './PersistentDrawer';

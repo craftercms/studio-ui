@@ -16,17 +16,21 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
-import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
+import { useActiveSiteId, useDebouncedInput, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { fetchItemStates } from '../../services/workflowStates';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import { ItemStates } from '../../models/WorkflowState';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid';
+import ItemStatesGridUI, { ItemStatesGridSkeletonTable, states } from '../ItemStatesGrid';
 import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
 import Button from '@material-ui/core/Button';
 import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 import { useStyles } from './styles';
+import LookupTable from '../../models/LookupTable';
+import { createPresenceTable } from '../../utils/array';
+import { getStateMask } from './utils';
+import { ItemStateMap, SandboxItem } from '../../models/Item';
+import { PagedArray } from '../../models/PagedArray';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -35,19 +39,24 @@ interface ItemStatesManagementProps {
 export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const { embedded } = props;
   const [fetching, setFetching] = useState(false);
-  const [states, setStates] = useState<ItemStates>(null);
+  const [itemStates, setItemStates] = useState<PagedArray<SandboxItem>>(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
   const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
   const [openFiltersDrawer, setOpenFiltersDrawer] = useState(true);
+  const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(createPresenceTable(states, false));
+  const [pathRegex, setPathRegex] = useState('');
+  const [debouncePathRegex, setDebouncePathRegex] = useState('');
   const classes = useStyles();
 
   const fetchStates = useCallback(() => {
+    let stateMask = getStateMask(filtersLookup as ItemStateMap);
+
     setFetching(true);
-    fetchItemStates(siteId).subscribe(
+    fetchItemStates(siteId, debouncePathRegex, stateMask).subscribe(
       (states) => {
-        console.log('states');
-        setStates(states);
+        console.log(states);
+        setItemStates(states);
         setFetching(false);
       },
       ({ response }) => {
@@ -55,14 +64,17 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         setFetching(false);
       }
     );
-  }, [siteId]);
+  }, [debouncePathRegex, filtersLookup, siteId]);
 
   useEffect(() => {
     fetchStates();
   }, [fetchStates]);
 
-  const resource = useLogicResource<ItemStates, { states: ItemStates; error: ApiResponse; fetching: boolean }>(
-    useMemo(() => ({ states, error, fetching }), [states, error, fetching]),
+  const resource = useLogicResource<
+    PagedArray<SandboxItem>,
+    { states: PagedArray<SandboxItem>; error: ApiResponse; fetching: boolean }
+  >(
+    useMemo(() => ({ states: itemStates, error, fetching }), [itemStates, error, fetching]),
     {
       shouldResolve: (source) => Boolean(source.states) && !fetching,
       shouldReject: ({ error }) => Boolean(error),
@@ -72,7 +84,38 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     }
   );
 
-  const onFilterChecked = (id: string) => {};
+  const onPathRegex$ = useDebouncedInput(
+    useCallback(
+      (keyword: string) => {
+        setDebouncePathRegex(keyword);
+      },
+      [setDebouncePathRegex]
+    ),
+    400
+  );
+
+  const onPathRegexInputChanges = (value: string) => {
+    setPathRegex(value);
+    onPathRegex$.next(value);
+  };
+
+  const onFilterChecked = (id: string, value: boolean) => {
+    if (id === 'all') {
+      setFiltersLookup(createPresenceTable(states, value));
+    } else {
+      setFiltersLookup({ [id]: value });
+    }
+  };
+
+  const onClearFilters = () => {
+    setFiltersLookup(createPresenceTable(states, false));
+    setDebouncePathRegex('');
+    setPathRegex('');
+  };
+
+  const onChangePage = () => {};
+
+  const onChangeRowsPerPage = () => {};
 
   return (
     <section>
@@ -83,7 +126,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             className={!embedded && classes.filterButton}
             endIcon={<FilterListRoundedIcon />}
             variant="outlined"
-            color="primary"
+            color={pathRegex || Object.values(filtersLookup).some((value) => value) ? 'primary' : 'default'}
             onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
           >
             <FormattedMessage id="words.filters" defaultMessage="Filters" />
@@ -98,9 +141,18 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
           fallback: <ItemStatesGridSkeletonTable />
         }}
       >
-        <ItemStatesGridUI resource={resource} openFiltersDrawer={openFiltersDrawer} onFilterChecked={onFilterChecked} />
+        <ItemStatesGridUI
+          resource={resource}
+          openFiltersDrawer={openFiltersDrawer}
+          onFilterChecked={onFilterChecked}
+          filtersLookup={filtersLookup}
+          pathRegex={pathRegex}
+          onPathRegexInputChanges={onPathRegexInputChanges}
+          onClearFilters={onClearFilters}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+        />
       </SuspenseWithEmptyState>
-
       <SetWorkflowStateDialog open={openSetStateDialog} onClose={() => setOpenSetStateDialog(false)} />
     </section>
   );

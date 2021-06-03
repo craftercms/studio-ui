@@ -18,15 +18,16 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    drawerPaper: {
-      padding: theme.spacing(2)
-    },
-    tableContainer: {
-      transition: theme.transitions.create('margin', {
+    wrapper: {
+      transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
       })
     },
+    drawerPaper: {
+      padding: theme.spacing(2)
+    },
+    tableContainer: {},
     iconRoot: {
       fontSize: '1em'
     },
@@ -43,11 +44,24 @@ export const useStyles = makeStyles((theme) =>
     inputPath: {
       marginTop: '20px'
     },
-    filtersCheckboxesWrapper: {
+    helperText: {
+      marginLeft: 0
+    },
+    formControl: {
       marginTop: '20px'
     },
+    formLabel: {
+      color: theme.palette.text.primary,
+      textTransform: 'uppercase',
+      marginBottom: '10px'
+    },
+    formGroup: {},
     upperCase: {
       textTransform: 'uppercase'
+    },
+    paginationRoot: {
+      marginLeft: 'auto',
+      marginRight: '20px'
     }
   })
 );
